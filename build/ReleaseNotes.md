@@ -4,6 +4,7 @@ Release date: 2014/??/??
 
 #### Breaking changes
 - Graphics: Remove Rotated180 and Rotated90C from ImageOrientation enumeration for code simplicity and efficiency purpose.
+- Graphics: CopyRegion now contains additional parameters for subresource indices and destination offset.
 
 #### Issues fixed
 - Shaders: Geometry shaders are forced to transmit SV_Position stream to pixel shaders.
