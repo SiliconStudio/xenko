@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Effects.Modules;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders.Compiler;
@@ -41,7 +43,7 @@ namespace SiliconStudio.Paradox.Effects
             parameterCollections = new ParameterCollection[5];
         }
 
-        public int ShaderSlot { get; set; }
+        public bool EnableFrustumCulling { get; set; }
 
         public string EffectName
         {
@@ -203,18 +205,17 @@ namespace SiliconStudio.Paradox.Effects
 
         protected virtual void UpdateMeshes(RenderContext context, ref FastList<EffectMesh> meshes)
         {
-            // Filter out EffectMesh which ModelComponent.Enabled is false
-
             for (var i = 0; i < meshes.Count; ++i)
             {
+                var mesh = meshes[i];
                 // Remove non-enabled effect meshes
-                if (!meshes[i].Enabled)
+                if (!mesh.Enabled)
                 {
                     meshes.SwapRemoveAt(i--);
                     continue;
                 }
 
-                ModelComponent modelComponent = meshes[i].ModelComponent;
+                ModelComponent modelComponent = mesh.ModelComponent;
                 if (modelComponent == null)
                     continue;
 
@@ -232,8 +233,61 @@ namespace SiliconStudio.Paradox.Effects
                 }
             }
 
+            // Frustum culling
+            if (EnableFrustumCulling)
+            {
+                PerformFrustumCulling(meshes);
+            }
+
             // Sort based on ModelComponent.DrawOrder
             meshes.Sort(ModelComponentSorter.Default);
+        }
+
+        private void PerformFrustumCulling(FastList<EffectMesh> meshes)
+        {
+            Matrix viewProjection, mat1, mat2;
+
+            // Compute view * projection
+            Pass.Parameters.Get(TransformationKeys.View, out mat1);
+            Pass.Parameters.Get(TransformationKeys.Projection, out mat2);
+            Matrix.Multiply(ref mat1, ref mat2, out viewProjection);
+
+            var frustum = new BoundingFrustum(ref viewProjection);
+
+            for (var i = 0; i < meshes.Count; ++i)
+            {
+                var mesh = meshes[i];
+
+                // Fast AABB transform: http://zeuxcg.org/2010/10/17/aabb-from-obb-with-component-wise-abs/
+                // Get world matrix
+                mesh.Parameters.Get(TransformationKeys.World, out mat1);
+
+                // Compute transformed AABB (by world)
+                var boundingBox = mesh.MeshData.BoundingBox;
+                var center = boundingBox.Center;
+                var extent = boundingBox.Extent;
+
+                Vector3.TransformCoordinate(ref center, ref mat1, out center);
+
+                // Update world matrix into absolute form
+                unsafe
+                {
+                    float* matrixData = &mat1.M11;
+                    for (int j = 0; j < 16; ++j)
+                    {
+                        *matrixData = Math.Abs(*matrixData);
+                        ++matrixData;
+                    }
+                }
+
+                Vector3.TransformNormal(ref extent, ref mat1, out extent);
+
+                // Perform frustum culling
+                if (!Collision.FrustumContainsBox(ref frustum, ref center, ref extent))
+                {
+                    meshes.SwapRemoveAt(i--);
+                }
+            }
         }
 
         protected virtual void PreRender(RenderContext context)
