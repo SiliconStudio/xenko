@@ -1,0 +1,10 @@
+﻿!ProjectTemplate
+Files:
+  - {Source: $ProjectName$.Windows.csproj.t4, Target: $ProjectName$.Windows.csproj, IsTemplate: true}
+  - {Source: $ProjectName$.iOS.csproj.t4, Target: $ProjectName$.iOS.csproj, IsTemplate: true}
+  - {Source: $ProjectName$.Android.csproj.t4, Target: $ProjectName$.Android.csproj, IsTemplate: true}
+  - {Source: TestClass1.cs.t4, Target: TestClass1.cs, IsTemplate: true}
+  - {Source: Properties\AssemblyInfo.cs.t4, Target: Properties\AssemblyInfo.cs, IsTemplate: true}
+  - {Source: Properties\AndroidManifest.xml.t4, Target: Properties\AndroidManifest.xml, IsTemplate: true}
+  - {Source: Resources\drawable\Icon.png, Target: Resources\drawable\Icon.png }
+  - {Source: Info.plist.t4, Target: Info.plist, IsTemplate: true}

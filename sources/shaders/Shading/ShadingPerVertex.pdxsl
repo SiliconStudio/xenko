@@ -1,0 +1,50 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Performs per-vertex shading (specular is still per-pixel).
+/// </summary>
+/// <remarks>
+/// LIGHTING_MAX_LIGHT_COUNT: Macro - maximum number of lights.
+/// </remarks>
+#ifndef LIGHTING_MAX_LIGHT_COUNT
+# define LIGHTING_MAX_LIGHT_COUNT 1
+#endif
+class ShadingPerVertex : LightParameters, ShadingGroup, ShaderBase
+{
+    stream float3 diffuseLighting;
+
+    clone void VSMain()
+    {
+        base.VSMain();
+
+        streams.diffuseLighting = float3(0,0,0);
+
+#ifdef LIGHTING_UNROLL_LOOP
+        [unroll(LIGHTING_MAX_LIGHT_COUNT)]
+        for (int i = 0; i < LIGHTING_MAX_LIGHT_COUNT; ++i)
+#else
+        for (int i = 0; i < LIGHTING_MAX_LIGHT_COUNT && i < LightCount; ++i)
+#endif
+        {
+            streams.diffuseLighting += GetAttenuation(lightIndex) * ComputeDiffuseInfluence(float4(0,0,0,0), i);
+        }
+    }
+
+    override float4 ComputeShading()
+    {
+        float3 diffuseAlbedo = ComputeDiffuseAlbedo();
+        float3 lighting = diffuseAlbedo.rgb * streams.diffuseLighting;
+        float3 specularAlbedo = ComputeSpecularAlbedo();
+
+#ifdef LIGHTING_UNROLL_LOOP
+        [unroll(LIGHTING_MAX_LIGHT_COUNT)]
+        for (int i = 0; i < LIGHTING_MAX_LIGHT_COUNT; ++i)
+#else
+        for (int i = 0; i < LIGHTING_MAX_LIGHT_COUNT && i < LightCount; ++i)
+#endif
+        {
+            lighting += ComputeSpecularInfluence(specularAlbedo, i);
+        }
+        return float4(lighting, 0.0f);
+    }
+};

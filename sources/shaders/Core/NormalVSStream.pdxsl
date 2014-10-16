@@ -1,0 +1,13 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Computes normals in view space.
+/// </summary>
+class NormalVSStream : NormalVSBase, Transformation
+{
+    override stage void GenerateNormalVS_VS()
+    {
+        // Perform normal generation at the end in case vNormal is modified
+        streams.vNormalVS = mul((float3x3)WorldViewInverse, streams.vNormal);
+    }
+};

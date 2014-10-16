@@ -1,0 +1,189 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Tessellates without displacing.
+/// </summary>
+/// <remarks>
+/// InputControlPointCount: Macro - number of input control points.
+/// </remarks>
+#ifndef InputControlPointCount
+# define InputControlPointCount 3
+#endif
+
+class TessellationFlat : ShaderBaseTessellation, PositionVSStream, PositionStream4, TransformationBase, NormalVSStream, Camera
+{
+    [Link("Tessellation.DesiredTriangleSize")]
+    stage float DesiredTriangleSize = 12.0f;
+
+    //stream bool clipped : CLIPPED;
+    stream float oppositeEdgeLOD;
+    stream float clipped;
+    patchstream float tessFactor[3] : SV_TessFactor;
+    patchstream float insideTessFactor : SV_InsideTessFactor;
+
+    override void BaseTransformVS()
+    {
+        this.PreTransformPosition();
+    }
+
+    stage void BaseTransformDS()
+    {
+        this.TransformPosition();
+        this.PostTransformPosition();
+    }
+
+    override void PostTransformPosition()
+    {
+        streams.ShadingPosition = mul(streams.vPositionVS, Projection);
+    }
+    
+    override void TransformPosition()
+    {
+        base.TransformPosition();
+
+        // Apply tessellation map, etc...
+        TessellateDomain();
+    }
+    
+    float2 GetScreenSpacePosition( 
+                                    float4 f3Position,            // View space position of patch control point
+                                    float4x4 f4x4Projection,        // Projection matrix
+                                    float fScreenWidth,             // Screen width
+                                    float fScreenHeight             // Screen height
+                                    )
+    {
+        float4 f4ProjectedPosition = mul( float4( f3Position.xyz, 1.0f ), f4x4Projection );
+        float2 f2ScreenPosition = f4ProjectedPosition.xy / f4ProjectedPosition.ww;
+        f2ScreenPosition = ( f2ScreenPosition + 1.0f ) * 0.5f * float2( fScreenWidth, -fScreenHeight );
+        return f2ScreenPosition;
+    }
+   
+    float IsClippedGroup(float4 clipPos1, float4 clipPos2, float4 clipPos3)
+    {
+        float3 planeTest;
+
+        planeTest.x = ((-clipPos1.w <= clipPos1.x && clipPos1.x <= clipPos1.w) ? 1.0f : 0.0f)
+                    + ((-clipPos2.w <= clipPos2.x && clipPos2.x <= clipPos2.w) ? 1.0f : 0.0f)
+                    + ((-clipPos3.w <= clipPos3.x && clipPos3.x <= clipPos3.w) ? 1.0f : 0.0f);
+
+        planeTest.y = ((-clipPos1.w <= clipPos1.y && clipPos1.y <= clipPos1.w) ? 1.0f : 0.0f)
+                    + ((-clipPos2.w <= clipPos2.y && clipPos2.y <= clipPos2.w) ? 1.0f : 0.0f)
+                    + ((-clipPos3.w <= clipPos3.y && clipPos3.y <= clipPos3.w) ? 1.0f : 0.0f);
+
+        planeTest.z = ((-clipPos1.w <= clipPos1.z && clipPos1.z <= clipPos1.w) ? 1.0f : 0.0f)
+                    + ((-clipPos2.w <= clipPos2.z && clipPos2.z <= clipPos2.w) ? 1.0f : 0.0f)
+                    + ((-clipPos3.w <= clipPos3.z && clipPos3.z <= clipPos3.w) ? 1.0f : 0.0f);
+
+        return !all(planeTest != 0.0f) ? 1.0 : 0.0;
+    }
+
+    float IsClipped(float4 clipPos1)
+    {
+        // Test whether the position is entirely inside the view frustum.
+        return (-clipPos1.w <= clipPos1.x && clipPos1.x <= clipPos1.w
+                 && -clipPos1.w <= clipPos1.y && clipPos1.y <= clipPos1.w
+                 && -clipPos1.w <= clipPos1.z && clipPos1.z <= clipPos1.w)
+               ? 0.0f
+               : 1.0f;
+    }
+    
+    float ComputeClipping(InputPatch<Input, InputControlPointCount> input, const OutputPatch<Input2, 3> output, inout Constants constants)
+    {
+        return ComputeClippingGroup3(input[0].vPositionVS, input[1].vPositionVS, input[2].vPositionVS, Projection);
+    }
+
+    void TessellateHull(InputPatch<Input, InputControlPointCount> input, uint uCPID, uint NextCPID)
+    {
+    }
+
+    void TessellateHullConstant(InputPatch<Input, InputControlPointCount> input, const OutputPatch<Input2, 3> output, inout Constants constants)
+    {
+    }
+
+    float ComputeClippingGroup3(float4 f3Position1, float4 f3Position2, float4 f3Position3, float4x4 f4x4Projection)
+    {
+        float4 clipPos1 = mul( float4( f3Position1.xyz, 1.0f ), f4x4Projection );
+        float4 clipPos2 = mul( float4( f3Position2.xyz, 1.0f ), f4x4Projection );
+        float4 clipPos3 = mul( float4( f3Position3.xyz, 1.0f ), f4x4Projection );
+
+        float3 planeTest;
+
+        planeTest.x = ((-clipPos1.w <= clipPos1.x && clipPos1.x <= clipPos1.w) ? 1.0f : 0.0f)
+                    + ((-clipPos2.w <= clipPos2.x && clipPos2.x <= clipPos2.w) ? 1.0f : 0.0f)
+                    + ((-clipPos3.w <= clipPos3.x && clipPos3.x <= clipPos3.w) ? 1.0f : 0.0f);
+
+        planeTest.y = ((-clipPos1.w <= clipPos1.y && clipPos1.y <= clipPos1.w) ? 1.0f : 0.0f)
+                    + ((-clipPos2.w <= clipPos2.y && clipPos2.y <= clipPos2.w) ? 1.0f : 0.0f)
+                    + ((-clipPos3.w <= clipPos3.y && clipPos3.y <= clipPos3.w) ? 1.0f : 0.0f);
+
+        planeTest.z = ((-clipPos1.w <= clipPos1.z && clipPos1.z <= clipPos1.w) ? 1.0f : 0.0f)
+                    + ((-clipPos2.w <= clipPos2.z && clipPos2.z <= clipPos2.w) ? 1.0f : 0.0f)
+                    + ((-clipPos3.w <= clipPos3.z && clipPos3.z <= clipPos3.w) ? 1.0f : 0.0f);
+
+        return !all(planeTest != 0.0f) ? 1.0 : 0.0;
+    }
+
+    [domain("tri")]
+    [partitioning("fractional_odd")]
+    [outputtopology("triangle_cw")]
+    [outputcontrolpoints(3)]
+    [patchconstantfunc("HSConstantMain")]
+    [maxtessfactor(48.0)]
+    override void HSMain(InputPatch<Input, InputControlPointCount> input, out Output output, uint uCPID : SV_OutputControlPointID)
+    {
+        const uint NextCPID = uCPID < 2 ? uCPID + 1 : 0;
+
+        streams = input[uCPID];
+
+        TessellateHull(input, uCPID, NextCPID);
+
+        // Compute screen space position of current control point and next one
+        // TODO: Reuse ShadingPosition?
+        // However, not sure if we can do tessellation directly through ShadingPosition interpolation (in which case we wouldn't need to do it in domain shader either)
+        float2 screenPosition0 = GetScreenSpacePosition(input[uCPID].vPositionVS, Projection, ViewSize.x, ViewSize.y);
+        float2 screenPosition1 = GetScreenSpacePosition(input[NextCPID].vPositionVS, Projection, ViewSize.x, ViewSize.y);
+
+        // Screen space tessellation based on desired triangle size
+        streams.oppositeEdgeLOD = 1.0f / DesiredTriangleSize * distance(screenPosition0, screenPosition1);
+
+        output = streams;
+    }
+
+    void HSConstantMain(InputPatch<Input, InputControlPointCount> input, const OutputPatch<Input2, 3> output, out Constants constants)
+    {
+        constants.tessFactor[0] = output[1].oppositeEdgeLOD;
+        constants.tessFactor[1] = output[2].oppositeEdgeLOD;
+        constants.tessFactor[2] = output[0].oppositeEdgeLOD;
+        constants.insideTessFactor = 0.33f * (constants.tessFactor[0] + constants.tessFactor[1] + constants.tessFactor[2]);
+
+        TessellateHullConstant(input, output, constants);
+        if (ComputeClipping(input, output, constants))
+        {
+            constants.tessFactor[0] = 0.0f;
+            constants.tessFactor[1] = 0.0f;
+            constants.tessFactor[2] = 0.0f;
+            constants.insideTessFactor = 0.0f;
+        }
+    }
+
+    void InterpolateBarycentric(const OutputPatch<Input, 3> input, in Constants constants, float3 f3BarycentricCoords)
+    {
+        float fU = f3BarycentricCoords.x;
+        float fV = f3BarycentricCoords.y;
+        float fW = f3BarycentricCoords.z;
+
+        streams = input[0] * fU + input[1] * fV + input[2] * fW;
+    }
+
+    [domain("tri")]
+    override void DSMain(const OutputPatch<Input, 3> input, out Output output, in Constants constants, float3 f3BarycentricCoords : SV_DomainLocation)
+    {
+        //streams = input[0] * fU + input[1] * fV + input[2] * fW;
+        streams = 0;
+        InterpolateBarycentric(input, constants, f3BarycentricCoords);
+
+        this.BaseTransformDS();
+
+        output = streams;
+    }
+};

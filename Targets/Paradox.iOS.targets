@@ -1,0 +1,106 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Embed native libraries -->
+  <ItemGroup>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\libfreetype.a" >
+      <LibraryName>freetype</LibraryName>
+    </SiliconStudioEmbeddedNativeLibrary>
+
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\libcore.a">
+      <LibraryName>core</LibraryName>
+    </SiliconStudioEmbeddedNativeLibrary>
+
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\libbulletc.a">
+      <LibraryName>bulletc</LibraryName>
+    </SiliconStudioEmbeddedNativeLibrary>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <SiliconStudioNETFrameworkVersion>v1.0</SiliconStudioNETFrameworkVersion>
+  </PropertyGroup>
+
+  <!-- 
+  *****************************************************************************************************************************
+  Handle SiliconStudioEmbedNativeLibrary files
+  *****************************************************************************************************************************
+  -->
+
+  <PropertyGroup>
+    <XamarinVersion>$([MSBuild]::GetRegistryValueFromView('HKEY_LOCAL_MACHINE\SOFTWARE\Xamarin\iOS', 'InstalledVersion', '8.2.0', RegistryView.Registry32))</XamarinVersion>
+    <XamarinIOSMajorVersion>$([System.Text.RegularExpressions.Regex]::Match($(XamarinVersion), `^(\d+)\.(\d+)\.`).get_Groups().get_Item(1).ToString())</XamarinIOSMajorVersion>
+    <XamarinIOSMinorVersion>$([System.Text.RegularExpressions.Regex]::Match($(XamarinVersion), `^(\d+)\.(\d+)\.`).get_Groups().get_Item(2).ToString())</XamarinIOSMinorVersion>
+  </PropertyGroup>
+
+  <Target Name="EnsureXamarinVersion" BeforeTargets="PrepareForBuild">
+    <Error Condition="'$(XamarinVersion)' == ''" Text="Xamarin iOS version was not found. Ensure HKEY_LOCAL_MACHINE\SOFTWARE\Xamarin\iOS\InstalledVersion is properly set."/>
+    <Error Condition="($(XamarinIOSMajorVersion) == 7 and $(XamarinIOSMinorVersion) >= 3) or ($(XamarinIOSMajorVersion) == 8 and $(XamarinIOSMinorVersion) &lt; 2)" Text="Xamarin iOS versions 7.3 to 8.1 are not compatible with Paradox (https://bugzilla.xamarin.com/show_bug.cgi?id=22906). Either downgrade to 7.2 (Xamarin 3.3) or upgrade to 8.2 (Xamarin 3.7)."/>
+  </Target>
+
+  <!-- Rewrite BuildDependsOn and ResolveReferencesDependsOn -->
+  <PropertyGroup Condition=" '$(SiliconStudioIsExecutable)' == 'true'">
+    <BuildDependsOn>
+      CopyParadoxNativeiOsLibrary;
+      $(BuildDependsOn);
+    </BuildDependsOn>
+    <!-- iOS: Ensure assets have been deployed before calling _CollectBundleResources (on Xamarin iOS 7 we use BeforeTargets) -->
+    <_CollectBundleResourcesDependsOn Condition="$(XamarinIOSMajorVersion) >= 8">
+      DeployAssetsiOS8;
+      $(_CollectBundleResourcesDependsOn);
+    </_CollectBundleResourcesDependsOn>
+  </PropertyGroup>
+
+  <!-- Override PostSettings target CopySiliconStudioNativeLibraries. 
+       Copy the libcore.a library to the project root directory for future native link. -->
+  <Target Name="CopyParadoxNativeiOsLibrary" Condition=" '$(SiliconStudioIsExecutable)' == 'true'">
+    <!-- Xamarin iOS 7.3- (deprecated) -->
+    <Copy Condition="$(XamarinIOSMajorVersion) &lt;= 7" SourceFiles="@(ResolvedSiliconStudioEmbeddedNativeLibrary)" DestinationFiles="@(SiliconStudioEmbeddedNativeLibrary->'$(ProjectDir)%(Filename)%(Extension)')"/>
+    <!-- Xamarin iOS 8.2+
+         HACK: Use LogicalName so that it is not actually inside the app bundle
+    -->
+    <ItemGroup Condition="$(XamarinIOSMajorVersion) >= 8">
+      <BundleResource Include="@(SiliconStudioEmbeddedNativeLibrary)">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <LogicalName>..\lib%(SiliconStudioEmbeddedNativeLibrary.LibraryName)%(SiliconStudioEmbeddedNativeLibrary.Extension)</LogicalName>
+      </BundleResource>
+    </ItemGroup>
+  </Target>
+
+  <!-- Deploy assets and native libraries (Xamarin iOS 8.2+ version) -->
+  <Target Name="DeployAssetsiOS8" DependsOnTargets="_GenerateBundleName;SiliconStudioCompileAsset" Condition="'$(SiliconStudioIsExecutable)' == 'true' And $(XamarinIOSMajorVersion) >= 8">
+    <PropertyGroup>
+      <MtouchExtraArgsLibs>@(SiliconStudioEmbeddedNativeLibrary->'-l%(LibraryName) -force_load %24{ProjectDir}/$(_AppBundlePath)../%(Filename)%(Extension)',' ')</MtouchExtraArgsLibs>
+      <MtouchExtraArgs>$(MtouchExtraArgs) --compiler=clang -cxx -gcc_flags "-L%24{ProjectDir}/$(_AppBundlePath)../ -lstdc++ $(MtouchExtraArgsLibs)"</MtouchExtraArgs>
+    </PropertyGroup>
+
+    <!-- Add all game data as content on iphone. Note that "Link" doesn't work but Xamarin seems to use a similar "LogicalName" property. -->
+    <ItemGroup>
+      <!-- Define the Assets to deploy -->
+      <AssetsToDeploy Include="$(SiliconStudioCompileAssetOutputPath)\**\*.*"/>
+
+      <BundleResource Include="@(AssetsToDeploy)">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <LogicalName>data\%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
+        <OptimizeImage>False</OptimizeImage>
+      </BundleResource>
+    </ItemGroup>
+  </Target>
+
+  <!-- Deploy assets and native libraries (Xamarin iOS 7.3- version)
+       Deprecated, later we will only support Xamarin iOS 8.2+ -->
+  <Target Name="DeployAssetsiOS7" BeforeTargets="_GenerateBundleContentDir" Condition="'$(SiliconStudioIsExecutable)' == 'true' And $(XamarinIOSMajorVersion) &lt;= 7">
+    <PropertyGroup>
+      <MtouchExtraArgsLibs>@(SiliconStudioEmbeddedNativeLibrary->'-l%(LibraryName) -force_load %24{ProjectDir}/source/%(Filename)%(Extension)',' ')</MtouchExtraArgsLibs>
+      <MtouchExtraArgs>$(MtouchExtraArgs) --compiler=clang -cxx -gcc_flags "-L%24{ProjectDir}/source -lstdc++ $(MtouchExtraArgsLibs)"</MtouchExtraArgs>
+    </PropertyGroup>
+
+    <!-- Add all game data as content on iphone. Note that "Link" doesn't work but Xamarin seems to use a similar "LogicalName" property. -->
+    <ItemGroup>
+      <!-- Define the Assets to deploy -->
+      <AssetsToDeploy Include="$(SiliconStudioCompileAssetOutputPath)\**\*.*"/>
+
+      <_BundleResourceWithLogicalName Include="@(AssetsToDeploy)">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <LogicalName>data\%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
+      </_BundleResourceWithLogicalName>
+    </ItemGroup>
+  </Target>
+</Project>

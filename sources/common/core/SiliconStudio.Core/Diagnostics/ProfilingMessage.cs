@@ -1,0 +1,116 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
+
+namespace SiliconStudio.Core.Diagnostics
+{
+    /// <summary>
+    /// A log message generate by <see cref="Profiler"/>.
+    /// </summary>
+    public class ProfilingMessage : LogMessage
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProfilingMessage" /> class.
+        /// </summary>
+        /// <param name="profileId">The profile unique identifier.</param>
+        /// <param name="profilingKey">The profile key.</param>
+        /// <param name="profilingType">Type of the profile.</param>
+        public ProfilingMessage(int profileId, ProfilingKey profilingKey, ProfilingMessageType profilingType) : this(profileId, profilingKey, profilingType, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProfilingMessage" /> class.
+        /// </summary>
+        /// <param name="profileId">The profile unique identifier.</param>
+        /// <param name="profilingKey">The profile key.</param>
+        /// <param name="profilingType">Type of the profile.</param>
+        /// <param name="text">The text.</param>
+        public ProfilingMessage(int profileId, ProfilingKey profilingKey, ProfilingMessageType profilingType, string text)
+            : base("Profiler", LogMessageType.Info, text)
+        {
+            if (profilingKey == null) throw new ArgumentNullException("profilingKey");
+
+            Id = profileId;
+            Key = profilingKey;
+            ProfilingType = profilingType;
+        }
+
+        /// <summary>
+        /// Gets or sets the unique identifier associated with this profile message.
+        /// </summary>
+        /// <value>The unique identifier.</value>
+        public int Id { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the profile key.
+        /// </summary>
+        /// <value>The profile key.</value>
+        public ProfilingKey Key { get; private set; }
+
+        /// <summary>
+        /// Gets the type of the profile.
+        /// </summary>
+        /// <value>The type of the profile.</value>
+        public ProfilingMessageType ProfilingType { get; private set; }
+ 
+        /// <summary>
+        /// Gets or sets the time elapsed for this particular profile.
+        /// </summary>
+        /// <value>The elapsed.</value>
+        public TimeSpan ElapsedTime { get; set; }
+
+        /// <summary>
+        /// Gets attributes attached to this message. May be null.
+        /// </summary>
+        /// <value>The properties.</value>
+        public Dictionary<object, object> Attributes { get; set; }
+
+        public override string ToString()
+        {
+            var builder = new StringBuilder(Text != null ? string.Format(": {0}",Text) : string.Empty);
+            bool hasElapsed = false;
+            if (ProfilingType != ProfilingMessageType.Begin)
+            {
+                builder.Append(": ");
+
+                if (ElapsedTime > new TimeSpan(0, 0, 1, 0))
+                {
+                    builder.AppendFormat("Elapsed = {0:0.000}m", ElapsedTime.TotalMinutes);
+                }
+                else if (ElapsedTime > new TimeSpan(0, 0, 0, 0, 1000))
+                {
+                    builder.AppendFormat("Elapsed = {0:0.000}s", ElapsedTime.TotalSeconds);
+                }
+                else
+                {
+                    builder.AppendFormat("Elapsed = {0:0.000}ms", ElapsedTime.TotalMilliseconds);
+                }
+                hasElapsed = true;
+            }
+
+            if (Attributes != null && Attributes.Count > 0)
+            {
+                if (!hasElapsed)
+                {
+                    builder.Append(": ");
+                }
+
+                foreach (var keyValue in Attributes)
+                {
+                    builder.Append(", ").Append(keyValue.Key).Append(" = ").Append(keyValue.Value);
+                }
+            }
+
+            return string.Format("[{0}] #{1}: {2}: {3}{4}", 
+                Module, 
+                Id, 
+                ProfilingType, 
+                Key, 
+                builder);
+        }
+    }
+}

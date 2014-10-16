@@ -1,0 +1,12 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+class CloneTestRoot : CloneTestBase
+{
+    CloneTestExtern extern0;
+    CloneTestExtern extern1;
+
+    override stage void testFunc()
+    {
+        base.testFunc();
+    }
+};

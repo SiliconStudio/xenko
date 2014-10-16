@@ -1,0 +1,42 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Defines the basic functions needed to perform shading.
+/// </summary>
+class ShadingGroup : ShadingEyeNormalBase
+{
+    float4 ComputeShading()
+    {
+        return float4(0,0,0,0);
+    }
+
+    float3 ComputeDiffuseAlbedo()
+    {
+        return float3(0,0,0);
+    }
+
+    float3 ComputeSpecularAlbedo()
+    {
+        return float3(0,0,0);
+    }
+
+    float3 ComputeDiffuseInfluence(float3 albedo, int lightIndex)
+    {
+        return float3(0,0,0);
+    }
+
+    float3 ComputeSpecularInfluence(float3 albedo, int lightIndex)
+    {
+        return float3(0,0,0);
+    }
+
+    float3 GetDirectionToLight(int lightIndex)
+    {
+        return float3(0,0,0);
+    }
+
+    float3 GetAttenuation(int lightIndex)
+    {
+        return float3(1,1,1);
+    }
+};

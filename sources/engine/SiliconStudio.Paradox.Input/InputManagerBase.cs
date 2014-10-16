@@ -1,0 +1,733 @@
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Diagnostics;
+using System.Linq;
+
+using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Paradox.Games;
+using SiliconStudio.Core.Mathematics;
+
+namespace SiliconStudio.Paradox.Input
+{
+    /// <summary>
+    /// Interface for input management system, including keyboard, mouse, gamepads and touch.
+    /// </summary>
+    public abstract class InputManagerBase : GameSystemBase, IInputManager
+    {
+        #region Constants and Fields
+
+        public static Logger Logger = GlobalLogger.GetLogger("Input");
+
+        internal const float GamePadAxisDeadZone = 0.01f;
+
+        internal readonly List<GamePadFactory> GamePadFactories = new List<GamePadFactory>();
+
+        private const int MaximumGamePadCount = 8;
+
+        private readonly GamePadState[] gamePadStates;
+
+        private readonly GamePad[] gamePads;
+
+        private int gamePadCount;
+
+        private readonly List<Keys> downKeysList = new List<Keys>();
+
+        private readonly HashSet<Keys> pressedKeysSet = new HashSet<Keys>();
+
+        private readonly HashSet<Keys> releasedKeysSet = new HashSet<Keys>();
+        
+        internal List<KeyboardInputEvent> KeyboardInputEvents = new List<KeyboardInputEvent>();
+
+        internal bool LostFocus;
+
+        internal List<MouseInputEvent> MouseInputEvents = new List<MouseInputEvent>();
+
+        internal Vector2 CurrentMousePosition;
+
+        private readonly Dictionary<Keys, bool> activeKeys = new Dictionary<Keys, bool>();
+
+        private const int NumberOfMouseButtons = 5;
+
+        private readonly bool[] mouseButtons = new bool[NumberOfMouseButtons];
+
+        private readonly bool[] mouseButtonsPrevious = new bool[NumberOfMouseButtons];
+
+        private readonly List<Dictionary<object, float>> virtualButtonValues = new List<Dictionary<object, float>>();
+
+        private readonly List<PointerEvent> pointerEvents = new List<PointerEvent>();
+
+        private readonly List<PointerEvent> currentPointerEvents = new List<PointerEvent>();
+
+        private readonly List<GestureEvent> currentGestureEvents = new List<GestureEvent>();
+
+        private readonly Dictionary<GestureConfig, GestureRecognizer> gestureConfigToRecognizer = new Dictionary<GestureConfig, GestureRecognizer>(); 
+
+        public GestureConfigCollection ActivatedGestures { get; private set; }
+
+        internal readonly Dictionary<int, PointerInfo> PointerInfos = new Dictionary<int, PointerInfo>();
+        
+        public float MouseWheelDelta { get; private set; }
+
+        /// <summary>
+        /// The width in pixel of the control
+        /// </summary>
+        internal float ControlWidth
+        {
+            get { return controlWidth; }
+            set
+            {
+                controlWidth = Math.Max(0, value);
+
+                if (controlHeight > 0)
+                    ScreenAspectRatio = ControlWidth / ControlHeight;
+            }
+        }
+
+        private float controlWidth;
+
+        /// <summary>
+        /// The height in pixel of the control
+        /// </summary>
+        internal float ControlHeight
+        {
+            get { return controlHeight; }
+            set
+            {
+                controlHeight = Math.Max(0, value);
+
+                if (controlHeight > 0)
+                    ScreenAspectRatio = ControlWidth / ControlHeight;
+            }
+        }
+        private float controlHeight;
+
+        internal float ScreenAspectRatio 
+        { 
+            get { return screenAspectRatio; }
+            private set
+            {
+                screenAspectRatio = value;
+
+                foreach (var recognizer in gestureConfigToRecognizer.Values)
+                    recognizer.ScreenRatio = ScreenAspectRatio;
+            }
+        }
+
+        private float screenAspectRatio;
+
+        #endregion
+
+        internal class PointerInfo
+        {
+            public readonly Stopwatch PointerClock = new Stopwatch();
+            public Vector2 LastPosition;
+        }
+
+        internal InputManagerBase(IServiceRegistry registry) : base(registry)
+        {
+            Enabled = true;
+            gamePads = new GamePad[MaximumGamePadCount];
+            gamePadStates = new GamePadState[MaximumGamePadCount];
+
+            KeyDown = downKeysList;
+            KeyEvents = new List<KeyEvent>();
+            PointerEvents = currentPointerEvents;
+            GestureEvents = currentGestureEvents;
+
+            ActivatedGestures = new GestureConfigCollection();
+            ActivatedGestures.CollectionChanged += ActivatedGesturesChanged;
+
+            Services.AddService(typeof(InputManager), this);
+            Services.AddService(typeof(IInputManager), this);
+        }
+
+        private void ActivatedGesturesChanged(object sender, TrackingCollectionChangedEventArgs trackingCollectionChangedEventArgs)
+        {
+            switch (trackingCollectionChangedEventArgs.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    StartGestureRecognition((GestureConfig)trackingCollectionChangedEventArgs.Item);
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    StopGestureRecognition((GestureConfig)trackingCollectionChangedEventArgs.Item);
+                    break;
+                case NotifyCollectionChangedAction.Replace:
+                case NotifyCollectionChangedAction.Reset:
+                    throw new NotSupportedException("ActivatedGestures collection was modified but the action was not supported by the system.");
+                case NotifyCollectionChangedAction.Move:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void StartGestureRecognition(GestureConfig config)
+        {
+            gestureConfigToRecognizer.Add(config, config.CreateRecognizer(ScreenAspectRatio));
+        }
+
+        private void StopGestureRecognition(GestureConfig config)
+        {
+            gestureConfigToRecognizer.Remove(config);
+        }
+
+        internal Vector2 NormalizeScreenPosition(Vector2 pixelPosition)
+        {
+            return new Vector2(pixelPosition.X / ControlWidth, pixelPosition.Y / ControlHeight);
+        }
+
+        internal void HandlePointerEvents(int pointerId, Vector2 newPosition, PointerState pState, PointerType pointerType = PointerType.Touch)
+        {
+            lock (pointerEvents)
+            {
+                if (!PointerInfos.ContainsKey(pointerId))
+                    PointerInfos[pointerId] = new PointerInfo();
+
+                var pointerInfo = PointerInfos[pointerId];
+
+                if (pState == PointerState.Down)
+                {
+                    pointerInfo.LastPosition = newPosition;
+                    pointerInfo.PointerClock.Restart();
+                }
+
+                var pointerEvent = PointerEvent.GetOrCreatePointerEvent();
+
+                pointerEvent.PointerId = pointerId;
+                pointerEvent.Position = newPosition;
+                pointerEvent.DeltaPosition = newPosition - pointerInfo.LastPosition;
+                pointerEvent.DeltaTime = pointerInfo.PointerClock.Elapsed;
+                pointerEvent.State = pState;
+                pointerEvent.PointerType = pointerType;
+                pointerEvent.IsPrimary = pointerId == 0;
+
+                lock (pointerEvents)
+                    pointerEvents.Add(pointerEvent);
+
+                pointerInfo.LastPosition = newPosition;
+                pointerInfo.PointerClock.Restart();
+            }
+        }
+
+        internal enum InputEventType
+        {
+            Up,
+
+            Down,
+
+            Wheel,
+        }
+
+        public VirtualButtonConfigSet VirtualButtonConfigSet { get; set; }
+
+        public List<PointerEvent> PointerEvents { get; private set; }
+
+        public List<GestureEvent> GestureEvents { get; private set; }
+        
+        public bool HasGamePad
+        {
+            get
+            {
+                return gamePadCount > 0;
+            }
+        }
+
+        public int GamePadCount
+        {
+            get
+            {
+                return gamePadCount;
+            }
+        }
+
+        public bool HasKeyboard { get; internal set; }
+        public bool HasMouse { get; internal set; }
+        public bool HasPointer { get; internal set; }
+
+        public List<Keys> KeyDown { get; private set; }
+
+        public List<KeyEvent> KeyEvents { get; private set; }
+        
+        public Vector2 MousePosition { get; private set; }
+
+        public virtual float GetVirtualButton(int configIndex, object bindingName)
+        {
+            if (VirtualButtonConfigSet == null || configIndex < 0 || configIndex >= virtualButtonValues.Count)
+            {
+                return 0.0f;
+            }
+
+            float value;
+            virtualButtonValues[configIndex].TryGetValue(bindingName, out value);
+            return value;
+        }
+
+        public virtual GamePadState GetGamePad(int gamepadIndex)
+        {
+            // If the game pad index is negative or larger, take the first connected gamepad
+            if (gamepadIndex < 0)
+            {
+                gamepadIndex = 0;
+                for(int i = 0; i < gamePadStates.Length; i++)
+                {
+                    if (gamePadStates[i].IsConnected)
+                    {
+                        gamepadIndex = i;
+                        break;
+                    }
+                }
+            }
+            else if (gamepadIndex >= gamePadStates.Length)
+            {
+                for (gamepadIndex = gamePadStates.Length - 1; gamepadIndex >= 0; gamepadIndex--)
+                {
+                    if (gamePadStates[gamepadIndex].IsConnected)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            return gamePadStates[gamepadIndex];
+        }
+
+        public bool IsKeyDown(Keys key)
+        {
+            bool pressed;
+            activeKeys.TryGetValue(key, out pressed);
+            return pressed;
+        }
+
+        public bool IsKeyPressed(Keys key)
+        {
+            return pressedKeysSet.Contains(key);
+        }
+
+        public bool IsKeyReleased(Keys key)
+        {
+            return releasedKeysSet.Contains(key);
+        }
+
+        public bool HasDownMouseButtons()
+        {
+            for (int i = 0; i < mouseButtons.Length; ++i)
+                if (IsMouseButtonDown((MouseButton)i))
+                    return true;
+
+            return false;
+        }
+
+        public bool HasReleasedMouseButtons()
+        {
+            for (int i = 0; i < mouseButtons.Length; ++i)
+                if (IsMouseButtonReleased((MouseButton)i))
+                    return true;
+
+            return false;
+        }
+
+        public bool HasPressedMouseButtons()
+        {
+            for (int i = 0; i < mouseButtons.Length; ++i)
+                if (IsMouseButtonPressed((MouseButton)i))
+                    return true;
+
+            return false;
+        }
+
+        public bool IsMouseButtonDown(MouseButton mouseButton)
+        {
+            return mouseButtons[(int)mouseButton];
+        }
+
+        public bool IsMouseButtonPressed(MouseButton mouseButton)
+        {
+            return !mouseButtonsPrevious[(int)mouseButton] && mouseButtons[(int)mouseButton];
+        }
+
+        public bool IsMouseButtonReleased(MouseButton mouseButton)
+        {
+            return mouseButtonsPrevious[(int)mouseButton] && !mouseButtons[(int)mouseButton];
+        }
+
+        public virtual void Scan()
+        {
+            lock (gamePads)
+            {
+                List<GamePadKey> gamePadKeys = GamePadFactories.SelectMany(gamePadFactory => gamePadFactory.GetConnectedPads()).ToList();
+
+                int nextAvailable = -1;
+                for (int i = 0; i < gamePads.Length; i++)
+                {
+                    GamePad gamePad = gamePads[i];
+                    if (gamePad == null)
+                    {
+                        if (nextAvailable < 0)
+                        {
+                            nextAvailable = i;
+                        }
+                        continue;
+                    }
+
+                    if (gamePadKeys.Contains(gamePad.Key))
+                    {
+                        gamePadKeys.Remove(gamePad.Key);
+                    }
+                    else
+                    {
+                        gamePad.Dispose();
+                        gamePads[i] = null;
+
+                        if (nextAvailable < 0)
+                        {
+                            nextAvailable = i;
+                        }
+                    }
+                }
+
+                foreach (GamePadKey gamePadKey in gamePadKeys)
+                {
+                    int gamePadIndex = -1;
+                    for (int i = nextAvailable; i < gamePads.Length; i++)
+                    {
+                        if (gamePads[i] == null)
+                        {
+                            gamePadIndex = i;
+                            break;
+                        }
+                    }
+
+                    if (gamePadIndex >= 0)
+                    {
+                        GamePad gamePad = gamePadKey.Factory.GetGamePad(gamePadKey.Guid);
+                        gamePads[gamePadIndex] = gamePad;
+                        nextAvailable = gamePadIndex + 1;
+                    }
+                }
+
+                gamePadCount = 0;
+                foreach (GamePad internalGamePad in gamePads)
+                {
+                    if (internalGamePad != null)
+                    {
+                        gamePadCount++;
+                    }
+                }
+            }
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            UpdateKeyboard();
+            UpdateMouse();
+            UpdateGamePads();
+            UpdatePointerEvents();
+            UpdateVirtualButtonValues();
+            UpdateGestureEvents(gameTime.Elapsed);
+        }
+        
+        private void UpdateGestureEvents(TimeSpan elapsedGameTime)
+        {
+            currentGestureEvents.Clear();
+
+            foreach (var gestureRecognizer in gestureConfigToRecognizer.Values)
+                currentGestureEvents.AddRange(gestureRecognizer.ProcessPointerEvents(elapsedGameTime, currentPointerEvents));
+        }
+
+        private void UpdatePointerEvents()
+        {
+            lock (PointerEvent.Pool)
+            {
+                foreach (var pointerEvent in currentPointerEvents)
+                    PointerEvent.Pool.Enqueue(pointerEvent);
+            }
+            currentPointerEvents.Clear();
+
+            lock (pointerEvents)
+            {
+                currentPointerEvents.AddRange(pointerEvents);
+                pointerEvents.Clear();
+            }
+        }
+
+        private void UpdateVirtualButtonValues()
+        {
+            if (VirtualButtonConfigSet != null)
+            {
+                for (int i = 0; i < VirtualButtonConfigSet.Count; i++)
+                {
+                    var config = VirtualButtonConfigSet[i];
+
+                    Dictionary<object, float> mapNameToValue;
+                    if (i == virtualButtonValues.Count)
+                    {
+                        mapNameToValue = new Dictionary<object, float>();
+                        virtualButtonValues.Add(mapNameToValue);
+                    }
+                    else
+                    {
+                        mapNameToValue = virtualButtonValues[i];
+                    }
+
+                    mapNameToValue.Clear();
+
+                    if (config != null)
+                    {
+                        foreach (var name in config.BindingNames)
+                        {
+                            mapNameToValue[name] = config.GetValue(this, name);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void UpdateGamePads()
+        {
+            lock (gamePads)
+            {
+                for (int i = 0, j = gamePadCount; i < gamePads.Length && j > 0; i++, j--)
+                {
+                    if (gamePads[i] != null)
+                    {
+                        // Get the state of the gamepad
+                        gamePadStates[i] = gamePads[i].GetState();
+                    }
+                }
+            }
+        }
+
+        private void UpdateMouse()
+        {
+            MouseWheelDelta = 0;
+
+            for (int i = 0; i < mouseButtons.Length; ++i)
+                mouseButtonsPrevious[i] = mouseButtons[i];
+
+            lock (MouseInputEvents)
+            {
+                foreach (MouseInputEvent mouseInputEvent in MouseInputEvents)
+                {
+                    var mouseButton = (int)mouseInputEvent.MouseButton;
+                    if (mouseButton < 0 || mouseButton >= mouseButtons.Length)
+                        continue;
+
+                    switch (mouseInputEvent.Type)
+                    {
+                        case InputEventType.Down:
+                            mouseButtons[mouseButton] = true;
+                            break;
+                        case InputEventType.Up:
+                            mouseButtons[mouseButton] = false;
+                            break;
+                        case InputEventType.Wheel:
+                            if (mouseInputEvent.MouseButton != MouseButton.Middle)
+                            {
+                                throw new NotImplementedException();
+                            }
+                            MouseWheelDelta += mouseInputEvent.Value;
+                            break;
+                        default:
+                            throw new NotSupportedException();
+                    }
+                }
+                MouseInputEvents.Clear();
+            }
+
+            MousePosition = CurrentMousePosition;
+
+            if (LostFocus)
+            {
+                for (int i = 0; i < mouseButtons.Length; ++i)
+                    mouseButtons[i] = false;
+            }
+
+            LostFocus = false;
+        }
+
+        private void UpdateKeyboard()
+        {
+            pressedKeysSet.Clear();
+            releasedKeysSet.Clear();
+            KeyEvents.Clear();
+
+            lock (KeyboardInputEvents)
+            {
+                foreach (KeyboardInputEvent keyboardInputEvent in KeyboardInputEvents)
+                {
+                    var key = keyboardInputEvent.Key;
+
+                    if (key == Keys.None)
+                        continue;
+
+                    switch (keyboardInputEvent.Type)
+                    {
+                        case InputEventType.Down:
+                            if (!IsKeyDown(key)) // prevent from several inconsistent pressed key due to OS repeat key  
+                            {
+                                activeKeys[key] = true;
+                                pressedKeysSet.Add(key);
+
+                                KeyEvents.Add(new KeyEvent(key, KeyEventType.Pressed));
+                                downKeysList.Add(key);
+                            }
+                            break;
+                        case InputEventType.Up:
+                            activeKeys[key] = false;
+                            releasedKeysSet.Add(key);
+                            KeyEvents.Add(new KeyEvent(key, KeyEventType.Released));
+                            downKeysList.Remove(key);
+                            break;
+                        default:
+                            throw new NotSupportedException();
+                    }
+                }
+
+                KeyboardInputEvents.Clear();
+            }
+
+            if (LostFocus)
+            {
+                activeKeys.Clear();
+                downKeysList.Clear();
+            }
+        }
+
+        internal static float ClampDeadZone(float value, float deadZone)
+        {
+            if (value > 0.0f)
+            {
+                value -= deadZone;
+                if (value < 0.0f)
+                {
+                    value = 0.0f;
+                }
+            }
+            else
+            {
+                value += deadZone;
+                if (value > 0.0f)
+                {
+                    value = 0.0f;
+                }
+            }
+
+            // Renormalize the value according to the dead zone
+            value = value / (1.0f - deadZone);
+            return value < -1.0f ? -1.0f : value > 1.0f ? 1.0f : value;
+        }
+
+        internal struct GamePadKey : IEquatable<GamePadKey>
+        {
+            #region Constants and Fields
+
+            public readonly GamePadFactory Factory;
+
+            public readonly Guid Guid;
+
+            #endregion
+
+            public GamePadKey(Guid guid, GamePadFactory factory)
+            {
+                Guid = guid;
+                Factory = factory;
+            }
+
+            public bool Equals(GamePadKey other)
+            {
+                return Guid.Equals(other.Guid) && Factory.Equals(other.Factory);
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) return false;
+                return obj is GamePadKey && Equals((GamePadKey)obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    return (Guid.GetHashCode() * 397) ^ Factory.GetHashCode();
+                }
+            }
+
+            public static bool operator ==(GamePadKey left, GamePadKey right)
+            {
+                return left.Equals(right);
+            }
+
+            public static bool operator !=(GamePadKey left, GamePadKey right)
+            {
+                return !left.Equals(right);
+            }
+        }
+
+        internal struct KeyboardInputEvent
+        {
+            #region Constants and Fields
+
+            public Keys Key;
+
+            public InputEventType Type;
+
+            #endregion
+        }
+
+        internal struct MouseInputEvent
+        {
+            #region Constants and Fields
+
+            public MouseButton MouseButton;
+
+            public InputEventType Type;
+
+            public float Value;
+
+            #endregion
+        }
+
+        public abstract bool MultiTouchEnabled { get; set; }
+
+        /// <summary>
+        /// Base class used to track the state of a gamepad (XInput or DirectInput).
+        /// </summary>
+        internal abstract class GamePad : IDisposable
+        {
+            #region Constants and Fields
+
+            /// <summary>
+            /// Unique identifier of the gamepad.
+            /// </summary>
+            public GamePadKey Key;
+
+            #endregion
+
+            protected GamePad(GamePadKey key)
+            {
+                Key = key;
+            }
+
+            public virtual void Dispose()
+            {
+            }
+
+            public abstract GamePadState GetState();
+        }
+
+        /// <summary>
+        /// Base class used to track the state of a gamepad (XInput or DirectInput).
+        /// </summary>
+        internal abstract class GamePadFactory
+        {
+            public abstract IEnumerable<GamePadKey> GetConnectedPads();
+
+            public abstract GamePad GetGamePad(Guid guid);
+        }
+    }
+}

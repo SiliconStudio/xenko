@@ -1,0 +1,8 @@
+!EffectLibrary
+Id: 053DD57E-8B6A-4F46-938F-9929B9A0CCC2
+Permutations:
+    Keys:
+        CompilerParameters.GraphicsProfileKey: Level_9_1
+    Children:
+        - Keys: 
+            Effect.Name: CustomEffect

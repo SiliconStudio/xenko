@@ -1,0 +1,66 @@
+!Package
+Id: b18707e8-1d26-49fc-9911-3834506d8149
+Tags: []
+Meta:
+    Name: SiliconStudio.Paradox.UI.Tests
+    Version: 1.0.0.0
+    Authors: []
+    Owners: []
+    Dependencies:
+        -   Name: Paradox
+            Version: 0.1
+LocalDependencies: []
+Profiles:
+    -   Name: Shared
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: Assets
+                RawImports: []
+        OutputGroupDirectories: {}
+        Properties: {}
+        ProjectReferences:
+            -   Id: e7b1b17f-d04b-4978-b504-a6bb3ee846c9
+                Location: SiliconStudio.Paradox.UI.Tests.Windows.csproj
+                Type: Library
+    -   Name: Windows
+        Platform: Windows
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: Assets/Windows
+                RawImports: []
+        OutputGroupDirectories: {}
+        Properties:
+            Paradox.GraphicsProfile: !GraphicsProfile Level_9_1
+        ProjectReferences:
+            -   Id: e7b1b17f-d04b-4978-b504-a6bb3ee846c9
+                Location: SiliconStudio.Paradox.UI.Tests.Windows.csproj
+                Type: Executable
+    -   Name: Android
+        Platform: Android
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: Assets/Android
+                RawImports: []
+        OutputGroupDirectories: {}
+        Properties:
+            Paradox.GraphicsProfile: !GraphicsProfile Level_9_1
+        ProjectReferences:
+            -   Id: e7b1b17f-d04b-4978-b504-a6bb3ee846c9
+                Location: SiliconStudio.Paradox.UI.Tests.Android.csproj
+                Type: Executable
+    -   Name: iOS
+        Platform: iOS
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: Assets/iPhone
+                RawImports: []
+        OutputGroupDirectories: {}
+        Properties:
+            Paradox.GraphicsProfile: !GraphicsProfile Level_9_1
+        ProjectReferences:
+            -   Id: e7b1b17f-d04b-4978-b504-a6bb3ee846c9
+                Location: SiliconStudio.Paradox.UI.Tests.iOS.csproj
+                Type: Executable
+ExplicitFolders: []
+Bundles: []
+TemplateFolders: []

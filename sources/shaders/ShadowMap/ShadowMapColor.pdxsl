@@ -1,0 +1,12 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Computes default shadow map color (white).
+/// </summary>
+class ShadowMapColor : ShadowBase, ComputeColor3
+{
+    override float3 Compute()
+    {
+        return 1;
+    }
+};

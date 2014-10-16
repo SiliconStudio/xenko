@@ -1,0 +1,22 @@
+<!-- Build file pre-included by all Paradox projects -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <ParadoxUserBuild>true</ParadoxUserBuild>
+  </PropertyGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)Paradox.PreSettings.targets"/>
+
+  <PropertyGroup>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    
+    <!--Paradox Directory to link against - based on platform-->
+    <ParadoxSdkBinDir Condition="'$(ParadoxSdkBinDir)' == ''">$(ParadoxSdkDir)\Bin\$(SiliconStudioPlatform)-$(ParadoxGraphicsApi)</ParadoxSdkBinDir>
+
+    <!--Paradox Directory used for compiling - Default to Windows-Direct3D11 -->
+    <ParadoxSdkToolsDir Condition="'$(ParadoxSdkToolsDir)' == ''">$(ParadoxSdkDir)\Bin\Windows-Direct3D11</ParadoxSdkToolsDir>
+    
+    <SiliconStudioAssemblyProcessorPath>$(ParadoxSdkToolsDir)\SiliconStudio.AssemblyProcessor.exe</SiliconStudioAssemblyProcessorPath>
+  </PropertyGroup>
+  
+</Project>

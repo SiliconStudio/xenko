@@ -1,0 +1,16 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Defines the normal, view space normal and tangent streams.
+/// </summary>
+class NormalStream
+{
+    // The normal attribute
+    stage stream float3 vNormal : NORMAL;
+    
+    // The tangent attribute
+    stage stream float4 vTangent : TANGENT;
+    
+    // The normal in view space
+    stream float3 vNormalVS;
+};

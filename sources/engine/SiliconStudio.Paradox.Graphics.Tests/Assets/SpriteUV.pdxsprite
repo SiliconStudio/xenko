@@ -1,0 +1,41 @@
+!SpriteGroup
+Id: c3cb3d3b-8e27-4a1a-9e35-26a92fdc18b0
+Tags: []
+Images:
+    -   Source: ../../../data/tests/small_uv.png
+        Name: uv1
+        TextureRegion:
+            X: 0
+            Y: 0
+            Width: 128
+            Height: 128
+        Center: {X: 0, Y: 0}
+    -   Source: ../../../data/tests/small_uv.png
+        Name: uv2
+        TextureRegion:
+            X: 128
+            Y: 0
+            Width: 128
+            Height: 128
+        Center: {X: 0, Y: 0}
+    -   Source: ../../../data/tests/small_uv.png
+        Name: uv3
+        TextureRegion:
+            X: 0
+            Y: 128
+            Width: 128
+            Height: 128
+        Center: {X: 0, Y: 0}
+    -   Source: ../../../data/tests/small_uv.png
+        Name: uv4
+        TextureRegion:
+            X: 128
+            Y: 128
+            Width: 128
+            Height: 128
+        Center: {X: 0, Y: 0}
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Format: AsIs
+Alpha: None
+GenerateMipmaps: true
+PremultiplyAlpha: false

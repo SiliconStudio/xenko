@@ -1,0 +1,22 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Performs percentage closure filtering.
+/// </summary>
+class ShadowMapFilterPcf : ShadowMapFilterBase
+{
+    float FilterShadow(Texture2D shadowMapTextureArg, SamplerState shadowMapSamplerArg, float2 position, float shadowMapDistance, int shadowMapIndex)
+    {
+        float shadow = 0.0f;
+        // small bias
+        shadowMapDistance -= 0.0005;
+        for(int x = -2; x <= 2; ++x)
+        {
+            for(int y = -2; y <= 2; ++y)
+            {
+                shadow += shadowMapTextureArg.SampleLevel(shadowMapSamplerArg, position, 0.0, int2(x,y)).x > shadowMapDistance - 0.002f;
+            }
+        }
+        return shadow / 25.0;    
+    }
+};

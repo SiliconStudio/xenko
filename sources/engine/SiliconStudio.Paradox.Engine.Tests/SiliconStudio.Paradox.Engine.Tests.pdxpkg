@@ -1,0 +1,66 @@
+!Package
+Id: c6c57562-42df-42ad-be2d-8d5889211366
+Tags: []
+Meta:
+    Name: SiliconStudio.Paradox.Engine.Tests
+    Version: 1.0.0.0
+    Authors: []
+    Owners: []
+    Dependencies:
+        -   Name: Paradox
+            Version: 0.1
+LocalDependencies: []
+Profiles:
+    -   Name: Shared
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: GameAssets
+                RawImports: []
+        OutputGroupDirectories: {}
+        Properties: {}
+        ProjectReferences:
+            -   Id: a8f8d125-7a22-489f-99bc-9a02f545a17f
+                Location: SiliconStudio.Paradox.Engine.Tests.Windows.csproj
+                Type: Library
+    -   Name: Windows
+        Platform: Windows
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: Assets/Windows
+                RawImports: []
+        OutputGroupDirectories: {}
+        Properties:
+            Paradox.GraphicsProfile: !GraphicsProfile Level_9_1
+        ProjectReferences:
+            -   Id: a8f8d125-7a22-489f-99bc-9a02f545a17f
+                Location: SiliconStudio.Paradox.Engine.Tests.Windows.csproj
+                Type: Executable
+    -   Name: Android
+        Platform: Android
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: Assets/Android
+                RawImports: []
+        OutputGroupDirectories: {}
+        Properties:
+            Paradox.GraphicsProfile: !GraphicsProfile Level_9_1
+        ProjectReferences:
+            -   Id: a8f8d125-7a22-489f-99bc-9a02f545a17f
+                Location: SiliconStudio.Paradox.Engine.Tests.Android.csproj
+                Type: Executable
+    -   Name: iOS
+        Platform: iOS
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: Assets/iPhone
+                RawImports: []
+        OutputGroupDirectories: {}
+        Properties:
+            Paradox.GraphicsProfile: !GraphicsProfile Level_9_1
+        ProjectReferences:
+            -   Id: a8f8d125-7a22-489f-99bc-9a02f545a17f
+                Location: SiliconStudio.Paradox.Engine.Tests.iOS.csproj
+                Type: Executable
+ExplicitFolders: []
+Bundles: []
+TemplateFolders: []

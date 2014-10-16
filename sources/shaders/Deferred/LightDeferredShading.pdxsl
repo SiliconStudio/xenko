@@ -1,0 +1,37 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Computes shading from a light map.
+/// </summary>
+class LightDeferredShading : ShadingBase, Texturing, AlbedoDiffuseBase, AlbedoSpecularBase, PositionVSBase, NormalVSBase
+{
+    stage Texture2D LightTexture;
+    
+    override stage float4 Shading()
+    {
+        float4 resultColor = base.Shading();
+
+        // Get diffuseLight and specularLuminance from prepass
+        float2 lightTextureDimensions;
+        LightTexture.GetDimensions(lightTextureDimensions.x, lightTextureDimensions.y);
+        float4 lightBufferValue = LightTexture.Sample(Sampler, streams.ShadingPosition.xy / lightTextureDimensions);
+        float3 diffuseLight = lightBufferValue.xyz;
+        float specularLuminance = lightBufferValue.w;
+
+        // General Lighting Equation: DiffuseAlbedo * DiffuseLight + SpecularAlbedo * SpecularLight
+
+        // SpecularAlbedo' = FresnelShlick(SpecularAlbedo, N, V)
+
+        // Because Light prepass stores only specular luminance, reconstruct SpecularLight from DiffuseLight multiply my SpecularLuminance.
+        // See http://www.realtimerendering.com/blog/deferred-lighting-approaches/
+        // SpecularLight = diffuseLight * specularLuminance / ( Utilities.Luminance(diffuseLight) + 0.0001)
+
+        // Compute color contribution
+        float3 normalVS = this.NormalVS();
+        float3 eyeVS = -normalize(this.PositionVS());
+
+        resultColor.rgb += this.DiffuseAlbedo() * diffuseLight + Utilities.FresnelSchlick(this.SpecularAlbedo(), normalVS, eyeVS, 1.0f) *  diffuseLight * (specularLuminance / ( Utilities.Luminance(diffuseLight) + 0.0001));
+        //resultColor.rgb += this.DiffuseAlbedo() * diffuseLight + Utilities.FresnelSchlick(this.SpecularAlbedo(), normalVS, eyeVS, 0.0f) *  diffuseLight * (specularLuminance / ( Utilities.Luminance(diffuseLight) + 0.0001));
+        return resultColor;
+    }
+};

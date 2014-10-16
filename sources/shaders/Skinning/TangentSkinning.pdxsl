@@ -1,0 +1,18 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Performs skinning on the tangent.
+/// </summary>
+class TangentSkinning : TransformationSkinning, NormalStream
+{
+    override void PreTransformPosition()
+    {
+        base.PreTransformPosition();
+
+        float3x3 blendMatrix = (float3x3)BlendMatrixArray[streams.BlendIndices[0]] * streams.BlendWeights[0]
+                             + (float3x3)BlendMatrixArray[streams.BlendIndices[1]] * streams.BlendWeights[1]
+                             + (float3x3)BlendMatrixArray[streams.BlendIndices[2]] * streams.BlendWeights[2]
+                             + (float3x3)BlendMatrixArray[streams.BlendIndices[3]] * streams.BlendWeights[3];
+        streams.vTangent.xyz = mul(streams.vTangent.xyz, blendMatrix);
+    }
+};

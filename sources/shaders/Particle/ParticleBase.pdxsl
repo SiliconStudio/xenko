@@ -1,0 +1,29 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Defines the buffer used for sorting particle.
+/// </summary>
+/// <remarks>
+/// PARTICLE_STRUCT: Macro - name of the structure where the particle information is stored.
+/// </remarks>
+#ifndef PARTICLE_STRUCT
+# define PARTICLE_STRUCT ParticleSimpleData
+class ParticleBase : ParticleSimpleDataBase
+#else
+class ParticleBase : PARTICLE_STRUCT##Base
+#endif
+{
+    cbuffer ParticleCountBuffer {
+        uint ParticleCount;
+        uint ParticleStartIndex;
+    };
+
+    stage RWStructuredBuffer<PARTICLE_STRUCT> ParticleGlobalBuffer;
+    [Map("ParticleGlobalBuffer")]
+    stage StructuredBuffer<PARTICLE_STRUCT> ParticleGlobalBufferRO;
+    stage RWStructuredBuffer<PARTICLE_STRUCT> ParticleInputBuffer;
+    stage RWStructuredBuffer<PARTICLE_STRUCT> ParticleOutputBuffer;
+    stage RWStructuredBuffer<uint2> ParticleSortBuffer;
+    [Map("ParticleSortBuffer")]
+    stage StructuredBuffer<uint2> ParticleSortBufferRO;
+};

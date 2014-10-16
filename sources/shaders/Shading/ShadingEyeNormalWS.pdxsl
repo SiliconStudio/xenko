@@ -1,0 +1,39 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Computes position, eye and normal vector in world space.
+/// </summary>
+/// <remarks>
+/// LIGHTING_MAX_LIGHT_COUNT: Macro - maximum number of lights.
+/// </remarks>
+#ifndef LIGHTING_MAX_LIGHT_COUNT
+# define LIGHTING_MAX_LIGHT_COUNT 1
+#endif
+class ShadingEyeNormalWS : LightParameters, ShadingEyeNormalBase, PositionStream4, ShaderBase
+{
+    cbuffer PerPass
+    {
+        float3 LightDirectionsWS[LIGHTING_MAX_LIGHT_COUNT] = null;
+        float3 LightPositionsWS[LIGHTING_MAX_LIGHT_COUNT] = null;
+    }
+        
+    clone override void VSMain()
+    {
+        float4 positionWS = mul(streams.Position, Transformation.World);
+        streams.ShadingEyePosition = positionWS.xyz / positionWS.w;
+        streams.ShadingEye = normalize(Transformation.Eye - streams.ShadingEyePosition);
+        streams.ShadingNormal = normalize(mul(streams.NormalStream.vNormal, (float3x3)Transformation.World));
+        
+        base.VSMain();
+    }
+
+    float3 GetLightDirection(int i)
+    {
+        return LightDirectionWS[i];
+    }
+
+    float3 GetLightPosition(int i)
+    {
+        return LightPositionWS[i];
+    }
+};

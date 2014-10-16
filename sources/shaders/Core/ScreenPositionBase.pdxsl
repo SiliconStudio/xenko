@@ -1,0 +1,17 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Declares and sets the value of the screen position of the fragment ({x,y} in [-1,1], z in [0,1]).
+/// </summary>
+class ScreenPositionBase : ShaderBase
+{
+    // The position in screen space
+    stage stream float3 ScreenPosition;
+
+    // Computation is done in pixel shader to ensure that ShadingPosition is correct
+    stage override void PSMain()
+    {
+        streams.ScreenPosition = streams.ShadingPosition.xyz / streams.ShadingPosition.w;
+        base.PSMain();
+    }
+};

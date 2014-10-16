@@ -1,0 +1,29 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SiliconStudioPlatform Condition="'$(SiliconStudioPlatform)' == ''">Windows</SiliconStudioPlatform>
+    
+    <!-- Determine CPU (note: remap Win32 to x86) -->
+    <SiliconStudioCPU>$(Platform)</SiliconStudioCPU>
+    <SiliconStudioCPU Condition="'$(SiliconStudioCPU)' == 'Win32'">x86</SiliconStudioCPU>
+    
+    <OutDir>bin\$(SiliconStudioPlatform)\$(SiliconStudioCPU)\</OutDir>
+    <IntDir>obj\$(SiliconStudioPlatform)\$(SiliconStudioCPU)\</IntDir>
+    <GenerateProjectSpecificOutputFolder>false</GenerateProjectSpecificOutputFolder>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(SiliconStudioPlatform)' == 'WindowsStore' Or '$(SiliconStudioPlatform)' == 'WindowsPhone'">
+    <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType Condition="'$(SiliconStudioPlatform)' == 'WindowsStore'">Windows Store</ApplicationType>
+    <ApplicationType Condition="'$(SiliconStudioPlatform)' == 'WindowsPhone'">Windows Phone</ApplicationType>
+    <ApplicationTypeRevision>8.1</ApplicationTypeRevision>
+    <ConvergedProjectType>CodeSharingDll</ConvergedProjectType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(VisualStudioVersion)' == '11.0'">
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(VisualStudioVersion)' == '12.0' And '$(SiliconStudioPlatform)' == 'WindowsStore'">
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(VisualStudioVersion)' == '12.0' And '$(SiliconStudioPlatform)' == 'WindowsPhone'">
+    <PlatformToolset>v120_wp81</PlatformToolset>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,141 @@
+<!-- Global settings used to configure the SiliconStudioPlatform -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--Import Local Pre Settings for the solution being loaded -->
+  <Import Project="$(SolutionDir)$(SolutionName).GlobalSettings.Local.targets" Condition="Exists('$(SolutionDir)$(SolutionName).GlobalSettings.Local.targets')" />
+  <Import Project="$(SolutionDir)SiliconStudio.GlobalSettings.Local.targets" Condition="Exists('$(SolutionDir)SiliconStudio.GlobalSettings.Local.targets')" />
+
+  <!-- Default values -->
+  <PropertyGroup>
+    <SiliconStudioAssemblyProcessor Condition="'$(SiliconStudioAssemblyProcessor)' == ''">false</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioAssemblyProcessorOptions)' == ''">--auto-notify-property --auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
+  </PropertyGroup>
+  
+  <!-- 
+    Global Settings per project
+  -->
+  <PropertyGroup>
+    <SiliconStudioDependenciesDir Condition="'$(SiliconStudioDependenciesDir)' == ''">$(MSBuildThisFileDirectory)..\deps\</SiliconStudioDependenciesDir>
+    <SiliconStudioDependenciesDir Condition="'$(SiliconStudioDependenciesDir)' != '' and !HasTrailingSlash('$(SiliconStudioDependenciesDir)')">$(SiliconStudioDependenciesDir)\</SiliconStudioDependenciesDir>
+    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioBuildDirectory)' == ''">$(SiliconStudioPlatform)-$(ParadoxGraphicsApi)</SiliconStudioBuildDirectory>
+    <BaseIntermediateOutputPath Condition=" $(BaseIntermediateOutputPath) == '' ">obj\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath Condition=" $(IntermediateOutputPath) == '' ">$(BaseIntermediateOutputPath)$(SiliconStudioBuildDirectory)\</IntermediateOutputPath>
+    <DefaultOutputPath>Bin\$(SiliconStudioBuildDirectory)\</DefaultOutputPath>
+    <OutputPath Condition="'$(OutputPath)' == ''">$(DefaultOutputPath)</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <ParadoxSharpDXSdkDir Condition="'$(ParadoxSharpDXSdkDir)' == ''">$(SiliconStudioDependenciesDir)SharpDX</ParadoxSharpDXSdkDir>
+  </PropertyGroup>
+
+  <!-- 
+    Settings SiliconStudioPlatform specific
+  -->
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
+    <TargetFrameworkVersionTool>v4.5.1</TargetFrameworkVersionTool>
+    <TargetFrameworkVersion Condition="'$(TargetFrameworkVersion)' == ''">v4.5</TargetFrameworkVersion>
+    <ParadoxSharpDXSdkBinDir>$(ParadoxSharpDXSdkDir)\Bin\DirectX11_2-Signed-net40</ParadoxSharpDXSdkBinDir>
+    <ParadoxSharpDXAudioSdkBinDir>$(ParadoxSharpDXSdkDir)\Bin\DirectX11-Signed-net40</ParadoxSharpDXAudioSdkBinDir>
+    <ParadoxSharpDXInputSdkBinDir>$(ParadoxSharpDXSdkDir)\Bin\DirectX11-Signed-net40</ParadoxSharpDXInputSdkBinDir>
+    <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP;NET45</SiliconStudioPlatformDefines>
+    <NUnitLiteBinDir>$(SiliconStudioDependenciesDir)NUnitLite\net-4.0\</NUnitLiteBinDir>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'WindowsStore' ">
+    <TargetPlatformVersion>8.1</TargetPlatformVersion>
+    <AutoIncludeSystemAssembly>true</AutoIncludeSystemAssembly>
+    <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_STORE;NET45;NETFX_CORE</SiliconStudioPlatformDefines>
+    <ParadoxSharpDXSdkBinDir>$(ParadoxSharpDXSdkDir)\Bin\DirectX11_2-Signed-winrt</ParadoxSharpDXSdkBinDir>
+    <ParadoxSharpDXAudioSdkBinDir>$(ParadoxSharpDXSdkBinDir)</ParadoxSharpDXAudioSdkBinDir>
+    <ParadoxSharpDXInputSdkBinDir>$(ParadoxSharpDXSdkBinDir)</ParadoxSharpDXInputSdkBinDir>
+    <NUnitLiteBinDir>$(SiliconStudioDependenciesDir)NUnitLite\net-winrt\</NUnitLiteBinDir>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'WindowsPhone' ">
+    <TargetPlatformIdentifier>WindowsPhoneApp</TargetPlatformIdentifier>
+    <TargetPlatformVersion>8.1</TargetPlatformVersion>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_PHONE;NET45;NETFX_CORE;SILVERLIGHT;WINDOWS_PHONE</SiliconStudioPlatformDefines>
+    <ParadoxSharpDXSdkBinDir>$(ParadoxSharpDXSdkDir)\Bin\DirectX11_2-Signed-winrt</ParadoxSharpDXSdkBinDir>
+    <ParadoxSharpDXAudioSdkBinDir>$(ParadoxSharpDXSdkBinDir)</ParadoxSharpDXAudioSdkBinDir>
+    <ParadoxSharpDXInputSdkBinDir>$(ParadoxSharpDXSdkBinDir)</ParadoxSharpDXInputSdkBinDir>
+    <NUnitLiteBinDir>$(SiliconStudioDependenciesDir)NUnitLite\net-winphone\</NUnitLiteBinDir>
+  </PropertyGroup>
+
+  
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Android' ">
+    <TargetFrameworkVersion>v2.3</TargetFrameworkVersion>
+    <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_ANDROID;NET45</SiliconStudioPlatformDefines>
+    <AndroidSupportedAbis>armeabi-v7a%3barmeabi%3bx86</AndroidSupportedAbis>
+    <AndroidStoreUncompressedFileExtensions />
+    <MandroidI18n />
+    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <NUnitLiteBinDir>$(SiliconStudioDependenciesDir)NUnitLite\net-monodroid\</NUnitLiteBinDir>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Android' And '$(OutputType)' == 'Exe' ">
+    <AndroidApplication>true</AndroidApplication>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Android' And '$(Configuration)' == 'Debug' ">
+    <AndroidUseSharedRuntime>True</AndroidUseSharedRuntime>
+    <AndroidLinkMode>None</AndroidLinkMode>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Android' And '$(Configuration)' == 'Release' ">
+    <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
+    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS' ">
+    <Platform Condition=" '$(Platform)' == '' ">iPhone</Platform>
+    <TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
+    <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS;NET45</SiliconStudioPlatformDefines>
+    <ProjectTypeGuids>{6BC8ED88-2882-458C-8E55-DFD12B67127B};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
+  </PropertyGroup>
+
+  <!-- Create empty project platform configuration so that MSBuild and Visual Studio Configuration Manager know about it -->
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS' And '$(Configuration)|$(Platform)' == 'Debug|iPhone' "/>
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS' And '$(Configuration)|$(Platform)' == 'Release|iPhone' "/>
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS' And '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' "/>
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS' And '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' "/>
+
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS' And '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <MtouchDebug>true</MtouchDebug>
+    <CodesignKey>iPhone Developer</CodesignKey>
+    <MtouchSdkVersion>Default</MtouchSdkVersion>
+    <MtouchLink>SdkOnly</MtouchLink>
+  </PropertyGroup>
+
+
+  <!-- 
+    Global Defines
+  -->
+  <PropertyGroup Condition=" '$(SiliconStudioPlatformForceMono)' == 'true' ">
+    <SiliconStudioPlatformDefines>$(SiliconStudioPlatformDefines);SILICONSTUDIO_PLATFORM_MONO</SiliconStudioPlatformDefines>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug'">
+    <DefineConstants>DEBUG;TRACE;$(SiliconStudioPlatformDefines)</DefineConstants>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release'">
+    <DefineConstants>TRACE;$(SiliconStudioPlatformDefines)</DefineConstants>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  
+  <!--
+    Signing
+  -->
+  <PropertyGroup Condition="'$(SiliconStudioAssemblySign)' == 'true' And '$(SiliconStudioSign)' == 'true'">
+    <DefineConstants>$(DefineConstants);SILICONSTUDIO_SIGNED</DefineConstants>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>$(SolutionDir)paradox.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+</Project>

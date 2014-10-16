@@ -1,0 +1,7 @@
+﻿<#@ template inherits="ProjectTemplateTransformation" language="C#" #>
+  <Import Project="$(SiliconStudioPackageProps)" Condition="Exists('$(SiliconStudioPackageProps)')" />
+  <Import Project="$(SiliconStudioParadoxDir)\sources\targets\Paradox.UnitTests.targets" Condition="Exists('$(SiliconStudioParadoxDir)\sources\targets\Paradox.UnitTests.targets')" />
+  <Target Name="EnsureSiliconStudioParadoxInstalled" BeforeTargets="PrepareForBuild">
+    <Error Condition="'$(SiliconStudioParadoxDir)' == ''" Text="Paradox SDK was not found. Check Paradox is installed and the global env variable [SiliconStudioParadoxDir] is setup correctly" />
+    <Error Condition="!Exists('$(SiliconStudioParadoxDir)\sources\targets\Paradox.UnitTests.targets')" Text="Invalid Paradox SDK installation. Target file [$(SiliconStudioParadoxDir)\sources\targets\Paradox.UnitTests.targets] was not found." />
+  </Target>

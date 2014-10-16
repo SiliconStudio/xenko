@@ -1,0 +1,10 @@
+!SoundEffect
+Id: de6d53ce-5ee6-4269-af43-09efc2a9569e
+Tags: []
+Source: ../../../data/tests/audio/FishLampByUlrick-EvensSalies.wav
+ImporterId: 5adcb5b0-7011-4d28-9741-23ec7c3df617
+~Base:
+    Location: --import--
+    Asset: !SoundMusic
+        Id: 00000000-0000-0000-0000-000000000000
+        Tags: []

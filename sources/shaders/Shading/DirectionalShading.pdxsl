@@ -1,0 +1,12 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Implements direction to light for directional lights.
+/// </summary>
+class DirectionalShading : LightParameters, ShadingGroup
+{
+    override float3 GetDirectionToLight(int lightIndex)
+    {
+        return -GetLightDirection(lightIndex);
+    }
+};

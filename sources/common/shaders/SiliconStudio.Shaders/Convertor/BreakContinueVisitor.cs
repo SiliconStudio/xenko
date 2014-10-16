@@ -1,0 +1,150 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using SiliconStudio.Shaders.Ast;
+using SiliconStudio.Shaders.Parser;
+using SiliconStudio.Shaders.Visitor;
+
+namespace SiliconStudio.Shaders.Convertor
+{
+    internal class BreakContinueVisitor : ShaderVisitor
+    {
+        /// <summary>
+        /// the logger
+        /// </summary>
+        private ParsingResult parserResult;
+
+        /// <summary>
+        /// the keyword to look after
+        /// </summary>
+        private string keyword;
+
+        /// <summary>
+        /// list of the "scopes" ie. where a break/continue test has to be performed
+        /// </summary>
+        private List<List<Statement>> scopeList = new List<List<Statement>>();
+
+        /// <summary>
+        /// current stack of "scopes"
+        /// </summary>
+        private Stack<Statement> containerStack = new Stack<Statement>();
+
+        public BreakContinueVisitor()
+            : base(false, true)
+        {
+            parserResult = new ParsingResult();
+        }
+
+        public bool Run(ForStatement forStatement, Variable breakFlag, string keywordName, ParsingResult logger)
+        {
+            keyword = keywordName;
+
+            Visit(forStatement.Body);
+
+            if (logger != null)
+                parserResult.CopyTo(logger);
+
+            if (parserResult.HasErrors)
+                return false;
+
+            TransformBreaks(breakFlag);
+            
+            return scopeList.Count > 0;
+        }
+        
+        [Visit]
+        protected void Visit(KeywordExpression expression)
+        {
+            if (expression.Name.Text == keyword)
+            {
+                var list = new List<Statement>(containerStack);
+                list.Reverse();
+                if (ParentNode is ExpressionStatement)
+                    list.Add(ParentNode as ExpressionStatement);
+                else
+                    parserResult.Error("{0} keyword detected, but outside of an ExpressionStatement. It is impossible to unroll the loop", expression.Span, keyword);
+                
+                scopeList.Add(list);
+            }
+        }
+
+        [Visit]
+        protected void Visit(BlockStatement blockStatement)
+        {
+            containerStack.Push(blockStatement);
+            Visit((Node)blockStatement);
+            containerStack.Pop();
+        }
+
+        [Visit]
+        protected void Visit(WhileStatement whileStatement) { }
+        
+        [Visit]
+        protected void Visit(ForStatement forStatement) { }
+
+        [Visit]
+        protected void Visit(StatementList statementList)
+        {
+            containerStack.Push(statementList);
+            Visit((Node)statementList);
+            containerStack.Pop();
+        }
+
+        [Visit]
+        protected void Visit(IfStatement ifStatement)
+        {
+            containerStack.Push(ifStatement);
+            Visit((Node)ifStatement);
+            containerStack.Pop();
+        }
+
+        /// <summary>
+        /// Inserts the break variable in the flow of the loop
+        /// </summary>
+        /// <param name="breakFlag">the break variable</param>
+        protected void TransformBreaks(Variable breakFlag)
+        {
+            var breakTest = new UnaryExpression(UnaryOperator.LogicalNot, new VariableReferenceExpression(breakFlag));
+            scopeList.Reverse();
+            foreach (var breakScope in scopeList)
+            {
+                for (int i = 0; i < breakScope.Count - 1; ++i)
+                {
+                    var currentScope = breakScope[i];
+                    var nextScope = breakScope[i+1];
+
+                    if (currentScope is StatementList)
+                    {
+                        var typedScope = currentScope as StatementList;
+                        var index = typedScope.Statements.IndexOf(nextScope);
+                        if (index == -1)
+                        {
+                            parserResult.Error("unable to find the next scope when replacing break/continue", nextScope.Span);
+                            break;
+                        }
+
+                        var testBlock = new IfStatement();
+                        testBlock.Condition = breakTest;
+                        var thenBlock = new StatementList();
+                        for (int j = index + 1; j < typedScope.Statements.Count; ++j)
+                            thenBlock.Add(typedScope.Statements[j]);
+                        testBlock.Then = thenBlock;
+
+                        typedScope.Statements.RemoveRange(index + 1, typedScope.Statements.Count - index - 1);
+                        if (typedScope.Statements.Count > 0 && i != breakScope.Count - 2) // do not add the statements behind the break/continue
+                            typedScope.Statements.Add(testBlock);
+                    }
+                }
+
+                var last = breakScope.LastOrDefault() as ExpressionStatement;
+                if (last != null)
+                    last.Expression = new AssignmentExpression(AssignmentOperator.Default, new VariableReferenceExpression(breakFlag), new LiteralExpression(true));
+            }
+        }
+    }
+}

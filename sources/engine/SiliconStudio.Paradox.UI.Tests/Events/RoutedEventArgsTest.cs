@@ -1,0 +1,57 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using System;
+
+using NUnit.Framework;
+
+using SiliconStudio.Paradox.UI.Controls;
+using SiliconStudio.Paradox.UI.Events;
+
+namespace SiliconStudio.Paradox.UI.Tests.Events
+{
+    /// <summary>
+    /// class used to test <see cref="RoutedEventArgs"/>
+    /// </summary>
+    public class RoutedEventArgsTest : RoutedEventArgs
+    {
+        /// <summary>
+        /// Launch all tests of the class
+        /// </summary>
+        public void TestAll()
+        {
+            TestEventFreezing();
+        }
+
+        /// <summary>
+        /// Test that when the event is marked as routed its values cannot be modified any more
+        /// </summary>
+        [Test]
+        public void TestEventFreezing()
+        {
+            // check that values can freely be modified by default
+            Assert.AreEqual(false, IsBeingRouted);
+            var image = new ImageElement();
+            var routedEvent = EventManager.RegisterRoutedEvent<RoutedEventArgs>("test", RoutingStrategy.Tunnel, typeof(RoutedEventArgsTest));
+            Source = image;
+            Assert.AreEqual(image, Source);
+            Source = null;
+            Assert.AreEqual(null, Source);
+            RoutedEvent = routedEvent;
+            Assert.AreEqual(routedEvent, RoutedEvent);
+            RoutedEvent = null;
+            Assert.AreEqual(null, RoutedEvent);
+
+            // check that value of IsBeingRouted is updated
+            StartEventRouting();
+            Assert.AreEqual(true, IsBeingRouted);
+
+            // check that modifications are now prohibited
+            Assert.Throws<InvalidOperationException>(() => Source = null);
+            Assert.Throws<InvalidOperationException>(() => RoutedEvent = null);
+
+            // check that value of IsBeingRouted is update
+            EndEventRouting();
+            Assert.AreEqual(false, IsBeingRouted);
+        }
+    }
+}

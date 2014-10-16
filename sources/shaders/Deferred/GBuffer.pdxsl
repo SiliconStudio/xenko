@@ -1,0 +1,22 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Compute Gbuffer. Expected texture output format: float4.
+/// </summary>
+class GBuffer : Transformation, ShaderBase, NormalStream, SpecularPowerBase, NormalVSBase
+{
+    //stream float vDepth : DEPTH_TEST;
+    
+    override stage void VSMain()
+    {
+        base.VSMain();
+        //float4 positionVS = mul(streams.Position, WorldView);
+        //streams.vDepth = positionVS.z;
+    }
+
+    override stage void PSMain()
+    {
+        GenerateNormalVS_PS();
+        streams.ColorTarget = float4(normalize(streams.vNormalVS.xyz), this.SpecularPowerValue());
+    }
+};

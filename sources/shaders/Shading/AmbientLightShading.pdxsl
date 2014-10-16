@@ -1,0 +1,13 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Computes shading using flat shading modified with uniform ambient light.
+/// </summary>
+class AmbientLightShading : ShadingBase, AlbedoDiffuseBase, AlbedoSpecularBase
+{
+    stage float4 AmbientLight;
+    
+    override stage float4 Shading() {
+        return base.Shading() + float4(this.DiffuseAlbedo() * AmbientLight, 0);
+    }
+};

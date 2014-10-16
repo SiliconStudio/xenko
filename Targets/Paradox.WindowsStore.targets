@@ -1,0 +1,86 @@
+<!-- Build file post-included by all Paradox projects -->
+<Project InitialTargets="SiliconStudioRemapPlatforms" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Target Name="SiliconStudioRemapPlatforms">
+    <!-- Remap real platform for WindowsStore and Windows Phone -->
+    <CreateProperty Condition=" '$(Platform)' == 'WindowsStore'" Value="AnyCPU">
+      <Output TaskParameter="Value" PropertyName="Platform" />
+    </CreateProperty>
+    <CreateProperty Condition=" '$(Platform)' == 'WindowsStore-x86'" Value="x86">
+      <Output TaskParameter="Value" PropertyName="Platform" />
+    </CreateProperty>
+    <CreateProperty Condition=" '$(Platform)' == 'WindowsStore-x64'" Value="x64">
+      <Output TaskParameter="Value" PropertyName="Platform" />
+    </CreateProperty>
+    <CreateProperty Condition=" '$(Platform)' == 'WindowsStore-ARM'" Value="ARM">
+      <Output TaskParameter="Value" PropertyName="Platform" />
+    </CreateProperty>
+  </Target>
+
+  <PropertyGroup>
+    <!-- Rewrite platform so that ProjectReference libraries get built properly -->
+    <Platform>WindowsStore</Platform>
+    
+    <SiliconStudioIsExecutable Condition=" '$(OutputType)' == 'AppContainerExe'">true</SiliconStudioIsExecutable>
+    <SiliconStudioNETFrameworkVersion>v4.5.1</SiliconStudioNETFrameworkVersion>
+
+    <SiliconStudioCPU Condition="'$(Platform)' == 'WindowsStore-x86'">x86</SiliconStudioCPU>
+    <SiliconStudioCPU Condition="'$(Platform)' == 'WindowsStore-x64'">x64</SiliconStudioCPU>
+    <SiliconStudioCPU Condition="'$(Platform)' == 'WindowsStore-ARM'">ARM</SiliconStudioCPU>
+    
+    <!-- Assembly processor is currently unsupported on Windows Store executables -->
+    <SiliconStudioAssemblyProcessor Condition="'$(SiliconStudioIsExecutable)' == 'true'">false</SiliconStudioAssemblyProcessor>
+
+    <!-- Use OutputPath to define AppxPackage directory -->
+    <AppxPackageDir>$(OutputPath)\$(AppxPackageDirName)\</AppxPackageDir>
+  </PropertyGroup>
+  
+  <!-- Embed native libraries -->
+  <ItemGroup>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\$(SiliconStudioCPU)\freetype.dll" />
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\$(SiliconStudioCPU)\libcore.dll"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\$(SiliconStudioCPU)\libbulletc.dll"/>
+  </ItemGroup>
+
+  <!-- On Windows platform automatically add the following references -->
+  <Choose>
+    <When Condition=" '$(SiliconStudioIsExecutable)' == 'true'">
+      <ItemGroup>
+        <Content Include="@(SiliconStudioEmbeddedNativeLibrary)">
+          <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          <Visible>False</Visible>
+        </Content>
+      </ItemGroup>
+	  </When>
+  </Choose>
+
+  <PropertyGroup>
+    <PrepareResourcesDependsOn>
+      DeployAssetsWinRT;
+      $(PrepareResourcesDependsOn)
+    </PrepareResourcesDependsOn>
+  </PropertyGroup>
+
+  <!-- iOS: Ensure assets have been deployed before calling _CollectBundleResources -->
+  <Target Name="DeployAssetsWinRT" DependsOnTargets="SiliconStudioCompileAsset" Condition="'$(SiliconStudioIsExecutable)' == 'true'">
+    <!-- Add all game data as content on iphone. Note that "Link" doesn't work but Xamarin seems to use a similar "LogicalName" property. -->
+    <ItemGroup>
+      <!-- Define the Assets to deploy -->
+      <AssetsToDeploy Include="$(SiliconStudioCompileAssetOutputPath)\**\*.*"/>
+
+      <Content Include="@(AssetsToDeploy)">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Link>data\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      </Content>
+    </ItemGroup>
+  </Target>
+
+  <!-- Enforce platform of referenced projects to be "WindowsStore" (doesn't include CPU) -->
+  <Target Name="CompileReferencesAsWindowsStorePlatform" AfterTargets="AssignProjectConfiguration">
+    <ItemGroup>
+      <ProjectReferenceWithConfiguration>
+        <SetPlatform>Platform=WindowsStore</SetPlatform>
+      </ProjectReferenceWithConfiguration>
+    </ItemGroup>
+  </Target>
+</Project>

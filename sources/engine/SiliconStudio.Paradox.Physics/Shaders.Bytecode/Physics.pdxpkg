@@ -1,0 +1,18 @@
+!Package
+Id: 1640a0bf-e632-42ad-8d94-36fb6bd716fc
+Meta:
+    Name: Paradox.Physics
+    Version: 1.0.0.0
+    Dependencies:
+        -   Name: Paradox
+            Version: 1.0.0.0
+Profiles:
+    - Name: Shared
+      AssetFolders:
+        - Path: ../Shaders
+        - Path: .
+    -   Name: Windows
+        Platform: Windows
+        Properties:
+            Paradox.GraphicsPlatform: !GraphicsPlatform Direct3D11
+            Paradox.GraphicsProfile: !GraphicsProfile Level_9_3

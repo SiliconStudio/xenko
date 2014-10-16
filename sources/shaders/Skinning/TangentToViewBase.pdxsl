@@ -1,0 +1,20 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Computes the transformation matrix from tangent to view space.
+/// </summary>
+class TangentToViewBase : NormalStream, Transformation
+{
+    float3x3 GetTangentToView()
+    {
+        float3x3 mTangentToView;
+
+        float3 bitangent = streams.vTangent.w * cross(streams.vNormal, streams.vTangent.xyz);
+
+        mTangentToView[0] = mul(streams.vTangent.xyz, (float3x3)WorldView).xyz;
+        mTangentToView[1] = mul(bitangent, (float3x3)WorldView).xyz;
+        mTangentToView[2] = mul(streams.vNormal, (float3x3)WorldView).xyz;
+
+        return mTangentToView;
+    }
+};

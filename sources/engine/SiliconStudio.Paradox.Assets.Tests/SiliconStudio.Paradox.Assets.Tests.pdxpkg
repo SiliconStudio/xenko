@@ -1,0 +1,40 @@
+!Package
+Id: 04ed1618-1a06-4a69-ac34-1006a978af11
+Tags: []
+Meta:
+    Name: SiliconStudio.Paradox.Assets.Tests
+    Version: 1.0.0.0
+    Authors: []
+    Owners: []
+    Dependencies:
+        -   Name: Paradox
+            Version: 0.1
+LocalDependencies: []
+Profiles:
+    -   Name: Shared
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: GameAssets
+                RawImports: []
+        OutputGroupDirectories: {}
+        Properties: {}
+        ProjectReferences:
+            -   Id: 117bf9f8-d2d9-4d32-9702-251c3e038090
+                Location: SiliconStudio.Paradox.Assets.Tests.csproj
+                Type: Library
+    -   Name: Windows
+        Platform: Windows
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: GameAssets
+                RawImports: []
+        OutputGroupDirectories: {}
+        Properties:
+            Paradox.GraphicsProfile: !GraphicsProfile Level_9_1
+        ProjectReferences:
+            -   Id: 117bf9f8-d2d9-4d32-9702-251c3e038090
+                Location: SiliconStudio.Paradox.Assets.Tests.csproj
+                Type: Executable
+ExplicitFolders: []
+Bundles: []
+TemplateFolders: []

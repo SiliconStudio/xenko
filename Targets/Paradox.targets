@@ -1,0 +1,171 @@
+<Project InitialTargets="SiliconStudioParadoxCheckRequirements" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--Check requirements when running this build file -->
+  <Target Name="SiliconStudioParadoxCheckRequirements">
+    <Error Condition="'$(SiliconStudioPlatform)' == ''" Text="The property %24(SiliconStudioPlatform) must be defined by the project"/>
+  </Target>
+
+  <PropertyGroup>
+    <!-- Defaults for CPU and GraphicsApi based on platform-->
+    <SiliconStudioParadoxGraphicsApi Condition="'$(SiliconStudioParadoxGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Windows'">Direct3D11</SiliconStudioParadoxGraphicsApi>
+    <SiliconStudioParadoxGraphicsApi Condition="'$(SiliconStudioParadoxGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Android'">OpenGLES</SiliconStudioParadoxGraphicsApi>
+    <SiliconStudioParadoxGraphicsApi Condition="'$(SiliconStudioParadoxGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'iOS'">OpenGLES</SiliconStudioParadoxGraphicsApi>
+    
+    <!--By default, turn on assembly processor-->
+    <SiliconStudioAssemblyProcessor Condition="'$(SiliconStudioAssemblyProcessor)' == ''">true</SiliconStudioAssemblyProcessor>
+
+    <SiliconStudioPlatformFullName Condition="'$(SiliconStudioPlatformFullName)' == ''">$(SiliconStudioPlatform)-$(SiliconStudioParadoxGraphicsApi)</SiliconStudioPlatformFullName>
+  </PropertyGroup>
+
+  <!-- 
+  *****************************************************************************************************************************
+  Package setup
+  *****************************************************************************************************************************
+  -->
+
+  <!-- Setup global properties for this package -->
+  <PropertyGroup>
+    <SiliconStudioPackageParadox Condition="'$(SiliconStudioPackageParadox)' == ''">$(MSBuildThisFileDirectory)..</SiliconStudioPackageParadox>
+    <!-- Resolve path (remove ".." elements), for better support on Xamarin iOS -->
+    <SiliconStudioPackageParadox>$([System.IO.Path]::GetFullPath('$(SiliconStudioPackageParadox)'))</SiliconStudioPackageParadox>
+    <SiliconStudioPackageParadoxBin Condition="'$(SiliconStudioPackageParadoxBin)' == ''">$(SiliconStudioPackageParadox)\Bin</SiliconStudioPackageParadoxBin>
+    <SiliconStudioPackageParadoxSdkBin Condition="'$(SiliconStudioPackageParadoxSdkBin)' == ''">$(SiliconStudioPackageParadoxBin)\Windows-Direct3D11</SiliconStudioPackageParadoxSdkBin>
+    <SiliconStudioPackageParadoxPlatformBin Condition="'$(SiliconStudioPackageParadoxPlatformBin)' == ''">$(SiliconStudioPackageParadoxBin)\$(SiliconStudioPlatformFullName)</SiliconStudioPackageParadoxPlatformBin>
+  </PropertyGroup>
+
+  <!---
+  *****************************************************************************************************************************
+  Assembly References
+  *****************************************************************************************************************************
+  -->
+  <Choose>
+    <When Condition="'$(SiliconStudioUnitTest)' != 'true'">
+      <ItemGroup>
+        <Reference Include="SiliconStudio.Core">
+          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Core.dll</HintPath>
+        </Reference>
+        <Reference Include="SiliconStudio.Core.IO">
+          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Core.IO.dll</HintPath>
+        </Reference>
+        <Reference Include="SiliconStudio.Core.Mathematics">
+          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Core.Mathematics.dll</HintPath>
+        </Reference>
+        <Reference Include="SiliconStudio.Core.MicroThreading">
+          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Core.MicroThreading.dll</HintPath>
+        </Reference>
+        <Reference Include="SiliconStudio.Core.Serialization">
+          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Core.Serialization.dll</HintPath>
+        </Reference>
+        <Reference Include="SiliconStudio.Paradox">
+          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Paradox.dll</HintPath>
+        </Reference>
+        <Reference Include="SiliconStudio.Paradox.Audio">
+          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Paradox.Audio.dll</HintPath>
+        </Reference>
+        <Reference Include="SiliconStudio.Paradox.Effects.Modules">
+          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Paradox.Effects.Modules.dll</HintPath>
+        </Reference>
+        <Reference Include="SiliconStudio.Paradox.Engine">
+          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Paradox.Engine.dll</HintPath>
+        </Reference>
+        <Reference Include="SiliconStudio.Paradox.Games">
+          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Paradox.Games.dll</HintPath>
+        </Reference>
+        <Reference Include="SiliconStudio.Paradox.Graphics">
+          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Paradox.Graphics.dll</HintPath>
+        </Reference>
+        <Reference Include="SiliconStudio.Paradox.Input">
+          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Paradox.Input.dll</HintPath>
+        </Reference>
+        <Reference Include="SiliconStudio.Paradox.Shaders">
+          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Paradox.Shaders.dll</HintPath>
+        </Reference>
+        <Reference Include="SiliconStudio.Paradox.UI">
+          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Paradox.UI.dll</HintPath>
+        </Reference>
+        <Reference Include="SiliconStudio.Paradox.Physics">
+          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Paradox.Physics.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+
+  <!-- 
+  *****************************************************************************************************************************
+  Platform specific
+  *****************************************************************************************************************************
+  -->
+  <PropertyGroup>
+    <!--This variable can be overriden by a platform specific targets (in case the executable is located into an assembly dll )-->
+    <SiliconStudioIsExecutable Condition=" '$(OutputType)' == 'Exe'">true</SiliconStudioIsExecutable>
+    <SiliconStudioIsExecutable Condition=" '$(OutputType)' == 'WinExe'">true</SiliconStudioIsExecutable>
+  </PropertyGroup>
+
+  <!-- Include platform specific targets -->
+  <Import Condition="Exists('$(MSBuildThisFileDirectory)\$(MSBuildThisFileName).$(SiliconStudioPlatform).targets')"
+          Project="$(MSBuildThisFileDirectory)\$(MSBuildThisFileName).$(SiliconStudioPlatform).targets"/>
+
+  <!-- 
+  *****************************************************************************************************************************
+  Assembly Processor
+  *****************************************************************************************************************************
+  -->
+  <Target Name="SiliconStudioRunAssemblyProcessor" AfterTargets="CopyFilesToOutputDirectory"  Condition=" '$(SiliconStudioAssemblyProcessor)' == 'true'">
+    <PropertyGroup>
+      <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioAssemblyProcessorOptions)' == ''">--auto-notify-property --parameter-key --auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorCommand Condition="'$(SiliconStudioAssemblyProcessorCommand)' == ''">"$(SiliconStudioPackageParadoxSdkBin)\SiliconStudio.AssemblyProcessor.exe" --platform=$(SiliconStudioPlatform) --targetFramework=$(SiliconStudioNETFrameworkVersion)  $(SiliconStudioAssemblyProcessorOptions) "$(TargetPath)"</SiliconStudioAssemblyProcessorCommand>
+    </PropertyGroup>
+    
+    <!-- Run assembly processor -->
+    <Message Importance="High" Text="SiliconStudio AssemblyProcessor: $(SiliconStudioAssemblyProcessorCommand)"/>
+    <Exec Command="$(SiliconStudioAssemblyProcessorCommand)" ContinueOnError='false'/>
+
+    <!-- Copy back *.dll from bin/Debug|Release to obj/Debug/Release directory -->
+    <Copy SourceFiles="@(MainAssembly)" DestinationFolder="$(IntermediateOutputPath)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="$(OverwriteReadOnlyFiles)"/>
+    <!-- Copy back *.pdb from bin/Debug|Release to obj/Debug/Release directory -->
+    <Copy SourceFiles="@(_DebugSymbolsOutputPath)" DestinationFiles="@(_DebugSymbolsIntermediatePath)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="$(OverwriteReadOnlyFiles)" Condition="'$(_DebugSymbolsProduced)'=='true' and '$(SkipCopyingSymbolsToOutputDirectory)' != 'true'"/>
+  </Target>
+
+  <!-- 
+  *****************************************************************************************************************************
+  Compile Asset 
+  *****************************************************************************************************************************
+  -->
+  <PropertyGroup>
+    <PrepareForRunDependsOn>
+      $(PrepareForRunDependsOn);
+      SiliconStudioCompileAsset;
+    </PrepareForRunDependsOn>
+
+    <!--asset BuildPath for all platforms (same as package)-->
+    <SiliconStudioCompileAssetBuildPath Condition="'$(SiliconStudioCompileAssetBuildPath)' == ''">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\obj\data</SiliconStudioCompileAssetBuildPath>
+
+    <!--asset OutputPath for Android-->
+    <SiliconStudioCompileAssetOutputPath Condition="'$(SiliconStudioCompileAssetOutputPath)' == '' and '$(SiliconStudioPlatform)' == 'Android'">$(ProjectDir)$(BaseIntermediateOutputPath)$(SiliconStudioPlatform)\$(Configuration)\assets\data</SiliconStudioCompileAssetOutputPath>
+
+    <!--asset OutputPath for other platforms -->
+    <SiliconStudioCompileAssetOutputPath Condition="'$(SiliconStudioCompileAssetOutputPath)' == ''">$(TargetDir)data</SiliconStudioCompileAssetOutputPath>
+
+    <SiliconStudioParadoxCompileAssetCommand Condition="'$(SiliconStudioParadoxCompileAssetCommand)' == ''">$(SiliconStudioPackageParadoxSdkBin)\SiliconStudio.Assets.CompilerApp.exe</SiliconStudioParadoxCompileAssetCommand>
+  </PropertyGroup>
+
+  <!--Compile assets for all SiliconStudioPackage items and only for an executable-->
+  <Target Name="SiliconStudioCompileAsset" Condition="'$(SiliconStudioCurrentPackagePath)' != '' and '$(SiliconStudioIsExecutable)' == 'true'">
+    <!--Check that the package file actually exist-->
+    <Error Condition="'$(SiliconStudioBuildProfile)' == ''" Text="The asset compiler is requiring the property (SiliconStudioBuildProfile) to be defined"/>
+    <Error Condition="!Exists('$(SiliconStudioCurrentPackagePath)')" Text="Unable to find package decription from path [$(SiliconStudioCurrentPackagePath)]"/>
+    <Exec WorkingDirectory="$(TargetDir)" 
+          Command="&quot;$(SiliconStudioParadoxCompileAssetCommand)&quot; $(SiliconStudioParadoxCompileAssetOptions) --platform=$(SiliconStudioPlatform) --graphics-platform=$(SiliconStudioParadoxGraphicsApi) --profile=$(SiliconStudioBuildProfile) --project-configuration=$(Configuration) --output-path=&quot;$(SiliconStudioCompileAssetOutputPath)&quot; --build-path=&quot;$(SiliconStudioCompileAssetBuildPath)&quot; --package-file=&quot;$(SiliconStudioCurrentPackagePath)&quot; --log-pipe=&quot;$(SiliconStudioBuildEngineLogPipeUrl)&quot;" />
+
+    <!-- Android specific: include build output in _AndroidAssetsDest so that APK is regenerated -->
+    <ItemGroup Condition="'$(SiliconStudioPlatform)' == 'Android'">
+      <_AndroidAssetsDest Include="$(SiliconStudioCompileAssetOutputPath)\**\*.*" />
+    </ItemGroup>
+  </Target>
+
+  <!-- Clean assets -->
+  <Target Name="SiliconStudioCleanAsset" Condition="'$(SiliconStudioCurrentPackagePath)' != '' and '$(SiliconStudioIsExecutable)' == 'true'">
+    <RemoveDir Condition="Exists('$(SiliconStudioCompileAssetBuildPath)')" ContinueOnError="true"  Directories="$(SiliconStudioCompileAssetBuildPath)"/>
+    <RemoveDir Condition="Exists('$(SiliconStudioCompileAssetOutputPath)')" ContinueOnError="true"  Directories="$(SiliconStudioCompileAssetOutputPath)"/>
+  </Target>
+
+</Project>

@@ -1,0 +1,88 @@
+﻿<#@ template language="C#" visibility="internal" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Reflection" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="Mono.Cecil" #>
+<#@ import namespace="SiliconStudio.Core.Serialization.Serializers" #>
+
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization.Serializers;
+using SiliconStudio.DataSerializers;
+
+[assembly: AssemblyVersion("<#=assembly.Name.Version.ToString()#>")]
+<# if (targetFramework != null) { #>
+[assembly: System.Runtime.Versioning.TargetFramework(<#=targetFramework#>)]
+<# } #>
+
+[assembly: SiliconStudio.Core.Serialization.Serializers.AssemblySerializerFactory(Type = typeof(SiliconStudio.DataSerializers.<#=assemblySerializerFactoryClassName#>))]
+
+<# if (assembly.Name.HasPublicKey) { #>
+[assembly: AssemblyKeyFile(@"<#=Path.Combine(Path.GetDirectoryName(assembly.MainModule.FullyQualifiedName), @"..\..\build\paradox.snk")#>")]
+<# } #>
+
+namespace SiliconStudio.Core.Serialization.Serializers
+{
+	class AssemblySerializerFactoryAttribute : Attribute
+	{
+		public Type Type;
+	}
+}
+
+namespace SiliconStudio.DataSerializers
+{
+    // Assembly attributes that defines supported serializer (only generics one so that other assemblies can do generic instantiations by themselves)
+<# foreach (var profile in cecilSerializerContext.SerializableTypesProfiles) {
+       foreach (var type in profile.Value.SerializableTypes.Where(x => x.Value.Local && x.Value.SerializerType != null)) { #>
+    [DataSerializerGlobalAttribute(typeof(<#= type.Value.SerializerType.ConvertCSharp(false) #>), typeof(<#= type.Key.ConvertCSharp(false) #>), DataSerializerGenericMode.<#= type.Value.Mode.ToString() #>, <#=type.Value.Inherited ? "true" : "false"#>, <#=type.Value.ComplexSerializer ? "true" : "false"#>, Profile = "<#=profile.Key#>")]
+<#     }
+       foreach (var type in profile.Value.GenericSerializableTypes.Where(x => x.Value.Local && x.Value.SerializerType != null)) {#>
+    [DataSerializerGlobalAttribute(typeof(<#= type.Value.SerializerType.ConvertCSharp(true) #>), typeof(<#= type.Key.ConvertCSharp(true) #>), DataSerializerGenericMode.<#= type.Value.Mode.ToString() #>, <#=type.Value.Inherited ? "true" : "false"#>, <#=type.Value.ComplexSerializer ? "true" : "false"#>, Profile = "<#=profile.Key#>")]
+<#     }
+   } #>
+   	public static class <#=assemblySerializerFactoryClassName#>
+	{
+	    [SiliconStudio.Core.ModuleInitializer]
+        internal static void Initialize()
+        {
+<# foreach (var profile in cecilSerializerContext.SerializableTypesProfiles) { #>
+			DataSerializerFactory.RegisterSerializationProfile("<#=profile.Key#>", Register<#=profile.Key#>);
+<# } #>
+        }
+
+<# foreach (var profile in cecilSerializerContext.SerializableTypesProfiles) { #>
+		public static void Register<#=profile.Key#>(DataSerializerFactory serializerFactory)
+		{
+			// Force module .ctor of referenced assemblies to be initialized as well
+<# foreach (var referencedAssemblySerializerFactoryType in referencedAssemblySerializerFactoryTypes) { #>
+			ModuleRuntimeHelpers.RunModuleConstructor(typeof(<#=referencedAssemblySerializerFactoryType.ConvertCSharp()#>).GetTypeInfo().Module);
+<# } #>
+
+			// Register types used by this assembly
+<# foreach (var type in profile.Value.SerializableTypes.Where(x => x.Value.Local)) { #>
+			if (!serializerFactory.CanSerialize(typeof(<#= type.Key.ConvertCSharp() #>)))
+			{
+<#   if (type.Value.SerializerType != null) { #>
+				serializerFactory.RegisterSerializer(<#=type.Key.ConvertTypeId()#>, new <#= type.Value.SerializerType.ConvertCSharp() #>());
+<#   } else { #>
+				serializerFactory.RegisterNullSerializer(<#=type.Key.ConvertTypeId()#>, typeof(<#= type.Key.ConvertCSharp() #>));
+<#   } #>
+			}
+<# } #>
+		}
+
+<# } // foreach (profile) #>
+	}
+}
+
+<#
+// Generate complex serializers
+foreach (var complexType in cecilSerializerContext.ComplexTypes)
+{
+	var complexClassSerializerGenerator = new ComplexClassSerializerGenerator(complexType.Key, complexType.Value.ComplexSerializerProcessParentType);
+	Write(complexClassSerializerGenerator.TransformText());
+} #>

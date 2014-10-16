@@ -1,0 +1,10 @@
+!SoundEffect
+Id: d9ce7b4e-ac45-4e2f-a2df-aaf3d17a8de8
+Tags: []
+Source: ../../../data/tests/audio/ae.wav
+ImporterId: 634842fa-d1db-45c2-b13d-bc11486dae4d
+~Base:
+    Location: --import--
+    Asset: !SoundEffect
+        Id: 00000000-0000-0000-0000-000000000000
+        Tags: []

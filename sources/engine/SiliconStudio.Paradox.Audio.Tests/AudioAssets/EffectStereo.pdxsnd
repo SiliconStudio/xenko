@@ -1,0 +1,10 @@
+!SoundEffect
+Id: 8d338636-2ff9-4114-8a05-a59cca7f0ae4
+Tags: []
+Source: ../../../data/tests/audio/90-bboc1-stero.wav
+ImporterId: 634842fa-d1db-45c2-b13d-bc11486dae4d
+~Base:
+    Location: --import--
+    Asset: !SoundEffect
+        Id: 00000000-0000-0000-0000-000000000000
+        Tags: []

@@ -1,0 +1,18 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+class SpriteBatch : SpriteBase
+{
+    // -------------------------------------
+    // streams
+    // -------------------------------------
+    stage stream float4 Color : COLOR;
+    stage stream float Swizzle : BATCH_SWIZZLE;
+
+    // Shading of the sprite
+    stage override float4 Shading()
+    {
+        float4 swizzleColor = streams.Swizzle == 0 ? base.Shading() : base.Shading().rrrr;
+
+        return swizzleColor * streams.Color;
+    }
+};

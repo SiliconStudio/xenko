@@ -1,0 +1,31 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+// Base class for all the graphics shaders
+class ShaderBase
+{
+    cbuffer OpenglFlags
+    {
+        // A variable used to flip the rendertarget in OpenGL - automatically managed by the engine
+        stage float ParadoxFlipRendertarget;
+    };
+
+    // Default SV_POSITION output for VS/GS shaders
+    stage stream float4 ShadingPosition : SV_Position;
+
+    // Default COLOR output for PS shader
+    stage stream float4 ColorTarget : SV_Target;
+
+    // Default DEPTH output for PS shader
+    stage stream float Depth : SV_Depth;
+    stage stream float DepthGreater : SV_DepthGreater; // Special output after PS
+    stage stream float DepthLessEqual : SV_DepthLessEqual; // Special output after PS
+
+    // Default InstanceId for VS/GS shaders
+    stage stream uint InstanceID : SV_InstanceID;
+
+    // Declare Vertex shader main method
+    stage void VSMain() {}
+
+    // Declare Pixel shader main method
+    stage void PSMain() {}
+};
