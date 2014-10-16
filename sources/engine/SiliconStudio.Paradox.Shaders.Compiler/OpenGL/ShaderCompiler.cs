@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using SharpDX.D3DCompiler;
 using SiliconStudio.Core.Diagnostics;
@@ -139,7 +140,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
             var realShaderSource = glslShaderCode.ToString();
 
             // optimize shader
-            var optShaderSource = GlslOptmizer.Run(realShaderSource, isOpenGLES, false, pipelineStage == PipelineStage.Vertex);
+            var optShaderSource = RunOptimizer(realShaderSource, isOpenGLES, false, pipelineStage == PipelineStage.Vertex);
             if (!String.IsNullOrEmpty(optShaderSource))
                 realShaderSource = optShaderSource;
 
@@ -151,5 +152,62 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
             shaderBytecodeResult.Bytecode = bytecode;
             return shaderBytecodeResult;
         }
+
+        private string RunOptimizer(string baseShader, bool openGLES, bool es30, bool vertex)
+	    {
+		    IntPtr ctx = IntPtr.Zero;
+            var inputShader = baseShader;
+            if (openGLES)
+		    {
+			    if (es30)
+                    ctx = glslopt_initialize(2);
+			    else
+                    ctx = glslopt_initialize(1);
+
+			    if (vertex)
+			    {
+                    var pre = "#define gl_Vertex _glesVertex\nattribute highp vec4 _glesVertex;\n";
+				    pre += "#define gl_Normal _glesNormal\nattribute mediump vec3 _glesNormal;\n";
+				    pre += "#define gl_MultiTexCoord0 _glesMultiTexCoord0\nattribute highp vec4 _glesMultiTexCoord0;\n";
+				    pre += "#define gl_MultiTexCoord1 _glesMultiTexCoord1\nattribute highp vec4 _glesMultiTexCoord1;\n";
+				    pre += "#define gl_Color _glesColor\nattribute lowp vec4 _glesColor;\n";
+                    inputShader = pre + inputShader;
+			    }
+		    }
+		    else
+            {
+                ctx = glslopt_initialize(0);
+		    }
+
+		    int type = vertex ? 0 : 1;
+            var shader = glslopt_optimize(ctx, type, inputShader, 0);
+
+		    bool optimizeOk = glslopt_get_status(shader);
+
+		    if (optimizeOk)
+		    {
+			    IntPtr optShader = glslopt_get_output(shader);
+                return Marshal.PtrToStringAuto(optShader);
+		    }
+
+            return null;
+	    }
+
+        [DllImport("glsl_optimizer_lib.dll")]
+        private static extern IntPtr glslopt_initialize(int target);
+
+        [DllImport("glsl_optimizer_lib.dll")]
+        private static extern IntPtr glslopt_optimize(IntPtr ctx, int type, [MarshalAs(UnmanagedType.LPStr)]string shaderSource, uint options);
+
+        [DllImport("glsl_optimizer_lib.dll")]
+        private static extern bool glslopt_get_status(IntPtr shader);
+
+        [DllImport("glsl_optimizer_lib.dll")]
+        private static extern IntPtr glslopt_get_output(IntPtr shader);
+
+        //glslopt_ctx* glslopt_initialize (glslopt_target target);
+        //glslopt_shader* glslopt_optimize (glslopt_ctx* ctx, glslopt_shader_type type, const char* shaderSource, unsigned options);
+        //bool glslopt_get_status (glslopt_shader* shader);
+        //const char* glslopt_get_output (glslopt_shader* shader);
     }
 }
