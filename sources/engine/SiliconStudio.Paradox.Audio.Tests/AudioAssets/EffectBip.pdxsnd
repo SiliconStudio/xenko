@@ -1,0 +1,10 @@
+!SoundEffect
+Id: 231da8ca-3e3f-4fdf-abe1-e9abc2d54272
+Tags: []
+Source: ../../../data/tests/audio/90-bboc1.wav
+ImporterId: 634842fa-d1db-45c2-b13d-bc11486dae4d
+~Base:
+    Location: --import--
+    Asset: !SoundEffect
+        Id: 00000000-0000-0000-0000-000000000000
+        Tags: []

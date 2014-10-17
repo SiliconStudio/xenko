@@ -1,0 +1,99 @@
+<!-- Global settings used to configure the ParadoxGraphicsApi -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Default values -->
+  <PropertyGroup>
+    <ParadoxGraphicsApi Condition=" '$(ParadoxGraphicsApi)' == ''">Direct3D11</ParadoxGraphicsApi>
+    <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioAssemblyProcessorOptions)' == ''">--auto-notify-property --parameter-key --auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
+  </PropertyGroup>
+
+  <!-- 
+    Global Settings per project
+  -->
+  <PropertyGroup>
+    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioBuildDirectory)' == ''">$(SiliconStudioPlatform)-$(ParadoxGraphicsApi)</SiliconStudioBuildDirectory>
+    <ParadoxDependenciesDir Condition="'$(ParadoxDependenciesDir)' == ''">$(MSBuildThisFileDirectory)..\..\deps\</ParadoxDependenciesDir>
+    <ParadoxDependenciesDir Condition="'$(ParadoxDependenciesDir)' != '' and !HasTrailingSlash('$(ParadoxDependenciesDir)')">$(ParadoxDependenciesDir)\</ParadoxDependenciesDir>
+  </PropertyGroup>
+
+  <!--Import global SiliconStudio settings-->
+  <Import Project="$(MSBuildThisFileDirectory)..\common\targets\SiliconStudio.GlobalSettings.targets"/>
+  
+  <!-- 
+    Settings ParadoxGraphicsApi specific
+  -->
+  <PropertyGroup Condition=" '$(ParadoxGraphicsApi)' == 'Direct3D11' ">
+    <ParadoxGraphicsApiDefines>SILICONSTUDIO_PARADOX_GRAPHICS_API_DIRECT3D;SILICONSTUDIO_PARADOX_GRAPHICS_API_DIRECT3D11</ParadoxGraphicsApiDefines>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(ParadoxGraphicsApi)' == 'Null' ">
+    <ParadoxGraphicsApiDefines>SILICONSTUDIO_PARADOX_GRAPHICS_API_NULL</ParadoxGraphicsApiDefines>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(ParadoxGraphicsApi)' == 'OpenGL' ">
+    <ParadoxGraphicsApiDefines>SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL;SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLCORE</ParadoxGraphicsApiDefines>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(ParadoxGraphicsApi)' == 'OpenGLES' ">
+    <ParadoxGraphicsApiDefines>SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL;SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES</ParadoxGraphicsApiDefines>
+  </PropertyGroup>
+
+  <!-- 
+    Settings SiliconStudioPlatform specific
+  -->
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
+    <ParadoxGraphicsApiDefines>FRAMEWORK_SHADER_USE_SHARPDX;$(ParadoxGraphicsApiDefines)</ParadoxGraphicsApiDefines>
+    <FrameworkShaderUseSharpDX>true</FrameworkShaderUseSharpDX>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'WindowsStore' ">
+    <AutoIncludeSystemAssembly>true</AutoIncludeSystemAssembly>
+    <ParadoxGraphicsApiDefines>FRAMEWORK_SHADER_USE_SHARPDX;$(ParadoxGraphicsApiDefines)</ParadoxGraphicsApiDefines>
+   
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'WindowsPhone' ">
+    <ParadoxGraphicsApiDefines>FRAMEWORK_SHADER_USE_SHARPDX;$(ParadoxGraphicsApiDefines)</ParadoxGraphicsApiDefines>
+   
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Android' ">
+    <ParadoxExternalSuffix>.Android</ParadoxExternalSuffix>
+    <FrameworkShaderUseSharpDX>false</FrameworkShaderUseSharpDX>
+    <AndroidSupportedAbis>armeabi-v7a%3barmeabi%3bx86</AndroidSupportedAbis>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS' ">
+    <ParadoxExternalSuffix>.iOS</ParadoxExternalSuffix>
+    <FrameworkShaderUseSharpDX>false</FrameworkShaderUseSharpDX>
+    <NUnitLiteBinDir>$(ParadoxDependenciesDir)NUnitLite\net-monotouch\</NUnitLiteBinDir>
+  </PropertyGroup>
+
+  <!-- 
+    Global Defines
+  -->
+  <PropertyGroup Condition=" '$(Yebis)' == 'true' ">
+    <ParadoxGraphicsApiDefines>$(ParadoxGraphicsApiDefines);PARADOX_YEBIS</ParadoxGraphicsApiDefines>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
+    <ParadoxGraphicsApiDefines>$(ParadoxGraphicsApiDefines);PARADOX_EFFECT_COMPILER</ParadoxGraphicsApiDefines>
+    <ParadoxEffectCompiler>true</ParadoxEffectCompiler>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);$(ParadoxGraphicsApiDefines)</DefineConstants>
+    <SiliconStudioOutputCommonDir>$(SolutionDir)Bin\$(SiliconStudioBuildDirectory)\</SiliconStudioOutputCommonDir>
+  </PropertyGroup>
+  
+  <!--Building Paradox SDK itself?-->
+  <PropertyGroup Condition=" '$(ParadoxUserBuild)' != 'true' ">
+    <!--Output All files in solution\Bin directory-->
+    <OutputPath>$(SiliconStudioOutputCommonDir)</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Yebis Condition=" '$(Yebis)' == '' And '$(SiliconStudioPlatform)' == 'Windows' ">true</Yebis>
+    <Yebis Condition=" '$(Yebis)' == '' ">false</Yebis>
+  </PropertyGroup>
+</Project>

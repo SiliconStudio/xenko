@@ -1,0 +1,38 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using System;
+using SharpYaml;
+using SharpYaml.Events;
+using SharpYaml.Serialization;
+using SiliconStudio.Core;
+using SiliconStudio.Core.Yaml;
+
+namespace SiliconStudio.Assets.Serializers
+{
+    /// <summary>
+    /// A Yaml serializer for <see cref="PackageReference"/>
+    /// </summary>
+    [YamlSerializerFactory]
+    internal class PackageReferenceSerializer : AssetScalarSerializerBase
+    {
+        public override bool CanVisit(Type type)
+        {
+            return type == typeof(PackageReference);
+        }
+
+        public override object ConvertFrom(ref ObjectContext context, Scalar fromScalar)
+        {
+            PackageReference packageReference;
+            if (!PackageReference.TryParse(fromScalar.Value, out packageReference))
+            {
+                throw new YamlException(fromScalar.Start, fromScalar.End, "Unable to decode package reference [{0}]. Expecting format GUID:LOCATION".ToFormat(fromScalar.Value));
+            }
+            return packageReference;
+        }
+
+        public override string ConvertTo(ref ObjectContext objectContext)
+        {
+            return objectContext.Instance.ToString();
+        }
+    }
+}

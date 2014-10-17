@@ -1,0 +1,23 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Creates shadow map for variance shadow mapping.
+/// </summary>
+class ShadowMapCasterVsm : ShadowMapCasterBase
+{
+    /// --------------------------------------------------------------------------------
+    /// Pixel Shader
+    /// --------------------------------------------------------------------------------
+    override stage void PSMain()
+    {
+        float depth = streams.ShadingPosition.z / streams.ShadingPosition.w;
+
+        // Compute partial derivatives of depth.
+        float dx = ddx(depth);
+        float dy = ddy(depth);
+        // Compute second moment over the pixel extents.
+        streams.ColorTarget = float4(depth, depth * depth + 0.25*(dx*dx + dy*dy), 0, 0);
+        // Compute second moment over the pixel extents.
+        //streams.ColorTarget = float4(streams.ShadingPosition.z, streams.ShadingPosition.z * streams.ShadingPosition.z , 0, 0);
+    }
+};

@@ -1,0 +1,57 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Performs AEN tessellation.
+/// </summary>
+/// <remarks>
+/// TSource: generic Semantic - Source texcoord semantic.
+/// TDestination: generic Semantic - Destination texcoord semantic.
+/// </remarks>
+// TODO: Generics on streams (type, name, semantics)
+class TessellationAEN<Semantic TSource, Semantic TDestination> : TessellationFlat, Texturing
+{
+    stream float2 f2DomEdgeStream[2];
+    stream float2 f2DomVertStream;
+
+    stream float2 TexCoordSource : TSource;
+    stream float2 TexCoordDest : TDestination;
+
+    override void TessellateHull(InputPatch<Input, 12> input, uint uCPID, uint NextCPID)
+    {
+        base.TessellateHull(input, uCPID, NextCPID);
+
+        const uint DominantEdge = uCPID * 2 + 3;
+        const uint DominantVertex = uCPID + 9;
+
+        streams.f2DomEdgeStream[0] = input[DominantEdge].TSource;
+        streams.f2DomEdgeStream[1] = input[DominantEdge+1].TSource;
+        streams.f2DomVertStream    = input[DominantVertex].TSource;
+    }
+
+    override void InterpolateBarycentric(const OutputPatch<Input, 3> input, in Constants constants, float3 f3BarycentricCoords)
+    {
+        base.InterpolateBarycentric(input, constants, f3BarycentricCoords);
+
+        float fU = f3BarycentricCoords.x;
+        float fV = f3BarycentricCoords.y;
+        float fW = f3BarycentricCoords.z;
+
+        float 
+            uCorner =  (fU == 1 ? 1:0),
+            vCorner =  (fV == 1 ? 1:0),
+            wCorner =  (fW == 1 ? 1:0),
+            uEdge =  (fU == 0 && fV * fW ? 1:0),
+            vEdge =  (fV == 0 && fU * fW ? 1:0),
+            wEdge =  (fW == 0 && fU * fV ? 1:0),
+            interior = (fU * fV * fW) ? 1 : 0;
+
+        streams.TexCoordDest = 
+              uCorner * input[0].f2DomVertStream
+            + vCorner * input[1].f2DomVertStream
+            + wCorner * input[2].f2DomVertStream
+            + uEdge * lerp(input[1].f2DomEdgeStream[1], input[1].f2DomEdgeStream[0], fV)
+            + vEdge * lerp(input[2].f2DomEdgeStream[1], input[2].f2DomEdgeStream[0], fW)
+            + wEdge * lerp(input[0].f2DomEdgeStream[1], input[0].f2DomEdgeStream[0], fU)
+            + interior * streams.TexCoordSource;
+    }
+};

@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
+  </PropertyGroup>
+  <Import Project="..\..\targets\Paradox.PreSettings.targets" />
+  <PropertyGroup>
+    <ProjectGuid>{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SiliconStudio.Paradox.UI</RootNamespace>
+    <AssemblyName>SiliconStudio.Paradox.UI</AssemblyName>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
+    <ParadoxProjectPlatformDependentWindows>true</ParadoxProjectPlatformDependentWindows>
+    <FileAlignment>512</FileAlignment>
+    <ParadoxBuildTags>*</ParadoxBuildTags>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(ParadoxGraphicsApi)' == 'Direct3D11' ">
+    <Reference Include="SharpDX">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(ParadoxSharpDXSdkBinDir)\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(ParadoxSharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Controls\Border.cs" />
+    <Compile Include="Controls\Button.cs" />
+    <Compile Include="Controls\ButtonBase.cs" />
+    <Compile Include="Controls\ContentDecorator.cs" />
+    <Compile Include="Controls\ContentPresenter.cs" />
+    <Compile Include="Controls\EditText.Android.cs" />
+    <Compile Include="Controls\EditText.cs" />
+    <Compile Include="Controls\EditText.iOS.cs" />
+    <Compile Include="Controls\EditText.Windows.Desktop.cs" />
+    <Compile Include="Controls\EditText.Windows.Mobile.cs" />
+    <Compile Include="Controls\ModalElement.cs" />
+    <Compile Include="Controls\ScrollBar.cs" />
+    <Compile Include="Data\UIData.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>UIData.pdxdata</DependentUpon>
+    </Compile>
+    <Compile Include="Data\UIImageGroupData.cs" />
+    <Compile Include="IScrollAnchorInfo.cs" />
+    <Compile Include="IScrollInfo.cs" />
+    <Compile Include="KeyEventArgs.cs" />
+    <Compile Include="MouseOverState.cs" />
+    <Compile Include="Panels\Grid.cs" />
+    <Compile Include="Panels\GridBase.cs" />
+    <Compile Include="Controls\ImageButton.cs" />
+    <Compile Include="Controls\ScrollViewer.cs" />
+    <Compile Include="Controls\ScrollingText.cs" />
+    <Compile Include="Controls\ToggleButton.cs" />
+    <Compile Include="IUIElementUpdate.cs" />
+    <Compile Include="ClickMode.cs" />
+    <Compile Include="Controls\ContentControl.cs" />
+    <Compile Include="Controls\Control.cs" />
+    <Compile Include="DepthAlignment.cs" />
+    <Compile Include="Panels\Canvas.cs" />
+    <Compile Include="Panels\UniformGrid.cs" />
+    <Compile Include="PropertyChangedArgs.cs" />
+    <Compile Include="PropertyChangedHandler.cs" />
+    <Compile Include="Renderers\DefaultBorderRenderer.cs" />
+    <Compile Include="Renderers\DefaultButtonRenderer.cs" />
+    <Compile Include="Renderers\DefaultContentDecoratorRenderer.cs" />
+    <Compile Include="Renderers\DefaultEditTextRenderer.cs" />
+    <Compile Include="Renderers\DefaultImageRenderer.cs" />
+    <Compile Include="Renderers\DefaultModalElementRenderer.cs" />
+    <Compile Include="Renderers\DefaultRenderersFactory.cs" />
+    <Compile Include="Events\EventManager.cs" />
+    <Compile Include="HorizontalAlignment.cs" />
+    <Compile Include="Controls\ImageElement.cs" />
+    <Compile Include="NamespaceDoc.cs" />
+    <Compile Include="Orientation.cs" />
+    <Compile Include="Panels\Panel.cs" />
+    <Compile Include="Events\RoutedEvent.cs" />
+    <Compile Include="Events\RoutedEventArgs.cs" />
+    <Compile Include="Events\RoutedEventHandlerInfo.cs" />
+    <Compile Include="Events\RoutingStrategy.cs" />
+    <Compile Include="Panels\StackPanel.cs" />
+    <Compile Include="DefaultDesigns.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DefaultDesigns.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Renderers\DefaultScrollingTextRenderer.cs" />
+    <Compile Include="Renderers\DefaultScrollBarRenderer.cs" />
+    <Compile Include="Renderers\DefaultTextBlockRenderer.cs" />
+    <Compile Include="Renderers\DefaultToggleButtonRenderer.cs" />
+    <Compile Include="Renderers\ElementRenderer.cs" />
+    <Compile Include="Renderers\IElementRendererFactory.cs" />
+    <Compile Include="Renderers\IRendererManager.cs" />
+    <Compile Include="Renderers\UIRenderingContext.cs" />
+    <Compile Include="Renderers\RendererManager.cs" />
+    <Compile Include="ScrollingMode.cs" />
+    <Compile Include="StretchDirection.cs" />
+    <Compile Include="StretchType.cs" />
+    <Compile Include="Controls\TextBlock.cs" />
+    <Compile Include="StripDefinition.cs" />
+    <Compile Include="StripDefinitionCollection.cs" />
+    <Compile Include="StripType.cs" />
+    <Compile Include="TextureExtensions.cs" />
+    <Compile Include="Thickness.cs" />
+    <Compile Include="ToggleState.cs" />
+    <Compile Include="TouchAction.cs" />
+    <Compile Include="TouchEventArgs.cs" />
+    <Compile Include="UIElement.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UIElementExtensions.cs" />
+    <Compile Include="UIElementCollection.cs" />
+    <Compile Include="UIImage.cs" />
+    <Compile Include="UIImageGroup.cs" />
+    <Compile Include="UIInternalException.cs" />
+    <Compile Include="UIProfilerKeys.cs" />
+    <Compile Include="UISystem.cs" />
+    <Compile Include="VerticalAlignment.cs" />
+    <Compile Include="Visibility.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
+      <Project>{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}</Project>
+      <Name>SiliconStudio.Core.Mathematics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
+      <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
+      <Name>SiliconStudio.Core.Serialization</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
+      <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Paradox.Games\SiliconStudio.Paradox.Games.csproj">
+      <Project>{42780CBD-3FE7-48E3-BD5B-59945EA20137}</Project>
+      <Name>SiliconStudio.Paradox.Games</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Paradox.Graphics\SiliconStudio.Paradox.Graphics.csproj">
+      <Project>{fb06c76a-6bb7-40be-9afa-fec13b045fb5}</Project>
+      <Name>SiliconStudio.Paradox.Graphics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Paradox.Input\SiliconStudio.Paradox.Input.csproj">
+      <Project>{84deb606-77ed-49cd-9aed-d2b13c1f5a1e}</Project>
+      <Name>SiliconStudio.Paradox.Input</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Paradox\SiliconStudio.Paradox.csproj">
+      <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
+      <Name>SiliconStudio.Paradox</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Data\UIData.pdxdata">
+      <Generator>ParadoxDataCodeGenerator</Generator>
+      <LastGenOutput>UIData.cs</LastGenOutput>
+    </None>
+    <None Include="en.lproj\Localizable.strings" />
+    <None Include="ja.lproj\Localizable.strings" />
+    <None Include="DefaultDesigns.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>DefaultDesigns.cs</LastGenOutput>
+    </None>
+    <None Include="Resources\EditTextActive.dds" />
+    <None Include="Resources\ButtonNotPressed.dds" />
+    <None Include="Resources\ButtonOverred.dds" />
+    <None Include="Resources\ButtonPressed.dds" />
+    <None Include="Resources\EditTextInactive.dds" />
+    <None Include="Resources\EditTextOverred.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

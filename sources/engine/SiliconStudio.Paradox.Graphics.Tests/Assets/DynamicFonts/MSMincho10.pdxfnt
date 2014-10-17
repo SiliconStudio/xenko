@@ -1,0 +1,16 @@
+!SpriteFont
+Id: 2fba8d24-2510-463f-b5d0-af0ad5b1da80
+FontName: MS Mincho
+Style: Regular
+IsDynamic: true
+Size: 10
+CharacterRegions:
+    -   Start: ' '
+        End: "\x7F"
+DefaultCharacter: ' '
+Spacing: 0
+LineSpacing: 0
+UseKerning: false
+AntiAlias: Aliased
+Format: Rgba32
+NoPremultiply: false

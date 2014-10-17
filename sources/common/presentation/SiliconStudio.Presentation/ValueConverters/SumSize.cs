@@ -1,0 +1,55 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using System;
+using System.Globalization;
+using System.Windows;
+using System.Windows.Data;
+
+using SiliconStudio.Presentation.MarkupExtensions;
+
+namespace SiliconStudio.Presentation.ValueConverters
+{
+    /// <summary>
+    /// This converter will sum a given <see cref="Size"/> with a <see cref="Size"/> passed as parameter. You can use the <see cref="SizeExtension"/>
+    /// markup extension to easily pass one, with the following syntax: {sskk:Size (arguments)}. 
+    /// </summary>
+    [ValueConversion(typeof(Size), typeof(Size))]
+    public class SumSize : ValueConverterBase<SumSize>
+    {
+        /// <inheritdoc/>
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (!(value is Size))
+            {
+                throw new ArgumentException("The value of the ConvertBack method of this converter must be a an instance of the Size structure.");
+            }
+            if (!(parameter is Size))
+            {
+                throw new ArgumentException("The parameter of the ConvertBack method of this converter must be a an instance of the Size structure.");
+            }
+
+            var sizeValue = (Size)value;
+            var sizeParameter = (Size)parameter;
+            var result = new Size(sizeValue.Width + sizeParameter.Width, sizeValue.Height + sizeParameter.Height);
+            return result;
+        }
+
+        /// <inheritdoc/>
+        public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (!(value is Size))
+            {
+                throw new ArgumentException("The value of the ConvertBack method of this converter must be a an instance of the Size structure.");
+            }
+            if (!(parameter is Size))
+            {
+                throw new ArgumentException("The parameter of the ConvertBack method of this converter must be a an instance of the Size structure.");
+            }
+            var sizeValue = (Size)value;
+            var sizeParameter = (Size)parameter;
+
+            var result = new Size(sizeValue.Width - sizeParameter.Width, sizeValue.Height - sizeParameter.Height);
+            return result;
+        }
+    }
+}

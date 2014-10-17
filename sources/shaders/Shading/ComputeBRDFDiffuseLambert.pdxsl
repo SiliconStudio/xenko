@@ -1,0 +1,11 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Computes a diffuse color based on Lambert model.
+/// </summary>
+class ComputeBRDFDiffuseLambert : ComputeBRDFColor
+{
+    override float3 Compute(float3 lightColor, float3 lightDir, float3 normal, float3 eye) {
+        return lightColor * saturate(dot(normal, lightDir));
+    }
+};

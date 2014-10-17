@@ -1,0 +1,14 @@
+!Package
+Id: 889FEA71-A58F-4415-98C6-92DE24737BE4
+Meta:
+    Name: Paradox.Graphics
+    Version: 1.0.0
+Profiles:
+    - Name: Shared
+      AssetFolders:
+        - Path: ../Shaders
+        - Path: .
+    -   Name: Windows
+        Platform: Windows
+        Properties:
+            Paradox.GraphicsProfile: !GraphicsProfile Level_9_1

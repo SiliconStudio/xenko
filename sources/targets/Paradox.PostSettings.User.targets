@@ -1,0 +1,15 @@
+<!-- Build file post-included by all Paradox projects -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!--Temporary define the Build Engine output path-->
+  <PropertyGroup>
+    <BuildEngineOutputPostfix Condition="'$(BuildEngineOutputPostfix)' == ''">data</BuildEngineOutputPostfix>
+  </PropertyGroup>
+
+  <!--Import Local Pre Settings for the solution being loaded -->
+  <Import Project="$(MSBuildThisFileDirectory)Paradox.PostSettings.targets"/>
+
+  <!--Import Reference imports for user builds -->
+  <Import Project="$(MSBuildThisFileDirectory)Paradox.PostSettings.References.targets"/>
+
+</Project>

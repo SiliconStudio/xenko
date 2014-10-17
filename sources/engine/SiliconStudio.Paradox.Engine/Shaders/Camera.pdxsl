@@ -1,0 +1,20 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+class Camera
+{
+    cbuffer PerFrame {
+        // Camera Z NearClipPlane value.
+        stage float NearClipPlane = 1.0f;
+        // Camera Z FarClipPlane value.
+        stage float FarClipPlane = 100.0f;
+        // Z Retro projection factor used retro project a non-linear 1/z depth in the range [0.0 - 1.0] to a linear-depth in view space.
+        // Remarks: ZInViewSpace = ZProjection.y / (depth - ZProjection.x)
+        stage float2 ZProjection;
+        // Camera aspect ratio.
+        stage float Aspect;
+        // Camera View size
+        stage float2 ViewSize;
+        // Camera field of view.
+        stage float FieldOfView;
+    };
+};

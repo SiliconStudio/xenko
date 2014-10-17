@@ -1,0 +1,15 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Defines the position, eye and normal vector used for shading.
+/// </summary>
+class ShadingEyeNormalBase
+{
+    stream float3 ShadingEye;
+    stream float3 ShadingNormal;
+    stream float3 ShadingEyePosition;
+
+    abstract float3 GetLightDirection(int i);
+
+    abstract float3 GetLightPosition(int i);
+};

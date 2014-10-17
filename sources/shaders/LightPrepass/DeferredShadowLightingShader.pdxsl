@@ -1,0 +1,41 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Prepares for deferred shadow mapping.
+/// </summary>
+class DeferredShadowLightingShader : ShaderBase, Transformation, PositionStream2, SpecularPowerBase, PositionVSBase, NormalVSBase
+{
+    DeferredLightingBase shadows[];
+
+    stage stream /*nointerpolation*/ uint lightIndexID : SV_VertexID;
+
+    stage int TileIndex = 0;
+    stage int TileCountX = 16;
+    stage int TileCountY = 10;
+
+    override stage void VSMain()
+    {
+        base.VSMain();
+
+        uint tileIndex = TileIndex;
+        float2 startXY = float2(tileIndex % TileCountX, tileIndex / TileCountX) / float2(TileCountX, TileCountY) * 2.0 - 1.0;
+        float2 vertexPosition = startXY + 1.0f / float2(TileCountX, TileCountY) * 2.0f * ((streams.Position.xy + 1.0f) * 0.5f);
+
+        streams.ShadingPosition = float4(vertexPosition, 0.0f, 1.0f);
+    }
+
+    // TODO: in Shading?
+    override stage void PSMain()
+    {
+        base.PSMain();
+        float3 positionVS = this.PositionVS();
+        float3 eyeVS = -normalize(positionVS);
+        float3 normalVS = this.NormalVS();
+        float specularPower = this.SpecularPowerValue();
+
+        streams.ColorTarget = 0.0f;
+
+        foreach (var shadow in shadows)
+            streams.ColorTarget += shadow.ComputeLighting(positionVS, normalVS, eyeVS);
+    }
+};

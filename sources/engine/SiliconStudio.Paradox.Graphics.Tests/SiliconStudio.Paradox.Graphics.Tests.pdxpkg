@@ -1,0 +1,70 @@
+!Package
+Id: 04ed1618-1a06-4a69-ac34-1006a978af11
+Tags: []
+Meta:
+    Name: SiliconStudio.Paradox.Graphics.Tests
+    Version: 1.0.0.0
+    Authors: []
+    Owners: []
+    Dependencies:
+        -   Name: Paradox
+            Version: 0.1
+LocalDependencies: []
+Profiles:
+    -   Name: Shared
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: Assets
+                RawImports: 
+                -   SourceDirectory: ../../../data/tests
+                    Patterns:
+                        - JpegImage.jpg
+                        - PngImage.png
+        OutputGroupDirectories: {}
+        Properties: {}
+        ProjectReferences:
+            -   Id: 9de0aa56-0de7-4adc-baac-cd38b7139ebc
+                Location: SiliconStudio.Paradox.Graphics.Tests.Windows.csproj
+                Type: Library
+    -   Name: Windows
+        Platform: Windows
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: Assets/Windows
+                RawImports: []
+        OutputGroupDirectories: {}
+        Properties:
+            Paradox.GraphicsProfile: !GraphicsProfile Level_9_1
+        ProjectReferences:
+            -   Id: 9de0aa56-0de7-4adc-baac-cd38b7139ebc
+                Location: SiliconStudio.Paradox.Graphics.Tests.Windows.csproj
+                Type: Executable
+    -   Name: Android
+        Platform: Android
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: Assets/Android
+                RawImports: []
+        OutputGroupDirectories: {}
+        Properties:
+            Paradox.GraphicsProfile: !GraphicsProfile Level_9_1
+        ProjectReferences:
+            -   Id: 9de0aa56-0de7-4adc-baac-cd38b7139ebc
+                Location: SiliconStudio.Paradox.Graphics.Tests.Android.csproj
+                Type: Executable
+    -   Name: iOS
+        Platform: iOS
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: Assets/iPhone
+                RawImports: []
+        OutputGroupDirectories: {}
+        Properties:
+            Paradox.GraphicsProfile: !GraphicsProfile Level_9_1
+        ProjectReferences:
+            -   Id: 9de0aa56-0de7-4adc-baac-cd38b7139ebc
+                Location: SiliconStudio.Paradox.Graphics.Tests.iOS.csproj
+                Type: Executable
+ExplicitFolders: []
+Bundles: []
+TemplateFolders: []

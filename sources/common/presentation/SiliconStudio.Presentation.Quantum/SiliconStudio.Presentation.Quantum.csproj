@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\targets\SiliconStudio.PreSettings.targets" />
+  <PropertyGroup>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{CB6C4D8B-906E-4120-8146-09261B8D2885}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SiliconStudio.Presentation.Quantum</RootNamespace>
+    <AssemblyName>SiliconStudio.Presentation.Quantum</AssemblyName>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
+    <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
+  </PropertyGroup>
+  <ItemGroup Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="AnonymousCommandWrapper.cs" />
+    <Compile Include="CombinedNodeCommandWrapper.cs" />
+    <Compile Include="CombinedObservableNode.cs" />
+    <Compile Include="CombinedValueChangedActionItem.cs" />
+    <Compile Include="Controls\AsyncContentControl.cs" />
+    <Compile Include="ComponentModel\DefaultObservableNodePropertyProvider.cs" />
+    <Compile Include="IAttributeProvider.cs" />
+    <Compile Include="INodeCommandWrapper.cs" />
+    <Compile Include="IObservableNode.cs" />
+    <Compile Include="ComponentModel\IObservableNodePropertyProvider.cs" />
+    <Compile Include="LCS.cs" />
+    <Compile Include="NodeCommandWrapperBase.cs" />
+    <Compile Include="NodeChangedArgs.cs" />
+    <Compile Include="ObservableModelNode.cs" />
+    <Compile Include="ObservableNode.cs" />
+    <Compile Include="ObservableViewModelConsistencyException.cs" />
+    <Compile Include="ObservableViewModelIdentifier.cs" />
+    <Compile Include="ObservableViewModelService.cs" />
+    <Compile Include="SingleObservableNode.cs" />
+    <Compile Include="DebugExtensions.cs" />
+    <Compile Include="ObservableNodeDynamicMetaObject.cs" />
+    <Compile Include="ComponentModel\ObservableNodePropertyDescriptor.cs" />
+    <Compile Include="ObservableNodeTypeDescriptor.cs" />
+    <Compile Include="ObservableViewModel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ModelNodeCommandWrapper.cs" />
+    <Compile Include="ValueChangedActionItem.cs" />
+    <Compile Include="View\ObservableNodeTemplateProvider.cs" />
+    <Compile Include="View\TypeMatchTemplateProvider.cs" />
+    <Compile Include="VirtualObservableNode.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">
+      <Project>{66581dad-70ad-4475-ae47-c6c0df1ec5e2}</Project>
+      <Name>SiliconStudio.Core.Design</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
+      <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.ActionStack\SiliconStudio.ActionStack.csproj">
+      <Project>{E9C3ADC8-3F13-4673-AAA8-A0E97419DB5B}</Project>
+      <Name>SiliconStudio.ActionStack</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Presentation\SiliconStudio.Presentation.csproj">
+      <Project>{47afcc2e-e9f0-47d6-9d75-9e646546a92b}</Project>
+      <Name>SiliconStudio.Presentation</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Quantum\SiliconStudio.Quantum.csproj">
+      <Project>{1d4210bd-fa51-4709-951b-50647617f97e}</Project>
+      <Name>SiliconStudio.Quantum</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Themes\generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

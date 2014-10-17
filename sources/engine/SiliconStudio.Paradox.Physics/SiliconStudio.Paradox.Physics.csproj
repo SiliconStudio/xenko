@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
+  </PropertyGroup>
+  <Import Project="..\..\targets\Paradox.PreSettings.targets" />
+  <PropertyGroup>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{DD592516-B341-40FE-9100-1B0FA784A060}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SiliconStudio.Paradox.Physics</RootNamespace>
+    <AssemblyName>SiliconStudio.Paradox.Physics</AssemblyName>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>--serialization --parameter-key</SiliconStudioAssemblyProcessorOptions>
+    <ParadoxBuildTags>*</ParadoxBuildTags>
+    <ParadoxBulletPlatform>Windows</ParadoxBulletPlatform>
+    <ParadoxBulletPlatform Condition="'$(SiliconStudioPlatform)' == 'iOS'">iOS</ParadoxBulletPlatform>
+    <ParadoxBulletSignedDir Condition="'$(SiliconStudioSign)' == 'true'">Signed\</ParadoxBulletSignedDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\..\deps\BulletPhysics\$(SiliconStudioPlatform)\**\libbulletc.*">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="BulletSharp">
+      <HintPath>..\..\..\deps\BulletPhysics\$(ParadoxBulletPlatform)\$(ParadoxBulletSignedDir)BulletSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="ParadoxMotionState.cs" />
+    <Compile Include="PhysicsDebugEffect.cs" />
+    <Compile Include="Shaders.Bytecode\PhysicsDebugEffect.bytecode.Direct3D11.Level_9_3.cs" />
+    <Compile Include="Shaders.Bytecode\PhysicsDebugEffect.bytecode.OpenGL.Level_9_3.cs" />
+    <Compile Include="Shaders.Bytecode\PhysicsDebugEffect.bytecode.OpenGLES.Level_9_3.cs" />
+    <Compile Include="Shaders\PhysicsDebugEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>PhysicsDebugEffect.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Shapes\Box2DColliderShape.cs" />
+    <Compile Include="Shapes\BoxColliderShape.cs" />
+    <Compile Include="Shapes\CapsuleColliderShape.cs" />
+    <Compile Include="Character.cs" />
+    <Compile Include="Collider.cs" />
+    <Compile Include="ColliderShape.cs" />
+    <Compile Include="Shapes\CompoundColliderShape.cs" />
+    <Compile Include="Constraints\ConeTwistConstraint.cs" />
+    <Compile Include="Constraint.cs" />
+    <Compile Include="Shapes\CylinderColliderShape.cs" />
+    <Compile Include="PhysicsEngine.cs" />
+    <Compile Include="Constraints\GearConstraint.cs" />
+    <Compile Include="Constraints\Generic6DoFConstraint.cs" />
+    <Compile Include="Constraints\Generic6DoFSpringConstraint.cs" />
+    <Compile Include="Constraints\HingeConstraint.cs" />
+    <Compile Include="Constraints\Point2PointConstraint.cs" />
+    <Compile Include="RigidBody.cs" />
+    <Compile Include="Constraints\RotationalLimitMotor.cs" />
+    <Compile Include="Constraints\SliderConstraint.cs" />
+    <Compile Include="Shapes\SphereColliderShape.cs" />
+    <Compile Include="Shapes\StaticPlaneColliderShape.cs" />
+    <Compile Include="Constraints\TranslationalLimitMotor.cs" />
+    <Compile Include="ColliderShapeTypes.cs" />
+    <Compile Include="CollisionFilterGroups.cs" />
+    <Compile Include="ConstraintTypes.cs" />
+    <Compile Include="Contact.cs" />
+    <Compile Include="HitResult.cs" />
+    <Compile Include="PhysicsEngineFlags.cs" />
+    <Compile Include="RigidBodyTypes.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\PhysicsDebugEffect.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>PhysicsDebugEffect.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
+      <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
+      <Name>SiliconStudio.Core.Mathematics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
+      <Project>{5210fb81-b807-49bb-af0d-31fb6a83a572}</Project>
+      <Name>SiliconStudio.Core.Serialization</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
+      <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Paradox.Graphics\SiliconStudio.Paradox.Graphics.csproj">
+      <Project>{fb06c76a-6bb7-40be-9afa-fec13b045fb5}</Project>
+      <Name>SiliconStudio.Paradox.Graphics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Paradox.Shaders\SiliconStudio.Paradox.Shaders.csproj">
+      <Project>{273bdd15-7392-4078-91f0-af23594a3d7b}</Project>
+      <Name>SiliconStudio.Paradox.Shaders</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Paradox\SiliconStudio.Paradox.csproj">
+      <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
+      <Name>SiliconStudio.Paradox</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

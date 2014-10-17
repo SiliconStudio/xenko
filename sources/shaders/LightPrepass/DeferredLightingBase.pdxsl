@@ -1,0 +1,12 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Default class for lighting prepass computation. Computes black color.
+/// </summary>
+class DeferredLightingBase
+{
+    float4 ComputeLighting(float3 positionVS, float3 normalVS, float3 eyeVS)
+    {
+        return 0;
+    }
+};

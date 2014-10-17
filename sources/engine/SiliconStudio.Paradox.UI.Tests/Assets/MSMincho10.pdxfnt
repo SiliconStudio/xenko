@@ -1,0 +1,22 @@
+!SpriteFont
+Id: 1d9fa77e-7abb-4ff3-b0d7-2a14ae1991c5
+FontName: MS Mincho
+Style: Regular
+IsDynamic: true
+Size: 10
+CharacterRegions:
+    -   Start: "一"
+        End: "什"
+    -   Start: "゠"
+        End: "ヿ"
+    -   Start: "぀"
+        End: "ゟ"
+    -   Start: ' '
+        End: "\x7F"
+DefaultCharacter: ' '
+Spacing: 0
+LineSpacing: 0
+UseKerning: false
+AntiAlias: Aliased
+Format: Rgba32
+NoPremultiply: false

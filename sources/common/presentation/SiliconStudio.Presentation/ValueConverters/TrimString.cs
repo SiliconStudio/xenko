@@ -1,0 +1,40 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using System;
+using System.Globalization;
+
+namespace SiliconStudio.Presentation.ValueConverters
+{
+    /// <summary>
+    /// This converter will trim the string representation of an object to the given number of characters, adding "..." at the end of the resulting string.
+    /// The number of character must be passed via the converter parameter.
+    /// </summary>
+    /// <remarks>If the parameter is a negative number, its absolute value will be used and no trailing "..." will be added.</remarks>
+    public class TrimString : OneWayValueConverter<TrimString>
+    {
+        /// <inheritdoc/>
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            // We get the length first to always throw an exception if the parameter in incorrect
+            int length;
+            try
+            {
+                length = System.Convert.ToInt32(parameter);
+                if (length == 0) throw new Exception();
+            }
+            catch (Exception)
+            {
+                throw new FormatException("The parameter must be convertible to a non-null integer.");
+            }
+
+            if (value == null)
+                return null;
+
+            bool addEllipsis = length >= 0;
+            length = Math.Abs(length);
+            var str = value.ToString();
+
+            return str.Length > length ? str.Substring(0, length) + (addEllipsis ? "..." : "") : str;
+        }
+    }
+}

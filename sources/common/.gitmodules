@@ -1,0 +1,3 @@
+[submodule "deps"]
+	path = deps
+	url = ssh://git@tecsigma.siliconstudio.co.jp:7999/ssnet/deps.git

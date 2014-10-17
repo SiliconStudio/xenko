@@ -1,0 +1,71 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using System.IO;
+
+using NUnit.Framework;
+
+using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Storage;
+using SiliconStudio.Paradox.Games;
+using SiliconStudio.Paradox.Shaders.Parser.Mixins;
+
+using LoggerResult = SiliconStudio.Shaders.Utility.LoggerResult;
+
+namespace SiliconStudio.Paradox.Shaders.Tests
+{
+    [TestFixture]
+    public class TestShaderLoading
+    {
+        private ShaderSourceManager sourceManager;
+        private ShaderLoader shaderLoader;
+
+        [SetUp]
+        public void Init()
+        {
+            using (var profile = Profiler.Begin(GameProfilingKeys.ObjectDatabaseInitialize))
+            {
+                // Create and mount database file system
+                var objDatabase = new ObjectDatabase("/data/db", "index", "/local/db");
+                var databaseFileProvider = new DatabaseFileProvider(objDatabase);
+                AssetManager.GetFileProvider = () => databaseFileProvider;
+            }
+
+            sourceManager = new ShaderSourceManager();
+            sourceManager.LookupDirectoryList.Add(@"shaders");
+            shaderLoader = new ShaderLoader(sourceManager);
+        }
+
+        [Test]
+        public void TestSimple()
+        {
+            var simple = sourceManager.LoadShaderSource("Simple");
+
+            // Make sure that SourceManager will fail if type is not found
+            Assert.Catch<FileNotFoundException>(() => sourceManager.LoadShaderSource("BiduleNotFound"));
+
+            // Reload it and check that it is not loaded twice
+            var simple2 = sourceManager.LoadShaderSource("Simple");
+
+            //TODO: cannot compare structure references
+            //Assert.That(ReferenceEquals(simple, simple2), Is.True);
+            Assert.AreEqual(simple, simple2);
+        }
+
+        [Test]
+        public void TestLoadAst()
+        {
+            var log = new LoggerResult();
+
+            var simple = shaderLoader.LoadClassSource(new ShaderClassSource("Simple"), new SiliconStudio.Shaders.Parser.ShaderMacro[0], log);
+
+            Assert.That(simple.Members.Count, Is.EqualTo(1));
+
+            var simple2 = shaderLoader.LoadClassSource(new ShaderClassSource("Simple"), new SiliconStudio.Shaders.Parser.ShaderMacro[0], log);
+
+            // Make sure that a class is not duplicated in memory
+            Assert.That(ReferenceEquals(simple, simple2), Is.True);
+        }
+    }
+}

@@ -1,0 +1,60 @@
+!Package
+Id: 637e7e88-bc09-4ddd-95eb-00114fd32e5e
+Tags: []
+Meta:
+    Name: SiliconStudio.Paradox.Audio.Tests
+    Version: 1.0.0.0
+    Authors: []
+    Owners: []
+    Dependencies:
+        -   Name: Paradox
+            Version: 0.1
+LocalDependencies: []
+Profiles:
+    -   Name: Shared
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: AudioAssets
+                RawImports: []
+        OutputGroupDirectories: {}
+        Properties: {}
+        ProjectReferences:
+            -   Id: 7af4b563-aad3-42ff-b91e-84b9d34d904a
+                Location: SiliconStudio.Paradox.Audio.Tests.Windows.csproj
+                Type: Library
+    -   Name: Windows
+        Platform: Windows
+        InheritProfiles: []
+        AssetFolders: []
+        OutputGroupDirectories: {}
+        Properties:
+            Paradox.GraphicsProfile: !GraphicsProfile Level_9_1
+        ProjectReferences:
+            -   Id: 7af4b563-aad3-42ff-b91e-84b9d34d904a
+                Location: SiliconStudio.Paradox.Audio.Tests.Windows.csproj
+                Type: Executable
+    -   Name: Android
+        Platform: Android
+        InheritProfiles: []
+        AssetFolders: []
+        OutputGroupDirectories: {}
+        Properties:
+            Paradox.GraphicsProfile: !GraphicsProfile Level_9_1
+        ProjectReferences:
+            -   Id: 7af4b563-aad3-42ff-b91e-84b9d34d904a
+                Location: SiliconStudio.Paradox.Audio.Tests.Android.csproj
+                Type: Executable
+    -   Name: iOS
+        Platform: iOS
+        InheritProfiles: []
+        AssetFolders: []
+        OutputGroupDirectories: {}
+        Properties:
+            Paradox.GraphicsProfile: !GraphicsProfile Level_9_1
+        ProjectReferences:
+            -   Id: 7af4b563-aad3-42ff-b91e-84b9d34d904a
+                Location: SiliconStudio.Paradox.Audio.Tests.iOS.csproj
+                Type: Executable
+ExplicitFolders: []
+Bundles: []
+TemplateFolders: []

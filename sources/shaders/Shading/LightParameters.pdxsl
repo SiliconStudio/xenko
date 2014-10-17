@@ -1,0 +1,23 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Defines light parameters.
+/// </summary>
+/// <remarks>
+/// LIGHTING_MAX_LIGHT_COUNT: Macro - maximum number of point lights.
+/// </remarks>
+#ifndef LIGHTING_MAX_LIGHT_COUNT
+# define LIGHTING_MAX_LIGHT_COUNT 1
+#endif
+class LightParameters
+{
+    cbuffer PerPass
+    {
+        [Color] float3 LightColorsWithGamma[LIGHTING_MAX_LIGHT_COUNT] = null;
+        float LightIntensities[LIGHTING_MAX_LIGHT_COUNT] = null;
+        float LightDecayStarts[LIGHTING_MAX_LIGHT_COUNT] = null;
+        float LightSpotBeamAngle[LIGHTING_MAX_LIGHT_COUNT] = null;
+        float LightSpotFieldAngle[LIGHTING_MAX_LIGHT_COUNT] = null;
+        int LightCount;
+    }
+};

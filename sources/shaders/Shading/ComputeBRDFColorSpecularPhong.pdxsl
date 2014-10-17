@@ -1,0 +1,25 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Computes a specular color based on Phong model.
+/// </summary>
+class ComputeBRDFColorSpecularPhong : ComputeBRDFColorSpecularBase, SpecularPowerBase
+{
+    override float3 Compute(float3 lightColor, float3 lightDir, float3 normal, float3 eye) 
+    {
+        // Precalculates NH
+        float3 refl = normalize(reflect(-lightDir, normal));
+        float NH = saturate(dot(eye, refl));
+
+        float specularPower = SpecularPowerValue();
+        float specularIntensity = SpecularIntensityMap.Compute().x;
+
+        // Lighting equation - Phong
+        // nf = NormalizedFactor = (n+2)(n+4) / 8.PI.(2^(-n/2)+n) ~= n + 8 / 8.PI
+        // Remove PI as it is cancelled by integral over the hemisphere
+        float normalizedFactor = (specularPower + 8.0f) / 8.0f;
+
+        // SpecularLight = BL * nf * [E.R]^n * [N.L]
+        return lightColor * normalizedFactor * specularIntensity * pow(NH, specularPower) * saturate(dot(normal, lightDir));
+    }
+};

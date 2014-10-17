@@ -1,0 +1,151 @@
+<!-- Build file post-included by all Silicon Studio projects -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Add Default targets used by Msbuild for undefined Platforms / or when skipping compilation under a platform -->
+  <Target Name="Build"/>
+  <Target Name="Clean"/>
+  <Target Name="ReBuild"/>
+  <Target Name="Publish"/>
+  <Target Name="GetTargetPath"/>
+  <Target Name="GetNativeManifest"/>
+  <Target Name="GetPackagingOutputs"/>
+  
+  <!-- Include platform dependent assembly when specified -->
+  <Choose>
+    <When Condition="'$(SiliconStudioPlatformDependent)' == 'true'">
+      <Choose>
+        <When Condition=" '$(SiliconStudioPlatform)' == 'Android'">
+          <ItemGroup>
+            <Reference Include="Mono.Android" />
+          </ItemGroup>
+        </When>
+        <When Condition=" '$(SiliconStudioPlatform)' == 'iOS'">
+          <ItemGroup>
+            <Reference Include="monotouch" />
+          </ItemGroup>
+        </When>
+      </Choose>
+    </When>
+  </Choose>
+
+  <!-- Setup VisualStudioVersion -->
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
+    <VisualStudioVersion>11.0</VisualStudioVersion>
+  </PropertyGroup>
+
+  <!-- Setup compiler targets per platform / language -->
+  <PropertyGroup>
+    <!-- On Android, everything is library (even Exe) -->
+    <OutputType Condition=" '$(SiliconStudioPlatform)' == 'Android' ">Library</OutputType>
+
+    <SiliconStudioCompilerTargets>$(MSBuildThisFileDirectory)SiliconStudio.$(SiliconStudioPlatform).$(SiliconStudioProjectType).targets</SiliconStudioCompilerTargets>
+    <SiliconStudioCompilerTargetsEnable Condition="!Exists('$(SiliconStudioCompilerTargets)')">false</SiliconStudioCompilerTargetsEnable>
+    <SiliconStudioCompilerTargetsEnable Condition=" '$(SiliconStudioPlatform)' != 'Windows' and $(SiliconStudioWindowsOnly) == 'true'">false</SiliconStudioCompilerTargetsEnable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(GenerateDoc)' == 'true' ">
+    <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
+  </PropertyGroup>
+
+  <!-- Import the specific compiler targets for the selected platform/language -->
+  <Import Condition="'$(SiliconStudioCompilerTargetsEnable)' != 'false'" Project="$(SiliconStudioCompilerTargets)" />
+  
+  <Target Name="RunSiliconStudioAssemblyProcessor" Condition=" '$(SiliconStudioAssemblyProcessor)' == 'true' and '$(SiliconStudioAssemblyProcessorGlobal)' == 'true' and '$(SiliconStudioAssemblyProcessorOptions)' != '' ">
+    <!-- SiliconStudio.AssemblyProcessor should be compiled. Get its target path as well. -->
+    <MSBuild Condition="'$(ParadoxUserBuild)' != 'true'" Projects="$(MSBuildThisFileDirectory)..\core\SiliconStudio.AssemblyProcessor\SiliconStudio.AssemblyProcessor.csproj" Targets="Build" Properties="Configuration=$(Configuration);BuildingInsideVisualStudio=false">
+      <Output TaskParameter="TargetOutputs" ItemName="_SiliconStudioAssemblyProcessorPath" />
+    </MSBuild>
+
+    <!-- Get target path of SiliconStudio.Core -->
+    <MSBuild Condition="'$(ParadoxUserBuild)' != 'true' and '$(ProjectName)' != 'SiliconStudio.Core'" Projects="$(MSBuildThisFileDirectory)..\core\SiliconStudio.Core\SiliconStudio.Core.csproj" Targets="GetTargetPath" Properties="Configuration=$(Configuration)">
+      <Output TaskParameter="TargetOutputs" ItemName="_SiliconStudioCoreAssemblyPath" />
+    </MSBuild>
+
+    <!-- SiliconStudio.Core must be compiled if it doesn't exist -->
+    <MSBuild Condition="'$(ParadoxUserBuild)' != 'true' and '$(ProjectName)' != 'SiliconStudio.Core' and !Exists('@(_SiliconStudioAssemblyProcessorPath)')" Projects="$(MSBuildThisFileDirectory)..\core\SiliconStudio.Core\SiliconStudio.Core.csproj" Targets="Build" Properties="Configuration=$(Configuration)">
+      <Output TaskParameter="TargetOutputs" ItemName="_SiliconStudioCoreAssemblyPath" />
+    </MSBuild>
+
+    <PropertyGroup Condition="'$(ParadoxUserBuild)' != 'true'">
+      <SiliconStudioAssemblyProcessorPath>@(_SiliconStudioAssemblyProcessorPath)</SiliconStudioAssemblyProcessorPath>
+      <SiliconStudioCoreAssemblyPath>@(_SiliconStudioCoreAssemblyPath)</SiliconStudioCoreAssemblyPath>
+      <!-- Add SiliconStudio.Core path to assembly search directory -->
+      <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioCoreAssemblyPath)' != ''">$(SiliconStudioAssemblyProcessorOptions) --assembly=$(SiliconStudioCoreAssemblyPath)</SiliconStudioAssemblyProcessorOptions>
+    </PropertyGroup>
+
+    <!--Add platform and target framework to assembly processor options-->
+    <PropertyGroup>
+      <SiliconStudioAssemblyProcessorOptions>--platform=$(SiliconStudioPlatform) --targetFramework=$(TargetFrameworkVersion) $(SiliconStudioAssemblyProcessorOptions)</SiliconStudioAssemblyProcessorOptions>
+    </PropertyGroup>
+
+    <!-- Run assembly processor -->
+    <Message Importance="High" Text="AssemblyProcessor: $(TargetPath) with $(SiliconStudioAssemblyProcessorPath) $(SiliconStudioAssemblyProcessorOptions)"/>
+    <Exec Command='"$(SiliconStudioAssemblyProcessorPath)" $(SiliconStudioAssemblyProcessorOptions) "$(TargetPath)"' ContinueOnError='false'/>
+
+    <!-- Copy back *.dll from bin/Debug|Release to obj/Debug/Release directory -->
+    <Copy SourceFiles="@(MainAssembly)" DestinationFolder="$(IntermediateOutputPath)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="$(OverwriteReadOnlyFiles)"/>
+    <!-- Copy back *.pdb from bin/Debug|Release to obj/Debug/Release directory -->
+    <Copy SourceFiles="@(_DebugSymbolsOutputPath)" DestinationFiles="@(_DebugSymbolsIntermediatePath)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="$(OverwriteReadOnlyFiles)" Condition="'$(_DebugSymbolsProduced)'=='true' and '$(SkipCopyingSymbolsToOutputDirectory)' != 'true'"/>
+  </Target>
+
+  <Target Name="SetPrivateOnProjectReferences" BeforeTargets="BeforeCompile">
+    <!-- Automatically add Private on project references if they are already built in same folder as output folder -->
+    <ItemGroup Condition="'$(OutputPath)' == '$(SiliconStudioOutputCommonDir)'">
+      <ProjectReferenceNew Include="@(ProjectReference)">
+        <Private>False</Private>
+      </ProjectReferenceNew>
+      <ProjectReference Remove="@(ProjectReference)"/>
+      <ProjectReference Include="@(ProjectReferenceNew)"/>
+    </ItemGroup>
+  </Target>
+
+  <!-- Register ourself in PrepareForRunDependsOn -->
+  <PropertyGroup>
+    <PrepareForRunDependsOn>
+      CopyFilesToOutputDirectory;
+      RunSiliconStudioAssemblyProcessor;
+      $(PrepareForRunDependsOn);
+    </PrepareForRunDependsOn>
+  </PropertyGroup>
+
+  <!-- For MonoDroid, we need to convert debugging files after assembly processor, but since Xamarin build includes MS build and inserts ConvertDebuggingFiles right after,
+      we need to totally rewrite this rule (note that it will ignore everything else... not sure how to avoid that except by doing some string splitting...) -->
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Android' ">
+    <PrepareForRunDependsOn>
+      CopyFilesToOutputDirectory;
+      RunSiliconStudioAssemblyProcessor;
+      ConvertDebuggingFiles;
+      _CollectMonoAndroidOutputs;
+    </PrepareForRunDependsOn>
+  </PropertyGroup>
+  
+  <!-- For MonoTouch executable projects, we add a target that set the variable MtouchExtraArgs -->
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS' and '$(OutputType)' == 'Exe'">
+    <ResolveReferencesDependsOn>
+      SetMtouchExtraArgs;
+      $(ResolveReferencesDependsOn)
+    </ResolveReferencesDependsOn>
+  </PropertyGroup>
+  
+  <!-- For MonoTouch executable projects, we force native compilation with 'clang', and force linking with native siliconstudio.core library
+       Note: this target can be redefined to add link other libraries -->
+  <Target Name="SetMtouchExtraArgs" Condition=" '$(SiliconStudioPlatform)' == 'iOS' and '$(OutputType)' == 'Exe'">
+    <PropertyGroup>
+      <MtouchExtraArgs>$(MtouchExtraArgs) --compiler=clang -cxx -gcc_flags "-L%24{ProjectDir}/source -lstdc++ -lcore -force_load %24{ProjectDir}/source/libcore.a"</MtouchExtraArgs>
+    </PropertyGroup>
+  </Target>
+  
+  <!-- For MonoTouch executable projects, we add a target that copies the siliconstudio.core native library to link in the project root directory -->
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS' and '$(OutputType)' == 'Exe'">
+    <BuildDependsOn>
+        CopySiliconStudioNativeLibraries;
+        $(BuildDependsOn);
+    </BuildDependsOn>  
+  </PropertyGroup>
+  
+  <!-- Copy the libcore.a and libfreetype.a libraries to the project root directory for future native link.
+       Note: this target is redefined in References.targets for user projects -->
+  <Target Name="CopySiliconStudioNativeLibraries" Condition=" '$(SiliconStudioPlatform)' == 'iOS' and '$(OutputType)' == 'Exe'">
+    <Copy SourceFiles="$(SiliconStudioDependenciesDir)Core.Native\$(SiliconStudioPlatform)\libcore.a" DestinationFolder="$(ProjectDir)"/>
+  </Target>
+</Project>

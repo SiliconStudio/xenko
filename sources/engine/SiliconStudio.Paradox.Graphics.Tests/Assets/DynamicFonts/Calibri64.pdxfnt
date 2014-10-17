@@ -1,0 +1,16 @@
+!SpriteFont
+Id: AED70788-54CE-4A84-BED9-C7F29BD71177
+FontName: Calibri
+Style: Regular
+IsDynamic: true
+Size: 64
+CharacterRegions:
+    -   Start: ' '
+        End: "\x7F"
+DefaultCharacter: ' '
+Spacing: 0
+LineSpacing: 0
+UseKerning: false
+AntiAlias: Grayscale
+Format: Rgba32
+NoPremultiply: false

@@ -1,0 +1,79 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+class Texturing
+{
+    // Default texture slots - might be automatically used by the material
+    stage Texture2D Texture0;
+    stage Texture2D Texture1;
+    stage Texture2D Texture2;
+    stage Texture2D Texture3;
+    stage Texture2D Texture4;
+    stage Texture2D Texture5;
+    stage Texture2D Texture6;
+    stage Texture2D Texture7;
+    stage Texture2D Texture8;
+    stage Texture2D Texture9;
+
+    // Default sampler
+    stage SamplerState Sampler;
+
+    stage SamplerState PointSampler
+    {
+        Filter = MIN_MAG_MIP_POINT;
+    };
+
+    stage SamplerState LinearSampler
+    {
+        Filter = MIN_MAG_MIP_LINEAR;
+    };
+
+    stage SamplerState AnisotropicSampler
+    {
+        Filter = ANISOTROPIC;
+    };
+
+    stage SamplerState AnisotropicRepeatSampler
+    {
+        Filter = ANISOTROPIC;
+        AddressU = Wrap;
+        AddressV = Wrap;
+        MaxAnisotropy = 16;
+    };
+
+    stage SamplerState PointRepeatSampler
+    {
+        Filter = MIN_MAG_MIP_POINT;
+        AddressU = Wrap;
+        AddressV = Wrap;
+    };
+
+    stage SamplerState LinearRepeatSampler
+    {
+        Filter = MIN_MAG_MIP_LINEAR;
+        AddressU = Wrap;
+        AddressV = Wrap;
+    };
+
+    stage SamplerState RepeatSampler
+    {
+        AddressU = Wrap;
+        AddressV = Wrap;
+    };
+
+    // Default custom samplers - might be automatically used by the materials
+    stage SamplerState Sampler0;
+    stage SamplerState Sampler1;
+    stage SamplerState Sampler2;
+    stage SamplerState Sampler3;
+    stage SamplerState Sampler4;
+    stage SamplerState Sampler5;
+    stage SamplerState Sampler6;
+    stage SamplerState Sampler7;
+    stage SamplerState Sampler8;
+    stage SamplerState Sampler9;
+
+    // Texcoord attribute inputs
+    stage stream float2 TexCoord : TEXCOORD0;
+    stage stream float2 TexCoord1 : TEXCOORD1;
+    stage stream float2 TexCoord2 : TEXCOORD2;
+};

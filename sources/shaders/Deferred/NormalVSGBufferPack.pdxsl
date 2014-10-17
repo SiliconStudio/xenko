@@ -1,0 +1,12 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Retrieves view space normal from a Gbuffer with packed normals.
+/// </summary>
+class NormalVSGBufferPack : NormalVSBase, GBufferBase
+{
+    override stage void GenerateNormalVS_PS()
+    {
+        streams.vNormalVS = normalize(GBufferTexture.Load(int3(streams.ShadingPosition.xy, 0), 0).xyz * 2 - 1);
+    }
+};

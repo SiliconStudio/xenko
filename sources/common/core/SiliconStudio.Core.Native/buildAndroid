@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Set local variables
+MAKEFILE=Makefile
+ANDROID_TARGET_PLATFORM=android-9
+NDK_HOST_NAME=arm-linux-androideabi
+NDK_STANDALONE_DIR=~/ndk-standalone-9
+INSTALL_DIR_BASE=bin/Android
+OUTPUT_LIB_NAME=libcore.so
+
+# Create the standalone compiler
+rm -r $NDK_STANDALONE_DIR
+~/android-ndk-r9d/build/tools/make-standalone-toolchain.sh --platform=$ANDROID_TARGET_PLATFORM --install-dir=$NDK_STANDALONE_DIR --toolchain=arm-linux-androideabi-clang3.4
+
+# Add the compiler path to the path
+export PATH=$NDK_STANDALONE_DIR/bin:$PATH
+
+function BuildAndInstallAndroid
+{
+	ARCHI=$1
+
+	if [ "$ARCHI" = "armeabi-v7a" ]; then
+		ARCHI_CFLAGS="-march=armv7-a -mfloat-abi=softfp -mfpu=neon -D_ARM_ARCH_7" 
+		ARCHI_LDFLAGS="-march=armv7-a -Wl,--fix-cortex-a8"
+	fi
+
+	# Set compilation flags
+	unset CFLAGS CC LDFLAGS MAIN_NAME INSTALL_DIR
+	export CC=$NDK_HOST_NAME-clang
+	export LDFLAGS="$ARCHI_LDFLAGS -shared"
+	export CFLAGS="$ARCHI_CFLAGS -O3 -c -DEXPORT -DPLATFORM_ANDROID"
+	export MAIN_NAME=$OUTPUT_LIB_NAME
+	export INSTALL_DIR=$INSTALL_DIR_BASE/$ARCHI
+
+	# Build  and install the library 
+	make -f $MAKEFILE clean
+	make -f $MAKEFILE $MAIN_NAME
+	make -f $MAKEFILE install
+}
+
+BuildAndInstallAndroid armeabi 
+BuildAndInstallAndroid armeabi-v7a 

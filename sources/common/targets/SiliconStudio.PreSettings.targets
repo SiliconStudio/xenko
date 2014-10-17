@@ -1,0 +1,57 @@
+<!-- Build file pre-included by all Silicon Studio projects -->
+<Project InitialTargets="SiliconStudioForcePlatform" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--Import Local Pre Settings for the solution being loaded -->
+  <Import Project="$(SolutionDir)$(SolutionName).PreSettings.Local.targets" Condition="Exists('$(SolutionDir)$(SolutionName).PreSettings.Local.targets')" />
+  <Import Project="$(SolutionDir)SiliconStudio.PreSettings.Local.targets" Condition="Exists('$(SolutionDir)SiliconStudio.PreSettings.Local.targets')" />
+
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+
+    <!-- Defines the language of the project being compiled CSharp or Cpp - defined by default to CSharp, must be overriden to Cpp in a Cpp project -->
+    <SiliconStudioProjectType Condition="'$(SiliconStudioProjectType)' == ''">CSharp</SiliconStudioProjectType>
+
+    <!-- Flag used per-project settings to specify that it should only be compiled on Windows Desktop-->
+    <SiliconStudioWindowsOnly Condition="'$(SiliconStudioWindowsOnly)' == ''">false</SiliconStudioWindowsOnly>
+
+    <!-- Default values -->
+    <SiliconStudioPlatform Condition=" '$(SiliconStudioPlatform)' == '' ">Windows</SiliconStudioPlatform>
+
+    <SiliconStudioGlobalSettingsTargets Condition="'$(SiliconStudioGlobalSettingsTargets)' == ''">$(MSBuildThisFileDirectory)SiliconStudio.GlobalSettings.targets</SiliconStudioGlobalSettingsTargets>
+    <SiliconStudioPostSettingsTargets Condition="'$(SiliconStudioPostSettingsTargets)' == ''">$(MSBuildThisFileDirectory)SiliconStudio.PostSettings.targets</SiliconStudioPostSettingsTargets>
+  </PropertyGroup>
+
+  <!-- Ensure appropriate Solution Platform are available -->
+  <Choose>
+    <When  Condition=" '$(SiliconStudioPlatform)' == 'Android' ">
+      <PropertyGroup Condition=" '$(Platform)' == 'Android' "/>
+    </When>
+    <When  Condition=" '$(SiliconStudioPlatform)' == 'iOS' ">
+      <PropertyGroup Condition=" '$(Platform)' == 'iPhone' "/>
+      <PropertyGroup Condition=" '$(Platform)' == 'iPhoneSimulator' "/>
+    </When>
+    <When  Condition=" '$(SiliconStudioPlatform)' == 'WindowsPhone' ">
+      <PropertyGroup Condition=" '$(Platform)' == 'WindowsPhone' "/>
+    </When>
+    <When  Condition=" '$(SiliconStudioPlatform)' == 'WindowsStore' ">
+      <PropertyGroup Condition=" '$(Platform)' == 'WindowsStore' "/>
+    </When>
+  </Choose>
+
+  <Target Name="SiliconStudioForcePlatform">
+    <!--
+   Remap real platform
+    Windows 8.1 App Store => AnyCPU 
+    Windows Phone 8.1 => AnyCPU
+    -->
+    <CreateProperty Condition=" '$(Platform)' == 'WindowsStore' or '$(Platform)' == 'WindowsPhone'" Value="AnyCPU">
+      <Output TaskParameter="Value" PropertyName="Platform" />
+    </CreateProperty>
+  </Target>
+
+  <!--Import Global Settings-->
+  <Import Project="$(SiliconStudioGlobalSettingsTargets)"/>
+
+  <!--Import Local Pre Settings for the solution being loaded -->
+  <Import Project="$(SolutionDir)$(SolutionName).PostSettings.Local.targets" Condition="Exists('$(SolutionDir)$(SolutionName).PostSettings.Local.targets')" />
+  <Import Project="$(SolutionDir)SiliconStudio.PostSettings.Local.targets" Condition="Exists('$(SolutionDir)SiliconStudio.PostSettings.Local.targets')" />
+</Project>

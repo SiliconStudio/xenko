@@ -1,0 +1,92 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Core.Diagnostics
+{
+    /// <summary>
+    /// A set of extensions method to use with the <see cref="LogMessage"/> class.
+    /// </summary>
+    public static class LogMessageExtensions
+    {
+        /// <summary>
+        /// Gets whether the given log message is a <see cref="LogMessageType.Debug"/> message type
+        /// </summary>
+        /// <param name="logMessage">The log message.</param>
+        /// <returns><c>true</c> if the given log message is a <see cref="LogMessageType.Debug"/> message, <c>false</c> otherwise.</returns>
+        public static bool IsDebug(this ILogMessage logMessage)
+        {
+            return logMessage.Type == LogMessageType.Debug;
+        }
+
+        /// <summary>
+        /// Gets whether the given log message is a <see cref="LogMessageType.Verbose"/> message type
+        /// </summary>
+        /// <param name="logMessage">The log message.</param>
+        /// <returns><c>true</c> if the given log message is a <see cref="LogMessageType.Verbose"/> message, <c>false</c> otherwise.</returns>
+        public static bool IsVerbose(this ILogMessage logMessage)
+        {
+            return logMessage.Type == LogMessageType.Verbose;
+        }
+
+        /// <summary>
+        /// Gets whether the given log message is a <see cref="LogMessageType.Info"/> message type
+        /// </summary>
+        /// <param name="logMessage">The log message.</param>
+        /// <returns><c>true</c> if the given log message is a <see cref="LogMessageType.Info"/> message, <c>false</c> otherwise.</returns>
+        public static bool IsInfo(this ILogMessage logMessage)
+        {
+            return logMessage.Type == LogMessageType.Info;
+        }
+
+        /// <summary>
+        /// Gets whether the given log message is a <see cref="LogMessageType.Warning"/> message type
+        /// </summary>
+        /// <param name="logMessage">The log message.</param>
+        /// <returns><c>true</c> if the given log message is a <see cref="LogMessageType.Warning"/> message, <c>false</c> otherwise.</returns>
+        public static bool IsWarning(this ILogMessage logMessage)
+        {
+            return logMessage.Type == LogMessageType.Warning;
+        }
+
+        /// <summary>
+        /// Gets whether the given log message is a <see cref="LogMessageType.Error"/> message type
+        /// </summary>
+        /// <param name="logMessage">The log message.</param>
+        /// <returns><c>true</c> if the given log message is a <see cref="LogMessageType.Error"/> message, <c>false</c> otherwise.</returns>
+        public static bool IsError(this ILogMessage logMessage)
+        {
+            return logMessage.Type == LogMessageType.Error;
+        }
+
+        /// <summary>
+        /// Gets whether the given log message is a <see cref="LogMessageType.Fatal"/> message type
+        /// </summary>
+        /// <param name="logMessage">The log message.</param>
+        /// <returns><c>true</c> if the given log message is a <see cref="LogMessageType.Fatal"/> message, <c>false</c> otherwise.</returns>
+        public static bool IsFatal(this ILogMessage logMessage)
+        {
+            return logMessage.Type == LogMessageType.Fatal;
+        }
+
+        /// <summary>
+        /// Gets whether the given log message is at least as severe as the given severity level.
+        /// </summary>
+        /// <param name="logMessage">The log message.</param>
+        /// <param name="minSeverity">The minimal severity level.</param>
+        /// <returns><c>true</c> if the given log message is at least as severe as the given severity level, <c>false</c> otherwise.</returns>
+        public static bool IsAtLeast(this ILogMessage logMessage, LogMessageType minSeverity)
+        {
+            return logMessage.Type >= minSeverity;
+        }
+
+        /// <summary>
+        /// Gets whether the given log message is at most as severe as the given severity level.
+        /// </summary>
+        /// <param name="logMessage">The log message.</param>
+        /// <param name="maxSeverity">The maximal severity level.</param>
+        /// <returns><c>true</c> if the given log message is at most as severe as the given severity level, <c>false</c> otherwise.</returns>
+        public static bool IsAtMost(this ILogMessage logMessage, LogMessageType maxSeverity)
+        {
+            return logMessage.Type <= maxSeverity;
+        }
+    }
+}

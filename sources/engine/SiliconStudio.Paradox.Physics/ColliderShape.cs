@@ -1,0 +1,117 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using System;
+
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization.Converters;
+using SiliconStudio.Paradox.Graphics;
+
+namespace SiliconStudio.Paradox.Physics
+{
+    public class ColliderShape : IDisposable
+    {
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public virtual void Dispose()
+        {
+            if (InternalShape == null) return;
+            InternalShape.Dispose();
+            InternalShape = null;
+        }
+
+        /// <summary>
+        /// Gets or sets the type.
+        /// </summary>
+        /// <value>
+        /// The type.
+        /// </value>
+        public ColliderShapeTypes Type { get; protected set; }
+
+        /// <summary>
+        /// The local offset
+        /// </summary>
+        public Vector3 LocalOffset;
+
+        /// <summary>
+        /// The local rotation
+        /// </summary>
+        public Quaternion LocalRotation = Quaternion.Identity;
+
+        /// <summary>
+        /// Updates the local transformations, required if you change LocalOffset and/or LocalRotation.
+        /// </summary>
+        public void UpdateLocalTransformations()
+        {
+            var inverseRotation = LocalRotation;
+            inverseRotation.Invert();
+
+            PositiveCenterMatrix = Matrix.RotationQuaternion(LocalRotation) * Matrix.Translation(LocalOffset);
+            NegativeCenterMatrix = Matrix.RotationQuaternion(inverseRotation) * Matrix.Translation(-LocalOffset);
+
+            //if we are part of a compund we should update the transformation properly
+            if (Parent == null) return;
+            var childs = Parent.InternalCompoundShape.ChildList;
+            for (var i = 0; i < childs.Count; i++)
+            {
+                if (childs[i].ChildShape == InternalShape)
+                {
+                    Parent.InternalCompoundShape.UpdateChildTransform(i, PositiveCenterMatrix, true);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the positive center matrix.
+        /// </summary>
+        /// <value>
+        /// The positive center matrix.
+        /// </value>
+        public Matrix PositiveCenterMatrix { get; private set; }
+
+        /// <summary>
+        /// Gets the negative center matrix.
+        /// </summary>
+        /// <value>
+        /// The negative center matrix.
+        /// </value>
+        public Matrix NegativeCenterMatrix { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the scaling.
+        /// Make sure that you manually created and assigned an exclusive ColliderShape to the Collider otherwise since the engine shares shapes among many Colliders, all the colliders will be scaled.
+        /// Please note that this scaling has no relation to the TransformationComponent scaling.
+        /// Not all the shapes support this feature properly and at the moment the debug primitives don't update scaling. //todo
+        /// </summary>
+        /// <value>
+        /// The scaling.
+        /// </value>
+        public Vector3 Scaling
+        {
+            get
+            {
+                return InternalShape.LocalScaling;
+            }
+            set
+            {
+                InternalShape.LocalScaling = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the collider shape is 2D.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [is2 d]; otherwise, <c>false</c>.
+        /// </value>
+        public bool Is2D { get; internal set; }
+
+        internal BulletSharp.CollisionShape InternalShape;
+
+        internal CompoundColliderShape Parent;
+
+        internal GeometricPrimitive DebugPrimitive;
+
+        internal Matrix DebugPrimitiveScaling;
+    }
+}

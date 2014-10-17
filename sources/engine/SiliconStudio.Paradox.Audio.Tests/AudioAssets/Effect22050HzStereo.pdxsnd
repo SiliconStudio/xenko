@@ -1,0 +1,10 @@
+!SoundEffect
+Id: 51109a5d-b9ee-4484-a1be-41a98474b49e
+Tags: []
+Source: ../../../data/tests/audio/parley22050HzStereo.wav
+ImporterId: 634842fa-d1db-45c2-b13d-bc11486dae4d
+~Base:
+    Location: --import--
+    Asset: !SoundEffect
+        Id: 00000000-0000-0000-0000-000000000000
+        Tags: []

@@ -1,0 +1,74 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using System.Collections.Generic;
+using System.Linq;
+
+using SiliconStudio.Shaders.Ast;
+using SiliconStudio.Shaders.Visitor;
+
+namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
+{
+    internal class ParadoxReplaceAppend : ShaderVisitor
+    {
+        #region Private members
+
+        /// <summary>
+        /// List of append methods
+        /// </summary>
+        private HashSet<MethodInvocationExpression> appendMethodsList;
+
+        /// <summary>
+        /// List of output statements replacing the append method
+        /// </summary>
+        private List<Statement> outputStatements;
+
+        /// <summary>
+        /// Variable replacing the stream in the append function
+        /// </summary>
+        private VariableReferenceExpression outputVre;
+
+        #endregion
+
+        #region Constructor
+
+        public ParadoxReplaceAppend(HashSet<MethodInvocationExpression> appendList, List<Statement> output, VariableReferenceExpression vre)
+            : base(false, false)
+        {
+            appendMethodsList = appendList;
+            outputStatements = output;
+            outputVre = vre;
+        }
+
+        #endregion
+
+        #region Public method
+
+        public void Run(Node startNode)
+        {
+            Visit(startNode);
+        }
+
+        #endregion
+
+        #region Protected method
+
+        [Visit]
+        protected Node Visit(ExpressionStatement expressionStatement)
+        {
+            Visit((Node)expressionStatement);
+
+            if (appendMethodsList.Contains(expressionStatement.Expression))
+            {
+                var appendMethodCall = expressionStatement.Expression as MethodInvocationExpression;
+                var blockStatement = new BlockStatement();
+                blockStatement.Statements.AddRange(outputStatements);
+                appendMethodCall.Arguments[0] = outputVre;
+                blockStatement.Statements.Add(expressionStatement);
+                return blockStatement;
+            }
+            return expressionStatement;
+        }
+
+        #endregion
+    }
+}

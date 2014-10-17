@@ -1,0 +1,27 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Defines the basic methods for tessellation.
+/// </summary>
+/// <remarks>
+/// InputControlPointCount: Macro - Input control points count.
+/// OutputControlPointCount: Macro - Output control points count.
+/// </remarks>
+
+#ifndef InputControlPointCount
+# define InputControlPointCount 3
+#endif
+
+#ifndef OutputControlPointCount
+# define OutputControlPointCount 3
+#endif
+
+class ShaderBaseTessellation : ShaderBase
+{
+    [patchconstantfunc("HSConstantMain")]
+    void HSMain(InputPatch<Input, InputControlPointCount> input, out Output output, uint uCPID : SV_OutputControlPointID) {}
+    void HSConstantMain(InputPatch<Input, InputControlPointCount> input, out Constants constants) {}
+    void DSMain(const OutputPatch<Input, OutputControlPointCount> input, out Output output, in Constants constants, float3 f3BarycentricCoords : SV_DomainLocation) {}
+
+    void TessellateDomain() {}
+};

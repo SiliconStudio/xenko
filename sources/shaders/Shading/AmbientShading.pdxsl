@@ -1,0 +1,12 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Adds an ambient color.
+/// </summary>
+class AmbientShading : ShadingBase, Material
+{
+    override stage float4 Shading()
+    {
+        return base.Shading() + AmbientColorValue;
+    }
+};

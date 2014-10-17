@@ -1,0 +1,219 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using System;
+using System.Threading.Tasks;
+using NUnit.Framework;
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Games;
+
+namespace SiliconStudio.Paradox.Graphics.Tests
+{
+    [TestFixture]
+    public class TestSpriteBatch : TestGameBase
+    {
+        private SpriteBatch spriteBatch;
+        private Texture2D sphere;
+
+        private const int SphereSpace = 4;
+        private const int SphereWidth = 150;
+        private const int SphereHeight = 150;
+        private const int SphereCountPerRow = 6;
+        private const int SphereTotalCount = 32;
+
+        private float timeInSeconds;
+
+        private SpriteGroup rotatedImages;
+
+        public TestSpriteBatch()
+        {
+            CurrentVersion = 4;
+        }
+
+        protected override void RegisterTests()
+        {
+            base.RegisterTests();
+
+            FrameGameSystem.Draw(()=>SetTimeAndDrawScene(0)).TakeScreenshot();
+            FrameGameSystem.Draw(()=>SetTimeAndDrawScene(0.27f)).TakeScreenshot();
+        }
+
+        protected override async Task LoadContent()
+        {
+            await base.LoadContent();
+
+            spriteBatch = new SpriteBatch(GraphicsDevice);
+            sphere = Asset.Load<Texture2D>("Sphere");
+            rotatedImages = Asset.Load<SpriteGroup>("RotatedImages");
+        }
+
+        protected override void Draw(GameTime gameTime)
+        {
+            base.Draw(gameTime);
+
+            timeInSeconds += 1 / 60f; // frame dependent for graphic unit testing.
+
+            if(!ScreenShotAutomationEnabled)
+                DrawScene();
+        }
+
+        private void SetTimeAndDrawScene(float time)
+        {
+            timeInSeconds = time;
+
+            DrawScene();
+        }
+
+        private void DrawScene()
+        {
+            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Black);
+            GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsDevice.SetRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            spriteBatch.Begin();
+
+            var pos = new Vector2(0f);
+            var noRotation = rotatedImages["NoRotation"];
+            var rotation180 = rotatedImages["Rotation180"];
+            var rotation90 = rotatedImages["Rotation90"];
+            var rotation90C = rotatedImages["Rotation90C"];
+            var width = noRotation.Region.Width;
+            var height = noRotation.Region.Height;
+
+            // Test image orientations API1
+            spriteBatch.Draw(noRotation.Texture, pos, noRotation.Region, Color.White, 0, Vector2.Zero);
+            pos.Y += height;
+            spriteBatch.Draw(rotation180.Texture, pos, rotation180.Region, Color.White, 0, Vector2.Zero, 1, orientation: ImageOrientation.Rotated180);
+            pos.Y += height;
+            spriteBatch.Draw(rotation90.Texture, pos, rotation90.Region, Color.White, 0, Vector2.Zero, 1, orientation: ImageOrientation.Rotated90);
+            pos.Y += height;
+            spriteBatch.Draw(rotation90C.Texture, pos, rotation90C.Region, Color.White, 0, Vector2.Zero, 1, orientation: ImageOrientation.Rotated90C);
+            pos.Y -= 3 * height;
+            pos.X += width;
+
+            // Test image orientations API2
+            spriteBatch.Draw(noRotation.Texture, new RectangleF(pos.X, pos.Y, width, height), noRotation.Region, Color.White, 0, Vector2.Zero);
+            pos.Y += height;
+            spriteBatch.Draw(rotation180.Texture, new RectangleF(pos.X, pos.Y, width, height), rotation180.Region, Color.White, 0, Vector2.Zero, SpriteEffects.None, ImageOrientation.Rotated180);
+            pos.Y += height;
+            spriteBatch.Draw(rotation90.Texture, new RectangleF(pos.X, pos.Y, width, height), rotation90.Region, Color.White, 0, Vector2.Zero, SpriteEffects.None, ImageOrientation.Rotated90);
+            pos.Y += height;
+            spriteBatch.Draw(rotation90C.Texture, new RectangleF(pos.X, pos.Y, width, height), rotation90C.Region, Color.White, 0, Vector2.Zero, SpriteEffects.None, ImageOrientation.Rotated90C);
+            pos.Y -= 3 * height;
+            pos.X += width;
+
+            // Test image inversions (no rotation)
+            spriteBatch.Draw(noRotation.Texture, pos, noRotation.Region, Color.White, 0, Vector2.Zero);
+            pos.Y += height;
+            spriteBatch.Draw(noRotation.Texture, pos, noRotation.Region, Color.White, 0, Vector2.Zero, 1, SpriteEffects.FlipHorizontally);
+            pos.Y += height;
+            spriteBatch.Draw(noRotation.Texture, pos, noRotation.Region, Color.White, 0, Vector2.Zero, 1, SpriteEffects.FlipVertically);
+            pos.Y += height;
+            spriteBatch.Draw(noRotation.Texture, pos, noRotation.Region, Color.White, 0, Vector2.Zero, 1, SpriteEffects.FlipBoth);
+            pos.Y -= 3 * height;
+            pos.X += width;
+
+            // Test image inversions (rotation 90)
+            spriteBatch.Draw(rotation90.Texture, pos, rotation90.Region, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, ImageOrientation.Rotated90);
+            pos.Y += height;
+            spriteBatch.Draw(rotation90.Texture, pos, rotation90.Region, Color.White, 0, Vector2.Zero, 1, SpriteEffects.FlipHorizontally, ImageOrientation.Rotated90);
+            pos.Y += height;
+            spriteBatch.Draw(rotation90.Texture, pos, rotation90.Region, Color.White, 0, Vector2.Zero, 1, SpriteEffects.FlipVertically, ImageOrientation.Rotated90);
+            pos.Y += height;
+            spriteBatch.Draw(rotation90.Texture, pos, rotation90.Region, Color.White, 0, Vector2.Zero, 1, SpriteEffects.FlipBoth, ImageOrientation.Rotated90);
+            pos.Y -= 3 * height;
+            pos.X += width;
+
+            // Test image inversions (rotation 180)
+            spriteBatch.Draw(rotation180.Texture, pos, rotation180.Region, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, ImageOrientation.Rotated180);
+            pos.Y += height;
+            spriteBatch.Draw(rotation180.Texture, pos, rotation180.Region, Color.White, 0, Vector2.Zero, 1, SpriteEffects.FlipHorizontally, ImageOrientation.Rotated180);
+            pos.Y += height;
+            spriteBatch.Draw(rotation180.Texture, pos, rotation180.Region, Color.White, 0, Vector2.Zero, 1, SpriteEffects.FlipVertically, ImageOrientation.Rotated180);
+            pos.Y += height;
+            spriteBatch.Draw(rotation180.Texture, pos, rotation180.Region, Color.White, 0, Vector2.Zero, 1, SpriteEffects.FlipBoth, ImageOrientation.Rotated180);
+            pos.Y -= 3 * height;
+            pos.X += width;
+
+            // Test image inversions (rotation -90)
+            spriteBatch.Draw(rotation90C.Texture, pos, rotation90C.Region, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, ImageOrientation.Rotated90C);
+            pos.Y += height;
+            spriteBatch.Draw(rotation90C.Texture, pos, rotation90C.Region, Color.White, 0, Vector2.Zero, 1, SpriteEffects.FlipHorizontally, ImageOrientation.Rotated90C);
+            pos.Y += height;
+            spriteBatch.Draw(rotation90C.Texture, pos, rotation90C.Region, Color.White, 0, Vector2.Zero, 1, SpriteEffects.FlipVertically, ImageOrientation.Rotated90C);
+            pos.Y += height;
+            spriteBatch.Draw(rotation90C.Texture, pos, rotation90C.Region, Color.White, 0, Vector2.Zero, 1, SpriteEffects.FlipBoth, ImageOrientation.Rotated90C);
+            pos.Y += height;
+
+            pos.X -= width * 5;
+
+            // Test with scales
+            spriteBatch.Draw(rotation90.Texture, pos, rotation90.Region, Color.White, 0, Vector2.Zero, new Vector2(0.66f, 1.33f), SpriteEffects.None, ImageOrientation.Rotated90);
+            pos.X += 0.66f * width;
+
+            // Test color
+            spriteBatch.Draw(noRotation.Texture, pos, noRotation.Region, Color.Gray);
+            pos.X += width;
+
+            // Rotations and centers
+            pos.Y += height;
+            pos.X += width;
+            spriteBatch.Draw(rotation90.Texture, pos, rotation90.Region, Color.White, timeInSeconds, new Vector2(height / 2f, width / 2f), 1, SpriteEffects.None, ImageOrientation.Rotated90);
+            pos.X += width;
+            spriteBatch.Draw(rotation180.Texture, pos, rotation180.Region, Color.White, timeInSeconds, new Vector2(width / 2f, height / 2f), 1, SpriteEffects.FlipVertically, ImageOrientation.Rotated180);
+
+            pos.Y += height;
+            pos.X -= 3.66f * width;
+
+            const int NbRows = 1;
+            const int NbColumns = 5;
+            var textureOffset = new Vector2((float)GraphicsDevice.BackBuffer.Width / NbColumns, (float)GraphicsDevice.BackBuffer.Height / NbRows);
+            var textureOrigin = new Vector2(SphereWidth / 2.0f, SphereHeight / 2.0f);
+            var random = new Random(0);
+
+            pos.Y += textureOrigin.Y / 2;
+            pos.X += textureOrigin.X;
+
+            // Display a grid of sphere
+            for (int y = 0; y < NbRows; y++)
+            {
+                for (int x = 0; x < NbColumns; x++)
+                {
+                    var time = timeInSeconds + random.NextDouble();
+                    var rotation = (float)(time * Math.PI * 2.0);
+                    var sourceRectangle = GetSphereAnimation((float)time);
+                    spriteBatch.Draw(sphere, pos + new Vector2(x * textureOffset.X, y * textureOffset.Y), sourceRectangle, Color.White, rotation, textureOrigin, layerDepth: -1);
+                }
+            }
+
+            spriteBatch.End();
+        }
+
+        /// <summary>
+        /// Calculates the rectangle region from the original Sphere bitmap.
+        /// </summary>
+        /// <param name="time">The current time</param>
+        /// <returns>The region from the sphere texture to display</returns>
+        private Rectangle GetSphereAnimation(float time)
+        {
+            var sphereIndex = MathUtil.Clamp((int)((time%1.0f)*SphereTotalCount), 0, SphereTotalCount);
+
+            int sphereX = sphereIndex % SphereCountPerRow;
+            int sphereY = sphereIndex/SphereCountPerRow;
+            return new Rectangle(sphereX * (SphereWidth + SphereSpace), sphereY * (SphereHeight + SphereSpace), SphereWidth, SphereHeight);
+        }
+
+        public static void Main()
+        {
+            using (var game = new TestSpriteBatch())
+                game.Run();
+        }
+
+        /// <summary>
+        /// Run the test
+        /// </summary>
+        [Test]
+        public void RunTestSpriteBatch()
+        {
+            RunGameTest(new TestSpriteBatch());
+        }
+    }
+}
