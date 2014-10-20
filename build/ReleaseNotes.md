@@ -1,3 +1,11 @@
+### Version 1.0.0-beta02
+
+Release date: 2014/??/??
+
+#### Issues fixed:
+- UI: Opacity is new correctly taken into account when drawing background color of UI elements.
+- UI: Fix rendering problems on the Button/ToggleButton's content when setting their background color.
+
 ### Version 1.0.0-beta01
 
 Release date: 2014/10/17
