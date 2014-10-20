@@ -1,0 +1,74 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Renders the geometry in the correct view for a cube map.
+/// </summary>
+class CameraCube : PositionStream4, ShaderBase
+{
+    float3 CameraWorldPosition;
+
+    float4x4 CameraViewProjectionMatrices[6];
+
+    stream uint RTAIndex : SV_RenderTargetArrayIndex;
+
+    [maxvertexcount(9)]
+    stage void GSMain(triangle Input input[3], inout TriangleStream<Output> triangleStream)
+    {
+        float4 PositionWS0 = input[0].PositionWS;
+        float4 PositionWS1 = input[1].PositionWS;
+        float4 PositionWS2 = input[2].PositionWS;
+        int index0 = GetViewIndex((PositionWS0.xyz / PositionWS0.w) - CameraWorldPosition);
+        int index1 = GetViewIndex((PositionWS1.xyz / PositionWS1.w) - CameraWorldPosition);
+        int index2 = GetViewIndex((PositionWS2.xyz / PositionWS2.w) - CameraWorldPosition);
+
+        OutputToView(input, triangleStream, index0);
+        
+        if (index1 != index0)
+            OutputToView(input, triangleStream, index1);
+        if (index2 != index0 && index2 != index1)
+            OutputToView(input, triangleStream, index2);
+    }
+
+    void OutputToView(triangle Input input[3], inout TriangleStream<Output> triangleStream, uint viewIndex)
+    {
+        streams = input[0];
+        streams.RTAIndex = viewIndex;
+        streams.ShadingPosition = mul(streams.PositionWS, CameraViewProjectionMatrices[viewIndex]);
+        triangleStream.Append(streams);
+        streams = input[1];
+        streams.ShadingPosition = mul(streams.PositionWS, CameraViewProjectionMatrices[viewIndex]);
+        triangleStream.Append(streams);
+        streams = input[2];
+        streams.ShadingPosition = mul(streams.PositionWS, CameraViewProjectionMatrices[viewIndex]);
+        triangleStream.Append(streams);
+        triangleStream.RestartStrip();
+    }
+
+    uint GetViewIndex(float3 vertexPos)
+    {
+        float3 absPos = abs(vertexPos);
+        if (absPos.x > absPos.y && absPos.x > absPos.z)
+        {
+            if (vertexPos.x > 0)
+                return 0;
+            else
+                return 1;
+        }
+        if (absPos.y > absPos.x && absPos.y > absPos.z)
+        {
+            if (vertexPos.y > 0)
+                return 2;
+            else
+                return 3;
+        }
+        if (absPos.z > absPos.x && absPos.z > absPos.y)
+        {
+            if (vertexPos.z > 0)
+                return 4;
+            else
+                return 5;
+        }
+
+        return 0;
+    }
+};

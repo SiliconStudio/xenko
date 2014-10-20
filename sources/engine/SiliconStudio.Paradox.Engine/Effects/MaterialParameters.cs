@@ -13,7 +13,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 
 
-#line 1 "C:\Dev\Paradox\sources\engine\SiliconStudio.Paradox.Engine\Effects\MaterialParameters.pdxfx"
+#line 1 "C:\Projects\Paradox\sources\engine\SiliconStudio.Paradox.Engine\Effects\MaterialParameters.pdxfx"
 namespace SiliconStudio.Paradox.Effects
 {
     [DataContract]
@@ -55,7 +55,7 @@ namespace SiliconStudio.Paradox.Effects
         public static readonly ParameterKey<float> OrenNayarDistributionVariance = ParameterKeys.New<float>();
 
         #line 20
-        public static readonly ParameterKey<float> CookTorranceFresnel = ParameterKeys.New<float>();
+        public static readonly ParameterKey<float> CookTorranceReflection = ParameterKeys.New<float>();
 
         #line 21
         public static readonly ParameterKey<float> CookTorranceRoughness = ParameterKeys.New<float>();

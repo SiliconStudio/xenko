@@ -1,0 +1,29 @@
+﻿// Copyright (c) 2014 Silicon Studio Corporation (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Computes the color by sampling a cubemap texture.
+/// </summary>
+/// <remarks>
+/// TTexture: generic TextureCube - The cubemap to sample.
+/// </remarks>
+class ComputeColorTextureCube<TextureCube TTexture> : ComputeColor, NormalWSStream, PositionVSStream, Transformation
+{
+    override float4 Compute()
+    {
+        float3 samplePos = streams.vPositionVS;
+        float3 eyeDir = mul(float4(samplePos, 0), ViewInverse).xyz;
+        float3 samplingDir = TransformCubemapSamplingDirection(reflect(eyeDir, streams.vNormalWS));
+        return TTexture.Sample(Texturing.Sampler, samplingDir);
+    }
+
+    float3 TransformCubemapSamplingDirection(float3 samplingDir)
+    {
+        // Thank you Direct3D left-handed coordinate system!
+        float3 absDir = abs(samplingDir);
+        if (absDir.x > absDir.y && absDir.x > absDir.z)
+            samplingDir.z = -samplingDir.z;
+        else
+            samplingDir.x = -samplingDir.x;
+        return samplingDir;
+    }
+};

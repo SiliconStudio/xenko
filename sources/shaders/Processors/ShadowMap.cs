@@ -1,10 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Effects.Modules.Renderers;
 using SiliconStudio.Paradox.Effects.Modules.Shadowmap;
 using SiliconStudio.Paradox.Engine;
 
-namespace SiliconStudio.Paradox.Effects.Modules
+namespace SiliconStudio.Paradox.Effects.Modules.Processors
 {
     /// <summary>
     /// Represents a shadow map for the <see cref="ShadowMapRenderer"/>.

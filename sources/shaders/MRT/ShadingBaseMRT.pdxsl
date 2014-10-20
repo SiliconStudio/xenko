@@ -1,0 +1,73 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Base class to perfom shading into multiple render targets. Defines the basic method and inserts it in the pipeline.
+/// </summary>
+/// <remarks>
+/// MRT_COUNT: Macro - Number of render targets.
+/// </remarks>
+class ShadingBaseMRT : ShaderBase
+{
+    // Default COLOR outputs for PS shader
+    stage stream float4 ColorTarget1 : SV_Target1;
+    stage stream float4 ColorTarget2 : SV_Target2;
+    stage stream float4 ColorTarget3 : SV_Target3;
+    stage stream float4 ColorTarget4 : SV_Target4;
+    stage stream float4 ColorTarget5 : SV_Target5;
+    stage stream float4 ColorTarget6 : SV_Target6;
+    stage stream float4 ColorTarget7 : SV_Target7;
+
+#if MRT_COUNT > 0
+    ComputeColor ShadingColor0;
+#endif
+#if MRT_COUNT > 1
+    ComputeColor ShadingColor1;
+#endif
+#if MRT_COUNT > 2
+    ComputeColor ShadingColor2;
+#endif
+#if MRT_COUNT > 3
+    ComputeColor ShadingColor3;
+#endif
+#if MRT_COUNT > 4
+    ComputeColor ShadingColor4;
+#endif
+#if MRT_COUNT > 5
+    ComputeColor ShadingColor5;
+#endif
+#if MRT_COUNT > 6
+    ComputeColor ShadingColor6;
+#endif
+#if MRT_COUNT > 7
+    ComputeColor ShadingColor7;
+#endif
+
+    stage override void PSMain()
+    {
+        base.PSMain();
+#if MRT_COUNT > 0
+        streams.ColorTarget = ShadingColor0.Compute();
+#endif
+#if MRT_COUNT > 1
+        streams.ColorTarget1 = ShadingColor1.Compute();
+#endif
+#if MRT_COUNT > 2
+        streams.ColorTarget2 = ShadingColor2.Compute();
+#endif
+#if MRT_COUNT > 3
+        streams.ColorTarget3 = ShadingColor3.Compute();
+#endif
+#if MRT_COUNT > 4
+        streams.ColorTarget4 = ShadingColor4.Compute();
+#endif
+#if MRT_COUNT > 5
+        streams.ColorTarget5 = ShadingColor5.Compute();
+#endif
+#if MRT_COUNT > 6
+        streams.ColorTarget6 = ShadingColor6.Compute();
+#endif
+#if MRT_COUNT > 7
+        streams.ColorTarget7 = ShadingColor7.Compute();
+#endif
+    }
+};

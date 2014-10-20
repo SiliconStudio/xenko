@@ -3,8 +3,8 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects.Modules.LightPrepass;
-using SiliconStudio.Paradox.Effects.Modules.Shading;
+using SiliconStudio.Paradox.Effects.Modules.Processors;
+using SiliconStudio.Paradox.Effects.Modules.Renderers;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
 

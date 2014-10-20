@@ -6,7 +6,7 @@
 class PositionVSStream : Transformation, PositionVSBase, ShaderBase, PositionStream
 {
     // View space position
-    stream float4 vPositionVS : POSITION_VS;
+    stage stream float4 vPositionVS : POSITION_VS;
 
     stage override void VSMain()
     {

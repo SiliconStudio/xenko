@@ -316,6 +316,50 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeColorSoftLight.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="ComputeColor\ComputeColorTextureCube.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ComputeColorTextureCube.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Geometry\CameraCube.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CameraCube.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="MRT\LinearDepth.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>LinearDepth.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="MRT\NormalColor.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>NormalColor.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="MRT\ShadingBaseMRT.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ShadingBaseMRT.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Processors\DynamicLightShadowProcessor.cs" />
+    <Compile Include="Processors\EntityLightShadow.cs" />
+    <Compile Include="Processors\GuillotinePacker.cs" />
+    <Compile Include="Processors\LightingProcessorHelpers.cs" />
+    <Compile Include="Processors\LightShadowProcessor.cs" />
+    <Compile Include="Processors\LightShadowProcessorDefaultBudget.cs" />
+    <Compile Include="Processors\LightShadowProcessorWithBudget.cs" />
+    <Compile Include="Processors\ShadowMap.cs" />
+    <Compile Include="Processors\ShadowMapTexture.cs" />
+    <Compile Include="Renderers\CubeMapRenderer.cs" />
+    <Compile Include="Renderers\LightForwardModelRenderer.cs" />
+    <Compile Include="Renderers\LightingPrepassRenderer.cs" />
+    <Compile Include="Renderers\PostProcessRenderer.cs" />
+    <Compile Include="Renderers\ShadowMapRenderer.cs" />
     <Compile Include="Shading\AmbientMapShading.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -327,6 +371,12 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeBRDFColorSpecularBase.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Shading\ComputeBRDFColorSpecularCookTorrance.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ComputeBRDFColorSpecularCookTorrance.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Shading\SpecularPower.cs">
       <AutoGen>True</AutoGen>
@@ -370,8 +420,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>NormalVSGBufferPack.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="EntityLightShadow.cs" />
-    <Compile Include="LightingProcessorHelpers.cs" />
     <Compile Include="LightPrepass\DeferredDirectionalLighting.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -396,9 +444,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>DeferredShadowLightingShader.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="LightShadowProcessor.cs" />
-    <Compile Include="LightShadowProcessorDefaultBudget.cs" />
-    <Compile Include="LightShadowProcessorWithBudget.cs" />
     <Compile Include="Particle\ParticleBase.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -454,7 +499,6 @@
       <DependentUpon>ComputeColorStream.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Deferred\GBufferRenderProcessor.cs" />
-    <Compile Include="GuillotinePacker.cs" />
     <Compile Include="ComputeColor\ComputeColorSubstituteAlpha.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -683,7 +727,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>SpecularPowerGBuffer.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="LightPrepass\LightingPrepassRenderer.cs" />
     <Compile Include="LightPrepass\DeferredLightingShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -696,7 +739,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>DeferredPointLighting.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="DynamicLightShadowProcessor.cs" />
     <Compile Include="Shading\DirectionalShading.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -811,9 +853,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>SpotShading.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Shading\LightForwardModelRenderer.cs" />
     <Compile Include="RenderPipelineLightingFactory.cs" />
-    <Compile Include="Shadowmap\ShadowMap.cs" />
     <Compile Include="Shadowmap\ShadowMapCascadeInfo.cs" />
     <Compile Include="Shadowmap\ShadowMapCascadeReceiverInfo.cs" />
     <Compile Include="Shadowmap\ShadowMapCasterVsm.cs">
@@ -823,14 +863,12 @@
       <DependentUpon>ShadowMapCasterVsm.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Shadowmap\ShadowMapReceiverInfo.cs" />
-    <Compile Include="Shadowmap\ShadowMapRenderer.cs" />
     <Compile Include="Shadowmap\ShadowMaps.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ShadowMaps.pdxfx</DependentUpon>
     </Compile>
-    <Compile Include="Shadowmap\ShadowMapTexture.cs" />
     <Compile Include="LightPrepass\LightPrepass.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1219,6 +1257,18 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Utilities.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="World\NormalWSBase.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>NormalWSBase.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="World\NormalWSStream.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>NormalWSStream.pdxsl</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\common\core\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj">
@@ -1488,6 +1538,10 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTexture.cs</LastGenOutput>
     </None>
+    <None Include="ComputeColor\ComputeColorTextureCube.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorTextureCube.cs</LastGenOutput>
+    </None>
     <None Include="ComputeColor\ComputeColorTextureDisplacement.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTextureDisplacement.cs</LastGenOutput>
@@ -1588,6 +1642,22 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadingBase.cs</LastGenOutput>
     </None>
+    <None Include="Geometry\CameraCube.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CameraCube.cs</LastGenOutput>
+    </None>
+    <None Include="MRT\LinearDepth.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>LinearDepth.cs</LastGenOutput>
+    </None>
+    <None Include="MRT\NormalColor.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>NormalColor.cs</LastGenOutput>
+    </None>
+    <None Include="MRT\ShadingBaseMRT.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ShadingBaseMRT.cs</LastGenOutput>
+    </None>
     <None Include="Core\ShadingColor.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadingColor.cs</LastGenOutput>
@@ -1607,6 +1677,10 @@
     <None Include="Shading\ComputeBRDFColorSpecularBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeBRDFColorSpecularBase.cs</LastGenOutput>
+    </None>
+    <None Include="Shading\ComputeBRDFColorSpecularCookTorrance.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeBRDFColorSpecularCookTorrance.cs</LastGenOutput>
     </None>
     <None Include="Shading\SpecularPower.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -2051,6 +2125,14 @@
     <None Include="Utils\Utilities.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>Utilities.cs</LastGenOutput>
+    </None>
+    <None Include="World\NormalWSBase.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>NormalWSBase.cs</LastGenOutput>
+    </None>
+    <None Include="World\NormalWSStream.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>NormalWSStream.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />

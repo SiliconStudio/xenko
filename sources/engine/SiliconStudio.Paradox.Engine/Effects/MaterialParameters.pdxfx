@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.Effects
 
         float OrenNayarRoughness;
         float OrenNayarDistributionVariance;
-        float CookTorranceFresnel;
+        float CookTorranceReflection;
         float CookTorranceRoughness;
 
         ShaderMixinSource DiffuseShader;

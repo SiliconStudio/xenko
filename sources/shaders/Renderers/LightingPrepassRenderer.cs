@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -7,6 +8,7 @@ using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.DataModel;
+using SiliconStudio.Paradox.Effects.Modules.Processors;
 using SiliconStudio.Paradox.Effects.Modules.Shadowmap;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
@@ -15,7 +17,7 @@ using SiliconStudio.Paradox.Shaders.Compiler;
 
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-namespace SiliconStudio.Paradox.Effects.Modules.LightPrepass
+namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 {
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct PointLightData
