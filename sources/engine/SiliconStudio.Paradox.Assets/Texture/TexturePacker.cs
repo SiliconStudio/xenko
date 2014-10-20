@@ -16,12 +16,10 @@ namespace SiliconStudio.Paradox.Assets.Texture
         {
             packConfiguration = configuration;
 
-            maxRectPacker.Initialize(packConfiguration.MaxWidth, packConfiguration.MaxHeight, configuration.UseRotation);
-
             textureAtlases.Clear();
         }
 
-        public void PackTextures(Dictionary<string, IntemediateTextureElement> textureElements)
+        public bool PackTextures(Dictionary<string, IntemediateTextureElement> textureElements)
         {
             // Create data for the packer
             var textureRegions = new List<RotatableRectangle>();
@@ -29,22 +27,56 @@ namespace SiliconStudio.Paradox.Assets.Texture
             foreach (var textureElementKey in textureElements.Keys)
             {
                 var textureElement = textureElements[textureElementKey];
-
-                textureRegions.Add(new RotatableRectangle
-                {
-                    Key = textureElementKey,
-                    Value = new Rectangle(0, 0, textureElement.Texture.Width, textureElement.Texture.Height)
-                });
+                textureRegions.Add(new RotatableRectangle(0, 0, textureElement.Texture.Width, textureElement.Texture.Height) { Key = textureElementKey });
             }
 
-            // Pack
-            maxRectPacker.Insert( textureRegions );
-
-            if (textureRegions.Count > 0)
+            do
             {
-                // todo:nut\ handle the case where the atlas could not fit all regions
+                // Reset packer state
+                maxRectPacker.Initialize(packConfiguration.MaxWidth, packConfiguration.MaxHeight, packConfiguration.UseRotation);
+
+                // Pack
+                maxRectPacker.Insert(textureRegions);
+
+                // Find true size from packed regions
+                var trueSize = GetTrueSize(maxRectPacker.UsedRectangles);
+
+                // Insert the atlas to store packed regions
+                var currentAtlas = new TextureAtlas
+                {
+                    PackConfiguration = packConfiguration,
+                    Width = trueSize.Width,
+                    Height = trueSize.Height,
+                };
+
+                // Insert all packed regions into Atlas
+                foreach (var usedRectangle in maxRectPacker.UsedRectangles)
+                {
+                    textureElements[usedRectangle.Key].Region = usedRectangle;
+
+                    currentAtlas.Textures.Add(textureElements[usedRectangle.Key]);
+
+                    textureElements.Remove(usedRectangle.Key);
+                }
+
+                textureAtlases.Add( currentAtlas );
             }
+            while (packConfiguration.UseMultipack && textureRegions.Count > 0);
+
+            return textureRegions.Count == 0;
         }
+
+        private Size2 GetTrueSize(List<RotatableRectangle> usedRectangles)
+        {
+            // todo:nut\ Find the true size of this atlas
+            return new Size2(packConfiguration.MaxWidth, packConfiguration.MaxHeight);
+        }
+    }
+
+    public enum SizeConstraints
+    {
+        Any,
+        PowerOfTwo,
     }
 
     public enum PivotType
@@ -65,6 +97,8 @@ namespace SiliconStudio.Paradox.Assets.Texture
 
         public PivotType PivotType;
 
+        public SizeConstraints SizeContraint;
+
         public int MaxWidth;
 
         public int MaxHeight;
@@ -76,7 +110,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
 
         public Texture2D Texture;
 
-        public Rectangle Region;
+        public RotatableRectangle Region;
     }
 
     public class TextureAtlas
