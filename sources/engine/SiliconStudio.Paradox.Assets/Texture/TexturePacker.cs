@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
@@ -43,6 +44,16 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 // Find true size from packed regions
                 var trueSize = GetTrueSize(maxRectPacker.UsedRectangles);
 
+                // Alter the size of atlas so that it is a power of two
+                if (packConfiguration.SizeContraint == SizeConstraints.PowerOfTwo)
+                {
+                    trueSize.Width = (int)Math.Pow(2, Math.Ceiling(Math.Log(trueSize.Width) / Math.Log(2)));
+                    trueSize.Height = (int)Math.Pow(2, Math.Ceiling(Math.Log(trueSize.Height) / Math.Log(2)));
+
+                    if (trueSize.Width > packConfiguration.MaxWidth || trueSize.Height > packConfiguration.MaxHeight)
+                        return false;
+                }
+
                 // Insert the atlas to store packed regions
                 var currentAtlas = new TextureAtlas
                 {
@@ -77,10 +88,29 @@ namespace SiliconStudio.Paradox.Assets.Texture
             return textureRegions.Count == 0;
         }
 
-        private Size2 GetTrueSize(List<RotatableRectangle> usedRectangles)
+        /// <summary>
+        /// Calculates bound for the packed textures
+        /// </summary>
+        /// <param name="usedRectangles"></param>
+        /// <returns></returns>
+        private Size2 GetTrueSize(IEnumerable<RotatableRectangle> usedRectangles)
         {
-            // todo:nut\ Find the true size of this atlas
-            return new Size2(packConfiguration.MaxWidth, packConfiguration.MaxHeight);
+            var minX = int.MaxValue;
+            var minY = int.MaxValue;
+
+            var maxX = int.MinValue;
+            var maxY = int.MinValue;
+
+            foreach (var useRectangle in usedRectangles)
+            {
+                if (minX > useRectangle.Value.X) minX = useRectangle.Value.X;
+                if (minY > useRectangle.Value.Y) minY = useRectangle.Value.Y;
+
+                if (maxX < useRectangle.Value.X + useRectangle.Value.Width) maxX = useRectangle.Value.X + useRectangle.Value.Width;
+                if (maxY < useRectangle.Value.Y + useRectangle.Value.Height) maxY = useRectangle.Value.Y + useRectangle.Value.Height;
+            }
+
+            return new Size2(maxX - minX, maxY - minY);
         }
     }
 

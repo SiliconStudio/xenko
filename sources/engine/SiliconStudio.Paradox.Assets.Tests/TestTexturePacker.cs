@@ -144,7 +144,6 @@ namespace SiliconStudio.Paradox.Assets.Tests
             Assert.AreEqual(false, canPackAllTextures);
 
             // The current bin cant fit all of textures, resize the bin
-
             packConfiguration = new Configuration
             {
                 BorderSize = 0,
@@ -152,8 +151,8 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 UseRotation = true,
                 PivotType = PivotType.Center,
                 SizeContraint = SizeConstraints.PowerOfTwo,
-                MaxHeight = 400,
-                MaxWidth = 400
+                MaxHeight = 1500,
+                MaxWidth = 800
             };
 
             texturePacker.Initialize(packConfiguration);
