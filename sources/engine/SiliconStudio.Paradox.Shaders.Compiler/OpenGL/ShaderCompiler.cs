@@ -1,31 +1,30 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using SharpDX.D3DCompiler;
-using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.Serialization;
+
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Glsl;
 using SiliconStudio.Shaders.Convertor;
 using SiliconStudio.Shaders.Writer.Hlsl;
-using SiliconStudio.GlslOptimizer;
 using ConstantBuffer = SiliconStudio.Shaders.Ast.Hlsl.ConstantBuffer;
 using LayoutQualifier = SiliconStudio.Shaders.Ast.LayoutQualifier;
 using ParameterQualifier = SiliconStudio.Shaders.Ast.Hlsl.ParameterQualifier;
-using ShaderBytecode = SiliconStudio.Paradox.Shaders.ShaderBytecode;
 
 namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
 {
     internal partial class ShaderCompiler : IShaderCompiler
     {
+        static ShaderCompiler()
+        {
+            // Preload proper glsl optimizer native library (depending on CPU type)
+            Core.NativeLibrary.PreloadLibrary("glsl_optimizer.dll");
+        }
+
         /// <summary>
         /// Converts the hlsl code into glsl and stores the result as plain text
         /// </summary>
@@ -184,30 +183,35 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
 
 		    bool optimizeOk = glslopt_get_status(shader);
 
+            string shaderAsString = null;
 		    if (optimizeOk)
 		    {
-			    IntPtr optShader = glslopt_get_output(shader);
-                return Marshal.PtrToStringAuto(optShader);
+                IntPtr optShader = glslopt_get_output(shader);
+                shaderAsString = Marshal.PtrToStringAnsi(optShader);
 		    }
 
-            return null;
+            glslopt_shader_delete(shader);
+            glslopt_cleanup(ctx);
+
+            return shaderAsString;
 	    }
 
-        [DllImport("glsl_optimizer_lib.dll")]
+        [DllImport("glsl_optimizer.dll", CallingConvention=CallingConvention.Cdecl)]
         private static extern IntPtr glslopt_initialize(int target);
 
-        [DllImport("glsl_optimizer_lib.dll")]
-        private static extern IntPtr glslopt_optimize(IntPtr ctx, int type, [MarshalAs(UnmanagedType.LPStr)]string shaderSource, uint options);
+        [DllImport("glsl_optimizer.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr glslopt_optimize(IntPtr ctx, int type, string shaderSource, uint options);
 
-        [DllImport("glsl_optimizer_lib.dll")]
+        [DllImport("glsl_optimizer.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern bool glslopt_get_status(IntPtr shader);
 
-        [DllImport("glsl_optimizer_lib.dll")]
+        [DllImport("glsl_optimizer.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr glslopt_get_output(IntPtr shader);
 
-        //glslopt_ctx* glslopt_initialize (glslopt_target target);
-        //glslopt_shader* glslopt_optimize (glslopt_ctx* ctx, glslopt_shader_type type, const char* shaderSource, unsigned options);
-        //bool glslopt_get_status (glslopt_shader* shader);
-        //const char* glslopt_get_output (glslopt_shader* shader);
+        [DllImport("glsl_optimizer.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void glslopt_shader_delete(IntPtr shader);
+
+        [DllImport("glsl_optimizer.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void glslopt_cleanup(IntPtr ctx);
     }
 }
