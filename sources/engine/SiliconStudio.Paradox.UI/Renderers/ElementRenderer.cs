@@ -142,7 +142,7 @@ namespace SiliconStudio.Paradox.UI.Renderers
         /// If the user wants to perform some intermediate rendering, it is his responsibility to bind them back correctly before the final rendering.</remarks>
         public virtual void RenderColor(UIElement element, UIRenderingContext context)
         {
-            var backgroundColor = element.BackgroundColor;
+            var backgroundColor = element.Opacity * element.BackgroundColor;
 
             // optimization: don't draw the background if transparent
             if (backgroundColor == new Color())
