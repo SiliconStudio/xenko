@@ -115,6 +115,51 @@ namespace SiliconStudio.Paradox.Assets.Texture
         }
     }
 
+    public class TextureAtlasFactory
+    {
+        public static Texture2D CreateTextureAtlas(GraphicsDevice graphicsDevice, TextureAtlas textureAtlas)
+        {
+            // todo:nut\ make a pixel format a parameter so that a user could choose to create png or jpeg
+            var atlasTexture = Texture2D.New(graphicsDevice, textureAtlas.Width, textureAtlas.Height, 1,
+                PixelFormat.B8G8R8A8_UNorm, usage: GraphicsResourceUsage.Dynamic);
+
+            var atlasTextureData = new ColorBGRA[textureAtlas.Width * textureAtlas.Height];
+
+            // Fill in textureData from textureAtlas
+            foreach (var intemediateTexture in textureAtlas.Textures)
+            {
+                var texture = intemediateTexture.Texture;
+
+                var textureData = texture.GetData<ColorBGRA>();
+
+                // If not use rotation, this copy use O(H). Otherwise, O(W*H) since the block of array is not contiguous when flipped
+                for (var y = 0; y < intemediateTexture.Region.Value.Height; ++y)
+                {
+                    if (!intemediateTexture.Region.IsRotated)
+                    {
+                        Array.Copy(textureData, y * intemediateTexture.Region.Value.Width,
+                            atlasTextureData, (intemediateTexture.Region.Value.Y + y) * textureAtlas.Width + intemediateTexture.Region.Value.X, intemediateTexture.Region.Value.Width);
+
+                        continue;
+                    }
+
+                    for (var x = 0; x < intemediateTexture.Region.Value.Width; ++x)
+                    {
+                        var targetIndexX = intemediateTexture.Region.Value.X + (intemediateTexture.Region.Value.Width - 1 - y);
+                        var targetIndexY = intemediateTexture.Region.Value.Y + x;
+
+                        atlasTextureData[targetIndexY * textureAtlas.Width + targetIndexX] = textureData[y * intemediateTexture.Region.Value.Width + x];
+                    }
+                }
+            }
+
+            // Update textureData to atlasTexture
+            atlasTexture.SetData(atlasTextureData);
+
+            return atlasTexture;
+        }
+    }
+
     public enum SizeConstraints
     {
         Any,
@@ -140,6 +185,8 @@ namespace SiliconStudio.Paradox.Assets.Texture
         public PivotType PivotType;
 
         public SizeConstraints SizeContraint;
+
+        public TextureAddressMode BorderAddressMode;
 
         public int MaxWidth;
 
