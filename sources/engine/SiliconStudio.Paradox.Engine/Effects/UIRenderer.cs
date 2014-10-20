@@ -124,7 +124,6 @@ namespace SiliconStudio.Paradox.Effects
                 batch.End();
 
                 // update context and restart the batch
-                renderingContext.DepthBias += 1;
                 renderingContext.StencilTestReferenceValue += 1;
                 batch.Begin(ref uiSystem.ViewProjectionInternal, GraphicsDevice.BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
             }
