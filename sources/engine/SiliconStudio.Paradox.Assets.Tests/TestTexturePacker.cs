@@ -14,7 +14,47 @@ namespace SiliconStudio.Paradox.Assets.Tests
     public class TestTexturePacker
     {
         [Test]
-        public void TestMaxRectsPack1()
+        public void TestMaxRectsPackWithoutRotation()
+        {
+            var maxRectPacker = new MaxRectanglesBinPack();
+            maxRectPacker.Initialize(100, 100, false);
+
+            // This data set remain only 1 rect that cant be packed
+            var packRectangles = new List<RotatableRectangle>
+            {
+                new RotatableRectangle(0, 0, 80, 100), new RotatableRectangle(0, 0, 100, 20),
+            };
+
+            maxRectPacker.Insert(packRectangles);
+
+            Assert.AreEqual(1, packRectangles.Count);
+            Assert.AreEqual(1, maxRectPacker.UsedRectangles.Count);
+        }
+
+        [Test]
+        public void TestMaxRectsPackWithRotation()
+        {
+            var maxRectPacker = new MaxRectanglesBinPack();
+            maxRectPacker.Initialize(100, 100, true);
+
+            // This data set remain only 1 rect that cant be packed
+            var packRectangles = new List<RotatableRectangle>
+            {
+                new RotatableRectangle(0, 0, 80, 100) { Key = "A" }, new RotatableRectangle(0, 0, 100, 20) { Key = "B"},
+            };
+
+            maxRectPacker.Insert(packRectangles);
+
+            Assert.AreEqual(0, packRectangles.Count);
+            Assert.AreEqual(2, maxRectPacker.UsedRectangles.Count);
+            Assert.AreEqual(true, maxRectPacker.UsedRectangles.Find(rectangle => rectangle.Key == "B").IsRotated);
+        }
+
+        /// <summary>
+        /// Test packing 7 rectangles
+        /// </summary>
+        [Test]
+        public void TestMaxRectsPackArbitaryRectangles()
         {
             var maxRectPacker = new MaxRectanglesBinPack();
             maxRectPacker.Initialize(100, 100, true);
@@ -35,56 +75,18 @@ namespace SiliconStudio.Paradox.Assets.Tests
         }
 
         [Test]
-        public void TestMaxRectsPack2()
-        {
-            var maxRectPacker = new MaxRectanglesBinPack();
-            maxRectPacker.Initialize(100, 100, false);
-
-            // This data set remain only 1 rect that cant be packed
-            var packRectangles = new List<RotatableRectangle>
-            {
-                new RotatableRectangle(0, 0, 80, 100), new RotatableRectangle(0, 0, 100, 20),
-            };
-
-            maxRectPacker.Insert(packRectangles);
-
-            Assert.AreEqual(1, packRectangles.Count);
-            Assert.AreEqual(1, maxRectPacker.UsedRectangles.Count);
-        }
-
-        [Test]
-        public void TestMaxRectsPack3()
-        {
-            var maxRectPacker = new MaxRectanglesBinPack();
-            maxRectPacker.Initialize(100, 100, true);
-
-            // This data set remain only 1 rect that cant be packed
-            var packRectangles = new List<RotatableRectangle>
-            {
-                new RotatableRectangle(0, 0, 80, 100) { Key = "A" }, new RotatableRectangle(0, 0, 100, 20) { Key = "B"},
-            };
-
-            maxRectPacker.Insert(packRectangles);
-
-            Assert.AreEqual(0, packRectangles.Count);
-            Assert.AreEqual(2, maxRectPacker.UsedRectangles.Count);
-            Assert.AreEqual(true, maxRectPacker.UsedRectangles.Find(rectangle => rectangle.Key == "B").IsRotated);
-        }
-
-        [Test]
-        public void TestTexturePacker1()
+        public void TestTexturePackerFitAllElements()
         {
             var textureElements = CreateFakeTextureElements();
 
             var packConfiguration = new Configuration
             {
                 BorderSize = 0,
-                UseMultipack = true,
+                UseMultipack = false,
                 UseRotation = true,
                 PivotType = PivotType.Center,
-                SizeContraint = SizeConstraints.PowerOfTwo,
-                MaxHeight = 2048,
-                MaxWidth = 2048
+                MaxHeight = 2000,
+                MaxWidth = 2000
             };
 
             var texturePacker = new TexturePacker();
@@ -116,7 +118,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
         }
 
         [Test]
-        public void TestTexturePacker2()
+        public void TestTexturePackerWithMultiPack()
         {
             var textureAtlases = new List<TextureAtlas>();
             var textureElements = CreateFakeTextureElements();
@@ -177,7 +179,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
         }
 
         [Test]
-        public void TestTexturePackWithBorder()
+        public void TestTexturePackerWithBorder()
         {
             var textureAtlases = new List<TextureAtlas>();
 
