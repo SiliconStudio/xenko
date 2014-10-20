@@ -163,6 +163,17 @@ namespace SiliconStudio.Paradox.Assets.Tests
             Assert.AreEqual(true, canPackAllTextures);
             Assert.AreEqual(0, textureElements.Count);
             Assert.AreEqual(2, textureAtlases.Count);
+
+            Assert.AreEqual(true, IsPowerOfTwo(textureAtlases[0].Width));
+            Assert.AreEqual(true, IsPowerOfTwo(textureAtlases[0].Height));
+
+            Assert.AreEqual(true, IsPowerOfTwo(textureAtlases[1].Width));
+            Assert.AreEqual(true, IsPowerOfTwo(textureAtlases[1].Height));
+        }
+
+        private bool IsPowerOfTwo(int value)
+        {
+            return (value & (value - 1)) == 0;
         }
     }
 }
