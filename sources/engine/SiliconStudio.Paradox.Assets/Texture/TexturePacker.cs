@@ -7,6 +7,8 @@ namespace SiliconStudio.Paradox.Assets.Texture
 {
     public class TexturePacker
     {
+        public List<TextureAtlas> TextureAtlases { get { return textureAtlases; } } 
+
         private readonly MaxRectanglesBinPack maxRectPacker = new MaxRectanglesBinPack();
         private readonly List<TextureAtlas> textureAtlases = new List<TextureAtlas>();
 
@@ -60,6 +62,15 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 }
 
                 textureAtlases.Add( currentAtlas );
+
+                if (textureRegions.Count > 0)
+                {
+                    foreach (var remainingTexture in textureRegions)
+                    {
+                        if(remainingTexture.Value.Width > packConfiguration.MaxWidth || remainingTexture.Value.Height > packConfiguration.MaxHeight)
+                            return false;
+                    }
+                }
             }
             while (packConfiguration.UseMultipack && textureRegions.Count > 0);
 
@@ -87,9 +98,9 @@ namespace SiliconStudio.Paradox.Assets.Texture
 
     public struct Configuration
     {
-        public int BorderSize;
+        public bool HasBorder{ get { return BorderSize > 0; } }
 
-        public int ShapePaddingSize;
+        public int BorderSize;
 
         public bool UseRotation;
 

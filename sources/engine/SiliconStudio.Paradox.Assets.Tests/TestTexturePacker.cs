@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 
 using SiliconStudio.Paradox.Assets.Texture;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Assets.Tests
 {
@@ -68,6 +69,101 @@ namespace SiliconStudio.Paradox.Assets.Tests
             Assert.AreEqual(0, packRectangles.Count);
             Assert.AreEqual(2, maxRectPacker.UsedRectangles.Count);
             Assert.AreEqual(true, maxRectPacker.UsedRectangles.Find(rectangle => rectangle.Key == "B").IsRotated);
+        }
+
+        [Test]
+        public void TestTexturePacker1()
+        {
+            var textureElements = CreateFakeTextureElements();
+
+            var packConfiguration = new Configuration
+            {
+                BorderSize = 0,
+                UseMultipack = true,
+                UseRotation = true,
+                PivotType = PivotType.Center,
+                SizeContraint = SizeConstraints.PowerOfTwo,
+                MaxHeight = 2048,
+                MaxWidth = 2048
+            };
+
+            var texturePacker = new TexturePacker();
+
+            texturePacker.Initialize(packConfiguration);
+
+            var canPackAllTextures = texturePacker.PackTextures(textureElements);
+
+            Assert.AreEqual(true, canPackAllTextures);
+        }
+
+        public Dictionary<string, IntemediateTextureElement> CreateFakeTextureElements()
+        {
+            var textureElements = new Dictionary<string, IntemediateTextureElement>();
+
+            textureElements.Add("A", new IntemediateTextureElement
+            {
+                TextureName = "A",
+                Texture = new FakeTexture2D { Width = 100, Height = 200 }
+            });
+
+            textureElements.Add("B", new IntemediateTextureElement
+            {
+                TextureName = "B",
+                Texture = new FakeTexture2D { Width = 400, Height = 300 }
+            });
+
+            return textureElements;
+        }
+
+        [Test]
+        public void TestTexturePacker2()
+        {
+            var textureAtlases = new List<TextureAtlas>();
+            var textureElements = CreateFakeTextureElements();
+
+            var packConfiguration = new Configuration
+            {
+                BorderSize = 0,
+                UseMultipack = true,
+                UseRotation = true,
+                PivotType = PivotType.Center,
+                SizeContraint = SizeConstraints.PowerOfTwo,
+                MaxHeight = 300,
+                MaxWidth = 300
+            };
+
+            var texturePacker = new TexturePacker();
+
+            texturePacker.Initialize(packConfiguration);
+
+            var canPackAllTextures = texturePacker.PackTextures(textureElements);
+            textureAtlases.AddRange(texturePacker.TextureAtlases);
+
+            Assert.AreEqual(1, textureElements.Count);
+            Assert.AreEqual(1, textureAtlases.Count);
+            Assert.AreEqual(false, canPackAllTextures);
+
+            // The current bin cant fit all of textures, resize the bin
+
+            packConfiguration = new Configuration
+            {
+                BorderSize = 0,
+                UseMultipack = true,
+                UseRotation = true,
+                PivotType = PivotType.Center,
+                SizeContraint = SizeConstraints.PowerOfTwo,
+                MaxHeight = 400,
+                MaxWidth = 400
+            };
+
+            texturePacker.Initialize(packConfiguration);
+
+            canPackAllTextures = texturePacker.PackTextures(textureElements);
+            textureAtlases.AddRange(texturePacker.TextureAtlases);
+
+            Assert.AreEqual(true, canPackAllTextures);
+            Assert.AreEqual(0, textureElements.Count);
+            Assert.AreEqual(2, textureAtlases.Count);
         }
     }
 }
