@@ -47,7 +47,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
             Assert.AreEqual(0, packRectangles.Count);
             Assert.AreEqual(2, maxRectPacker.UsedRectangles.Count);
-            Assert.AreEqual(true, maxRectPacker.UsedRectangles.Find(rectangle => rectangle.Key == "B").IsRotated);
+            Assert.IsTrue(maxRectPacker.UsedRectangles.Find(rectangle => rectangle.Key == "B").IsRotated);
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
             var canPackAllTextures = texturePacker.PackTextures(textureElements);
 
-            Assert.AreEqual(true, canPackAllTextures);
+            Assert.IsTrue(canPackAllTextures);
         }
 
         public Dictionary<string, IntemediateTextureElement> CreateFakeTextureElements()
@@ -143,7 +143,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
             Assert.AreEqual(1, textureElements.Count);
             Assert.AreEqual(1, textureAtlases.Count);
-            Assert.AreEqual(false, canPackAllTextures);
+            Assert.IsFalse(canPackAllTextures);
 
             // The current bin cant fit all of textures, resize the bin
             packConfiguration = new Configuration
@@ -162,15 +162,15 @@ namespace SiliconStudio.Paradox.Assets.Tests
             canPackAllTextures = texturePacker.PackTextures(textureElements);
             textureAtlases.AddRange(texturePacker.TextureAtlases);
 
-            Assert.AreEqual(true, canPackAllTextures);
+            Assert.IsTrue(canPackAllTextures);
             Assert.AreEqual(0, textureElements.Count);
             Assert.AreEqual(2, textureAtlases.Count);
 
-            Assert.AreEqual(true, IsPowerOfTwo(textureAtlases[0].Width));
-            Assert.AreEqual(true, IsPowerOfTwo(textureAtlases[0].Height));
+            Assert.IsTrue(IsPowerOfTwo(textureAtlases[0].Width));
+            Assert.IsTrue(IsPowerOfTwo(textureAtlases[0].Height));
 
-            Assert.AreEqual(true, IsPowerOfTwo(textureAtlases[1].Width));
-            Assert.AreEqual(true, IsPowerOfTwo(textureAtlases[1].Height));
+            Assert.IsTrue(IsPowerOfTwo(textureAtlases[1].Width));
+            Assert.IsTrue(IsPowerOfTwo(textureAtlases[1].Height));
         }
 
         private bool IsPowerOfTwo(int value)
@@ -215,12 +215,12 @@ namespace SiliconStudio.Paradox.Assets.Tests
             var canPackAllTextures = texturePacker.PackTextures(textureElements);
             textureAtlases.AddRange(texturePacker.TextureAtlases);
 
-            Assert.AreEqual(true, canPackAllTextures);
+            Assert.IsTrue(canPackAllTextures);
             Assert.AreEqual(0, textureElements.Count);
             Assert.AreEqual(1, textureAtlases.Count);
 
-            Assert.AreEqual(true, IsPowerOfTwo(textureAtlases[0].Width));
-            Assert.AreEqual(true, IsPowerOfTwo(textureAtlases[0].Height));
+            Assert.IsTrue(IsPowerOfTwo(textureAtlases[0].Width));
+            Assert.IsTrue(IsPowerOfTwo(textureAtlases[0].Height));
 
             // Test if border is applied in width and height
             var textureA = textureAtlases[0].Textures.Find(rectangle => rectangle.Region.Key == "A");
