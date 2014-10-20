@@ -133,22 +133,22 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 var textureData = texture.GetData<ColorBGRA>();
 
                 // If not use rotation, this copy use O(H). Otherwise, O(W*H) since the block of array is not contiguous when flipped
-                for (var y = 0; y < intemediateTexture.Region.Value.Height; ++y)
+                for (var y = 0; y < texture.Height; ++y)
                 {
                     if (!intemediateTexture.Region.IsRotated)
                     {
-                        Array.Copy(textureData, y * intemediateTexture.Region.Value.Width,
-                            atlasTextureData, (intemediateTexture.Region.Value.Y + y) * textureAtlas.Width + intemediateTexture.Region.Value.X, intemediateTexture.Region.Value.Width);
+                        Array.Copy(textureData, y * texture.Width,
+                            atlasTextureData, (intemediateTexture.Region.Value.Y + y) * textureAtlas.Width + intemediateTexture.Region.Value.X, texture.Width);
 
                         continue;
                     }
 
-                    for (var x = 0; x < intemediateTexture.Region.Value.Width; ++x)
+                    for (var x = 0; x < texture.Width; ++x)
                     {
-                        var targetIndexX = intemediateTexture.Region.Value.X + (intemediateTexture.Region.Value.Width - 1 - y);
+                        var targetIndexX = intemediateTexture.Region.Value.X + (texture.Width - 1 - y);
                         var targetIndexY = intemediateTexture.Region.Value.Y + x;
 
-                        atlasTextureData[targetIndexY * textureAtlas.Width + targetIndexX] = textureData[y * intemediateTexture.Region.Value.Width + x];
+                        atlasTextureData[targetIndexY * textureAtlas.Width + targetIndexX] = textureData[y * texture.Width + x];
                     }
                 }
             }
