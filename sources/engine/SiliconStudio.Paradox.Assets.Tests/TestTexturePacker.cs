@@ -2,9 +2,12 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 using NUnit.Framework;
 
+using SiliconStudio.Assets;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Assets.Texture;
 using SiliconStudio.Paradox.Graphics;
 
@@ -13,6 +16,18 @@ namespace SiliconStudio.Paradox.Assets.Tests
     [TestFixture]
     public class TestTexturePacker
     {
+        public static void LoadParadoxAssemblies()
+        {
+            RuntimeHelpers.RunModuleConstructor(typeof(Asset).Module.ModuleHandle);
+        }
+
+        [TestFixtureSetUp]
+        public void InitializeTest()
+        {
+            LoadParadoxAssemblies();
+            Game.InitializeAssetDatabase();
+        }
+
         [Test]
         public void TestMaxRectsPackWithoutRotation()
         {
@@ -235,15 +250,41 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 (!textureB.Region.IsRotated) ? textureB.Region.Value.Height : textureB.Region.Value.Width);
         }
 
+        public Texture2D CreateMockTexture(GraphicsDevice graphicsDevice, int width, int height)
+        {
+            var texture = Texture2D.New(graphicsDevice, width, height, 1, PixelFormat.B8G8R8A8_UNorm, usage: GraphicsResourceUsage.Dynamic);
+            texture.Name = "Mock";
+
+            var textureData = new ColorBGRA[width * height];
+
+            ColorBGRA color1 = Color.MediumPurple;
+            ColorBGRA color2 = Color.White;
+
+            // Fill in mock data
+            for(var y = 0 ; y < height ; ++y)
+                for (var x = 0; x < width; ++x)
+                {
+                    textureData[y * width + x] = y < height/2 ? color1 : color2;
+                }
+
+            texture.SetData(textureData);
+            return texture;
+        }
+
         [Test]
         public void TestTextureAtlasFactory()
         {
+            var graphicsDevice = GraphicsDevice.New(DeviceCreationFlags.None, GraphicsProfile.Level_11_0);
+
             var textureElements = new Dictionary<string, IntemediateTextureElement>();
 
-            textureElements.Add("A", new IntemediateTextureElement
+            var mockTexture = CreateMockTexture(graphicsDevice, 100, 200);
+
+            // Load a test texture asset
+            textureElements.Add(mockTexture.Name, new IntemediateTextureElement
             {
-                TextureName = "A",
-                Texture = new FakeTexture2D { Width = 100, Height = 200 }
+                TextureName = mockTexture.Name,
+                Texture = mockTexture
             });
 
             var packConfiguration = new Configuration
@@ -269,8 +310,8 @@ namespace SiliconStudio.Paradox.Assets.Tests
             var textureAtlases = texturePacker.TextureAtlases;
 
             Assert.AreEqual(1, textureAtlases.Count);
-            
-            var graphicsDevice = GraphicsDevice.New(DeviceCreationFlags.None, GraphicsProfile.Level_11_0);
+            Assert.IsTrue(IsPowerOfTwo(textureAtlases[0].Width));
+            Assert.IsTrue(IsPowerOfTwo(textureAtlases[0].Height));
 
             // Create atlas texture
             var atlasTexture = TextureAtlasFactory.CreateTextureAtlas(graphicsDevice, textureAtlases[0]);
