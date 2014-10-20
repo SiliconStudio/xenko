@@ -11,6 +11,7 @@
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\**\libcore.dll"/>
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\**\libbulletc.dll"/>
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\**\d3dcompiler_47.dll"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\**\glsl_optimizer.dll"/>
   </ItemGroup>
 
   <!-- On Windows platform automatically add the following references -->
