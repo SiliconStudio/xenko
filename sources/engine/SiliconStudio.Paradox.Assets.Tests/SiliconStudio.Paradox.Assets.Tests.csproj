@@ -143,6 +143,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestAssetImport.cs" />
     <Compile Include="TestDependencyResolver.cs" />
+    <Compile Include="TestTexturePacker.cs" />
     <Compile Include="TestMaterialTree.cs" />
     <Compile Include="TestTextureAlphaSplitter.cs" />
     <Compile Include="TestTreeFlattener.cs" />
