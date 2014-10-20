@@ -70,11 +70,6 @@
       <Name>SiliconStudio.Shaders</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\tools\SiliconStudio.GlslOptimizer\SiliconStudio.GlslOptimizer.vcxproj">
-      <Project>{3531277d-c8a3-4b2b-a6cd-de6f5d42c630}</Project>
-      <Name>SiliconStudio.GlslOptimizer</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Paradox.Shaders\SiliconStudio.Paradox.Shaders.csproj">
       <Project>{273bdd15-7392-4078-91f0-af23594a3d7b}</Project>
       <Name>SiliconStudio.Paradox.Shaders</Name>
@@ -93,6 +88,10 @@
   </ItemGroup>
   <ItemGroup Condition="'$(SiliconStudioPlatform)' == 'Windows'">
     <None Include="$(WindowsSdkDir_81)\Redist\D3D\**\d3dcompiler_47.dll">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\deps\glsl-optimizer\$(SiliconStudioPlatform)\**\glsl_optimizer.dll">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
