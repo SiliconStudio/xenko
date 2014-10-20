@@ -282,101 +282,48 @@ namespace SiliconStudio.Paradox.UI.Tests.Layering
         [Test]
         public void TestArrangeOverrideAbsolute()
         {
-            ResetState();
-
-            DepthAlignment = DepthAlignment.Stretch;
-
             // test that arrange set render size to provided size when there is no children
+            var nullCanvas = new Canvas { DepthAlignment = DepthAlignment.Stretch};
             var providedSize = 1000 * rand.NextVector3();
             var providedSizeWithoutMargins = CalculateSizeWithoutThickness(ref providedSize, ref MarginInternal);
-            Measure(providedSize);
-            Arrange(providedSize, false);
-            Assert.AreEqual(providedSizeWithoutMargins, RenderSize);
+            nullCanvas.Measure(providedSize);
+            nullCanvas.Arrange(providedSize, false);
+            Assert.AreEqual(providedSizeWithoutMargins, nullCanvas.RenderSize);
 
-            ResetState();
-
-            // Create and add children
-            for (var i = 0; i < 6; i++)
-                Children.Add(new ArrangeValidator());
-
-            // set an available size
-            var availablesizeWithMargins = 1000 * rand.NextVector3();
-            var availableSizeWithoutMargins = CalculateSizeWithoutThickness(ref availablesizeWithMargins, ref MarginInternal);
-
-            for (var i = 0; i < Children.Count; ++i)
+            // test that arrange works properly with valid children.
+            var availablesizeWithMargins = new Vector3(200, 300, 500);
+            var canvas = new Canvas { DepthAlignment = DepthAlignment.Stretch };
+            for (int i = 0; i < 10; i++)
             {
-                var child = (ArrangeValidator)Children[i];
+                var child = new ArrangeValidator { Name = i.ToString() };
 
-                // set children margins
-                child.Margin = rand.NextThickness(10, 11, 12, 13, 14, 15);
+                child.SetCanvasPinOrigin(new Vector3(0, 0.5f, 1));
+                child.SetCanvasAbsolutePosition(((i>>1)-1) * 0.5f * availablesizeWithMargins);
+                child.Margin = new Thickness(10, 11, 12, 13, 14, 15);
 
-                // set pin positions and origins
-                child.DependencyProperties.Set(AbsolutePositionPropertyKey, 100 * rand.NextVector3());
-                child.DependencyProperties.Set(PinOriginPropertyKey, rand.NextVector3());
+                child.ReturnedMeasuredValue = (i%2)==0? new Vector3(1000) : availablesizeWithMargins/3f;
+                child.ExpectedArrangeValue = new Vector3(
+                    Math.Min(child.ReturnedMeasuredValue.X, Math.Max(0, i > 1 ? availablesizeWithMargins.X * (1 - ((i >> 1) - 1) * 0.5f) - 23 : 0)),
+                    Math.Min(child.ReturnedMeasuredValue.Y, (i>> 1) == 2? availablesizeWithMargins.Y - 25 : 0),
+                    Math.Min(child.ReturnedMeasuredValue.Z, Math.Max(0, i < 8 ? availablesizeWithMargins.Z * (((i >> 1) - 1) * 0.5f) - 27 : 0)));
 
-                // set last last child pin at 0
-                if (i == Children.Count - 2)
-                {
-                    child.DependencyProperties.Set(AbsolutePositionPropertyKey, Vector3.Zero);
-                    child.DependencyProperties.Set(PinOriginPropertyKey, Vector3.Zero);
-                }
-
-                // set last child pin max
-                if (i == Children.Count - 1)
-                {
-                    child.DependencyProperties.Set(AbsolutePositionPropertyKey, availableSizeWithoutMargins);
-                    child.DependencyProperties.Set(PinOriginPropertyKey, Vector3.One);
-                }
-
-                // set the arrange validator values
-                child.ReturnedMeasuredValue = 1000 * rand.NextVector3();
-                var returnedWithMargin = CalculateSizeWithThickness(ref child.ReturnedMeasuredValue, ref child.MarginInternal);
-
-                // calculate the arrange supposed size
-                var pinOrigin = child.DependencyProperties.Get(PinOriginPropertyKey);
-                var pinPosition = child.DependencyProperties.Get(AbsolutePositionPropertyKey);
-                var childAvailableSize = Vector3.Zero;
-
-                if (pinPosition.X >= 0 && pinPosition.X <= availableSizeWithoutMargins.X
-                    && pinPosition.Y >= 0 && pinPosition.Y <= availableSizeWithoutMargins.Y
-                    && pinPosition.Z >= 0 && pinPosition.Z <= availableSizeWithoutMargins.Z)
-                {
-                    var availableBeforeElement = Vector3.Demodulate(pinPosition, pinOrigin);
-                    var availableAfterElement = Vector3.Demodulate(availableSizeWithoutMargins - pinPosition, Vector3.One - pinOrigin);
-
-                    for (var dim = 0; dim < 3; dim++)
-                    {
-                        if (pinOrigin[dim] == 0.0f)
-                            childAvailableSize[dim] = availableAfterElement[dim];
-                        else if (pinOrigin[dim] == 1.0f)
-                            childAvailableSize[dim] = availableBeforeElement[dim];
-                        else
-                            childAvailableSize[dim] = Math.Min(availableBeforeElement[dim], availableAfterElement[dim]);
-                    }
-                }
-                var expectedVectorSizeWithMargin = new Vector3(
-                    Math.Min(childAvailableSize.X, returnedWithMargin.X),
-                    Math.Min(childAvailableSize.Y, returnedWithMargin.Y),
-                    Math.Min(childAvailableSize.Z, returnedWithMargin.Z));
-                var expectedVectorSizeWithoutMargin = CalculateSizeWithoutThickness(ref expectedVectorSizeWithMargin, ref child.MarginInternal);
-
-                child.ExpectedArrangeValue = expectedVectorSizeWithoutMargin;
+                canvas.Children.Add(child);
             }
 
             // Measure the stack
-            Measure(availablesizeWithMargins);
-            Arrange(availablesizeWithMargins, false);
+            canvas.Measure(availablesizeWithMargins);
+            canvas.Arrange(availablesizeWithMargins, false);
 
             // checks the stack arranged size
-            Assert.AreEqual(availableSizeWithoutMargins, RenderSize);
+            Assert.AreEqual(availablesizeWithMargins, canvas.RenderSize);
 
             // Checks the children arrange matrix
-            for (int i = 0; i < Children.Count; i++)
+            for (int i = 0; i < canvas.Children.Count; i++)
             {
-                var pinPosition = Children[i].DependencyProperties.Get(AbsolutePositionPropertyKey);
-                var pinOrigin = Children[i].DependencyProperties.Get(PinOriginPropertyKey);
-                var childOffsets = (pinPosition - Vector3.Modulate(pinOrigin, Children[i].RenderSize)) - RenderSize / 2;
-                Assert.AreEqual(Matrix.Translation(childOffsets), Children[i].DependencyProperties.Get(PanelArrangeMatrixPropertyKey));
+                var pinPosition = canvas.Children[i].DependencyProperties.Get(AbsolutePositionPropertyKey);
+                var pinOrigin = canvas.Children[i].DependencyProperties.Get(PinOriginPropertyKey);
+                var childOffsets = (pinPosition - Vector3.Modulate(pinOrigin, canvas.Children[i].RenderSize)) - canvas.RenderSize / 2;
+                Assert.AreEqual(Matrix.Translation(childOffsets), canvas.Children[i].DependencyProperties.Get(PanelArrangeMatrixPropertyKey));
             }
         }
 
