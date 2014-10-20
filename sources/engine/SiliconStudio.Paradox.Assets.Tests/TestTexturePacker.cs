@@ -234,5 +234,49 @@ namespace SiliconStudio.Paradox.Assets.Tests
             Assert.AreEqual(textureB.Texture.Height + 2 * packConfiguration.BorderSize,
                 (!textureB.Region.IsRotated) ? textureB.Region.Value.Height : textureB.Region.Value.Width);
         }
+
+        [Test]
+        public void TestTextureAtlasFactory()
+        {
+            var textureElements = new Dictionary<string, IntemediateTextureElement>();
+
+            textureElements.Add("A", new IntemediateTextureElement
+            {
+                TextureName = "A",
+                Texture = new FakeTexture2D { Width = 100, Height = 200 }
+            });
+
+            var packConfiguration = new Configuration
+            {
+                BorderSize = 0,
+                SizeContraint = SizeConstraints.PowerOfTwo,
+                UseMultipack = false,
+                UseRotation = true,
+                PivotType = PivotType.Center,
+                MaxHeight = 2000,
+                MaxWidth = 2000
+            };
+
+            var texturePacker = new TexturePacker();
+
+            texturePacker.Initialize(packConfiguration);
+
+            var canPackAllTextures = texturePacker.PackTextures(textureElements);
+
+            Assert.AreEqual(true, canPackAllTextures);
+
+            // Obtain texture atlases
+            var textureAtlases = texturePacker.TextureAtlases;
+
+            Assert.AreEqual(1, textureAtlases.Count);
+            
+            var graphicsDevice = GraphicsDevice.New(DeviceCreationFlags.None, GraphicsProfile.Level_11_0);
+
+            // Create atlas texture
+            var atlasTexture = TextureAtlasFactory.CreateTextureAtlas(graphicsDevice, textureAtlases[0]);
+
+            Assert.AreEqual(textureAtlases[0].Width, atlasTexture.Width);
+            Assert.AreEqual(textureAtlases[0].Height, atlasTexture.Height);
+        }
     }
 }
