@@ -30,7 +30,8 @@ namespace SiliconStudio.Paradox.Assets.Texture
             foreach (var textureElementKey in textureElements.Keys)
             {
                 var textureElement = textureElements[textureElementKey];
-                textureRegions.Add(new RotatableRectangle(0, 0, textureElement.Texture.Width, textureElement.Texture.Height) { Key = textureElementKey });
+                textureRegions.Add(new RotatableRectangle(0, 0,
+                    textureElement.Texture.Width + 2 * packConfiguration.BorderSize, textureElement.Texture.Height + 2 * packConfiguration.BorderSize) { Key = textureElementKey });
             }
 
             do

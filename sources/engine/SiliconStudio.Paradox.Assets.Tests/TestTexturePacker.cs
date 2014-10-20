@@ -175,5 +175,62 @@ namespace SiliconStudio.Paradox.Assets.Tests
         {
             return (value & (value - 1)) == 0;
         }
+
+        [Test]
+        public void TestTexturePackWithBorder()
+        {
+            var textureAtlases = new List<TextureAtlas>();
+
+            var textureElements = new Dictionary<string, IntemediateTextureElement>();
+
+            textureElements.Add("A", new IntemediateTextureElement
+            {
+                TextureName = "A",
+                Texture = new FakeTexture2D { Width = 100, Height = 200 },
+            });
+
+            textureElements.Add("B", new IntemediateTextureElement
+            {
+                TextureName = "B",
+                Texture = new FakeTexture2D { Width = 57, Height = 22 },
+            });
+
+            var packConfiguration = new Configuration
+            {
+                BorderSize = 2,
+                UseMultipack = true,
+                UseRotation = true,
+                PivotType = PivotType.Center,
+                SizeContraint = SizeConstraints.PowerOfTwo,
+                MaxHeight = 512,
+                MaxWidth = 512
+            };
+
+            var texturePacker = new TexturePacker();
+
+            texturePacker.Initialize(packConfiguration);
+
+            var canPackAllTextures = texturePacker.PackTextures(textureElements);
+            textureAtlases.AddRange(texturePacker.TextureAtlases);
+
+            Assert.AreEqual(true, canPackAllTextures);
+            Assert.AreEqual(0, textureElements.Count);
+            Assert.AreEqual(1, textureAtlases.Count);
+
+            Assert.AreEqual(true, IsPowerOfTwo(textureAtlases[0].Width));
+            Assert.AreEqual(true, IsPowerOfTwo(textureAtlases[0].Height));
+
+            // Test if border is applied in width and height
+            var textureA = textureAtlases[0].Textures.Find(rectangle => rectangle.Region.Key == "A");
+            var textureB = textureAtlases[0].Textures.Find(rectangle => rectangle.Region.Key == "B");
+
+            Assert.AreEqual(textureA.Texture.Width + 2 * packConfiguration.BorderSize, textureA.Region.Value.Width);
+            Assert.AreEqual(textureA.Texture.Height + 2 * packConfiguration.BorderSize, textureA.Region.Value.Height);
+
+            Assert.AreEqual(textureB.Texture.Width + 2 * packConfiguration.BorderSize,
+                (!textureB.Region.IsRotated) ? textureB.Region.Value.Width : textureB.Region.Value.Height);
+            Assert.AreEqual(textureB.Texture.Height + 2 * packConfiguration.BorderSize,
+                (!textureB.Region.IsRotated) ? textureB.Region.Value.Height : textureB.Region.Value.Width);
+        }
     }
 }
