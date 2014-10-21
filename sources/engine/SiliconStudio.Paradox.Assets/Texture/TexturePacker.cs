@@ -173,7 +173,9 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 case TextureAddressMode.Clamp:
                     return (value >= 0) ? maxValue - 1 : 0;
                 case TextureAddressMode.MirrorOnce:
-                    return 0;
+                    var absValue = Math.Abs(value);
+                    if (0 <= absValue && absValue < maxValue) return absValue;
+                    return (maxValue - 1) - (absValue % maxValue);
                 default:
                     throw new ArgumentOutOfRangeException("mode");
             }
