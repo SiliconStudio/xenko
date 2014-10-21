@@ -3,6 +3,7 @@
 using System;
 using System.IO;
 using System.Threading;
+using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Paradox.Audio
 {
