@@ -263,7 +263,7 @@ namespace SiliconStudio.Core.Tests
             throw new InvalidOperationException("Callstack at end of MicroThread should contain Scheduler.Step().");
         }
 
-        protected MicroThread[] TestBase(string testName, BaseTests baseTests, Func<Action, Task> asyncFunction, int parallelCount)
+        protected MicroThread[] TestBase(string testName, BaseTests baseTests, Func<Action, Task> asyncFunction, int parallelCount, MicroThreadFlags flags = MicroThreadFlags.None)
         {
             var scheduler = new Scheduler();
             int completed = 0;
@@ -271,7 +271,7 @@ namespace SiliconStudio.Core.Tests
 
             // Run two microthreads at the same time
             for (int i = 0; i < parallelCount; ++i)
-                microThreads[i] = scheduler.Add(() => asyncFunction(() => { Interlocked.Increment(ref completed); CheckStackForSchedulerStep(); }));
+                microThreads[i] = scheduler.Add(() => asyncFunction(() => { Interlocked.Increment(ref completed); CheckStackForSchedulerStep(); }), flags);
 
             // Simulation of main loop
             for (int i = 0; i < 1000 && scheduler.MicroThreads.Count() > 0; ++i)
@@ -295,6 +295,13 @@ namespace SiliconStudio.Core.Tests
         }
         
         [Test, Sequential, TestCaseSource("FunctionsThrow")]
+        public void TestExceptionsIgnore(string testName, BaseTests baseTests, Func<Action, Task> asyncFunction, int parallelCount)
+        {
+            var microThreads = TestBase(testName, baseTests, asyncFunction, parallelCount, MicroThreadFlags.IgnoreExceptions);
+            Assert.That(microThreads.All(x => x.State == MicroThreadState.Failed && x.Exception != null), Is.EqualTo(true));
+        }
+
+        [Test, ExpectedException(typeof(InvalidOperationException)), Sequential, TestCaseSource("FunctionsThrow")]
         public void TestExceptions(string testName, BaseTests baseTests, Func<Action, Task> asyncFunction, int parallelCount)
         {
             var microThreads = TestBase(testName, baseTests, asyncFunction, parallelCount);
