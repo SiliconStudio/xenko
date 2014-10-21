@@ -161,6 +161,19 @@ namespace SiliconStudio.Paradox.Audio
         }
 
         /// <summary>
+        /// Stop all registered instances different from the provided main instance
+        /// </summary>
+        /// <param name="mainInstance">The main instance of the sound effect</param>
+        internal void StopConcurrentInstances(SoundEffectInstance mainInstance)
+        {
+            foreach (var instance in Instances)
+            {
+                if(instance != mainInstance)
+                    instance.Stop();
+            }
+        }
+
+        /// <summary>
         /// Unregister a disposed Instance.
         /// </summary>
         /// <param name="instance"></param>

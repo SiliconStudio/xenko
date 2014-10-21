@@ -91,6 +91,15 @@ namespace SiliconStudio.Paradox.Audio
 
         public virtual void Play()
         {
+            PlayExtended(true);
+        }
+
+        /// <summary>
+        /// Play or resume the current sound instance with extended parameters.
+        /// </summary>
+        /// <param name="stopSiblingInstances">Indicate if the sibling instances should be stopped or not</param>
+        protected void PlayExtended(bool stopSiblingInstances)
+        {
             CheckNotDisposed();
 
             if (EngineState == AudioEngineState.Invalidated)
@@ -102,7 +111,7 @@ namespace SiliconStudio.Paradox.Audio
             if (PlayState == SoundPlayState.Playing)
                 return;
 
-            if (PlayState == SoundPlayState.Stopped)
+            if (stopSiblingInstances)
                 StopConcurrentInstances();
 
             if (!DataBufferLoaded)

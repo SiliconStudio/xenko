@@ -446,5 +446,45 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
                 game.Exit();
             }
         }
+
+        /// <summary>
+        /// Tests the behavior of processor when several listener are present in the scene.
+        /// </summary>
+        [Test]
+        public void TestMultiListener()
+        {
+            TestUtilities.ExecuteScriptInDrawLoop(TestEmitterUpdateValuesSetup, TestMulteListenerUpdate);
+        }
+
+        private void TestMulteListenerUpdate(Game game, int loopCount, int loopCountSum)
+        {
+            var matchingEntities = game.Entities.Processors.OfType<AudioEmitterProcessor>().First().MatchingEntitiesForDebug;
+
+            var dataComp1 = matchingEntities[compEntities[0]];
+
+            if (loopCount == 0)
+            {
+                soundControllers[0].Play();
+            }
+            else if (loopCount < 10)
+            {
+                // check that the two instances are correctly create and playing
+                var tupple1 = Tuple.Create(listComps[0], soundControllers[0]);
+                var tupple2 = Tuple.Create(listComps[1], soundControllers[0]);
+                
+                Assert.IsTrue(dataComp1.ListenerControllerToSoundInstance.ContainsKey(tupple1));
+                Assert.IsTrue(dataComp1.ListenerControllerToSoundInstance.ContainsKey(tupple2));
+
+                var instance1 = dataComp1.ListenerControllerToSoundInstance[tupple1];
+                var instance2 = dataComp1.ListenerControllerToSoundInstance[tupple2];
+
+                Assert.AreEqual(SoundPlayState.Playing, instance1.PlayState);
+                Assert.AreEqual(SoundPlayState.Playing, instance2.PlayState);
+            }
+            else
+            {
+                game.Exit();
+            }
+        }
     }
 }
