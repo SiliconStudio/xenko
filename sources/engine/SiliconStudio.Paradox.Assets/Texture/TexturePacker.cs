@@ -119,11 +119,12 @@ namespace SiliconStudio.Paradox.Assets.Texture
     {
         public static Texture2D CreateTextureAtlas(GraphicsDevice graphicsDevice, TextureAtlas textureAtlas)
         {
-            // todo:nut\ make a pixel format a parameter so that a user could choose to create png or jpeg
             var atlasTexture = Texture2D.New(graphicsDevice, textureAtlas.Width, textureAtlas.Height, 1,
                 PixelFormat.B8G8R8A8_UNorm, usage: GraphicsResourceUsage.Dynamic);
 
             var atlasTextureData = new ColorBGRA[textureAtlas.Width * textureAtlas.Height];
+
+            var borderSize = textureAtlas.PackConfiguration.BorderSize;
 
             // Fill in textureData from textureAtlas
             foreach (var intemediateTexture in textureAtlas.Textures)
@@ -132,23 +133,18 @@ namespace SiliconStudio.Paradox.Assets.Texture
 
                 var textureData = texture.GetData<ColorBGRA>();
 
-                // If not use rotation, this copy use O(H). Otherwise, O(W*H) since the block of array is not contiguous when flipped
-                for (var y = 0; y < texture.Height; ++y)
+                for (var y = -borderSize ; y < texture.Height + borderSize; ++y)
                 {
-                    if (!intemediateTexture.Region.IsRotated)
+                    for (var x = -borderSize; x < texture.Width + borderSize; ++x)
                     {
-                        Array.Copy(textureData, y * texture.Width,
-                            atlasTextureData, (intemediateTexture.Region.Value.Y + y) * textureAtlas.Width + intemediateTexture.Region.Value.X, texture.Width);
+                        var targetIndexX = intemediateTexture.Region.Value.X + borderSize + ((intemediateTexture.Region.IsRotated) ? (texture.Width - 1 - y) : x);
+                        var targetIndexY = intemediateTexture.Region.Value.Y + borderSize + ((intemediateTexture.Region.IsRotated) ? x : y);
 
-                        continue;
-                    }
+                        var sourceIndexX = GetSourceTextureIndex(x, texture.Width, textureAtlas.PackConfiguration.BorderAddressMode);
+                        var sourceIndexY = GetSourceTextureIndex(y, texture.Height, textureAtlas.PackConfiguration.BorderAddressMode);
 
-                    for (var x = 0; x < texture.Width; ++x)
-                    {
-                        var targetIndexX = intemediateTexture.Region.Value.X + (texture.Width - 1 - y);
-                        var targetIndexY = intemediateTexture.Region.Value.Y + x;
-
-                        atlasTextureData[targetIndexY * textureAtlas.Width + targetIndexX] = textureData[y * texture.Width + x];
+                        atlasTextureData[targetIndexY * textureAtlas.Width + targetIndexX] = (sourceIndexX < 0 || sourceIndexY < 0)
+                            ? (ColorBGRA)(textureAtlas.PackConfiguration.BorderColor ?? Color.Transparent) : textureData[sourceIndexY * texture.Width + sourceIndexX];
                     }
                 }
             }
@@ -176,6 +172,8 @@ namespace SiliconStudio.Paradox.Assets.Texture
                     var absValue = Math.Abs(value);
                     if (0 <= absValue && absValue < maxValue) return absValue;
                     return (maxValue - 1) - (absValue % maxValue);
+                case TextureAddressMode.Border:
+                    return -1;
                 default:
                     throw new ArgumentOutOfRangeException("mode");
             }
@@ -210,7 +208,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
 
         public TextureAddressMode BorderAddressMode;
 
-        public Color BorderColor;
+        public Color? BorderColor;
 
         public int MaxWidth;
 
