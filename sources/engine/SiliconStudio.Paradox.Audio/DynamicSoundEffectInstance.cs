@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -199,7 +198,7 @@ namespace SiliconStudio.Paradox.Audio
         /// More precisely, the event is thrown every time that:
         /// <list type="bullet">
         /// <item>the sound is playing and the number of buffers remaining to play is too low.</item>
-        /// <item>the number of buffers remaining after a <see cref="SubmitBuffer"/> call is still not enough.</item>
+        /// <item>the number of buffers remaining after a <see cref="SubmitBuffer(byte[])"/> call is still not enough.</item>
         /// </list> 
         /// </remarks>
         public event EventHandler<EventArgs> BufferNeeded;
