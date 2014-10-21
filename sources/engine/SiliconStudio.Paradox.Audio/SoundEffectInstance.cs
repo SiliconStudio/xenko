@@ -21,6 +21,12 @@ namespace SiliconStudio.Paradox.Audio
     /// <para>
     /// A SoundEffectInstance is invalidated when the corresponding <see cref="SoundEffect"/> is Disposed.
     /// </para>
+    /// <para>
+    /// By default, playing an sound effect stops all the sibling instances currently playing. That is, the instances coming from the same <see cref="SoundEffect"/>.
+    /// This behavior is important on mobile devices which most of the time have only a limited number audio tracks. 
+    /// It prevents all the audio tracks from being occupied by the same short repeating sound and favors the variety of sounds.
+    /// This behavior can nevertheless be overridden by using the <see cref="SoundEffectInstance.Play(bool)"/> function.
+    /// </para>
     /// </remarks>
     /// <seealso cref="SoundEffect"/>
     /// <seealso cref="IPositionableSound"/>"/>
@@ -65,9 +71,17 @@ namespace SiliconStudio.Paradox.Audio
         protected override void StopConcurrentInstances()
         {
             if(soundEffect != null)
-                soundEffect.StopAllInstances();
+                soundEffect.StopConcurrentInstances(this);
         }
-
+        
+        /// <summary>
+        /// Play or resume the sound effect instance, specifying explicitly how to deal with sibling instances.
+        /// </summary>
+        /// <param name="stopSiblingInstances">Indicate if sibling instances (instances coming from the same <see cref="SoundEffect"/>) currently playing should be stopped or not.</param>
+        public void Play(bool stopSiblingInstances)
+        {
+            PlayExtended(stopSiblingInstances);
+        }
         
         #region Implementation of the ILocalizable Interface
 
@@ -146,21 +160,21 @@ namespace SiliconStudio.Paradox.Audio
         private float pitch;
 
         /// <summary>
-        /// Multiplicative factor to apply to the pitch that comes from the doppler effect.
+        /// Multiplicative factor to apply to the pitch that comes from the Doppler effect.
         /// </summary>
         private float dopplerPitchFactor;
 
         private void ComputeDopplerFactor(AudioListener listener, AudioEmitter emitter)
         {
-            // To evaluate the doppler effect we calculate the distance to the listener from one wave to the next one and divide it by the sound speed
+            // To evaluate the Doppler effect we calculate the distance to the listener from one wave to the next one and divide it by the sound speed
             // we use 343m/s for the sound speed which correspond to the sound speed in the air.
             // we use 600Hz for the sound frequency which correspond to the middle of the human hearable sounds frequencies.
 
-            const float soundSpeed = 343f;
-            const float soundFreq = 600f;
-            const float soundPeriod = 1 / soundFreq;
+            const float SoundSpeed = 343f;
+            const float SoundFreq = 600f;
+            const float SoundPeriod = 1 / SoundFreq;
 
-            // avoid unseless calculations.
+            // avoid useless calculations.
             if (emitter.DopplerScale <= float.Epsilon || (emitter.Velocity == Vector3.Zero && listener.Velocity == Vector3.Zero))
             {
                 dopplerPitchFactor = 1f;
@@ -171,7 +185,7 @@ namespace SiliconStudio.Paradox.Audio
             var distListEmit = vecListEmit.Length();
 
             var vecListEmitSpeed = emitter.Velocity - listener.Velocity;
-            if (Vector3.Dot(vecListEmitSpeed, Vector3.Normalize(vecListEmit)) < -soundSpeed) // emiter and listener are getting closer more quicly than the speed of the sound.
+            if (Vector3.Dot(vecListEmitSpeed, Vector3.Normalize(vecListEmit)) < -SoundSpeed) // emitter and listener are getting closer more quickly than the speed of the sound.
             {
                 dopplerPitchFactor = float.PositiveInfinity; // will be clamped later
                 return;
@@ -179,16 +193,16 @@ namespace SiliconStudio.Paradox.Audio
 
             var timeSinceLastWaveArrived = 0f; // time elapsed since the previous wave arrived to the listener.
             var lastWaveDistToListener = 0f; // the distance that the last wave still have to travel to arrive to the listener.
-            const float distLastWave = soundPeriod * soundSpeed; // distance traveled by the previous wave.
-            if (distLastWave > distListEmit)
-                timeSinceLastWaveArrived = (distLastWave - distListEmit) / soundSpeed;
+            const float DistLastWave = SoundPeriod * SoundSpeed; // distance traveled by the previous wave.
+            if (DistLastWave > distListEmit)
+                timeSinceLastWaveArrived = (DistLastWave - distListEmit) / SoundSpeed;
             else
-                lastWaveDistToListener = distListEmit - distLastWave;
-            var nextVecListEmit = vecListEmit + soundPeriod * vecListEmitSpeed;
+                lastWaveDistToListener = distListEmit - DistLastWave;
+            var nextVecListEmit = vecListEmit + SoundPeriod * vecListEmitSpeed;
             var nextWaveDistToListener = nextVecListEmit.Length();
-            var timeBetweenTwoWaves = timeSinceLastWaveArrived + (nextWaveDistToListener - lastWaveDistToListener) / soundSpeed;
+            var timeBetweenTwoWaves = timeSinceLastWaveArrived + (nextWaveDistToListener - lastWaveDistToListener) / SoundSpeed;
             var apparentFrequency = 1 / timeBetweenTwoWaves;
-            dopplerPitchFactor = (float) Math.Pow(apparentFrequency / soundFreq, emitter.DopplerScale);
+            dopplerPitchFactor = (float) Math.Pow(apparentFrequency / SoundFreq, emitter.DopplerScale);
         }
 
         #endregion

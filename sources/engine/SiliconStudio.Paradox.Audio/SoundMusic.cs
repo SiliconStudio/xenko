@@ -8,17 +8,16 @@ using SiliconStudio.Core.Serialization;
 namespace SiliconStudio.Paradox.Audio
 {
     /// <summary>
-    /// This class provides a loaded sound resource which is playable but not localizable. 
+    /// This class provides a sound resource which is playable but not localizable. 
     /// <para>
     /// SoundMusics are usually "long" sounds that need neither to be localized nor to be played with low latency. 
-    /// Classical examples are background musics or explainations. SoundMusics are progressively streamed to minimize memory usage.
+    /// Classical examples are background music or explanations. SoundMusics are progressively streamed to minimize memory usage.
     /// The user can also reduce the assets global size using the MP3 file format to encode SoundMusic.
     /// If low latency or sound localization is required take a look at the <see cref="SoundEffect"/> or <see cref="DynamicSoundEffectInstance"/> classes.
     /// </para>
     /// </summary>
     /// <remarks>
-    /// <para>Only one instance of SoundMusic can be played at a time. 
-    /// If Play is called while another SoundMusic is playing that SoundMusic is <bold>Stopped</bold>.</para>
+    /// <para>Only one instance of SoundMusic can be played at a time. Thus, playing a new SoundMusic stops the previous instance.</para>
     /// <para>
     /// You can create a SoundMusics by calling the static <see cref="Load"/> load function. 
     /// Currently only mono and stereo wav and mp3 files are supported for SoundMusics.
@@ -101,8 +100,8 @@ namespace SiliconStudio.Paradox.Audio
             // Make a memory copy of the stream so that the source can be properly disposed
             var memoryStream = new MemoryStream();
             stream.CopyTo(memoryStream);
-            this.Stream = memoryStream;
-            this.Stream.Position = 0;
+            Stream = memoryStream;
+            Stream.Position = 0;
 #endif
         }
 

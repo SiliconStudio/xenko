@@ -2,10 +2,15 @@
 
 Release date: 2014/??/??
 
-#### Issues fixed:
+#### Issues fixed
+- Audio: Fix crash in DynamicSoundEffectInstance worker thread during Dispose.
+- Audio: Fix problem of AudioEmitterSoundController stopping to play when SoundEffect is shared between several components.
+- Shaders: Fix ScreenPositionBase.pdxsl.
 - UI: Opacity is new correctly taken into account when drawing background color of UI elements.
 - UI: Fix rendering problems on the Button/ToggleButton's content when setting their background color.
-- Audio: Fix crash in DynamicSoundEffectInstance worker thread during Dispose.
+
+#### Enhancements
+- Audio: Add overloaded Play function in SoundEffectInstance that allows the user to specify how to deal with siblings instances (play in parallel or stop them)
 
 ### Version 1.0.0-beta01
 

@@ -52,7 +52,7 @@ namespace SiliconStudio.Paradox.Audio.Tests
             {
                 continousStereoSoundEffect = SoundEffect.Load(defaultEngine, contStream);
             }
-            using (var monoStream = AssetManager.FileProvider.OpenStream("LaugherMono", VirtualFileMode.Open, VirtualFileAccess.Read))
+            using (var monoStream = AssetManager.FileProvider.OpenStream("Effect44100Hz", VirtualFileMode.Open, VirtualFileAccess.Read))
             {
                 laugherMono = SoundEffect.Load(defaultEngine, monoStream);
             }
@@ -221,7 +221,7 @@ namespace SiliconStudio.Paradox.Audio.Tests
             laugherMono.Stop();
             Utilities.Sleep(500);
             Assert.DoesNotThrow(laugherMono.Play, "Restarting the audio sound after stopping it crashed throwing an exception.");
-            var countDown = 7500;
+            var countDown = 12000;
             while (laugherMono.PlayState == SoundPlayState.Playing)
             {
                 Utilities.Sleep(10);
