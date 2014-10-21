@@ -2,16 +2,22 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 /// <summary>
 /// Declares and sets the value of the screen position of the fragment ({x,y} in [-1,1], z in [0,1]).
+/// Be careful when to include this class because ShadingPosition should be correct at this point. Include this class at the end of the mixin list.
 /// </summary>
 class ScreenPositionBase : ShaderBase
 {
     // The position in screen space
-    stage stream float3 ScreenPosition;
+    stage stream float4 ScreenPosition;
 
-    // Computation is done in pixel shader to ensure that ShadingPosition is correct
+    stage override void VSMain()
+    {
+        base.VSMain();
+        streams.ScreenPosition = streams.ShadingPosition;
+    }
+
     stage override void PSMain()
     {
-        streams.ScreenPosition = streams.ShadingPosition.xyz / streams.ShadingPosition.w;
+        streams.ScreenPosition /= streams.ScreenPosition.w;
         base.PSMain();
     }
 };
