@@ -18,6 +18,9 @@ namespace SiliconStudio.Paradox.Audio
     /// </summary>
     public sealed partial class DynamicSoundEffectInstance : SoundEffectInstance
     {
+        internal object WorkerLock = new object();
+        internal bool IsDisposing;
+
         /// <summary>
         /// The wave format of this dynamic sound effect.
         /// </summary>
@@ -195,7 +198,7 @@ namespace SiliconStudio.Paradox.Audio
         /// More precisely, the event is thrown every time that:
         /// <list type="bullet">
         /// <item>the sound is playing and the number of buffers remaining to play is too low.</item>
-        /// <item>the number of buffers remaining after a <see cref="SubmitBuffer"/> call is still not enough.</item>
+        /// <item>the number of buffers remaining after a <see cref="SubmitBuffer(byte[])"/> call is still not enough.</item>
         /// </list> 
         /// </remarks>
         public event EventHandler<EventArgs> BufferNeeded;
@@ -251,21 +254,24 @@ namespace SiliconStudio.Paradox.Audio
         
         public override void Stop()
         {
-            base.Stop();
-
             // submitted buffers need to be cleared even if the music is already stopped (-> overload stop instead of stopImpl)
 
-            pendingBufferCount = 0;
-            internalPendingBufferCount = 0;
-
-            ClearBuffersImpl();
-
-            lock (submittedBufferHandles.InternalLock)
+            lock (WorkerLock) // we lock the worker thread here to avoid to have invalid states due to simultaneous Stop/Submit (via BufferNeeded callback).
             {
-                foreach (var handles in submittedBufferHandles.InternalQueue)
-                    handles.FreeHandles();
+                base.Stop();
 
-                submittedBufferHandles.InternalQueue.Clear();
+                pendingBufferCount = 0;
+                internalPendingBufferCount = 0;
+
+                ClearBuffersImpl();
+
+                lock (submittedBufferHandles.InternalLock)
+                {
+                    foreach (var handles in submittedBufferHandles.InternalQueue)
+                        handles.FreeHandles();
+
+                    submittedBufferHandles.InternalQueue.Clear();
+                }
             }
         }
 
@@ -296,7 +302,12 @@ namespace SiliconStudio.Paradox.Audio
         {
             AudioEngine.UnregisterSound(this);
 
-            base.DestroyImpl();
+            IsDisposing = true;
+
+            lock (WorkerLock) // avoid to have simultaneous destroy and submit buffer (via BufferNeeded of working thread).
+            {
+                base.DestroyImpl();
+            }
 
             Interlocked.Decrement(ref numberOfInstances);
 
@@ -335,9 +346,12 @@ namespace SiliconStudio.Paradox.Audio
                 DynamicSoundEffectInstance instanceNeedingBuffer;
                 while (instancesNeedingBuffer.TryDequeue(out instanceNeedingBuffer))
                 {
-                    if (!instanceNeedingBuffer.IsDisposed && instanceNeedingBuffer.BufferNeeded != null)
+                    lock (instanceNeedingBuffer.WorkerLock)
                     {
-                        instanceNeedingBuffer.BufferNeeded(instanceNeedingBuffer, EventArgs.Empty);
+                        if (!instanceNeedingBuffer.IsDisposing && instanceNeedingBuffer.BufferNeeded != null)
+                        {
+                            instanceNeedingBuffer.BufferNeeded(instanceNeedingBuffer, EventArgs.Empty);
+                        }
                     }
                 }
             }

@@ -52,7 +52,7 @@ namespace SiliconStudio.Paradox.Audio.Tests
             {
                 continousStereoSoundEffect = SoundEffect.Load(defaultEngine, contStream);
             }
-            using (var monoStream = AssetManager.FileProvider.OpenStream("LaugherMono", VirtualFileMode.Open, VirtualFileAccess.Read))
+            using (var monoStream = AssetManager.FileProvider.OpenStream("Effect44100Hz", VirtualFileMode.Open, VirtualFileAccess.Read))
             {
                 laugherMono = SoundEffect.Load(defaultEngine, monoStream);
             }
