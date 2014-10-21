@@ -158,6 +158,23 @@ namespace SiliconStudio.Paradox.Assets.Texture
 
             return atlasTexture;
         }
+
+        public static int GetSourceTextureIndex(int value, int maxValue, TextureAddressMode mode)
+        {
+            switch (mode)
+            {
+                case TextureAddressMode.Wrap:
+                    return (value >= 0) ? value % maxValue : (maxValue - ((-value) % maxValue)) % maxValue;
+                case TextureAddressMode.Mirror:
+                    return 0;
+                case TextureAddressMode.Clamp:
+                    return 0;
+                case TextureAddressMode.MirrorOnce:
+                    return 0;
+                default:
+                    throw new ArgumentOutOfRangeException("mode");
+            }
+        }
     }
 
     public enum SizeConstraints
@@ -187,6 +204,8 @@ namespace SiliconStudio.Paradox.Assets.Texture
         public SizeConstraints SizeContraint;
 
         public TextureAddressMode BorderAddressMode;
+
+        public Color BorderColor;
 
         public int MaxWidth;
 

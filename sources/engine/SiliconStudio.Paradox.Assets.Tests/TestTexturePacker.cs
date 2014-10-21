@@ -304,7 +304,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
             var canPackAllTextures = texturePacker.PackTextures(textureElements);
 
-            Assert.AreEqual(true, canPackAllTextures);
+            Assert.IsTrue(canPackAllTextures);
 
             // Obtain texture atlases
             var textureAtlases = texturePacker.TextureAtlases;
@@ -318,6 +318,35 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
             Assert.AreEqual(textureAtlases[0].Width, atlasTexture.Width);
             Assert.AreEqual(textureAtlases[0].Height, atlasTexture.Height);
+        }
+
+        [Test]
+        public void TestWrapBorderMode()
+        {
+            // Positive sets
+            Assert.AreEqual(0, TextureAtlasFactory.GetSourceTextureIndex(0, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(5, TextureAtlasFactory.GetSourceTextureIndex(5, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(9, 10, TextureAddressMode.Wrap));
+
+            Assert.AreEqual(0, TextureAtlasFactory.GetSourceTextureIndex(10, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(5, TextureAtlasFactory.GetSourceTextureIndex(15, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(19, 10, TextureAddressMode.Wrap));
+
+            Assert.AreEqual(0, TextureAtlasFactory.GetSourceTextureIndex(20, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(5, TextureAtlasFactory.GetSourceTextureIndex(25, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(29, 10, TextureAddressMode.Wrap));
+
+            // Negative sets
+            Assert.AreEqual(6, TextureAtlasFactory.GetSourceTextureIndex(-4, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(1, TextureAtlasFactory.GetSourceTextureIndex(-9, 10, TextureAddressMode.Wrap));
+
+            Assert.AreEqual(0, TextureAtlasFactory.GetSourceTextureIndex(-10, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(6, TextureAtlasFactory.GetSourceTextureIndex(-14, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(1, TextureAtlasFactory.GetSourceTextureIndex(-19, 10, TextureAddressMode.Wrap));
+
+            Assert.AreEqual(0, TextureAtlasFactory.GetSourceTextureIndex(-20, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(6, TextureAtlasFactory.GetSourceTextureIndex(-24, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(1, TextureAtlasFactory.GetSourceTextureIndex(-29, 10, TextureAddressMode.Wrap));
         }
     }
 }
