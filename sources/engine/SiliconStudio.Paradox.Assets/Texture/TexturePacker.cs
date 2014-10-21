@@ -168,7 +168,8 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 case TextureAddressMode.Mirror:
                     return 0;
                 case TextureAddressMode.Clamp:
-                    return 0;
+                    if (0 <= value && value < maxValue) return value;
+                    return (value < 0) ? 0 : maxValue - 1;
                 case TextureAddressMode.MirrorOnce:
                     return 0;
                 default:
