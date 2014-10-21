@@ -161,15 +161,17 @@ namespace SiliconStudio.Paradox.Assets.Texture
 
         public static int GetSourceTextureIndex(int value, int maxValue, TextureAddressMode mode)
         {
+            // Invariant condition
+            if (0 <= value && value < maxValue) return value;
+
             switch (mode)
             {
                 case TextureAddressMode.Wrap:
                     return (value >= 0) ? value % maxValue : (maxValue - ((-value) % maxValue)) % maxValue;
                 case TextureAddressMode.Mirror:
-                    return 0;
+                    return (value >= 0 ) ? (maxValue - 1) - (value % maxValue) : (-value) % maxValue;;
                 case TextureAddressMode.Clamp:
-                    if (0 <= value && value < maxValue) return value;
-                    return (value < 0) ? 0 : maxValue - 1;
+                    return (value >= 0) ? maxValue - 1 : 0;
                 case TextureAddressMode.MirrorOnce:
                     return 0;
                 default:

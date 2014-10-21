@@ -377,5 +377,33 @@ namespace SiliconStudio.Paradox.Assets.Tests
             Assert.AreEqual(0, TextureAtlasFactory.GetSourceTextureIndex(-24, 10, TextureAddressMode.Clamp));
             Assert.AreEqual(0, TextureAtlasFactory.GetSourceTextureIndex(-29, 10, TextureAddressMode.Clamp));
         }
+
+        [Test]
+        public void TestMirrorBorderMode()
+        {
+            // Positive sets
+            Assert.AreEqual(0, TextureAtlasFactory.GetSourceTextureIndex(0, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(5, TextureAtlasFactory.GetSourceTextureIndex(5, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(9, 10, TextureAddressMode.Mirror));
+
+            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(10, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(8, TextureAtlasFactory.GetSourceTextureIndex(11, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(7, TextureAtlasFactory.GetSourceTextureIndex(12, 10, TextureAddressMode.Mirror));
+
+            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(20, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(8, TextureAtlasFactory.GetSourceTextureIndex(21, 10, TextureAddressMode.Mirror));
+
+            // Negative Sets
+            Assert.AreEqual(1, TextureAtlasFactory.GetSourceTextureIndex(-1, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(2, TextureAtlasFactory.GetSourceTextureIndex(-2, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(3, TextureAtlasFactory.GetSourceTextureIndex(-3, 10, TextureAddressMode.Mirror));
+
+            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(-9, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(0, TextureAtlasFactory.GetSourceTextureIndex(-10, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(1, TextureAtlasFactory.GetSourceTextureIndex(-11, 10, TextureAddressMode.Mirror));
+
+            Assert.AreEqual(0, TextureAtlasFactory.GetSourceTextureIndex(-20, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(1, TextureAtlasFactory.GetSourceTextureIndex(-21, 10, TextureAddressMode.Mirror));
+        }
     }
 }
