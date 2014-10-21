@@ -16,36 +16,101 @@
 //  ------------------------------------------------------------------
 #endregion
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Drawing;
+using EnvDTE80;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Package;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Text.Classification;
+using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.TextManager.Interop;
+using SiliconStudio.Paradox.VisualStudio.Classifiers;
 using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 namespace NShader
 {
     public class NShaderLanguageService : LanguageService
     {
-        private ColorableItem[] m_colorableItems;
+        private VisualStudioThemeEngine themeEngine;
+        private NShaderColorableItem[] m_colorableItems;
 
         private LanguagePreferences m_preferences;
 
-        public NShaderLanguageService()
+        public override void Initialize()
         {
-            m_colorableItems = new ColorableItem[]
+            base.Initialize();
+
+            EnsureInitialized();
+        }
+
+        private void EnsureInitialized()
+        {
+            // Check if already initialized
+            if (m_colorableItems != null)
+                return;
+
+            // Initialize theme engine
+            themeEngine = new VisualStudioThemeEngine(Site);
+            themeEngine.OnThemeChanged += themeEngine_OnThemeChanged;
+
+            var currentTheme = themeEngine.GetCurrentTheme();
+
+            m_colorableItems = new NShaderColorableItem[]
                                    {
-                                        /*1*/ new NShaderColorableItem("Paradox Shader Language - Keyword", "Paradox Shader Language - Keyword", COLORINDEX.CI_BLUE, COLORINDEX.CI_USERTEXT_BK),
-                                        /*2*/ new NShaderColorableItem("Paradox Shader Language - Comment", "Paradox Shader Language - Comment", COLORINDEX.CI_DARKGREEN, COLORINDEX.CI_USERTEXT_BK),
-                                        /*3*/ new NShaderColorableItem("Paradox Shader Language - Identifier", "Paradox Shader Language - Identifier", COLORINDEX.CI_SYSPLAINTEXT_FG, COLORINDEX.CI_USERTEXT_BK),
-                                        /*4*/ new NShaderColorableItem("Paradox Shader Language - String", "Paradox Shader Language - String", COLORINDEX.CI_RED, COLORINDEX.CI_USERTEXT_BK),
-                                        /*5*/ new NShaderColorableItem("Paradox Shader Language - Number", "Paradox Shader Language - Number", COLORINDEX.CI_DARKBLUE, COLORINDEX.CI_USERTEXT_BK),
-                                        /*6*/ new NShaderColorableItem("Paradox Shader Language - Intrinsic", "Paradox Shader Language - Intrinsic", COLORINDEX.CI_MAROON, COLORINDEX.CI_USERTEXT_BK, FONTFLAGS.FF_BOLD),
-                                        /*7*/ new NShaderColorableItem("Paradox Shader Language - Special", "Paradox Shader Language - Special", COLORINDEX.CI_AQUAMARINE, COLORINDEX.CI_USERTEXT_BK),
-                                        /*8*/ new NShaderColorableItem("Paradox Shader Language - Preprocessor", "Paradox Shader Language - Preprocessor", COLORINDEX.CI_DARKGRAY, COLORINDEX.CI_USERTEXT_BK),
+                                        /*1*/ new NShaderColorableItem(currentTheme, "Paradox Shader Language - Keyword", "Paradox Shader Language - Keyword", COLORINDEX.CI_BLUE, COLORINDEX.CI_AQUAMARINE, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(86, 156, 214), Color.Empty, FONTFLAGS.FF_DEFAULT),
+                                        /*2*/ new NShaderColorableItem(currentTheme, "Paradox Shader Language - Comment", "Paradox Shader Language - Comment", COLORINDEX.CI_DARKGREEN, COLORINDEX.CI_GREEN, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(87, 166, 74), Color.Empty, FONTFLAGS.FF_DEFAULT),
+                                        /*3*/ new NShaderColorableItem(currentTheme, "Paradox Shader Language - Identifier", "Paradox Shader Language - Identifier", COLORINDEX.CI_SYSPLAINTEXT_FG, COLORINDEX.CI_SYSPLAINTEXT_FG, COLORINDEX.CI_USERTEXT_BK, FONTFLAGS.FF_DEFAULT),
+                                        /*4*/ new NShaderColorableItem(currentTheme, "Paradox Shader Language - String", "Paradox Shader Language - String", COLORINDEX.CI_RED, COLORINDEX.CI_RED, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(214, 157, 133), Color.Empty, FONTFLAGS.FF_DEFAULT),
+                                        /*5*/ new NShaderColorableItem(currentTheme, "Paradox Shader Language - Number", "Paradox Shader Language - Number", COLORINDEX.CI_DARKBLUE, COLORINDEX.CI_BLUE, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(181, 206, 168), Color.Empty, FONTFLAGS.FF_DEFAULT),
+                                        /*6*/ new NShaderColorableItem(currentTheme, "Paradox Shader Language - Intrinsic", "Paradox Shader Language - Intrinsic", COLORINDEX.CI_MAROON, COLORINDEX.CI_CYAN, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(239, 242, 132), Color.Empty, FONTFLAGS.FF_BOLD),
+                                        /*7*/ new NShaderColorableItem(currentTheme, "Paradox Shader Language - Special", "Paradox Shader Language - Special", COLORINDEX.CI_AQUAMARINE, COLORINDEX.CI_MAGENTA, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(78, 201, 176), Color.Empty, FONTFLAGS.FF_DEFAULT),
+                                        /*8*/ new NShaderColorableItem(currentTheme, "Paradox Shader Language - Preprocessor", "Paradox Shader Language - Preprocessor", COLORINDEX.CI_DARKGRAY, COLORINDEX.CI_LIGHTGRAY, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(155, 155, 155), Color.Empty, FONTFLAGS.FF_DEFAULT),
                                    };
         }
 
+        public override void Dispose()
+        {
+            themeEngine.OnThemeChanged -= themeEngine_OnThemeChanged;
+            themeEngine.Dispose();
+
+            base.Dispose();
+        }
+
+        void themeEngine_OnThemeChanged(object sender, EventArgs e)
+        {
+            var colorUtilities = Site.GetService(typeof(SVsFontAndColorStorage)) as IVsFontAndColorUtilities;
+            var currentTheme = themeEngine.GetCurrentTheme();
+
+            var store = Package.GetGlobalService(typeof(SVsFontAndColorStorage)) as IVsFontAndColorStorage;
+            store.OpenCategory(DefGuidList.guidTextEditorFontCategory, (uint)(__FCSTORAGEFLAGS.FCSF_LOADDEFAULTS | __FCSTORAGEFLAGS.FCSF_NOAUTOCOLORS | __FCSTORAGEFLAGS.FCSF_PROPAGATECHANGES));
+
+            // Update each colorable item
+            foreach (var colorableItem in m_colorableItems)
+            {
+                // Get display name of setting
+                string displayName;
+                colorableItem.GetDisplayName(out displayName);
+                
+                // Get new color
+                var hiColor = currentTheme == VisualStudioTheme.Dark ? colorableItem.HiForeColorDark : colorableItem.HiForeColorLight;
+                var colorIndex = currentTheme == VisualStudioTheme.Dark ? colorableItem.ForeColorDark : colorableItem.ForeColorLight;
+                
+                uint color;
+                if (hiColor != Color.Empty)
+                    color = hiColor.R | ((uint)hiColor.G << 8) | ((uint)hiColor.B << 16);
+                else
+                    colorUtilities.EncodeIndexedColor(colorIndex, out color);
+
+                // Update color in settings
+                store.SetItem(displayName, new[] { new ColorableItemInfo { bForegroundValid = 1, crForeground = color } });
+            }
+        }
 
         public override int GetItemCount(out int count)
         {
@@ -90,6 +155,8 @@ namespace NShader
 
         public override Colorizer GetColorizer(IVsTextLines buffer)
         {
+            EnsureInitialized();
+
             // Clear font cache
             // http://social.msdn.microsoft.com/Forums/office/en-US/54064c52-727d-4015-af70-c72e44d116a7/vs2012-fontandcolors-text-editor-category-for-language-service-colors?forum=vsx
             IVsFontAndColorStorage storage;
