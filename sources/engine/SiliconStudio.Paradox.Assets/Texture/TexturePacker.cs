@@ -219,8 +219,6 @@ namespace SiliconStudio.Paradox.Assets.Texture
 
     public class IntemediateTextureElement
     {
-        public string TextureName;
-
         public Texture2D Texture;
 
         public RotatableRectangle Region;

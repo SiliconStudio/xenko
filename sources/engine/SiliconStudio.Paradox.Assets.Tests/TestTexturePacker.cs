@@ -119,13 +119,11 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
             textureElements.Add("A", new IntemediateTextureElement
             {
-                TextureName = "A",
                 Texture = new FakeTexture2D { Width = 100, Height = 200 }
             });
 
             textureElements.Add("B", new IntemediateTextureElement
             {
-                TextureName = "B",
                 Texture = new FakeTexture2D { Width = 400, Height = 300 }
             });
 
@@ -202,13 +200,11 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
             textureElements.Add("A", new IntemediateTextureElement
             {
-                TextureName = "A",
                 Texture = new FakeTexture2D { Width = 100, Height = 200 },
             });
 
             textureElements.Add("B", new IntemediateTextureElement
             {
-                TextureName = "B",
                 Texture = new FakeTexture2D { Width = 57, Height = 22 },
             });
 
@@ -283,7 +279,6 @@ namespace SiliconStudio.Paradox.Assets.Tests
             // Load a test texture asset
             textureElements.Add(mockTexture.Name, new IntemediateTextureElement
             {
-                TextureName = mockTexture.Name,
                 Texture = mockTexture
             });
 
