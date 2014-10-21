@@ -2,15 +2,17 @@
 
 Release date: 2014/??/??
 
+#### Enhancements
+- Audio: Add overloaded Play function in SoundEffectInstance that allows the user to specify how to deal with siblings instances (play in parallel or stop them)
+- Studio: Improved the different grid views in the interface.
+
 #### Issues fixed
 - Audio: Fix crash in DynamicSoundEffectInstance worker thread during Dispose.
 - Audio: Fix problem of AudioEmitterSoundController stopping to play when SoundEffect is shared between several components.
 - Shaders: Fix ScreenPositionBase.pdxsl.
+- Studio: Some crashes that could occurs when copy/pasting assets. It is also possible to copy/paste from when a package is selected in the tree view
 - UI: Opacity is new correctly taken into account when drawing background color of UI elements.
 - UI: Fix rendering problems on the Button/ToggleButton's content when setting their background color.
-
-#### Enhancements
-- Audio: Add overloaded Play function in SoundEffectInstance that allows the user to specify how to deal with siblings instances (play in parallel or stop them)
 
 ### Version 1.0.0-beta01
 
