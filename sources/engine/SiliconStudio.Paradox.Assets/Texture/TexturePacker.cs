@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
             textureAtlases.Clear();
         }
 
-        public bool PackTextures(Dictionary<string, IntemediateTextureElement> textureElements)
+        public bool PackTextures(Dictionary<string, IntermediateTextureElement> textureElements)
         {
             // Create data for the packer
             var textureRegions = new List<RotatableRectangle>();
@@ -215,7 +215,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
         public int MaxHeight;
     }
 
-    public class IntemediateTextureElement
+    public class IntermediateTextureElement
     {
         public Texture2D Texture;
 
@@ -224,7 +224,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
 
     public class TextureAtlas
     {
-        public readonly List<IntemediateTextureElement> Textures = new List<IntemediateTextureElement>();
+        public readonly List<IntermediateTextureElement> Textures = new List<IntermediateTextureElement>();
 
         public int Width;
 

@@ -113,16 +113,16 @@ namespace SiliconStudio.Paradox.Assets.Tests
             Assert.IsTrue(canPackAllTextures);
         }
 
-        public Dictionary<string, IntemediateTextureElement> CreateFakeTextureElements()
+        public Dictionary<string, IntermediateTextureElement> CreateFakeTextureElements()
         {
-            var textureElements = new Dictionary<string, IntemediateTextureElement>();
+            var textureElements = new Dictionary<string, IntermediateTextureElement>();
 
-            textureElements.Add("A", new IntemediateTextureElement
+            textureElements.Add("A", new IntermediateTextureElement
             {
                 Texture = new FakeTexture2D { Width = 100, Height = 200 }
             });
 
-            textureElements.Add("B", new IntemediateTextureElement
+            textureElements.Add("B", new IntermediateTextureElement
             {
                 Texture = new FakeTexture2D { Width = 400, Height = 300 }
             });
@@ -196,14 +196,14 @@ namespace SiliconStudio.Paradox.Assets.Tests
         {
             var textureAtlases = new List<TextureAtlas>();
 
-            var textureElements = new Dictionary<string, IntemediateTextureElement>();
+            var textureElements = new Dictionary<string, IntermediateTextureElement>();
 
-            textureElements.Add("A", new IntemediateTextureElement
+            textureElements.Add("A", new IntermediateTextureElement
             {
                 Texture = new FakeTexture2D { Width = 100, Height = 200 },
             });
 
-            textureElements.Add("B", new IntemediateTextureElement
+            textureElements.Add("B", new IntermediateTextureElement
             {
                 Texture = new FakeTexture2D { Width = 57, Height = 22 },
             });
@@ -272,12 +272,12 @@ namespace SiliconStudio.Paradox.Assets.Tests
         {
             var graphicsDevice = GraphicsDevice.New(DeviceCreationFlags.None, GraphicsProfile.Level_11_0);
 
-            var textureElements = new Dictionary<string, IntemediateTextureElement>();
+            var textureElements = new Dictionary<string, IntermediateTextureElement>();
 
             var mockTexture = CreateMockTexture(graphicsDevice, 100, 200);
 
             // Load a test texture asset
-            textureElements.Add(mockTexture.Name, new IntemediateTextureElement
+            textureElements.Add(mockTexture.Name, new IntermediateTextureElement
             {
                 Texture = mockTexture
             });
