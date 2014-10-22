@@ -21,6 +21,18 @@ namespace SiliconStudio.Paradox.Assets.Texture
     public static class TextureCommandHelper
     {
         /// <summary>
+        /// Returns the nearest and higher power of two of the given input.
+        /// If the input is already a power of two, returns the same value.
+        /// </summary>
+        /// <param name="value">input value</param>
+        /// <returns></returns>
+        public static int CeilingToNearestPowerOfTwo(int value)
+        {
+            if (IsPowerOfTwo(value)) return value;
+
+            return (int)Math.Pow(2, Math.Ceiling(Math.Log(value) / Math.Log(2)));
+        }
+        /// <summary>
         /// Returns true if the provided int is a power of 2.
         /// </summary>
         /// <param name="x">the int value to test</param>

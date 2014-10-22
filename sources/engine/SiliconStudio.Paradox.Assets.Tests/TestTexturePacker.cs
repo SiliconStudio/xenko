@@ -175,16 +175,11 @@ namespace SiliconStudio.Paradox.Assets.Tests
             Assert.AreEqual(0, textureElements.Count);
             Assert.AreEqual(2, textureAtlases.Count);
 
-            Assert.IsTrue(IsPowerOfTwo(textureAtlases[0].Width));
-            Assert.IsTrue(IsPowerOfTwo(textureAtlases[0].Height));
+            Assert.IsTrue(TextureCommandHelper.IsPowerOfTwo(textureAtlases[0].Width));
+            Assert.IsTrue(TextureCommandHelper.IsPowerOfTwo(textureAtlases[0].Height));
 
-            Assert.IsTrue(IsPowerOfTwo(textureAtlases[1].Width));
-            Assert.IsTrue(IsPowerOfTwo(textureAtlases[1].Height));
-        }
-
-        private bool IsPowerOfTwo(int value)
-        {
-            return (value & (value - 1)) == 0;
+            Assert.IsTrue(TextureCommandHelper.IsPowerOfTwo(textureAtlases[1].Width));
+            Assert.IsTrue(TextureCommandHelper.IsPowerOfTwo(textureAtlases[1].Height));
         }
 
         [Test]
@@ -224,8 +219,8 @@ namespace SiliconStudio.Paradox.Assets.Tests
             Assert.AreEqual(0, textureElements.Count);
             Assert.AreEqual(1, textureAtlases.Count);
 
-            Assert.IsTrue(IsPowerOfTwo(textureAtlases[0].Width));
-            Assert.IsTrue(IsPowerOfTwo(textureAtlases[0].Height));
+            Assert.IsTrue(TextureCommandHelper.IsPowerOfTwo(textureAtlases[0].Width));
+            Assert.IsTrue(TextureCommandHelper.IsPowerOfTwo(textureAtlases[0].Height));
 
             // Test if border is applied in width and height
             var textureA = textureAtlases[0].Textures.Find(rectangle => rectangle.Region.Key == "A");
@@ -297,8 +292,8 @@ namespace SiliconStudio.Paradox.Assets.Tests
             var textureAtlases = texturePacker.TextureAtlases;
 
             Assert.AreEqual(1, textureAtlases.Count);
-            Assert.IsTrue(IsPowerOfTwo(textureAtlases[0].Width));
-            Assert.IsTrue(IsPowerOfTwo(textureAtlases[0].Height));
+            Assert.IsTrue(TextureCommandHelper.IsPowerOfTwo(textureAtlases[0].Width));
+            Assert.IsTrue(TextureCommandHelper.IsPowerOfTwo(textureAtlases[0].Height));
 
             // Create atlas texture
             var atlasTexture = TextureAtlasFactory.CreateTextureAtlas(graphicsDevice, textureAtlases[0]);

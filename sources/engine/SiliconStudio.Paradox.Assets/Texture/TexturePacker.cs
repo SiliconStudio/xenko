@@ -50,15 +50,15 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 maxRectPacker.Insert(textureRegions);
 
                 // Find true size from packed regions
-                var trueSize = CalculatePackedRectanglesBound(maxRectPacker.UsedRectangles);
+                var packedSize = CalculatePackedRectanglesBound(maxRectPacker.UsedRectangles);
 
                 // Alter the size of atlas so that it is a power of two
                 if (packConfiguration.SizeContraint == SizeConstraints.PowerOfTwo)
                 {
-                    trueSize.Width = (int)Math.Pow(2, Math.Ceiling(Math.Log(trueSize.Width) / Math.Log(2)));
-                    trueSize.Height = (int)Math.Pow(2, Math.Ceiling(Math.Log(trueSize.Height) / Math.Log(2)));
+                    packedSize.Width = TextureCommandHelper.CeilingToNearestPowerOfTwo(packedSize.Width);
+                    packedSize.Height = TextureCommandHelper.CeilingToNearestPowerOfTwo(packedSize.Height);
 
-                    if (trueSize.Width > packConfiguration.MaxWidth || trueSize.Height > packConfiguration.MaxHeight)
+                    if (packedSize.Width > packConfiguration.MaxWidth || packedSize.Height > packConfiguration.MaxHeight)
                         return false;
                 }
 
@@ -66,8 +66,8 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 var currentAtlas = new TextureAtlas
                 {
                     PackConfiguration = packConfiguration,
-                    Width = trueSize.Width,
-                    Height = trueSize.Height,
+                    Width = packedSize.Width,
+                    Height = packedSize.Height,
                 };
 
                 // Insert all packed regions into Atlas
