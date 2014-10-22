@@ -1,12 +1,14 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 using NUnit.Framework;
 
 using SiliconStudio.Assets;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Assets.Texture;
 using SiliconStudio.Paradox.Graphics;
@@ -414,6 +416,74 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
             Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(-20, 10, TextureAddressMode.MirrorOnce));
             Assert.AreEqual(8, TextureAtlasFactory.GetSourceTextureIndex(-21, 10, TextureAddressMode.MirrorOnce));
+        }
+
+        [Test]
+        public void TestImageCreationGetAndSet()
+        {
+            const int Width = 256;
+            const int Height = 128;
+
+            var source = Image.New2D(Width, Height, 1, PixelFormat.R8G8B8A8_UNorm);
+
+            Assert.AreEqual(source.TotalSizeInBytes, PixelFormat.R8G8B8A8_UNorm.SizeInBytes() * Width * Height);
+            Assert.AreEqual(source.PixelBuffer.Count, 1);
+
+            Assert.AreEqual(1, source.Description.MipLevels);
+            Assert.AreEqual(1, source.Description.ArraySize);
+
+            Assert.AreEqual(Width * Height * 4,
+                source.PixelBuffer[0].Width * source.PixelBuffer[0].Height * source.PixelBuffer[0].PixelSize);
+
+            // Set Pixel
+            var pixelBuffer = source.PixelBuffer[0];
+            pixelBuffer.SetPixel(0, 0, (byte)255);
+
+            // Get Pixel
+            var fromPixels = pixelBuffer.GetPixels<byte>();
+            Assert.AreEqual(fromPixels[0], 255);
+
+            // Dispose images
+            source.Dispose();
+        }
+
+        [Test]
+        public void TestImageDataPointerManipulation()
+        {
+            const int Width = 256;
+            const int Height = 128;
+
+            var source = Image.New2D(Width, Height, 1, PixelFormat.R8G8B8A8_UNorm);
+
+            Assert.AreEqual(source.TotalSizeInBytes, PixelFormat.R8G8B8A8_UNorm.SizeInBytes() * Width * Height);
+            Assert.AreEqual(source.PixelBuffer.Count, 1);
+
+            Assert.AreEqual(1, source.Description.MipLevels);
+            Assert.AreEqual(1, source.Description.ArraySize);
+
+            Assert.AreEqual(Width * Height * 4,
+                source.PixelBuffer[0].Width * source.PixelBuffer[0].Height * source.PixelBuffer[0].PixelSize);
+
+            unsafe
+            {
+                var ptr = (Color*)source.DataPointer;
+
+                // Clean the data
+                for (var i = 0; i < source.PixelBuffer[0].Height * source.PixelBuffer[0].Width; ++i)
+                    ptr[i] = Color.Transparent;
+
+                // Set a specific pixel to red
+                ptr[0] = Color.Red;
+            }
+
+            var pixelBuffer = source.PixelBuffer[0];
+
+            // Get Pixel
+            var fromPixels = pixelBuffer.GetPixels<Color>();
+            Assert.AreEqual(Color.Red, fromPixels[0]);
+
+            // Dispose images
+            source.Dispose();
         }
     }
 }
