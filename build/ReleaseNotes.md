@@ -1,6 +1,6 @@
 ### Version 1.0.0-beta02
 
-Release date: 2014/10/2?
+Release date: 2014/10/22
 
 #### New Features
 - Graphics: Add ability to unbind all the shader resources used by an effect.
