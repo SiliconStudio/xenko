@@ -30,10 +30,11 @@ namespace SiliconStudio.Paradox.Assets.Texture
         }
 
         /// <summary>
-        /// 
+        /// Packs textureElement into textureAtlases.
+        /// Note that, textureElements is modified when any texture element could be packed, it will be removed from the collection.
         /// </summary>
-        /// <param name="textureElements"></param>
-        /// <returns></returns>
+        /// <param name="textureElements">input texture elements</param>
+        /// <returns>True indicates all textures could be packed; False otherwise</returns>
         public bool PackTextures(Dictionary<string, IntermediateTextureElement> textureElements)
         {
             // Create data for the packer

@@ -72,6 +72,12 @@ namespace SiliconStudio.Paradox.Assets.Texture
             freeRectangles.Add(new Rectangle(0, 0, binWidth, binHeight));
         }
 
+        /// <summary>
+        /// Packs input rectangles with MaxRects algorithm.
+        /// Note that, rectangles is modified when any rectangle could be packed, it will be removed from the collection.
+        /// </summary>
+        /// <param name="rectangles">a list of rectangles to be packed</param>
+        /// <param name="method">MaxRects heuristic method which default value is RectangleBestShortSideFit</param>
         public void PackRectangles(List<RotatableRectangle> rectangles, FreeRectangleChoiceHeuristic method = FreeRectangleChoiceHeuristic.RectangleBestShortSideFit)
         {
             while (rectangles.Count > 0)
