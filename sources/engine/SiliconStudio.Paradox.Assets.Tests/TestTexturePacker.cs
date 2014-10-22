@@ -1,14 +1,13 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 using NUnit.Framework;
 
 using SiliconStudio.Assets;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Assets.Texture;
 using SiliconStudio.Paradox.Graphics;
@@ -111,6 +110,10 @@ namespace SiliconStudio.Paradox.Assets.Tests
             var canPackAllTextures = texturePacker.PackTextures(textureElements);
 
             Assert.IsTrue(canPackAllTextures);
+
+            // Dispose image
+            foreach (var texture in texturePacker.TextureAtlases.SelectMany(textureAtlas => textureAtlas.Textures))
+                texture.Texture.Dispose();
         }
 
         public Dictionary<string, IntermediateTextureElement> CreateFakeTextureElements()
@@ -119,12 +122,12 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
             textureElements.Add("A", new IntermediateTextureElement
             {
-                Texture = new FakeTexture2D { Width = 100, Height = 200 }
+                Texture = Image.New2D(100, 200, 1, PixelFormat.R8G8B8A8_UNorm)
             });
 
             textureElements.Add("B", new IntermediateTextureElement
             {
-                Texture = new FakeTexture2D { Width = 400, Height = 300 }
+                Texture = Image.New2D(400, 300, 1, PixelFormat.R8G8B8A8_UNorm)
             });
 
             return textureElements;
@@ -182,6 +185,10 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
             Assert.IsTrue(TextureCommandHelper.IsPowerOfTwo(textureAtlases[1].Width));
             Assert.IsTrue(TextureCommandHelper.IsPowerOfTwo(textureAtlases[1].Height));
+
+            // Dispose image
+            foreach (var texture in textureAtlases.SelectMany(textureAtlas => textureAtlas.Textures))
+                texture.Texture.Dispose();
         }
 
         [Test]
@@ -193,12 +200,12 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
             textureElements.Add("A", new IntermediateTextureElement
             {
-                Texture = new FakeTexture2D { Width = 100, Height = 200 },
+                Texture = Image.New2D(100, 200, 1, PixelFormat.R8G8B8A8_UNorm)
             });
 
             textureElements.Add("B", new IntermediateTextureElement
             {
-                Texture = new FakeTexture2D { Width = 57, Height = 22 },
+                Texture = Image.New2D(57, 22, 1, PixelFormat.R8G8B8A8_UNorm)
             });
 
             var packConfiguration = new Configuration
@@ -228,47 +235,43 @@ namespace SiliconStudio.Paradox.Assets.Tests
             var textureA = textureAtlases[0].Textures.Find(rectangle => rectangle.Region.Key == "A");
             var textureB = textureAtlases[0].Textures.Find(rectangle => rectangle.Region.Key == "B");
 
-            Assert.AreEqual(textureA.Texture.Width + 2 * packConfiguration.BorderSize, textureA.Region.Value.Width);
-            Assert.AreEqual(textureA.Texture.Height + 2 * packConfiguration.BorderSize, textureA.Region.Value.Height);
+            Assert.AreEqual(textureA.Texture.Description.Width + 2 * packConfiguration.BorderSize, textureA.Region.Value.Width);
+            Assert.AreEqual(textureA.Texture.Description.Height + 2 * packConfiguration.BorderSize, textureA.Region.Value.Height);
 
-            Assert.AreEqual(textureB.Texture.Width + 2 * packConfiguration.BorderSize,
+            Assert.AreEqual(textureB.Texture.Description.Width + 2 * packConfiguration.BorderSize,
                 (!textureB.Region.IsRotated) ? textureB.Region.Value.Width : textureB.Region.Value.Height);
-            Assert.AreEqual(textureB.Texture.Height + 2 * packConfiguration.BorderSize,
+            Assert.AreEqual(textureB.Texture.Description.Height + 2 * packConfiguration.BorderSize,
                 (!textureB.Region.IsRotated) ? textureB.Region.Value.Height : textureB.Region.Value.Width);
         }
 
-        public Texture2D CreateMockTexture(GraphicsDevice graphicsDevice, int width, int height)
+        public Image CreateMockTexture(int width, int height)
         {
-            var texture = Texture2D.New(graphicsDevice, width, height, 1, PixelFormat.B8G8R8A8_UNorm, usage: GraphicsResourceUsage.Dynamic);
-            texture.Name = "Mock";
+            var texture = Image.New2D(width, height, 1, PixelFormat.R8G8B8A8_UNorm);
 
-            var textureData = new ColorBGRA[width * height];
+            unsafe
+            {
+                var ptr = (Color*)texture.DataPointer;
 
-            ColorBGRA color1 = Color.MediumPurple;
-            ColorBGRA color2 = Color.White;
+                // Fill in mock data
+                for (var y = 0; y < height; ++y)
+                    for (var x = 0; x < width; ++x)
+                    {
+                        ptr[y * width + x] = y < height / 2 ? Color.MediumPurple : Color.White;
+                    }
+            }
 
-            // Fill in mock data
-            for(var y = 0 ; y < height ; ++y)
-                for (var x = 0; x < width; ++x)
-                {
-                    textureData[y * width + x] = y < height/2 ? color1 : color2;
-                }
-
-            texture.SetData(textureData);
             return texture;
         }
 
         [Test]
         public void TestTextureAtlasFactory()
         {
-            var graphicsDevice = GraphicsDevice.New(DeviceCreationFlags.None, GraphicsProfile.Level_11_0);
-
             var textureElements = new Dictionary<string, IntermediateTextureElement>();
 
-            var mockTexture = CreateMockTexture(graphicsDevice, 100, 200);
+            var mockTexture = CreateMockTexture(100, 200);
 
             // Load a test texture asset
-            textureElements.Add(mockTexture.Name, new IntermediateTextureElement
+            textureElements.Add("A", new IntermediateTextureElement
             {
                 Texture = mockTexture
             });
@@ -298,10 +301,13 @@ namespace SiliconStudio.Paradox.Assets.Tests
             Assert.IsTrue(TextureCommandHelper.IsPowerOfTwo(textureAtlases[0].Height));
 
             // Create atlas texture
-            var atlasTexture = TextureAtlasFactory.CreateTextureAtlas(graphicsDevice, textureAtlases[0]);
+            var atlasTexture = TextureAtlasFactory.CreateTextureAtlas(textureAtlases[0]);
 
-            Assert.AreEqual(textureAtlases[0].Width, atlasTexture.Width);
-            Assert.AreEqual(textureAtlases[0].Height, atlasTexture.Height);
+            Assert.AreEqual(textureAtlases[0].Width, atlasTexture.Description.Width);
+            Assert.AreEqual(textureAtlases[0].Height, atlasTexture.Description.Height);
+
+            mockTexture.Dispose();
+            atlasTexture.Dispose();
         }
 
         [Test]
