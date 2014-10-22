@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
@@ -244,7 +245,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 (!textureB.Region.IsRotated) ? textureB.Region.Value.Height : textureB.Region.Value.Width);
         }
 
-        public Image CreateMockTexture(int width, int height)
+        public Image CreateMockTexture(int width, int height, Color color)
         {
             var texture = Image.New2D(width, height, 1, PixelFormat.R8G8B8A8_UNorm);
 
@@ -256,7 +257,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 for (var y = 0; y < height; ++y)
                     for (var x = 0; x < width; ++x)
                     {
-                        ptr[y * width + x] = y < height / 2 ? Color.MediumPurple : Color.White;
+                        ptr[y * width + x] = y < height / 2 ? color : Color.White;
                     }
             }
 
@@ -268,7 +269,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
         {
             var textureElements = new Dictionary<string, IntermediateTextureElement>();
 
-            var mockTexture = CreateMockTexture(100, 200);
+            var mockTexture = CreateMockTexture(100, 200, Color.MediumPurple);
 
             // Load a test texture asset
             textureElements.Add("A", new IntermediateTextureElement
@@ -302,6 +303,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
             // Create atlas texture
             var atlasTexture = TextureAtlasFactory.CreateTextureAtlas(textureAtlases[0]);
+//            atlasTexture.Save(new FileStream(@"C:/Users/Peeranut/Desktop/super_output/img.png", FileMode.CreateNew), ImageFileType.Png);
 
             Assert.AreEqual(textureAtlases[0].Width, atlasTexture.Description.Width);
             Assert.AreEqual(textureAtlases[0].Height, atlasTexture.Description.Height);
@@ -490,6 +492,162 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
             // Dispose images
             source.Dispose();
+        }
+
+        [Test]
+        public void TestImageRotation()
+        {
+            var sourceWidth = 2;
+            var sourceHeight = 4;
+
+            string[,] source = new string[sourceWidth, sourceHeight];
+            for (int i = 0; i < source.GetLength(0); ++i)
+                for (int j = 0; j < source.GetLength(1); ++j)
+                    source[i, j] = i + ", " + j;
+
+            var destinationWidth = 4;
+            var destinationHeight = 2;
+            string[,] destination = new string[destinationWidth, destinationHeight];
+            for (int i = 0; i < destination.GetLength(0); ++i)
+                for (int j = 0; j < destination.GetLength(1); ++j)
+                    destination[i, j] = (sourceWidth - 1 - j) + ", " + i;
+        }
+
+        [Test]
+        public void TestImageRotation2()
+        {
+            var sourceWidth = 4;
+            var sourceHeight = 2;
+
+            string[] source = new string[sourceWidth * sourceHeight];
+            for (int j = 0; j < sourceHeight; ++j)
+                for (int i = 0; i < sourceWidth; ++i)
+                    source[j * sourceWidth + i] = j + ", " + i;
+
+//            var destinationWidth = 2;
+//            var destinationHeight = 4;
+//            string[] destination = new string[destinationWidth * destinationHeight];
+//            for (int j = 0; j < destinationHeight; ++j)
+//                for (int i = 0; i < destinationWidth; ++i)
+//                    destination[j * destinationWidth + i] = (sourceHeight - 1 - i) + ", " + j;
+
+            var destinationWidth = 2;
+            var destinationHeight = 4;
+            string[] destination = new string[destinationWidth * destinationHeight];
+            for (int j = 0; j < destinationHeight; ++j)
+                for (int i = 0; i < destinationWidth; ++i)
+                    destination[j * destinationWidth + i] = source[(sourceHeight - 1 - i) * sourceWidth + j];
+        }
+
+        [Test]
+        public void TestCreateTextureAtlasToOutput()
+        {
+            var textureElements = new Dictionary<string, IntermediateTextureElement>();
+
+            // Load a test texture asset
+            textureElements.Add("MediumPurple", new IntermediateTextureElement
+            {
+                Texture = CreateMockTexture(130, 158, Color.MediumPurple)
+            });
+
+            textureElements.Add("Red", new IntermediateTextureElement
+            {
+                Texture = CreateMockTexture(127, 248, Color.Red)
+            });
+
+            textureElements.Add("Blue", new IntermediateTextureElement
+            {
+                Texture = CreateMockTexture(212, 153, Color.Blue)
+            });
+
+            textureElements.Add("Gold", new IntermediateTextureElement
+            {
+                Texture = CreateMockTexture(78, 100, Color.Gold)
+            });
+
+            textureElements.Add("RosyBrown", new IntermediateTextureElement
+            {
+                Texture = CreateMockTexture(78, 100, Color.RosyBrown)
+            });
+
+            textureElements.Add("SaddleBrown", new IntermediateTextureElement
+            {
+                Texture = CreateMockTexture(400, 100, Color.SaddleBrown)
+            });
+
+            textureElements.Add("Salmon", new IntermediateTextureElement
+            {
+                Texture = CreateMockTexture(400, 200, Color.Salmon)
+            });
+
+            textureElements.Add("PowderBlue", new IntermediateTextureElement
+            {
+                Texture = CreateMockTexture(190, 200, Color.PowderBlue)
+            });
+
+            textureElements.Add("Orange", new IntermediateTextureElement
+            {
+                Texture = CreateMockTexture(200, 230, Color.Orange)
+            });
+
+            textureElements.Add("Silver", new IntermediateTextureElement
+            {
+                Texture = CreateMockTexture(100, 170, Color.Silver)
+            });
+
+            textureElements.Add("SlateGray", new IntermediateTextureElement
+            {
+                Texture = CreateMockTexture(100, 170, Color.SlateGray)
+            });
+
+            textureElements.Add("Tan", new IntermediateTextureElement
+            {
+                Texture = CreateMockTexture(140, 110, Color.Tan)
+            });
+
+            var packConfiguration = new Configuration
+            {
+                BorderSize = 10,
+                SizeContraint = SizeConstraints.PowerOfTwo,
+                BorderAddressMode = TextureAddressMode.Border,
+                BorderColor = Color.SteelBlue,
+                UseMultipack = false,
+                UseRotation = true,
+                PivotType = PivotType.Center,
+                MaxHeight = 1024,
+                MaxWidth = 1024
+            };
+
+            var texturePacker = new TexturePacker(packConfiguration);
+
+            var canPackAllTextures = texturePacker.PackTextures(textureElements);
+
+            Assert.IsTrue(canPackAllTextures);
+
+            // Obtain texture atlases
+            var textureAtlases = texturePacker.TextureAtlases;
+
+            Assert.AreEqual(1, textureAtlases.Count);
+
+            if (packConfiguration.SizeContraint == SizeConstraints.PowerOfTwo)
+            {
+                Assert.IsTrue(TextureCommandHelper.IsPowerOfTwo(textureAtlases[0].Width));
+                Assert.IsTrue(TextureCommandHelper.IsPowerOfTwo(textureAtlases[0].Height));
+            }
+
+            // Create atlas texture
+            var atlasTexture = TextureAtlasFactory.CreateTextureAtlas(textureAtlases[0]);
+            atlasTexture.Save(new FileStream(@"C:/Users/Peeranut/Desktop/super_output/img.png", FileMode.Create), ImageFileType.Png);
+
+            Assert.AreEqual(textureAtlases[0].Width, atlasTexture.Description.Width);
+            Assert.AreEqual(textureAtlases[0].Height, atlasTexture.Description.Height);
+
+            atlasTexture.Dispose();
+
+            foreach (var texture in textureAtlases.SelectMany(textureAtlas => textureAtlas.Textures))
+            {
+                texture.Texture.Dispose();
+            }
         }
     }
 }
