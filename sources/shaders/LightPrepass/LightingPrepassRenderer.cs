@@ -244,7 +244,6 @@ namespace SiliconStudio.Paradox.Effects.Modules.LightPrepass
             Pass.Parameters.Set(RenderTargetKeys.DepthStencilSource, depthStencilBuffer.Texture);
             Pass.Parameters.Set(GBufferBaseKeys.GBufferTexture, gbufferTexture);
             Pass.Parameters.Set(LightDeferredShadingKeys.LightTexture, lightTexture);
-            Pass.Parameters.Set(MaterialKeys.SpecularIntensity, 1.0f);
 
             // Generates a quad for post effect rendering (should be utility function)
             var vertices = new[]
@@ -523,10 +522,17 @@ namespace SiliconStudio.Paradox.Effects.Modules.LightPrepass
 
             // Clear and set light accumulation target
             GraphicsDevice.Clear(lightRenderTarget, new Color4(0.0f, 0.0f, 0.0f, 0.0f));
-            GraphicsDevice.SetRenderTarget(lightRenderTarget);
+            GraphicsDevice.SetRenderTarget(lightRenderTarget); // no depth buffer
 
             // Set default blend state
             GraphicsDevice.SetBlendState(null);
+
+            // set default depth stencil test
+            GraphicsDevice.SetDepthStencilState(GraphicsDevice.DepthStencilStates.None);
+
+            // TODO: remove this?
+            // override specular intensity
+            Pass.Parameters.Set(MaterialKeys.SpecularIntensity, 1.0f);
 
             UpdateTiles(Pass.Parameters);
 
@@ -547,6 +553,10 @@ namespace SiliconStudio.Paradox.Effects.Modules.LightPrepass
             RenderTilesForPointLights(context, hasPreviousLighting);
             
             EndRender(context);
+
+            // TDO: remove this
+            // Reset some values
+            Pass.Parameters.Reset(MaterialKeys.SpecularIntensity);
         }
 
         private bool RenderTileForDirectLights(RenderContext context)
