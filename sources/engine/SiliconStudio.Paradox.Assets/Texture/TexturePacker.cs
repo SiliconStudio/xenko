@@ -29,6 +29,11 @@ namespace SiliconStudio.Paradox.Assets.Texture
             textureAtlases.Clear();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="textureElements"></param>
+        /// <returns></returns>
         public bool PackTextures(Dictionary<string, IntermediateTextureElement> textureElements)
         {
             // Create data for the packer
@@ -47,7 +52,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 maxRectPacker.Initialize(packConfiguration.MaxWidth, packConfiguration.MaxHeight, packConfiguration.UseRotation);
 
                 // Pack
-                maxRectPacker.Insert(textureRegions);
+                maxRectPacker.PackRectangles(textureRegions);
 
                 // Find true size from packed regions
                 var packedSize = CalculatePackedRectanglesBound(maxRectPacker.UsedRectangles);
@@ -62,7 +67,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
                         return false;
                 }
 
-                // Insert the atlas to store packed regions
+                // PackRectangles the atlas to store packed regions
                 var currentAtlas = new TextureAtlas
                 {
                     PackConfiguration = packConfiguration,
@@ -70,7 +75,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
                     Height = packedSize.Height,
                 };
 
-                // Insert all packed regions into Atlas
+                // PackRectangles all packed regions into Atlas
                 foreach (var usedRectangle in maxRectPacker.UsedRectangles)
                 {
                     textureElements[usedRectangle.Key].Region = usedRectangle;

@@ -72,7 +72,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
             freeRectangles.Add(new Rectangle(0, 0, binWidth, binHeight));
         }
 
-        public void Insert(List<RotatableRectangle> rectangles, FreeRectangleChoiceHeuristic method = FreeRectangleChoiceHeuristic.RectangleBestShortSideFit)
+        public void PackRectangles(List<RotatableRectangle> rectangles, FreeRectangleChoiceHeuristic method = FreeRectangleChoiceHeuristic.RectangleBestShortSideFit)
         {
             while (rectangles.Count > 0)
             {

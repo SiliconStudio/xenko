@@ -40,7 +40,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 new RotatableRectangle(0, 0, 80, 100), new RotatableRectangle(0, 0, 100, 20),
             };
 
-            maxRectPacker.Insert(packRectangles);
+            maxRectPacker.PackRectangles(packRectangles);
 
             Assert.AreEqual(1, packRectangles.Count);
             Assert.AreEqual(1, maxRectPacker.UsedRectangles.Count);
@@ -58,7 +58,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 new RotatableRectangle(0, 0, 80, 100) { Key = "A" }, new RotatableRectangle(0, 0, 100, 20) { Key = "B"},
             };
 
-            maxRectPacker.Insert(packRectangles);
+            maxRectPacker.PackRectangles(packRectangles);
 
             Assert.AreEqual(0, packRectangles.Count);
             Assert.AreEqual(2, maxRectPacker.UsedRectangles.Count);
@@ -83,7 +83,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 new RotatableRectangle(0, 0, 25, 40), new RotatableRectangle(0, 0, 20, 40)
             };
 
-            maxRectPacker.Insert(packRectangles);
+            maxRectPacker.PackRectangles(packRectangles);
 
             Assert.AreEqual(1, packRectangles.Count);
             Assert.AreEqual(6, maxRectPacker.UsedRectangles.Count);
