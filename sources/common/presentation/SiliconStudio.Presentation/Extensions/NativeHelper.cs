@@ -48,7 +48,7 @@ namespace SiliconStudio.Presentation.Extensions
 
         public const int GWL_STYLE = unchecked((int)0xFFFFFFF0);
 
-        // Window Styes - http://msdn.microsoft.com/en-us/library/windows/desktop/ms632600%28v=vs.85%29.aspx
+        // Window Styles - http://msdn.microsoft.com/en-us/library/windows/desktop/ms632600%28v=vs.85%29.aspx
         public const int WS_BORDER = unchecked(0x00800000);
         public const int WS_CAPTION = unchecked(0x00C00000);
         public const int WS_CHILD = unchecked(0x40000000);
