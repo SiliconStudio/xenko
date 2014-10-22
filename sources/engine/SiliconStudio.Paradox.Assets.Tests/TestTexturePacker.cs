@@ -104,9 +104,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 MaxWidth = 2000
             };
 
-            var texturePacker = new TexturePacker();
-
-            texturePacker.Initialize(packConfiguration);
+            var texturePacker = new TexturePacker(packConfiguration);
 
             var canPackAllTextures = texturePacker.PackTextures(textureElements);
 
@@ -147,9 +145,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 MaxWidth = 300
             };
 
-            var texturePacker = new TexturePacker();
-
-            texturePacker.Initialize(packConfiguration);
+            var texturePacker = new TexturePacker(packConfiguration);
 
             var canPackAllTextures = texturePacker.PackTextures(textureElements);
             textureAtlases.AddRange(texturePacker.TextureAtlases);
@@ -159,7 +155,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
             Assert.IsFalse(canPackAllTextures);
 
             // The current bin cant fit all of textures, resize the bin
-            packConfiguration = new Configuration
+            var newPackConfiguration = new Configuration
             {
                 BorderSize = 0,
                 UseMultipack = true,
@@ -170,7 +166,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 MaxWidth = 800
             };
 
-            texturePacker.Initialize(packConfiguration);
+            texturePacker.ResetPacker(newPackConfiguration);
 
             canPackAllTextures = texturePacker.PackTextures(textureElements);
             textureAtlases.AddRange(texturePacker.TextureAtlases);
@@ -219,9 +215,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 MaxWidth = 512
             };
 
-            var texturePacker = new TexturePacker();
-
-            texturePacker.Initialize(packConfiguration);
+            var texturePacker = new TexturePacker(packConfiguration);
 
             var canPackAllTextures = texturePacker.PackTextures(textureElements);
             textureAtlases.AddRange(texturePacker.TextureAtlases);
@@ -293,9 +287,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 MaxWidth = 2000
             };
 
-            var texturePacker = new TexturePacker();
-
-            texturePacker.Initialize(packConfiguration);
+            var texturePacker = new TexturePacker(packConfiguration);
 
             var canPackAllTextures = texturePacker.PackTextures(textureElements);
 

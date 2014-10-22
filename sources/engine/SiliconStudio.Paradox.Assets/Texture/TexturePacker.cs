@@ -15,9 +15,16 @@ namespace SiliconStudio.Paradox.Assets.Texture
 
         private Configuration packConfiguration;
 
-        public void Initialize(Configuration configuration)
+        public TexturePacker(Configuration configuration)
         {
             packConfiguration = configuration;
+
+            textureAtlases.Clear();
+        }
+
+        public void ResetPacker(Configuration? configuration = null)
+        {
+            if(configuration != null) packConfiguration = (Configuration)configuration;
 
             textureAtlases.Clear();
         }
