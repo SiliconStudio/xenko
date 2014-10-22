@@ -244,7 +244,6 @@ namespace SiliconStudio.Paradox.Effects.Modules.LightPrepass
             Pass.Parameters.Set(RenderTargetKeys.DepthStencilSource, depthStencilBuffer.Texture);
             Pass.Parameters.Set(GBufferBaseKeys.GBufferTexture, gbufferTexture);
             Pass.Parameters.Set(LightDeferredShadingKeys.LightTexture, lightTexture);
-            Pass.Parameters.Set(MaterialKeys.SpecularIntensity, 1.0f);
 
             // Generates a quad for post effect rendering (should be utility function)
             var vertices = new[]
@@ -523,10 +522,18 @@ namespace SiliconStudio.Paradox.Effects.Modules.LightPrepass
 
             // Clear and set light accumulation target
             GraphicsDevice.Clear(lightRenderTarget, new Color4(0.0f, 0.0f, 0.0f, 0.0f));
-            GraphicsDevice.SetRenderTarget(lightRenderTarget);
+            GraphicsDevice.SetRenderTarget(lightRenderTarget); // no depth buffer
+            // TODO: make sure that the lightRenderTarget.Texture is not bound to any shader to prevent some warnings
 
             // Set default blend state
             GraphicsDevice.SetBlendState(null);
+
+            // set default depth stencil test
+            GraphicsDevice.SetDepthStencilState(GraphicsDevice.DepthStencilStates.None);
+
+            // TODO: remove this?
+            // override specular intensity
+            context.Parameters.Set(MaterialKeys.SpecularIntensity, 1.0f);
 
             UpdateTiles(Pass.Parameters);
 
@@ -537,7 +544,14 @@ namespace SiliconStudio.Paradox.Effects.Modules.LightPrepass
             foreach (var lightList in shadowLights)
             {
                 if (lightList.Value.Count > 0)
-                    hasPreviousLighting |= RenderTileForDirectShadowLights(context, hasPreviousLighting, shadowEffects[lightList.Key], lightList.Value, shadowLightDatas[lightList.Key], lightList.Key.Filter == ShadowMapFilterType.Variance);
+                {
+                    var effect = shadowEffects[lightList.Key];
+                    if (RenderTileForDirectShadowLights(context, hasPreviousLighting, effect, lightList.Value, shadowLightDatas[lightList.Key], lightList.Key.Filter == ShadowMapFilterType.Variance))
+                    {
+                        effect.UnbindResources();
+                        hasPreviousLighting = true;
+                    }
+                }
             }
 
             // spot lights
@@ -547,6 +561,10 @@ namespace SiliconStudio.Paradox.Effects.Modules.LightPrepass
             RenderTilesForPointLights(context, hasPreviousLighting);
             
             EndRender(context);
+
+            // TDO: remove this
+            // Reset some values
+            context.Parameters.Reset(MaterialKeys.SpecularIntensity);
         }
 
         private bool RenderTileForDirectLights(RenderContext context)
@@ -605,7 +623,13 @@ namespace SiliconStudio.Paradox.Effects.Modules.LightPrepass
                 startLightIndex += MaxDirectLightsPerTileDrawCall;
             }
 
-            return (drawCount > 0);
+            if (drawCount > 0)
+            {
+                directLightingPrepassEffect.UnbindResources();
+                return true;
+            }
+
+            return false;
         }
 
         private bool RenderTileForDirectShadowLights(RenderContext context, bool hasPreviousDraw, Effect effect, List<EntityLightShadow> lights, List<DirectLightData> lightDatas, bool varianceShadowMap)
@@ -752,13 +776,21 @@ namespace SiliconStudio.Paradox.Effects.Modules.LightPrepass
                 startLightIndex += MaxSpotLightsPerTileDrawCall;
             }
 
-            return (drawCount > 0);
+            if (drawCount > 0)
+            {
+                spotLightingPrepassEffect.UnbindResources();
+                return true;
+            }
+
+            return false;
         }
 
         private void RenderTilesForPointLights(RenderContext context, bool hasPreviousDraw)
         {
             context.Parameters.Set(DeferredLightingShaderKeys.TileCountX, TileCountX);
             context.Parameters.Set(DeferredLightingShaderKeys.TileCountY, TileCountY);
+
+            var hasDrawn = false;
 
             for (var tileIndex = 0; tileIndex < TileCountX * TileCountY; ++tileIndex)
             {
@@ -823,8 +855,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.LightPrepass
                     // Apply effect & parameters
                     pointLightingPrepassEffect.Apply(parameterCollections);
 
-                    // On second draw, switch to accumulation
-                    if (!hasPreviousDraw && i == 1)
+                    // From second draw, switch to accumulation
+                    if (!hasPreviousDraw && i > 0)
                         GraphicsDevice.SetBlendState(accumulationBlendState);
 
                     // Set VAO and draw tile
@@ -835,9 +867,15 @@ namespace SiliconStudio.Paradox.Effects.Modules.LightPrepass
                 }
 
                 // Set default blend state for next draw (if accumulation blend state has been used)
+                // drawCount > 1 means that there was more than one call on this tile, so accumulation blend state has been set. It needs to be reset.
                 if (!hasPreviousDraw && drawCount > 1)
                     GraphicsDevice.SetBlendState(null);
+
+                hasDrawn |= (drawCount > 0);
             }
+
+            if (hasDrawn)
+                pointLightingPrepassEffect.UnbindResources();
         }
 
         private void UpdateTiles(ParameterCollection viewParameters)

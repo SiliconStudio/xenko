@@ -66,6 +66,19 @@ namespace SiliconStudio.Paradox.Graphics.Internals
             }
         }
 
+        public void UnbindResources(GraphicsDevice graphicsDevice, EffectParameterResourceBinding[] bindings)
+        {
+            // look for shader resource and unbind
+            for (int i = 0; i < bindings.Length; i++)
+            {
+                var binding = bindings[i];
+                if (binding.Description.Param.Class == EffectParameterClass.ShaderResourceView)
+                    graphicsDevice.SetShaderResourceView(binding.Description.Stage, binding.Description.SlotStart, null);
+                else if (binding.Description.Param.Class == EffectParameterClass.UnorderedAccessView)
+                    graphicsDevice.SetUnorderedAccessView(binding.Description.Stage, binding.Description.SlotStart, null);
+            }
+        }
+
         private void PrepareBinding(ref EffectParameterResourceBinding binding)
         {
             switch (binding.Description.Param.Class)

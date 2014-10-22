@@ -71,13 +71,14 @@ namespace SiliconStudio.Core.MicroThreading
         private readonly CallbackFromActionBuilder callbackFromActionBuilder;
         private readonly CallbackSendPostCallbackBuilder callbackSendPostCallbackBuilder;
 
-        public MicroThread(Scheduler scheduler)
+        public MicroThread(Scheduler scheduler, MicroThreadFlags flags = MicroThreadFlags.None)
         {
             Id = Interlocked.Increment(ref globalCounterId);
             Scheduler = scheduler;
             ScheduledLinkedListNode = new PriorityQueueNode<MicroThread>(this);
             AllLinkedListNode = new LinkedListNode<MicroThread>(this);
             ScheduleMode = ScheduleMode.Last;
+            Flags = flags;
             Tags = new PropertyContainer(this);
 
             callbackFromActionBuilder = new CallbackFromActionBuilder(this);
@@ -131,6 +132,20 @@ namespace SiliconStudio.Core.MicroThreading
         /// <value>The exception.</value>
         public Exception Exception { get; private set; }
 
+        /// <summary>
+        /// Gets the <see cref="MicroThread"/> flags.
+        /// </summary>
+        /// <value>
+        /// The flags.
+        /// </value>
+        public MicroThreadFlags Flags { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the <see cref="MicroThread"/> scheduling mode.
+        /// </summary>
+        /// <value>
+        /// The scheduling mode.
+        /// </value>
         public ScheduleMode ScheduleMode { get; set; }
 
         /// <summary>
@@ -190,6 +205,7 @@ namespace SiliconStudio.Core.MicroThreading
         /// Starts this <see cref="MicroThread"/> with the specified function.
         /// </summary>
         /// <param name="microThreadFunction">The micro thread function.</param>
+        /// <param name="flags">The flags.</param>
         /// <param name="scheduleMode">The schedule mode.</param>
         /// <exception cref="System.InvalidOperationException">MicroThread was already started before.</exception>
         public void Start(Func<Task> microThreadFunction, ScheduleMode scheduleMode = ScheduleMode.Last)
@@ -260,7 +276,7 @@ namespace SiliconStudio.Core.MicroThreading
         /// As an exception can only be raised cooperatively, there is no guarantee it will actually happen or when it will happen.
         /// The scheduler usually checks for them before and after a continuation is running.
         /// Only one Exception is currently recorded.
-        /// <param name="e">The e.</param>
+        /// <param name="e">The exception.</param>
         public void RaiseException(Exception e)
         {
             if (ExceptionToRaise == null)

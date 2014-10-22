@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Collections;
@@ -180,6 +181,14 @@ namespace SiliconStudio.Core.MicroThreading
                                 else
                                     microThread.CompletionTask.TrySetResult(1);
                             }
+                            else if (microThread.State == MicroThreadState.Failed && microThread.Exception != null)
+                            {
+                                // Nothing was listening on the micro thread and it crashed
+                                // Let's treat it as unhandled exception and propagate it
+                                // Use ExceptionDispatchInfo.Capture to not overwrite callstack
+                                if ((microThread.Flags & MicroThreadFlags.IgnoreExceptions) != MicroThreadFlags.IgnoreExceptions)
+                                    ExceptionDispatchInfo.Capture(microThread.Exception).Throw();
+                            }
 
                             if (MicroThreadEnded != null)
                                 MicroThreadEnded(this, new SchedulerThreadEventArgs(microThread, managedThreadId));
@@ -204,10 +213,11 @@ namespace SiliconStudio.Core.MicroThreading
         /// Note that in case of multithreaded scheduling, it might start before this function returns.
         /// </summary>
         /// <param name="microThreadFunction">The function to create a micro thread from.</param>
+        /// <param name="flags">The flags.</param>
         /// <returns>A micro thread.</returns>
-        public MicroThread Add(Func<Task> microThreadFunction)
+        public MicroThread Add(Func<Task> microThreadFunction, MicroThreadFlags flags = MicroThreadFlags.None)
         {
-            var microThread = new MicroThread(this);
+            var microThread = new MicroThread(this, flags);
             microThread.Start(microThreadFunction);
             return microThread;
         }

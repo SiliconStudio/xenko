@@ -1,11 +1,11 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Windows.Media;
 
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
+
+using SiliconStudio.Paradox.VisualStudio.BuildEngine;
 
 namespace SiliconStudio.Paradox.VisualStudio
 {
@@ -57,72 +57,108 @@ namespace SiliconStudio.Paradox.VisualStudio
         [Export(typeof(EditorFormatDefinition))]
         [ClassificationType(ClassificationTypeNames = BuildEngineDebug)]
         [Name(BuildEngineDebug)]
+        [UserVisible(true)] //this should be visible to the end user
+        [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
         internal sealed class BuildEngineDebugFormat : ClassificationFormatDefinition
         {
-            public BuildEngineDebugFormat()
+            [ImportingConstructor]
+            public BuildEngineDebugFormat(OutputClassificationColorManager colorManager)
             {
-                this.ForegroundColor = Colors.DarkGray;
+                DisplayName = "Paradox BuildEngine Debug";
                 this.IsBold = false;
+                var classificationColor = colorManager.GetClassificationColor(BuildEngineDebug);
+                ForegroundColor = classificationColor.ForegroundColor;
+                BackgroundColor = classificationColor.BackgroundColor;
             }
         }
 
         [Export(typeof(EditorFormatDefinition))]
         [ClassificationType(ClassificationTypeNames = BuildEngineVerbose)]
         [Name(BuildEngineVerbose)]
+        [UserVisible(true)] //this should be visible to the end user
+        [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
         internal sealed class BuildEngineVerboseFormat : ClassificationFormatDefinition
         {
-            public BuildEngineVerboseFormat()
+            [ImportingConstructor]
+            public BuildEngineVerboseFormat(OutputClassificationColorManager colorManager)
             {
-                this.ForegroundColor = Colors.Gray;
+                DisplayName = "Paradox BuildEngine Verbose";
                 this.IsBold = false;
+                var classificationColor = colorManager.GetClassificationColor(BuildEngineVerbose);
+                ForegroundColor = classificationColor.ForegroundColor;
+                BackgroundColor = classificationColor.BackgroundColor;
             }
         }
 
         [Export(typeof(EditorFormatDefinition))]
         [ClassificationType(ClassificationTypeNames = BuildEngineInfo)]
         [Name(BuildEngineInfo)]
+        [UserVisible(true)] //this should be visible to the end user
+        [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
         internal sealed class BuildEngineInfoFormat : ClassificationFormatDefinition
         {
-            public BuildEngineInfoFormat()
+            [ImportingConstructor]
+            public BuildEngineInfoFormat(OutputClassificationColorManager colorManager)
             {
-                this.ForegroundColor = Colors.Green;
+                DisplayName = "Paradox BuildEngine Info";
                 this.IsBold = false;
+                var classificationColor = colorManager.GetClassificationColor(BuildEngineInfo);
+                ForegroundColor = classificationColor.ForegroundColor;
+                BackgroundColor = classificationColor.BackgroundColor;
             }
         }
 
         [Export(typeof(EditorFormatDefinition))]
         [ClassificationType(ClassificationTypeNames = BuildEngineWarning)]
         [Name(BuildEngineWarning)]
+        [UserVisible(true)] //this should be visible to the end user
+        [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
         internal sealed class BuildEngineWarningFormat : ClassificationFormatDefinition
         {
-            public BuildEngineWarningFormat()
+            [ImportingConstructor]
+            public BuildEngineWarningFormat(OutputClassificationColorManager colorManager)
             {
-                this.ForegroundColor = Colors.DarkOrange;
+                DisplayName = "Paradox BuildEngine Warning";
                 this.IsBold = false;
+                var classificationColor = colorManager.GetClassificationColor(BuildEngineWarning);
+                ForegroundColor = classificationColor.ForegroundColor;
+                BackgroundColor = classificationColor.BackgroundColor;
             }
         }
 
         [Export(typeof(EditorFormatDefinition))]
         [ClassificationType(ClassificationTypeNames = BuildEngineError)]
         [Name(BuildEngineError)]
+        [UserVisible(true)] //this should be visible to the end user
+        [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
         internal sealed class BuildEngineErrorFormat : ClassificationFormatDefinition
         {
-            public BuildEngineErrorFormat()
+            [ImportingConstructor]
+            public BuildEngineErrorFormat(OutputClassificationColorManager colorManager)
             {
-                this.ForegroundColor = Colors.Red;
+                DisplayName = "Paradox BuildEngine Error";
                 this.IsBold = true;
+                var classificationColor = colorManager.GetClassificationColor(BuildEngineError);
+                ForegroundColor = classificationColor.ForegroundColor;
+                BackgroundColor = classificationColor.BackgroundColor;
             }
         }
 
         [Export(typeof(EditorFormatDefinition))]
         [ClassificationType(ClassificationTypeNames = BuildEngineFatal)]
         [Name(BuildEngineFatal)]
+        [UserVisible(true)] //this should be visible to the end user
+        [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
         internal sealed class BuildEngineFatalFormat : ClassificationFormatDefinition
         {
-            public BuildEngineFatalFormat()
+            [ImportingConstructor]
+            public BuildEngineFatalFormat(OutputClassificationColorManager colorManager)
             {
-                this.ForegroundColor = Colors.Red;
+                DisplayName = "Paradox BuildEngine Fatal";
                 this.IsBold = true;
+                var classificationColor = colorManager.GetClassificationColor(BuildEngineFatal);
+                ForegroundColor = classificationColor.ForegroundColor;
+                BackgroundColor = classificationColor.BackgroundColor;
             }
         }
 

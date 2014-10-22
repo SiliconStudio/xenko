@@ -148,20 +148,18 @@ namespace SiliconStudio.Paradox.Effects.Modules
             // Add sthe G-buffer pass to the pipeline.
             mainPipeline.Renderers.Add(gbufferProcessor);
 
-            var readOnlyDepthStencil = graphicsService.GraphicsDevice.DepthStencilBuffer.Texture.ToDepthStencilBuffer(true);
-
             // Performs the light prepass on opaque geometry.
             // Adds this pass to the pipeline.
-            var lightDeferredProcessor = new LightingPrepassRenderer(serviceRegistry, prepassEffectName, readOnlyDepthStencil, gbufferProcessor.GBufferTexture);
+            var lightDeferredProcessor = new LightingPrepassRenderer(serviceRegistry, prepassEffectName, graphicsService.GraphicsDevice.DepthStencilBuffer, gbufferProcessor.GBufferTexture);
             mainPipeline.Renderers.Add(lightDeferredProcessor);
 
-            // Sets the render targets and clear them. Alos sets the viewport.
+            // Sets the render targets and clear them. Also sets the viewport.
             mainPipeline.Renderers.Add(new RenderTargetSetter(serviceRegistry)
             {
                 ClearColor = clearColor,
                 EnableClearDepth = false,
                 RenderTarget = graphicsService.GraphicsDevice.BackBuffer,
-                DepthStencil = readOnlyDepthStencil,
+                DepthStencil = graphicsService.GraphicsDevice.DepthStencilBuffer,
                 Viewport = new Viewport(0, 0, graphicsService.GraphicsDevice.BackBuffer.Width, graphicsService.GraphicsDevice.BackBuffer.Height)
             });
 
@@ -181,8 +179,8 @@ namespace SiliconStudio.Paradox.Effects.Modules
                 Viewport = new Viewport(0, 0, graphicsService.GraphicsDevice.BackBuffer.Width, graphicsService.GraphicsDevice.BackBuffer.Height)
             });
 
-            // Renders transparent geometry. This time, depth write is enabled.
-            mainPipeline.Renderers.Add(new RenderStateSetter(serviceRegistry) { DepthStencilState = graphicsService.GraphicsDevice.DepthStencilStates.Default });
+            // Renders transparent geometry. Depth stencil state is determined by the object to draw.
+            //mainPipeline.Renderers.Add(new RenderStateSetter(serviceRegistry) { DepthStencilState = graphicsService.GraphicsDevice.DepthStencilStates.DepthRead });
             mainPipeline.Renderers.Add(new TransparentModelRenderer(serviceRegistry, effectName));
 
             // Renders the UI.
