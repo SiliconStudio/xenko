@@ -164,6 +164,11 @@ namespace SiliconStudio.Paradox.Graphics
             Apply(graphicsDeviceDefault, parameterCollections, applyEffectStates);
         }
 
+        public void UnbindResources()
+        {
+            UnbindResources(graphicsDeviceDefault);
+        }
+
         internal EffectParameterResourceBinding GetParameterFastUpdater<T>(ParameterKey<T> value)
         {
             for (int i = 0; i < resourceBindings.Length; i++)
@@ -303,6 +308,12 @@ namespace SiliconStudio.Paradox.Graphics
             stageStatus.ParameterCollections[parameterCollections.Length + DefaultParameterCollectionCount - 1] = graphicsDevice.Parameters; // GraphicsDevice.Parameters is overriding all parameters
             stageStatus.UpdateParameters(graphicsDevice, updaterDefinition, parameterCollections.Length + DefaultParameterCollectionCount);
             stageStatus.Apply(graphicsDevice, resourceBindings, ref effectStateBindings, applyEffectStates);
+        }
+
+        public void UnbindResources(GraphicsDevice graphicsDevice)
+        {
+            var stageStatus = graphicsDevice.StageStatus;
+            stageStatus.UnbindResources(graphicsDevice, resourceBindings);
         }
 
         public bool HasParameter(ParameterKey parameterKey)

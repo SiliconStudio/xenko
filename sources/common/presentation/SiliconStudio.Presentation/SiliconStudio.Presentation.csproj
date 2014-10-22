@@ -66,8 +66,11 @@
     <Compile Include="Behaviors\TextTrimmingBehavior.cs" />
     <Compile Include="Behaviors\TilePanelNavigationBehavior.cs" />
     <Compile Include="Commands\AsyncCommand.cs" />
+    <Compile Include="Core\BindingProxy.cs" />
     <Compile Include="Core\DependencyPropertyWatcher.cs" />
     <Compile Include="Core\Utils.cs" />
+    <Compile Include="ValueConverters\MaxNum.cs" />
+    <Compile Include="ValueConverters\MinNum.cs" />
     <Compile Include="ViewModel\IViewModelServiceProvider.cs" />
     <Compile Include="ViewModel\ViewModelServiceProvider.cs" />
     <Compile Include="View\DefaultTemplateProvider.cs" />

@@ -13,79 +13,79 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 
 
-#line 1 "C:\Projects\Paradox\sources\shaders\DefaultDeferredEffect.pdxfx"
+#line 3 "C:\Projects\Paradox\sources\shaders\DefaultDeferredEffect.pdxfx"
 using SiliconStudio.Paradox.Effects.Data;
 
-#line 2
+#line 4
 using SiliconStudio.Paradox.Engine;
 
-#line 4
+#line 6
 namespace DefaultEffects
 {
     [DataContract]
-#line 7
+#line 9
     public partial class LightingParameters : ShaderMixinParameters
     {
 
-        #line 9
+        #line 11
         public static readonly ParameterKey<int> PerPixelDirectionalLightCount = ParameterKeys.New<int>();
 
-        #line 10
+        #line 12
         public static readonly ParameterKey<int> PerPixelDiffuseDirectionalLightCount = ParameterKeys.New<int>();
 
-        #line 11
+        #line 13
         public static readonly ParameterKey<int> PerVertexDirectionalLightCount = ParameterKeys.New<int>();
 
-        #line 12
+        #line 14
         public static readonly ParameterKey<int> PerVertexDiffusePixelSpecularDirectionalLightCount = ParameterKeys.New<int>();
     };
 
-    #line 16
+    #line 18
     public partial class ParadoxGBufferShaderPass  : IShaderMixinBuilder
     {
         public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
         {
 
-            #line 21
+            #line 23
             context.CloneProperties();
 
-            #line 21
+            #line 23
             mixin.Mixin.CloneFrom(mixin.Parent.Mixin);
 
-            #line 22
+            #line 24
             context.Mixin(mixin, "GBuffer");
 
-            #line 23
+            #line 25
             context.Mixin(mixin, "NormalVSStream");
 
-            #line 25
+            #line 27
             if (context.GetParam(MaterialParameters.SpecularPowerMap) != null)
             {
 
-                #line 27
+                #line 29
                 context.Mixin(mixin, "SpecularPower");
 
                 {
 
-                    #line 28
+                    #line 30
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                    #line 28
+                    #line 30
                     context.Mixin(__subMixin, context.GetParam(MaterialParameters.SpecularPowerMap));
                     mixin.Mixin.AddComposition("SpecularPowerMap", __subMixin.Mixin);
                 }
             }
 
-            #line 31
+            #line 33
             if (context.GetParam(MaterialParameters.SpecularIntensityMap) != null)
             {
 
                 {
 
-                    #line 33
+                    #line 35
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                    #line 33
+                    #line 35
                     context.Mixin(__subMixin, context.GetParam(MaterialParameters.SpecularIntensityMap));
                     mixin.Mixin.AddComposition("SpecularIntensityMap", __subMixin.Mixin);
                 }
@@ -100,7 +100,7 @@ namespace DefaultEffects
         }
     }
 
-    #line 38
+    #line 40
     public partial class ParadoxGBufferPlugin  : IShaderMixinBuilder
     {
         public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
@@ -108,39 +108,33 @@ namespace DefaultEffects
 
             {
 
-                #line 40
+                #line 42
                 var __subMixin = new ShaderMixinSourceTree() { Name = "ParadoxGBufferShaderPass", Parent = mixin };
                 mixin.Children.Add(__subMixin);
 
-                #line 40
+                #line 42
                 context.BeginChild(__subMixin);
 
-                #line 40
+                #line 42
                 context.Mixin(__subMixin, "ParadoxGBufferShaderPass");
 
-                #line 40
+                #line 42
                 context.EndChild();
             }
 
-            #line 43
-            context.RemoveMixin(mixin, "PositionVSStream");
-
-            #line 44
+            #line 46
             context.RemoveMixin(mixin, "NormalVSStream");
 
-            #line 45
+            #line 47
             context.RemoveMixin(mixin, "SpecularPowerMap");
 
-            #line 46
+            #line 48
             context.RemoveMixin(mixin, "SpecularPowerPerMesh");
 
-            #line 49
+            #line 51
             context.Mixin(mixin, "NormalVSGBuffer");
 
-            #line 50
-            context.Mixin(mixin, "PositionVSGBuffer");
-
-            #line 51
+            #line 53
             context.Mixin(mixin, "SpecularPowerGBuffer");
         }
 
@@ -152,19 +146,19 @@ namespace DefaultEffects
         }
     }
 
-    #line 54
+    #line 56
     public partial class ParadoxDeferredLightingPointGroup  : IShaderMixinBuilder
     {
         public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
         {
 
-            #line 58
+            #line 60
             mixin.Mixin.AddMacro("DEFERRED_MAX_POINT_LIGHT_COUNT", context.GetParam(LightingKeys.MaxDeferredLights));
 
-            #line 60
+            #line 62
             mixin.Mixin.AddMacro("DEFERRED_POINT_LIGHTING_UNROLL_LOOP", 1);
 
-            #line 61
+            #line 63
             context.Mixin(mixin, "DeferredPointLighting");
         }
 
@@ -176,34 +170,34 @@ namespace DefaultEffects
         }
     }
 
-    #line 64
+    #line 66
     public partial class DeferredLightingDirectShadowGroup  : IShaderMixinBuilder
     {
         public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
         {
 
-            #line 69
+            #line 71
             mixin.Mixin.AddMacro("DEFERRED_MAX_DIRECT_SHADOW_LIGHT_COUNT", 1);
 
-            #line 70
+            #line 72
             mixin.Mixin.AddMacro("DEFERRED_DIRECT_LIGHTING_UNROLL_LOOP", 1);
 
-            #line 71
+            #line 73
             context.Mixin(mixin, "DeferredDirectionalShadowLighting");
 
-            #line 73
+            #line 75
             context.Mixin(mixin, "DeferredShadowMapCascadeBase");
 
-            #line 75
+            #line 77
             mixin.Mixin.AddMacro("SHADOWMAP_COUNT", 1);
 
-            #line 76
+            #line 78
             mixin.Mixin.AddMacro("SHADOWMAP_CASCADE_COUNT", context.GetParam(ShadowMapParameters.ShadowMapCascadeCount));
 
-            #line 77
+            #line 79
             mixin.Mixin.AddMacro("SHADOWMAP_TOTAL_COUNT", context.GetParam(ShadowMapParameters.ShadowMapCascadeCount));
 
-            #line 78
+            #line 80
             mixin.Mixin.AddMacro("HAS_DYNAMIC_SHADOWMAP_COUNT", 0);
         }
 
@@ -215,16 +209,16 @@ namespace DefaultEffects
         }
     }
 
-    #line 81
+    #line 83
     public partial class NearestFilterGroup  : IShaderMixinBuilder
     {
         public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
         {
 
-            #line 83
+            #line 85
             context.Mixin(mixin, "DeferredLightingDirectShadowGroup");
 
-            #line 84
+            #line 86
             context.Mixin(mixin, "ShadowMapFilterDefault");
         }
 
@@ -236,16 +230,16 @@ namespace DefaultEffects
         }
     }
 
-    #line 87
+    #line 89
     public partial class PcfGroup  : IShaderMixinBuilder
     {
         public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
         {
 
-            #line 89
+            #line 91
             context.Mixin(mixin, "DeferredLightingDirectShadowGroup");
 
-            #line 90
+            #line 92
             context.Mixin(mixin, "ShadowMapFilterPcf");
         }
 
@@ -257,16 +251,16 @@ namespace DefaultEffects
         }
     }
 
-    #line 93
+    #line 95
     public partial class VsmGroup  : IShaderMixinBuilder
     {
         public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
         {
 
-            #line 95
+            #line 97
             context.Mixin(mixin, "DeferredLightingDirectShadowGroup");
 
-            #line 96
+            #line 98
             context.Mixin(mixin, "ShadowMapFilterVsm");
         }
 
@@ -278,53 +272,38 @@ namespace DefaultEffects
         }
     }
 
-    #line 99
+    #line 101
     public partial class ParadoxDirectShadowPrepassLighting  : IShaderMixinBuilder
     {
         public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
         {
 
-            #line 103
+            #line 105
             context.CloneProperties();
 
-            #line 103
+            #line 105
             mixin.Mixin.CloneFrom(mixin.Parent.Mixin);
 
-            #line 104
+            #line 106
             context.Mixin(mixin, "DeferredShadowLightingShader");
 
-            #line 106
+            #line 108
             if (context.GetParam(ShadowMapParameters.FilterType) == ShadowMapFilterType.Nearest)
 
                 {
 
-                    #line 107
+                    #line 109
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                    #line 107
+                    #line 109
                     context.Mixin(__subMixin, "NearestFilterGroup");
-                    mixin.Mixin.AddCompositionToArray("shadows", __subMixin.Mixin);
-                }
-
-            #line 108
-            else 
-#line 108
-            if (context.GetParam(ShadowMapParameters.FilterType) == ShadowMapFilterType.PercentageCloserFiltering)
-
-                {
-
-                    #line 109
-                    var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-
-                    #line 109
-                    context.Mixin(__subMixin, "PcfGroup");
                     mixin.Mixin.AddCompositionToArray("shadows", __subMixin.Mixin);
                 }
 
             #line 110
             else 
 #line 110
-            if (context.GetParam(ShadowMapParameters.FilterType) == ShadowMapFilterType.Variance)
+            if (context.GetParam(ShadowMapParameters.FilterType) == ShadowMapFilterType.PercentageCloserFiltering)
 
                 {
 
@@ -332,6 +311,21 @@ namespace DefaultEffects
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
                     #line 111
+                    context.Mixin(__subMixin, "PcfGroup");
+                    mixin.Mixin.AddCompositionToArray("shadows", __subMixin.Mixin);
+                }
+
+            #line 112
+            else 
+#line 112
+            if (context.GetParam(ShadowMapParameters.FilterType) == ShadowMapFilterType.Variance)
+
+                {
+
+                    #line 113
+                    var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+
+                    #line 113
                     context.Mixin(__subMixin, "VsmGroup");
                     mixin.Mixin.AddCompositionToArray("shadows", __subMixin.Mixin);
                 }
@@ -345,16 +339,16 @@ namespace DefaultEffects
         }
     }
 
-    #line 114
+    #line 116
     public partial class ParadoxDeferredLightingDirectGroup  : IShaderMixinBuilder
     {
         public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
         {
 
-            #line 118
+            #line 120
             mixin.Mixin.AddMacro("DEFERRED_MAX_DIRECT_LIGHT_COUNT", 1);
 
-            #line 119
+            #line 121
             context.Mixin(mixin, "DeferredDirectionalLighting");
         }
 
@@ -366,16 +360,16 @@ namespace DefaultEffects
         }
     }
 
-    #line 122
+    #line 124
     public partial class ParadoxDeferredLightingSpotGroup  : IShaderMixinBuilder
     {
         public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
         {
 
-            #line 126
+            #line 128
             mixin.Mixin.AddMacro("DEFERRED_MAX_SPOT_LIGHT_COUNT", 1);
 
-            #line 127
+            #line 129
             context.Mixin(mixin, "DeferredSpotLighting");
         }
 
@@ -387,24 +381,24 @@ namespace DefaultEffects
         }
     }
 
-    #line 130
+    #line 132
     public partial class ParadoxDirectPrepassLighting  : IShaderMixinBuilder
     {
         public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
         {
 
-            #line 132
+            #line 134
             context.CloneProperties();
 
-            #line 132
+            #line 134
             mixin.Mixin.CloneFrom(mixin.Parent.Mixin);
 
             {
 
-                #line 133
+                #line 135
                 var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                #line 133
+                #line 135
                 context.Mixin(__subMixin, "ParadoxDeferredLightingDirectGroup");
                 mixin.Mixin.AddCompositionToArray("lightingGroups", __subMixin.Mixin);
             }
@@ -418,27 +412,27 @@ namespace DefaultEffects
         }
     }
 
-    #line 136
+    #line 138
     public partial class ParadoxPointPrepassLighting  : IShaderMixinBuilder
     {
         public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
         {
 
-            #line 140
+            #line 142
             context.CloneProperties();
 
-            #line 140
+            #line 142
             mixin.Mixin.CloneFrom(mixin.Parent.Mixin);
 
-            #line 141
+            #line 143
             if (context.GetParam(LightingKeys.MaxDeferredLights) > 0)
 
                 {
 
-                    #line 142
+                    #line 144
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                    #line 142
+                    #line 144
                     context.Mixin(__subMixin, "ParadoxDeferredLightingPointGroup");
                     mixin.Mixin.AddCompositionToArray("lightingGroups", __subMixin.Mixin);
                 }
@@ -452,24 +446,24 @@ namespace DefaultEffects
         }
     }
 
-    #line 145
+    #line 147
     public partial class ParadoxSpotPrepassLighting  : IShaderMixinBuilder
     {
         public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
         {
 
-            #line 149
+            #line 151
             context.CloneProperties();
 
-            #line 149
+            #line 151
             mixin.Mixin.CloneFrom(mixin.Parent.Mixin);
 
             {
 
-                #line 150
+                #line 152
                 var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                #line 150
+                #line 152
                 context.Mixin(__subMixin, "ParadoxDeferredLightingSpotGroup");
                 mixin.Mixin.AddCompositionToArray("lightingGroups", __subMixin.Mixin);
             }
@@ -483,24 +477,24 @@ namespace DefaultEffects
         }
     }
 
-    #line 153
+    #line 155
     public partial class ParadoxDeferredSpecular  : IShaderMixinBuilder
     {
         public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
         {
 
-            #line 155
+            #line 157
             context.Mixin(mixin, "ComputeBRDFColorSpecularBlinnPhong");
 
-            #line 156
+            #line 158
             context.Mixin(mixin, "SpecularPowerGBuffer");
 
             {
 
-                #line 157
+                #line 159
                 var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                #line 157
+                #line 159
                 context.Mixin(__subMixin, "ComputeColorOne");
                 mixin.Mixin.AddComposition("SpecularIntensityMap", __subMixin.Mixin);
             }
@@ -514,128 +508,128 @@ namespace DefaultEffects
         }
     }
 
-    #line 160
+    #line 162
     public partial class ParadoxDefaultLightPrepassEffect  : IShaderMixinBuilder
     {
         public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
         {
 
-            #line 164
+            #line 166
             context.Mixin(mixin, "PositionVSGBuffer");
 
-            #line 165
+            #line 167
             context.Mixin(mixin, "NormalVSGBuffer");
 
-            #line 166
+            #line 168
             context.Mixin(mixin, "BRDFDiffuseBase");
 
-            #line 167
+            #line 169
             context.Mixin(mixin, "BRDFSpecularBase");
 
             {
 
-                #line 168
+                #line 170
                 var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                #line 168
+                #line 170
                 context.Mixin(__subMixin, "ComputeBRDFColorFresnel");
                 mixin.Mixin.AddComposition("DiffuseColor", __subMixin.Mixin);
             }
 
             {
 
-                #line 169
+                #line 171
                 var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                #line 169
+                #line 171
                 context.Mixin(__subMixin, "ComputeBRDFDiffuseLambert");
                 mixin.Mixin.AddComposition("DiffuseLighting", __subMixin.Mixin);
             }
 
             {
 
-                #line 170
+                #line 172
                 var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                #line 170
+                #line 172
                 context.Mixin(__subMixin, "ComputeBRDFColor");
                 mixin.Mixin.AddComposition("SpecularColor", __subMixin.Mixin);
             }
 
             {
 
-                #line 171
+                #line 173
                 var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                #line 171
+                #line 173
                 context.Mixin(__subMixin, "ParadoxDeferredSpecular");
                 mixin.Mixin.AddComposition("SpecularLighting", __subMixin.Mixin);
             }
 
             {
 
-                #line 173
+                #line 175
                 var __subMixin = new ShaderMixinSourceTree() { Name = "ParadoxDirectShadowPrepassLighting", Parent = mixin };
                 mixin.Children.Add(__subMixin);
 
-                #line 173
+                #line 175
                 context.BeginChild(__subMixin);
 
-                #line 173
+                #line 175
                 context.Mixin(__subMixin, "ParadoxDirectShadowPrepassLighting");
 
-                #line 173
+                #line 175
                 context.EndChild();
             }
 
-            #line 175
+            #line 177
             context.Mixin(mixin, "DeferredLightingShader");
 
             {
 
-                #line 177
+                #line 179
                 var __subMixin = new ShaderMixinSourceTree() { Name = "ParadoxDirectPrepassLighting", Parent = mixin };
                 mixin.Children.Add(__subMixin);
 
-                #line 177
+                #line 179
                 context.BeginChild(__subMixin);
 
-                #line 177
+                #line 179
                 context.Mixin(__subMixin, "ParadoxDirectPrepassLighting");
 
-                #line 177
+                #line 179
                 context.EndChild();
             }
 
             {
 
-                #line 179
+                #line 181
                 var __subMixin = new ShaderMixinSourceTree() { Name = "ParadoxSpotPrepassLighting", Parent = mixin };
                 mixin.Children.Add(__subMixin);
 
-                #line 179
+                #line 181
                 context.BeginChild(__subMixin);
 
-                #line 179
+                #line 181
                 context.Mixin(__subMixin, "ParadoxSpotPrepassLighting");
 
-                #line 179
+                #line 181
                 context.EndChild();
             }
 
             {
 
-                #line 181
+                #line 183
                 var __subMixin = new ShaderMixinSourceTree() { Name = "ParadoxPointPrepassLighting", Parent = mixin };
                 mixin.Children.Add(__subMixin);
 
-                #line 181
+                #line 183
                 context.BeginChild(__subMixin);
 
-                #line 181
+                #line 183
                 context.Mixin(__subMixin, "ParadoxPointPrepassLighting");
 
-                #line 181
+                #line 183
                 context.EndChild();
             }
         }
@@ -648,63 +642,63 @@ namespace DefaultEffects
         }
     }
 
-    #line 184
+    #line 186
     public partial class DirectionalLightsShader  : IShaderMixinBuilder
     {
         public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
         {
 
-            #line 189
+            #line 191
             mixin.Mixin.AddMacro("LIGHTING_MAX_LIGHT_COUNT", context.GetParam(LightingKeys.MaxDirectionalLights));
 
-            #line 190
+            #line 192
             if (context.GetParam(LightingKeys.UnrollDirectionalLightLoop))
 
-                #line 191
+                #line 193
                 mixin.Mixin.AddMacro("LIGHTING_UNROLL_LOOP", true);
 
-            #line 193
+            #line 195
             if (context.GetParam(MaterialParameters.LightingType) == MaterialLightingType.DiffusePixel)
             {
 
-                #line 195
+                #line 197
                 context.Mixin(mixin, "ShadingDiffusePerPixel");
             }
 
-            #line 197
+            #line 199
             else 
-#line 197
+#line 199
             if (context.GetParam(MaterialParameters.LightingType) == MaterialLightingType.DiffuseVertex)
             {
 
-                #line 199
+                #line 201
                 context.Mixin(mixin, "ShadingDiffusePerVertex");
             }
 
-            #line 201
+            #line 203
             else 
-#line 201
+#line 203
             if (context.GetParam(MaterialParameters.LightingType) == MaterialLightingType.DiffuseSpecularPixel)
             {
 
-                #line 203
+                #line 205
                 context.Mixin(mixin, "ShadingDiffuseSpecularPerPixel");
             }
 
-            #line 205
+            #line 207
             else 
-#line 205
+#line 207
             if (context.GetParam(MaterialParameters.LightingType) == MaterialLightingType.DiffuseVertexSpecularPixel)
             {
 
-                #line 207
+                #line 209
                 context.Mixin(mixin, "ShadingDiffusePerVertexSpecularPerPixel");
             }
 
-            #line 209
+            #line 211
             context.Mixin(mixin, "DirectionalShading");
 
-            #line 210
+            #line 212
             context.Mixin(mixin, "ShadingEyeNormalVS");
         }
 
@@ -716,22 +710,22 @@ namespace DefaultEffects
         }
     }
 
-    #line 213
+    #line 215
     public partial class ParadoxDiffuseDeferred  : IShaderMixinBuilder
     {
         public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
         {
 
-            #line 217
+            #line 219
             if (context.GetParam(MaterialParameters.AlbedoDiffuse) != null)
             {
 
                 {
 
-                    #line 219
+                    #line 221
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                    #line 219
+                    #line 221
                     context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoDiffuse));
                     mixin.Mixin.AddComposition("albedoDiffuse", __subMixin.Mixin);
                 }
@@ -746,22 +740,22 @@ namespace DefaultEffects
         }
     }
 
-    #line 223
+    #line 225
     public partial class ParadoxSpecularDeferred  : IShaderMixinBuilder
     {
         public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
         {
 
-            #line 227
+            #line 229
             if (context.GetParam(MaterialParameters.AlbedoSpecular) != null)
             {
 
                 {
 
-                    #line 229
+                    #line 231
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                    #line 229
+                    #line 231
                     context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoSpecular));
                     mixin.Mixin.AddComposition("albedoSpecular", __subMixin.Mixin);
                 }
@@ -776,92 +770,92 @@ namespace DefaultEffects
         }
     }
 
-    #line 233
+    #line 235
     public partial class ParadoxDefaultDeferredShader  : IShaderMixinBuilder
     {
         public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
         {
 
-            #line 238
+            #line 240
             context.Mixin(mixin, "ParadoxBaseShader");
 
-            #line 240
+            #line 242
             context.Mixin(mixin, "ParadoxSkinning");
 
-            #line 242
+            #line 244
             context.Mixin(mixin, "ParadoxShadowCast");
 
-            #line 246
+            #line 248
             if (context.GetParam(RenderingParameters.UseDeferred) && !context.GetParam(MaterialParameters.UseTransparent))
             {
 
-                #line 248
+                #line 250
                 context.Mixin(mixin, "ParadoxGBufferPlugin");
 
-                #line 249
+                #line 251
                 context.Mixin(mixin, "LightDeferredShading");
 
-                #line 250
+                #line 252
                 context.Mixin(mixin, "ParadoxDiffuseDeferred");
 
-                #line 251
+                #line 253
                 context.Mixin(mixin, "ParadoxSpecularDeferred");
 
-                #line 253
+                #line 255
                 if (context.GetParam(MaterialParameters.AmbientMap) != null)
                 {
 
-                    #line 255
+                    #line 257
                     context.Mixin(mixin, "AmbientMapShading");
 
                     {
 
-                        #line 256
+                        #line 258
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                        #line 256
+                        #line 258
                         context.Mixin(__subMixin, context.GetParam(MaterialParameters.AmbientMap));
                         mixin.Mixin.AddComposition("AmbientMap", __subMixin.Mixin);
                     }
                 }
             }
 
-            #line 260
+            #line 262
             else
             {
 
-                #line 261
+                #line 263
                 context.Mixin(mixin, "ParadoxDiffuseForward");
 
-                #line 262
+                #line 264
                 context.Mixin(mixin, "ParadoxSpecularForward");
 
-                #line 264
+                #line 266
                 if (context.GetParam(MaterialParameters.AmbientMap) != null)
                 {
 
-                    #line 266
+                    #line 268
                     context.Mixin(mixin, "AmbientMapShading");
 
                     {
 
-                        #line 267
+                        #line 269
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                        #line 267
+                        #line 269
                         context.Mixin(__subMixin, context.GetParam(MaterialParameters.AmbientMap));
                         mixin.Mixin.AddComposition("AmbientMap", __subMixin.Mixin);
                     }
                 }
 
-                #line 270
+                #line 272
                 if (context.GetParam(MaterialParameters.UseTransparent))
                 {
 
-                    #line 272
+                    #line 274
                     context.Mixin(mixin, "TransparentShading");
 
-                    #line 273
+                    #line 275
                     context.Mixin(mixin, "DiscardTransparent");
                 }
             }

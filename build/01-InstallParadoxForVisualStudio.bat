@@ -5,7 +5,7 @@ REM -------------------------------------------------------------------
 REM Global config
 REM -------------------------------------------------------------------
 set PARADOX_OUTPUT_DIR=%~dp0\..\Bin\Windows-Direct3D11
-set PARADOX_VSIX=%PARADOX_OUTPUT_DIR%\SiliconStudio.Paradox.VisualStudio.Package.vsix
+set PARADOX_VSIX=%PARADOX_OUTPUT_DIR%\SiliconStudio.Paradox.vsix
 REM -------------------------------------------------------------------
 REM Build Paradox
 REM -------------------------------------------------------------------

@@ -22,6 +22,8 @@ using System.Windows.Media;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 
+using SiliconStudio.Paradox.VisualStudio.BuildEngine;
+
 namespace SiliconStudio.Paradox.VisualStudio
 {
     public partial class OutputClassifier
@@ -53,12 +55,18 @@ namespace SiliconStudio.Paradox.VisualStudio
         [Export(typeof(EditorFormatDefinition))]
         [ClassificationType(ClassificationTypeNames = BuildEngine<#=classifier.Name#>)]
         [Name(BuildEngine<#=classifier.Name#>)]
+        [UserVisible(true)] //this should be visible to the end user
+        [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
         internal sealed class BuildEngine<#=classifier.Name#>Format : ClassificationFormatDefinition
         {
-            public BuildEngine<#=classifier.Name#>Format()
+            [ImportingConstructor]
+            public BuildEngine<#=classifier.Name#>Format(OutputClassificationColorManager colorManager)
             {
-                this.ForegroundColor = Colors.<#=classifier.Color#>;
+                DisplayName = "Paradox BuildEngine <#=classifier.Name#>";
                 this.IsBold = <#=classifier.IsBold.ToString().ToLower()#>;
+                var classificationColor = colorManager.GetClassificationColor(BuildEngine<#=classifier.Name#>);
+                ForegroundColor = classificationColor.ForegroundColor;
+                BackgroundColor = classificationColor.BackgroundColor;
             }
         }
 
