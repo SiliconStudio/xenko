@@ -29,6 +29,7 @@ namespace SiliconStudio.Paradox.UI.Controls
 
         public Button()
         {
+            DrawLayerNumber += 1; // (button design image)
             Padding = new Thickness(10, 5, 10, 7);
         }
 

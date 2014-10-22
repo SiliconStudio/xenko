@@ -30,6 +30,7 @@
     <Compile Include="ChannelPreference.cs" />
     <Compile Include="MicroThread.cs" />
     <Compile Include="MicroThreadEvent.cs" />
+    <Compile Include="MicroThreadFlags.cs" />
     <Compile Include="MicroThreadLocal.cs" />
     <Compile Include="MicroThreadState.cs" />
     <Compile Include="MicroThreadSynchronizationContext.cs" />

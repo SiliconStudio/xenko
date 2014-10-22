@@ -16,17 +16,17 @@ namespace SiliconStudio.Presentation.ValueConverters
         /// <inheritdoc/>
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var doubleValue = (double)System.Convert.ChangeType(value, typeof(double));
-            var doubleParameter = (double)System.Convert.ChangeType(parameter, typeof(double));
+            var doubleValue = (double)System.Convert.ChangeType(value ?? 0, typeof(double));
+            var doubleParameter = (double)System.Convert.ChangeType(parameter ?? 0, typeof(double));
             var result = doubleValue + doubleParameter;
-            return System.Convert.ChangeType(result, value.GetType());
+            return System.Convert.ChangeType(result, value != null ? value.GetType() : targetType);
         }
 
         /// <inheritdoc/>
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var doubleValue = (double)System.Convert.ChangeType(value, typeof(double));
-            var doubleParameter = (double)System.Convert.ChangeType(parameter, typeof(double));
+            var doubleValue = (double)System.Convert.ChangeType(value ?? 0, typeof(double));
+            var doubleParameter = (double)System.Convert.ChangeType(parameter ?? 0, typeof(double));
             var result = doubleValue - doubleParameter;
             return System.Convert.ChangeType(result, targetType);
         }

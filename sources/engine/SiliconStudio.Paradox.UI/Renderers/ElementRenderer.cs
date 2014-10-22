@@ -142,7 +142,7 @@ namespace SiliconStudio.Paradox.UI.Renderers
         /// If the user wants to perform some intermediate rendering, it is his responsibility to bind them back correctly before the final rendering.</remarks>
         public virtual void RenderColor(UIElement element, UIRenderingContext context)
         {
-            var backgroundColor = element.BackgroundColor;
+            var backgroundColor = element.Opacity * element.BackgroundColor;
 
             // optimization: don't draw the background if transparent
             if (backgroundColor == new Color())
@@ -151,7 +151,7 @@ namespace SiliconStudio.Paradox.UI.Renderers
             // Default implementation: render an back-face cube with background color
             Batch.DrawBackground(ref element.WorldMatrixInternal, ref element.RenderSizeInternal, ref backgroundColor, context.DepthBias);
 
-            // increase depth bias value if rendering continues after base.RenderColor call.
+            // increase depth bias value so that next elements renders on top of it.
             context.DepthBias += 1;
         }
 
@@ -166,6 +166,9 @@ namespace SiliconStudio.Paradox.UI.Renderers
         {
             // Default implementation: render an back-face cube
             Batch.DrawBackground(ref element.WorldMatrixInternal, ref element.RenderSizeInternal, ref blackColor, context.DepthBias);
+
+            // increase the context depth bias for next elements.
+            context.DepthBias += 1;
         }
 
         /// <summary>

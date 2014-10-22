@@ -22,5 +22,10 @@ namespace SiliconStudio.Paradox.UI.Controls
             get { return DependencyProperties.Get(BackgroundImagePropertyKey); }
             set { DependencyProperties.Set(BackgroundImagePropertyKey, value); }
         }
+
+        public ContentDecorator()
+        {
+            DrawLayerNumber += 1; // (decorator design image)
+        }
     }
 }

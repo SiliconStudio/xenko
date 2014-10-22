@@ -49,6 +49,7 @@ namespace SiliconStudio.Paradox.UI.Controls
 
         public ToggleButton()
         {
+            DrawLayerNumber += 1; // (toggle design image)
             Padding = new Thickness(10, 5, 10, 7);
             State = ToggleState.UnChecked;
         }

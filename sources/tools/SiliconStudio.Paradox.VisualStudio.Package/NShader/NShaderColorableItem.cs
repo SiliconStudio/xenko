@@ -19,40 +19,69 @@ using System.Drawing;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Package;
 using Microsoft.VisualStudio.TextManager.Interop;
+using SiliconStudio.Paradox.VisualStudio.Classifiers;
 
 namespace NShader
 {
     public class NShaderColorableItem : ColorableItem
     {
-        public NShaderColorableItem(string name, COLORINDEX foreColor, COLORINDEX backColor)
-            : base(name, name, foreColor, backColor, Color.Empty, Color.Empty, FONTFLAGS.FF_DEFAULT)
+        public Color HiForeColorLight { get; private set; }
+        public Color HiForeColorDark { get; private set; }
+        public COLORINDEX ForeColorLight { get; private set; }
+        public COLORINDEX ForeColorDark { get; private set; }
+
+        public NShaderColorableItem(VisualStudioTheme theme, string name, COLORINDEX foreColorLight, COLORINDEX foreColorDark, COLORINDEX backColor)
+            : base(name, name, theme == VisualStudioTheme.Dark ? foreColorDark : foreColorLight, backColor, Color.Empty, Color.Empty, FONTFLAGS.FF_DEFAULT)
         {
+            ForeColorLight = foreColorLight;
+            ForeColorDark = foreColorDark;
         }
 
-        public NShaderColorableItem(string name, COLORINDEX foreColor, COLORINDEX backColor, FONTFLAGS fontFlags)
-            : base(name, name, foreColor, backColor, Color.Empty, Color.Empty, fontFlags)
+        public NShaderColorableItem(VisualStudioTheme theme, string name, COLORINDEX foreColorLight, COLORINDEX foreColorDark, COLORINDEX backColor, FONTFLAGS fontFlags)
+            : base(name, name, theme == VisualStudioTheme.Dark ? foreColorDark : foreColorLight, backColor, Color.Empty, Color.Empty, fontFlags)
         {
+            ForeColorLight = foreColorLight;
+            ForeColorDark = foreColorDark;
         }
 
-        public NShaderColorableItem(string name, string displayName, COLORINDEX foreColor, COLORINDEX backColor)
-            : base(name, displayName, foreColor, backColor, Color.Empty, Color.Empty, FONTFLAGS.FF_DEFAULT)
+        public NShaderColorableItem(VisualStudioTheme theme, string name, string displayName, COLORINDEX foreColorLight, COLORINDEX foreColorDark, COLORINDEX backColor)
+            : base(name, displayName, theme == VisualStudioTheme.Dark ? foreColorDark : foreColorLight, backColor, Color.Empty, Color.Empty, FONTFLAGS.FF_DEFAULT)
         {
+            ForeColorLight = foreColorLight;
+            ForeColorDark = foreColorDark;
         }
 
-        public NShaderColorableItem(string name, string displayName, COLORINDEX foreColor, COLORINDEX backColor, FONTFLAGS fontFlags)
-            : base(name, displayName, foreColor, backColor, Color.Empty, Color.Empty, fontFlags)
+        public NShaderColorableItem(VisualStudioTheme theme, string name, string displayName, COLORINDEX foreColorLight, COLORINDEX foreColorDark, COLORINDEX backColor, FONTFLAGS fontFlags)
+            : base(name, displayName, theme == VisualStudioTheme.Dark ? foreColorDark : foreColorLight, backColor, Color.Empty, Color.Empty, fontFlags)
         {
+            ForeColorLight = foreColorLight;
+            ForeColorDark = foreColorDark;
         }
 
-        public NShaderColorableItem(string name, string displayName, COLORINDEX foreColor, COLORINDEX backColor, Color hiForeColor, Color hiBackColor, FONTFLAGS fontFlags)
-            : base(name, displayName, foreColor, backColor, hiForeColor, hiBackColor, fontFlags)
+        public NShaderColorableItem(VisualStudioTheme theme, string name, string displayName, COLORINDEX foreColorLight, COLORINDEX foreColorDark, COLORINDEX backColor, Color hiForeColorLight, Color hiForeColorDark, Color hiBackColor, FONTFLAGS fontFlags)
+            : base(name, displayName, theme == VisualStudioTheme.Dark ? foreColorDark : foreColorLight, backColor, theme == VisualStudioTheme.Dark ? hiForeColorDark : hiForeColorLight,  hiBackColor, fontFlags)
         {
+            ForeColorLight = foreColorLight;
+            ForeColorDark = foreColorDark;
+
+            HiForeColorLight = hiForeColorLight;
+            HiForeColorDark = hiForeColorDark;
         }
 
         public override int GetMergingPriority(out int priority)
         {
            priority = 0x2000;
            return VSConstants.S_OK;
+        }
+
+        public override int GetColorData(int cdElement, out uint crColor)
+        {
+            return base.GetColorData(cdElement, out crColor);
+        }
+
+        public override int GetDefaultColors(COLORINDEX[] foreColor, COLORINDEX[] backColor)
+        {
+            return base.GetDefaultColors(foreColor, backColor);
         }
     }
 }

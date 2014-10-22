@@ -1,3 +1,27 @@
+### Version 1.0.0-beta02
+
+Release date: 2014/10/22
+
+#### New Features
+- Graphics: Add ability to unbind all the shader resources used by an effect.
+- Graphics: Add Frustum culling (available in ModelRenderer.EnableFrustumCulling).
+
+#### Enhancements
+- Audio: Add overloaded Play function in SoundEffectInstance that allows the user to specify how to deal with siblings instances (play in parallel or stop them).
+- Game: MicroThreads unhandled exceptions are not ignored anymore ([#47](https://github.com/SiliconStudio/paradox/issues/47)).
+- Studio: Improved the different grid views in the interface.
+- Visual Studio Package: Syntax highlighting now adapts to dark theme colors ([#26](https://github.com/SiliconStudio/paradox/issues/26)).
+
+#### Issues fixed
+- Audio: Fix crash in DynamicSoundEffectInstance worker thread during Dispose ([#34](https://github.com/SiliconStudio/paradox/issues/34)).
+- Audio: Fix problem of AudioEmitterSoundController stopping to play when SoundEffect is shared between several components.
+- Shaders: Fix ScreenPositionBase.pdxsl.
+- Studio: Some crashes that could occurs when copy/pasting assets. It is also possible to copy/paste from when a package is selected in the tree view.
+- Studio: Windows resize was slow in some specific cases ([#46](https://github.com/SiliconStudio/paradox/issues/46)).
+- UI: Opacity is new correctly taken into account when drawing background color of UI elements ([#43](https://github.com/SiliconStudio/paradox/issues/43)).
+- UI: Fix rendering problems on the Button/ToggleButton's content when setting their background color.
+- Visual Studio Package: Syntax highlighting was not working properly on VS2012 ([#45](https://github.com/SiliconStudio/paradox/issues/45)).
+
 ### Version 1.0.0-beta01
 
 Release date: 2014/10/17
