@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Assets.Texture
 {
-    public class RotatableRectangle
+    public struct RotatableRectangle
     {
         public string Key;
 
@@ -12,16 +13,17 @@ namespace SiliconStudio.Paradox.Assets.Texture
 
         public bool IsRotated;
 
-        public RotatableRectangle()
-        { }
-
-        public RotatableRectangle(int x, int y, int width, int height)
+        public RotatableRectangle(int x, int y, int width, int height, string key = null)
         {
+            Key = key;
             Value = new Rectangle(x, y, width, height);
+            IsRotated = false;
         }
 
-        public RotatableRectangle(Rectangle value)
+        public RotatableRectangle(Rectangle value, string key = null)
         {
+            Key = key;
+            IsRotated = false;
             Value = value;
         }
     }
@@ -80,6 +82,8 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// <param name="method">MaxRects heuristic method which default value is RectangleBestShortSideFit</param>
         public void PackRectangles(List<RotatableRectangle> rectangles, FreeRectangleChoiceHeuristic method = FreeRectangleChoiceHeuristic.RectangleBestShortSideFit)
         {
+            var bestNode = new RotatableRectangle();
+
             while (rectangles.Count > 0)
             {
                 var bestScore1 = int.MaxValue;
@@ -87,20 +91,18 @@ namespace SiliconStudio.Paradox.Assets.Texture
 
                 var bestRectangleIndex = -1;
 
-                RotatableRectangle bestNode = null;
-
                 for (var i = 0; i < rectangles.Count; ++i)
                 {
                     int score1;
                     int score2;
-                    ChooseTargetPosition(rectangles[i], method, out score1, out score2);
+                    var pickedNode = ChooseTargetPosition(rectangles[i], method, out score1, out score2);
 
                     if (score1 < bestScore1 || (score1 == bestScore1 && score2 < bestScore2))
                     {
                         bestScore1 = score1;
                         bestScore2 = score2;
-                        bestNode = rectangles[i];
                         bestRectangleIndex = i;
+                        bestNode = pickedNode;
                     }
                 }
 
@@ -199,41 +201,45 @@ namespace SiliconStudio.Paradox.Assets.Texture
             return true;
         }
 
-        private void ChooseTargetPosition(RotatableRectangle rectangle, FreeRectangleChoiceHeuristic method, out int score1, out int score2)
+        private RotatableRectangle ChooseTargetPosition(RotatableRectangle rectangle, FreeRectangleChoiceHeuristic method, out int score1, out int score2)
         {
             score1 = int.MaxValue;
             score2 = int.MaxValue;
 
+            RotatableRectangle bestNode;
+
             switch (method)
             {
                 case FreeRectangleChoiceHeuristic.RectangleBestShortSideFit:
-                    FindPositionForNewNodeBestShortSideFit(rectangle, out score1, ref score2);
+                    bestNode = FindPositionForNewNodeBestShortSideFit(rectangle, out score1, ref score2);
                     break;
                 case FreeRectangleChoiceHeuristic.RectangleBottomLeftRule:
-                    FindPositionForNewNodeBottomLeft(rectangle, out score1, ref score2);
+                    bestNode = FindPositionForNewNodeBottomLeft(rectangle, out score1, ref score2);
                     break;
                 case FreeRectangleChoiceHeuristic.RectangleContactPointRule:
-                    FindPositionForNewNodeContactPoint(rectangle, out score1);
+                    bestNode = FindPositionForNewNodeContactPoint(rectangle, out score1);
                     score1 *= -1;
                     break;
                 case FreeRectangleChoiceHeuristic.RectangleBestLongSideFit:
-                    FindPositionForNewNodeBestLongSideFit(rectangle, ref score2, out score1);
+                    bestNode = FindPositionForNewNodeBestLongSideFit(rectangle, ref score2, out score1);
                     break;
                 case FreeRectangleChoiceHeuristic.RectangleBestAreaFit:
-                    FindPositionForNewNodeBestAreaFit(rectangle, out score1, ref score2);
+                    bestNode = FindPositionForNewNodeBestAreaFit(rectangle, out score1, ref score2);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("method");
             }
 
-            if (rectangle.Value.Height == 0)
+            if (bestNode.Value.Height == 0)
             {
                 score1 = int.MaxValue;
                 score2 = int.MaxValue;
             }
+
+            return bestNode;
         }
 
-        private void FindPositionForNewNodeBestShortSideFit(RotatableRectangle rectangle, out int bestShortSideFit, ref int bestLongSideFit)
+        private RotatableRectangle FindPositionForNewNodeBestShortSideFit(RotatableRectangle rectangle, out int bestShortSideFit, ref int bestLongSideFit)
         {
             var bestNode = rectangle;
 
@@ -290,6 +296,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
                     }
                 }
             }
+            return bestNode;
         }
 
         /// <summary>
@@ -302,7 +309,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// <param name="bestY"></param>
         /// <param name="bestX"></param>
         /// <returns></returns>
-        private void FindPositionForNewNodeBottomLeft(RotatableRectangle rectangle, out int bestY, ref int bestX)
+        private RotatableRectangle FindPositionForNewNodeBottomLeft(RotatableRectangle rectangle, out int bestY, ref int bestX)
         {
             var bestNode = rectangle;
             var width = rectangle.Value.Width;
@@ -345,9 +352,11 @@ namespace SiliconStudio.Paradox.Assets.Texture
                     }
                 }
             }
+
+            return bestNode;
         }
 
-        private void FindPositionForNewNodeContactPoint(RotatableRectangle rectangle, out int bestContactScore)
+        private RotatableRectangle FindPositionForNewNodeContactPoint(RotatableRectangle rectangle, out int bestContactScore)
         {
             var bestNode = rectangle;
 
@@ -390,6 +399,8 @@ namespace SiliconStudio.Paradox.Assets.Texture
                     }
                 }
             }
+
+            return bestNode;
         }
 
         private int ContactPointScoreNode(int x, int y, int width, int height)
@@ -419,7 +430,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
             return Math.Min(i1end, i2end) - Math.Max(i1start, i2start);
         }
 
-        private void FindPositionForNewNodeBestLongSideFit(RotatableRectangle rectangle, ref int bestShortSideFit, out int bestLongSideFit)
+        private RotatableRectangle FindPositionForNewNodeBestLongSideFit(RotatableRectangle rectangle, ref int bestShortSideFit, out int bestLongSideFit)
         {
             var bestNode = rectangle;
 
@@ -472,9 +483,11 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 	}
                 }
             }
+
+            return bestNode;
         }
 
-        private void FindPositionForNewNodeBestAreaFit(RotatableRectangle rectangle, out int bestAreaFit, ref int bestShortSideFit)
+        private RotatableRectangle FindPositionForNewNodeBestAreaFit(RotatableRectangle rectangle, out int bestAreaFit, ref int bestShortSideFit)
         {
             var bestNode = rectangle;
 
@@ -527,6 +540,8 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 	}
                 }
             }
+
+            return bestNode;
         }
     }
 }
