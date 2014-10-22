@@ -2,6 +2,9 @@
 
 Release date: 2014/10/2?
 
+#### New Features
+- Graphics: Add ability to unbind all the shader resources used by an effect.
+
 #### Enhancements
 - Audio: Add overloaded Play function in SoundEffectInstance that allows the user to specify how to deal with siblings instances (play in parallel or stop them).
 - Game: MicroThreads unhandled exceptions are not ignored anymore ([#47](https://github.com/SiliconStudio/paradox/issues/47)).
