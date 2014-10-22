@@ -50,7 +50,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 maxRectPacker.Insert(textureRegions);
 
                 // Find true size from packed regions
-                var trueSize = GetTrueSize(maxRectPacker.UsedRectangles);
+                var trueSize = CalculatePackedRectanglesBound(maxRectPacker.UsedRectangles);
 
                 // Alter the size of atlas so that it is a power of two
                 if (packConfiguration.SizeContraint == SizeConstraints.PowerOfTwo)
@@ -101,7 +101,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// </summary>
         /// <param name="usedRectangles"></param>
         /// <returns></returns>
-        private Size2 GetTrueSize(IEnumerable<RotatableRectangle> usedRectangles)
+        private Size2 CalculatePackedRectanglesBound(IEnumerable<RotatableRectangle> usedRectangles)
         {
             var minX = int.MaxValue;
             var minY = int.MaxValue;
