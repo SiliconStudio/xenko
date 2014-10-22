@@ -150,26 +150,29 @@ namespace SiliconStudio.Paradox.Assets.Texture
             // Fill in textureData from textureAtlas
             foreach (var intemediateTexture in textureAtlas.Textures)
             {
-                var texture = intemediateTexture.Texture;
-                var textureWidth = texture.Description.Width;
-                var textureHeight = texture.Description.Height;
+                var isRotated = intemediateTexture.Region.IsRotated;
+                var sourceTexture = intemediateTexture.Texture;
+                var sourceTextureWidth = sourceTexture.Description.Width;
+                var sourceTextureHeight = sourceTexture.Description.Height;
 
                 unsafe
                 {
                     var atlasData = (Color*)atlasTexture.DataPointer;
-                    var textureData = (Color*)texture.DataPointer;
+                    var textureData = (Color*)sourceTexture.DataPointer;
 
-                    for (var y = -borderSize; y < texture.Description.Height + borderSize; ++y)
-                        for (var x = -borderSize; x < texture.Description.Width + borderSize; ++x)
+                    for (var y = 0; y < intemediateTexture.Region.Value.Height; ++y)
+                        for (var x = 0; x < intemediateTexture.Region.Value.Width; ++x)
                         {
-                            var targetIndexX = intemediateTexture.Region.Value.X + borderSize + ((intemediateTexture.Region.IsRotated) ? (textureWidth - 1 - y) : x);
-                            var targetIndexY = intemediateTexture.Region.Value.Y + borderSize + ((intemediateTexture.Region.IsRotated) ? x : y);
+                            var targetIndexX = intemediateTexture.Region.Value.X + x;
+                            var targetIndexY = intemediateTexture.Region.Value.Y + y;
 
-                            var sourceIndexX = GetSourceTextureIndex(x, textureWidth, textureAtlas.PackConfiguration.BorderAddressMode);
-                            var sourceIndexY = GetSourceTextureIndex(y, textureHeight, textureAtlas.PackConfiguration.BorderAddressMode);
+                            var sourceIndexX = GetSourceTextureIndex(x - borderSize, isRotated ? sourceTextureHeight : sourceTextureWidth, textureAtlas.PackConfiguration.BorderAddressMode);
+                            var sourceIndexY = GetSourceTextureIndex(y - borderSize, isRotated ? sourceTextureWidth : sourceTextureHeight, textureAtlas.PackConfiguration.BorderAddressMode);
 
                             atlasData[targetIndexY * textureAtlas.Width + targetIndexX] = (sourceIndexX < 0 || sourceIndexY < 0)
-                                ? textureAtlas.PackConfiguration.BorderColor ?? Color.Transparent : textureData[sourceIndexY * textureWidth + sourceIndexX];
+                                ? textureAtlas.PackConfiguration.BorderColor ?? Color.Transparent : 
+                                    textureData[isRotated ? (sourceTextureHeight - 1 - sourceIndexX) * sourceTextureWidth + sourceIndexY 
+                                        : (sourceIndexY * sourceTextureWidth + sourceIndexX)];
                         }
                 }
             }
