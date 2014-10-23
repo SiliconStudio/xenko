@@ -21,6 +21,10 @@ namespace SiliconStudio.Paradox.Input
     {
         #region Constants and Fields
 
+        private List<SensorBase> Sensors = new List<SensorBase>();
+
+        internal const float DesiredSensorUpdateRate = 60;
+
         public static Logger Logger = GlobalLogger.GetLogger("Input");
 
         internal const float GamePadAxisDeadZone = 0.01f;
@@ -72,6 +76,36 @@ namespace SiliconStudio.Paradox.Input
         internal readonly Dictionary<int, PointerInfo> PointerInfos = new Dictionary<int, PointerInfo>();
         
         public float MouseWheelDelta { get; private set; }
+
+        /// <summary>
+        /// Gets the reference to the accelerometer sensor. The accelerometer measures all the acceleration forces applied on the device.
+        /// </summary>
+        public AccelerometerSensor Accelerometer { get; private set; }
+
+        /// <summary>
+        /// Gets the reference to the compass sensor. The compass measures the angle between the device top and the north.
+        /// </summary>
+        public CompassSensor Compass { get; private set; }
+
+        /// <summary>
+        /// Gets the reference to the gyroscope sensor. The gyroscope measures the rotation speed of the device.
+        /// </summary>
+        public GyroscopeSensor Gyroscope { get; private set; }
+
+        /// <summary>
+        /// Gets the reference to the user acceleration sensor. The user acceleration sensor measures the acceleration produce by the user on the device (no gravity).
+        /// </summary>
+        public UserAccelerationSensor UserAcceleration { get; private set; }
+
+        /// <summary>
+        /// Gets the reference to the gravity sensor. The gravity sensor measures the gravity vector applied to the device.
+        /// </summary>
+        public GravitySensor Gravity { get; private set; }
+
+        /// <summary>
+        /// Gets the reference to the orientation sensor. The orientation sensor measures orientation of device in the world.
+        /// </summary>
+        public OrientationSensor Orientation { get; private set; }
 
         /// <summary>
         /// The width in pixel of the control
@@ -144,6 +178,39 @@ namespace SiliconStudio.Paradox.Input
 
             Services.AddService(typeof(InputManager), this);
             Services.AddService(typeof(IInputManager), this);
+
+            Accelerometer = new AccelerometerSensor();
+            Compass = new CompassSensor();
+            Gyroscope = new GyroscopeSensor();
+            UserAcceleration = new UserAccelerationSensor();
+            Gravity = new GravitySensor();
+            Orientation = new OrientationSensor();
+
+            Sensors.Add(Accelerometer);
+            Sensors.Add(Compass);
+            Sensors.Add(Gyroscope);
+            Sensors.Add(UserAcceleration);
+            Sensors.Add(Gravity);
+            Sensors.Add(Orientation);
+        }
+
+        public override void Initialize()
+        {
+            base.Initialize();
+            
+            Game.Activated += OnApplicationResumed;
+            Game.Deactivated += OnApplicationPaused;
+        }
+
+        protected override void Destroy()
+        {
+            base.Destroy();
+
+            Game.Activated -= OnApplicationResumed;
+            Game.Deactivated -= OnApplicationPaused;
+
+            // ensure that OnApplicationPaused is called before destruction, when Game.Deactivated event is not triggered.
+            OnApplicationPaused(this, EventArgs.Empty);
         }
 
         private void ActivatedGesturesChanged(object sender, TrackingCollectionChangedEventArgs trackingCollectionChangedEventArgs)
@@ -423,6 +490,7 @@ namespace SiliconStudio.Paradox.Input
 
         public override void Update(GameTime gameTime)
         {
+            UpdateSensors();
             UpdateKeyboard();
             UpdateMouse();
             UpdateGamePads();
@@ -430,7 +498,47 @@ namespace SiliconStudio.Paradox.Input
             UpdateVirtualButtonValues();
             UpdateGestureEvents(gameTime.Elapsed);
         }
-        
+
+        private void UpdateSensors()
+        {
+            CheckAndEnableSensors();
+            UpdateEnabledSensorsData();
+            CheckAndDisableSensors();
+
+            // reset ShouldEnable/Disable and Data values sensor
+            foreach (var sensor in Sensors)
+            {
+                // reset the data of disabled sensor (we don't want the sensor data value to be frozen to last enabled value)
+                if (!sensor.IsEnabled)
+                    sensor.ResetData();
+
+                // reset the ShouldBeDisable/Enable internal state
+                sensor.ShouldBeDisabled = false;
+                sensor.ShouldBeEnabled = false;
+            }
+        }
+
+        /// <summary>
+        /// Checks if new sensors need to be enabled and activate them.
+        /// </summary>
+        internal virtual void CheckAndEnableSensors()
+        {
+        }
+
+        /// <summary>
+        /// Update the data values of enabled sensors
+        /// </summary>
+        internal virtual void UpdateEnabledSensorsData()
+        {
+        }
+
+        /// <summary>
+        /// Checks if old sensors need to be disabled and inactivate them.
+        /// </summary>
+        internal virtual void CheckAndDisableSensors()
+        {
+        }
+
         private void UpdateGestureEvents(TimeSpan elapsedGameTime)
         {
             currentGestureEvents.Clear();
@@ -693,6 +801,14 @@ namespace SiliconStudio.Paradox.Input
         }
 
         public abstract bool MultiTouchEnabled { get; set; }
+
+        public virtual void OnApplicationPaused(object sender, EventArgs e)
+        {
+        }
+
+        public virtual void OnApplicationResumed(object sender, EventArgs e)
+        {
+        }
 
         /// <summary>
         /// Base class used to track the state of a gamepad (XInput or DirectInput).

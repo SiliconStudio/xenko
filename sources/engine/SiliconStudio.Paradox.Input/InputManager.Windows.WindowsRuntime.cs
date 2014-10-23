@@ -1,5 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using Matrix = SiliconStudio.Core.Mathematics.Matrix;
 #if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
 using System;
 using System.Collections.Generic;
@@ -17,15 +19,25 @@ using Windows.UI.Input;
 using Point = Windows.Foundation.Point;
 using WinRTPointerDeviceType = Windows.Devices.Input.PointerDeviceType;
 using WinRTPointerPoint = Windows.UI.Input.PointerPoint;
+using WindowsAccelerometer = Windows.Devices.Sensors.Accelerometer;
+using WindowsGyroscope = Windows.Devices.Sensors.Gyrometer;
+using WindowsOrientation = Windows.Devices.Sensors.OrientationSensor;
+using WindowsCompass = Windows.Devices.Sensors.Compass;
 
 namespace SiliconStudio.Paradox.Input
 {
     public partial class InputManager
     {
+        private const uint DesiredSensorUpdateIntervalMs = (uint)(1f/DesiredSensorUpdateRate*1000f);
+
         // mapping between WinRT keys and toolkit keys
         private static readonly Dictionary<VirtualKey, Keys> _keysDictionary;
 
         private bool isLeftButtonPressed;
+        private WindowsAccelerometer windowsAccelerometer;
+        private WindowsCompass windowsCompass;
+        private WindowsGyroscope windowsGyroscope;
+        private WindowsOrientation windowsOrientation;
 
         // TODO: Support for MultiTouchEnabled on Windows Runtime
         public override bool MultiTouchEnabled { get { return true; } set { } }
@@ -182,6 +194,158 @@ namespace SiliconStudio.Paradox.Input
 
             // Scan all registered inputs
             Scan();
+            
+            // get sensor default instances
+            windowsAccelerometer = WindowsAccelerometer.GetDefault();
+            windowsCompass = WindowsCompass.GetDefault();
+            windowsGyroscope = WindowsGyroscope.GetDefault();
+            windowsOrientation = WindowsOrientation.GetDefault();
+
+            // determine which sensors are available
+            Accelerometer.IsSupported = windowsAccelerometer != null;
+            Compass.IsSupported = windowsCompass != null;
+            Gyroscope.IsSupported = windowsGyroscope != null;
+            Orientation.IsSupported = windowsOrientation != null;
+            Gravity.IsSupported = Orientation.IsSupported && Accelerometer.IsSupported;
+            UserAcceleration.IsSupported = Gravity.IsSupported;
+        }
+
+        internal override void CheckAndEnableSensors()
+        {
+            base.CheckAndEnableSensors();
+
+            if (Accelerometer.ShouldBeEnabled || Gravity.ShouldBeEnabled || UserAcceleration.ShouldBeEnabled)
+                windowsAccelerometer.ReportInterval = Math.Max(DesiredSensorUpdateIntervalMs, windowsAccelerometer.MinimumReportInterval);
+
+            if (Compass.ShouldBeEnabled)
+                windowsCompass.ReportInterval = Math.Max(DesiredSensorUpdateIntervalMs, windowsCompass.MinimumReportInterval);
+
+            if (Gyroscope.ShouldBeEnabled)
+                windowsGyroscope.ReportInterval = Math.Max(DesiredSensorUpdateIntervalMs, windowsGyroscope.MinimumReportInterval);
+
+            if (Orientation.ShouldBeEnabled || Gravity.ShouldBeEnabled || UserAcceleration.ShouldBeEnabled)
+                windowsOrientation.ReportInterval = Math.Max(DesiredSensorUpdateIntervalMs, windowsOrientation.MinimumReportInterval);
+        }
+
+        internal override void UpdateEnabledSensorsData()
+        {
+            base.UpdateEnabledSensorsData();
+
+            if (Accelerometer.IsEnabled)
+            {
+                var currentReading = windowsAccelerometer.GetCurrentReading();
+                Accelerometer.Acceleration = new Vector3((float)currentReading.AccelerationX, (float)currentReading.AccelerationY, (float)currentReading.AccelerationZ);
+            }
+
+            if (Compass.IsEnabled)
+            {
+                var currentReading = windowsCompass.GetCurrentReading();
+                Compass.Heading = (float)(currentReading.HeadingMagneticNorth * Math.PI / 180);
+            }
+
+            if (Gyroscope.IsEnabled)
+            {
+                var currentReading = windowsGyroscope.GetCurrentReading();
+                Gyroscope.RotationRate = new Vector3((float)currentReading.AngularVelocityX, (float)currentReading.AngularVelocityY, (float)currentReading.AngularVelocityZ);
+            }
+
+            if (Orientation.IsEnabled || UserAcceleration.IsEnabled || Gravity.IsEnabled)
+            {
+                var currentReading = windowsOrientation.GetCurrentReading();
+                var matrix = currentReading.RotationMatrix;
+
+                if (Orientation.IsEnabled)
+                {
+                    var q = currentReading.Quaternion;
+                    Orientation.Quaternion = new Quaternion(q.X, q.Y, q.Z, q.W);
+
+                    var rotationMatrix = Matrix.Identity;
+                    rotationMatrix.M11 = matrix.M11;
+                    rotationMatrix.M12 = matrix.M21;
+                    rotationMatrix.M13 = matrix.M31;
+                    rotationMatrix.M21 = matrix.M12;
+                    rotationMatrix.M22 = matrix.M22;
+                    rotationMatrix.M23 = matrix.M32;
+                    rotationMatrix.M31 = matrix.M13;
+                    rotationMatrix.M32 = matrix.M23;
+                    rotationMatrix.M33 = matrix.M33;
+
+                    Orientation.RotationMatrix = rotationMatrix;
+
+                    Orientation.Yaw = (float) Math.Atan2(2*(q.W*q.X + q.Y*q.Z), 1 - 2*(q.X * q.X + q.Y * q.Y));
+                    Orientation.Pitch = (float) Math.Asin(2*(q.W*q.Y - q.Z*q.X));
+                    Orientation.Roll = (float)Math.Atan2(2*(q.W*q.Z + q.X*q.Y), 1 - 2*(q.Y*q.Y + q.Z*q.Z));
+                }
+                if (UserAcceleration.IsEnabled || Gravity.IsEnabled)
+                {
+                    // calculate the gravity direction
+                    var currentAcceleration = windowsAccelerometer.GetCurrentReading();
+                    var acceleration = new Vector3((float)currentAcceleration.AccelerationX, (float)currentAcceleration.AccelerationY, (float)currentAcceleration.AccelerationZ);
+                    var gravityDirection = new Vector3(-matrix.M13, -matrix.M23, -matrix.M33);
+                    var gravity = Vector3.Dot(acceleration, gravityDirection) * gravityDirection;
+                    
+                    if (Gravity.IsEnabled)
+                        Gravity.Vector = gravity;
+
+                    if (UserAcceleration.IsEnabled)
+                        UserAcceleration.Acceleration = acceleration - gravity;
+                }
+            }
+        }
+
+        internal override void CheckAndDisableSensors()
+        {
+            base.CheckAndDisableSensors();
+
+            if (!(Accelerometer.IsEnabled || Gravity.IsEnabled || UserAcceleration.IsEnabled) && (Accelerometer.ShouldBeDisabled || Gravity.ShouldBeDisabled || UserAcceleration.ShouldBeDisabled))
+                windowsAccelerometer.ReportInterval = 0;
+
+            if (Compass.ShouldBeDisabled)
+                windowsCompass.ReportInterval = 0;
+
+            if (Gyroscope.ShouldBeDisabled)
+                windowsGyroscope.ReportInterval = 0;
+
+            if (!(Orientation.IsEnabled || Gravity.IsEnabled || UserAcceleration.IsEnabled) && (Orientation.ShouldBeDisabled || Gravity.ShouldBeDisabled || UserAcceleration.ShouldBeDisabled))
+                windowsOrientation.ReportInterval = 0;
+        }
+
+        public override void OnApplicationPaused(object sender, EventArgs e)
+        {
+            base.OnApplicationPaused(sender, e);
+
+            // revert sensor sampling rate to reduce battery consumption
+
+            if (Accelerometer.IsEnabled || Gravity.IsEnabled || UserAcceleration.IsEnabled)
+                windowsAccelerometer.ReportInterval = 0;
+
+            if (Compass.IsEnabled)
+                windowsCompass.ReportInterval = 0;
+
+            if (Gyroscope.IsEnabled)
+                windowsGyroscope.ReportInterval = 0;
+
+            if (Orientation.IsEnabled || Gravity.IsEnabled || UserAcceleration.IsEnabled)
+                windowsOrientation.ReportInterval = 0;
+        }
+
+        public override void OnApplicationResumed(object sender, EventArgs e)
+        {
+            base.OnApplicationResumed(sender, e);
+
+            // reset the paradox sampling rate to activated sensors
+
+            if (Accelerometer.IsEnabled || Gravity.IsEnabled || UserAcceleration.IsEnabled)
+                windowsAccelerometer.ReportInterval = Math.Max(DesiredSensorUpdateIntervalMs, windowsAccelerometer.MinimumReportInterval);
+
+            if (Compass.IsEnabled)
+                windowsCompass.ReportInterval = Math.Max(DesiredSensorUpdateIntervalMs, windowsCompass.MinimumReportInterval);
+
+            if (Gyroscope.IsEnabled)
+                windowsGyroscope.ReportInterval = Math.Max(DesiredSensorUpdateIntervalMs, windowsGyroscope.MinimumReportInterval);
+
+            if (Orientation.IsEnabled || Gravity.IsEnabled || UserAcceleration.IsEnabled)
+                windowsOrientation.ReportInterval = Math.Max(DesiredSensorUpdateIntervalMs, windowsOrientation.MinimumReportInterval);
         }
 
         private void InitializeFromFrameworkElement(FrameworkElement uiElement)
