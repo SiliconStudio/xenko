@@ -12,8 +12,14 @@ class ComputeColorTextureCube<TextureCube TTexture> : ComputeColor, NormalWSStre
     {
         float3 samplePos = streams.vPositionVS;
         float3 eyeDir = mul(float4(samplePos, 0), ViewInverse).xyz;
-        float3 samplingDir = TransformCubemapSamplingDirection(reflect(eyeDir, streams.vNormalWS));
-        return TTexture.Sample(Texturing.Sampler, samplingDir);
+        
+        // sampling direction in the cubemap.
+        float3 samplingDir = GetSamplingDir();
+
+        // transform the final sampling direction.
+        samplingDir = TransformCubemapSamplingDirection(samplingDir);
+
+        return SampleCubemap(samplingDir);
     }
 
     float3 TransformCubemapSamplingDirection(float3 samplingDir)
@@ -25,5 +31,21 @@ class ComputeColorTextureCube<TextureCube TTexture> : ComputeColor, NormalWSStre
         else
             samplingDir.x = -samplingDir.x;
         return samplingDir;
+    }
+
+    float3 GetSamplingDir()
+    {
+        float3 samplePos = streams.vPositionVS;
+        float3 eyeDir = mul(float4(samplePos, 0), ViewInverse).xyz;
+        
+        // sampling direction in the cubemap.
+        float3 samplingDir = reflect(eyeDir, streams.vNormalWS);
+        
+        return samplingDir;
+    }
+
+    float4 SampleCubemap(float3 samplingDir)
+    {
+        return TTexture.Sample(Texturing.LinearSampler, samplingDir);
     }
 };

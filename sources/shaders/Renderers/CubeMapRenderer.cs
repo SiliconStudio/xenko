@@ -40,6 +40,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         #region Private members
 
+        // cubemap size
+        private int cubemapSize;
+
         // camera parameters
         private Matrix[] cameraViewProjMatrices = new Matrix[6];
 
@@ -86,30 +89,12 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// <param name="cubeMapPosition">The origin of the cubemap</param>
         /// <param name="nearPlane">The near plane.</param>
         /// <param name="farPlane">The far plane.</param>
-        public CubeMapRenderer(IServiceRegistry services, RenderPipeline recursivePipeline, int cubeMapSize, bool singlePass, Vector3 cubeMapPosition, float nearPlane, float farPlane) : base(services, recursivePipeline)
+        public CubeMapRenderer(IServiceRegistry services, RenderPipeline recursivePipeline, int mapSize, bool singlePass, Vector3 cubeMapPosition, float nearPlane, float farPlane) : base(services, recursivePipeline)
         {
             renderInSinglePass = singlePass;
+            cubemapSize = mapSize;
             
-            TextureCube = TextureCube.New(GraphicsDevice, cubeMapSize, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
-
-            if (renderInSinglePass)
-            {
-                cubeMapRenderTarget = TextureCube.ToRenderTarget(ViewType.Full, 0, 0);
-                cubeMapDepthStencilBuffer = Texture2D.New(GraphicsDevice, cubeMapSize, cubeMapSize, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil, 6).ToDepthStencilBuffer(false);
-            }
-            else
-            {
-                cubeMapRenderTargetsArray = new RenderTarget[6];
-                for (var i = 0; i < 6; ++i)
-                    cubeMapRenderTargetsArray[i] = TextureCube.ToRenderTarget(ViewType.Single, i, 0);
-                cubeMapDepthStencilBuffer = Texture2D.New(GraphicsDevice, cubeMapSize, cubeMapSize, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil).ToDepthStencilBuffer(false);
-            }
-
-            Textures2D = new Texture2D[6];
-            for (var i = 0; i < 6; ++i)
-                Textures2D[i] = Texture2D.New(GraphicsDevice, cubeMapSize, cubeMapSize, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource);
-
-            // TODO: simplify that
+            // TODO: simplify that - move to load?
             var targetEntity = new Entity() { new TransformationComponent() };
             camera = new CameraComponent()
             {
@@ -119,7 +104,43 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 VerticalFieldOfView = MathUtil.PiOverTwo,
                 Target = targetEntity,
             };
+            // attach the camera component to an entity to perform computation of transformation matrices
             var cameraCube = new Entity(cubeMapPosition) { camera };
+        }
+
+        #endregion
+
+        #region Public methods
+
+        public override void Load()
+        {
+            base.Load();
+
+            // TODO: mip maps?
+            TextureCube = TextureCube.New(GraphicsDevice, cubemapSize, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
+
+            if (renderInSinglePass)
+            {
+                cubeMapRenderTarget = TextureCube.ToRenderTarget(ViewType.Full, 0, 0);
+                cubeMapDepthStencilBuffer = Texture2D.New(GraphicsDevice, cubemapSize, cubemapSize, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil, 6).ToDepthStencilBuffer(false);
+            }
+            else
+            {
+                cubeMapRenderTargetsArray = new RenderTarget[6];
+                for (var i = 0; i < 6; ++i)
+                    cubeMapRenderTargetsArray[i] = TextureCube.ToRenderTarget(ViewType.Single, i, 0);
+                cubeMapDepthStencilBuffer = Texture2D.New(GraphicsDevice, cubemapSize, cubemapSize, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil).ToDepthStencilBuffer(false);
+            }
+
+            Textures2D = new Texture2D[6];
+            for (var i = 0; i < 6; ++i)
+                Textures2D[i] = Texture2D.New(GraphicsDevice, cubemapSize, cubemapSize, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource);
+        }
+
+        public override void Unload()
+        {
+            // TODO: dispose targets and textures?
+            base.Unload();
         }
 
         #endregion
@@ -149,11 +170,12 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         private void RenderInSixPasses(RenderContext context)
         {
             var cameraPos = camera.Entity.Transformation.Translation;
+            camera.Entity.Transformation.UpdateWorldMatrix();
             for (var i = 0; i < 6; ++i)
             {
                 camera.Target.Transformation.Translation = cameraPos + targetPositions[i];
-                camera.TargetUp = cameraUps[i];
                 camera.Target.Transformation.UpdateWorldMatrix();
+                camera.TargetUp = cameraUps[i];
                 ComputeCameraTransformations(context);
                 GraphicsDevice.Clear(cubeMapDepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
                 GraphicsDevice.Clear(cubeMapRenderTargetsArray[i], Color.Black);
@@ -215,11 +237,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 viewParameters.Set(CameraKeys.FarClipPlane, camera.FarPlane);
                 viewParameters.Set(CameraKeys.FieldOfView, camera.VerticalFieldOfView);
                 viewParameters.Set(CameraKeys.Aspect, camera.AspectRatio);
-                viewParameters.Set(CameraKeys.FocusDistance, camera.FocusDistance);
-
-                // TODO: move the following code in a more suitable place
-                //viewParameters.Set(GlobalKeys.Time, (float)game.PlayTime.TotalTime.TotalSeconds);
-                //viewParameters.Set(GlobalKeys.TimeStep, (float)game.PlayTime.ElapsedTime.TotalSeconds);            
+                viewParameters.Set(CameraKeys.FocusDistance, camera.FocusDistance);       
             }
         }
 
@@ -230,11 +248,12 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         private void ComputeAllCameraMatrices(RenderContext context)
         {
             var cameraPos = camera.Entity.Transformation.Translation;
+            camera.Entity.Transformation.UpdateWorldMatrix();
             for (var i = 0; i < 6; ++i)
             {
                 camera.Target.Transformation.Translation = cameraPos + targetPositions[i];
-                camera.TargetUp = cameraUps[i];
                 camera.Target.Transformation.UpdateWorldMatrix();
+                camera.TargetUp = cameraUps[i];
 
                 Matrix projection;
                 Matrix worldToCamera;

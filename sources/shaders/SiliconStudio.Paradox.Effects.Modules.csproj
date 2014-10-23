@@ -322,6 +322,18 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeColorTextureCube.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Cubemap\ComputeColorTextureCubeLod.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ComputeColorTextureCubeLod.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\ComputeColorTextureCubeParallax.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ComputeColorTextureCubeParallax.pdxsl</DependentUpon>
+    </Compile>
     <Compile Include="Geometry\CameraCube.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1641,6 +1653,14 @@
     <None Include="Core\ShadingBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadingBase.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\ComputeColorTextureCubeLod.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorTextureCubeLod.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\ComputeColorTextureCubeParallax.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorTextureCubeParallax.cs</LastGenOutput>
     </None>
     <None Include="Geometry\CameraCube.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

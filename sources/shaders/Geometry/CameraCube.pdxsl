@@ -11,22 +11,15 @@ class CameraCube : PositionStream4, ShaderBase
 
     stream uint RTAIndex : SV_RenderTargetArrayIndex;
 
-    [maxvertexcount(9)]
+    [maxvertexcount(18)]
     stage void GSMain(triangle Input input[3], inout TriangleStream<Output> triangleStream)
     {
-        float4 PositionWS0 = input[0].PositionWS;
-        float4 PositionWS1 = input[1].PositionWS;
-        float4 PositionWS2 = input[2].PositionWS;
-        int index0 = GetViewIndex((PositionWS0.xyz / PositionWS0.w) - CameraWorldPosition);
-        int index1 = GetViewIndex((PositionWS1.xyz / PositionWS1.w) - CameraWorldPosition);
-        int index2 = GetViewIndex((PositionWS2.xyz / PositionWS2.w) - CameraWorldPosition);
-
-        OutputToView(input, triangleStream, index0);
-        
-        if (index1 != index0)
-            OutputToView(input, triangleStream, index1);
-        if (index2 != index0 && index2 != index1)
-            OutputToView(input, triangleStream, index2);
+        OutputToView(input, triangleStream, 0);
+        OutputToView(input, triangleStream, 1);
+        OutputToView(input, triangleStream, 2);
+        OutputToView(input, triangleStream, 3);
+        OutputToView(input, triangleStream, 4);
+        OutputToView(input, triangleStream, 5);
     }
 
     void OutputToView(triangle Input input[3], inout TriangleStream<Output> triangleStream, uint viewIndex)
@@ -42,33 +35,5 @@ class CameraCube : PositionStream4, ShaderBase
         streams.ShadingPosition = mul(streams.PositionWS, CameraViewProjectionMatrices[viewIndex]);
         triangleStream.Append(streams);
         triangleStream.RestartStrip();
-    }
-
-    uint GetViewIndex(float3 vertexPos)
-    {
-        float3 absPos = abs(vertexPos);
-        if (absPos.x > absPos.y && absPos.x > absPos.z)
-        {
-            if (vertexPos.x > 0)
-                return 0;
-            else
-                return 1;
-        }
-        if (absPos.y > absPos.x && absPos.y > absPos.z)
-        {
-            if (vertexPos.y > 0)
-                return 2;
-            else
-                return 3;
-        }
-        if (absPos.z > absPos.x && absPos.z > absPos.y)
-        {
-            if (vertexPos.z > 0)
-                return 4;
-            else
-                return 5;
-        }
-
-        return 0;
     }
 };
