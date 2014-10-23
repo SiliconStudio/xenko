@@ -286,6 +286,9 @@
     <None Include="Resources\EditTextOverred.dds" />
     <None Include="SiliconStudio.Paradox.UI.Tests.pdxpkg" />
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+    <Content Include="Resources\ToggleChecked.dds" />
+    <Content Include="Resources\ToggleIndetermate.dds" />
+    <Content Include="Resources\ToggleUnchecked.dds" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\Icon.png" Label="Paradox.DoNotSync" />
