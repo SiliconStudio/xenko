@@ -46,6 +46,8 @@
     <Compile Include="Commands\DisabledCommand.cs" />
     <Compile Include="Controls\FilteringComboBox.cs" />
     <Compile Include="Controls\MatrixEditor.cs" />
+    <Compile Include="Controls\PropertyView.cs" />
+    <Compile Include="Controls\PropertyViewItem.cs" />
     <Compile Include="Core\AnonymousComparer.cs" />
     <Compile Include="Core\AnonymousEqualityComparer.cs" />
     <Compile Include="Behaviors\CharInputBehavior.cs" />

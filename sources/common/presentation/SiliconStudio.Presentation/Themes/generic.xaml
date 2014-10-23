@@ -56,6 +56,106 @@
         </Setter>
     </Style>
 
+    <Style TargetType="ctrl:PropertyView">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ctrl:PropertyView">
+                    <Border BorderThickness="{TemplateBinding Border.BorderThickness}" BorderBrush="{TemplateBinding Border.BorderBrush}" Name="Bd" SnapsToDevicePixels="True">
+                        <ScrollViewer CanContentScroll="False" HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}" VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}" Background="{TemplateBinding Panel.Background}" Padding="{TemplateBinding Control.Padding}" x:Name="_pv_scrollviewer_" SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" Focusable="False">
+                            <ItemsPresenter/>
+                        </ScrollViewer>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="UIElement.IsEnabled" Value="False">
+                            <Setter TargetName="Bd" Property="Panel.Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
+                        </Trigger>
+                        <Trigger Property="VirtualizingStackPanel.IsVirtualizing" Value="True">
+                            <Setter TargetName="_pv_scrollviewer_" Property="ScrollViewer.CanContentScroll" Value="True">
+                            </Setter>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="ctrl:PropertyViewItem">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ctrl:PropertyViewItem">
+                    <Border BorderThickness="{TemplateBinding Border.BorderThickness}" BorderBrush="{TemplateBinding Border.BorderBrush}" Name="Bd" SnapsToDevicePixels="True">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <ToggleButton IsChecked="False" ClickMode="Press" Name="Expander">
+                                <ToggleButton.Style>
+                                    <Style TargetType="ToggleButton">
+                                        <Style.Resources>
+                                            <ResourceDictionary />
+                                        </Style.Resources>
+                                        <Setter Property="Focusable" Value="False"/>
+                                        <Setter Property="Width" Value="16"/>
+                                        <Setter Property="Height" Value="16"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ToggleButton">
+                                                    <Border Padding="5,5,5,5" Background="#00FFFFFF" Width="16" Height="16">
+                                                        <Path Fill="#00FFFFFF" Stroke="#FF989898" Name="ExpandPath">
+                                                            <Path.Data>
+                                                                <PathGeometry Figures="M0,0L0,6L6,0z" />
+                                                            </Path.Data>
+                                                            <Path.RenderTransform>
+                                                                <RotateTransform Angle="135" CenterX="3" CenterY="3" />
+                                                            </Path.RenderTransform>
+                                                        </Path>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="UIElement.IsMouseOver" Value="True">
+                                                            <Setter TargetName="ExpandPath" Property="Shape.Stroke" Value="#FF1BBBFA"/>
+                                                            <Setter TargetName="ExpandPath" Property="Shape.Fill" Value="#00FFFFFF"/>
+                                                        </Trigger>
+                                                        <Trigger Property="ToggleButton.IsChecked" Value="True">
+                                                            <Setter TargetName="ExpandPath" Property="UIElement.RenderTransform">
+                                                                <Setter.Value>
+                                                                    <RotateTransform Angle="180" CenterX="3" CenterY="3" />
+                                                                </Setter.Value>
+                                                            </Setter>
+                                                            <Setter TargetName="ExpandPath" Property="Shape.Fill" Value="#FF595959"/>
+                                                            <Setter TargetName="ExpandPath" Property="Shape.Stroke" Value="#FF262626"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ToggleButton.Style>
+                            </ToggleButton>
+                            <Grid Grid.Column="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <ContentPresenter Content="{TemplateBinding HeaderedContentControl.Header}" ContentTemplate="{TemplateBinding HeaderedContentControl.HeaderTemplate}" ContentStringFormat="{TemplateBinding HeaderedItemsControl.HeaderStringFormat}" ContentSource="Header" Name="PART_Header" HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
+                                <ItemsPresenter Name="ItemsHost" Grid.Row="1"/>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="UIElement.IsEnabled" Value="False">
+                            <Setter TargetName="Bd" Property="Panel.Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
+                        </Trigger>
+                        <Trigger Property="VirtualizingStackPanel.IsVirtualizing" Value="True">
+                            <Setter TargetName="_pv_scrollviewer_" Property="ScrollViewer.CanContentScroll" Value="True">
+                            </Setter>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="ctrl:TextBox" BasedOn="{StaticResource DefaultTextBoxStyle}"/>
 
     <Style TargetType="ctrl:TimerTextBox" BasedOn="{StaticResource {x:Type ctrl:TextBox}}"/>
