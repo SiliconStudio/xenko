@@ -10,9 +10,6 @@ class ComputeColorTextureCube<TextureCube TTexture> : ComputeColor, NormalWSStre
 {
     override float4 Compute()
     {
-        float3 samplePos = streams.vPositionVS;
-        float3 eyeDir = mul(float4(samplePos, 0), ViewInverse).xyz;
-        
         // sampling direction in the cubemap.
         float3 samplingDir = GetSamplingDir();
 

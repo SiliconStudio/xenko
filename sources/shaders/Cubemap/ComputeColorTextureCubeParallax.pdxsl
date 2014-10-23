@@ -8,31 +8,32 @@
 /// </remarks>
 class ComputeColorTextureCubeParallax<TextureCube TTextureP> : ComputeColorTextureCube<TTextureP>
 {
-    stage float CubemapRange = 2;
+    stage float CubemapRange = 1;
     stage float3 CubemapCenterWS = float3(0,0,0);
     
     float3 ParallaxCorrection(float3 samplingDir, float3 reflectionPoint)
     {
+        reflectionPoint -= CubemapCenterWS;
         float3 lambdaPos =  (CubemapRange - reflectionPoint) / samplingDir;
-        float3 lambdaNeg = -(CubemapRange + reflectionPoint) / samplingDir;
+        float3 lambdaNeg = (-CubemapRange - reflectionPoint) / samplingDir;
 
-        float3 maxLambda = max(lambdaPos, lambdaNeg); // only take positive values
+        float3 maxLambda = max(lambdaPos, lambdaNeg); // only take strictly positive values
         float minLambda = min(maxLambda.x, min(maxLambda.y, maxLambda.z)); // take the smallest one
 
-        float3 finalPos = reflectionPoint + minLambda * samplingDir;
-        return normalize(finalPos - CubemapCenterWS);
+        // no need to normalize
+        return reflectionPoint + minLambda * samplingDir;
     }
-
+    
     override float3 GetSamplingDir()
     {
         float3 samplingDir = base.GetSamplingDir();
-
+        
         float3 samplePos = streams.vPositionVS;
 
         // parallax correction.
         float4 reflectionPoint = mul(float4(samplePos, 1), ViewInverse);
-        float3 correctedSamplingDir = ParallaxCorrection(samplingDir, reflectionPoint / reflectionPoint.w);
-
+        float3 correctedSamplingDir = ParallaxCorrection(samplingDir, reflectionPoint.xyz / reflectionPoint.w);
+        
         return correctedSamplingDir;
     }
 };
