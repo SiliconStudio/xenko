@@ -57,11 +57,18 @@
     </Style>
 
     <Style TargetType="ctrl:PropertyView">
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <StackPanel IsItemsHost="True"/>
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ctrl:PropertyView">
                     <Border BorderThickness="{TemplateBinding Border.BorderThickness}" BorderBrush="{TemplateBinding Border.BorderBrush}" Name="Bd" SnapsToDevicePixels="True">
-                        <ScrollViewer CanContentScroll="False" HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}" VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}" Background="{TemplateBinding Panel.Background}" Padding="{TemplateBinding Control.Padding}" x:Name="_pv_scrollviewer_" SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" Focusable="False">
+                        <ScrollViewer x:Name="_pv_scrollviewer_" CanContentScroll="False" HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}" VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}" Background="{TemplateBinding Panel.Background}" Padding="{TemplateBinding Control.Padding}" SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" Focusable="False">
                             <ItemsPresenter/>
                         </ScrollViewer>
                     </Border>
@@ -80,6 +87,7 @@
     </Style>
 
     <Style TargetType="ctrl:PropertyViewItem">
+        <Setter Property="Increment" Value="15"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ctrl:PropertyViewItem">
@@ -138,19 +146,12 @@
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
                                 <ContentPresenter Content="{TemplateBinding HeaderedContentControl.Header}" ContentTemplate="{TemplateBinding HeaderedContentControl.HeaderTemplate}" ContentStringFormat="{TemplateBinding HeaderedItemsControl.HeaderStringFormat}" ContentSource="Header" Name="PART_Header" HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
-                                <ItemsPresenter Name="ItemsHost" Grid.Row="1"/>
+                                <Expander x:Name="propertyExpander" Grid.Row="1" IsExpanded="{TemplateBinding IsExpanded}" Style="{DynamicResource PropertyExpanderStyle}" IsEnabled="True">
+                                    <ItemsPresenter Name="ItemsHost" Grid.Row="1"/>
+                                </Expander>
                             </Grid>
                         </Grid>
                     </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="UIElement.IsEnabled" Value="False">
-                            <Setter TargetName="Bd" Property="Panel.Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
-                        </Trigger>
-                        <Trigger Property="VirtualizingStackPanel.IsVirtualizing" Value="True">
-                            <Setter TargetName="_pv_scrollviewer_" Property="ScrollViewer.CanContentScroll" Value="True">
-                            </Setter>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
