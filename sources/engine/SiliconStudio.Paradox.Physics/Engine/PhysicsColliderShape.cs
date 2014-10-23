@@ -3,9 +3,8 @@
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Core.Serialization.Serializers;
-using SiliconStudio.Paradox.Physics;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Paradox.Physics
 {
     [DataConverter(AutoGenerate = false, ContentReference = true)]
     [DataSerializer(typeof(PhysicsColliderShapeSerializer))]

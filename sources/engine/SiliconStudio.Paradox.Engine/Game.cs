@@ -84,12 +84,6 @@ namespace SiliconStudio.Paradox
         public UISystem UI { get; private set; }
 
         /// <summary>
-        /// Gets the physics system.
-        /// </summary>
-        /// <value>The physics system.</value>
-        public IPhysicsSystem Physics { get; private set; }
-
-        /// <summary>
         /// Gets the sprite animation system.
         /// </summary>
         /// <value>The sprite animation system.</value>
@@ -176,7 +170,6 @@ namespace SiliconStudio.Paradox
             Audio = new AudioSystem(Services);
             UI = new UISystem(Services);
             gameFontSystem = new GameFontSystem(Services);
-            Physics = new Bullet2PhysicsSystem(Services);
             SpriteAnimation = new SpriteAnimationSystem(Services);
 
             // ---------------------------------------------------------
@@ -204,9 +197,6 @@ namespace SiliconStudio.Paradox
 
             // Add the Font system
             GameSystems.Add(gameFontSystem);
-
-            //Add the Physics System
-            GameSystems.Add(Physics);
 
             //Add the sprite animation System
             GameSystems.Add(SpriteAnimation);
@@ -247,7 +237,6 @@ namespace SiliconStudio.Paradox
                 Entities.Processors.Add(new HierarchicalProcessor());
                 Entities.Processors.Add(new AnimationProcessor());
                 Entities.Processors.Add(new ModelNodeLinkProcessor());
-                Entities.Processors.Add(new PhysicsProcessor());
                 Entities.Processors.Add(new TransformationProcessor());              
                 Entities.Processors.Add(new MeshProcessor());
                 Entities.Processors.Add(new AudioListenerProcessor());

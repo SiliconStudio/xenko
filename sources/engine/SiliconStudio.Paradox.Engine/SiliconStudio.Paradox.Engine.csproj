@@ -176,15 +176,6 @@
     <Compile Include="Data\BoundingBoxExtensions.cs" />
     <Compile Include="Data\HalfBufferExtensions.cs" />
     <Compile Include="Data\PolySortExtensions.cs" />
-    <Compile Include="Engine\Bullet2PhysicsSystem.cs" />
-    <Compile Include="Engine\ColliderExtensions.cs" />
-    <Compile Include="Engine\IPhysicsSystem.cs" />
-    <Compile Include="Engine\PhysicsColliderShape.cs" />
-    <Compile Include="Engine\PhysicsColliderShapeData.cs" />
-    <Compile Include="Engine\PhysicsColliderShapeSerializer.cs" />
-    <Compile Include="Engine\PhysicsComponent.cs" />
-    <Compile Include="Engine\PhysicsElement.cs" />
-    <Compile Include="Engine\PhysicsProcessor.cs" />
     <Compile Include="Engine\LightProcessor.cs" />
     <Compile Include="Engine\PlayingAnimation.cs" />
     <Compile Include="Engine\ModelNodeLinkComponent.cs" />
@@ -381,10 +372,6 @@
       <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
       <Name>SiliconStudio.Core.Mathematics</Name>
       <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.Physics\SiliconStudio.Paradox.Physics.csproj">
-      <Project>{dd592516-b341-40fe-9100-1b0fa784a060}</Project>
-      <Name>SiliconStudio.Paradox.Physics</Name>
     </ProjectReference>
     <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\SiliconStudio.Paradox.Shaders.Compiler\SiliconStudio.Paradox.Shaders.Compiler.csproj">
       <Project>{E8B3553F-A79F-4E50-B75B-ACEE771C320C}</Project>

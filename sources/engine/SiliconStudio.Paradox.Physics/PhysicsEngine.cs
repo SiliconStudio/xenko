@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Engine.Data;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Physics
@@ -70,15 +71,46 @@ namespace SiliconStudio.Paradox.Physics
 
         internal static PhysicsEngine Singleton = null;
 
+        readonly Game mGame;
+
+        public PhysicsEngine(Game game)
+        {
+            mGame = game;
+        }
+
+        static bool sConvertersDone;
+
+        public static void InitializeConverters()
+        {
+            //init converters
+            // Register type PhysicsColliderShapeData
+            Core.Serialization.Converters.ConverterContext.RegisterConverter(new PhysicsColliderShapeDataConverter());
+            // Register type PhysicsComponentData
+            Core.Serialization.Converters.ConverterContext.RegisterConverter(new PhysicsComponentDataConverter());
+            // Register type PhysicsElementData
+            Core.Serialization.Converters.ConverterContext.RegisterConverter(new PhysicsElementDataConverter());
+
+            sConvertersDone = true;
+        }
+
         /// <summary>
         /// Initializes the Physics engine using the specified flags.
         /// </summary>
+        /// <param name="game">The Game.</param>
         /// <param name="flags">The flags.</param>
         /// <exception cref="System.NotImplementedException">SoftBody processing is not yet available</exception>
-        public void Initialize(PhysicsEngineFlags flags)
+        public void Initialize(PhysicsEngineFlags flags = PhysicsEngineFlags.None)
         {
-            // Preload proper freetype native library (depending on CPU type)
+            // Preload proper libbulletc native library (depending on CPU type)
             Core.NativeLibrary.PreloadLibrary("libbulletc.dll");
+
+            if (!sConvertersDone)
+            {
+                InitializeConverters();
+            }
+
+            //add into processors pipeline
+            mGame.Entities.Processors.Add(new PhysicsProcessor());
 
             mCollisionConf = new BulletSharp.DefaultCollisionConfiguration();
             mDispatcher = new BulletSharp.CollisionDispatcher(mCollisionConf);
@@ -258,6 +290,11 @@ namespace SiliconStudio.Paradox.Physics
 
             collider.InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.NoContactResponse;
 
+            if (shape.NeedsCustomCollisionCallback)
+            {
+                collider.InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.CustomMaterialCallback;
+            }
+
             collider.InternalCollider.UserObject = collider;
             collider.Engine = this;
 
@@ -276,11 +313,16 @@ namespace SiliconStudio.Paradox.Physics
             var rb = new RigidBody(collider);
 
             rb.InternalRigidBody = new BulletSharp.RigidBody(0.0f, rb.MotionState, collider.InternalShape, Vector3.Zero);
-            rb.InternalRigidBody.CollisionFlags |= BulletSharp.CollisionFlags.StaticObject; //already set if mass is 0 actually!
+            rb.InternalRigidBody.CollisionFlags |= BulletSharp.CollisionFlags.StaticObject; //already set if mass is 0 actually!   
 
             rb.InternalCollider = rb.InternalRigidBody;
 
             rb.InternalCollider.ContactProcessingThreshold = 1e18f;
+
+            if (collider.NeedsCustomCollisionCallback)
+            {
+                rb.InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.CustomMaterialCallback;
+            }
 
             if (collider.Is2D) //set different defaults for 2D shapes
             {
@@ -313,6 +355,11 @@ namespace SiliconStudio.Paradox.Physics
             };
 
             ch.InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.CharacterObject;
+
+            if (collider.NeedsCustomCollisionCallback)
+            {
+                ch.InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.CustomMaterialCallback;
+            }
 
             ch.InternalCollider.ContactProcessingThreshold = 1e18f;
 

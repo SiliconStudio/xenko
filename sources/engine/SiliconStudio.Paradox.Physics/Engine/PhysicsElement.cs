@@ -5,10 +5,10 @@ using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Converters;
+using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Physics;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Paradox.Physics
 {
     [DataContract]
     [DataConverter(AutoGenerate = true)]
@@ -217,7 +217,7 @@ namespace SiliconStudio.Paradox.Engine
                 scale.Z = (float)Math.Sqrt((worldMatrix.M31 * worldMatrix.M31) + (worldMatrix.M32 * worldMatrix.M32) + (worldMatrix.M33 * worldMatrix.M33));
 
                 TransformationComponent.CreateMatrixTRS(ref translation, ref rotation, ref scale, out entity.Transformation.WorldMatrix);
-                if (entity.Transformation.Parent == null || entity.Transformation.isSpecialRoot)
+                if (entity.Transformation.Parent == null)
                 {
                     entity.Transformation.LocalMatrix = entity.Transformation.WorldMatrix;
                 }
