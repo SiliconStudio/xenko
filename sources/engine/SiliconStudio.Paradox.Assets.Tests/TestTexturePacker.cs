@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
@@ -495,51 +494,6 @@ namespace SiliconStudio.Paradox.Assets.Tests
         }
 
         [Test]
-        public void TestImageRotation()
-        {
-            var sourceWidth = 2;
-            var sourceHeight = 4;
-
-            string[,] source = new string[sourceWidth, sourceHeight];
-            for (int i = 0; i < source.GetLength(0); ++i)
-                for (int j = 0; j < source.GetLength(1); ++j)
-                    source[i, j] = i + ", " + j;
-
-            var destinationWidth = 4;
-            var destinationHeight = 2;
-            string[,] destination = new string[destinationWidth, destinationHeight];
-            for (int i = 0; i < destination.GetLength(0); ++i)
-                for (int j = 0; j < destination.GetLength(1); ++j)
-                    destination[i, j] = (sourceWidth - 1 - j) + ", " + i;
-        }
-
-        [Test]
-        public void TestImageRotation2()
-        {
-            var sourceWidth = 4;
-            var sourceHeight = 2;
-
-            string[] source = new string[sourceWidth * sourceHeight];
-            for (int j = 0; j < sourceHeight; ++j)
-                for (int i = 0; i < sourceWidth; ++i)
-                    source[j * sourceWidth + i] = j + ", " + i;
-
-//            var destinationWidth = 2;
-//            var destinationHeight = 4;
-//            string[] destination = new string[destinationWidth * destinationHeight];
-//            for (int j = 0; j < destinationHeight; ++j)
-//                for (int i = 0; i < destinationWidth; ++i)
-//                    destination[j * destinationWidth + i] = (sourceHeight - 1 - i) + ", " + j;
-
-            var destinationWidth = 2;
-            var destinationHeight = 4;
-            string[] destination = new string[destinationWidth * destinationHeight];
-            for (int j = 0; j < destinationHeight; ++j)
-                for (int i = 0; i < destinationWidth; ++i)
-                    destination[j * destinationWidth + i] = source[(sourceHeight - 1 - i) * sourceWidth + j];
-        }
-
-        [Test]
         public void TestCreateTextureAtlasToOutput()
         {
             var textureElements = new Dictionary<string, IntermediateTextureElement>();
@@ -637,7 +591,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
             // Create atlas texture
             var atlasTexture = TextureAtlasFactory.CreateTextureAtlas(textureAtlases[0]);
-            atlasTexture.Save(new FileStream(@"C:/Users/Peeranut/Desktop/super_output/img.png", FileMode.Create), ImageFileType.Png);
+//            atlasTexture.Save(new FileStream(@"C:/Users/Peeranut/Desktop/packing_output/img.png", FileMode.Create), ImageFileType.Png);
 
             Assert.AreEqual(textureAtlases[0].Width, atlasTexture.Description.Width);
             Assert.AreEqual(textureAtlases[0].Height, atlasTexture.Description.Height);
