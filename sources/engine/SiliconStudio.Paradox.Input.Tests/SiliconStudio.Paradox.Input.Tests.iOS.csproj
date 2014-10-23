@@ -207,6 +207,7 @@
     <Compile Include="BasicInputTest.cs" />
     <Compile Include="AdvancedInputTest.cs" />
     <Compile Include="Module.cs" />
+    <Compile Include="SensorGameTest.cs" />
     <None Include="SiliconStudio.Paradox.Input.Tests.pdxpkg" />
   </ItemGroup>
   <ItemGroup>

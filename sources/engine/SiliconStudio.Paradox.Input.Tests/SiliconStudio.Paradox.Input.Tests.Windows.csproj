@@ -146,6 +146,7 @@
     <Compile Include="BasicInputTest.cs" />
     <Compile Include="AdvancedInputTest.cs" />
     <Compile Include="Module.cs" />
+    <Compile Include="SensorGameTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Label="Paradox.DoNotSync" Include="Properties\AssemblyInfo.cs" />
