@@ -130,6 +130,21 @@ foreach(var platform in Properties.Platforms)
       <Name>SiliconStudio.Paradox.Graphics</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Paradox.Games\SiliconStudio.Paradox.Games.csproj">
+      <Project>{42780cbd-3fe7-48e3-bd5b-59945ea20137}</Project>
+      <Name>SiliconStudio.Paradox.Games</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Paradox.UI\SiliconStudio.Paradox.UI.csproj">
+      <Project>{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}</Project>
+      <Name>SiliconStudio.Paradox.UI</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Paradox.Audio\SiliconStudio.Paradox.Audio.csproj">
+      <Project>{de042125-c270-4d1d-9270-0759c167567a}</Project>
+      <Name>SiliconStudio.Paradox.Audio</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="<#= Properties.ParadoxSdkRelativeDir #>\sources\common\shaders\SiliconStudio.Shaders\SiliconStudio.Shaders.csproj">
       <Project>{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}</Project>
       <Name>SiliconStudio.Shaders</Name>
