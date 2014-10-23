@@ -76,6 +76,14 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
+        /// Gets the extent of this bouding box.
+        /// </summary>
+        public Vector3 Extent
+        {
+            get { return (Maximum - Minimum) / 2; }
+        }
+
+        /// <summary>
         /// Retrieves the eight corners of the bounding box.
         /// </summary>
         /// <returns>An array of points representing the eight corners of the bounding box.</returns>

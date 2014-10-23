@@ -1,6 +1,10 @@
 ### Version 1.0.0-beta02
 
-Release date: 2014/10/2?
+Release date: 2014/10/22
+
+#### New Features
+- Graphics: Add ability to unbind all the shader resources used by an effect.
+- Graphics: Add Frustum culling (available in ModelRenderer.EnableFrustumCulling).
 
 #### Enhancements
 - Audio: Add overloaded Play function in SoundEffectInstance that allows the user to specify how to deal with siblings instances (play in parallel or stop them).
