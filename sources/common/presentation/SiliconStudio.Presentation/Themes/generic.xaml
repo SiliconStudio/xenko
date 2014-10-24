@@ -57,6 +57,9 @@
     </Style>
 
     <Style TargetType="ctrl:PropertyView">
+        <!-- TODO: Replace DynamicResource by StaticResource once it is stylized in the correct theme -->
+        <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
@@ -88,7 +91,8 @@
 
     <Style TargetType="ctrl:PropertyViewItem">
         <Setter Property="Increment" Value="15"/>
-        <Setter Property="Template">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <!--<Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ctrl:PropertyViewItem">
                     <Border BorderThickness="{TemplateBinding Border.BorderThickness}" BorderBrush="{TemplateBinding Border.BorderBrush}" Name="Bd" SnapsToDevicePixels="True">
@@ -109,7 +113,7 @@
                                         <Setter Property="Template">
                                             <Setter.Value>
                                                 <ControlTemplate TargetType="ToggleButton">
-                                                    <Border Padding="5,5,5,5" Background="#00FFFFFF" Width="16" Height="16">
+                                                    <Border Padding="5,5,5,5" Background="#FFFFFFFF" Width="16" Height="16">
                                                         <Path Fill="#00FFFFFF" Stroke="#FF989898" Name="ExpandPath">
                                                             <Path.Data>
                                                                 <PathGeometry Figures="M0,0L0,6L6,0z" />
@@ -154,7 +158,7 @@
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
-        </Setter>
+        </Setter>-->
     </Style>
 
     <Style TargetType="ctrl:TextBox" BasedOn="{StaticResource DefaultTextBoxStyle}"/>

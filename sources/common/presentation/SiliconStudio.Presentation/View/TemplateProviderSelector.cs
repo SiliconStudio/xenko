@@ -88,13 +88,17 @@ namespace SiliconStudio.Presentation.View
                 throw new ArgumentException(@"Container must be of type FrameworkElement", "container");
 
             var provider = FindTemplateProvider(item);
+            if (provider == null)
+                return null;
+
             var template = provider.Template;
             // We set the template we found into the content presenter itself to avoid re-entering the template selector if the property is refreshed.
+            // TODO: workaround/fix this
             var contentPresenter = container as ContentPresenter;
-            if (contentPresenter == null)
-                throw new ArgumentException("The container of an TemplateProviderSelector must be a ContentPresenter.");
+            //if (contentPresenter == null)
+            //    throw new ArgumentException("The container of an TemplateProviderSelector must be a ContentPresenter.");
 
-            contentPresenter.ContentTemplate = template;
+            //contentPresenter.ContentTemplate = template;
             return template;
         }
         
@@ -107,12 +111,13 @@ namespace SiliconStudio.Presentation.View
             // Every following providers may have an override rule against the new template provider, we must potentially resort them.
             for (int i = insertIndex + 1; i < list.Count; ++i)
             {
-                if (list[i].CompareTo(list[insertIndex]) < 0)
+                var followingProvider = list[i];
+                if (followingProvider.CompareTo(templateProvider) < 0)
                 {
-                    if (!movedItems.Contains(list[i]))
+                    if (!movedItems.Contains(followingProvider))
                     {
                         list.RemoveAt(i);
-                        InsertTemplateProvider(list, list[i], movedItems);
+                        InsertTemplateProvider(list, followingProvider, movedItems);
                     }
                 }
             }
@@ -126,19 +131,20 @@ namespace SiliconStudio.Presentation.View
         /// <returns> a template provider for the given object, that has not been used yet since the last call to <see cref="ResetProviders"/>, or null if no (more) template provider matches the given object.</returns>
         private static ITemplateProvider FindTemplateProvider(object item)
         {
-            List<string> userProvidersForItem = usedProviders.GetOrCreateValue(item);
-
+            List<string> usedProvidersForItem = usedProviders.GetOrCreateValue(item);
             var availableSelectors = TemplateProviders.Where(x => x.Match(item)).ToList();
-            ITemplateProvider result = availableSelectors.FirstOrDefault(selector => !userProvidersForItem.Contains(selector.Name));
+
+            bool rootOnly = usedProvidersForItem.Count == 0;
+            ITemplateProvider result = availableSelectors.FirstOrDefault(x => !usedProvidersForItem.Contains(x.Name) && (!rootOnly || x.CanBeRoot));
             if (result == null)
             {
                 // No unused template found, lets use the first available template and reset the used provider list.
-                result = availableSelectors.FirstOrDefault();
-                userProvidersForItem.Clear();
+                result = availableSelectors.FirstOrDefault(x => x.CanBeRoot);
+                usedProvidersForItem.Clear();
             }
             if (result != null)
             {
-                userProvidersForItem.Add(result.Name);
+                usedProvidersForItem.Add(result.Name);
             }
             return result;
         }
