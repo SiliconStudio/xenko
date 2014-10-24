@@ -211,12 +211,6 @@ namespace SiliconStudio.Paradox.Assets.Texture
         PowerOfTwo,
     }
 
-    public enum PivotType
-    {
-        Center,
-        TopLeft,
-    }
-
     public struct Configuration
     {
         public bool HasBorder{ get { return BorderSize > 0; } }
