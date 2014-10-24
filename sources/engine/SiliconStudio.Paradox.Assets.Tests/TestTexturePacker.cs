@@ -606,7 +606,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
         public void TestLoadImagesToCreateAtlas()
         {
             // Specify where the images are, and uncomment [Test] above
-            var inputDir = @"./";
+            var inputDir = @".\";
 
             var textureElements = new Dictionary<string, IntermediateTextureElement>();
 
@@ -653,6 +653,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
                     BorderSize = 100,
                     SizeContraint = SizeConstraints.PowerOfTwo,
                     BorderAddressMode = TextureAddressMode.Wrap,
+                    OutputAtlasImageType = ImageFileType.Dds,
                     BorderColor = Color.SteelBlue,
                     UseMultipack = false,
                     UseRotation = false,
@@ -671,7 +672,9 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
                 // Create atlas texture
                 var atlasTexture = TextureAtlasFactory.CreateTextureAtlas(textureAtlases[0]);
-                atlasTexture.Save(new FileStream(@"./output2.png", FileMode.Create), ImageFileType.Png);
+                var outputType = packConfiguration.OutputAtlasImageType ?? ImageFileType.Png;
+
+                atlasTexture.Save(new FileStream(@"C:\Users\Peeranut\Desktop\sprite_output\output2." + GetImageExtension(outputType), FileMode.Create), outputType);
                 atlasTexture.Dispose();
 
                 foreach (var texture in textureAtlases.SelectMany(textureAtlas => textureAtlas.Textures))
@@ -679,7 +682,12 @@ namespace SiliconStudio.Paradox.Assets.Tests
             }
         }
 
-        public Image LoadImage(TextureTool texTool, UFile sourcePath)
+        private string GetImageExtension(ImageFileType fileType)
+        {
+            return fileType.ToString().ToLower();
+        }
+
+        private Image LoadImage(TextureTool texTool, UFile sourcePath)
         {
             using (var texImage = texTool.Load(sourcePath))
             {

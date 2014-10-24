@@ -60,7 +60,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 var packedSize = CalculatePackedRectanglesBound(maxRectPacker.UsedRectangles);
 
                 // Alter the size of atlas so that it is a power of two
-                if (packConfiguration.SizeContraint == SizeConstraints.PowerOfTwo)
+                if (packConfiguration.SizeContraint == SizeConstraints.PowerOfTwo || packConfiguration.SizeContraint == null)
                 {
                     packedSize.Width = TextureCommandHelper.CeilingToNearestPowerOfTwo(packedSize.Width);
                     packedSize.Height = TextureCommandHelper.CeilingToNearestPowerOfTwo(packedSize.Height);
@@ -166,8 +166,10 @@ namespace SiliconStudio.Paradox.Assets.Texture
                             var targetIndexX = intemediateTexture.Region.Value.X + x;
                             var targetIndexY = intemediateTexture.Region.Value.Y + y;
 
-                            var sourceIndexX = GetSourceTextureIndex(x - borderSize, isRotated ? sourceTextureHeight : sourceTextureWidth, textureAtlas.PackConfiguration.BorderAddressMode);
-                            var sourceIndexY = GetSourceTextureIndex(y - borderSize, isRotated ? sourceTextureWidth : sourceTextureHeight, textureAtlas.PackConfiguration.BorderAddressMode);
+                            var sourceIndexX = GetSourceTextureIndex(x - borderSize, isRotated ? sourceTextureHeight : sourceTextureWidth,
+                                textureAtlas.PackConfiguration.BorderAddressMode ?? TextureAddressMode.Border);
+                            var sourceIndexY = GetSourceTextureIndex(y - borderSize, isRotated ? sourceTextureWidth : sourceTextureHeight,
+                                textureAtlas.PackConfiguration.BorderAddressMode ?? TextureAddressMode.Border);
 
                             atlasData[targetIndexY * textureAtlas.Width + targetIndexX] = (sourceIndexX < 0 || sourceIndexY < 0)
                                 ? textureAtlas.PackConfiguration.BorderColor ?? Color.Transparent : 
@@ -221,9 +223,11 @@ namespace SiliconStudio.Paradox.Assets.Texture
 
         public bool UseMultipack;
 
-        public SizeConstraints SizeContraint;
+        public SizeConstraints? SizeContraint;
 
-        public TextureAddressMode BorderAddressMode;
+        public TextureAddressMode? BorderAddressMode;
+
+        public ImageFileType? OutputAtlasImageType;
 
         public Color? BorderColor;
 
