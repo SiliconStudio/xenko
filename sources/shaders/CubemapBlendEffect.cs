@@ -57,7 +57,7 @@ namespace CubemapBlendShader
             context.Mixin(mixin, "PostEffectBase");
 
             #line 24
-            mixin.Mixin.AddMacro("TEXTURECUBE_BLEND_COUNT", 2);
+            mixin.Mixin.AddMacro("TEXTURECUBE_BLEND_COUNT", context.GetParam(CubeMapBlender.CubemapCount));
 
             #line 25
             context.Mixin(mixin, "CubemapBlender");

@@ -9,6 +9,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Paradox.Shaders.Compiler;
 
 namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 {
@@ -17,6 +18,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         #region Static members
 
         public static ParameterKey<ShaderMixinParameters[]> Cubemaps = ParameterKeys.New<ShaderMixinParameters[]>();
+        public static ParameterKey<ParameterKey> CubemapKey = ParameterKeys.New<ParameterKey>();
+        public static ParameterKey<int> CubemapCount = ParameterKeys.New<int>();
 
         #endregion
 
@@ -60,7 +63,18 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         public override void Load()
         {
-            cubemapBlendEffect = EffectSystem.LoadEffect("cubemapBlendEffect");
+            // TODO: generate many shaders with different parameters (cubemap count)
+            var compilerParameter = new CompilerParameters();
+            var compilerParameterChild = new ShaderMixinParameters[2];
+            for (var i = 0; i < 2; ++i)
+            {
+                var param = new ShaderMixinParameters();
+                param.Add(CubeMapBlender.CubemapKey, GetTextureCubeKey(i));
+                compilerParameterChild[i] = param;
+            }
+            compilerParameter.Set(CubeMapBlender.Cubemaps, compilerParameterChild);
+            compilerParameter.Set(CubeMapBlender.CubemapCount, 2);
+            cubemapBlendEffect = EffectSystem.LoadEffect("cubemapBlendEffect", compilerParameter);
             drawQuad = new PostEffectQuad(GraphicsDevice, cubemapBlendEffect);
 
             Pass.StartPass += OnRender;
