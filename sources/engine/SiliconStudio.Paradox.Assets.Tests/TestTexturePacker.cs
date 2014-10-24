@@ -103,7 +103,6 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 BorderSize = 0,
                 UseMultipack = false,
                 UseRotation = true,
-                PivotType = PivotType.Center,
                 MaxHeight = 2000,
                 MaxWidth = 2000
             };
@@ -147,7 +146,6 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 BorderSize = 0,
                 UseMultipack = true,
                 UseRotation = true,
-                PivotType = PivotType.Center,
                 SizeContraint = SizeConstraints.PowerOfTwo,
                 MaxHeight = 300,
                 MaxWidth = 300
@@ -168,7 +166,6 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 BorderSize = 0,
                 UseMultipack = true,
                 UseRotation = true,
-                PivotType = PivotType.Center,
                 SizeContraint = SizeConstraints.PowerOfTwo,
                 MaxHeight = 1500,
                 MaxWidth = 800
@@ -216,7 +213,6 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 BorderSize = 2,
                 UseMultipack = true,
                 UseRotation = true,
-                PivotType = PivotType.Center,
                 SizeContraint = SizeConstraints.PowerOfTwo,
                 MaxHeight = 512,
                 MaxWidth = 512
@@ -285,7 +281,6 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 SizeContraint = SizeConstraints.PowerOfTwo,
                 UseMultipack = false,
                 UseRotation = true,
-                PivotType = PivotType.Center,
                 MaxHeight = 2000,
                 MaxWidth = 2000
             };
@@ -571,7 +566,6 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 BorderColor = Color.SteelBlue,
                 UseMultipack = false,
                 UseRotation = true,
-                PivotType = PivotType.Center,
                 MaxHeight = 1024,
                 MaxWidth = 1024
             };
@@ -662,7 +656,6 @@ namespace SiliconStudio.Paradox.Assets.Tests
                     BorderColor = Color.SteelBlue,
                     UseMultipack = false,
                     UseRotation = false,
-                    PivotType = PivotType.Center,
                     MaxHeight = 2048,
                     MaxWidth = 2048
                 };

@@ -227,8 +227,6 @@ namespace SiliconStudio.Paradox.Assets.Texture
 
         public bool UseMultipack;
 
-        public PivotType PivotType;
-
         public SizeConstraints SizeContraint;
 
         public TextureAddressMode BorderAddressMode;
