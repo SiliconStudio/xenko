@@ -671,7 +671,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
                 // Create atlas texture
                 var atlasTexture = TextureAtlasFactory.CreateTextureAtlas(textureAtlases[0]);
-                atlasTexture.Save(new FileStream(@"./output.png", FileMode.Create), ImageFileType.Png);
+                atlasTexture.Save(new FileStream(@"./output2.png", FileMode.Create), ImageFileType.Png);
                 atlasTexture.Dispose();
 
                 foreach (var texture in textureAtlases.SelectMany(textureAtlas => textureAtlas.Textures))
