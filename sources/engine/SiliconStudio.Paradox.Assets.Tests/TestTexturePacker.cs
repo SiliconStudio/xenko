@@ -2,15 +2,18 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
 using NUnit.Framework;
 
 using SiliconStudio.Assets;
+using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Assets.Texture;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.TextureConverter;
 
 namespace SiliconStudio.Paradox.Assets.Tests
 {
@@ -406,11 +409,11 @@ namespace SiliconStudio.Paradox.Assets.Tests
             Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(9, 10, TextureAddressMode.MirrorOnce));
 
             Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(10, 10, TextureAddressMode.MirrorOnce));
-            Assert.AreEqual(8, TextureAtlasFactory.GetSourceTextureIndex(11, 10, TextureAddressMode.MirrorOnce));
-            Assert.AreEqual(7, TextureAtlasFactory.GetSourceTextureIndex(12, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(11, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(12, 10, TextureAddressMode.MirrorOnce));
 
             Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(20, 10, TextureAddressMode.MirrorOnce));
-            Assert.AreEqual(8, TextureAtlasFactory.GetSourceTextureIndex(21, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(21, 10, TextureAddressMode.MirrorOnce));
 
             // Negative Sets
             Assert.AreEqual(1, TextureAtlasFactory.GetSourceTextureIndex(-1, 10, TextureAddressMode.MirrorOnce));
@@ -419,10 +422,10 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
             Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(-9, 10, TextureAddressMode.MirrorOnce));
             Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(-10, 10, TextureAddressMode.MirrorOnce));
-            Assert.AreEqual(8, TextureAtlasFactory.GetSourceTextureIndex(-11, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(-11, 10, TextureAddressMode.MirrorOnce));
 
             Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(-20, 10, TextureAddressMode.MirrorOnce));
-            Assert.AreEqual(8, TextureAtlasFactory.GetSourceTextureIndex(-21, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(-21, 10, TextureAddressMode.MirrorOnce));
         }
 
         [Test]
@@ -496,6 +499,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
         [Test]
         public void TestCreateTextureAtlasToOutput()
         {
+            const string OutputPath = "./output.png";
             var textureElements = new Dictionary<string, IntermediateTextureElement>();
 
             // Load a test texture asset
@@ -591,7 +595,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
             // Create atlas texture
             var atlasTexture = TextureAtlasFactory.CreateTextureAtlas(textureAtlases[0]);
-//            atlasTexture.Save(new FileStream(@"C:/Users/Peeranut/Desktop/packing_output/img.png", FileMode.Create), ImageFileType.Png);
+            atlasTexture.Save(new FileStream(OutputPath, FileMode.Create), ImageFileType.Png);
 
             Assert.AreEqual(textureAtlases[0].Width, atlasTexture.Description.Width);
             Assert.AreEqual(textureAtlases[0].Height, atlasTexture.Description.Height);
@@ -601,6 +605,98 @@ namespace SiliconStudio.Paradox.Assets.Tests
             foreach (var texture in textureAtlases.SelectMany(textureAtlas => textureAtlas.Textures))
             {
                 texture.Texture.Dispose();
+            }
+        }
+
+//        [Test]
+        public void TestLoadImagesToCreateAtlas()
+        {
+            // Specify where the images are, and uncomment [Test] above
+            var inputDir = @"./";
+
+            var textureElements = new Dictionary<string, IntermediateTextureElement>();
+
+            using (var texTool = new TextureTool())
+            {
+                for (var i = 1; i <= 5; ++i)
+                {
+                    var name = "character_idle_0" + i;
+                    textureElements.Add(name, new IntermediateTextureElement
+                    {
+                        Texture = LoadImage(texTool, new UFile(inputDir + "/" + name + ".png"))
+                    });
+                }
+
+                for (var i = 1; i <= 5; ++i)
+                {
+                    var name = "character_run_0" + i;
+                    textureElements.Add(name, new IntermediateTextureElement
+                    {
+                        Texture = LoadImage(texTool, new UFile(inputDir + "/" + name + ".png"))
+                    });
+                }
+
+                for (var i = 1; i <= 5; ++i)
+                {
+                    var name = "character_shoot_0" + i;
+                    textureElements.Add(name, new IntermediateTextureElement
+                    {
+                        Texture = LoadImage(texTool, new UFile(inputDir + "/" + name + ".png"))
+                    });
+                }
+
+                for (var i = 1; i <= 8; ++i)
+                {
+                    var name = "ef_0" + i;
+                    textureElements.Add(name, new IntermediateTextureElement
+                    {
+                        Texture = LoadImage(texTool, new UFile(inputDir + "/" + name + ".png"))
+                    });
+                }
+
+                var packConfiguration = new Configuration
+                {
+                    BorderSize = 100,
+                    SizeContraint = SizeConstraints.PowerOfTwo,
+                    BorderAddressMode = TextureAddressMode.Wrap,
+                    BorderColor = Color.SteelBlue,
+                    UseMultipack = false,
+                    UseRotation = false,
+                    PivotType = PivotType.Center,
+                    MaxHeight = 2048,
+                    MaxWidth = 2048
+                };
+
+                var texturePacker = new TexturePacker(packConfiguration);
+
+                var canPackAllTextures = texturePacker.PackTextures(textureElements);
+
+                Assert.IsTrue(canPackAllTextures);
+
+                // Obtain texture atlases
+                var textureAtlases = texturePacker.TextureAtlases;
+
+                // Create atlas texture
+                var atlasTexture = TextureAtlasFactory.CreateTextureAtlas(textureAtlases[0]);
+                atlasTexture.Save(new FileStream(@"./output.png", FileMode.Create), ImageFileType.Png);
+                atlasTexture.Dispose();
+
+                foreach (var texture in textureAtlases.SelectMany(textureAtlas => textureAtlas.Textures))
+                    texture.Texture.Dispose();
+            }
+        }
+
+        public Image LoadImage(TextureTool texTool, UFile sourcePath)
+        {
+            using (var texImage = texTool.Load(sourcePath))
+            {
+                // Decompresses the specified texImage
+                texTool.Decompress(texImage);
+
+                if (texImage.Format == PixelFormat.B8G8R8A8_UNorm)
+                    texTool.SwitchChannel(texImage);
+
+                return texTool.ConvertToParadoxImage(texImage);
             }
         }
     }
