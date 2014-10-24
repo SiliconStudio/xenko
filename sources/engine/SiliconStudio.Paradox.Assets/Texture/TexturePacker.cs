@@ -196,7 +196,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 case TextureAddressMode.MirrorOnce:
                     var absValue = Math.Abs(value);
                     if (0 <= absValue && absValue < maxValue) return absValue;
-                    return (maxValue - 1) - (absValue % maxValue);
+                    return Math.Min(absValue, maxValue - 1);
                 case TextureAddressMode.Border:
                     return -1;
                 default:
