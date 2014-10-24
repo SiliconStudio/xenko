@@ -42,14 +42,14 @@ namespace DefaultEffects
         mixin child ParadoxGBufferShaderPass;
 
         // Remove somes mixins from current state
-        mixin remove PositionVSStream;    
+        //mixin remove PositionVSStream;    
         mixin remove NormalVSStream;
         mixin remove SpecularPowerMap;
         mixin remove SpecularPowerPerMesh;
         
         // Use Position, Normal and specular power from GBuffer
         mixin NormalVSGBuffer;        // Add mixin to current state
-        mixin PositionVSGBuffer;
+        //mixin PositionVSGBuffer;
         mixin SpecularPowerGBuffer;
     };
 

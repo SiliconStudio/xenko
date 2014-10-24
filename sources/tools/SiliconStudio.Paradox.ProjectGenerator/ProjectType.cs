@@ -4,7 +4,9 @@ namespace SiliconStudio.Paradox.ProjectGenerator
 {
     public enum ProjectType
     {
-        Android = 0,
-        iOS = 1,
+        Android,
+        iOS,
+        WindowsStore,
+        WindowsPhone,
     }
 }

@@ -312,6 +312,9 @@ namespace SiliconStudio.Presentation.Settings
                     newProfile.NotifyEntryChanged(key.Key);
                 }
             }
+
+            // Changes have been notified, empty the list of modified settings.
+            newProfile.ValidateSettingsChanges();
         }
     }
 }

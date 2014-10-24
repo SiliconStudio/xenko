@@ -26,6 +26,7 @@
     <Compile Include="Angle.cs" />
     <Compile Include="AngleType.cs" />
     <Compile Include="BoundingBox.cs" />
+    <Compile Include="BoundingFrustum.cs" />
     <Compile Include="BoundingSphere.cs" />
     <Compile Include="Collision.cs" />
     <Compile Include="Color.cs" />
