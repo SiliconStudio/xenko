@@ -1,0 +1,33 @@
+﻿// Copyright (c) 2014 Silicon Studio Corporation (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Computes the color by sampling a cubemap texture as a 2D texture.
+/// </summary>
+/// <remarks>
+/// TTextureDisplay: generic TextureCube - The cubemap to sample.
+/// </remarks>
+class CubemapFaceDisplay<TextureCube TTextureDisplay> : ComputeColorTextureCube<TTextureDisplay>, Texturing
+{
+    // TEMPORARY
+    stage float ViewIndex;
+
+    override float3 GetSamplingDir()
+    {
+        float2 texcoords = float2(2, -2) * streams.TexCoord + float2(-1, 1);
+
+        if (ViewIndex == 0)
+            return float3(1, texcoords.y, texcoords.x); // face X
+        if (ViewIndex == 1)
+            return float3(-1, texcoords.y, -texcoords.x); // face -X
+        if (ViewIndex == 2)
+            return float3(texcoords.x, 1, -texcoords.y); // face Y
+        if (ViewIndex == 3)
+            return float3(-texcoords.x, -1, texcoords.y); // face -Y
+        if (ViewIndex == 4)
+            return float3(-texcoords.x, texcoords.y, 1); // face Z
+        if (ViewIndex == 5)
+            return float3(texcoords.x, texcoords.y, -1); // face -Z
+        
+        return 0;
+    }
+};

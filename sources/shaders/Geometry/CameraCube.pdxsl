@@ -14,26 +14,24 @@ class CameraCube : PositionStream4, ShaderBase
     [maxvertexcount(18)]
     stage void GSMain(triangle Input input[3], inout TriangleStream<Output> triangleStream)
     {
-        OutputToView(input, triangleStream, 0);
-        OutputToView(input, triangleStream, 1);
-        OutputToView(input, triangleStream, 2);
-        OutputToView(input, triangleStream, 3);
-        OutputToView(input, triangleStream, 4);
-        OutputToView(input, triangleStream, 5);
-    }
-
-    void OutputToView(triangle Input input[3], inout TriangleStream<Output> triangleStream, uint viewIndex)
-    {
-        streams = input[0];
-        streams.RTAIndex = viewIndex;
-        streams.ShadingPosition = mul(streams.PositionWS, CameraViewProjectionMatrices[viewIndex]);
-        triangleStream.Append(streams);
-        streams = input[1];
-        streams.ShadingPosition = mul(streams.PositionWS, CameraViewProjectionMatrices[viewIndex]);
-        triangleStream.Append(streams);
-        streams = input[2];
-        streams.ShadingPosition = mul(streams.PositionWS, CameraViewProjectionMatrices[viewIndex]);
-        triangleStream.Append(streams);
-        triangleStream.RestartStrip();
+        for (int i = 0; i < 6; ++i)
+        {
+            streams.RTAIndex = i;
+            // TODO: check this for OpenGL and offline cubemap creation.
+#ifdef SILICONSTUDIO_PARADOX_GRAPHICS_API_DIRECT3D
+            for (int j = 2; j >= 0; --j) // change face winding because a coordinate will be flipped
+#else
+            for (int j = 0; j < 2; ++j)
+#endif
+            {
+                streams = input[j];
+                streams.ShadingPosition = mul(streams.PositionWS, CameraViewProjectionMatrices[i]);
+#ifdef SILICONSTUDIO_PARADOX_GRAPHICS_API_DIRECT3D
+                streams.ShadingPosition.x = -streams.ShadingPosition.x; // horizontal flip because cubemap sampling on direct3d will assume left hand coordinate system.
+#endif
+                triangleStream.Append(streams);
+            }
+            triangleStream.RestartStrip();
+        }
     }
 };

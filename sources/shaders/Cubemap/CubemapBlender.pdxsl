@@ -1,0 +1,23 @@
+﻿// Copyright (c) 2014 Silicon Studio Corporation (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+#ifndef TEXTURECUBE_BLEND_COUNT
+# define TEXTURECUBE_BLEND_COUNT 1
+#endif
+class CubemapBlender : ShadingBase
+{
+    ComputeColor Cubemaps[];
+    float BlendIndices[TEXTURECUBE_BLEND_COUNT];
+
+    override float4 Shading()
+    {
+        float4 finalColor = 0;
+
+        for( int i = 0; i < TEXTURECUBE_BLEND_COUNT; ++i)
+        {
+            float4 color = Cubemaps[i].Compute();
+            finalColor += BlendIndices[i] * color;
+        }
+
+        return finalColor;
+    }
+};

@@ -417,7 +417,9 @@ namespace SiliconStudio.Paradox.Graphics
 
             if (description.Dimension == TextureDimension.TextureCube)
             {
-                desc.OptionFlags = ResourceOptionFlags.TextureCube;
+                desc.OptionFlags = ResourceOptionFlags.TextureCube | ResourceOptionFlags.GenerateMipMaps;
+                if ((description.Flags & TextureFlags.RenderTarget) != 0 && description.MipLevels > 1)
+                    desc.OptionFlags |= ResourceOptionFlags.GenerateMipMaps;
             }
 
             return desc;

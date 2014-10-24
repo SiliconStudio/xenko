@@ -84,7 +84,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// </summary>
         /// <param name="services">The IServiceRegistry.</param>
         /// <param name="recursivePipeline">The recursive pipeline.</param>
-        /// <param name="cubeMapSize">The size of the cubemap.</param>
+        /// <param name="mapSize">The size of the cubemap.</param>
         /// <param name="singlePass">A flag stating if the cubemap should be rendered in one or 6 passes.</param>
         /// <param name="cubeMapPosition">The origin of the cubemap</param>
         /// <param name="nearPlane">The near plane.</param>
@@ -106,6 +106,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             };
             // attach the camera component to an entity to perform computation of transformation matrices
             var cameraCube = new Entity(cubeMapPosition) { camera };
+
+            // TODO: mip maps?
+            TextureCube = TextureCube.New(GraphicsDevice, cubemapSize, 0, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
         }
 
         #endregion
@@ -115,9 +118,6 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         public override void Load()
         {
             base.Load();
-
-            // TODO: mip maps?
-            TextureCube = TextureCube.New(GraphicsDevice, cubemapSize, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
 
             if (renderInSinglePass)
             {
@@ -157,6 +157,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             // NOTE: this is really slow so it should be avoided
             //for (var i = 0; i < 6; ++i)
             //    Textures2D[i].SetData(GraphicsDevice, TextureCube.GetData<uint>(i));
+
+            GraphicsDevice.GenerateMips(TextureCube);
         }
 
         #endregion

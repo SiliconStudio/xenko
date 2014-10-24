@@ -6,39 +6,19 @@
 /// <remarks>
 /// TTexture: generic TextureCube - The cubemap to sample.
 /// </remarks>
-class ComputeColorTextureCube<TextureCube TTexture> : ComputeColor, NormalWSStream, PositionVSStream, Transformation
+class ComputeColorTextureCube<TextureCube TTexture> : ComputeColor
 {
     override float4 Compute()
     {
         // sampling direction in the cubemap.
         float3 samplingDir = GetSamplingDir();
 
-        // transform the final sampling direction.
-        samplingDir = TransformCubemapSamplingDirection(samplingDir);
-
         return SampleCubemap(samplingDir);
-    }
-
-    float3 TransformCubemapSamplingDirection(float3 samplingDir)
-    {
-        // Thank you Direct3D left-handed coordinate system!
-        float3 absDir = abs(samplingDir);
-        if (absDir.x > absDir.y && absDir.x > absDir.z)
-            samplingDir.z = -samplingDir.z;
-        else
-            samplingDir.x = -samplingDir.x;
-        return samplingDir;
     }
 
     float3 GetSamplingDir()
     {
-        float3 samplePos = streams.vPositionVS;
-        float3 eyeDir = mul(float4(samplePos, 0), ViewInverse).xyz;
-        
-        // sampling direction in the cubemap.
-        float3 samplingDir = reflect(eyeDir, streams.vNormalWS);
-        
-        return samplingDir;
+        return 0;
     }
 
     float4 SampleCubemap(float3 samplingDir)

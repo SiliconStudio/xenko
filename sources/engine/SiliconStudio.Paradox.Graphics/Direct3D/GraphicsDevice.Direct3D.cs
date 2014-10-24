@@ -69,6 +69,11 @@ namespace SiliconStudio.Paradox.Graphics
             InitializeStages();
         }
 
+        public void GenerateMips(Texture texture)
+        {
+            NativeDeviceContext.GenerateMips(texture.NativeShaderResourceView);
+        }
+
         private void SetDefaultStates()
         {
         }

@@ -316,11 +316,23 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeColorSoftLight.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="CubemapBlendEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapBlendEffect.pdxfx</DependentUpon>
+    </Compile>
     <Compile Include="Cubemap\ComputeColorTextureCube.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeColorTextureCube.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\ComputeColorTextureCubeReflect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ComputeColorTextureCubeReflect.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Cubemap\ComputeColorTextureCubeLod.cs">
       <AutoGen>True</AutoGen>
@@ -333,6 +345,24 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeColorTextureCubeParallax.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapBlender.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapBlender.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapFaceDisplay.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapFaceDisplay.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapSkybox.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapSkybox.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Geometry\CameraCube.cs">
       <AutoGen>True</AutoGen>
@@ -358,6 +388,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ShadingBaseMRT.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Renderers\CubeMapBlender.cs" />
     <Compile Include="Processors\DynamicLightShadowProcessor.cs" />
     <Compile Include="Processors\EntityLightShadow.cs" />
     <Compile Include="Processors\GuillotinePacker.cs" />
@@ -372,6 +403,7 @@
     <Compile Include="Renderers\LightingPrepassRenderer.cs" />
     <Compile Include="Renderers\PostProcessRenderer.cs" />
     <Compile Include="Renderers\ShadowMapRenderer.cs" />
+    <Compile Include="Renderers\SkyboxRenderer.cs" />
     <Compile Include="Shading\AmbientMapShading.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1550,9 +1582,17 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTexture.cs</LastGenOutput>
     </None>
+    <None Include="CubemapBlendEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapBlendEffect.cs</LastGenOutput>
+    </None>
     <None Include="Cubemap\ComputeColorTextureCube.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTextureCube.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\ComputeColorTextureCubeReflect.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorTextureCubeReflect.cs</LastGenOutput>
     </None>
     <None Include="ComputeColor\ComputeColorTextureDisplacement.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -1661,6 +1701,18 @@
     <None Include="Cubemap\ComputeColorTextureCubeParallax.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTextureCubeParallax.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapBlender.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapBlender.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapFaceDisplay.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapFaceDisplay.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapSkybox.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapSkybox.cs</LastGenOutput>
     </None>
     <None Include="Geometry\CameraCube.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

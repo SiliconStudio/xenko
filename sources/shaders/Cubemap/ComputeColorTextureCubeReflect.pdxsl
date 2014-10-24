@@ -1,0 +1,21 @@
+﻿// Copyright (c) 2014 Silicon Studio Corporation (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Computes the color by sampling a cubemap texture after a reflection on an object.
+/// </summary>
+/// <remarks>
+/// TTextureReflect: generic TextureCube - The cubemap to sample.
+/// </remarks>
+class ComputeColorTextureCubeReflect<TextureCube TTextureReflect> : ComputeColorTextureCube<TTextureReflect>, NormalWSStream, PositionVSStream, Transformation
+{
+    override float3 GetSamplingDir()
+    {
+        float3 samplePos = streams.vPositionVS;
+        float3 eyeDir = mul(float4(samplePos, 0), ViewInverse).xyz;
+        
+        // sampling direction in the cubemap.
+        float3 samplingDir = reflect(eyeDir, streams.vNormalWS);
+        
+        return samplingDir;
+    }
+};

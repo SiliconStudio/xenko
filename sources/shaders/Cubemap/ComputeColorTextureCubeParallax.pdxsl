@@ -4,15 +4,16 @@
 /// Performs parallax correction on the cubemap.
 /// </summary>
 /// <remarks>
-/// TTexture: generic TextureCube - The cubemap to sample.
+/// TTexturePara: generic TextureCube - The cubemap to sample.
 /// </remarks>
-class ComputeColorTextureCubeParallax<TextureCube TTextureP> : ComputeColorTextureCube<TTextureP>
+class ComputeColorTextureCubeParallax<TextureCube TTexturePara> : ComputeColorTextureCubeReflect<TTexturePara>
 {
     stage float CubemapRange = 1;
     stage float3 CubemapCenterWS = float3(0,0,0);
     
     float3 ParallaxCorrection(float3 samplingDir, float3 reflectionPoint)
     {
+        // TODO: evolve to a more generic transformation (rotation, scale of the BB)
         reflectionPoint -= CubemapCenterWS;
         float3 lambdaPos =  (CubemapRange - reflectionPoint) / samplingDir;
         float3 lambdaNeg = (-CubemapRange - reflectionPoint) / samplingDir;

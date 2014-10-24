@@ -4,9 +4,9 @@
 /// computes lod on the cubemap
 /// </summary>
 /// <remarks>
-/// TTexture: generic TextureCube - The cubemap to sample.
+/// TTextureLod: generic TextureCube - The cubemap to sample.
 /// </remarks>
-class ComputeColorTextureCubeLod<TextureCube TTextureL> : ComputeColorTextureCube<TTextureL>
+class ComputeColorTextureCubeLod<TextureCube TTextureLod> : ComputeColorTextureCube<TTextureLod>
 {
     stage float CubemapRoughness = 0.5f;
 
@@ -14,6 +14,6 @@ class ComputeColorTextureCubeLod<TextureCube TTextureL> : ComputeColorTextureCub
     {
         float4 baseColor = base.SampleCubemap(samplingDir);
         // TODO: replace with correct number of mipmaps
-        return TTextureL.SampleLevel(Texturing.LinearSampler, samplingDir, 7 * CubemapRoughness);
+        return TTextureLod.SampleLevel(Texturing.LinearSampler, samplingDir, 7 * CubemapRoughness);
     }
 };

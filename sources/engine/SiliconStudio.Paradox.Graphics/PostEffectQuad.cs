@@ -49,11 +49,14 @@ namespace SiliconStudio.Paradox.Graphics
         /// <exception cref="System.ArgumentException">Expecting a Texture2D;texture</exception>
         public void Draw(Texture texture)
         {
-            var texture2D = texture as Texture2D;
-            if (texture2D == null) throw new ArgumentException("Expecting a Texture2D", "texture");
+            if (texture != null)
+            {
+                var texture2D = texture as Texture2D;
+                if (texture2D == null) throw new ArgumentException("Expecting a Texture2D", "texture");
 
-            // Make sure that we are using our vertex shader
-            effect.Parameters.Set(TexturingKeys.Texture0, texture2D);
+                // Make sure that we are using our vertex shader
+                effect.Parameters.Set(TexturingKeys.Texture0, texture2D);
+            }
             effect.Apply();
             Draw();
 

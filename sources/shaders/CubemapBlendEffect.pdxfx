@@ -1,0 +1,32 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using SiliconStudio.Paradox.Effects.Data;
+using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects.Modules.Renderers;
+
+namespace CubemapBlendShader
+{
+    shader SingleCubemapShader
+    {
+        mixin CubemapFaceDisplay<TexturingKeys.TextureCube0>;
+    }
+
+    shader CubemapBlendEffect
+    {
+        using params MaterialParameters;
+        using params BasicShadersParameters;
+        using params CubeMapBlender;
+
+        mixin ShaderBase;
+        mixin PostEffectBase;
+        
+        // TODO: make this configurable
+        mixin macro TEXTURECUBE_BLEND_COUNT = 2;
+        mixin CubemapBlender;
+
+        foreach(params CubeMapBlender.Cubemaps)
+        {
+            mixin compose Cubemaps += SingleCubemapShader;
+        }
+    };
+}
