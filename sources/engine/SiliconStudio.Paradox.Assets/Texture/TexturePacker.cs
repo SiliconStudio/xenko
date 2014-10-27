@@ -1,8 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 
+using SiliconStudio.BuildEngine;
+using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Paradox.Assets.Materials;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.TextureConverter;
 
 namespace SiliconStudio.Paradox.Assets.Texture
 {
@@ -204,6 +211,80 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 default:
                     throw new ArgumentOutOfRangeException("mode");
             }
+        }
+
+        public static ResultStatus CreateAndSaveTextureAtlasImage(TextureAtlas textureAtlas, string outputUrl, 
+            TextureFormat textureFormat, GraphicsPlatform graphicsPlatform, GraphicsProfile graphicsProfile, bool generateMipMaps,
+            bool colorKeyEnabled, Color colorKey, bool premultiplyAlpha, AlphaFormat alphaFormat, PlatformType platform, TextureQuality quality,
+            bool separateAlpha, CancellationToken cancellationToken, Logger logger)
+        {
+            var assetManager = new AssetManager();
+
+            using (var atlasImage = CreateTextureAtlas(textureAtlas))
+            using (var texTool = new TextureTool())
+            using (var texImage = texTool.Load(atlasImage))
+            {
+                // Apply transformations
+                texTool.Decompress(texImage);
+
+                if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
+                    return ResultStatus.Cancelled;
+
+                // texture size is now determined, we can cache it
+                var textureSize = new Int2(texImage.Width, texImage.Height);
+
+                // Check that the resulting texture size is supported by the targeted graphics profile
+                if (!TextureCommandHelper.TextureSizeSupported(textureFormat, graphicsPlatform, graphicsProfile, textureSize, generateMipMaps, logger))
+                    return ResultStatus.Failed;
+
+                // Apply the color key
+                if (colorKeyEnabled)
+                    texTool.ColorKey(texImage, colorKey);
+
+                if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
+                    return ResultStatus.Cancelled;
+
+                // Pre-multiply alpha
+                if (premultiplyAlpha)
+                    texTool.PreMultiplyAlpha(texImage);
+
+                if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
+                    return ResultStatus.Cancelled;
+
+                // Generate mipmaps
+                if (generateMipMaps)
+                    texTool.GenerateMipMaps(texImage, Filter.MipMapGeneration.Box);
+
+                if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
+                    return ResultStatus.Cancelled;
+
+                // Convert/Compress to output format
+                // TODO: Change alphaFormat depending on actual image content (auto-detection)?
+                var outputFormat = TextureCommandHelper.DetermineOutputFormat(textureFormat, alphaFormat, platform, graphicsPlatform, textureSize, texImage.Format);
+                texTool.Compress(texImage, outputFormat, (TextureConverter.Requests.TextureQuality)quality);
+
+                if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
+                    return ResultStatus.Cancelled;
+
+                // Save the texture
+                if (separateAlpha)
+                {
+                    TextureAlphaComponentSplitter.CreateAndSaveSeparateTextures(texTool, texImage, outputUrl, generateMipMaps);
+                }
+                else
+                {
+                    using (var outputImage = texTool.ConvertToParadoxImage(texImage))
+                    {
+                        if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
+                            return ResultStatus.Cancelled;
+
+                        assetManager.Save(outputUrl, outputImage);
+
+                        logger.Info("Compression successful [{3}] to ({0}x{1},{2})", outputImage.Description.Width, outputImage.Description.Height, outputImage.Description.Format, outputUrl);
+                    }
+                }
+            }
+            return ResultStatus.Successful;
         }
     }
 
