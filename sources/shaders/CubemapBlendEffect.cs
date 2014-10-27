@@ -32,8 +32,8 @@ namespace CubemapBlendShader
         public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
         {
 
-            #line 11
-            context.Mixin(mixin, "CubemapFaceDisplay", TexturingKeys.TextureCube0);
+            #line 12
+            context.Mixin(mixin, "CubemapFaceDisplayNoFlip", context.GetParam(CubeMapBlender.CubemapKey));
         }
 
         [ModuleInitializer]
@@ -44,43 +44,43 @@ namespace CubemapBlendShader
         }
     }
 
-    #line 14
+    #line 15
     public partial class CubemapBlendEffect  : IShaderMixinBuilder
     {
         public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
         {
 
-            #line 20
+            #line 21
             context.Mixin(mixin, "ShaderBase");
 
-            #line 21
+            #line 22
             context.Mixin(mixin, "PostEffectBase");
 
-            #line 24
+            #line 25
             mixin.Mixin.AddMacro("TEXTURECUBE_BLEND_COUNT", context.GetParam(CubeMapBlender.CubemapCount));
 
-            #line 25
+            #line 26
             context.Mixin(mixin, "CubemapBlender");
 
-            #line 27
+            #line 28
             foreach(var ____1 in context.GetParam(CubeMapBlender.Cubemaps))
 
             {
 
-                #line 27
+                #line 28
                 context.PushParameters(____1);
 
                 {
 
-                    #line 29
+                    #line 30
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                    #line 29
+                    #line 30
                     context.Mixin(__subMixin, "SingleCubemapShader");
                     mixin.Mixin.AddCompositionToArray("Cubemaps", __subMixin.Mixin);
                 }
 
-                #line 27
+                #line 28
                 context.PopParameters();
             }
         }

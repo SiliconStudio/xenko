@@ -8,7 +8,8 @@ namespace CubemapBlendShader
 {
     shader SingleCubemapShader
     {
-        mixin CubemapFaceDisplay<TexturingKeys.TextureCube0>;
+        using params CubeMapBlender;
+        mixin CubemapFaceDisplayNoFlip<CubeMapBlender.CubemapKey>;
     }
 
     shader CubemapBlendEffect

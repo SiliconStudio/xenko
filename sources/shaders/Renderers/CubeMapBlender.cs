@@ -37,7 +37,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         #region Constructor
 
-        public CubeMapBlender(IServiceRegistry services, TextureCube texture0, TextureCube texture1)
+        public CubeMapBlender(IServiceRegistry services)
             : base(services)
         {
             textureCubes = new List<Tuple<TextureCube, Vector3>>();
@@ -74,7 +74,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             }
             compilerParameter.Set(CubeMapBlender.Cubemaps, compilerParameterChild);
             compilerParameter.Set(CubeMapBlender.CubemapCount, 2);
-            cubemapBlendEffect = EffectSystem.LoadEffect("cubemapBlendEffect", compilerParameter);
+            cubemapBlendEffect = EffectSystem.LoadEffect("CubemapBlendEffect", compilerParameter);
             drawQuad = new PostEffectQuad(GraphicsDevice, cubemapBlendEffect);
 
             Pass.StartPass += OnRender;
@@ -106,7 +106,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                     var insertIndex = 0;
                     for (; insertIndex < maxBlend; ++insertIndex)
                     {
-                        if (d < closestTextures[insertIndex].Item3)
+                        if (insertIndex >= closestTextures.Count || d < closestTextures[insertIndex].Item3)
                             break;
                     }
                     if (insertIndex < maxBlend)
@@ -135,7 +135,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 for (int i = 0; i < 6; ++i)
                 {
                     // set the render targets
-                    GraphicsDevice.SetRenderTarget(targetCubemap.ToRenderTarget(ViewType.Single, 0, 0));
+                    GraphicsDevice.SetRenderTarget(targetCubemap.ToRenderTarget(ViewType.Single, i, 0));
                     parameters.Set(CubemapFaceDisplayKeys.ViewIndex, i);
                     cubemapBlendEffect.Apply(parameters);
                     drawQuad.Draw();

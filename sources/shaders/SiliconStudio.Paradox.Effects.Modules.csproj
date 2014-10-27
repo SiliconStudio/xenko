@@ -358,6 +358,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>CubemapFaceDisplay.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Cubemap\CubemapFaceDisplayNoFlip.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapFaceDisplayNoFlip.pdxsl</DependentUpon>
+    </Compile>
     <Compile Include="Cubemap\CubemapSkybox.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1709,6 +1715,10 @@
     <None Include="Cubemap\CubemapFaceDisplay.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CubemapFaceDisplay.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapFaceDisplayNoFlip.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapFaceDisplayNoFlip.cs</LastGenOutput>
     </None>
     <None Include="Cubemap\CubemapSkybox.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

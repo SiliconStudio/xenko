@@ -8,14 +8,16 @@ class CubemapBlender : ShadingBase
     ComputeColor Cubemaps[];
     float BlendIndices[TEXTURECUBE_BLEND_COUNT];
 
-    override float4 Shading()
+    override stage float4 Shading()
     {
         float4 finalColor = 0;
 
-        for( int i = 0; i < TEXTURECUBE_BLEND_COUNT; ++i)
+        var index = 0;
+        foreach (var cubemap in Cubemaps)
         {
-            float4 color = Cubemaps[i].Compute();
-            finalColor += BlendIndices[i] * color;
+            float4 color = cubemap.Compute();
+            finalColor += BlendIndices[index] * color;
+            ++index;
         }
 
         return finalColor;
