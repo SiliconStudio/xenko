@@ -60,7 +60,7 @@ namespace CubemapBlendShader
             mixin.Mixin.AddMacro("TEXTURECUBE_BLEND_COUNT", context.GetParam(CubeMapBlender.CubemapCount));
 
             #line 26
-            context.Mixin(mixin, "CubemapBlender");
+            context.Mixin(mixin, "CubemapBlendMRT");
 
             #line 28
             foreach(var ____1 in context.GetParam(CubeMapBlender.Cubemaps))

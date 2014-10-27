@@ -13,21 +13,6 @@ class CubemapFaceDisplay<TextureCube TTextureDisplay> : ComputeColorTextureCube<
 
     override float3 GetSamplingDir()
     {
-        float2 texcoords = float2(2, -2) * streams.TexCoord + float2(-1, 1);
-
-        if (ViewIndex == 0)
-            return float3(1, texcoords.y, texcoords.x); // face X
-        if (ViewIndex == 1)
-            return float3(-1, texcoords.y, -texcoords.x); // face -X
-        if (ViewIndex == 2)
-            return float3(texcoords.x, 1, -texcoords.y); // face Y
-        if (ViewIndex == 3)
-            return float3(-texcoords.x, -1, texcoords.y); // face -Y
-        if (ViewIndex == 4)
-            return float3(-texcoords.x, texcoords.y, 1); // face Z
-        if (ViewIndex == 5)
-            return float3(texcoords.x, texcoords.y, -1); // face -Z
-        
-        return 0;
+        return CubemapUtils.ConvertTexcoordsFlip(streams.TexCoord, ViewIndex);
     }
 };

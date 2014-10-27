@@ -352,6 +352,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>CubemapBlender.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Cubemap\CubemapBlendMRT.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapBlendMRT.pdxsl</DependentUpon>
+    </Compile>
     <Compile Include="Cubemap\CubemapFaceDisplay.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -369,6 +375,12 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>CubemapSkybox.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapUtils.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapUtils.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Geometry\CameraCube.cs">
       <AutoGen>True</AutoGen>
@@ -1712,6 +1724,10 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CubemapBlender.cs</LastGenOutput>
     </None>
+    <None Include="Cubemap\CubemapBlendMRT.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapBlendMRT.cs</LastGenOutput>
+    </None>
     <None Include="Cubemap\CubemapFaceDisplay.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CubemapFaceDisplay.cs</LastGenOutput>
@@ -1723,6 +1739,10 @@
     <None Include="Cubemap\CubemapSkybox.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CubemapSkybox.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapUtils.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapUtils.cs</LastGenOutput>
     </None>
     <None Include="Geometry\CameraCube.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
