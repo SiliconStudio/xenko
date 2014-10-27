@@ -186,13 +186,13 @@ namespace SiliconStudio.Paradox.Assets
 
                 if (UseSeparateAlphaTexture)
                 {
-                    var baseLocation = ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]);
+                    var baseLocation = (asset.GroupAsset.UseTextureAtlas) ? ImageGroupAsset.BuildTextureAtlasUrl(Url) : ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]);
                     newImage.Texture = new ContentReference<Texture2D> { Location = TextureAlphaComponentSplitter.GenerateColorTextureURL(baseLocation) };
                     newImage.TextureAlpha = new ContentReference<Texture2D> { Location = TextureAlphaComponentSplitter.GenerateAlphaTextureURL(baseLocation) };
                 }
                 else
                 {
-                    newImage.Texture = new ContentReference<Texture2D> { Location = (asset.GroupAsset.UseTextureAtlas) ? Url + "__ATLAS_IMAGE_GROUP__" : ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]) };
+                    newImage.Texture = new ContentReference<Texture2D> { Location = (asset.GroupAsset.UseTextureAtlas) ? ImageGroupAsset.BuildTextureAtlasUrl(Url) : ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]) };
                 }
 
                 SetImageSpecificFields(uiImage, newImage);
@@ -242,7 +242,7 @@ namespace SiliconStudio.Paradox.Assets
                 var colorKeyColor = imageGroup.ColorKeyColor;
                 var colorKeyEnabled = imageGroup.ColorKeyEnabled;
 
-                var createResult = TextureAtlasFactory.CreateAndSaveTextureAtlasImage(textureAtlas, Url + "__ATLAS_IMAGE_GROUP__", format, asset.GraphicsPlatform, asset.GraphicsProfile,
+                var createResult = TextureAtlasFactory.CreateAndSaveTextureAtlasImage(textureAtlas, ImageGroupAsset.BuildTextureAtlasUrl(Url), format, asset.GraphicsPlatform, asset.GraphicsProfile,
                     generateMipmaps, colorKeyEnabled, colorKeyColor, premultiplyAlpha, alpha, asset.Platform, asset.TextureQuality, UseSeparateAlphaTexture, CancellationToken, logger);
 
                 foreach (var texture in textureAtlas.Textures)

@@ -86,6 +86,11 @@ namespace SiliconStudio.Paradox.Assets
         {
             return textureAbsolutePath + "__IMAGE_TEXTURE__" + spriteIndex;
         }
+
+        public static string BuildTextureAtlasUrl(UFile textureAbsolutePath)
+        {
+            return textureAbsolutePath + "__ATLAS_IMAGE_GROUP";
+        }
     }
 
     /// <summary>
