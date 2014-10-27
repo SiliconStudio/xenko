@@ -5,6 +5,10 @@ Release date: 2014/??/??
 #### Breaking changes
 - Graphics: Remove Rotated180 and Rotated90C from ImageOrientation enumeration for code simplicity and efficiency purpose.
 
+#### Issues fixed
+- Shaders: Geometry shaders are forced to transmit SV_Position stream to pixel shaders.
+- Shaders: Compositions (especially arrays) couldn't be used in child classes of the one containing their declaration. Function and member calls weren't correctly resolved.
+
 ### Version 1.0.0-beta02
 
 Release date: 2014/10/22
