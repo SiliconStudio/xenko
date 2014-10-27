@@ -134,12 +134,12 @@ namespace SiliconStudio.Presentation.View
             List<string> usedProvidersForItem = usedProviders.GetOrCreateValue(item);
             var availableSelectors = TemplateProviders.Where(x => x.Match(item)).ToList();
 
-            bool rootOnly = usedProvidersForItem.Count == 0;
-            ITemplateProvider result = availableSelectors.FirstOrDefault(x => !usedProvidersForItem.Contains(x.Name) && (!rootOnly || x.CanBeRoot));
+            bool isRoot = usedProvidersForItem.Count == 0;
+            ITemplateProvider result = availableSelectors.FirstOrDefault(x => !usedProvidersForItem.Contains(x.Name) && isRoot == x.IsRoot);
             if (result == null)
             {
                 // No unused template found, lets use the first available template and reset the used provider list.
-                result = availableSelectors.FirstOrDefault(x => x.CanBeRoot);
+                result = availableSelectors.FirstOrDefault(x => x.IsRoot);
                 usedProvidersForItem.Clear();
             }
 

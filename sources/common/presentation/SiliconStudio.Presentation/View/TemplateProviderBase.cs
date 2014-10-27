@@ -18,7 +18,7 @@ namespace SiliconStudio.Presentation.View
         /// </summary>
         protected TemplateProviderBase()
         {
-            CanBeRoot = true;
+            IsRoot = true;
             OverriddenProviderNames = new List<string>();
             OverrideRule = OverrideRule.Some;
         }
@@ -30,7 +30,7 @@ namespace SiliconStudio.Presentation.View
         public DataTemplate Template { get; set; }
 
         /// <inheritdoc/>
-        public bool CanBeRoot { get; set; }
+        public bool IsRoot { get; set; }
 
         /// <inheritdoc/>
         public OverrideRule OverrideRule { get; set; }

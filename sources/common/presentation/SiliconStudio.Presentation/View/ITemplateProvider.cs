@@ -45,9 +45,9 @@ namespace SiliconStudio.Presentation.View
         DataTemplate Template { get; set; }
 
         /// <summary>
-        /// Gets or sets whether this provider can provide a root template.
+        /// Gets or sets whether this provider provides a root template.
         /// </summary>
-        bool CanBeRoot { get; set; }
+        bool IsRoot { get; set; }
         
         /// <summary>
         /// Gets or sets the rule to use when this provider can potentially override other providers that matches the same object.
