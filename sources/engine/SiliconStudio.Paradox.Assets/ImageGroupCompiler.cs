@@ -147,13 +147,15 @@ namespace SiliconStudio.Paradox.Assets
             {
                 var packConfiguration = new Configuration
                 {
-                    BorderSize = 2,
+                    BorderSize = asset.GroupAsset.BorderSize,
+                    BorderColor = asset.GroupAsset.BorderColor,
+                    UseRotation = asset.GroupAsset.UseRotation,
+                    MaxHeight = asset.GroupAsset.MaxHeight,
+                    MaxWidth = asset.GroupAsset.MaxWidth,
+
+                    // Enforce constraints
                     SizeContraint = SizeConstraints.PowerOfTwo,
-                    BorderColor = Color.Transparent,
                     UseMultipack = false,
-                    UseRotation = true,
-                    MaxHeight = 2048,
-                    MaxWidth = 2048
                 };
 
                 borderSize = packConfiguration.BorderSize;

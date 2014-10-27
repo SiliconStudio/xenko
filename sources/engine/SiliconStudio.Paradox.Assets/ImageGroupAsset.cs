@@ -71,6 +71,23 @@ namespace SiliconStudio.Paradox.Assets
         [DefaultValue(true)]
         public bool UseTextureAtlas { get; set; }
 
+        [DataMember(90)]
+        [DefaultValue(0)]
+        public int BorderSize { get; set; }
+
+        [DataMember(100)]
+        public Color BorderColor { get; set; }
+
+        [DataMember(110)]
+        [DefaultValue(true)]
+        public bool UseRotation { get; set; }
+
+        [DataMember(120)]
+        public int MaxWidth { get; set; }
+
+        [DataMember(130)]
+        public int MaxHeight { get; set; }
+
         public override void SetDefaults()
         {
             Format = TextureFormat.Compressed;
@@ -79,7 +96,14 @@ namespace SiliconStudio.Paradox.Assets
             ColorKeyEnabled = false;
             GenerateMipmaps = false;
             PremultiplyAlpha = true;
+
             UseTextureAtlas = true;
+            BorderSize = 0;
+            BorderColor = Color.Transparent;
+            UseRotation = true;
+
+            MaxWidth = 1024;
+            MaxHeight = 1024;
         }
 
         public static string BuildTextureUrl(UFile textureAbsolutePath, int spriteIndex)
