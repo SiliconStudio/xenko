@@ -296,7 +296,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="imageOrientation">The rotation to apply on the image uv</param>
         /// <param name="swizzle">Swizzle mode indicating the swizzle use when sampling the texture in the shader</param>
         /// <param name="snapImage">Indicate if the image needs to be snapped or not</param>
-        public void DrawImage(Texture2D texture, Texture2D texture1, ref Matrix worldMatrix, ref Rectangle sourceRectangle, ref Vector3 elementSize, ref Vector2 imageSize, ref Vector4 borderSize, 
+        public void DrawImage(Texture2D texture, Texture2D texture1, ref Matrix worldMatrix, ref RectangleF sourceRectangle, ref Vector3 elementSize, ref Vector2 imageSize, ref Vector4 borderSize, 
             ref Color color, int depthBias, ImageOrientation imageOrientation = ImageOrientation.AsIs, SwizzleMode swizzle = SwizzleMode.None, bool snapImage = false)
         {
             // Check that texture is not null
@@ -320,10 +320,10 @@ namespace SiliconStudio.Paradox.Graphics
             {
                 Source =
                 {
-                    X = sourceRectangle.X / (float)texture.Width, 
-                    Y = sourceRectangle.Y / (float)texture.Height, 
-                    Width = sourceRectangle.Width / (float)texture.Width, 
-                    Height = sourceRectangle.Height / (float)texture.Height
+                    X = sourceRectangle.X / texture.Width, 
+                    Y = sourceRectangle.Y / texture.Height, 
+                    Width = sourceRectangle.Width / texture.Width, 
+                    Height = sourceRectangle.Height / texture.Height
                 },
                 DepthBias = depthBias,
                 Color = color,

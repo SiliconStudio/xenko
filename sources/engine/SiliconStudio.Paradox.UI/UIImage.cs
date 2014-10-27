@@ -101,7 +101,7 @@ namespace SiliconStudio.Paradox.UI
         /// <summary>
         /// Region of the texture (in pixels) defining the image. 
         /// </summary>
-        public override Rectangle Region
+        public override RectangleF Region
         {
             set
             {

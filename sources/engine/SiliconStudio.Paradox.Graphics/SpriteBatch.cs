@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Graphics
     {
         private static readonly Vector2[] CornerOffsets = { Vector2.Zero, Vector2.UnitX, Vector2.One, Vector2.UnitY };
         private static Vector2 vector2Zero = Vector2.Zero;
-        private static Rectangle? nullRectangle;
+        private static RectangleF? nullRectangle;
         
         private SpriteTransformMode spriteTransformMode;
 
@@ -148,7 +148,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="origin">The sprite origin in the texture in pixels (dependent of image orientation). Default value is (0,0) which represents the upper-left corner.</param>
         /// <param name="effects">Effects to apply.</param>
         /// <param name="layerDepth">The depth of a layer. By default, 0 represents the front layer and 1 represents a back layer. Use SpriteSortMode if you want sprites to be sorted during drawing.</param>
-        public void Draw(Texture texture, RectangleF destinationRectangle, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, 
+        public void Draw(Texture texture, RectangleF destinationRectangle, RectangleF? sourceRectangle, Color color, float rotation, Vector2 origin, 
             SpriteEffects effects = SpriteEffects.None, ImageOrientation orientation = ImageOrientation.AsIs, float layerDepth = 0f) 
         {
             DrawSprite(texture, ref destinationRectangle, false, ref sourceRectangle, color, rotation, ref origin, effects, orientation, layerDepth);
@@ -198,7 +198,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="position">The location (in screen coordinates) to draw the sprite.</param>
         /// <param name="sourceRectangle">A rectangle that specifies (in texels) the source texels from a texture. Use null to draw the entire texture. </param>
         /// <param name="color">The color to tint a sprite. Use Color.White for full color with no tinting.</param>
-        public void Draw(Texture texture, Vector2 position, Rectangle? sourceRectangle, Color color)
+        public void Draw(Texture texture, Vector2 position, RectangleF? sourceRectangle, Color color)
         {
             var destination = new RectangleF(position.X, position.Y, 1f, 1f);
             DrawSprite(texture, ref destination, true, ref sourceRectangle, color, 0f, ref vector2Zero, SpriteEffects.None, ImageOrientation.AsIs, 0f);
@@ -217,7 +217,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="effects">Effects to apply.</param>
         /// <param name="orientation">The source image orientation</param>
         /// <param name="layerDepth">The depth of a layer. By default, 0 represents the front layer and 1 represents a back layer. Use SpriteSortMode if you want sprites to be sorted during drawing.</param>
-        public void Draw(Texture texture, Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, 
+        public void Draw(Texture texture, Vector2 position, RectangleF? sourceRectangle, Color color, float rotation, 
             Vector2 origin, float scale = 1f, SpriteEffects effects = SpriteEffects.None, ImageOrientation orientation = ImageOrientation.AsIs, float layerDepth = 0)
         {
             var destination = new RectangleF(position.X, position.Y, scale, scale);
@@ -237,7 +237,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="effects">Effects to apply.</param>
         /// <param name="orientation">The source image orientation</param>
         /// <param name="layerDepth">The depth of a layer. By default, 0 represents the front layer and 1 represents a back layer. Use SpriteSortMode if you want sprites to be sorted during drawing.</param>
-        public void Draw(Texture texture, Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, 
+        public void Draw(Texture texture, Vector2 position, RectangleF? sourceRectangle, Color color, float rotation, 
             Vector2 origin, Vector2 scale, SpriteEffects effects = SpriteEffects.None, ImageOrientation orientation = ImageOrientation.AsIs, float layerDepth = 0)
         {
             var destination = new RectangleF(position.X, position.Y, scale.X, scale.Y);
@@ -463,7 +463,7 @@ namespace SiliconStudio.Paradox.Graphics
             spriteFont.InternalDraw(ref text, ref drawCommand, alignment);
         }
         
-        internal unsafe void DrawSprite(Texture texture, ref RectangleF destination, bool scaleDestination, ref Rectangle? sourceRectangle, Color color, 
+        internal unsafe void DrawSprite(Texture texture, ref RectangleF destination, bool scaleDestination, ref RectangleF? sourceRectangle, Color color, 
             float rotation, ref Vector2 origin, SpriteEffects effects, ImageOrientation orientation, float depth, SwizzleMode swizzle = SwizzleMode.None, bool realSize = false)
         {
             // Check that texture is not null
