@@ -17,20 +17,48 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
     {
         #region Static members
 
+        /// <summary>
+        /// The key to set each cubemap parameter.
+        /// </summary>
         public static ParameterKey<ShaderMixinParameters[]> Cubemaps = ParameterKeys.New<ShaderMixinParameters[]>();
+
+        /// <summary>
+        /// The key of the cubemap.
+        /// </summary>
         public static ParameterKey<ParameterKey> CubemapKey = ParameterKeys.New<ParameterKey>();
+
+        /// <summary>
+        /// The number of cubemap in the shader.
+        /// </summary>
         public static ParameterKey<int> CubemapCount = ParameterKeys.New<int>();
 
         #endregion
 
         #region Private members
-
+        
+        /// <summary>
+        /// List of cubemaps and their positions.
+        /// </summary>
         private List<Tuple<TextureCube, Vector3>> textureCubes;
-        private List<Vector3> pointsOfInterest;
-        private Effect cubemapBlendEffect;
 
+        /// <summary>
+        /// List of points of interest and the maximum number of cubemap that can be blended.
+        /// </summary>
+        private List<Tuple<Vector3, int>> pointsOfInterest;
+
+        /// <summary>
+        /// The blend effects.
+        /// </summary>
+        private Dictionary<int, Effect> cubemapBlendEffects;
+
+        /// <summary>
+        /// The target cubemap
+        /// </summary>
         private TextureCube targetCubemap;
 
+        /// <summary>
+        /// The post effect draw quad.
+        /// </summary>
         private PostEffectQuad drawQuad;
 
         #endregion
@@ -41,8 +69,10 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             : base(services)
         {
             textureCubes = new List<Tuple<TextureCube, Vector3>>();
-            pointsOfInterest = new List<Vector3>();
+            pointsOfInterest = new List<Tuple<Vector3, int>>();
+            cubemapBlendEffects = new Dictionary<int, Effect>();
 
+            // TODO: change size
             int cubemapSize = 512;
             targetCubemap = TextureCube.New(GraphicsDevice, cubemapSize, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
         }
@@ -51,35 +81,50 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         #region Public methods
 
+        /// <summary>
+        /// Adds a cubemap at the current location.
+        /// </summary>
+        /// <param name="texture">The cubemap texture.</param>
+        /// <param name="position">The position.</param>
         public void AddTextureCube(TextureCube texture, Vector3 position)
         {
             textureCubes.Add(Tuple.Create(texture, position));
         }
 
-        public void AddPointOfInterest(Vector3 poi)
+        /// <summary>
+        /// Adds a point of interest (ie. a place where cubemap blend will be computed)
+        /// </summary>
+        /// <param name="poi">The point of interest position.</param>
+        /// <param name="maxCubemapBlend">The maximum number of cubemaps that can be blended.</param>
+        public void AddPointOfInterest(Vector3 poi, int maxCubemapBlend)
         {
-            pointsOfInterest.Add(poi);
+            pointsOfInterest.Add(Tuple.Create(poi, maxCubemapBlend));
         }
 
+        /// <inheritdoc/>
         public override void Load()
         {
-            // TODO: generate many shaders with different parameters (cubemap count)
-            var compilerParameter = new CompilerParameters();
-            var compilerParameterChild = new ShaderMixinParameters[2];
-            for (var i = 0; i < 2; ++i)
+            for (var maxBlendCount = 2; maxBlendCount < 4; ++maxBlendCount)
             {
-                var param = new ShaderMixinParameters();
-                param.Add(CubeMapBlender.CubemapKey, GetTextureCubeKey(i));
-                compilerParameterChild[i] = param;
+                var compilerParameter = new CompilerParameters();
+                var compilerParameterChild = new ShaderMixinParameters[maxBlendCount];
+                for (var i = 0; i < maxBlendCount; ++i)
+                {
+                    var param = new ShaderMixinParameters();
+                    param.Add(CubeMapBlender.CubemapKey, GetTextureCubeKey(i));
+                    compilerParameterChild[i] = param;
+                }
+                compilerParameter.Set(CubeMapBlender.Cubemaps, compilerParameterChild);
+                compilerParameter.Set(CubeMapBlender.CubemapCount, maxBlendCount);
+                cubemapBlendEffects.Add(maxBlendCount, EffectSystem.LoadEffect("CubemapBlendEffect", compilerParameter));
+
             }
-            compilerParameter.Set(CubeMapBlender.Cubemaps, compilerParameterChild);
-            compilerParameter.Set(CubeMapBlender.CubemapCount, 2);
-            cubemapBlendEffect = EffectSystem.LoadEffect("CubemapBlendEffect", compilerParameter);
-            drawQuad = new PostEffectQuad(GraphicsDevice, cubemapBlendEffect);
+            drawQuad = new PostEffectQuad(GraphicsDevice, cubemapBlendEffects[2]);
 
             Pass.StartPass += OnRender;
         }
 
+        /// <inheritdoc/>
         public override void Unload()
         {
             Pass.StartPass -= OnRender;
@@ -91,36 +136,49 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         protected void OnRender(RenderContext context)
         {
-            var maxBlend = 2;
-            maxBlend = maxBlend > textureCubes.Count ? textureCubes.Count : maxBlend;
             var closestTextures = new List<Tuple<TextureCube, Vector3, float>>();
             var parameters = new ParameterCollection();
 
             foreach (var poi in pointsOfInterest)
             {
+                var maxCubemapBlend = poi.Item2;
+                maxCubemapBlend = maxCubemapBlend > textureCubes.Count ? textureCubes.Count : maxCubemapBlend;
+                
+                // TODO: better use a list?
+                Effect cubemapBlendEffect = null;
+                while (maxCubemapBlend > 1)
+                {
+                    if (cubemapBlendEffects.TryGetValue(maxCubemapBlend, out cubemapBlendEffect) && cubemapBlendEffect != null)
+                        break;
+                    --maxCubemapBlend;
+                }
+
+                if (cubemapBlendEffect == null)
+                    continue;
+
                 // take the k closest textures
                 closestTextures.Clear();
                 foreach (var tex in textureCubes)
                 {
-                    var d = (tex.Item2 - poi).LengthSquared();
+                    var d = (tex.Item2 - poi.Item1).LengthSquared();
                     var insertIndex = 0;
-                    for (; insertIndex < maxBlend; ++insertIndex)
+                    for (; insertIndex < maxCubemapBlend; ++insertIndex)
                     {
                         if (insertIndex >= closestTextures.Count || d < closestTextures[insertIndex].Item3)
                             break;
                     }
-                    if (insertIndex < maxBlend)
+                    if (insertIndex < maxCubemapBlend)
                         closestTextures.Insert(insertIndex, Tuple.Create(tex.Item1, tex.Item2, d));
                 }
 
                 // compute blending indices & set parameters
-                // TODO: change this
-                var totalWeight = closestTextures.Aggregate(0.0f, (s, t) => s + t.Item3);
-                var blendIndices = new float[maxBlend];
+                // TODO: change weight computation
+                var totalWeight = closestTextures.Aggregate(0.0f, (s, t) => s + 1.0f / (t.Item3 + 1));
+                var blendIndices = new float[maxCubemapBlend];
                 parameters.Clear();
-                for (var i = 0; i < maxBlend; ++i)
+                for (var i = 0; i < maxCubemapBlend; ++i)
                 {
-                    blendIndices[i] = closestTextures[i].Item3 / totalWeight;
+                    blendIndices[i] = (1.0f / (closestTextures[i].Item3 + 1)) / totalWeight;
                     parameters.Set(GetTextureCubeKey(i), closestTextures[i].Item1);
                 }
                 parameters.Set(CubemapBlenderKeys.BlendIndices, blendIndices);
