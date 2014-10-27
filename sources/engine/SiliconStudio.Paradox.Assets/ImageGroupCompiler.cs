@@ -175,9 +175,7 @@ namespace SiliconStudio.Paradox.Assets
                 if (asset.GroupAsset.UseTextureAtlas)
                 {
                     var region = regionDictionary[ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage])];
-                    var regionValue = new Rectangle(borderSize + region.Value.X, borderSize + region.Value.Y, region.Value.Width - 2 * borderSize, region.Value.Height - 2 * borderSize);
-
-                    newImage.Region = regionValue;
+                    newImage.Region = new Rectangle(borderSize + region.Value.X, borderSize + region.Value.Y, region.Value.Width - 2 * borderSize, region.Value.Height - 2 * borderSize);
                     newImage.Orientation = (region.IsRotated) ? ImageOrientation.Rotated90 : ImageOrientation.AsIs;
                 }
                 else
@@ -219,15 +217,7 @@ namespace SiliconStudio.Paradox.Assets
                 var textureElements = new Dictionary<string, IntermediateTextureElement>();
 
                 foreach (var uiImage in asset.GroupAsset.Images)
-                {
-                    var sourcePath = uiImage.Source;
-
-                    textureElements.Add(ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]),
-                        new IntermediateTextureElement
-                        {
-                            Texture = LoadImage(texTool, new UFile(sourcePath))
-                        });
-                }
+                    textureElements.Add(ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]), new IntermediateTextureElement { Texture = LoadImage(texTool, new UFile(uiImage.Source)) });
 
                 var texturePacker = new TexturePacker(packConfiguration);
                 var canPackAllTextures = texturePacker.PackTextures(textureElements);
@@ -255,10 +245,10 @@ namespace SiliconStudio.Paradox.Assets
                 var createResult = TextureAtlasFactory.CreateAndSaveTextureAtlasImage(textureAtlas, Url + "__ATLAS_IMAGE_GROUP__", format, asset.GraphicsPlatform, asset.GraphicsProfile,
                     generateMipmaps, colorKeyEnabled, colorKeyColor, premultiplyAlpha, alpha, asset.Platform, asset.TextureQuality, UseSeparateAlphaTexture, CancellationToken, logger);
 
-                if (createResult != ResultStatus.Successful) return createResult;
-
                 foreach (var texture in textureAtlas.Textures)
                     texture.Texture.Dispose();
+
+                if (createResult != ResultStatus.Successful) return createResult;
             }
 
             regionDictionary = textureAtlas.Textures.ToDictionary(texture => texture.Region.Key, texture => texture.Region);
