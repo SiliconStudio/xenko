@@ -17,13 +17,13 @@ namespace SiliconStudio.Paradox.Assets.Sprite
             base.Compile(context, urlInStorage, assetAbsolutePath, asset, result);
 
             if (!result.HasErrors)
-                result.BuildSteps.Add(new SpriteGroupCommand(urlInStorage, new ImageGroupParameters<SpriteGroupAsset>(asset, context.Platform), SpriteToTextureIndex, SeparateAlphaTexture));
+                result.BuildSteps.Add(new SpriteGroupCommand(urlInStorage, new ImageGroupParameters<SpriteGroupAsset>(asset, context.Platform), SpriteToTextureIndex, SeparateAlphaTexture, context));
         }
 
         internal class SpriteGroupCommand : ImageGroupCommand<SpriteGroupAsset, SpriteInfo, SpriteGroupData, SpriteData>
         {
-            public SpriteGroupCommand(string url, ImageGroupParameters<SpriteGroupAsset> asset, Dictionary<SpriteInfo, int> imageToTextureIndex, bool separateAlpha)
-                : base(url, asset, imageToTextureIndex, separateAlpha)
+            public SpriteGroupCommand(string url, ImageGroupParameters<SpriteGroupAsset> asset, Dictionary<SpriteInfo, int> imageToTextureIndex, bool separateAlpha, AssetCompilerContext context)
+                : base(url, asset, imageToTextureIndex, separateAlpha, context)
             {
             }
 

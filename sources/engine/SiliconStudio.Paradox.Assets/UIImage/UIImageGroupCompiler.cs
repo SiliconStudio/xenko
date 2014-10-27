@@ -16,13 +16,13 @@ namespace SiliconStudio.Paradox.Assets.UIImage
             base.Compile(context, urlInStorage, assetAbsolutePath, asset, result);
 
             if(!result.HasErrors)
-                result.BuildSteps.Add(new UIImageGroupCommand(urlInStorage, new ImageGroupParameters<UIImageGroupAsset>(asset, context.Platform), SpriteToTextureIndex, SeparateAlphaTexture));
+                result.BuildSteps.Add(new UIImageGroupCommand(urlInStorage, new ImageGroupParameters<UIImageGroupAsset>(asset, context.Platform), SpriteToTextureIndex, SeparateAlphaTexture, context));
         }
 
         internal class UIImageGroupCommand : ImageGroupCommand<UIImageGroupAsset, UIImageInfo, UIImageGroupData, UIImageData>
         {
-            public UIImageGroupCommand(string url, ImageGroupParameters<UIImageGroupAsset> asset, Dictionary<UIImageInfo, int> imageToTextureIndex, bool separateAlpha)
-                : base(url, asset, imageToTextureIndex, separateAlpha)
+            public UIImageGroupCommand(string url, ImageGroupParameters<UIImageGroupAsset> asset, Dictionary<UIImageInfo, int> imageToTextureIndex, bool separateAlpha, AssetCompilerContext context)
+                : base(url, asset, imageToTextureIndex, separateAlpha, context)
             {
             }
 
