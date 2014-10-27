@@ -33,6 +33,7 @@ namespace SiliconStudio.Paradox.UI.Renderers
             typeToRenderers[typeof(ContentDecorator)] = new DefaultContentDecoratorRenderer(services);
             typeToRenderers[typeof(Border)] = new DefaultBorderRenderer(services);
             typeToRenderers[typeof(ToggleButton)] = new DefaultToggleButtonRenderer(services);
+            typeToRenderers[typeof(Slider)] = new DefaultSliderRenderer(services);
         }
 
         public ElementRenderer TryCreateRenderer(UIElement element)

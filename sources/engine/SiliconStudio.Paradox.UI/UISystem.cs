@@ -183,21 +183,23 @@ namespace SiliconStudio.Paradox.UI
             DecreaseStencilValueState = new DepthStencilState(GraphicsDevice, depthStencilDescription);
 
             // set the default design of the UI elements.
-            var buttonPressedTexture = TextureExtensions.CreateTextureFromFileData(GraphicsDevice, DefaultDesigns.ButtonPressed);
-            var buttonNotPressedTexture = TextureExtensions.CreateTextureFromFileData(GraphicsDevice, DefaultDesigns.ButtonNotPressed);
-            var buttonOverredTexture = TextureExtensions.CreateTextureFromFileData(GraphicsDevice, DefaultDesigns.ButtonOverred);
-            Button.PressedImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default button pressed design", buttonPressedTexture) { Borders = 8 * Vector4.One });
-            Button.NotPressedImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default button not pressed design", buttonNotPressedTexture) { Borders = 8 * Vector4.One });
-            Button.MouseOverImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default button overred design", buttonOverredTexture) { Borders = 8 * Vector4.One });
-            var editActiveTexture = TextureExtensions.CreateTextureFromFileData(GraphicsDevice, DefaultDesigns.EditTextActive);
-            var editInactiveTexture = TextureExtensions.CreateTextureFromFileData(GraphicsDevice, DefaultDesigns.EditTextInactive);
-            var editOverredTexture = TextureExtensions.CreateTextureFromFileData(GraphicsDevice, DefaultDesigns.EditTextOverred);
-            EditText.ActiveImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default edit active design", editActiveTexture) { Borders = 12 * Vector4.One });
-            EditText.InactiveImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default edit inactive design", editInactiveTexture) { Borders = 12 * Vector4.One });
-            EditText.MouseOverImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default edit overred design", editOverredTexture) { Borders = 12 * Vector4.One });
-            ToggleButton.CheckedImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default toggle button checked design", buttonPressedTexture) { Borders = 8 * Vector4.One });
-            ToggleButton.UncheckedImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default toggle button unchecked design", buttonNotPressedTexture) { Borders = 8 * Vector4.One });
-            ToggleButton.IndeterminateImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default toggle button indeterminate design", buttonOverredTexture) { Borders = 8 * Vector4.One });
+            var designsTexture = TextureExtensions.CreateTextureFromFileData(GraphicsDevice, DefaultDesigns.Designs);
+            Button.PressedImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default button pressed design", designsTexture) { Borders = 8 * Vector4.One, Region = new RectangleF(71, 3, 32, 32)});
+            Button.NotPressedImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default button not pressed design", designsTexture) { Borders = 8 * Vector4.One, Region = new RectangleF(3, 3, 32, 32) });
+            Button.MouseOverImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default button overred design", designsTexture) { Borders = 8 * Vector4.One, Region = new RectangleF(37, 3, 32, 32) });
+            EditText.ActiveImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default edit active design", designsTexture) { Borders = 12 * Vector4.One, Region = new RectangleF(105, 3, 32, 32) });
+            EditText.InactiveImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default edit inactive design", designsTexture) { Borders = 12 * Vector4.One, Region = new RectangleF(139, 3, 32, 32) });
+            EditText.MouseOverImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default edit overred design", designsTexture) { Borders = 12 * Vector4.One, Region = new RectangleF(173, 3, 32, 32) });
+            ToggleButton.CheckedImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default toggle button checked design", designsTexture) { Borders = 8 * Vector4.One, Region = new RectangleF(71, 3, 32, 32) });
+            ToggleButton.UncheckedImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default toggle button unchecked design", designsTexture) { Borders = 8 * Vector4.One, Region = new RectangleF(3, 3, 32, 32) });
+            ToggleButton.IndeterminateImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default toggle button indeterminate design", designsTexture) { Borders = 8 * Vector4.One, Region = new RectangleF(37, 3, 32, 32) });
+            Slider.TrackBackgroundImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default slider track background design", designsTexture) { Borders = 14 * Vector4.One, Region = new RectangleF(207, 3, 32, 32) });
+            Slider.TrackForegroundImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default slider track foreground design", designsTexture) { Borders = 0 * Vector4.One, Region = new RectangleF(5, 37, 24, 20) });
+            Slider.ThumbImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default slider thumb design", designsTexture) { Borders = 4 * Vector4.One, Region = new RectangleF(22, 59, 16, 32) });
+            Slider.MouseOverThumbImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default slider thumb overred design", designsTexture) { Borders = 4 * Vector4.One, Region = new RectangleF(4, 59, 16, 32) });
+            Slider.TickImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default slider track foreground design", designsTexture) { Region = new RectangleF(32, 44, 3, 6) });
+            Slider.TickOffsetPropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(13f);
+            Slider.TrackStartingOffsetsrPropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new Vector2(3));
         }
 
         /// <summary>
