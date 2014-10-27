@@ -67,6 +67,10 @@ namespace SiliconStudio.Paradox.Assets
         [DefaultValue(true)]
         public bool PremultiplyAlpha { get; set; }
 
+        [DataMember(80)]
+        [DefaultValue(true)]
+        public bool UseTextureAtlas { get; set; }
+
         public override void SetDefaults()
         {
             Format = TextureFormat.Compressed;
@@ -75,6 +79,7 @@ namespace SiliconStudio.Paradox.Assets
             ColorKeyEnabled = false;
             GenerateMipmaps = false;
             PremultiplyAlpha = true;
+            UseTextureAtlas = true;
         }
 
         public static string BuildTextureUrl(UFile textureAbsolutePath, int spriteIndex)

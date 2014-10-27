@@ -65,7 +65,8 @@ namespace SiliconStudio.Paradox.Assets
                     foreach (var spriteAsset in spriteAssetArray)
                         SpriteToTextureIndex[spriteAsset] = i;
                     
-                    continue;
+                    // texture asset does not need to be generated if using texture atlas
+                    if(asset.UseTextureAtlas) continue;
 
                     // create an texture asset.
                     var textureAsset = new TextureAsset
@@ -104,21 +105,15 @@ namespace SiliconStudio.Paradox.Assets
         where TImageGroupData : ImageGroupData<TImageData>, new()
         where TImageData : ImageFragmentData, new()
     {
-        protected readonly AssetCompilerContext Context;
-
         protected readonly bool UseSeparateAlphaTexture;
 
         protected readonly Dictionary<TImageInfo, int> ImageToTextureIndex;
 
-        // todo: Get a flag from GroupAsset
-        private const bool UseTextureAtlas = true;
-
-        protected ImageGroupCommand(string url, ImageGroupParameters<TGroupAsset> asset, Dictionary<TImageInfo, int> imageToTextureIndex, bool useSeparateAlphaTexture, AssetCompilerContext context)
+        protected ImageGroupCommand(string url, ImageGroupParameters<TGroupAsset> asset, Dictionary<TImageInfo, int> imageToTextureIndex, bool useSeparateAlphaTexture)
             : base(url, asset)
         {
             ImageToTextureIndex = imageToTextureIndex;
             UseSeparateAlphaTexture = useSeparateAlphaTexture;
-            Context = context;
         }
 
         public override IEnumerable<ObjectUrl> GetInputFiles()
@@ -196,8 +191,8 @@ namespace SiliconStudio.Paradox.Assets
                 var colorKeyColor = imageGroup.ColorKeyColor;
                 var colorKeyEnabled = imageGroup.ColorKeyEnabled;
 
-                var createResult = TextureAtlasFactory.CreateAndSaveTextureAtlasImage(textureAtlas, Url + "__ATLAS_IMAGE_GROUP__", format, Context.GetGraphicsPlatform(), Context.GetGraphicsProfile(),
-                    generateMipmaps, colorKeyEnabled, colorKeyColor, premultiplyAlpha, alpha, Context.Platform, Context.GetTextureQuality(), UseSeparateAlphaTexture, CancellationToken, commandContext.Logger);
+                var createResult = TextureAtlasFactory.CreateAndSaveTextureAtlasImage(textureAtlas, Url + "__ATLAS_IMAGE_GROUP__", format, asset.GraphicsPlatform, asset.GraphicsProfile,
+                    generateMipmaps, colorKeyEnabled, colorKeyColor, premultiplyAlpha, alpha, asset.Platform, asset.TextureQuality, UseSeparateAlphaTexture, CancellationToken, commandContext.Logger);
 
                 if (createResult != ResultStatus.Successful) return Task.FromResult(createResult);
 
@@ -217,9 +212,9 @@ namespace SiliconStudio.Paradox.Assets
                 var newImage = new TImageData
                 {
                     Name = uiImage.Name,
-                    Region = (UseTextureAtlas) ? regionValue : uiImage.TextureRegion,
+                    Region = (asset.GroupAsset.UseTextureAtlas) ? regionValue : uiImage.TextureRegion,
                     IsTransparent = asset.GroupAsset.Alpha != AlphaFormat.None, // todo analyze texture region texture data to auto-determine alpha?
-                    Orientation = (region.IsRotated) ? ImageOrientation.Rotated90 : ImageOrientation.AsIs,
+                    Orientation = (asset.GroupAsset.UseTextureAtlas) ? ((region.IsRotated) ? ImageOrientation.Rotated90 : ImageOrientation.AsIs) : uiImage.Orientation,
                 };
 
                 if (UseSeparateAlphaTexture)
@@ -230,7 +225,7 @@ namespace SiliconStudio.Paradox.Assets
                 }
                 else
                 {
-                    newImage.Texture = new ContentReference<Texture2D> { Location = (UseTextureAtlas) ? Url + "__ATLAS_IMAGE_GROUP__" : ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]) };
+                    newImage.Texture = new ContentReference<Texture2D> { Location = (asset.GroupAsset.UseTextureAtlas) ? Url + "__ATLAS_IMAGE_GROUP__" : ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]) };
                 }
 
                 SetImageSpecificFields(uiImage, newImage);
@@ -269,15 +264,24 @@ namespace SiliconStudio.Paradox.Assets
         public ImageGroupParameters()
         {
         }
-    
-        public ImageGroupParameters(T groupAsset, PlatformType platform)
+
+        public ImageGroupParameters(T groupAsset, PlatformType platform, GraphicsPlatform graphicsPlatform, GraphicsProfile graphicsProfile, TextureQuality textureQuality)
         {
             GroupAsset = groupAsset;
             Platform = platform;
+            GraphicsPlatform = graphicsPlatform;
+            GraphicsProfile = graphicsProfile;
+            TextureQuality = textureQuality;
         }
 
         public T GroupAsset;
     
         public PlatformType Platform;
+
+        public GraphicsPlatform GraphicsPlatform;
+
+        public GraphicsProfile GraphicsProfile;
+
+        public TextureQuality TextureQuality;
     }
 }
