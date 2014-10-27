@@ -351,28 +351,12 @@ namespace SiliconStudio.Paradox.Graphics
             
             // rotate origin and unit axis if need.
             var leftTopCorner = vector4LeftTop;
-            if (imageOrientation != ImageOrientation.AsIs)
+            if (imageOrientation == ImageOrientation.Rotated90)
             {
-                if (imageOrientation == ImageOrientation.Rotated180)
-                {
-                    drawInfo.UnitXWorld = -drawInfo.UnitXWorld;
-                    drawInfo.UnitYWorld = -drawInfo.UnitYWorld;
-                    leftTopCorner = new Vector4(0.5f, 0.5f, 0, 1);
-                }
-                else if (imageOrientation == ImageOrientation.Rotated90)
-                {
-                    var unitX = drawInfo.UnitXWorld;
-                    drawInfo.UnitXWorld = -drawInfo.UnitYWorld;
-                    drawInfo.UnitYWorld = unitX;
-                    leftTopCorner = new Vector4(-0.5f, 0.5f, 0, 1);
-                }
-                else if (imageOrientation == ImageOrientation.Rotated90C)
-                {
-                    var unitX = drawInfo.UnitXWorld;
-                    drawInfo.UnitXWorld = drawInfo.UnitYWorld;
-                    drawInfo.UnitYWorld = -unitX;
-                    leftTopCorner = new Vector4(0.5f, -0.5f, 0, 1);
-                }
+                var unitX = drawInfo.UnitXWorld;
+                drawInfo.UnitXWorld = -drawInfo.UnitYWorld;
+                drawInfo.UnitYWorld = unitX;
+                leftTopCorner = new Vector4(-0.5f, 0.5f, 0, 1);
             }
             Vector4.Transform(ref leftTopCorner, ref worldViewProjection, out drawInfo.LeftTopCornerWorld);
 

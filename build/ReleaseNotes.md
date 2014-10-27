@@ -1,3 +1,10 @@
+### Version 1.0.0-beta03
+
+Release date: 2014/??/??
+
+#### Breaking changes
+- Graphics: Remove Rotated180 and Rotated90C from ImageOrientation enumeration for code simplicity and efficiency purpose.
+
 ### Version 1.0.0-beta02
 
 Release date: 2014/10/22

@@ -518,7 +518,7 @@ namespace SiliconStudio.Paradox.Graphics
             // Scale the destination box
             if (scaleDestination)
             {
-                if (orientation == ImageOrientation.Rotated90 || orientation == ImageOrientation.Rotated90C)
+                if (orientation == ImageOrientation.Rotated90)
                 {
                     destination.Width *= height;
                     destination.Height *= width;
