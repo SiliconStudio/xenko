@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -44,7 +45,7 @@ namespace SiliconStudio.Presentation.View
         private TemplateProviderSelector()
         {
         }
-
+        
         /// <summary>
         /// Registers the given template into the static <see cref="TemplateProviderSelector"/>.
         /// </summary>
@@ -93,12 +94,11 @@ namespace SiliconStudio.Presentation.View
 
             var template = provider.Template;
             // We set the template we found into the content presenter itself to avoid re-entering the template selector if the property is refreshed.
-            // TODO: workaround/fix this
-            var contentPresenter = container as ContentPresenter;
-            //if (contentPresenter == null)
-            //    throw new ArgumentException("The container of an TemplateProviderSelector must be a ContentPresenter.");
-
-            //contentPresenter.ContentTemplate = template;
+            //var contentPresenter = container as ContentPresenter;
+            //if (contentPresenter != null)
+            //{
+            //    contentPresenter.ContentTemplate = template;
+            //}
             return template;
         }
         
@@ -142,9 +142,20 @@ namespace SiliconStudio.Presentation.View
                 result = availableSelectors.FirstOrDefault(x => x.CanBeRoot);
                 usedProvidersForItem.Clear();
             }
+
             if (result != null)
             {
-                usedProvidersForItem.Add(result.Name);
+                // Accessing an internal property of the template - this is the only way to know it it contains a content presenter.
+                var childTypeFromChildIndex = typeof(FrameworkTemplate).GetProperty("ChildTypeFromChildIndex", BindingFlags.NonPublic | BindingFlags.Instance);
+                var children = (Dictionary<int, Type>)childTypeFromChildIndex.GetValue(result.Template);
+                if (children.All(x => x.Value != typeof(ContentPresenter)))
+                {
+                    usedProvidersForItem.Clear();
+                }
+                else
+                {
+                    usedProvidersForItem.Add(result.Name);
+                }
             }
             return result;
         }
