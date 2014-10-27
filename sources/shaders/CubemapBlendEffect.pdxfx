@@ -9,7 +9,7 @@ namespace CubemapBlendShader
     shader SingleCubemapShader
     {
         using params CubeMapBlender;
-        mixin CubemapFaceDisplayNoFlip<CubeMapBlender.CubemapKey>;
+        mixin CubemapFace<CubeMapBlender.CubemapKey>;
     }
 
     shader CubemapBlendEffect
@@ -23,7 +23,11 @@ namespace CubemapBlendShader
         
         // TODO: make this configurable
         mixin macro TEXTURECUBE_BLEND_COUNT = CubeMapBlender.CubemapCount;
-        mixin CubemapBlendMRT;
+
+        if (CubeMapBlender.UseMultipleRenderTargets)
+            mixin CubemapBlenderMRT;
+        else
+            mixin CubemapBlender;
 
         foreach(params CubeMapBlender.Cubemaps)
         {

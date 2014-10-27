@@ -352,11 +352,29 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>CubemapBlender.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Cubemap\CubemapBlendMRT.cs">
+    <Compile Include="Cubemap\CubemapBlenderBase.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>CubemapBlendMRT.pdxsl</DependentUpon>
+      <DependentUpon>CubemapBlenderBase.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapBlenderMRT.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapBlenderMRT.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapFace.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapFace.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapFaceBase.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapFaceBase.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Cubemap\CubemapFaceDisplay.cs">
       <AutoGen>True</AutoGen>
@@ -1724,9 +1742,21 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CubemapBlender.cs</LastGenOutput>
     </None>
-    <None Include="Cubemap\CubemapBlendMRT.pdxsl">
+    <None Include="Cubemap\CubemapBlenderBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>CubemapBlendMRT.cs</LastGenOutput>
+      <LastGenOutput>CubemapBlenderBase.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapBlenderMRT.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapBlenderMRT.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapFace.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapFace.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapFaceBase.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapFaceBase.cs</LastGenOutput>
     </None>
     <None Include="Cubemap\CubemapFaceDisplay.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

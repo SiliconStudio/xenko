@@ -32,6 +32,11 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// </summary>
         public static ParameterKey<int> CubemapCount = ParameterKeys.New<int>();
 
+        /// <summary>
+        /// Flag to enable multiple render target.
+        /// </summary>
+        public static ParameterKey<bool> UseMultipleRenderTargets = ParameterKeys.New<bool>();
+
         #endregion
 
         #region Private members
@@ -61,6 +66,11 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// </summary>
         private PostEffectQuad drawQuad;
 
+        /// <summary>
+        /// A flag to use multiple render target to blend the cubemaps in one call.
+        /// </summary>
+        private bool useMRT;
+
         #endregion
 
         #region Constructor
@@ -71,6 +81,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             textureCubes = new List<Tuple<TextureCube, Vector3>>();
             pointsOfInterest = new List<Tuple<Vector3, int>>();
             cubemapBlendEffects = new Dictionary<int, Effect>();
+            useMRT = false;
 
             // TODO: change size
             int cubemapSize = 512;
@@ -104,7 +115,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// <inheritdoc/>
         public override void Load()
         {
-            for (var maxBlendCount = 2; maxBlendCount < 4; ++maxBlendCount)
+            useMRT = GraphicsDevice.Features.Profile >= GraphicsProfile.Level_10_0;
+
+            for (var maxBlendCount = 2; maxBlendCount < 5; ++maxBlendCount)
             {
                 var compilerParameter = new CompilerParameters();
                 var compilerParameterChild = new ShaderMixinParameters[maxBlendCount];
@@ -116,8 +129,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 }
                 compilerParameter.Set(CubeMapBlender.Cubemaps, compilerParameterChild);
                 compilerParameter.Set(CubeMapBlender.CubemapCount, maxBlendCount);
+                compilerParameter.Set(CubeMapBlender.UseMultipleRenderTargets, useMRT);
                 cubemapBlendEffects.Add(maxBlendCount, EffectSystem.LoadEffect("CubemapBlendEffect", compilerParameter));
-
             }
             drawQuad = new PostEffectQuad(GraphicsDevice, cubemapBlendEffects[2]);
 
@@ -181,7 +194,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                     blendIndices[i] = (1.0f / (closestTextures[i].Item3 + 1)) / totalWeight;
                     parameters.Set(GetTextureCubeKey(i), closestTextures[i].Item1);
                 }
-                parameters.Set(CubemapBlendMRTKeys.BlendIndices, blendIndices);
+                parameters.Set(CubemapBlenderBaseKeys.BlendIndices, blendIndices);
 
                 // clear target
                 GraphicsDevice.Clear(targetCubemap.ToRenderTarget(ViewType.Full, 0, 0), Color.Black);
@@ -189,26 +202,30 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 // set states
                 GraphicsDevice.SetDepthStencilState(GraphicsDevice.DepthStencilStates.None);
 
-                // TODO: use MRT or geometry shader?
                 // render each face
-                /*for (int i = 0; i < 6; ++i)
+                if (useMRT)
                 {
-                    // set the render targets
-                    GraphicsDevice.SetRenderTarget(targetCubemap.ToRenderTarget(ViewType.Single, i, 0));
-                    parameters.Set(CubemapFaceDisplayKeys.ViewIndex, i);
+                    GraphicsDevice.SetRenderTargets(
+                        targetCubemap.ToRenderTarget(ViewType.Single, 0, 0),
+                        targetCubemap.ToRenderTarget(ViewType.Single, 1, 0),
+                        targetCubemap.ToRenderTarget(ViewType.Single, 2, 0),
+                        targetCubemap.ToRenderTarget(ViewType.Single, 3, 0),
+                        targetCubemap.ToRenderTarget(ViewType.Single, 4, 0),
+                        targetCubemap.ToRenderTarget(ViewType.Single, 5, 0));
                     cubemapBlendEffect.Apply(parameters);
                     drawQuad.Draw();
-                }*/
-
-                GraphicsDevice.SetRenderTargets(
-                    targetCubemap.ToRenderTarget(ViewType.Single, 0, 0),
-                    targetCubemap.ToRenderTarget(ViewType.Single, 1, 0),
-                    targetCubemap.ToRenderTarget(ViewType.Single, 2, 0),
-                    targetCubemap.ToRenderTarget(ViewType.Single, 3, 0),
-                    targetCubemap.ToRenderTarget(ViewType.Single, 4, 0),
-                    targetCubemap.ToRenderTarget(ViewType.Single, 5, 0));
-                cubemapBlendEffect.Apply(parameters);
-                drawQuad.Draw();
+                }
+                else
+                {
+                    for (int i = 0; i < 6; ++i)
+                    {
+                        // set the render targets
+                        GraphicsDevice.SetRenderTarget(targetCubemap.ToRenderTarget(ViewType.Single, i, 0));
+                        parameters.Set(CubemapBlenderKeys.ViewIndex, i);
+                        cubemapBlendEffect.Apply(parameters);
+                        drawQuad.Draw();
+                    }
+                }
             }
         }
 

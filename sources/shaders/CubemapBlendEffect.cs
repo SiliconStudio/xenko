@@ -33,7 +33,7 @@ namespace CubemapBlendShader
         {
 
             #line 12
-            context.Mixin(mixin, "CubemapFaceDisplayNoFlip", context.GetParam(CubeMapBlender.CubemapKey));
+            context.Mixin(mixin, "CubemapFace", context.GetParam(CubeMapBlender.CubemapKey));
         }
 
         [ModuleInitializer]
@@ -59,28 +59,37 @@ namespace CubemapBlendShader
             #line 25
             mixin.Mixin.AddMacro("TEXTURECUBE_BLEND_COUNT", context.GetParam(CubeMapBlender.CubemapCount));
 
-            #line 26
-            context.Mixin(mixin, "CubemapBlendMRT");
+            #line 27
+            if (context.GetParam(CubeMapBlender.UseMultipleRenderTargets))
 
-            #line 28
+                #line 28
+                context.Mixin(mixin, "CubemapBlenderMRT");
+
+            #line 30
+            else
+
+                #line 30
+                context.Mixin(mixin, "CubemapBlender");
+
+            #line 32
             foreach(var ____1 in context.GetParam(CubeMapBlender.Cubemaps))
 
             {
 
-                #line 28
+                #line 32
                 context.PushParameters(____1);
 
                 {
 
-                    #line 30
+                    #line 34
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                    #line 30
+                    #line 34
                     context.Mixin(__subMixin, "SingleCubemapShader");
                     mixin.Mixin.AddCompositionToArray("Cubemaps", __subMixin.Mixin);
                 }
 
-                #line 28
+                #line 32
                 context.PopParameters();
             }
         }

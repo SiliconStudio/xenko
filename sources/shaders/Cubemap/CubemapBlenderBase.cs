@@ -7,8 +7,8 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 namespace SiliconStudio.Paradox.Effects.Modules
 {
-    public static partial class CubemapBlenderKeys
+    public static partial class CubemapBlenderBaseKeys
     {
-        public static readonly ParameterKey<int> ViewIndex = ParameterKeys.New<int>();
+        public static readonly ParameterKey<float[]> BlendIndices = ParameterKeys.New<float[]>();
     }
 }

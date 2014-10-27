@@ -1,12 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corporation (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#ifndef TEXTURECUBE_BLEND_COUNT
-# define TEXTURECUBE_BLEND_COUNT 1
-#endif
-class CubemapBlendMRT : ShaderBase
+/// <summary>
+/// Blends cubemaps and outputs in multiple render targets.
+/// </summary>
+class CubemapBlenderMRT : CubemapBlenderBase, ShaderBase
 {
-    stream uint ViewIndexStream : TEMPSEM;
-
+    // TODO: define them in a shared class
     // Default COLOR outputs for PS shader
     stage stream float4 ColorTarget1 : SV_Target1;
     stage stream float4 ColorTarget2 : SV_Target2;
@@ -14,9 +13,6 @@ class CubemapBlendMRT : ShaderBase
     stage stream float4 ColorTarget4 : SV_Target4;
     stage stream float4 ColorTarget5 : SV_Target5;
     
-    ComputeColor Cubemaps[];
-    float BlendIndices[TEXTURECUBE_BLEND_COUNT];
-
     override stage void PSMain()
     {
         base.PSMain();
@@ -28,22 +24,15 @@ class CubemapBlendMRT : ShaderBase
         float4 finalColor4 = 0;
         float4 finalColor5 = 0;
 
-        var index = 0;
+        int index = 0;
         foreach (var cubemap in Cubemaps)
         {
-            streams.ViewIndexStream = 0;
-            finalColor0 += BlendIndices[index] * cubemap.Compute();
-            streams.ViewIndexStream = 1;
-            finalColor1 += BlendIndices[index] * cubemap.Compute();
-            streams.ViewIndexStream = 2;
-            finalColor2 += BlendIndices[index] * cubemap.Compute();
-            streams.ViewIndexStream = 3;
-            finalColor3 += BlendIndices[index] * cubemap.Compute();
-            streams.ViewIndexStream = 4;
-            finalColor4 += BlendIndices[index] * cubemap.Compute();
-            streams.ViewIndexStream = 5;
-            finalColor5 += BlendIndices[index] * cubemap.Compute();
-
+            finalColor0 += BlendIndices[index] * cubemap.ComputeFaceColor(0);
+            finalColor1 += BlendIndices[index] * cubemap.ComputeFaceColor(1);
+            finalColor2 += BlendIndices[index] * cubemap.ComputeFaceColor(2);
+            finalColor3 += BlendIndices[index] * cubemap.ComputeFaceColor(3);
+            finalColor4 += BlendIndices[index] * cubemap.ComputeFaceColor(4);
+            finalColor5 += BlendIndices[index] * cubemap.ComputeFaceColor(5);
             ++index;
         }
 
