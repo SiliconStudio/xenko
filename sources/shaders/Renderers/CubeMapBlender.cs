@@ -42,9 +42,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         #region Private members
         
         /// <summary>
-        /// List of cubemaps and their positions.
+        /// List of cubemaps, their positions and influence range.
         /// </summary>
-        private List<Tuple<TextureCube, Vector3>> textureCubes;
+        private List<Tuple<TextureCube, Vector3, float>> textureCubes;
 
         /// <summary>
         /// List of points of interest and the maximum number of cubemap that can be blended.
@@ -78,7 +78,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         public CubeMapBlender(IServiceRegistry services)
             : base(services)
         {
-            textureCubes = new List<Tuple<TextureCube, Vector3>>();
+            textureCubes = new List<Tuple<TextureCube, Vector3, float>>();
             pointsOfInterest = new List<Tuple<Vector3, int>>();
             cubemapBlendEffects = new Dictionary<int, Effect>();
             useMRT = false;
@@ -97,9 +97,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// </summary>
         /// <param name="texture">The cubemap texture.</param>
         /// <param name="position">The position.</param>
-        public void AddTextureCube(TextureCube texture, Vector3 position)
+        public void AddTextureCube(TextureCube texture, Vector3 position, float range)
         {
-            textureCubes.Add(Tuple.Create(texture, position));
+            textureCubes.Add(Tuple.Create(texture, position, range));
         }
 
         /// <summary>
@@ -149,7 +149,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         protected void OnRender(RenderContext context)
         {
-            var closestTextures = new List<Tuple<TextureCube, Vector3, float>>();
+            var selectedCubemaps = new List<Tuple<TextureCube, float>>();
             var parameters = new ParameterCollection();
 
             foreach (var poi in pointsOfInterest)
@@ -169,30 +169,20 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 if (cubemapBlendEffect == null)
                     continue;
 
-                // take the k closest textures
-                closestTextures.Clear();
-                foreach (var tex in textureCubes)
-                {
-                    var d = (tex.Item2 - poi.Item1).LengthSquared();
-                    var insertIndex = 0;
-                    for (; insertIndex < maxCubemapBlend; ++insertIndex)
-                    {
-                        if (insertIndex >= closestTextures.Count || d < closestTextures[insertIndex].Item3)
-                            break;
-                    }
-                    if (insertIndex < maxCubemapBlend)
-                        closestTextures.Insert(insertIndex, Tuple.Create(tex.Item1, tex.Item2, d));
-                }
+                // TODO: take the k most important cubemaps
+                selectedCubemaps.Clear();
+                //FindClosestCubemaps(poi.Item1, maxCubemapBlend, selectedCubemaps);
+                FindMostInfluencialCubemaps(poi.Item1, maxCubemapBlend, selectedCubemaps);
 
                 // compute blending indices & set parameters
                 // TODO: change weight computation
-                var totalWeight = closestTextures.Aggregate(0.0f, (s, t) => s + 1.0f / (t.Item3 + 1));
+                var totalWeight = selectedCubemaps.Aggregate(0.0f, (s, t) => s + t.Item2);
                 var blendIndices = new float[maxCubemapBlend];
                 parameters.Clear();
                 for (var i = 0; i < maxCubemapBlend; ++i)
                 {
-                    blendIndices[i] = (1.0f / (closestTextures[i].Item3 + 1)) / totalWeight;
-                    parameters.Set(GetTextureCubeKey(i), closestTextures[i].Item1);
+                    blendIndices[i] = selectedCubemaps[i].Item2 / totalWeight;
+                    parameters.Set(GetTextureCubeKey(i), selectedCubemaps[i].Item1);
                 }
                 parameters.Set(CubemapBlenderBaseKeys.BlendIndices, blendIndices);
 
@@ -226,6 +216,47 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                         drawQuad.Draw();
                     }
                 }
+            }
+        }
+
+        private void FindClosestCubemaps(Vector3 position, int maxCubemapBlend, List<Tuple<TextureCube, float>> selectedCubemaps)
+        {
+            foreach (var tex in textureCubes)
+            {
+                var d = (tex.Item2 - position).LengthSquared();
+                var influence = 1.0f / (d + 1);
+                var insertIndex = 0;
+                for (; insertIndex < maxCubemapBlend; ++insertIndex)
+                {
+                    if (insertIndex >= selectedCubemaps.Count || influence > selectedCubemaps[insertIndex].Item2)
+                        break;
+                }
+                if (insertIndex < maxCubemapBlend)
+                    selectedCubemaps.Insert(insertIndex, Tuple.Create(tex.Item1, influence));
+            }
+        }
+
+        private void FindMostInfluencialCubemaps(Vector3 position, int maxCubemapBlend, List<Tuple<TextureCube, float>> selectedCubemaps)
+        {
+            foreach (var tex in textureCubes)
+            {
+                // compute influence
+                // TODO: other profile than linear?
+                var d = (tex.Item2 - position).Length();
+                var influence = 1 - (d / tex.Item3);
+                if (influence > 1)
+                    influence = 1;
+                else if (influence <= 0)
+                    continue;
+
+                var insertIndex = 0;
+                for (; insertIndex < maxCubemapBlend; ++insertIndex)
+                {
+                    if (insertIndex >= selectedCubemaps.Count || influence > selectedCubemaps[insertIndex].Item2)
+                        break;
+                }
+                if (insertIndex < maxCubemapBlend)
+                    selectedCubemaps.Insert(insertIndex, Tuple.Create(tex.Item1, influence));
             }
         }
 
