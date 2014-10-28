@@ -3,12 +3,14 @@
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Core.Serialization.Serializers;
+using SiliconStudio.Paradox.EntityModel;
 
 namespace SiliconStudio.Paradox.Physics
 {
     [DataConverter(AutoGenerate = false, ContentReference = true)]
     [DataSerializer(typeof(PhysicsColliderShapeSerializer))]
     [ContentSerializer(typeof(DataContentConverterSerializer<PhysicsColliderShape>))]
+    [DataSerializerGlobal(typeof(CloneSerializer<PhysicsColliderShape>), Profile = "Clone")] 
     public class PhysicsColliderShape
     {
         public PhysicsColliderShape(ColliderShape shape)

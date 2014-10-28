@@ -3,7 +3,6 @@
 using System;
 
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.Engine.Data;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -16,7 +15,6 @@ namespace SiliconStudio.Paradox.Physics
 
         public void Initialize(SerializerSelector serializerSelector)
         {
-            throw new NotImplementedException();
         }
     }
 }
