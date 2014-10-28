@@ -140,13 +140,14 @@ namespace SiliconStudio.Paradox.Assets
             var imageGroupData = new TImageGroupData { Images = new List<TImageData>() };
 
             // Create atlas texture
-            Dictionary<string, RotatableRectangle> regionDictionary = null;
+            Dictionary<string, Tuple<int, RotatableRectangle>> regionDictionary = null;
             var borderSize = 0;
 
             if (asset.GroupAsset.UseTextureAtlas)
             {
                 var packConfiguration = new Configuration
                 {
+                    UseMultipack = asset.GroupAsset.UseMultipack,
                     BorderSize = asset.GroupAsset.BorderSize,
                     BorderColor = asset.GroupAsset.BorderColor,
                     UseRotation = asset.GroupAsset.UseRotation,
@@ -155,14 +156,13 @@ namespace SiliconStudio.Paradox.Assets
 
                     // Enforce constraints
                     SizeContraint = SizeConstraints.PowerOfTwo,
-                    UseMultipack = false,
                 };
 
                 borderSize = packConfiguration.BorderSize;
 
-                var createResult = CreateAndSaveTextureAtlasImage(ref packConfiguration, commandContext.Logger, out regionDictionary);
+                var resultStatus = CreateAndSaveTextureAtlasImage(ref packConfiguration, commandContext.Logger, out regionDictionary);
 
-                if (createResult != ResultStatus.Successful) return Task.FromResult(createResult);
+                if (resultStatus != ResultStatus.Successful) return Task.FromResult(resultStatus);
             }
 
             // add the sprite data to the sprite list.
@@ -176,7 +176,9 @@ namespace SiliconStudio.Paradox.Assets
 
                 if (asset.GroupAsset.UseTextureAtlas)
                 {
-                    var region = regionDictionary[ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage])];
+                    var regionData = regionDictionary[ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage])];
+                    var region = regionData.Item2;
+
                     newImage.Region = new Rectangle(borderSize + region.Value.X, borderSize + region.Value.Y, region.Value.Width - 2 * borderSize, region.Value.Height - 2 * borderSize);
                     newImage.Orientation = (region.IsRotated) ? ImageOrientation.Rotated90 : ImageOrientation.AsIs;
                 }
@@ -188,13 +190,18 @@ namespace SiliconStudio.Paradox.Assets
 
                 if (UseSeparateAlphaTexture)
                 {
-                    var baseLocation = (asset.GroupAsset.UseTextureAtlas) ? ImageGroupAsset.BuildTextureAtlasUrl(Url) : ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]);
+                    var baseLocation = (asset.GroupAsset.UseTextureAtlas) 
+                        ? ImageGroupAsset.BuildTextureAtlasUrl(Url, regionDictionary[ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage])].Item1) 
+                        : ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]);
+
                     newImage.Texture = new ContentReference<Texture2D> { Location = TextureAlphaComponentSplitter.GenerateColorTextureURL(baseLocation) };
                     newImage.TextureAlpha = new ContentReference<Texture2D> { Location = TextureAlphaComponentSplitter.GenerateAlphaTextureURL(baseLocation) };
                 }
                 else
                 {
-                    newImage.Texture = new ContentReference<Texture2D> { Location = (asset.GroupAsset.UseTextureAtlas) ? ImageGroupAsset.BuildTextureAtlasUrl(Url) : ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]) };
+                    newImage.Texture = new ContentReference<Texture2D> { Location = (asset.GroupAsset.UseTextureAtlas) 
+                        ? ImageGroupAsset.BuildTextureAtlasUrl(Url, regionDictionary[ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage])].Item1) 
+                        : ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]) };
                 }
 
                 SetImageSpecificFields(uiImage, newImage);
@@ -208,10 +215,9 @@ namespace SiliconStudio.Paradox.Assets
             return Task.FromResult(ResultStatus.Successful);
         }
 
-        private ResultStatus CreateAndSaveTextureAtlasImage(ref Configuration packConfiguration, Logger logger, out Dictionary<string, RotatableRectangle> regionDictionary)
+        private ResultStatus CreateAndSaveTextureAtlasImage(ref Configuration packConfiguration, Logger logger, out Dictionary<string, Tuple<int, RotatableRectangle>> regionDictionary)
         {
-            TextureAtlas textureAtlas;
-            regionDictionary = null;
+            regionDictionary = new Dictionary<string, Tuple<int, RotatableRectangle>>();
 
             // Pack textures
             using (var texTool = new TextureTool())
@@ -230,9 +236,6 @@ namespace SiliconStudio.Paradox.Assets
                     return ResultStatus.Failed;
                 }
 
-                // Obtain texture atlas
-                textureAtlas = texturePacker.TextureAtlases.First();
-
                 // Create atlas texture
                 var imageGroup = asset.GroupAsset;
 
@@ -244,16 +247,28 @@ namespace SiliconStudio.Paradox.Assets
                 var colorKeyColor = imageGroup.ColorKeyColor;
                 var colorKeyEnabled = imageGroup.ColorKeyEnabled;
 
-                var createResult = TextureAtlasFactory.CreateAndSaveTextureAtlasImage(textureAtlas, ImageGroupAsset.BuildTextureAtlasUrl(Url), format, asset.GraphicsPlatform, asset.GraphicsProfile,
+                // Create and save every generated texture atlas
+                for (var textureAtlasIndex = 0 ; textureAtlasIndex < texturePacker.TextureAtlases.Count ; ++textureAtlasIndex)
+                {
+                    var textureAtlas = texturePacker.TextureAtlases[textureAtlasIndex];
+
+                    var resultStatus = TextureAtlasFactory.CreateAndSaveTextureAtlasImage(textureAtlas, 
+                        ImageGroupAsset.BuildTextureAtlasUrl(Url, textureAtlasIndex), format, asset.GraphicsPlatform, asset.GraphicsProfile,
+
                     generateMipmaps, colorKeyEnabled, colorKeyColor, premultiplyAlpha, alpha, asset.Platform, asset.TextureQuality, UseSeparateAlphaTexture, CancellationToken, logger);
 
-                foreach (var texture in textureAtlas.Textures)
-                    texture.Texture.Dispose();
+                    foreach (var texture in textureAtlas.Textures)
+                    {
+                        var textureKey = texture.Region.Key;
 
-                if (createResult != ResultStatus.Successful) return createResult;
+                        regionDictionary.Add(textureKey, new Tuple<int, RotatableRectangle>(textureAtlasIndex, texture.Region));
+
+                        texture.Texture.Dispose();
+                    }
+
+                    if (resultStatus != ResultStatus.Successful) return resultStatus;
+                }
             }
-
-            regionDictionary = textureAtlas.Textures.ToDictionary(texture => texture.Region.Key, texture => texture.Region);
 
             return ResultStatus.Successful;
         }

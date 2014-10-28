@@ -72,20 +72,24 @@ namespace SiliconStudio.Paradox.Assets
         public bool UseTextureAtlas { get; set; }
 
         [DataMember(90)]
+        [DefaultValue(false)]
+        public bool UseMultipack { get; set; }
+
+        [DataMember(100)]
         [DefaultValue(0)]
         public int BorderSize { get; set; }
 
-        [DataMember(100)]
+        [DataMember(110)]
         public Color BorderColor { get; set; }
 
-        [DataMember(110)]
+        [DataMember(120)]
         [DefaultValue(true)]
         public bool UseRotation { get; set; }
 
-        [DataMember(120)]
+        [DataMember(130)]
         public int MaxWidth { get; set; }
 
-        [DataMember(130)]
+        [DataMember(140)]
         public int MaxHeight { get; set; }
 
         public override void SetDefaults()
@@ -98,6 +102,7 @@ namespace SiliconStudio.Paradox.Assets
             PremultiplyAlpha = true;
 
             UseTextureAtlas = true;
+            UseMultipack = false;
             BorderSize = 0;
             BorderColor = Color.Transparent;
             UseRotation = true;
@@ -111,9 +116,9 @@ namespace SiliconStudio.Paradox.Assets
             return textureAbsolutePath + "__IMAGE_TEXTURE__" + spriteIndex;
         }
 
-        public static string BuildTextureAtlasUrl(UFile textureAbsolutePath)
+        public static string BuildTextureAtlasUrl(UFile textureAbsolutePath, int index)
         {
-            return textureAbsolutePath + "__ATLAS_IMAGE_GROUP";
+            return textureAbsolutePath + "__ATLAS_IMAGE_GROUP_" + index;
         }
     }
 
