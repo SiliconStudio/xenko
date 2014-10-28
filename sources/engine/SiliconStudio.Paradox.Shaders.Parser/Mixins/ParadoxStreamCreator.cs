@@ -129,18 +129,31 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             // pathc some usage so that variables are correctly passed even if they are not explicitely used.
             if (streamStageUsageGS != null && streamStageUsageVS != null)
             {
-                // get the ShadingPosition variable
-                foreach (var variable in streamStageUsageVS.OutStreamList.OfType<Variable>())
+                var needToAdd = true;
+                foreach (var variable in streamStageUsageGS.OutStreamList.OfType<Variable>())
                 {
                     var sem = variable.Qualifiers.OfType<Semantic>().FirstOrDefault();
                     if (sem != null && sem.Name.Text == "SV_Position")
                     {
-                        streamStageUsageGS.OutStreamList.Add(variable);
+                        needToAdd = false;
                         break;
                     }
-
                 }
 
+                if (needToAdd)
+                {
+                    // get the ShadingPosition variable
+                    foreach (var variable in streamStageUsageVS.OutStreamList.OfType<Variable>())
+                    {
+                        var sem = variable.Qualifiers.OfType<Semantic>().FirstOrDefault();
+                        if (sem != null && sem.Name.Text == "SV_Position")
+                        {
+                            streamStageUsageGS.OutStreamList.Add(variable);
+                            break;
+                        }
+
+                    }
+                }
                 // TODO: it may have more variables like this one.
             }
 
