@@ -81,7 +81,16 @@ namespace SiliconStudio.Paradox.Physics
                     break;
                 }
 
-                if (element.BoneIndex == -1) return;
+                if (element.BoneIndex == -1)
+                {
+                    throw new Exception("The specified LinkedBoneName doesn't exist in the model hierarchy.");
+                }
+            }
+
+            //complex hierarchy models not implemented yet
+            if (element.BoneIndex != -1)
+            {
+                throw new NotImplementedException("Physics on complex hierarchy model's bones is not implemented yet.");
             }
 
             var defaultGroups = element.CanCollideWith == 0 || element.CollisionGroup == 0;

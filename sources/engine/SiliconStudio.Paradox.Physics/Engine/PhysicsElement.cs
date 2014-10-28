@@ -1,12 +1,12 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
-
-using SiliconStudio.Core;
+﻿using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
+
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using System;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -115,8 +115,22 @@ namespace SiliconStudio.Paradox.Physics
 
         #region Ignore or Private/Internal
 
+        private Collider mCollider;
+
         [DataMemberIgnore]
-        public Collider Collider { get; internal set; }
+        public Collider Collider
+        {
+            get
+            {
+                if (mCollider == null)
+                {
+                    throw new Exception("Collider is null, please make sure that you are trying to access this object after it is added to the game entities ( Entities.Add(entity) ).");
+                }
+
+                return mCollider;
+            }
+            internal set { mCollider = value; }
+        }
 
         [DataMemberIgnore]
         public RigidBody RigidBody
@@ -136,7 +150,7 @@ namespace SiliconStudio.Paradox.Physics
 
         internal PhysicsProcessor.AssociatedData Data;
 
-        #endregion end
+        #endregion Ignore or Private/Internal
 
         #region Utility
 
@@ -239,8 +253,8 @@ namespace SiliconStudio.Paradox.Physics
         public void UpdatePhysicsTransformation()
         {
             Collider.PhysicsWorldTransform = DerivePhysicsTransformation();
-        }    
+        }
 
-        #endregion
+        #endregion Utility
     }
 }
