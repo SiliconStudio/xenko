@@ -70,31 +70,31 @@ namespace SiliconStudio.Paradox.Assets
 
         [DataMember(80)]
         [DefaultValue(true)]
-        public bool UseTextureAtlas { get; set; }
+        public bool GenerateTextureAtlas { get; set; }
 
         [DataMember(90)]
         [DefaultValue(false)]
-        public bool UseMultipack { get; set; }
+        public bool UseMultipackAtlas { get; set; }
 
         [DataMember(100)]
-        public TextureAddressMode BorderAddressMode { get; set; }
+        public TextureAddressMode AtlasBorderMode { get; set; }
 
         [DataMember(110)]
         [DefaultValue(0)]
-        public int BorderSize { get; set; }
+        public int AtlasBorderSize { get; set; }
 
         [DataMember(120)]
-        public Color BorderColor { get; set; }
+        public Color AtlasBorderColor { get; set; }
 
         [DataMember(130)]
         [DefaultValue(true)]
-        public bool UseRotation { get; set; }
+        public bool UseRotationInAtlas { get; set; }
 
         [DataMember(140)]
-        public int MaxWidth { get; set; }
+        public int AtlasMaxWidth { get; set; }
 
         [DataMember(150)]
-        public int MaxHeight { get; set; }
+        public int AtlasMaxHeight { get; set; }
 
         public override void SetDefaults()
         {
@@ -105,16 +105,16 @@ namespace SiliconStudio.Paradox.Assets
             GenerateMipmaps = false;
             PremultiplyAlpha = true;
 
-            UseTextureAtlas = true;
-            UseMultipack = false;
+            GenerateTextureAtlas = true;
+            UseMultipackAtlas = false;
 
-            BorderAddressMode = TextureAddressMode.Border;
-            BorderSize = 0;
-            BorderColor = Color.Transparent;
-            UseRotation = true;
+            AtlasBorderMode = TextureAddressMode.Border;
+            AtlasBorderSize = 0;
+            AtlasBorderColor = Color.Transparent;
+            UseRotationInAtlas = true;
 
-            MaxWidth = 1024;
-            MaxHeight = 1024;
+            AtlasMaxWidth = 1024;
+            AtlasMaxHeight = 1024;
         }
 
         public static string BuildTextureUrl(UFile textureAbsolutePath, int spriteIndex)
@@ -124,7 +124,7 @@ namespace SiliconStudio.Paradox.Assets
 
         public static string BuildTextureAtlasUrl(UFile textureAbsolutePath, int index)
         {
-            return textureAbsolutePath + "__ATLAS_IMAGE_GROUP_" + index;
+            return textureAbsolutePath + "__ATLAS_IMAGE_GROUP__" + index;
         }
     }
 

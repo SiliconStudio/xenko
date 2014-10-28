@@ -67,7 +67,7 @@ namespace SiliconStudio.Paradox.Assets
                         SpriteToTextureIndex[spriteAsset] = i;
                     
                     // texture asset does not need to be generated if using texture atlas
-                    if(asset.UseTextureAtlas) continue;
+                    if(asset.GenerateTextureAtlas) continue;
 
                     // create an texture asset.
                     var textureAsset = new TextureAsset
@@ -143,17 +143,17 @@ namespace SiliconStudio.Paradox.Assets
             Dictionary<string, Tuple<int, RotatableRectangle>> regionDictionary = null;
             var borderSize = 0;
 
-            if (asset.GroupAsset.UseTextureAtlas)
+            if (asset.GroupAsset.GenerateTextureAtlas)
             {
                 var packConfiguration = new Configuration
                 {
-                    UseMultipack = asset.GroupAsset.UseMultipack,
-                    BorderAddressMode = asset.GroupAsset.BorderAddressMode,
-                    BorderSize = asset.GroupAsset.BorderSize,
-                    BorderColor = asset.GroupAsset.BorderColor,
-                    UseRotation = asset.GroupAsset.UseRotation,
-                    MaxHeight = asset.GroupAsset.MaxHeight,
-                    MaxWidth = asset.GroupAsset.MaxWidth,
+                    UseMultipack = asset.GroupAsset.UseMultipackAtlas,
+                    BorderAddressMode = asset.GroupAsset.AtlasBorderMode,
+                    BorderSize = asset.GroupAsset.AtlasBorderSize,
+                    BorderColor = asset.GroupAsset.AtlasBorderColor,
+                    UseRotation = asset.GroupAsset.UseRotationInAtlas,
+                    MaxHeight = asset.GroupAsset.AtlasMaxHeight,
+                    MaxWidth = asset.GroupAsset.AtlasMaxWidth,
 
                     // Enforce constraints
                     SizeContraint = SizeConstraints.PowerOfTwo,
@@ -175,7 +175,7 @@ namespace SiliconStudio.Paradox.Assets
                     IsTransparent = asset.GroupAsset.Alpha != AlphaFormat.None, // todo analyze texture region texture data to auto-determine alpha?
                 };
 
-                if (asset.GroupAsset.UseTextureAtlas)
+                if (asset.GroupAsset.GenerateTextureAtlas)
                 {
                     var regionData = regionDictionary[ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage])];
                     var region = regionData.Item2;
@@ -191,7 +191,7 @@ namespace SiliconStudio.Paradox.Assets
 
                 if (UseSeparateAlphaTexture)
                 {
-                    var baseLocation = (asset.GroupAsset.UseTextureAtlas) 
+                    var baseLocation = (asset.GroupAsset.GenerateTextureAtlas) 
                         ? ImageGroupAsset.BuildTextureAtlasUrl(Url, regionDictionary[ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage])].Item1) 
                         : ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]);
 
@@ -200,7 +200,7 @@ namespace SiliconStudio.Paradox.Assets
                 }
                 else
                 {
-                    newImage.Texture = new ContentReference<Texture2D> { Location = (asset.GroupAsset.UseTextureAtlas) 
+                    newImage.Texture = new ContentReference<Texture2D> { Location = (asset.GroupAsset.GenerateTextureAtlas) 
                         ? ImageGroupAsset.BuildTextureAtlasUrl(Url, regionDictionary[ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage])].Item1) 
                         : ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]) };
                 }
