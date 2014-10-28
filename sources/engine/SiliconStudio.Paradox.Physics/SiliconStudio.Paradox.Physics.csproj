@@ -67,6 +67,7 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Module.cs" />
     <Compile Include="ParadoxMotionState.cs" />
     <Compile Include="PhysicsDebugEffect.cs" />
     <Compile Include="Shaders.Bytecode\PhysicsDebugEffect.bytecode.Direct3D11.Level_9_3.cs" />
