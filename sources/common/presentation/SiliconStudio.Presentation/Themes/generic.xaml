@@ -56,6 +56,30 @@
         </Setter>
     </Style>
 
+    <Style x:Key="PropertyExpanderStyle" TargetType="{x:Type Expander}">
+        <Setter Property="Padding" Value="10,0,0,0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Expander}">
+                    <Grid>
+                        <Border Visibility="Collapsed" x:Name="ExpandSite" Padding="0">
+                            <Border BorderThickness="0" Margin="0" Padding="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+												      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+												      Focusable="false" />
+                            </Border>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsExpanded" Value="True">
+                            <Setter Property="Visibility" Value="Visible" TargetName="ExpandSite" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="ctrl:PropertyView">
         <!-- TODO: Replace DynamicResource by StaticResource once it is stylized in the correct theme -->
         <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"/>
@@ -150,7 +174,7 @@
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
                                 <ContentPresenter Content="{TemplateBinding HeaderedContentControl.Header}" ContentTemplate="{TemplateBinding HeaderedContentControl.HeaderTemplate}" ContentStringFormat="{TemplateBinding HeaderedItemsControl.HeaderStringFormat}" ContentSource="Header" Name="PART_Header" HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
-                                <Expander x:Name="propertyExpander" Grid.Row="1" IsExpanded="{TemplateBinding IsExpanded}" Style="{DynamicResource PropertyExpanderStyle}" IsEnabled="True">
+                                <Expander x:Name="propertyExpander" Grid.Row="1" IsExpanded="{TemplateBinding IsExpanded}" Style="{StaticResource PropertyExpanderStyle}" IsEnabled="True">
                                     <ItemsPresenter Name="ItemsHost" Grid.Row="1"/>
                                 </Expander>
                             </Grid>
