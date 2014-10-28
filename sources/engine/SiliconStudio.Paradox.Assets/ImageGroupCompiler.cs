@@ -148,6 +148,7 @@ namespace SiliconStudio.Paradox.Assets
                 var packConfiguration = new Configuration
                 {
                     UseMultipack = asset.GroupAsset.UseMultipack,
+                    BorderAddressMode = asset.GroupAsset.BorderAddressMode,
                     BorderSize = asset.GroupAsset.BorderSize,
                     BorderColor = asset.GroupAsset.BorderColor,
                     UseRotation = asset.GroupAsset.UseRotation,
