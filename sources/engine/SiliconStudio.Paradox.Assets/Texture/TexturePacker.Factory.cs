@@ -11,10 +11,21 @@ using SiliconStudio.TextureConverter;
 
 namespace SiliconStudio.Paradox.Assets.Texture
 {
+    /// <summary>
+    /// A partial class of TexturePacker that contains a Factory to create and/or save texture atlas
+    /// </summary>
     public partial class TexturePacker
     {
-        public class Factory
+        /// <summary>
+        /// A texture Atlas Factory that contains APIs related to atlas texture creation
+        /// </summary>
+        public static class Factory
         {
+            /// <summary>
+            /// Creates texture atlas image from a given texture atlas
+            /// </summary>
+            /// <param name="textureAtlas">Input texture atlas</param>
+            /// <returns></returns>
             public static Image CreateTextureAtlas(TextureAtlas textureAtlas)
             {
                 var atlasTexture = Image.New2D(textureAtlas.Width, textureAtlas.Height, 1, PixelFormat.R8G8B8A8_UNorm);
@@ -65,30 +76,17 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 return atlasTexture;
             }
 
-            public static int GetSourceTextureIndex(int value, int maxValue, TextureAddressMode mode)
-            {
-                // Invariant condition
-                if (0 <= value && value < maxValue) return value;
-
-                switch (mode)
-                {
-                    case TextureAddressMode.Wrap:
-                        return (value >= 0) ? value % maxValue : (maxValue - ((-value) % maxValue)) % maxValue;
-                    case TextureAddressMode.Mirror:
-                        return (value >= 0) ? (maxValue - 1) - (value % maxValue) : (-value) % maxValue;
-                    case TextureAddressMode.Clamp:
-                        return (value >= 0) ? maxValue - 1 : 0;
-                    case TextureAddressMode.MirrorOnce:
-                        var absValue = Math.Abs(value);
-                        if (0 <= absValue && absValue < maxValue) return absValue;
-                        return Math.Min(absValue, maxValue - 1);
-                    case TextureAddressMode.Border:
-                        return -1;
-                    default:
-                        throw new ArgumentOutOfRangeException("mode");
-                }
-            }
-
+            /// <summary>
+            /// Creates and Saves texture atlas image to a disk
+            /// </summary>
+            /// <typeparam name="T">ImageGroupAsset</typeparam>
+            /// <param name="textureAtlas">Input texture atlas</param>
+            /// <param name="outputUrl">Output url to be saved</param>
+            /// <param name="parameters">Parameters of image group asset</param>
+            /// <param name="separateAlpha">Should alpha be saved separately; This is true for Android</param>
+            /// <param name="cancellationToken">Cancellation token for cancelling the build task</param>
+            /// <param name="logger">Logger to output the warnings and errors</param>
+            /// <returns></returns>
             public static ResultStatus CreateAndSaveTextureAtlasImage<T>(TextureAtlas textureAtlas, string outputUrl,
                 ImageGroupParameters<T> parameters, bool separateAlpha, CancellationToken cancellationToken, Logger logger)
                 where T : ImageGroupAsset
@@ -164,6 +162,39 @@ namespace SiliconStudio.Paradox.Assets.Texture
                     }
                 }
                 return ResultStatus.Successful;
+            }
+
+            /// <summary>
+            /// Gets index texture from a source image from a given value, max value and texture address mode.
+            /// If index is in [0, maxValue), the output index will be the same as the input index.
+            /// Otherwise, the output index will be determined by the texture address mode.
+            /// </summary>
+            /// <param name="value">Input index value</param>
+            /// <param name="maxValue">Max value of an input</param>
+            /// <param name="mode">Border mode</param>
+            /// <returns></returns>
+            public static int GetSourceTextureIndex(int value, int maxValue, TextureAddressMode mode)
+            {
+                // Invariant condition
+                if (0 <= value && value < maxValue) return value;
+
+                switch (mode)
+                {
+                    case TextureAddressMode.Wrap:
+                        return (value >= 0) ? value % maxValue : (maxValue - ((-value) % maxValue)) % maxValue;
+                    case TextureAddressMode.Mirror:
+                        return (value >= 0) ? (maxValue - 1) - (value % maxValue) : (-value) % maxValue;
+                    case TextureAddressMode.Clamp:
+                        return (value >= 0) ? maxValue - 1 : 0;
+                    case TextureAddressMode.MirrorOnce:
+                        var absValue = Math.Abs(value);
+                        if (0 <= absValue && absValue < maxValue) return absValue;
+                        return Math.Min(absValue, maxValue - 1);
+                    case TextureAddressMode.Border:
+                        return -1;
+                    default:
+                        throw new ArgumentOutOfRangeException("mode");
+                }
             }
         }
     }
