@@ -6,6 +6,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Assets.Texture;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Assets
 {
@@ -76,20 +77,23 @@ namespace SiliconStudio.Paradox.Assets
         public bool UseMultipack { get; set; }
 
         [DataMember(100)]
+        public TextureAddressMode BorderAddressMode { get; set; }
+
+        [DataMember(110)]
         [DefaultValue(0)]
         public int BorderSize { get; set; }
 
-        [DataMember(110)]
+        [DataMember(120)]
         public Color BorderColor { get; set; }
 
-        [DataMember(120)]
+        [DataMember(130)]
         [DefaultValue(true)]
         public bool UseRotation { get; set; }
 
-        [DataMember(130)]
+        [DataMember(140)]
         public int MaxWidth { get; set; }
 
-        [DataMember(140)]
+        [DataMember(150)]
         public int MaxHeight { get; set; }
 
         public override void SetDefaults()
@@ -103,6 +107,8 @@ namespace SiliconStudio.Paradox.Assets
 
             UseTextureAtlas = true;
             UseMultipack = false;
+
+            BorderAddressMode = TextureAddressMode.Border;
             BorderSize = 0;
             BorderColor = Color.Transparent;
             UseRotation = true;
