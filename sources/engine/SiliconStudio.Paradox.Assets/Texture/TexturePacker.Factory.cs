@@ -1,0 +1,170 @@
+﻿using System;
+using System.Threading;
+
+using SiliconStudio.BuildEngine;
+using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Paradox.Assets.Materials;
+using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.TextureConverter;
+
+namespace SiliconStudio.Paradox.Assets.Texture
+{
+    public partial class TexturePacker
+    {
+        public class Factory
+        {
+            public static Image CreateTextureAtlas(TextureAtlas textureAtlas)
+            {
+                var atlasTexture = Image.New2D(textureAtlas.Width, textureAtlas.Height, 1, PixelFormat.R8G8B8A8_UNorm);
+
+                unsafe
+                {
+                    var ptr = (Color*)atlasTexture.DataPointer;
+
+                    // Clean the data
+                    for (var i = 0; i < atlasTexture.PixelBuffer[0].Height * atlasTexture.PixelBuffer[0].Width; ++i)
+                        ptr[i] = Color.Transparent;
+                }
+
+                var borderSize = textureAtlas.PackConfig.BorderSize;
+
+                // Fill in textureData from textureAtlas
+                foreach (var intemediateTexture in textureAtlas.Textures)
+                {
+                    var isRotated = intemediateTexture.Region.IsRotated;
+                    var sourceTexture = intemediateTexture.Texture;
+                    var sourceTextureWidth = sourceTexture.Description.Width;
+                    var sourceTextureHeight = sourceTexture.Description.Height;
+
+                    unsafe
+                    {
+                        var atlasData = (Color*)atlasTexture.DataPointer;
+                        var textureData = (Color*)sourceTexture.DataPointer;
+
+                        for (var y = 0; y < intemediateTexture.Region.Value.Height; ++y)
+                            for (var x = 0; x < intemediateTexture.Region.Value.Width; ++x)
+                            {
+                                var targetIndexX = intemediateTexture.Region.Value.X + x;
+                                var targetIndexY = intemediateTexture.Region.Value.Y + y;
+
+                                var sourceIndexX = GetSourceTextureIndex(x - borderSize, isRotated ? sourceTextureHeight : sourceTextureWidth,
+                                    textureAtlas.PackConfig.BorderAddressMode ?? TextureAddressMode.Border);
+                                var sourceIndexY = GetSourceTextureIndex(y - borderSize, isRotated ? sourceTextureWidth : sourceTextureHeight,
+                                    textureAtlas.PackConfig.BorderAddressMode ?? TextureAddressMode.Border);
+
+                                atlasData[targetIndexY * textureAtlas.Width + targetIndexX] = (sourceIndexX < 0 || sourceIndexY < 0)
+                                    ? textureAtlas.PackConfig.BorderColor ?? Color.Transparent :
+                                        textureData[isRotated ? (sourceTextureHeight - 1 - sourceIndexX) * sourceTextureWidth + sourceIndexY
+                                            : (sourceIndexY * sourceTextureWidth + sourceIndexX)];
+                            }
+                    }
+                }
+
+                return atlasTexture;
+            }
+
+            public static int GetSourceTextureIndex(int value, int maxValue, TextureAddressMode mode)
+            {
+                // Invariant condition
+                if (0 <= value && value < maxValue) return value;
+
+                switch (mode)
+                {
+                    case TextureAddressMode.Wrap:
+                        return (value >= 0) ? value % maxValue : (maxValue - ((-value) % maxValue)) % maxValue;
+                    case TextureAddressMode.Mirror:
+                        return (value >= 0) ? (maxValue - 1) - (value % maxValue) : (-value) % maxValue;
+                    case TextureAddressMode.Clamp:
+                        return (value >= 0) ? maxValue - 1 : 0;
+                    case TextureAddressMode.MirrorOnce:
+                        var absValue = Math.Abs(value);
+                        if (0 <= absValue && absValue < maxValue) return absValue;
+                        return Math.Min(absValue, maxValue - 1);
+                    case TextureAddressMode.Border:
+                        return -1;
+                    default:
+                        throw new ArgumentOutOfRangeException("mode");
+                }
+            }
+
+            public static ResultStatus CreateAndSaveTextureAtlasImage<T>(TextureAtlas textureAtlas, string outputUrl,
+                ImageGroupParameters<T> parameters, bool separateAlpha, CancellationToken cancellationToken, Logger logger)
+                where T : ImageGroupAsset
+            {
+                var assetManager = new AssetManager();
+
+                var imageGroup = parameters.GroupAsset;
+
+                using (var atlasImage = CreateTextureAtlas(textureAtlas))
+                using (var texTool = new TextureTool())
+                using (var texImage = texTool.Load(atlasImage))
+                {
+                    // Apply transformations
+                    texTool.Decompress(texImage);
+
+                    if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
+                        return ResultStatus.Cancelled;
+
+                    // texture size is now determined, we can cache it
+                    var textureSize = new Int2(texImage.Width, texImage.Height);
+
+                    // Check that the resulting texture size is supported by the targeted graphics profile
+                    if (!TextureCommandHelper.TextureSizeSupported(imageGroup.Format, parameters.GraphicsPlatform, parameters.GraphicsProfile, textureSize, imageGroup.GenerateMipmaps, logger))
+                        return ResultStatus.Failed;
+
+                    // Apply the color key
+                    if (imageGroup.ColorKeyEnabled)
+                        texTool.ColorKey(texImage, imageGroup.ColorKeyColor);
+
+                    if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
+                        return ResultStatus.Cancelled;
+
+                    // Pre-multiply alpha
+                    if (imageGroup.PremultiplyAlpha)
+                        texTool.PreMultiplyAlpha(texImage);
+
+                    if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
+                        return ResultStatus.Cancelled;
+
+                    // Generate mipmaps
+                    if (imageGroup.GenerateMipmaps)
+                        texTool.GenerateMipMaps(texImage, Filter.MipMapGeneration.Box);
+
+                    if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
+                        return ResultStatus.Cancelled;
+
+                    // Convert/Compress to output format
+                    // TODO: Change alphaFormat depending on actual image content (auto-detection)?
+                    var outputFormat = TextureCommandHelper.DetermineOutputFormat(imageGroup.Format, imageGroup.Alpha, parameters.Platform,
+                        parameters.GraphicsPlatform, textureSize, texImage.Format);
+
+                    texTool.Compress(texImage, outputFormat, (TextureConverter.Requests.TextureQuality)parameters.TextureQuality);
+
+                    if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
+                        return ResultStatus.Cancelled;
+
+                    // Save the texture
+                    if (separateAlpha)
+                    {
+                        TextureAlphaComponentSplitter.CreateAndSaveSeparateTextures(texTool, texImage, outputUrl, imageGroup.GenerateMipmaps);
+                    }
+                    else
+                    {
+                        using (var outputImage = texTool.ConvertToParadoxImage(texImage))
+                        {
+                            if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
+                                return ResultStatus.Cancelled;
+
+                            assetManager.Save(outputUrl, outputImage);
+
+                            logger.Info("Compression successful [{3}] to ({0}x{1},{2})", outputImage.Description.Width, outputImage.Description.Height, outputImage.Description.Format, outputUrl);
+                        }
+                    }
+                }
+                return ResultStatus.Successful;
+            }
+        }
+    }
+}

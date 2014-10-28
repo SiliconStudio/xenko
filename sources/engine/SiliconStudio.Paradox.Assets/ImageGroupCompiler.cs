@@ -145,7 +145,7 @@ namespace SiliconStudio.Paradox.Assets
 
             if (asset.GroupAsset.GenerateTextureAtlas)
             {
-                var packConfiguration = new Configuration
+                var packConfiguration = new TexturePacker.Config
                 {
                     UseMultipack = asset.GroupAsset.UseMultipackAtlas,
                     BorderAddressMode = asset.GroupAsset.AtlasBorderMode,
@@ -156,7 +156,7 @@ namespace SiliconStudio.Paradox.Assets
                     MaxWidth = asset.GroupAsset.AtlasMaxWidth,
 
                     // Enforce constraints
-                    SizeContraint = SizeConstraints.PowerOfTwo,
+                    SizeContraint = TexturePacker.SizeConstraints.PowerOfTwo,
                 };
 
                 borderSize = packConfiguration.BorderSize;
@@ -216,19 +216,20 @@ namespace SiliconStudio.Paradox.Assets
             return Task.FromResult(ResultStatus.Successful);
         }
 
-        private ResultStatus CreateAndSaveTextureAtlasImage(ref Configuration packConfiguration, Logger logger, out Dictionary<string, Tuple<int, MaxRectanglesBinPack.RotatableRectangle>> regionDictionary)
+        private ResultStatus CreateAndSaveTextureAtlasImage(ref TexturePacker.Config packConfig, Logger logger, out Dictionary<string, Tuple<int, MaxRectanglesBinPack.RotatableRectangle>> regionDictionary)
         {
             regionDictionary = new Dictionary<string, Tuple<int, MaxRectanglesBinPack.RotatableRectangle>>();
 
             // Pack textures
             using (var texTool = new TextureTool())
             {
-                var textureElements = new Dictionary<string, IntermediateTextureElement>();
+                var textureElements = new Dictionary<string, TexturePacker.IntermediateTexture>();
 
                 foreach (var uiImage in asset.GroupAsset.Images)
-                    textureElements.Add(ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]), new IntermediateTextureElement { Texture = LoadImage(texTool, new UFile(uiImage.Source)) });
+                    textureElements.Add(ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]), 
+                        new TexturePacker.IntermediateTexture { Texture = LoadImage(texTool, new UFile(uiImage.Source)) });
 
-                var texturePacker = new TexturePacker(packConfiguration);
+                var texturePacker = new TexturePacker(packConfig);
                 var canPackAllTextures = texturePacker.PackTextures(textureElements);
 
                 if (!canPackAllTextures)
@@ -242,7 +243,7 @@ namespace SiliconStudio.Paradox.Assets
                 {
                     var textureAtlas = texturePacker.TextureAtlases[textureAtlasIndex];
 
-                    var resultStatus = TextureAtlasFactory.CreateAndSaveTextureAtlasImage(textureAtlas, ImageGroupAsset.BuildTextureAtlasUrl(Url, textureAtlasIndex), asset, UseSeparateAlphaTexture, CancellationToken, logger);
+                    var resultStatus = TexturePacker.Factory.CreateAndSaveTextureAtlasImage(textureAtlas, ImageGroupAsset.BuildTextureAtlasUrl(Url, textureAtlasIndex), asset, UseSeparateAlphaTexture, CancellationToken, logger);
 
                     foreach (var texture in textureAtlas.Textures)
                     {

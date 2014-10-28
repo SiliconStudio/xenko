@@ -98,7 +98,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
         {
             var textureElements = CreateFakeTextureElements();
 
-            var packConfiguration = new Configuration
+            var packConfiguration = new Config
             {
                 BorderSize = 0,
                 UseMultipack = false,
@@ -118,16 +118,16 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 texture.Texture.Dispose();
         }
 
-        public Dictionary<string, IntermediateTextureElement> CreateFakeTextureElements()
+        public Dictionary<string, IntermediateTexture> CreateFakeTextureElements()
         {
-            var textureElements = new Dictionary<string, IntermediateTextureElement>();
+            var textureElements = new Dictionary<string, IntermediateTexture>();
 
-            textureElements.Add("A", new IntermediateTextureElement
+            textureElements.Add("A", new IntermediateTexture
             {
                 Texture = Image.New2D(100, 200, 1, PixelFormat.R8G8B8A8_UNorm)
             });
 
-            textureElements.Add("B", new IntermediateTextureElement
+            textureElements.Add("B", new IntermediateTexture
             {
                 Texture = Image.New2D(400, 300, 1, PixelFormat.R8G8B8A8_UNorm)
             });
@@ -141,7 +141,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
             var textureAtlases = new List<TextureAtlas>();
             var textureElements = CreateFakeTextureElements();
 
-            var packConfiguration = new Configuration
+            var packConfiguration = new Config
             {
                 BorderSize = 0,
                 UseMultipack = true,
@@ -161,7 +161,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
             Assert.IsFalse(canPackAllTextures);
 
             // The current bin cant fit all of textures, resize the bin
-            var newPackConfiguration = new Configuration
+            var newPackConfiguration = new Config
             {
                 BorderSize = 0,
                 UseMultipack = true,
@@ -196,19 +196,19 @@ namespace SiliconStudio.Paradox.Assets.Tests
         {
             var textureAtlases = new List<TextureAtlas>();
 
-            var textureElements = new Dictionary<string, IntermediateTextureElement>();
+            var textureElements = new Dictionary<string, IntermediateTexture>();
 
-            textureElements.Add("A", new IntermediateTextureElement
+            textureElements.Add("A", new IntermediateTexture
             {
                 Texture = Image.New2D(100, 200, 1, PixelFormat.R8G8B8A8_UNorm)
             });
 
-            textureElements.Add("B", new IntermediateTextureElement
+            textureElements.Add("B", new IntermediateTexture
             {
                 Texture = Image.New2D(57, 22, 1, PixelFormat.R8G8B8A8_UNorm)
             });
 
-            var packConfiguration = new Configuration
+            var packConfiguration = new Config
             {
                 BorderSize = 2,
                 UseMultipack = true,
@@ -265,17 +265,17 @@ namespace SiliconStudio.Paradox.Assets.Tests
         [Test]
         public void TestTextureAtlasFactory()
         {
-            var textureElements = new Dictionary<string, IntermediateTextureElement>();
+            var textureElements = new Dictionary<string, IntermediateTexture>();
 
             var mockTexture = CreateMockTexture(100, 200, Color.MediumPurple);
 
             // Load a test texture asset
-            textureElements.Add("A", new IntermediateTextureElement
+            textureElements.Add("A", new IntermediateTexture
             {
                 Texture = mockTexture
             });
 
-            var packConfiguration = new Configuration
+            var packConfiguration = new Config
             {
                 BorderSize = 0,
                 SizeContraint = SizeConstraints.PowerOfTwo,
@@ -495,70 +495,70 @@ namespace SiliconStudio.Paradox.Assets.Tests
         public void TestCreateTextureAtlasToOutput()
         {
             const string OutputPath = "./output.png";
-            var textureElements = new Dictionary<string, IntermediateTextureElement>();
+            var textureElements = new Dictionary<string, IntermediateTexture>();
 
             // Load a test texture asset
-            textureElements.Add("MediumPurple", new IntermediateTextureElement
+            textureElements.Add("MediumPurple", new IntermediateTexture
             {
                 Texture = CreateMockTexture(130, 158, Color.MediumPurple)
             });
 
-            textureElements.Add("Red", new IntermediateTextureElement
+            textureElements.Add("Red", new IntermediateTexture
             {
                 Texture = CreateMockTexture(127, 248, Color.Red)
             });
 
-            textureElements.Add("Blue", new IntermediateTextureElement
+            textureElements.Add("Blue", new IntermediateTexture
             {
                 Texture = CreateMockTexture(212, 153, Color.Blue)
             });
 
-            textureElements.Add("Gold", new IntermediateTextureElement
+            textureElements.Add("Gold", new IntermediateTexture
             {
                 Texture = CreateMockTexture(78, 100, Color.Gold)
             });
 
-            textureElements.Add("RosyBrown", new IntermediateTextureElement
+            textureElements.Add("RosyBrown", new IntermediateTexture
             {
                 Texture = CreateMockTexture(78, 100, Color.RosyBrown)
             });
 
-            textureElements.Add("SaddleBrown", new IntermediateTextureElement
+            textureElements.Add("SaddleBrown", new IntermediateTexture
             {
                 Texture = CreateMockTexture(400, 100, Color.SaddleBrown)
             });
 
-            textureElements.Add("Salmon", new IntermediateTextureElement
+            textureElements.Add("Salmon", new IntermediateTexture
             {
                 Texture = CreateMockTexture(400, 200, Color.Salmon)
             });
 
-            textureElements.Add("PowderBlue", new IntermediateTextureElement
+            textureElements.Add("PowderBlue", new IntermediateTexture
             {
                 Texture = CreateMockTexture(190, 200, Color.PowderBlue)
             });
 
-            textureElements.Add("Orange", new IntermediateTextureElement
+            textureElements.Add("Orange", new IntermediateTexture
             {
                 Texture = CreateMockTexture(200, 230, Color.Orange)
             });
 
-            textureElements.Add("Silver", new IntermediateTextureElement
+            textureElements.Add("Silver", new IntermediateTexture
             {
                 Texture = CreateMockTexture(100, 170, Color.Silver)
             });
 
-            textureElements.Add("SlateGray", new IntermediateTextureElement
+            textureElements.Add("SlateGray", new IntermediateTexture
             {
                 Texture = CreateMockTexture(100, 170, Color.SlateGray)
             });
 
-            textureElements.Add("Tan", new IntermediateTextureElement
+            textureElements.Add("Tan", new IntermediateTexture
             {
                 Texture = CreateMockTexture(140, 110, Color.Tan)
             });
 
-            var packConfiguration = new Configuration
+            var packConfiguration = new Config
             {
                 BorderSize = 10,
                 SizeContraint = SizeConstraints.PowerOfTwo,
@@ -608,14 +608,14 @@ namespace SiliconStudio.Paradox.Assets.Tests
             // Specify where the images are, and uncomment [Test] above
             var inputDir = @".\";
 
-            var textureElements = new Dictionary<string, IntermediateTextureElement>();
+            var textureElements = new Dictionary<string, IntermediateTexture>();
 
             using (var texTool = new TextureTool())
             {
                 for (var i = 1; i <= 5; ++i)
                 {
                     var name = "character_idle_0" + i;
-                    textureElements.Add(name, new IntermediateTextureElement
+                    textureElements.Add(name, new IntermediateTexture
                     {
                         Texture = LoadImage(texTool, new UFile(inputDir + "/" + name + ".png"))
                     });
@@ -624,7 +624,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 for (var i = 1; i <= 5; ++i)
                 {
                     var name = "character_run_0" + i;
-                    textureElements.Add(name, new IntermediateTextureElement
+                    textureElements.Add(name, new IntermediateTexture
                     {
                         Texture = LoadImage(texTool, new UFile(inputDir + "/" + name + ".png"))
                     });
@@ -633,7 +633,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 for (var i = 1; i <= 5; ++i)
                 {
                     var name = "character_shoot_0" + i;
-                    textureElements.Add(name, new IntermediateTextureElement
+                    textureElements.Add(name, new IntermediateTexture
                     {
                         Texture = LoadImage(texTool, new UFile(inputDir + "/" + name + ".png"))
                     });
@@ -642,13 +642,13 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 for (var i = 1; i <= 8; ++i)
                 {
                     var name = "ef_0" + i;
-                    textureElements.Add(name, new IntermediateTextureElement
+                    textureElements.Add(name, new IntermediateTexture
                     {
                         Texture = LoadImage(texTool, new UFile(inputDir + "/" + name + ".png"))
                     });
                 }
 
-                var packConfiguration = new Configuration
+                var packConfiguration = new Config
                 {
                     BorderSize = 100,
                     SizeContraint = SizeConstraints.PowerOfTwo,
