@@ -1,6 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corporation (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects.Modules.Processors;
@@ -102,14 +104,21 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         private void RenderInSixPasses(RenderContext context, Entity entity, CubemapSourceComponent component)
         {
             var cameraPos = entity.Transformation.Translation;
-            entity.Transformation.UpdateWorldMatrix();
-            var camera = entity.Get<CameraComponent>();
             for (var i = 0; i < 6; ++i)
             {
-                camera.Target.Transformation.Translation = cameraPos + targetPositions[i];
-                camera.Target.Transformation.UpdateWorldMatrix();
-                camera.TargetUp = cameraUps[i];
-                ComputeCameraTransformations(camera);
+                Matrix worldToCamera;
+                Matrix projection;
+                ComputeViewProjectionMatrices(cameraPos, targetPositions[i], cameraUps[i], component, out worldToCamera, out projection);
+                cameraViewProjMatrices[i] = worldToCamera * projection;
+
+                // TODO: set parameters on another collection?
+                GraphicsDevice.Parameters.Set(TransformationKeys.View, worldToCamera);
+                GraphicsDevice.Parameters.Set(TransformationKeys.Projection, projection);
+                GraphicsDevice.Parameters.Set(CameraKeys.NearClipPlane, component.NearPlane);
+                GraphicsDevice.Parameters.Set(CameraKeys.FarClipPlane, component.FarPlane);
+                GraphicsDevice.Parameters.Set(CameraKeys.FieldOfView, MathUtil.PiOverTwo);
+                GraphicsDevice.Parameters.Set(CameraKeys.Aspect, 1);
+
                 GraphicsDevice.Clear(component.DepthStencil, DepthStencilClearOptions.DepthBuffer);
 
                 // temp
@@ -139,8 +148,18 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// <param name="component">The CubemapSource component.</param>
         private void RenderInSinglePass(RenderContext context, Entity entity, CubemapSourceComponent component)
         {
-            var camera = entity.Get<CameraComponent>();
-            ComputeAllCameraMatrices(camera);
+            var cameraPos = component.Entity.Transformation.Translation;
+            for (var i = 0; i < 6; ++i)
+            {
+                Matrix worldToCamera;
+                Matrix projection;
+                ComputeViewProjectionMatrices(cameraPos, targetPositions[i], cameraUps[i], component, out worldToCamera, out projection);
+                cameraViewProjMatrices[i] = worldToCamera * projection;
+            }
+
+            // TODO: set parameters on another collection?
+            GraphicsDevice.Parameters.Set(CameraCubeKeys.CameraViewProjectionMatrices, cameraViewProjMatrices);
+            GraphicsDevice.Parameters.Set(CameraCubeKeys.CameraWorldPosition, cameraPos);
 
             GraphicsDevice.Clear(component.DepthStencil, DepthStencilClearOptions.DepthBuffer);
             GraphicsDevice.Clear(component.RenderTarget, Color.Black);
@@ -155,53 +174,14 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             GraphicsDevice.Parameters.Remove(CameraCubeKeys.CameraWorldPosition);
         }
 
-        /// <summary>
-        /// Computes the parameters of the camera.
-        /// </summary>
-        /// <param name="camera">The camera used to render the cubemap.</param>
-        private void ComputeCameraTransformations(CameraComponent camera)
+        #endregion
+
+        #region Helpers
+
+        private static void ComputeViewProjectionMatrices(Vector3 position, Vector3 faceOffset, Vector3 up, CubemapSourceComponent source, out Matrix viewMatrix, out Matrix projection)
         {
-            if (camera != null && camera.Entity != null)
-            {
-                Matrix projection;
-                Matrix worldToCamera;
-                camera.Calculate(out projection, out worldToCamera);
-
-                // TODO: set parameters on another collection?
-                GraphicsDevice.Parameters.Set(TransformationKeys.View, worldToCamera);
-                GraphicsDevice.Parameters.Set(TransformationKeys.Projection, projection);
-                GraphicsDevice.Parameters.Set(CameraKeys.NearClipPlane, camera.NearPlane);
-                GraphicsDevice.Parameters.Set(CameraKeys.FarClipPlane, camera.FarPlane);
-                GraphicsDevice.Parameters.Set(CameraKeys.FieldOfView, camera.VerticalFieldOfView);
-                GraphicsDevice.Parameters.Set(CameraKeys.Aspect, camera.AspectRatio);
-                GraphicsDevice.Parameters.Set(CameraKeys.FocusDistance, camera.FocusDistance);       
-            }
-        }
-
-        /// <summary>
-        /// Computes the parameters of the cubemap camera.
-        /// </summary>
-        /// <param name="camera">The camera used to render the cubemap.</param>
-        private void ComputeAllCameraMatrices(CameraComponent camera)
-        {
-            var cameraPos = camera.Entity.Transformation.Translation;
-            camera.Entity.Transformation.UpdateWorldMatrix();
-            for (var i = 0; i < 6; ++i)
-            {
-                camera.Target.Transformation.Translation = cameraPos + targetPositions[i];
-                camera.Target.Transformation.UpdateWorldMatrix();
-                camera.TargetUp = cameraUps[i];
-
-                Matrix projection;
-                Matrix worldToCamera;
-                camera.Calculate(out projection, out worldToCamera);
-
-                cameraViewProjMatrices[i] = worldToCamera * projection;
-            }
-
-            // TODO: set parameters on another collection?
-            GraphicsDevice.Parameters.Set(CameraCubeKeys.CameraViewProjectionMatrices, cameraViewProjMatrices);
-            GraphicsDevice.Parameters.Set(CameraCubeKeys.CameraWorldPosition, cameraPos);
+            viewMatrix = Matrix.LookAtRH(position, position + faceOffset, up);
+            Matrix.PerspectiveFovRH(MathUtil.PiOverTwo, 1, source.NearPlane, source.FarPlane, out projection);
         }
 
         #endregion

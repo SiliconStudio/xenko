@@ -29,13 +29,12 @@ namespace SiliconStudio.Paradox.Engine
             InfinityCubemap = false;
             GenerateMips = false;
             textureCube = null;
+            NearPlane = 0.1f;
+            FarPlane = 100.0f;
         }
 
-        public CubemapSourceComponent(TextureCube texture)
+        public CubemapSourceComponent(TextureCube texture) : this()
         {
-            InfluenceRadius = 1.0f;
-            InfinityCubemap = false;
-            GenerateMips = false;
             textureCube = texture;
             IsDynamic = false;
         }
@@ -78,6 +77,23 @@ namespace SiliconStudio.Paradox.Engine
         [DataMemberConvert]
         [DefaultValue(1.0f)]
         public float InfluenceRadius { get; set; }
+
+        /// <summary>
+        /// The near plane of the cubemap.
+        /// </summary>
+        [DataMemberConvert]
+        [DefaultValue(0.1f)]
+        public float NearPlane { get; set; }
+
+        /// <summary>
+        /// The far plane of the cubemap.
+        /// </summary>
+        [DataMemberConvert]
+        [DefaultValue(100.0f)]
+        public float FarPlane { get; set; }
+
+        //[DataMemberConvert]
+        //public Texture2D TextureTest { get; set; }
 
         /// <summary>
         /// The texture attached to this component.
