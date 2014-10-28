@@ -150,6 +150,7 @@ namespace SiliconStudio.Paradox.Assets
                 // Initialize packing configuration from GroupAsset
                 var packConfiguration = new TexturePacker.Config
                 {
+                    Algorithm = asset.GroupAsset.AtlasPackingAlgorithm,
                     UseMultipack = asset.GroupAsset.UseMultipackAtlas,
                     BorderAddressMode = asset.GroupAsset.AtlasBorderMode,
                     BorderSize = asset.GroupAsset.AtlasBorderSize,

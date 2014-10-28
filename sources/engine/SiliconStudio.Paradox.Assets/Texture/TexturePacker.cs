@@ -66,7 +66,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 maxRectPacker.Initialize(packConfig.MaxWidth, packConfig.MaxHeight, packConfig.UseRotation);
 
                 // Pack
-                maxRectPacker.PackRectangles(textureRegions);
+                maxRectPacker.PackRectangles(textureRegions, packConfig.Algorithm);
 
                 // Find true size from packed regions
                 var packedSize = CalculatePackedRectanglesBound(maxRectPacker.PackedRectangles);
@@ -156,6 +156,11 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// </summary>
         public struct Config
         {
+            /// <summary>
+            /// Gets or Sets MaxRects heuristic algorithm to place rectangles
+            /// </summary>
+            public MaxRectanglesBinPack.FreeRectangleChoiceHeuristic Algorithm;
+
             /// <summary>
             /// Gets a boolean indicating if border is enabled
             /// </summary>

@@ -76,48 +76,55 @@ namespace SiliconStudio.Paradox.Assets
         public bool GenerateTextureAtlas { get; set; }
 
         /// <summary>
-        /// Gets or Sets the use of Multipack atlas mode which allows more than one texture atlas to fit all given textures
+        /// Gets or Sets MaxRects rectangles placement algorithm
         /// </summary>
         [DataMember(90)]
+        [DefaultValue(MaxRectanglesBinPack.FreeRectangleChoiceHeuristic.RectangleBestShortSideFit)]
+        public MaxRectanglesBinPack.FreeRectangleChoiceHeuristic AtlasPackingAlgorithm { get; set; }
+
+        /// <summary>
+        /// Gets or Sets the use of Multipack atlas mode which allows more than one texture atlas to fit all given textures
+        /// </summary>
+        [DataMember(100)]
         [DefaultValue(false)]
         public bool UseMultipackAtlas { get; set; }
 
         /// <summary>
         /// Gets or Sets atlas border mode for images inside atlas texture
         /// </summary>
-        [DataMember(100)]
+        [DataMember(110)]
         public TextureAddressMode AtlasBorderMode { get; set; }
 
         /// <summary>
         /// Gets or Sets atlas border size for images inside atlas texture
         /// </summary>
-        [DataMember(110)]
+        [DataMember(120)]
         [DefaultValue(0)]
         public int AtlasBorderSize { get; set; }
 
         /// <summary>
         /// Gets or Sets atlas border color for images inside atlas texture where Border mode is used in AtlasBorderMode
         /// </summary>
-        [DataMember(120)]
+        [DataMember(130)]
         public Color AtlasBorderColor { get; set; }
 
         /// <summary>
         /// Gets or Sets whether or not to use Rotation for images inside atlas texture
         /// </summary>
-        [DataMember(130)]
+        [DataMember(140)]
         [DefaultValue(true)]
         public bool UseRotationInAtlas { get; set; }
 
         /// <summary>
         /// Gets or Sets max width for generated atlas textures
         /// </summary>
-        [DataMember(140)]
+        [DataMember(150)]
         public int AtlasMaxWidth { get; set; }
 
         /// <summary>
         /// Gets or Sets max height for generated atlas textures
         /// </summary>
-        [DataMember(150)]
+        [DataMember(160)]
         public int AtlasMaxHeight { get; set; }
 
         /// <summary>
@@ -133,6 +140,7 @@ namespace SiliconStudio.Paradox.Assets
             PremultiplyAlpha = true;
 
             GenerateTextureAtlas = true;
+            AtlasPackingAlgorithm = MaxRectanglesBinPack.FreeRectangleChoiceHeuristic.RectangleBestShortSideFit;
             UseMultipackAtlas = false;
 
             AtlasBorderMode = TextureAddressMode.Border;
