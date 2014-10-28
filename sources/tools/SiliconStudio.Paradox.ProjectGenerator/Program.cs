@@ -35,6 +35,7 @@ namespace SiliconStudio.Paradox.ProjectGenerator
             string outputFile = null;
             string platform = null;
             string projectName = null;
+            string outputDirectory = null;
 
             var p = new OptionSet
                 {
@@ -46,10 +47,10 @@ namespace SiliconStudio.Paradox.ProjectGenerator
                         typeof(Program).Assembly.GetName().Version.Major,
                         typeof(Program).Assembly.GetName().Version.Minor,
                         typeof(Program).Assembly.GetName().Version.Build) + string.Empty,
-                    string.Format("Usage: {0} [operation] [options]* inputfile -o outputfile", exeName),
+                    string.Format("Usage: {0} [operation] [input-file] [options]*", exeName),
                     "=== Operations ===",
-                    " solution          Generate platform-specific solution from Paradox.sln",
-                    " project-unittest  Create unit-test from template",
+                    " solution 'solution-file.sln'   Generate platform-specific solution from solution-file.sln",
+                    " project-unittest               Create unit-test from template",
                     string.Empty,
                     "=== General options ===",
                     string.Empty,
@@ -63,6 +64,7 @@ namespace SiliconStudio.Paradox.ProjectGenerator
                     "=== Options for: project-unittest ===",
                     string.Empty,
                     { "project-name=", "Project name", v => projectName = v },
+                    { "d|output-directory=", "Output directory", v => outputDirectory = v },
                     string.Empty,
                 };
 
@@ -92,7 +94,7 @@ namespace SiliconStudio.Paradox.ProjectGenerator
                             throw new OptionException("Project name is not set.", "project-name");
 
                         GenerateUnitTestProject(
-                            outputFile,
+                            outputDirectory,
                             Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine(templateFolder, @"Paradox.UnitTests\Paradox.UnitTests.ttproj")),
                             projectName);
                         break;
@@ -123,7 +125,7 @@ namespace SiliconStudio.Paradox.ProjectGenerator
             var result = new LoggerResult();
 
             var templateGeneratorParameters = new TemplateGeneratorParameters();
-            templateGeneratorParameters.OutputDirectory = Path.Combine(outputDirectory, name);
+            templateGeneratorParameters.OutputDirectory = outputDirectory;
             templateGeneratorParameters.Session = session;
             templateGeneratorParameters.Name = name;
             templateGeneratorParameters.Logger = result;
@@ -232,6 +234,14 @@ namespace SiliconStudio.Paradox.ProjectGenerator
             {
                 processors.Add(new SynchronizeProjectProcessor(ProjectType.iOS));
             }
+            else if (platform == "WindowsPhone")
+            {
+                processors.Add(new SynchronizeProjectProcessor(ProjectType.WindowsPhone));
+            }
+            else if (platform == "WindowsStore")
+            {
+                processors.Add(new SynchronizeProjectProcessor(ProjectType.WindowsStore));
+            }
 
             var projectProcessorContexts = new List<ProjectProcessorContext>();
 
@@ -240,7 +250,7 @@ namespace SiliconStudio.Paradox.ProjectGenerator
             // Select active projects
             SelectActiveProjects(solution, platform, projectProcessorContexts, removedProjects);
 
-            // Remove unecessary project dependencies
+            // Remove unnecessary project dependencies
             CleanProjectDependencies(projectProcessorContexts, removedProjects);
 
             // Process projects

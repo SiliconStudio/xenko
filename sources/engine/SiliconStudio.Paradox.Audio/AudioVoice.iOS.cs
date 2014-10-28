@@ -123,7 +123,7 @@ namespace SiliconStudio.Paradox.Audio
         }
 
         /// <summary>
-        /// Create the audio stream format for 16bits Pcm data.
+        /// Create the audio stream format for 16bits PCM data.
         /// </summary>
         /// <param name="numberOfChannels"></param>
         /// <param name="frameRate"></param>
@@ -176,7 +176,7 @@ namespace SiliconStudio.Paradox.Audio
                     // Create the AudioComponentDescrition corresponding to the IO Remote output and MultiChannelMixer 
                     var remoteInOutComponentDesc = AudioComponentDescription.CreateOutput(AudioTypeOutput.Remote);
                     var mixerMultiChannelComponentDesc = AudioComponentDescription.CreateMixer(AudioTypeMixer.MultiChannel);
-                    var mixer3DComponentDesc = AudioComponentDescription.CreateMixer(AudioTypeMixer.Embedded3D);
+                    var mixer3DComponentDesc = AudioComponentDescription.CreateMixer(AudioTypeMixer.Spacial);
 
                     // Add the Audio Unit nodes to the AudioGraph
                     var outputUnitNodeId = audioGraph.AddNode(remoteInOutComponentDesc);
@@ -390,12 +390,12 @@ namespace SiliconStudio.Paradox.Audio
             CheckUnitStatus(unitChannelMixer.SetParameter(AudioUnitParameterType.MultiChannelMixerPan, pan, AudioUnitScopeType.Input, BusIndexMixer), "Failed to set the mixer bus Pan parameter.");
         }
 
-        private void Set3DParameters(float azimut, float elevation, float distance, float playRate)
+        private void Set3DParameters(float azimuth, float elevation, float distance, float playRate)
         {
             if (BusIndexMixer == uint.MaxValue)
                 return;
 
-            CheckUnitStatus(unit3DMixer.SetParameter((AudioUnitParameterType)_3DMixerParametersIds.Azimuth, azimut, AudioUnitScopeType.Input, BusIndexMixer), "Failed to set the Azimut parameter of the 3D mixer");
+            CheckUnitStatus(unit3DMixer.SetParameter((AudioUnitParameterType)_3DMixerParametersIds.Azimuth, azimuth, AudioUnitScopeType.Input, BusIndexMixer), "Failed to set the Azimuth parameter of the 3D mixer");
             CheckUnitStatus(unit3DMixer.SetParameter((AudioUnitParameterType)_3DMixerParametersIds.Elevation, elevation, AudioUnitScopeType.Input, BusIndexMixer), "Failed to set the Elevation parameter of the 3D mixer");
             CheckUnitStatus(unit3DMixer.SetParameter((AudioUnitParameterType)_3DMixerParametersIds.Distance, distance, AudioUnitScopeType.Input, BusIndexMixer), "Failed to set the Distance parameter of the 3D mixer");
             CheckUnitStatus(unit3DMixer.SetParameter((AudioUnitParameterType)_3DMixerParametersIds.PlaybackRate, playRate, AudioUnitScopeType.Input, BusIndexMixer), "Failed to set the PlayRate parameter of the 3D mixer");

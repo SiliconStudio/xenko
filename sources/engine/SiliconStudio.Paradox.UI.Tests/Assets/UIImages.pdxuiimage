@@ -11,15 +11,6 @@ Images:
             Height: 512
         Borders: {X: 0, Y: 0, Z: 0, W: 0}
     -   Source: ../../../data/tests/rotatedUV.dds
-        Name: uvRotated90C
-        TextureRegion:
-            X: 0
-            Y: 512
-            Width: 512
-            Height: 512
-        Orientation: Rotated90C
-        Borders: {X: 0, Y: 0, Z: 0, W: 0}
-    -   Source: ../../../data/tests/rotatedUV.dds
         Name: uvRotated90
         TextureRegion:
             X: 512
@@ -27,15 +18,6 @@ Images:
             Width: 512
             Height: 512
         Orientation: Rotated90
-        Borders: {X: 0, Y: 0, Z: 0, W: 0}
-    -   Source: ../../../data/tests/rotatedUV.dds
-        Name: uvRotated180
-        TextureRegion:
-            X: 512
-            Y: 512
-            Width: 512
-            Height: 512
-        Orientation: Rotated180
         Borders: {X: 0, Y: 0, Z: 0, W: 0}
     -   Source: ../../../data/tests/GameScene.jpg
         Name: GameScreenLeft
