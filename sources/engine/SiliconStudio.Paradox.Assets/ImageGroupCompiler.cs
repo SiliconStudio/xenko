@@ -133,6 +133,7 @@ namespace SiliconStudio.Paradox.Assets
                 }
             }
         }
+
         protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
         {
             var assetManager = new AssetManager();
@@ -143,8 +144,10 @@ namespace SiliconStudio.Paradox.Assets
             Dictionary<string, Tuple<int, MaxRectanglesBinPack.RotatableRectangle>> regionDictionary = null;
             var borderSize = 0;
 
+            // Generate texture atlas
             if (asset.GroupAsset.GenerateTextureAtlas)
             {
+                // Initialize packing configuration from GroupAsset
                 var packConfiguration = new TexturePacker.Config
                 {
                     UseMultipack = asset.GroupAsset.UseMultipackAtlas,
@@ -166,18 +169,19 @@ namespace SiliconStudio.Paradox.Assets
                 if (resultStatus != ResultStatus.Successful) return Task.FromResult(resultStatus);
             }
 
-            // add the sprite data to the sprite list.
-            foreach (var uiImage in asset.GroupAsset.Images)
+            // Add the sprite data to the sprite list.
+            foreach (var image in asset.GroupAsset.Images)
             {
                 var newImage = new TImageData
                 {
-                    Name = uiImage.Name,
+                    Name = image.Name,
                     IsTransparent = asset.GroupAsset.Alpha != AlphaFormat.None, // todo analyze texture region texture data to auto-determine alpha?
                 };
 
+                // Set region for each image
                 if (asset.GroupAsset.GenerateTextureAtlas)
                 {
-                    var regionData = regionDictionary[ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage])];
+                    var regionData = regionDictionary[ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[image])];
                     var region = regionData.Item2;
 
                     newImage.Region = new Rectangle(borderSize + region.Value.X, borderSize + region.Value.Y, region.Value.Width - 2 * borderSize, region.Value.Height - 2 * borderSize);
@@ -185,15 +189,15 @@ namespace SiliconStudio.Paradox.Assets
                 }
                 else
                 {
-                    newImage.Region = uiImage.TextureRegion;
-                    newImage.Orientation = uiImage.Orientation;
+                    newImage.Region = image.TextureRegion;
+                    newImage.Orientation = image.Orientation;
                 }
 
                 if (UseSeparateAlphaTexture)
                 {
                     var baseLocation = (asset.GroupAsset.GenerateTextureAtlas) 
-                        ? ImageGroupAsset.BuildTextureAtlasUrl(Url, regionDictionary[ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage])].Item1) 
-                        : ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]);
+                        ? ImageGroupAsset.BuildTextureAtlasUrl(Url, regionDictionary[ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[image])].Item1) 
+                        : ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[image]);
 
                     newImage.Texture = new ContentReference<Texture2D> { Location = TextureAlphaComponentSplitter.GenerateColorTextureURL(baseLocation) };
                     newImage.TextureAlpha = new ContentReference<Texture2D> { Location = TextureAlphaComponentSplitter.GenerateAlphaTextureURL(baseLocation) };
@@ -201,11 +205,11 @@ namespace SiliconStudio.Paradox.Assets
                 else
                 {
                     newImage.Texture = new ContentReference<Texture2D> { Location = (asset.GroupAsset.GenerateTextureAtlas) 
-                        ? ImageGroupAsset.BuildTextureAtlasUrl(Url, regionDictionary[ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage])].Item1) 
-                        : ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]) };
+                        ? ImageGroupAsset.BuildTextureAtlasUrl(Url, regionDictionary[ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[image])].Item1) 
+                        : ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[image]) };
                 }
 
-                SetImageSpecificFields(uiImage, newImage);
+                SetImageSpecificFields(image, newImage);
 
                 imageGroupData.Images.Add(newImage);
             }
@@ -216,7 +220,15 @@ namespace SiliconStudio.Paradox.Assets
             return Task.FromResult(ResultStatus.Successful);
         }
 
-        private ResultStatus CreateAndSaveTextureAtlasImage(ref TexturePacker.Config packConfig, Logger logger, out Dictionary<string, Tuple<int, MaxRectanglesBinPack.RotatableRectangle>> regionDictionary)
+        /// <summary>
+        /// Creates and Saves texture atlas image from images in GroupAsset
+        /// </summary>
+        /// <param name="packConfig">Packing configuration</param>
+        /// <param name="logger">Status Logger</param>
+        /// <param name="regionDictionary">Output that contains Key for each image and a tuple linking the image with a texture atlas index and its region</param>
+        /// <returns>Status of building</returns>
+        private ResultStatus CreateAndSaveTextureAtlasImage(ref TexturePacker.Config packConfig, Logger logger, 
+            out Dictionary<string, Tuple<int, MaxRectanglesBinPack.RotatableRectangle>> regionDictionary)
         {
             regionDictionary = new Dictionary<string, Tuple<int, MaxRectanglesBinPack.RotatableRectangle>>();
 
@@ -243,7 +255,8 @@ namespace SiliconStudio.Paradox.Assets
                 {
                     var textureAtlas = texturePacker.TextureAtlases[textureAtlasIndex];
 
-                    var resultStatus = TexturePacker.Factory.CreateAndSaveTextureAtlasImage(textureAtlas, ImageGroupAsset.BuildTextureAtlasUrl(Url, textureAtlasIndex), asset, UseSeparateAlphaTexture, CancellationToken, logger);
+                    var resultStatus = TexturePacker.Factory.CreateAndSaveTextureAtlasImage(textureAtlas, ImageGroupAsset.BuildTextureAtlasUrl(Url, textureAtlasIndex),
+                        asset, UseSeparateAlphaTexture, CancellationToken, logger);
 
                     foreach (var texture in textureAtlas.Textures)
                     {
@@ -265,6 +278,12 @@ namespace SiliconStudio.Paradox.Assets
         {
         }
 
+        /// <summary>
+        /// Loads image from a path with texTool
+        /// </summary>
+        /// <param name="texTool">A tool for loading an image</param>
+        /// <param name="sourcePath">Source path of an image</param>
+        /// <returns></returns>
         private static Image LoadImage(TextureTool texTool, UFile sourcePath)
         {
             using (var texImage = texTool.Load(sourcePath))
