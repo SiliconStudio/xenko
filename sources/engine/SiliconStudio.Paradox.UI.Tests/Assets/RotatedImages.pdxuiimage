@@ -1,0 +1,24 @@
+!UIImageGroup
+Id: e606e3a1-d7b7-4572-b021-26f3abe86a87
+Tags: []
+Images: 
+    -   Source: ../../../data/tests/ImageBorders.png
+        Name: NotRotated
+        TextureRegion:
+            X: 10
+            Y: 10
+            Width: 256
+            Height: 128
+        Borders: {X: 75, Y: 40, Z: 30, W: 15}
+    -   Source: ../../../data/tests/ImageBorders.png
+        Name: Rotated90
+        TextureRegion:
+            X: 374
+            Y: 0
+            Width: 128
+            Height: 256
+        Orientation: Rotated90
+        Borders: {X: 15, Y: 30, Z: 75, W: 40}
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Format: TrueColor
+Alpha: None
