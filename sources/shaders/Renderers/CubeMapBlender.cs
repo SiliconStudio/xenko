@@ -73,6 +73,24 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         #endregion
 
+        #region temporary
+
+        public TextureCube TargetTexture
+        {
+            get
+            {
+                return targetCubemap;
+            }
+        }
+
+        public void UpdatePosition(Vector3 pos)
+        {
+            var old = pointsOfInterest[0];
+            pointsOfInterest[0] = Tuple.Create(pos, old.Item2);
+        }
+
+        #endregion
+
         #region Constructor
 
         public CubeMapBlender(IServiceRegistry services)
@@ -176,7 +194,10 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
                 // compute blending indices & set parameters
                 // TODO: change weight computation
-                var totalWeight = selectedCubemaps.Aggregate(0.0f, (s, t) => s + t.Item2);
+                maxCubemapBlend = maxCubemapBlend > selectedCubemaps.Count ? selectedCubemaps.Count : maxCubemapBlend;
+                var totalWeight = 0f;
+                for (var i = 0; i < maxCubemapBlend; ++i)
+                    totalWeight += selectedCubemaps[i].Item2;
                 var blendIndices = new float[maxCubemapBlend];
                 parameters.Clear();
                 for (var i = 0; i < maxCubemapBlend; ++i)
@@ -257,6 +278,53 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 }
                 if (insertIndex < maxCubemapBlend)
                     selectedCubemaps.Insert(insertIndex, Tuple.Create(tex.Item1, influence));
+            }
+        }
+
+        // Sebastien Largarde's weights
+        // http://seblagarde.wordpress.com/2012/09/29/image-based-lighting-approaches-and-parallax-corrected-cubemap/
+        private void FindMostInfluencialCubemaps2(Vector3 position, int maxCubemapBlend, List<Tuple<TextureCube, float>> selectedCubemaps)
+        {
+            var inflSum = 0f;
+            var invInflSum = 0f;
+            var influences = new List<float>();
+
+            foreach (var tex in textureCubes)
+            {
+                // TODO: add boxes and inner boundaries
+                var d = (tex.Item2 - position).Length();
+                inflSum += d;
+                invInflSum += 1 - d;
+                influences.Add(d);
+            }
+
+            var sumBlend = 0f;
+            var n = textureCubes.Count;
+            for (var i = 0; i < n; ++i)
+            {
+                var infl = influences[i];
+                var blendFactor = (1 - (infl / inflSum)) / (n - 1);
+                blendFactor *= (1 - infl) / invInflSum;
+                sumBlend += blendFactor;
+                influences[i] = blendFactor;
+            }
+
+            if (sumBlend == 0f)
+                sumBlend = 1f;
+
+            var invSumBlend = 1 / sumBlend;
+            for (var i = 0; i < n; ++i)
+            {
+                var influence = influences[i] * invSumBlend;
+
+                var insertIndex = 0;
+                for (; insertIndex < maxCubemapBlend; ++insertIndex)
+                {
+                    if (insertIndex >= selectedCubemaps.Count || influence > selectedCubemaps[insertIndex].Item2)
+                        break;
+                }
+                if (insertIndex < maxCubemapBlend)
+                    selectedCubemaps.Insert(insertIndex, Tuple.Create(textureCubes[i].Item1, influence));
             }
         }
 

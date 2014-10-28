@@ -328,6 +328,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeColorTextureCube.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Cubemap\ComputeColorTextureCubeBasic.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ComputeColorTextureCubeBasic.pdxsl</DependentUpon>
+    </Compile>
     <Compile Include="Cubemap\ComputeColorTextureCubeReflect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1625,6 +1631,10 @@
     <None Include="Cubemap\ComputeColorTextureCube.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTextureCube.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\ComputeColorTextureCubeBasic.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorTextureCubeBasic.cs</LastGenOutput>
     </None>
     <None Include="Cubemap\ComputeColorTextureCubeReflect.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
