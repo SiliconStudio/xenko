@@ -6,10 +6,14 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Paradox.Assets.Texture
 {
     /// <summary>
-    /// Implementation of texture packer using MaxRects algorithm
+    /// Implementation of texture packer using MaxRects algorithm.
+    /// Reference: http://clb.demon.fi/files/RectangleBinPack.pdf by Jukka Jylanki.
     /// </summary>
     public partial class MaxRectanglesBinPack
     {
+        /// <summary>
+        /// Heuristic methods for choosing a place for a given rectangle
+        /// </summary>
         public enum FreeRectangleChoiceHeuristic
         {
             RectangleBestShortSideFit,
@@ -23,29 +27,43 @@ namespace SiliconStudio.Paradox.Assets.Texture
         private int binWidth;
         private int binHeight;
 
-        public List<RotatableRectangle> UsedRectangles { get { return usedRectangles; } }
-
-        private readonly List<RotatableRectangle> usedRectangles = new List<RotatableRectangle>();
+        private readonly List<RotatableRectangle> packedRectangles = new List<RotatableRectangle>();
         private readonly List<Rectangle> freeRectangles = new List<Rectangle>();
+
+        /// <summary>
+        /// Gets those rectangles that are already packed
+        /// </summary>
+        public List<RotatableRectangle> PackedRectangles { get { return packedRectangles; } }
 
         public MaxRectanglesBinPack()
         {  
         }
 
+        /// <summary>
+        /// Initializes a new instance of MaxRectanglesBinPack
+        /// </summary>
+        /// <param name="width">Expected width of a bin</param>
+        /// <param name="height">Expected height of a bin</param>
+        /// <param name="useRotation">Indicate whether rectangle are allowed to be rotated</param>
         public MaxRectanglesBinPack(int width, int height, bool useRotation)
         {
             Initialize(width, height, useRotation);
         }
 
+        /// <summary>
+        /// Initializes a bin given new sets of parameters, and clear states of MaxRectanglesBinPack
+        /// </summary>
+        /// <param name="width">Expected width of a bin</param>
+        /// <param name="height">Expected height of a bin</param>
+        /// <param name="useRotation">Indicate whether rectangle are allowed to be rotated</param>
         public void Initialize(int width, int height, bool useRotation)
         {
-            
             binWidth = width;
             binHeight = height;
 
             this.useRotation = useRotation;
 
-            usedRectangles.Clear();
+            packedRectangles.Clear();
             freeRectangles.Clear();
             
             freeRectangles.Add(new Rectangle(0, 0, binWidth, binHeight));
@@ -75,6 +93,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
                     var pickedNode = ChooseTargetPosition(rectangles[i], method, out score1, out score2);
 
                     if (score1 < bestScore1 || (score1 == bestScore1 && score2 < bestScore2))
+                    // Found the new best free region to hold a rectangle
                     {
                         bestScore1 = score1;
                         bestScore2 = score2;
@@ -83,6 +102,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
                     }
                 }
 
+                // Could not find any free region to hold a rectangle, terminate packing process
                 if (bestRectangleIndex == -1) break;
 
                 PlaceRectangle(bestNode);
@@ -90,6 +110,10 @@ namespace SiliconStudio.Paradox.Assets.Texture
             }
         }
 
+        /// <summary>
+        /// Places a given rectangle in packedRectangles, modifies free rectangles that are affected by the placement
+        /// </summary>
+        /// <param name="node">A rectangle to be placed</param>
         private void PlaceRectangle(RotatableRectangle node)
         {
             var numberRectanglesToProcess = freeRectangles.Count;
@@ -105,9 +129,12 @@ namespace SiliconStudio.Paradox.Assets.Texture
 
             PruneFreeList();
 
-            usedRectangles.Add(node);
+            packedRectangles.Add(node);
         }
 
+        /// <summary>
+        /// Removes those free rectangles that are sub-regions of other rectangles
+        /// </summary>
         private void PruneFreeList()
         {
             // Go through each pair and remove any rectangle that is redundant.
@@ -128,6 +155,12 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 }
         }
 
+        /// <summary>
+        /// Splits a free region by a usedNode rectangle
+        /// </summary>
+        /// <param name="freeNode">Free rectangle to be splitted</param>
+        /// <param name="usedNode">UsedNode rectangle</param>
+        /// <returns></returns>
         private bool SplitFreeNode(Rectangle freeNode, RotatableRectangle usedNode)
         {
             // Test with SAT if the rectangles even intersect.
@@ -178,6 +211,14 @@ namespace SiliconStudio.Paradox.Assets.Texture
             return true;
         }
 
+        /// <summary>
+        /// Determines a target position to place a given rectangle by a given heuristic method
+        /// </summary>
+        /// <param name="rectangle">A given rectangle to be processed</param>
+        /// <param name="method">A heuristic placement method</param>
+        /// <param name="score1">First score</param>
+        /// <param name="score2">Second score</param>
+        /// <returns></returns>
         private RotatableRectangle ChooseTargetPosition(RotatableRectangle rectangle, FreeRectangleChoiceHeuristic method, out int score1, out int score2)
         {
             score1 = int.MaxValue;
@@ -216,6 +257,13 @@ namespace SiliconStudio.Paradox.Assets.Texture
             return bestNode;
         }
 
+        /// <summary>
+        /// Finds a placement position using NewNodeBestShortSideFit heuristic method
+        /// </summary>
+        /// <param name="rectangle">A given rectangle</param>
+        /// <param name="bestShortSideFit"></param>
+        /// <param name="bestLongSideFit"></param>
+        /// <returns></returns>
         private RotatableRectangle FindPositionForNewNodeBestShortSideFit(RotatableRectangle rectangle, out int bestShortSideFit, ref int bestLongSideFit)
         {
             var bestNode = rectangle;
@@ -333,6 +381,12 @@ namespace SiliconStudio.Paradox.Assets.Texture
             return bestNode;
         }
 
+        /// <summary>
+        /// Finds a placement position using NodeContactPoint heuristic method
+        /// </summary>
+        /// <param name="rectangle">A given rectangle</param>
+        /// <param name="bestContactScore"></param>
+        /// <returns></returns>
         private RotatableRectangle FindPositionForNewNodeContactPoint(RotatableRectangle rectangle, out int bestContactScore)
         {
             var bestNode = rectangle;
@@ -380,6 +434,14 @@ namespace SiliconStudio.Paradox.Assets.Texture
             return bestNode;
         }
 
+        /// <summary>
+        /// Calculates ContactPoint score
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <returns></returns>
         private int ContactPointScoreNode(int x, int y, int width, int height)
         {
             var score = 0;
@@ -389,12 +451,12 @@ namespace SiliconStudio.Paradox.Assets.Texture
             if (y == 0 || y + height == binHeight)
                 score += width;
 
-            for (var i = 0; i < usedRectangles.Count; ++i)
+            for (var i = 0; i < packedRectangles.Count; ++i)
             {
-                if (usedRectangles[i].Value.X == x + width || usedRectangles[i].Value.X + usedRectangles[i].Value.Width == x)
-                    score += CommonIntervalLength(usedRectangles[i].Value.Y, usedRectangles[i].Value.Y + usedRectangles[i].Value.Height, y, y + height);
-                if (usedRectangles[i].Value.Y == y + height || usedRectangles[i].Value.Y + usedRectangles[i].Value.Height == y)
-                    score += CommonIntervalLength(usedRectangles[i].Value.X, usedRectangles[i].Value.X + usedRectangles[i].Value.Width, x, x + width);
+                if (packedRectangles[i].Value.X == x + width || packedRectangles[i].Value.X + packedRectangles[i].Value.Width == x)
+                    score += CommonIntervalLength(packedRectangles[i].Value.Y, packedRectangles[i].Value.Y + packedRectangles[i].Value.Height, y, y + height);
+                if (packedRectangles[i].Value.Y == y + height || packedRectangles[i].Value.Y + packedRectangles[i].Value.Height == y)
+                    score += CommonIntervalLength(packedRectangles[i].Value.X, packedRectangles[i].Value.X + packedRectangles[i].Value.Width, x, x + width);
             }
 
             return score;
@@ -407,6 +469,13 @@ namespace SiliconStudio.Paradox.Assets.Texture
             return Math.Min(i1end, i2end) - Math.Max(i1start, i2start);
         }
 
+        /// <summary>
+        /// Finds a placement position using BestLongSideFit heuristic method
+        /// </summary>
+        /// <param name="rectangle">A given rectangle</param>
+        /// <param name="bestShortSideFit"></param>
+        /// <param name="bestLongSideFit"></param>
+        /// <returns></returns>
         private RotatableRectangle FindPositionForNewNodeBestLongSideFit(RotatableRectangle rectangle, ref int bestShortSideFit, out int bestLongSideFit)
         {
             var bestNode = rectangle;
@@ -464,6 +533,13 @@ namespace SiliconStudio.Paradox.Assets.Texture
             return bestNode;
         }
 
+        /// <summary>
+        /// Finds a placement position using BestAreaFit heuristic method
+        /// </summary>
+        /// <param name="rectangle">A given rectangle</param>
+        /// <param name="bestAreaFit"></param>
+        /// <param name="bestShortSideFit"></param>
+        /// <returns></returns>
         private RotatableRectangle FindPositionForNewNodeBestAreaFit(RotatableRectangle rectangle, out int bestAreaFit, ref int bestShortSideFit)
         {
             var bestNode = rectangle;

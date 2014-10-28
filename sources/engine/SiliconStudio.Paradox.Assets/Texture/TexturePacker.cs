@@ -63,7 +63,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 maxRectPacker.PackRectangles(textureRegions);
 
                 // Find true size from packed regions
-                var packedSize = CalculatePackedRectanglesBound(maxRectPacker.UsedRectangles);
+                var packedSize = CalculatePackedRectanglesBound(maxRectPacker.PackedRectangles);
 
                 // Alter the size of atlas so that it is a power of two
                 if (packConfiguration.SizeContraint == SizeConstraints.PowerOfTwo || packConfiguration.SizeContraint == null)
@@ -84,7 +84,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 };
 
                 // PackRectangles all packed regions into Atlas
-                foreach (var usedRectangle in maxRectPacker.UsedRectangles)
+                foreach (var usedRectangle in maxRectPacker.PackedRectangles)
                 {
                     textureElements[usedRectangle.Key].Region = usedRectangle;
 
@@ -336,6 +336,4 @@ namespace SiliconStudio.Paradox.Assets.Texture
 
         public Configuration PackConfiguration;
     }
-
-
 }

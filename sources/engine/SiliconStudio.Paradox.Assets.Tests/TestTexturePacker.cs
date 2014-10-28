@@ -47,7 +47,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
             maxRectPacker.PackRectangles(packRectangles);
 
             Assert.AreEqual(1, packRectangles.Count);
-            Assert.AreEqual(1, maxRectPacker.UsedRectangles.Count);
+            Assert.AreEqual(1, maxRectPacker.PackedRectangles.Count);
         }
 
         [Test]
@@ -65,8 +65,8 @@ namespace SiliconStudio.Paradox.Assets.Tests
             maxRectPacker.PackRectangles(packRectangles);
 
             Assert.AreEqual(0, packRectangles.Count);
-            Assert.AreEqual(2, maxRectPacker.UsedRectangles.Count);
-            Assert.IsTrue(maxRectPacker.UsedRectangles.Find(rectangle => rectangle.Key == "B").IsRotated);
+            Assert.AreEqual(2, maxRectPacker.PackedRectangles.Count);
+            Assert.IsTrue(maxRectPacker.PackedRectangles.Find(rectangle => rectangle.Key == "B").IsRotated);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
             maxRectPacker.PackRectangles(packRectangles);
 
             Assert.AreEqual(1, packRectangles.Count);
-            Assert.AreEqual(6, maxRectPacker.UsedRectangles.Count);
+            Assert.AreEqual(6, maxRectPacker.PackedRectangles.Count);
         }
 
         [Test]
