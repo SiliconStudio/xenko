@@ -236,26 +236,12 @@ namespace SiliconStudio.Paradox.Assets
                     return ResultStatus.Failed;
                 }
 
-                // Create atlas texture
-                var imageGroup = asset.GroupAsset;
-
-                // Texture Atlas Parameters
-                var alpha = imageGroup.Alpha;
-                var format = imageGroup.Format;
-                var generateMipmaps = imageGroup.GenerateMipmaps;
-                var premultiplyAlpha = imageGroup.PremultiplyAlpha;
-                var colorKeyColor = imageGroup.ColorKeyColor;
-                var colorKeyEnabled = imageGroup.ColorKeyEnabled;
-
                 // Create and save every generated texture atlas
                 for (var textureAtlasIndex = 0 ; textureAtlasIndex < texturePacker.TextureAtlases.Count ; ++textureAtlasIndex)
                 {
                     var textureAtlas = texturePacker.TextureAtlases[textureAtlasIndex];
 
-                    var resultStatus = TextureAtlasFactory.CreateAndSaveTextureAtlasImage(textureAtlas, 
-                        ImageGroupAsset.BuildTextureAtlasUrl(Url, textureAtlasIndex), format, asset.GraphicsPlatform, asset.GraphicsProfile,
-
-                    generateMipmaps, colorKeyEnabled, colorKeyColor, premultiplyAlpha, alpha, asset.Platform, asset.TextureQuality, UseSeparateAlphaTexture, CancellationToken, logger);
+                    var resultStatus = TextureAtlasFactory.CreateAndSaveTextureAtlasImage(textureAtlas, ImageGroupAsset.BuildTextureAtlasUrl(Url, textureAtlasIndex), asset, UseSeparateAlphaTexture, CancellationToken, logger);
 
                     foreach (var texture in textureAtlas.Textures)
                     {

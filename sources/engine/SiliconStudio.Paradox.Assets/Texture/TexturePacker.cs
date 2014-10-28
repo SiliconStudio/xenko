@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 
 using SiliconStudio.BuildEngine;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
@@ -213,12 +212,13 @@ namespace SiliconStudio.Paradox.Assets.Texture
             }
         }
 
-        public static ResultStatus CreateAndSaveTextureAtlasImage(TextureAtlas textureAtlas, string outputUrl, 
-            TextureFormat textureFormat, GraphicsPlatform graphicsPlatform, GraphicsProfile graphicsProfile, bool generateMipMaps,
-            bool colorKeyEnabled, Color colorKey, bool premultiplyAlpha, AlphaFormat alphaFormat, PlatformType platform, TextureQuality quality,
-            bool separateAlpha, CancellationToken cancellationToken, Logger logger)
+        public static ResultStatus CreateAndSaveTextureAtlasImage<T>(TextureAtlas textureAtlas, string outputUrl, 
+            ImageGroupParameters<T> parameters, bool separateAlpha, CancellationToken cancellationToken, Logger logger)
+            where T : ImageGroupAsset
         {
             var assetManager = new AssetManager();
+
+            var imageGroup = parameters.GroupAsset;
 
             using (var atlasImage = CreateTextureAtlas(textureAtlas))
             using (var texTool = new TextureTool())
@@ -234,25 +234,25 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 var textureSize = new Int2(texImage.Width, texImage.Height);
 
                 // Check that the resulting texture size is supported by the targeted graphics profile
-                if (!TextureCommandHelper.TextureSizeSupported(textureFormat, graphicsPlatform, graphicsProfile, textureSize, generateMipMaps, logger))
+                if (!TextureCommandHelper.TextureSizeSupported(imageGroup.Format, parameters.GraphicsPlatform, parameters.GraphicsProfile, textureSize, imageGroup.GenerateMipmaps, logger))
                     return ResultStatus.Failed;
 
                 // Apply the color key
-                if (colorKeyEnabled)
-                    texTool.ColorKey(texImage, colorKey);
+                if (imageGroup.ColorKeyEnabled)
+                    texTool.ColorKey(texImage, imageGroup.ColorKeyColor);
 
                 if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
                     return ResultStatus.Cancelled;
 
                 // Pre-multiply alpha
-                if (premultiplyAlpha)
+                if (imageGroup.PremultiplyAlpha)
                     texTool.PreMultiplyAlpha(texImage);
 
                 if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
                     return ResultStatus.Cancelled;
 
                 // Generate mipmaps
-                if (generateMipMaps)
+                if (imageGroup.GenerateMipmaps)
                     texTool.GenerateMipMaps(texImage, Filter.MipMapGeneration.Box);
 
                 if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
@@ -260,8 +260,10 @@ namespace SiliconStudio.Paradox.Assets.Texture
 
                 // Convert/Compress to output format
                 // TODO: Change alphaFormat depending on actual image content (auto-detection)?
-                var outputFormat = TextureCommandHelper.DetermineOutputFormat(textureFormat, alphaFormat, platform, graphicsPlatform, textureSize, texImage.Format);
-                texTool.Compress(texImage, outputFormat, (TextureConverter.Requests.TextureQuality)quality);
+                var outputFormat = TextureCommandHelper.DetermineOutputFormat(imageGroup.Format, imageGroup.Alpha, parameters.Platform,
+                    parameters.GraphicsPlatform, textureSize, texImage.Format);
+
+                texTool.Compress(texImage, outputFormat, (TextureConverter.Requests.TextureQuality)parameters.TextureQuality);
 
                 if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
                     return ResultStatus.Cancelled;
@@ -269,7 +271,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 // Save the texture
                 if (separateAlpha)
                 {
-                    TextureAlphaComponentSplitter.CreateAndSaveSeparateTextures(texTool, texImage, outputUrl, generateMipMaps);
+                    TextureAlphaComponentSplitter.CreateAndSaveSeparateTextures(texTool, texImage, outputUrl, imageGroup.GenerateMipmaps);
                 }
                 else
                 {
