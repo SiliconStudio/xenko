@@ -5,15 +5,24 @@ using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Assets.Texture
 {
+    /// <summary>
+    /// TexturePacker class for packing several textures, using MaxRects (MaxRectanglesBinPack), into one or more texture atlases
+    /// </summary>
     public partial class TexturePacker
     {
-        public List<TextureAtlas> TextureAtlases { get { return textureAtlases; } } 
+        /// <summary>
+        /// Gets available Texture Atlases which contain a set of textures that are already packed
+        /// </summary>
+        public List<TextureAtlas> TextureAtlases { get { return textureAtlases; } }
 
+        private Config packConfig;
         private readonly MaxRectanglesBinPack maxRectPacker = new MaxRectanglesBinPack();
         private readonly List<TextureAtlas> textureAtlases = new List<TextureAtlas>();
 
-        private Config packConfig;
-
+        /// <summary>
+        /// Initializes a new instance of TexturePacker by a given pack Config
+        /// </summary>
+        /// <param name="config">Pack configuration</param>
         public TexturePacker(Config config)
         {
             packConfig = config;
@@ -21,6 +30,10 @@ namespace SiliconStudio.Paradox.Assets.Texture
             textureAtlases.Clear();
         }
 
+        /// <summary>
+        /// Resets a packer states, and optional set a new Config
+        /// </summary>
+        /// <param name="config">Pack configuration</param>
         public void ResetPacker(Config? config = null)
         {
             if(config != null) packConfig = (Config)config;
@@ -32,7 +45,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// Packs textureElement into textureAtlases.
         /// Note that, textureElements is modified when any texture element could be packed, it will be removed from the collection.
         /// </summary>
-        /// <param name="textureElements">input texture elements</param>
+        /// <param name="textureElements">Input texture elements</param>
         /// <returns>True indicates all textures could be packed; False otherwise</returns>
         public bool PackTextures(Dictionary<string, IntermediateTexture> textureElements)
         {
@@ -127,50 +140,117 @@ namespace SiliconStudio.Paradox.Assets.Texture
             return new Size2(maxX - minX, maxY - minY);
         }
 
+        /// <summary>
+        /// Size constraints enums for TexturePacker where :
+        /// - Any would create a texture exactly by a given size.
+        /// - PowerOfTwo would create a texture where width and height are of power of two by ceiling a given size to the nearest power of two value.
+        /// </summary>
         public enum SizeConstraints
         {
             Any,
             PowerOfTwo,
         }
 
+        /// <summary>
+        /// Packing Configuration defines constraints for TexturePacker
+        /// </summary>
         public struct Config
         {
+            /// <summary>
+            /// Gets a boolean indicating if border is enabled
+            /// </summary>
             public bool HasBorder { get { return BorderSize > 0; } }
 
+            /// <summary>
+            /// Gets or Sets border size
+            /// </summary>
             public int BorderSize;
 
+            /// <summary>
+            /// Gets or Sets the use of rotation for packing
+            /// </summary>
             public bool UseRotation;
 
+            /// <summary>
+            /// Gets or Sets the use of Multipack.
+            /// If Multipack is enabled, a packer could create more than one texture atlases to fit all textures,
+            /// whereas if Multipack is disabled, a packer always creates only one texture atlas which might not fit all textures.
+            /// </summary>
             public bool UseMultipack;
 
+            /// <summary>
+            /// Gets or Sets texture atlas size constraints: Any or Power of two
+            /// - Any would create a texture exactly by a given size.
+            /// - PowerOfTwo would create a texture where width and height are of power of two by ceiling a given size to the nearest power of two value.
+            /// </summary>
             public SizeConstraints? SizeContraint;
 
+            /// <summary>
+            /// Gets or Sets border modes which applies specific TextureAddressMode in the border of each texture element in a given size of border
+            /// </summary>
             public TextureAddressMode? BorderAddressMode;
 
+            /// <summary>
+            /// Gets or Sets output image type of texture atlas
+            /// </summary>
             public ImageFileType? OutputAtlasImageType;
 
+            /// <summary>
+            /// Gets or Sets Border color when BorderAddressMode is set to Border mode
+            /// </summary>
             public Color? BorderColor;
 
+            /// <summary>
+            /// Gets or Sets MaxWidth for expected TextureAtlas
+            /// </summary>
             public int MaxWidth;
 
+            /// <summary>
+            /// Gets or Sets MaxHeight for expected TextureAtlas
+            /// </summary>
             public int MaxHeight;
         }
 
+        /// <summary>
+        /// Intermediate texture element that is used during Packing and texture atlas creation processes.
+        /// It represents a packed texture.
+        /// </summary>
         public class IntermediateTexture
         {
+            /// <summary>
+            /// Gets or Sets CPU-resource texture
+            /// </summary>
             public Image Texture;
 
+            /// <summary>
+            /// Gets or Sets Region for the texture relative to a texture atlas that contains it
+            /// </summary>
             public MaxRectanglesBinPack.RotatableRectangle Region;
         }
 
+        /// <summary>
+        /// TextureAtlas contains packed intemediate textures, width and height of this atlas 
+        /// </summary>
         public class TextureAtlas
         {
+            /// <summary>
+            /// Gets or Sets a list of packed IntermediateTexture
+            /// </summary>
             public readonly List<IntermediateTexture> Textures = new List<IntermediateTexture>();
 
+            /// <summary>
+            /// Gets or Sets Width of the texture atlas
+            /// </summary>
             public int Width;
 
+            /// <summary>
+            /// Gets or Sets Height of the texture atlas
+            /// </summary>
             public int Height;
 
+            /// <summary>
+            /// Gets or Sets Packing configuration
+            /// </summary>
             public Config PackConfig;
         }
     }
