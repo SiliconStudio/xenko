@@ -57,7 +57,17 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// <summary>
         /// A flag to use multiple render target to blend the cubemaps in one call.
         /// </summary>
-        private bool useMRT;
+        private bool useMultipleRenderTargets;
+
+        /// <summary>
+        /// Cached list of cubemaps.
+        /// </summary>
+        private List<Tuple<TextureCube, float>> selectedCubemaps;
+
+        /// <summary>
+        /// Cached ParameterCollection used by the blending effect.
+        /// </summary>
+        private ParameterCollection blendEffectParameters;
 
         #endregion
 
@@ -67,7 +77,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             : base(services)
         {
             cubemapBlendEffects = new Dictionary<int, Effect>();
-            useMRT = false;
+            useMultipleRenderTargets = false;
+            selectedCubemaps = new List<Tuple<TextureCube, float>>();
+            blendEffectParameters = new ParameterCollection();
         }
 
         #endregion
@@ -77,7 +89,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// <inheritdoc/>
         public override void Load()
         {
-            useMRT = GraphicsDevice.Features.Profile >= GraphicsProfile.Level_10_0;
+            useMultipleRenderTargets = GraphicsDevice.Features.Profile >= GraphicsProfile.Level_10_0;
 
             for (var maxBlendCount = 2; maxBlendCount < 5; ++maxBlendCount)
             {
@@ -91,7 +103,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 }
                 compilerParameter.Set(CubeMapBlender.Cubemaps, compilerParameterChild);
                 compilerParameter.Set(CubeMapBlender.CubemapCount, maxBlendCount);
-                compilerParameter.Set(CubeMapBlender.UseMultipleRenderTargets, useMRT);
+                compilerParameter.Set(CubeMapBlender.UseMultipleRenderTargets, useMultipleRenderTargets);
                 cubemapBlendEffects.Add(maxBlendCount, EffectSystem.LoadEffect("CubemapBlendEffect", compilerParameter));
             }
             drawQuad = new PostEffectQuad(GraphicsDevice, cubemapBlendEffects[2]);
@@ -109,6 +121,10 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         #region Protected methods
 
+        /// <summary>
+        /// Blends the cubemaps at designed points.
+        /// </summary>
+        /// <param name="context">The RenderContext.</param>
         protected void OnRender(RenderContext context)
         {
             var entitySystem = Services.GetServiceAs<EntitySystem>();
@@ -121,9 +137,6 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 return;
 
             var textureCubes = cubemapSourceProcessor.Cubemaps;
-
-            var selectedCubemaps = new List<Tuple<TextureCube, float>>();
-            var parameters = new ParameterCollection();
 
             foreach (var cubemap in cubemapBlendProcessor.Cubemaps)
             {
@@ -155,17 +168,21 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 // compute blending indices & set parameters
                 // TODO: change weight computation
                 maxCubemapBlend = maxCubemapBlend > selectedCubemaps.Count ? selectedCubemaps.Count : maxCubemapBlend;
+
+                // TODO: if there is only one texture and size matches, copy to the destination texture without shaders?
+                // TODO: or use the source texture as the current cubemap
+
                 var totalWeight = 0f;
                 for (var i = 0; i < maxCubemapBlend; ++i)
                     totalWeight += selectedCubemaps[i].Item2;
                 var blendIndices = new float[maxCubemapBlend];
-                parameters.Clear();
+                blendEffectParameters.Clear();
                 for (var i = 0; i < maxCubemapBlend; ++i)
                 {
                     blendIndices[i] = selectedCubemaps[i].Item2 / totalWeight;
-                    parameters.Set(GetTextureCubeKey(i), selectedCubemaps[i].Item1);
+                    blendEffectParameters.Set(GetTextureCubeKey(i), selectedCubemaps[i].Item1);
                 }
-                parameters.Set(CubemapBlenderBaseKeys.BlendIndices, blendIndices);
+                blendEffectParameters.Set(CubemapBlenderBaseKeys.BlendIndices, blendIndices);
 
                 // clear target
                 // TODO: custom clear color?
@@ -175,16 +192,10 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 GraphicsDevice.SetDepthStencilState(GraphicsDevice.DepthStencilStates.None);
 
                 // render each face
-                if (useMRT)
+                if (useMultipleRenderTargets)
                 {
-                    GraphicsDevice.SetRenderTargets(
-                        cubemap.Value.Texture.ToRenderTarget(ViewType.Single, 0, 0),
-                        cubemap.Value.Texture.ToRenderTarget(ViewType.Single, 1, 0),
-                        cubemap.Value.Texture.ToRenderTarget(ViewType.Single, 2, 0),
-                        cubemap.Value.Texture.ToRenderTarget(ViewType.Single, 3, 0),
-                        cubemap.Value.Texture.ToRenderTarget(ViewType.Single, 4, 0),
-                        cubemap.Value.Texture.ToRenderTarget(ViewType.Single, 5, 0));
-                    cubemapBlendEffect.Apply(parameters);
+                    GraphicsDevice.SetRenderTargets(cubemap.Value.RenderTargets);
+                    cubemapBlendEffect.Apply(blendEffectParameters);
                     drawQuad.Draw();
                 }
                 else
@@ -192,12 +203,15 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                     for (int i = 0; i < 6; ++i)
                     {
                         // set the render targets
-                        GraphicsDevice.SetRenderTarget(cubemap.Value.Texture.ToRenderTarget(ViewType.Single, i, 0));
-                        parameters.Set(CubemapBlenderKeys.ViewIndex, i);
-                        cubemapBlendEffect.Apply(parameters);
+                        GraphicsDevice.SetRenderTarget(cubemap.Value.RenderTargets[i]);
+                        blendEffectParameters.Set(CubemapBlenderKeys.ViewIndex, i);
+                        cubemapBlendEffect.Apply(blendEffectParameters);
                         drawQuad.Draw();
                     }
                 }
+
+                if (cubemap.Value.GenerateMips)
+                    GraphicsDevice.GenerateMips(cubemap.Value.Texture);
             }
         }
 

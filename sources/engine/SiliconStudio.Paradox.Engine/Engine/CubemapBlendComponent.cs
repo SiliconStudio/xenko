@@ -12,9 +12,12 @@ namespace SiliconStudio.Paradox.Engine
 {
     [DataConverter(AutoGenerate = true)]
     [DataContract("CubemapBlendComponent")]
-    public class CubemapBlendComponent : EntityComponent
+    public sealed class CubemapBlendComponent : EntityComponent
     {
         public static PropertyKey<CubemapBlendComponent> Key = new PropertyKey<CubemapBlendComponent>("Key", typeof(CubemapBlendComponent));
+
+        [DataMemberIgnore]
+        private TextureCube textureCube;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CubemapBlendComponent"/> class.
@@ -24,7 +27,14 @@ namespace SiliconStudio.Paradox.Engine
             Size = 256;
             MaxBlendCount = 0;
             GenerateMips = false;
+            textureCube = null;
         }
+
+        /// <summary>
+        /// Enables the computation of the cubemap.
+        /// </summary>
+        [DataMemberConvert]
+        public bool Enabled { get; set; }
 
         /// <summary>
         /// The size of the target cubemap.
@@ -41,12 +51,6 @@ namespace SiliconStudio.Paradox.Engine
         public int MaxBlendCount { get; set; }
 
         /// <summary>
-        /// Enables the computation of the cubemap.
-        /// </summary>
-        [DataMemberConvert]
-        public bool Enabled { get; set; }
-
-        /// <summary>
         /// Enables mip maps generation.
         /// </summary>
         [DataMemberConvert]
@@ -57,7 +61,36 @@ namespace SiliconStudio.Paradox.Engine
         /// The texture attached to this component.
         /// </summary>
         [DataMemberIgnore]
-        public TextureCube Texture { get; set; }
+        public TextureCube Texture
+        {
+            get
+            {
+                return textureCube;
+            }
+            set
+            {
+                textureCube = value;
+                // TODO: check previous status to dispose the rendertarget?
+                if (textureCube != null)
+                {
+                    RenderTargets = new RenderTarget[6]
+                    {
+                        textureCube.ToRenderTarget(ViewType.Single, 0, 0),
+                        textureCube.ToRenderTarget(ViewType.Single, 1, 0),
+                        textureCube.ToRenderTarget(ViewType.Single, 2, 0),
+                        textureCube.ToRenderTarget(ViewType.Single, 3, 0),
+                        textureCube.ToRenderTarget(ViewType.Single, 4, 0),
+                        textureCube.ToRenderTarget(ViewType.Single, 5, 0)
+                    };
+                }
+            }
+        }
+
+        /// <summary>
+        /// The render targets of the cubemap.
+        /// </summary>
+        [DataMemberIgnore]
+        public RenderTarget[] RenderTargets { get; set; }
 
         public override PropertyKey DefaultKey
         {

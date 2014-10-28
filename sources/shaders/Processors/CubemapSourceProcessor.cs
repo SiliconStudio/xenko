@@ -11,7 +11,7 @@ using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects.Modules.Processors
 {
-    public class CubemapSourceProcessor : EntityProcessor<CubemapSourceComponent>
+    public sealed class CubemapSourceProcessor : EntityProcessor<CubemapSourceComponent>
     {
         #region Private members
 

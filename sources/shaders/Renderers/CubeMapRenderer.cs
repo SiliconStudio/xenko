@@ -49,15 +49,6 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         #endregion
 
-        #region Public members
-
-        /// <summary>
-        /// Array containing each side of the cubemap as a 2D texture.
-        /// </summary>
-        public Texture2D[] Textures2D;
-
-        #endregion
-
         #region Constructor
 
         /// <summary>
@@ -73,29 +64,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         #endregion
 
-        #region Public methods
-
-        public override void Load()
-        {
-            base.Load();
-
-            // TODO: remove this
-            var cubemapSize = 128;
-            Textures2D = new Texture2D[6];
-            for (var i = 0; i < 6; ++i)
-                Textures2D[i] = Texture2D.New(GraphicsDevice, cubemapSize, cubemapSize, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource);
-        }
-
-        public override void Unload()
-        {
-            // TODO: dispose targets and textures?
-            base.Unload();
-        }
-
-        #endregion
-
         #region Protected methods
 
+        /// <inheritdoc/>
         protected override void Render(RenderContext context)
         {
             var entitySystem = Services.GetServiceAs<EntitySystem>();
@@ -111,10 +82,6 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                         RenderInSinglePass(context, source.Key, source.Value);
                     else
                         RenderInSixPasses(context, source.Key, source.Value);
-
-                    // NOTE: this is really slow so it should be avoided
-                    //for (var i = 0; i < 6; ++i)
-                    //    Textures2D[i].SetData(GraphicsDevice, TextureCube.GetData<uint>(i));
 
                     if (source.Value.GenerateMips)
                         GraphicsDevice. GenerateMips(source.Value.Texture);
@@ -142,7 +109,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 camera.Target.Transformation.Translation = cameraPos + targetPositions[i];
                 camera.Target.Transformation.UpdateWorldMatrix();
                 camera.TargetUp = cameraUps[i];
-                ComputeCameraTransformations(context, camera);
+                ComputeCameraTransformations(camera);
                 GraphicsDevice.Clear(component.DepthStencil, DepthStencilClearOptions.DepthBuffer);
 
                 // temp
@@ -173,14 +140,12 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         private void RenderInSinglePass(RenderContext context, Entity entity, CubemapSourceComponent component)
         {
             var camera = entity.Get<CameraComponent>();
-            ComputeAllCameraMatrices(context, camera);
-
-            var rt = component.Texture.ToRenderTarget(ViewType.Full, 0, 0);
+            ComputeAllCameraMatrices(camera);
 
             GraphicsDevice.Clear(component.DepthStencil, DepthStencilClearOptions.DepthBuffer);
-            GraphicsDevice.Clear(rt, Color.Black);
+            GraphicsDevice.Clear(component.RenderTarget, Color.Black);
             
-            GraphicsDevice.SetRenderTargets(component.DepthStencil, rt);
+            GraphicsDevice.SetRenderTargets(component.DepthStencil, component.RenderTarget);
             
             base.Render(context);
 
@@ -193,36 +158,31 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// <summary>
         /// Computes the parameters of the camera.
         /// </summary>
-        /// <param name="context">The render context.</param>
         /// <param name="camera">The camera used to render the cubemap.</param>
-        private void ComputeCameraTransformations(RenderContext context, CameraComponent camera)
+        private void ComputeCameraTransformations(CameraComponent camera)
         {
-            //var pass = context.CurrentPass.Children[0];
-
             if (camera != null && camera.Entity != null)
             {
-                var viewParameters = GraphicsDevice.Parameters;
-
                 Matrix projection;
                 Matrix worldToCamera;
                 camera.Calculate(out projection, out worldToCamera);
 
-                viewParameters.Set(TransformationKeys.View, worldToCamera);
-                viewParameters.Set(TransformationKeys.Projection, projection);
-                viewParameters.Set(CameraKeys.NearClipPlane, camera.NearPlane);
-                viewParameters.Set(CameraKeys.FarClipPlane, camera.FarPlane);
-                viewParameters.Set(CameraKeys.FieldOfView, camera.VerticalFieldOfView);
-                viewParameters.Set(CameraKeys.Aspect, camera.AspectRatio);
-                viewParameters.Set(CameraKeys.FocusDistance, camera.FocusDistance);       
+                // TODO: set parameters on another collection?
+                GraphicsDevice.Parameters.Set(TransformationKeys.View, worldToCamera);
+                GraphicsDevice.Parameters.Set(TransformationKeys.Projection, projection);
+                GraphicsDevice.Parameters.Set(CameraKeys.NearClipPlane, camera.NearPlane);
+                GraphicsDevice.Parameters.Set(CameraKeys.FarClipPlane, camera.FarPlane);
+                GraphicsDevice.Parameters.Set(CameraKeys.FieldOfView, camera.VerticalFieldOfView);
+                GraphicsDevice.Parameters.Set(CameraKeys.Aspect, camera.AspectRatio);
+                GraphicsDevice.Parameters.Set(CameraKeys.FocusDistance, camera.FocusDistance);       
             }
         }
 
         /// <summary>
         /// Computes the parameters of the cubemap camera.
         /// </summary>
-        /// <param name="context">The render context.</param>
         /// <param name="camera">The camera used to render the cubemap.</param>
-        private void ComputeAllCameraMatrices(RenderContext context, CameraComponent camera)
+        private void ComputeAllCameraMatrices(CameraComponent camera)
         {
             var cameraPos = camera.Entity.Transformation.Translation;
             camera.Entity.Transformation.UpdateWorldMatrix();
@@ -239,6 +199,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 cameraViewProjMatrices[i] = worldToCamera * projection;
             }
 
+            // TODO: set parameters on another collection?
             GraphicsDevice.Parameters.Set(CameraCubeKeys.CameraViewProjectionMatrices, cameraViewProjMatrices);
             GraphicsDevice.Parameters.Set(CameraCubeKeys.CameraWorldPosition, cameraPos);
         }

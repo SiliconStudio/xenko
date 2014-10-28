@@ -16,6 +16,9 @@ namespace SiliconStudio.Paradox.Engine
     {
         public static PropertyKey<CubemapSourceComponent> Key = new PropertyKey<CubemapSourceComponent>("Key", typeof(CubemapSourceComponent));
 
+        [DataMemberIgnore]
+        private TextureCube textureCube;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CubemapSourceComponent"/> class.
         /// </summary>
@@ -25,13 +28,23 @@ namespace SiliconStudio.Paradox.Engine
             InfluenceRadius = 1.0f;
             InfinityCubemap = false;
             GenerateMips = false;
+            textureCube = null;
+        }
+
+        public CubemapSourceComponent(TextureCube texture)
+        {
+            InfluenceRadius = 1.0f;
+            InfinityCubemap = false;
+            GenerateMips = false;
+            textureCube = texture;
+            IsDynamic = false;
         }
 
         /// <summary>
-        /// The cubemap has no location.
+        /// Enables the computation of the cubemap if this one is dynamic.
         /// </summary>
         [DataMemberConvert]
-        public bool InfinityCubemap { get; set; }
+        public bool Enabled { get; set; }
 
         /// <summary>
         /// Enables runtime cubemap creation.
@@ -40,10 +53,11 @@ namespace SiliconStudio.Paradox.Engine
         public bool IsDynamic { get; set; }
 
         /// <summary>
-        /// Enables the computation of the cubemap if this one is dynamic.
+        /// The size of the target cubemap if this one is dynamic.
         /// </summary>
         [DataMemberConvert]
-        public bool Enabled { get; set; }
+        [DefaultValue(256)]
+        public int Size { get; set; }
 
         /// <summary>
         /// Enables mip maps generation.
@@ -53,11 +67,10 @@ namespace SiliconStudio.Paradox.Engine
         public bool GenerateMips { get; set; }
 
         /// <summary>
-        /// The size of the target cubemap if this one is dynamic.
+        /// The cubemap has no location.
         /// </summary>
         [DataMemberConvert]
-        [DefaultValue(256)]
-        public int Size { get; set; }
+        public bool InfinityCubemap { get; set; }
 
         /// <summary>
         /// The influence radius of the cubemap. 0 is infinity?
@@ -70,7 +83,28 @@ namespace SiliconStudio.Paradox.Engine
         /// The texture attached to this component.
         /// </summary>
         [DataMemberIgnore]
-        public TextureCube Texture { get; set; }
+        public TextureCube Texture
+        {
+            get
+            {
+                return textureCube;
+            }
+            set
+            {
+                textureCube = value;
+                // TODO: check previous status to dispose the rendertarget?
+                if (IsDynamic && textureCube != null)
+                {
+                    RenderTarget = textureCube.ToRenderTarget(ViewType.Full, 0, 0);
+                }
+            }
+        }
+
+        /// <summary>
+        /// The render target of the cubemap.
+        /// </summary>
+        [DataMemberIgnore]
+        public RenderTarget RenderTarget { get; private set; }
 
         /// <summary>
         /// The texture attached to this component.
