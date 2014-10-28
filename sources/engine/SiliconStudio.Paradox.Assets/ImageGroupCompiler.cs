@@ -140,7 +140,7 @@ namespace SiliconStudio.Paradox.Assets
             var imageGroupData = new TImageGroupData { Images = new List<TImageData>() };
 
             // Create atlas texture
-            Dictionary<string, Tuple<int, RotatableRectangle>> regionDictionary = null;
+            Dictionary<string, Tuple<int, MaxRectanglesBinPack.RotatableRectangle>> regionDictionary = null;
             var borderSize = 0;
 
             if (asset.GroupAsset.GenerateTextureAtlas)
@@ -216,9 +216,9 @@ namespace SiliconStudio.Paradox.Assets
             return Task.FromResult(ResultStatus.Successful);
         }
 
-        private ResultStatus CreateAndSaveTextureAtlasImage(ref Configuration packConfiguration, Logger logger, out Dictionary<string, Tuple<int, RotatableRectangle>> regionDictionary)
+        private ResultStatus CreateAndSaveTextureAtlasImage(ref Configuration packConfiguration, Logger logger, out Dictionary<string, Tuple<int, MaxRectanglesBinPack.RotatableRectangle>> regionDictionary)
         {
-            regionDictionary = new Dictionary<string, Tuple<int, RotatableRectangle>>();
+            regionDictionary = new Dictionary<string, Tuple<int, MaxRectanglesBinPack.RotatableRectangle>>();
 
             // Pack textures
             using (var texTool = new TextureTool())
@@ -248,7 +248,7 @@ namespace SiliconStudio.Paradox.Assets
                     {
                         var textureKey = texture.Region.Key;
 
-                        regionDictionary.Add(textureKey, new Tuple<int, RotatableRectangle>(textureAtlasIndex, texture.Region));
+                        regionDictionary.Add(textureKey, new Tuple<int, MaxRectanglesBinPack.RotatableRectangle>(textureAtlasIndex, texture.Region));
 
                         texture.Texture.Dispose();
                     }

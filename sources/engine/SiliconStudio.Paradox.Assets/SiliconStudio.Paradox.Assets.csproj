@@ -210,6 +210,7 @@
     <Compile Include="Sprite\SpriteGroupAsset.cs" />
     <Compile Include="Sprite\SpriteGroupCompiler.cs" />
     <Compile Include="Texture\MaxRectanglesBinPack.cs" />
+    <Compile Include="Texture\MaxRectanglesBinPack.RotatableRectangle.cs" />
     <Compile Include="Texture\TextureCommandHelper.cs" />
     <Compile Include="Texture\TexturePacker.cs" />
     <Compile Include="Texture\TextureQuality.cs" />

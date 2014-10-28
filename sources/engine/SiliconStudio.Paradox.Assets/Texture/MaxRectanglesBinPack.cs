@@ -5,33 +5,10 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Assets.Texture
 {
-    public struct RotatableRectangle
-    {
-        public string Key;
-
-        public Rectangle Value;
-
-        public bool IsRotated;
-
-        public RotatableRectangle(int x, int y, int width, int height, string key = null)
-        {
-            Key = key;
-            Value = new Rectangle(x, y, width, height);
-            IsRotated = false;
-        }
-
-        public RotatableRectangle(Rectangle value, string key = null)
-        {
-            Key = key;
-            IsRotated = false;
-            Value = value;
-        }
-    }
-
     /// <summary>
     /// Implementation of texture packer using MaxRects algorithm
     /// </summary>
-    public class MaxRectanglesBinPack
+    public partial class MaxRectanglesBinPack
     {
         public enum FreeRectangleChoiceHeuristic
         {

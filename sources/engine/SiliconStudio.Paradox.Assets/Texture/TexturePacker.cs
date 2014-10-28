@@ -44,13 +44,13 @@ namespace SiliconStudio.Paradox.Assets.Texture
         public bool PackTextures(Dictionary<string, IntermediateTextureElement> textureElements)
         {
             // Create data for the packer
-            var textureRegions = new List<RotatableRectangle>();
+            var textureRegions = new List<MaxRectanglesBinPack.RotatableRectangle>();
 
             foreach (var textureElementKey in textureElements.Keys)
             {
                 var textureElement = textureElements[textureElementKey];
 
-                textureRegions.Add(new RotatableRectangle(0, 0,
+                textureRegions.Add(new MaxRectanglesBinPack.RotatableRectangle(0, 0,
                     textureElement.Texture.Description.Width + 2 * packConfiguration.BorderSize, textureElement.Texture.Description.Height + 2 * packConfiguration.BorderSize) { Key = textureElementKey });
             }
 
@@ -114,7 +114,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// </summary>
         /// <param name="usedRectangles"></param>
         /// <returns></returns>
-        private Size2 CalculatePackedRectanglesBound(IEnumerable<RotatableRectangle> usedRectangles)
+        private Size2 CalculatePackedRectanglesBound(IEnumerable<MaxRectanglesBinPack.RotatableRectangle> usedRectangles)
         {
             var minX = int.MaxValue;
             var minY = int.MaxValue;
@@ -323,7 +323,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
     {
         public Image Texture;
 
-        public RotatableRectangle Region;
+        public MaxRectanglesBinPack.RotatableRectangle Region;
     }
 
     public class TextureAtlas
