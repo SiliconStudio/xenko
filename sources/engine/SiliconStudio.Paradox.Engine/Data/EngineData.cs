@@ -390,6 +390,11 @@ namespace SiliconStudio.Paradox.Engine.Data
         /// Data field for <see cref="SiliconStudio.Paradox.Engine.CubemapBlendComponent.Enabled"/>.
         /// </summary>
         public System.Boolean Enabled;
+
+        /// <summary>
+        /// Data field for <see cref="SiliconStudio.Paradox.Engine.CubemapBlendComponent.GenerateMips"/>.
+        /// </summary>
+        public System.Boolean GenerateMips;
     }
 
     /// <summary>
@@ -412,6 +417,11 @@ namespace SiliconStudio.Paradox.Engine.Data
         /// Data field for <see cref="SiliconStudio.Paradox.Engine.CubemapSourceComponent.Enabled"/>.
         /// </summary>
         public System.Boolean Enabled;
+
+        /// <summary>
+        /// Data field for <see cref="SiliconStudio.Paradox.Engine.CubemapSourceComponent.GenerateMips"/>.
+        /// </summary>
+        public System.Boolean GenerateMips;
 
         /// <summary>
         /// Data field for <see cref="SiliconStudio.Paradox.Engine.CubemapSourceComponent.Size"/>.
@@ -1197,6 +1207,7 @@ namespace SiliconStudio.Paradox.Engine.Data
             target.Size = source.Size;
             target.MaxBlendCount = source.MaxBlendCount;
             target.Enabled = source.Enabled;
+            target.GenerateMips = source.GenerateMips;
         }
 
         public override bool CanConstruct
@@ -1226,6 +1237,7 @@ namespace SiliconStudio.Paradox.Engine.Data
             source.Size = target.Size;
             source.MaxBlendCount = target.MaxBlendCount;
             source.Enabled = target.Enabled;
+            source.GenerateMips = target.GenerateMips;
         }
     }
 
@@ -1279,6 +1291,7 @@ namespace SiliconStudio.Paradox.Engine.Data
             target.InfinityCubemap = source.InfinityCubemap;
             target.IsDynamic = source.IsDynamic;
             target.Enabled = source.Enabled;
+            target.GenerateMips = source.GenerateMips;
             target.Size = source.Size;
             target.InfluenceRadius = source.InfluenceRadius;
         }
@@ -1310,6 +1323,7 @@ namespace SiliconStudio.Paradox.Engine.Data
             source.InfinityCubemap = target.InfinityCubemap;
             source.IsDynamic = target.IsDynamic;
             source.Enabled = target.Enabled;
+            source.GenerateMips = target.GenerateMips;
             source.Size = target.Size;
             source.InfluenceRadius = target.InfluenceRadius;
         }

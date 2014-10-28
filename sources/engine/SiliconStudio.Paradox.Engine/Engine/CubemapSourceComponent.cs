@@ -24,6 +24,7 @@ namespace SiliconStudio.Paradox.Engine
             Size = 256;
             InfluenceRadius = 1.0f;
             InfinityCubemap = false;
+            GenerateMips = false;
         }
 
         /// <summary>
@@ -45,6 +46,13 @@ namespace SiliconStudio.Paradox.Engine
         public bool Enabled { get; set; }
 
         /// <summary>
+        /// Enables mip maps generation.
+        /// </summary>
+        [DataMemberConvert]
+        [DefaultValue(false)]
+        public bool GenerateMips { get; set; }
+
+        /// <summary>
         /// The size of the target cubemap if this one is dynamic.
         /// </summary>
         [DataMemberConvert]
@@ -63,6 +71,12 @@ namespace SiliconStudio.Paradox.Engine
         /// </summary>
         [DataMemberIgnore]
         public TextureCube Texture { get; set; }
+
+        /// <summary>
+        /// The texture attached to this component.
+        /// </summary>
+        [DataMemberIgnore]
+        public DepthStencilBuffer DepthStencil { get; set; }
 
         public override PropertyKey DefaultKey
         {

@@ -23,6 +23,7 @@ namespace SiliconStudio.Paradox.Engine
         {
             Size = 256;
             MaxBlendCount = 0;
+            GenerateMips = false;
         }
 
         /// <summary>
@@ -44,6 +45,13 @@ namespace SiliconStudio.Paradox.Engine
         /// </summary>
         [DataMemberConvert]
         public bool Enabled { get; set; }
+
+        /// <summary>
+        /// Enables mip maps generation.
+        /// </summary>
+        [DataMemberConvert]
+        [DefaultValue(false)]
+        public bool GenerateMips { get; set; }
 
         /// <summary>
         /// The texture attached to this component.

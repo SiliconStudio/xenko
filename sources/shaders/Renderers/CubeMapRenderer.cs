@@ -3,6 +3,7 @@
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Effects.Modules.Processors;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
@@ -40,23 +41,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         #region Private members
 
-        // cubemap size
-        private int cubemapSize;
-
         // camera parameters
         private Matrix[] cameraViewProjMatrices = new Matrix[6];
-
-        // for 6 passes
-        private RenderTarget[] cubeMapRenderTargetsArray;
-
-        // for single pass
-        private RenderTarget cubeMapRenderTarget;
-
-        // depth stencil buffer
-        private DepthStencilBuffer cubeMapDepthStencilBuffer;
-
-        // the camera
-        private CameraComponent camera;
 
         // flag to render in a single pass
         private bool renderInSinglePass;
@@ -64,11 +50,6 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         #endregion
 
         #region Public members
-
-        /// <summary>
-        /// The cubemap texture.
-        /// </summary>
-        public TextureCube TextureCube;
 
         /// <summary>
         /// Array containing each side of the cubemap as a 2D texture.
@@ -84,31 +65,10 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// </summary>
         /// <param name="services">The IServiceRegistry.</param>
         /// <param name="recursivePipeline">The recursive pipeline.</param>
-        /// <param name="mapSize">The size of the cubemap.</param>
         /// <param name="singlePass">A flag stating if the cubemap should be rendered in one or 6 passes.</param>
-        /// <param name="cubeMapPosition">The origin of the cubemap</param>
-        /// <param name="nearPlane">The near plane.</param>
-        /// <param name="farPlane">The far plane.</param>
-        public CubeMapRenderer(IServiceRegistry services, RenderPipeline recursivePipeline, int mapSize, bool singlePass, Vector3 cubeMapPosition, float nearPlane, float farPlane) : base(services, recursivePipeline)
+        public CubeMapRenderer(IServiceRegistry services, RenderPipeline recursivePipeline, bool singlePass) : base(services, recursivePipeline)
         {
             renderInSinglePass = singlePass;
-            cubemapSize = mapSize;
-            
-            // TODO: simplify that - move to load?
-            var targetEntity = new Entity() { new TransformationComponent() };
-            camera = new CameraComponent()
-            {
-                AspectRatio = 1,
-                FarPlane = farPlane,
-                NearPlane = nearPlane,
-                VerticalFieldOfView = MathUtil.PiOverTwo,
-                Target = targetEntity,
-            };
-            // attach the camera component to an entity to perform computation of transformation matrices
-            var cameraCube = new Entity(cubeMapPosition) { camera };
-
-            // TODO: mip maps?
-            TextureCube = TextureCube.New(GraphicsDevice, cubemapSize, 0, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
         }
 
         #endregion
@@ -119,19 +79,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         {
             base.Load();
 
-            if (renderInSinglePass)
-            {
-                cubeMapRenderTarget = TextureCube.ToRenderTarget(ViewType.Full, 0, 0);
-                cubeMapDepthStencilBuffer = Texture2D.New(GraphicsDevice, cubemapSize, cubemapSize, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil, 6).ToDepthStencilBuffer(false);
-            }
-            else
-            {
-                cubeMapRenderTargetsArray = new RenderTarget[6];
-                for (var i = 0; i < 6; ++i)
-                    cubeMapRenderTargetsArray[i] = TextureCube.ToRenderTarget(ViewType.Single, i, 0);
-                cubeMapDepthStencilBuffer = Texture2D.New(GraphicsDevice, cubemapSize, cubemapSize, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil).ToDepthStencilBuffer(false);
-            }
-
+            // TODO: remove this
+            var cubemapSize = 128;
             Textures2D = new Texture2D[6];
             for (var i = 0; i < 6; ++i)
                 Textures2D[i] = Texture2D.New(GraphicsDevice, cubemapSize, cubemapSize, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource);
@@ -149,16 +98,28 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         protected override void Render(RenderContext context)
         {
-            if (renderInSinglePass)
-                RenderInSinglePass(context);
-            else
-                RenderInSixPasses(context);
+            var entitySystem = Services.GetServiceAs<EntitySystem>();
+            var cubemapSourceProcessor = entitySystem.GetProcessor<CubemapSourceProcessor>();
+            if (cubemapSourceProcessor == null)
+                return;
 
-            // NOTE: this is really slow so it should be avoided
-            //for (var i = 0; i < 6; ++i)
-            //    Textures2D[i].SetData(GraphicsDevice, TextureCube.GetData<uint>(i));
+            foreach (var source in cubemapSourceProcessor.Cubemaps)
+            {
+                if (source.Value.IsDynamic)
+                {
+                    if (renderInSinglePass)
+                        RenderInSinglePass(context, source.Key, source.Value);
+                    else
+                        RenderInSixPasses(context, source.Key, source.Value);
 
-            GraphicsDevice.GenerateMips(TextureCube);
+                    // NOTE: this is really slow so it should be avoided
+                    //for (var i = 0; i < 6; ++i)
+                    //    Textures2D[i].SetData(GraphicsDevice, TextureCube.GetData<uint>(i));
+
+                    if (source.Value.GenerateMips)
+                        GraphicsDevice. GenerateMips(source.Value.Texture);
+                }
+            }
         }
 
         #endregion
@@ -169,19 +130,26 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// Renders the cubemap in 6 passes, one for each face.
         /// </summary>
         /// <param name="context">The render context.</param>
-        private void RenderInSixPasses(RenderContext context)
+        /// <param name="entity">The entity the cubemap is attached to.</param>
+        /// <param name="component">The CubemapSource component.</param>
+        private void RenderInSixPasses(RenderContext context, Entity entity, CubemapSourceComponent component)
         {
-            var cameraPos = camera.Entity.Transformation.Translation;
-            camera.Entity.Transformation.UpdateWorldMatrix();
+            var cameraPos = entity.Transformation.Translation;
+            entity.Transformation.UpdateWorldMatrix();
+            var camera = entity.Get<CameraComponent>();
             for (var i = 0; i < 6; ++i)
             {
                 camera.Target.Transformation.Translation = cameraPos + targetPositions[i];
                 camera.Target.Transformation.UpdateWorldMatrix();
                 camera.TargetUp = cameraUps[i];
-                ComputeCameraTransformations(context);
-                GraphicsDevice.Clear(cubeMapDepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-                GraphicsDevice.Clear(cubeMapRenderTargetsArray[i], Color.Black);
-                GraphicsDevice.SetRenderTargets(cubeMapDepthStencilBuffer, cubeMapRenderTargetsArray[i]);
+                ComputeCameraTransformations(context, camera);
+                GraphicsDevice.Clear(component.DepthStencil, DepthStencilClearOptions.DepthBuffer);
+
+                // temp
+                var rt = component.Texture.ToRenderTarget(ViewType.Single, i, 0);
+
+                GraphicsDevice.Clear(rt, Color.Black);
+                GraphicsDevice.SetRenderTargets(component.DepthStencil, rt);
                 base.Render(context);
             }
 
@@ -200,14 +168,19 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// Renders the cubemap in one pass using a geometry shader.
         /// </summary>
         /// <param name="context">The render context.</param>
-        private void RenderInSinglePass(RenderContext context)
+        /// <param name="entity">The entity the cubemap is attached to.</param>
+        /// <param name="component">The CubemapSource component.</param>
+        private void RenderInSinglePass(RenderContext context, Entity entity, CubemapSourceComponent component)
         {
-            ComputeAllCameraMatrices(context);
+            var camera = entity.Get<CameraComponent>();
+            ComputeAllCameraMatrices(context, camera);
 
-            GraphicsDevice.Clear(cubeMapDepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsDevice.Clear(cubeMapRenderTarget, Color.Black);
+            var rt = component.Texture.ToRenderTarget(ViewType.Full, 0, 0);
+
+            GraphicsDevice.Clear(component.DepthStencil, DepthStencilClearOptions.DepthBuffer);
+            GraphicsDevice.Clear(rt, Color.Black);
             
-            GraphicsDevice.SetRenderTargets(cubeMapDepthStencilBuffer, cubeMapRenderTarget);
+            GraphicsDevice.SetRenderTargets(component.DepthStencil, rt);
             
             base.Render(context);
 
@@ -221,7 +194,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// Computes the parameters of the camera.
         /// </summary>
         /// <param name="context">The render context.</param>
-        private void ComputeCameraTransformations(RenderContext context)
+        /// <param name="camera">The camera used to render the cubemap.</param>
+        private void ComputeCameraTransformations(RenderContext context, CameraComponent camera)
         {
             //var pass = context.CurrentPass.Children[0];
 
@@ -247,7 +221,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// Computes the parameters of the cubemap camera.
         /// </summary>
         /// <param name="context">The render context.</param>
-        private void ComputeAllCameraMatrices(RenderContext context)
+        /// <param name="camera">The camera used to render the cubemap.</param>
+        private void ComputeAllCameraMatrices(RenderContext context, CameraComponent camera)
         {
             var cameraPos = camera.Entity.Transformation.Translation;
             camera.Entity.Transformation.UpdateWorldMatrix();
