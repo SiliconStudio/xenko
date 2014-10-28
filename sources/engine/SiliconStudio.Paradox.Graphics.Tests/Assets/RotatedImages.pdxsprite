@@ -11,15 +11,6 @@ Images:
             Height: 64
         Center: {X: 0, Y: 0}
     -   Source: ../../../data/tests/ImageOrientation.png
-        Name: Rotation180
-        TextureRegion:
-            X: 0
-            Y: 64
-            Width: 128
-            Height: 64
-        Orientation: Rotated180
-        Center: {X: 0, Y: 0}
-    -   Source: ../../../data/tests/ImageOrientation.png
         Name: Rotation90
         TextureRegion:
             X: 128
@@ -27,14 +18,5 @@ Images:
             Width: 64
             Height: 128
         Orientation: Rotated90
-        Center: {X: 0, Y: 0}
-    -   Source: ../../../data/tests/ImageOrientation.png
-        Name: Rotation90C
-        TextureRegion:
-            X: 192
-            Y: 0
-            Width: 64
-            Height: 128
-        Orientation: Rotated90C
         Center: {X: 0, Y: 0}
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

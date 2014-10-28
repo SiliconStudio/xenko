@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         public TestSpriteBatch()
         {
-            CurrentVersion = 4;
+            CurrentVersion = 5;
         }
 
         protected override void RegisterTests()
@@ -72,32 +72,22 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             var pos = new Vector2(0f);
             var noRotation = rotatedImages["NoRotation"];
-            var rotation180 = rotatedImages["Rotation180"];
             var rotation90 = rotatedImages["Rotation90"];
-            var rotation90C = rotatedImages["Rotation90C"];
             var width = noRotation.Region.Width;
             var height = noRotation.Region.Height;
 
             // Test image orientations API1
             spriteBatch.Draw(noRotation.Texture, pos, noRotation.Region, Color.White, 0, Vector2.Zero);
             pos.Y += height;
-            spriteBatch.Draw(rotation180.Texture, pos, rotation180.Region, Color.White, 0, Vector2.Zero, 1, orientation: ImageOrientation.Rotated180);
-            pos.Y += height;
             spriteBatch.Draw(rotation90.Texture, pos, rotation90.Region, Color.White, 0, Vector2.Zero, 1, orientation: ImageOrientation.Rotated90);
-            pos.Y += height;
-            spriteBatch.Draw(rotation90C.Texture, pos, rotation90C.Region, Color.White, 0, Vector2.Zero, 1, orientation: ImageOrientation.Rotated90C);
-            pos.Y -= 3 * height;
+            pos.Y -= height;
             pos.X += width;
 
             // Test image orientations API2
             spriteBatch.Draw(noRotation.Texture, new RectangleF(pos.X, pos.Y, width, height), noRotation.Region, Color.White, 0, Vector2.Zero);
             pos.Y += height;
-            spriteBatch.Draw(rotation180.Texture, new RectangleF(pos.X, pos.Y, width, height), rotation180.Region, Color.White, 0, Vector2.Zero, SpriteEffects.None, ImageOrientation.Rotated180);
-            pos.Y += height;
             spriteBatch.Draw(rotation90.Texture, new RectangleF(pos.X, pos.Y, width, height), rotation90.Region, Color.White, 0, Vector2.Zero, SpriteEffects.None, ImageOrientation.Rotated90);
-            pos.Y += height;
-            spriteBatch.Draw(rotation90C.Texture, new RectangleF(pos.X, pos.Y, width, height), rotation90C.Region, Color.White, 0, Vector2.Zero, SpriteEffects.None, ImageOrientation.Rotated90C);
-            pos.Y -= 3 * height;
+            pos.Y -= height;
             pos.X += width;
 
             // Test image inversions (no rotation)
@@ -121,30 +111,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             spriteBatch.Draw(rotation90.Texture, pos, rotation90.Region, Color.White, 0, Vector2.Zero, 1, SpriteEffects.FlipBoth, ImageOrientation.Rotated90);
             pos.Y -= 3 * height;
             pos.X += width;
-
-            // Test image inversions (rotation 180)
-            spriteBatch.Draw(rotation180.Texture, pos, rotation180.Region, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, ImageOrientation.Rotated180);
-            pos.Y += height;
-            spriteBatch.Draw(rotation180.Texture, pos, rotation180.Region, Color.White, 0, Vector2.Zero, 1, SpriteEffects.FlipHorizontally, ImageOrientation.Rotated180);
-            pos.Y += height;
-            spriteBatch.Draw(rotation180.Texture, pos, rotation180.Region, Color.White, 0, Vector2.Zero, 1, SpriteEffects.FlipVertically, ImageOrientation.Rotated180);
-            pos.Y += height;
-            spriteBatch.Draw(rotation180.Texture, pos, rotation180.Region, Color.White, 0, Vector2.Zero, 1, SpriteEffects.FlipBoth, ImageOrientation.Rotated180);
-            pos.Y -= 3 * height;
-            pos.X += width;
-
-            // Test image inversions (rotation -90)
-            spriteBatch.Draw(rotation90C.Texture, pos, rotation90C.Region, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, ImageOrientation.Rotated90C);
-            pos.Y += height;
-            spriteBatch.Draw(rotation90C.Texture, pos, rotation90C.Region, Color.White, 0, Vector2.Zero, 1, SpriteEffects.FlipHorizontally, ImageOrientation.Rotated90C);
-            pos.Y += height;
-            spriteBatch.Draw(rotation90C.Texture, pos, rotation90C.Region, Color.White, 0, Vector2.Zero, 1, SpriteEffects.FlipVertically, ImageOrientation.Rotated90C);
-            pos.Y += height;
-            spriteBatch.Draw(rotation90C.Texture, pos, rotation90C.Region, Color.White, 0, Vector2.Zero, 1, SpriteEffects.FlipBoth, ImageOrientation.Rotated90C);
-            pos.Y += height;
-
-            pos.X -= width * 5;
-
+            
             // Test with scales
             spriteBatch.Draw(rotation90.Texture, pos, rotation90.Region, Color.White, 0, Vector2.Zero, new Vector2(0.66f, 1.33f), SpriteEffects.None, ImageOrientation.Rotated90);
             pos.X += 0.66f * width;
@@ -154,14 +121,12 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             pos.X += width;
 
             // Rotations and centers
-            pos.Y += height;
-            pos.X += width;
+            pos.Y += 2.5f * height;
+            pos.X -= 0.66f * width;
             spriteBatch.Draw(rotation90.Texture, pos, rotation90.Region, Color.White, timeInSeconds, new Vector2(height / 2f, width / 2f), 1, SpriteEffects.None, ImageOrientation.Rotated90);
-            pos.X += width;
-            spriteBatch.Draw(rotation180.Texture, pos, rotation180.Region, Color.White, timeInSeconds, new Vector2(width / 2f, height / 2f), 1, SpriteEffects.FlipVertically, ImageOrientation.Rotated180);
 
-            pos.Y += height;
-            pos.X -= 3.66f * width;
+            pos.X = 0;
+            pos.Y += 2f * height;
 
             const int NbRows = 1;
             const int NbColumns = 5;

@@ -9,7 +9,7 @@ namespace SiliconStudio.Paradox.Graphics
     [DataConverter(AutoGenerate = true, ContentReference = false)]
     public class ImageFragment
     {
-        internal Rectangle RegionInternal;
+        internal RectangleF RegionInternal;
 
         internal ImageFragment()
             : this(null)
@@ -75,7 +75,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// The rectangle specifying the region of the texture to use as fragment.
         /// </summary>
         [DataMemberConvert]
-        public virtual Rectangle Region
+        public virtual RectangleF Region
         {
             get { return RegionInternal; }
             set { RegionInternal = value; }

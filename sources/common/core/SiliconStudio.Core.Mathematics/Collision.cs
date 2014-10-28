@@ -1460,5 +1460,37 @@ namespace SiliconStudio.Core.Mathematics
 
             return ContainmentType.Contains;
         }
+
+        /// <summary>
+        /// Determines whether a <see cref="BoundingFrustum"/> intersects or contains an AABB determined by its center and extent.
+        /// Faster variant specific for frustum culling.
+        /// </summary>
+        /// <param name="frustum">The frustum.</param>
+        /// <param name="center">The center.</param>
+        /// <param name="extent">The extent.</param>
+        /// <returns></returns>
+        public static bool FrustumContainsBox(ref BoundingFrustum frustum, ref Vector3 center, ref Vector3 extent)
+        {
+            unsafe
+            {
+                fixed (Plane* planeStart = &frustum.Plane1)
+                {
+                    var plane = planeStart;
+                    for (int i = 0; i < 6; ++i)
+                    {
+                        if (Vector3.Dot(center, plane->Normal)
+                            + extent.X * Math.Abs(plane->Normal.X)
+                            + extent.Y * Math.Abs(plane->Normal.Y)
+                            + extent.Z * Math.Abs(plane->Normal.Z)
+                            <= -plane->D)
+                            return false;
+
+                        plane++;
+                    }
+                }
+
+                return true;
+            }
+        }
     }
 }

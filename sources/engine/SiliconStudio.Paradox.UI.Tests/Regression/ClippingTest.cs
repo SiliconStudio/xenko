@@ -6,7 +6,6 @@ using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Input;
 using SiliconStudio.Paradox.UI.Controls;
 using SiliconStudio.Paradox.UI.Panels;
@@ -25,7 +24,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public ClippingTest()
         {
-            CurrentVersion = 3;
+            CurrentVersion = 4;
         }
 
         protected override async Task LoadContent()
@@ -54,7 +53,6 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             };
 
             var borderImage = uiGroup["BorderButton"];
-            borderImage.Orientation = ImageOrientation.Rotated180;
             element2 = new ContentDecorator { Name = "2", Width = 600, Height = 300, Content = element3, BackgroundImage = borderImage };
             element2.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, new Vector3(400, 200, 0));
             element2.DependencyProperties.Set(Panel.ZIndexPropertyKey, 1);

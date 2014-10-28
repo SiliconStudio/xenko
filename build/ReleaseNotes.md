@@ -1,9 +1,22 @@
+### Version 1.0.0-beta03
+
+Release date: 2014/??/??
+
+#### Breaking changes
+- Graphics: Remove Rotated180 and Rotated90C from ImageOrientation enumeration for code simplicity and efficiency purpose.
+- Graphics: CopyRegion now contains additional parameters for subresource indices and destination offset.
+
+#### Issues fixed
+- Shaders: Geometry shaders are forced to transmit SV_Position stream to pixel shaders.
+- Shaders: Compositions (especially arrays) couldn't be used in child classes of the one containing their declaration. Function and member calls weren't correctly resolved.
+
 ### Version 1.0.0-beta02
 
-Release date: 2014/10/2?
+Release date: 2014/10/22
 
 #### New Features
 - Graphics: Add ability to unbind all the shader resources used by an effect.
+- Graphics: Add Frustum culling (available in ModelRenderer.EnableFrustumCulling).
 
 #### Enhancements
 - Audio: Add overloaded Play function in SoundEffectInstance that allows the user to specify how to deal with siblings instances (play in parallel or stop them).
