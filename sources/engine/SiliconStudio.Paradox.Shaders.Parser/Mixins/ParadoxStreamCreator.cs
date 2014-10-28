@@ -126,6 +126,25 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             StreamStageUsage streamStageUsagePS = pixelShaderMethod == null ? null : StreamAnalysisPerShader(pixelShaderMethod.GetTag(ParadoxTags.ShaderScope) as ModuleMixin, pixelShaderMethod, PdxShaderStage.Pixel);
             StreamStageUsage streamStageUsageCS = computeShaderMethod == null ? null : StreamAnalysisPerShader(computeShaderMethod.GetTag(ParadoxTags.ShaderScope) as ModuleMixin, computeShaderMethod, PdxShaderStage.Compute);
             
+            // pathc some usage so that variables are correctly passed even if they are not explicitely used.
+            if (streamStageUsageGS != null && streamStageUsageVS != null)
+            {
+                // get the ShadingPosition variable
+                foreach (var variable in streamStageUsageVS.OutStreamList.OfType<Variable>())
+                {
+                    var sem = variable.Qualifiers.OfType<Semantic>().FirstOrDefault();
+                    if (sem != null && sem.Name.Text == "SV_Position")
+                    {
+                        streamStageUsageGS.OutStreamList.Add(variable);
+                        break;
+                    }
+
+                }
+
+                // TODO: it may have more variables like this one.
+            }
+
+
             var shaderStreamsUsage = new List<StreamStageUsage>();
             
             // store these methods to prevent their renaming
@@ -398,7 +417,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 {
                     var sem = (variable as Variable).Qualifiers.OfType<Semantic>().FirstOrDefault();
                     if (nextStreamUsage.InStreamList.Contains(variable)
-                        || (nextStreamUsage.ShaderStage == PdxShaderStage.Pixel && sem != null && sem.Name.Text == "SV_Position"))
+                        || ((nextStreamUsage.ShaderStage == PdxShaderStage.Pixel || nextStreamUsage.ShaderStage == PdxShaderStage.Geometry) && sem != null && sem.Name.Text == "SV_Position"))
                         toKeep.Add(variable);
                     else if (nextStreamUsage.ShaderStage == PdxShaderStage.Pixel && prevStreamUsage.ShaderStage == PdxShaderStage.Geometry && sem != null && sem.Name.Text == "SV_RenderTargetArrayIndex")
                     {

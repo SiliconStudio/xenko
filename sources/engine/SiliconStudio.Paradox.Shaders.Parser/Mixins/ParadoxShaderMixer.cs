@@ -212,8 +212,12 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             // then rerun the semantic analysis
             foreach (var composition in CompositionsPerVariable.Where(x => x.Key.Type is ArrayType))
             {
-                var moduleMixin = composition.Key.GetTag(ParadoxTags.ShaderScope) as ModuleMixin;
+                var moduleMixin = GetTopMixin(composition.Key.GetTag(ParadoxTags.ShaderScope) as ModuleMixin);
                 var compilationContext = moduleMixin.MinimalContext.Where(x => !(moduleMixin.InheritanceList.Contains(x) || x == moduleMixin)).ToList();
+
+                // rerun the semantic analysis in all the shader that inherits from the one where the composition was declared.
+                foreach (var inheritedMixin in moduleMixin.InheritanceList)
+                    inheritedMixin.ParsingInfo = ParadoxSemanticAnalysis.RunAnalysis(inheritedMixin, compilationContext, true);
                 moduleMixin.ParsingInfo = ParadoxSemanticAnalysis.RunAnalysis(moduleMixin, compilationContext, true);
 
                 if (moduleMixin.ParsingInfo.ErrorsWarnings.HasErrors)
@@ -502,7 +506,18 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     FindShader(target, ref mixin);
             }
 
-            var foundMethod = GetTopMixin(mixin).GetMethodFromExpression(expression);
+            var topMixin = GetTopMixin(mixin);
+            if (topMixin == null)
+            {
+                log.Error(ParadoxMessageCode.ErrorTopMixinNotFound, expression.Span, expression);
+                return null;
+            }
+            var foundMethod = topMixin.GetMethodFromExpression(expression);
+            if (foundMethod == null)
+            {
+                log.Error(ParadoxMessageCode.ErrorCallNotFound, expression.Span, expression);
+                return null;
+            }
             if (foundMethod.Qualifiers.Contains(ParadoxStorageQualifier.Abstract))
             {
                 log.Error(ParadoxMessageCode.ErrorCallToAbstractMethod, expression.Span, expression, foundMethod);

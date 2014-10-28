@@ -167,10 +167,10 @@ namespace SiliconStudio.Paradox.Graphics
         private int copyProgramOffsetLocation = -1;
         private int copyProgramScaleLocation = -1;
         private float[] squareVertices = {
-			-0.5f, -0.5f,
-			0.5f, -0.5f,
-			-0.5f, 0.5f, 
-			0.5f, 0.5f,
+            0.0f, 0.0f,
+            1.0f, 0.0f,
+            0.0f, 1.0f, 
+            1.0f, 1.0f,
         };
 #endif
         /// <summary>
@@ -426,7 +426,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="regionSource">The region of the source <see cref="GraphicsResource"/> to copy.</param>
         /// <param name="destination">The destination into which to copy the data</param>
         /// <remarks>This might alter some states such as currently bound texture.</remarks>
-        public void CopyRegion(GraphicsResource source, ResourceRegion? regionSource, GraphicsResource destination)
+        public void CopyRegion(GraphicsResource source, int sourceSubresource, ResourceRegion? regionSource, GraphicsResource destination, int destinationSubResource, int dstX = 0, int dstY = 0, int dstZ = 0)
         {
 #if DEBUG
             EnsureContextActive();
@@ -437,7 +437,10 @@ namespace SiliconStudio.Paradox.Graphics
             if (sourceTexture == null || destTexture == null)
                 throw new NotImplementedException("Copy is only implemented for ITexture2D objects.");
 
-            var sourceRegion = regionSource.HasValue? regionSource.Value: new ResourceRegion(0, 0, 0, sourceTexture.Description.Width, sourceTexture.Description.Height, 0);
+            if (sourceSubresource != 0 || destinationSubResource != 0)
+                throw new NotImplementedException("Copy is only implemented for subresource 0 in OpenGL.");
+
+            var sourceRegion = regionSource.HasValue? regionSource.Value : new ResourceRegion(0, 0, 0, sourceTexture.Description.Width, sourceTexture.Description.Height, 0);
             var sourceRectangle = new Rectangle(sourceRegion.Left, sourceRegion.Top, sourceRegion.Right - sourceRegion.Left, sourceRegion.Bottom - sourceRegion.Top);
 
             if (sourceRectangle.Width == 0 || sourceRectangle.Height == 0)
@@ -447,6 +450,9 @@ namespace SiliconStudio.Paradox.Graphics
             {
                 if(sourceTexture.Width <= 16 || sourceTexture.Height <= 16)
                     throw new NotSupportedException("ReadPixels from texture smaller or equal to 16x16 pixels seems systematically to fails on some android devices (for exp: Galaxy S3)");
+
+                if (dstX != 0 || dstY != 0 || dstZ != 0)
+                    throw new NotSupportedException("ReadPixels from staging texture using non-zero destination is not supported");
 
                 GL.Viewport(0, 0, destTexture.Description.Width, destTexture.Description.Height);
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, FindOrCreateFBO(source));
@@ -472,12 +478,13 @@ namespace SiliconStudio.Paradox.Graphics
                 const string copyVertexShaderSource =
                     "attribute vec2 aPosition;   \n" +
                     "varying vec2 vTexCoord;     \n" +
-                    "uniform vec2 uScale;     \n" +
-                    "uniform vec2 uOffset;     \n" +
+                    "uniform vec4 uScale;     \n" +
+                    "uniform vec4 uOffset;     \n" +
                     "void main()                 \n" +
                     "{                           \n" +
-                    "   gl_Position = vec4(2.0 * uScale * (aPosition + uOffset), 0.0, 1.0); \n" +
-                    "   vTexCoord = aPosition + 0.5;   \n" +
+                    "   vec4 transformedPosition = aPosition.xyxy * uScale + uOffset;" +
+                    "   gl_Position = vec4(transformedPosition.zw * 2.0 - 1.0, 0.0, 1.0); \n" +
+                    "   vTexCoord = transformedPosition.xy;   \n" +
                     "}                           \n";
 
                 const string copyFragmentShaderSource =
@@ -518,13 +525,19 @@ namespace SiliconStudio.Paradox.Graphics
                 GL.Uniform1(textureLocation, 0);
             }
 
-            // compute program scale and offsets
-            var sourceSize = new Vector2(sourceTexture.Width, sourceTexture.Height);
             var regionSize = new Vector2(sourceRectangle.Width, sourceRectangle.Height);
-            var regionLeftTop = new Vector2(sourceRectangle.Left, sourceRectangle.Top);
-            var scale = new Vector2(sourceSize.X / regionSize.X, sourceSize.Y / regionSize.Y);
-            var offsetInPixels = sourceSize / 2 - (regionLeftTop + regionSize / 2);
-            var offset = new Vector2(offsetInPixels.X / sourceSize.X, offsetInPixels.Y / sourceSize.Y);
+
+            // Source
+            var sourceSize = new Vector2(sourceTexture.Width, sourceTexture.Height);
+            var sourceRegionLeftTop = new Vector2(sourceRectangle.Left, sourceRectangle.Top);
+            var sourceScale = new Vector2(regionSize.X / sourceSize.X, regionSize.Y / sourceSize.Y);
+            var sourceOffset = new Vector2(sourceRegionLeftTop.X / sourceSize.X, sourceRegionLeftTop.Y / sourceSize.Y);
+
+            // Dest
+            var destSize = new Vector2(destTexture.Width, destTexture.Height);
+            var destRegionLeftTop = new Vector2(dstX, dstY);
+            var destScale = new Vector2(regionSize.X / destSize.X, regionSize.Y / destSize.Y);
+            var destOffset = new Vector2(destRegionLeftTop.X / destSize.X, destRegionLeftTop.Y / destSize.Y);
 
             var enabledColors = new bool[4];
             GL.GetBoolean(GetPName.ColorWritemask, enabledColors);
@@ -544,7 +557,7 @@ namespace SiliconStudio.Paradox.Graphics
 
             activeTexture = 0;
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, ((Texture)source).resourceId);
+            GL.BindTexture(TextureTarget.Texture2D, sourceTexture.resourceId);
             boundTextures[0] = null;
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
@@ -555,8 +568,8 @@ namespace SiliconStudio.Paradox.Graphics
             GL.EnableVertexAttribArray(0);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 0, squareVertices);
-            GL.Uniform2(copyProgramOffsetLocation, offset.X, offset.Y);
-            GL.Uniform2(copyProgramScaleLocation, scale.X, scale.Y);
+            GL.Uniform4(copyProgramOffsetLocation, sourceOffset.X, sourceOffset.Y, destOffset.X, destOffset.Y);
+            GL.Uniform4(copyProgramScaleLocation, sourceScale.X, sourceScale.Y, destScale.X, destScale.Y);
             GL.DrawArrays(BeginMode.TriangleStrip, 0, 4);
             GL.DisableVertexAttribArray(0);
             GL.UseProgram(boundProgram);
@@ -581,7 +594,7 @@ namespace SiliconStudio.Paradox.Graphics
             GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, sourceFBO);
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, destinationFBO);
             GL.BlitFramebuffer(sourceRegion.Left, sourceRegion.Top, sourceRegion.Right, sourceRegion.Bottom,
-                               0, 0, destTexture.Description.Width, destTexture.Description.Height,
+                               dstX, dstY, dstX + sourceRegion.Right - sourceRegion.Left, dstY + sourceRegion.Bottom - sourceRegion.Top,
                                ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFBO);
 #endif
@@ -595,7 +608,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <remarks>This might alter some states such as currently bound texture.</remarks>
         public void Copy(GraphicsResource source, GraphicsResource destination)
         {
-            CopyRegion(source, null, destination);
+            CopyRegion(source, 0, null, destination, 0);
         }
 
         public void CopyCount(Buffer sourceBuffer, Buffer destBuffer, int offsetToDest)

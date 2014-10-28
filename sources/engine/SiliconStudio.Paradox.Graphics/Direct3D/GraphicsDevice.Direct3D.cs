@@ -359,7 +359,7 @@ namespace SiliconStudio.Paradox.Graphics
             NativeDeviceContext.CopyResource(source.NativeResource, destination.NativeResource);
         }
 
-        public void CopyRegion(GraphicsResource source, ResourceRegion? sourecRegion, GraphicsResource destination)
+        public void CopyRegion(GraphicsResource source, int sourceSubresource, ResourceRegion? sourecRegion, GraphicsResource destination, int destinationSubResource, int dstX = 0, int dstY = 0, int dstZ = 0)
         {
             if (source == null) throw new ArgumentNullException("source");
             if (destination == null) throw new ArgumentNullException("destination");
@@ -372,7 +372,7 @@ namespace SiliconStudio.Paradox.Graphics
                 nullableSharpDxRegion = new SharpDX.Direct3D11.ResourceRegion(value.Left, value.Top, value.Front, value.Right, value.Bottom, value.Back);
             }
 
-            NativeDeviceContext.CopySubresourceRegion(source.NativeResource, 0, nullableSharpDxRegion, destination.NativeResource, 0);
+            NativeDeviceContext.CopySubresourceRegion(source.NativeResource, sourceSubresource, nullableSharpDxRegion, destination.NativeResource, destinationSubResource, dstX, dstY, dstZ);
         }
 
         /// <inheritdoc />
