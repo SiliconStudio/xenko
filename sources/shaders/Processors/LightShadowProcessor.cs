@@ -34,21 +34,33 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
 
         #region Public properties
 
+        /// <summary>
+        /// The shadow map information per entity.
+        /// </summary>
         public Dictionary<Entity, EntityLightShadow> Lights
         {
             get { return enabledEntities; }
         }
 
+        /// <summary>
+        /// The shadow maps.
+        /// </summary>
         public virtual HashSet<ShadowMapTexture> ShadowMapTextures
         {
             get { return InternalShadowMapTextures; }
         }
 
+        /// <summary>
+        /// The active shadow map textures.
+        /// </summary>
         public virtual HashSet<ShadowMapTexture> ActiveShadowMapTextures
         {
             get { return InternalActiveShadowMapTextures; }
         }
 
+        /// <summary>
+        /// The active shadow maps.
+        /// </summary>
         public virtual HashSet<ShadowMap> ActiveShadowMaps
         {
             get { return InternalActiveShadowMaps; }

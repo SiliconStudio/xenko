@@ -38,6 +38,14 @@ namespace SiliconStudio.Paradox.Engine.Data
             SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.EntityModel.Data.EntityComponentDataConverter());
             // Register entity component reference for type EntityComponentData
             SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Data.EntityComponentReferenceDataConverter<SiliconStudio.Paradox.EntityModel.EntityComponent>());
+            // Register type CubemapBlendComponentData
+            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Engine.Data.CubemapBlendComponentDataConverter());
+            // Register entity component reference for type CubemapBlendComponentData
+            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Data.EntityComponentReferenceDataConverter<SiliconStudio.Paradox.Engine.CubemapBlendComponent>());
+            // Register type CubemapSourceComponentData
+            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Engine.Data.CubemapSourceComponentDataConverter());
+            // Register entity component reference for type CubemapSourceComponentData
+            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Data.EntityComponentReferenceDataConverter<SiliconStudio.Paradox.Engine.CubemapSourceComponent>());
             // Register type PhysicsColliderShapeData
             SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Engine.Data.PhysicsColliderShapeDataConverter());
             // Register type PhysicsComponentData
@@ -362,6 +370,60 @@ namespace SiliconStudio.Paradox.EntityModel.Data
 
 namespace SiliconStudio.Paradox.Engine.Data
 {
+    /// <summary>
+    /// Data type for <see cref="SiliconStudio.Paradox.Engine.CubemapBlendComponent"/>.
+    /// </summary>
+    [SiliconStudio.Core.DataContract("CubemapBlendComponentData")]
+    public partial class CubemapBlendComponentData : SiliconStudio.Paradox.EntityModel.Data.EntityComponentData
+    {
+        /// <summary>
+        /// Data field for <see cref="SiliconStudio.Paradox.Engine.CubemapBlendComponent.Size"/>.
+        /// </summary>
+        public System.Int32 Size;
+
+        /// <summary>
+        /// Data field for <see cref="SiliconStudio.Paradox.Engine.CubemapBlendComponent.MaxBlendCount"/>.
+        /// </summary>
+        public System.Int32 MaxBlendCount;
+
+        /// <summary>
+        /// Data field for <see cref="SiliconStudio.Paradox.Engine.CubemapBlendComponent.Enabled"/>.
+        /// </summary>
+        public System.Boolean Enabled;
+    }
+
+    /// <summary>
+    /// Data type for <see cref="SiliconStudio.Paradox.Engine.CubemapSourceComponent"/>.
+    /// </summary>
+    [SiliconStudio.Core.DataContract("CubemapSourceComponentData")]
+    public partial class CubemapSourceComponentData : SiliconStudio.Paradox.EntityModel.Data.EntityComponentData
+    {
+        /// <summary>
+        /// Data field for <see cref="SiliconStudio.Paradox.Engine.CubemapSourceComponent.InfinityCubemap"/>.
+        /// </summary>
+        public System.Boolean InfinityCubemap;
+
+        /// <summary>
+        /// Data field for <see cref="SiliconStudio.Paradox.Engine.CubemapSourceComponent.IsDynamic"/>.
+        /// </summary>
+        public System.Boolean IsDynamic;
+
+        /// <summary>
+        /// Data field for <see cref="SiliconStudio.Paradox.Engine.CubemapSourceComponent.Enabled"/>.
+        /// </summary>
+        public System.Boolean Enabled;
+
+        /// <summary>
+        /// Data field for <see cref="SiliconStudio.Paradox.Engine.CubemapSourceComponent.Size"/>.
+        /// </summary>
+        public System.Int32 Size;
+
+        /// <summary>
+        /// Data field for <see cref="SiliconStudio.Paradox.Engine.CubemapSourceComponent.InfluenceRadius"/>.
+        /// </summary>
+        public System.Single InfluenceRadius;
+    }
+
     /// <summary>
     /// Data type for <see cref="SiliconStudio.Paradox.Engine.PhysicsColliderShape"/>.
     /// </summary>
@@ -1081,11 +1143,179 @@ namespace SiliconStudio.Paradox.Effects.Data
     }
 
 
-
 }
 
 namespace SiliconStudio.Paradox.Engine.Data
 {
+    /// <summary>
+    /// Converter type for <see cref="SiliconStudio.Paradox.Engine.CubemapBlendComponent"/>.
+    /// </summary>
+    public partial class CubemapBlendComponentDataConverter : SiliconStudio.Paradox.EntityModel.Data.EntityComponentDataConverter	
+	{
+		/// <inheritdoc/>
+		public override System.Type DataType
+		{
+			get { return typeof(SiliconStudio.Paradox.Engine.Data.CubemapBlendComponentData); }
+		}
+
+		/// <inheritdoc/>
+		public override System.Type ObjectType
+		{
+			get { return typeof(SiliconStudio.Paradox.Engine.CubemapBlendComponent); }
+		}
+				
+        /// <inheritdoc/>
+        public override void ConvertFromData(SiliconStudio.Core.Serialization.Converters.ConverterContext converterContext, object data, ref object obj)
+        {
+            var dataT = (SiliconStudio.Paradox.Engine.Data.CubemapBlendComponentData)data;
+            var objT = (SiliconStudio.Paradox.Engine.CubemapBlendComponent)obj;
+            ConvertFromData(converterContext, dataT, ref objT);
+            obj = objT;
+        }
+		
+        /// <inheritdoc/>
+        public override void ConvertToData(SiliconStudio.Core.Serialization.Converters.ConverterContext converterContext, ref object data, object obj)
+        {
+            var dataT = (SiliconStudio.Paradox.Engine.Data.CubemapBlendComponentData)data;
+            var objT = (SiliconStudio.Paradox.Engine.CubemapBlendComponent)obj;
+            ConvertToData(converterContext, ref dataT, objT);
+            data = dataT;
+        }
+
+		        /// <inheritdoc/>
+        public void ConvertToData(SiliconStudio.Core.Serialization.Converters.ConverterContext context, ref SiliconStudio.Paradox.Engine.Data.CubemapBlendComponentData target, SiliconStudio.Paradox.Engine.CubemapBlendComponent source)
+        {
+			if(target == null)
+                target = new SiliconStudio.Paradox.Engine.Data.CubemapBlendComponentData();
+				
+			{
+				var targetBase = (SiliconStudio.Paradox.EntityModel.Data.EntityComponentData)target;
+				var sourceBase = (SiliconStudio.Paradox.EntityModel.EntityComponent)source;
+				ConvertToData(context, ref targetBase, sourceBase);
+			}
+
+            target.Size = source.Size;
+            target.MaxBlendCount = source.MaxBlendCount;
+            target.Enabled = source.Enabled;
+        }
+
+        public override bool CanConstruct
+        {
+            get { return true; }
+        }
+		
+		
+        /// <inheritdoc/>
+        public override void ConstructFromData(SiliconStudio.Core.Serialization.Converters.ConverterContext converterContext, object data, ref object obj)
+        {
+            var dataT = (SiliconStudio.Paradox.Engine.Data.CubemapBlendComponentData)data;
+            var objT = (SiliconStudio.Paradox.Engine.CubemapBlendComponent)obj;
+            ConstructFromData(converterContext, dataT, ref objT);
+            obj = objT;
+        }
+
+		/// <inheritdoc/>
+        public void ConstructFromData(SiliconStudio.Core.Serialization.Converters.ConverterContext context, SiliconStudio.Paradox.Engine.Data.CubemapBlendComponentData target, ref SiliconStudio.Paradox.Engine.CubemapBlendComponent source)
+		{
+			source = new SiliconStudio.Paradox.Engine.CubemapBlendComponent();
+		}
+
+        /// <inheritdoc/>
+        public void ConvertFromData(SiliconStudio.Core.Serialization.Converters.ConverterContext context, SiliconStudio.Paradox.Engine.Data.CubemapBlendComponentData target, ref SiliconStudio.Paradox.Engine.CubemapBlendComponent source)
+        {
+            source.Size = target.Size;
+            source.MaxBlendCount = target.MaxBlendCount;
+            source.Enabled = target.Enabled;
+        }
+    }
+
+    /// <summary>
+    /// Converter type for <see cref="SiliconStudio.Paradox.Engine.CubemapSourceComponent"/>.
+    /// </summary>
+    public partial class CubemapSourceComponentDataConverter : SiliconStudio.Paradox.EntityModel.Data.EntityComponentDataConverter	
+	{
+		/// <inheritdoc/>
+		public override System.Type DataType
+		{
+			get { return typeof(SiliconStudio.Paradox.Engine.Data.CubemapSourceComponentData); }
+		}
+
+		/// <inheritdoc/>
+		public override System.Type ObjectType
+		{
+			get { return typeof(SiliconStudio.Paradox.Engine.CubemapSourceComponent); }
+		}
+				
+        /// <inheritdoc/>
+        public override void ConvertFromData(SiliconStudio.Core.Serialization.Converters.ConverterContext converterContext, object data, ref object obj)
+        {
+            var dataT = (SiliconStudio.Paradox.Engine.Data.CubemapSourceComponentData)data;
+            var objT = (SiliconStudio.Paradox.Engine.CubemapSourceComponent)obj;
+            ConvertFromData(converterContext, dataT, ref objT);
+            obj = objT;
+        }
+		
+        /// <inheritdoc/>
+        public override void ConvertToData(SiliconStudio.Core.Serialization.Converters.ConverterContext converterContext, ref object data, object obj)
+        {
+            var dataT = (SiliconStudio.Paradox.Engine.Data.CubemapSourceComponentData)data;
+            var objT = (SiliconStudio.Paradox.Engine.CubemapSourceComponent)obj;
+            ConvertToData(converterContext, ref dataT, objT);
+            data = dataT;
+        }
+
+		        /// <inheritdoc/>
+        public void ConvertToData(SiliconStudio.Core.Serialization.Converters.ConverterContext context, ref SiliconStudio.Paradox.Engine.Data.CubemapSourceComponentData target, SiliconStudio.Paradox.Engine.CubemapSourceComponent source)
+        {
+			if(target == null)
+                target = new SiliconStudio.Paradox.Engine.Data.CubemapSourceComponentData();
+				
+			{
+				var targetBase = (SiliconStudio.Paradox.EntityModel.Data.EntityComponentData)target;
+				var sourceBase = (SiliconStudio.Paradox.EntityModel.EntityComponent)source;
+				ConvertToData(context, ref targetBase, sourceBase);
+			}
+
+            target.InfinityCubemap = source.InfinityCubemap;
+            target.IsDynamic = source.IsDynamic;
+            target.Enabled = source.Enabled;
+            target.Size = source.Size;
+            target.InfluenceRadius = source.InfluenceRadius;
+        }
+
+        public override bool CanConstruct
+        {
+            get { return true; }
+        }
+		
+		
+        /// <inheritdoc/>
+        public override void ConstructFromData(SiliconStudio.Core.Serialization.Converters.ConverterContext converterContext, object data, ref object obj)
+        {
+            var dataT = (SiliconStudio.Paradox.Engine.Data.CubemapSourceComponentData)data;
+            var objT = (SiliconStudio.Paradox.Engine.CubemapSourceComponent)obj;
+            ConstructFromData(converterContext, dataT, ref objT);
+            obj = objT;
+        }
+
+		/// <inheritdoc/>
+        public void ConstructFromData(SiliconStudio.Core.Serialization.Converters.ConverterContext context, SiliconStudio.Paradox.Engine.Data.CubemapSourceComponentData target, ref SiliconStudio.Paradox.Engine.CubemapSourceComponent source)
+		{
+			source = new SiliconStudio.Paradox.Engine.CubemapSourceComponent();
+		}
+
+        /// <inheritdoc/>
+        public void ConvertFromData(SiliconStudio.Core.Serialization.Converters.ConverterContext context, SiliconStudio.Paradox.Engine.Data.CubemapSourceComponentData target, ref SiliconStudio.Paradox.Engine.CubemapSourceComponent source)
+        {
+            source.InfinityCubemap = target.InfinityCubemap;
+            source.IsDynamic = target.IsDynamic;
+            source.Enabled = target.Enabled;
+            source.Size = target.Size;
+            source.InfluenceRadius = target.InfluenceRadius;
+        }
+    }
+
+
     /// <summary>
     /// Converter type for <see cref="SiliconStudio.Paradox.Engine.PhysicsComponent"/>.
     /// </summary>

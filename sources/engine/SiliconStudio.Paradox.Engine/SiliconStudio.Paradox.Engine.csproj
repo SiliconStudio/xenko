@@ -180,6 +180,8 @@
     <Compile Include="Data\PolySortExtensions.cs" />
     <Compile Include="Engine\Bullet2PhysicsSystem.cs" />
     <Compile Include="Engine\ColliderExtensions.cs" />
+    <Compile Include="Engine\CubemapBlendComponent.cs" />
+    <Compile Include="Engine\CubemapSourceComponent.cs" />
     <Compile Include="Engine\IPhysicsSystem.cs" />
     <Compile Include="Engine\PhysicsColliderShape.cs" />
     <Compile Include="Engine\PhysicsColliderShapeData.cs" />

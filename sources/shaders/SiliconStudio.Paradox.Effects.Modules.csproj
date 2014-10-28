@@ -430,6 +430,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ShadingBaseMRT.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Processors\CubemapBlendProcessor.cs" />
+    <Compile Include="Processors\CubemapSourceProcessor.cs" />
     <Compile Include="Renderers\CubeMapBlender.cs" />
     <Compile Include="Processors\DynamicLightShadowProcessor.cs" />
     <Compile Include="Processors\EntityLightShadow.cs" />
