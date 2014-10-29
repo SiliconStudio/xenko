@@ -12,13 +12,8 @@ class CubemapSkybox<Texture TTextureSkybox> : ComputeColorTextureCube<TTextureSk
     {
         float height = NearClipPlane * tan(0.5 * FieldOfView);
         float width = height * Aspect;
-        float4 screenVS = float4(float2(height, width) * streams.ScreenPosition.xy, -NearClipPlane, 0);
+        float4 screenVS = float4(float2(width, height) * streams.ScreenPosition.xy, -NearClipPlane, 0);
         float4 ray = mul(screenVS, ViewInverse);
-
-        //float height = 0.1 * tan(0.5 * 0.6);
-        //float width = height * 1.77778;
-        //float4 screenVS = float4(float2(height, width) * streams.ScreenPosition.xy, -0.1, 0);
-        //float4 ray = mul(screenVS, ViewInverse);
         return ray.xyz;
     }
 };

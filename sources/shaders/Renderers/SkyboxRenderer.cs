@@ -8,8 +8,13 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 {
     public class SkyboxRenderer : Renderer
     {
-        private Texture skybox;
-        public SkyboxRenderer(IServiceRegistry services, Texture skyboxTexture)
+        private TextureCube skybox;
+
+        private Effect skyboxEffect;
+        
+        private PostEffectQuad skyQuad;
+
+        public SkyboxRenderer(IServiceRegistry services, TextureCube skyboxTexture)
             : base(services)
         {
             skybox = skyboxTexture;
@@ -17,12 +22,23 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         public override void Load()
         {
-            throw new System.NotImplementedException();
+            skyboxEffect = EffectSystem.LoadEffect("SkyboxShader");
+            skyboxEffect.Parameters.Set(TexturingKeys.TextureCube0, skybox);
+            skyQuad = new PostEffectQuad(GraphicsDevice, skyboxEffect);
+
+            Pass.StartPass += RenderSky;
         }
 
         public override void Unload()
         {
-            throw new System.NotImplementedException();
+            skyboxEffect.Dispose();
+            skyQuad.Dispose();
+        }
+
+        private void RenderSky(RenderContext context)
+        {
+            skyboxEffect.Apply(context.CurrentPass.Parameters);
+            skyQuad.Draw();
         }
     }
 }

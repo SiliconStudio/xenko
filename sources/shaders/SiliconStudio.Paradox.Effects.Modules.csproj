@@ -436,6 +436,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ShadingBaseMRT.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="PostEffect\PostEffectBack.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>PostEffectBack.pdxsl</DependentUpon>
+    </Compile>
     <Compile Include="Processors\CubemapBlendProcessor.cs" />
     <Compile Include="Processors\CubemapSourceProcessor.cs" />
     <Compile Include="Renderers\CubeMapBlender.cs" />
@@ -1233,6 +1239,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>TransformationSkinning.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="SkyboxEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SkyboxEffect.pdxfx</DependentUpon>
+    </Compile>
     <Compile Include="SSAOKeys.cs" />
     <Compile Include="PostEffectKeys.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -1824,6 +1836,10 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>TextureStream.cs</LastGenOutput>
     </None>
+    <None Include="PostEffect\PostEffectBack.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>PostEffectBack.cs</LastGenOutput>
+    </None>
     <None Include="Shading\AmbientMapShading.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>AmbientMapShading.cs</LastGenOutput>
@@ -2203,6 +2219,10 @@
     <None Include="Skinning\TransformationSkinning.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>TransformationSkinning.cs</LastGenOutput>
+    </None>
+    <None Include="SkyboxEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>SkyboxEffect.cs</LastGenOutput>
     </None>
     <None Include="Tessellation\ShaderBaseTessellation.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
