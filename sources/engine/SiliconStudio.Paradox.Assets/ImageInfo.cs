@@ -47,19 +47,19 @@ namespace SiliconStudio.Paradox.Assets
         public ImageOrientation Orientation { get; set; }
 
         /// <summary>
-        /// Gets or Sets atlas border mode in X axis for images inside atlas texture
+        /// Gets or sets atlas border mode in X axis for images inside atlas texture
         /// </summary>
         [DataMember(40)]
         public TextureAddressMode AddressModeU { get; set; }
 
         /// <summary>
-        /// Gets or Sets atlas border mode in Y axis for images inside atlas texture
+        /// Gets or sets atlas border mode in Y axis for images inside atlas texture
         /// </summary>
         [DataMember(50)]
         public TextureAddressMode AddressModeV { get; set; }
 
         /// <summary>
-        /// Gets or Sets atlas border color for images inside atlas texture where Border mode is used in AddressModeU
+        /// Gets or sets atlas border color for images inside atlas texture where Border mode is used in AddressModeU
         /// </summary>
         [DataMember(60)]
         public Color BorderColor { get; set; }

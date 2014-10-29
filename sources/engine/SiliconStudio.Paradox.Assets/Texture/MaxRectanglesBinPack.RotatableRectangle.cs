@@ -10,17 +10,17 @@ namespace SiliconStudio.Paradox.Assets.Texture
     public struct RotatableRectangle
     {
         /// <summary>
-        /// Gets or Sets a Key for this rectangle
+        /// Gets or sets a Key for this rectangle
         /// </summary>
         public string Key;
 
         /// <summary>
-        /// Gets or Sets rectangle value whose width and height is swapped when the rectangle is rotated
+        /// Gets or sets rectangle value whose width and height is swapped when the rectangle is rotated
         /// </summary>
         public Rectangle Value;
 
         /// <summary>
-        /// Gets or Sets a rotation flag to indicate that this rectangle is rotated by 90 degree
+        /// Gets or sets a rotation flag to indicate that this rectangle is rotated by 90 degree
         /// </summary>
         public bool IsRotated;
 

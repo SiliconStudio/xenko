@@ -13,41 +13,41 @@ namespace SiliconStudio.Paradox.Assets.Texture
     public partial class TexturePacker
     {
         /// <summary>
-        /// Gets or Sets MaxRects heuristic algorithm to place rectangles
+        /// Gets or sets MaxRects heuristic algorithm to place rectangles
         /// </summary>
         public TexturePackingMethod Algorithm;
 
         /// <summary>
-        /// Gets or Sets the use of rotation for packing
+        /// Gets or sets the use of rotation for packing
         /// </summary>
         public bool UseRotation;
 
         /// <summary>
-        /// Gets or Sets the use of Multipack.
+        /// Gets or sets the use of Multipack.
         /// If Multipack is enabled, a packer could create more than one texture atlases to fit all textures,
         /// whereas if Multipack is disabled, a packer always creates only one texture atlas which might not fit all textures.
         /// </summary>
         public bool UseMultipack;
 
         /// <summary>
-        /// Gets or Sets texture atlas size constraints: Any or Power of two
+        /// Gets or sets texture atlas size constraints: Any or Power of two
         /// - Any would create a texture exactly by a given size.
         /// - PowerOfTwo would create a texture where width and height are of power of two by ceiling a given size to the nearest power of two value.
         /// </summary>
         public AtlasSizeConstraints AtlasSizeContraint;
 
         /// <summary>
-        /// Gets or Sets MaxWidth for expected TextureAtlas
+        /// Gets or sets MaxWidth for expected TextureAtlas
         /// </summary>
         public int MaxWidth;
 
         /// <summary>
-        /// Gets or Sets MaxHeight for expected TextureAtlas
+        /// Gets or sets MaxHeight for expected TextureAtlas
         /// </summary>
         public int MaxHeight;
 
         /// <summary>
-        /// Gets or Sets border size
+        /// Gets or sets border size
         /// </summary>
         public int BorderSize;
 
@@ -279,27 +279,27 @@ namespace SiliconStudio.Paradox.Assets.Texture
     public class IntermediateTexture
     {
         /// <summary>
-        /// Gets or Sets CPU-resource texture
+        /// Gets or sets CPU-resource texture
         /// </summary>
         public Image Texture;
 
         /// <summary>
-        /// Gets or Sets Region for the texture relative to a texture atlas that contains it
+        /// Gets or sets Region for the texture relative to a texture atlas that contains it
         /// </summary>
         public RotatableRectangle Region;
 
         /// <summary>
-        /// Gets or Sets border modes in X axis which applies specific TextureAddressMode in the border of each texture element in a given size of border
+        /// Gets or sets border modes in X axis which applies specific TextureAddressMode in the border of each texture element in a given size of border
         /// </summary>
         public TextureAddressMode AddressModeU;
 
         /// <summary>
-        /// Gets or Sets border modes in Y axis which applies specific TextureAddressMode in the border of each texture element in a given size of border
+        /// Gets or sets border modes in Y axis which applies specific TextureAddressMode in the border of each texture element in a given size of border
         /// </summary>
         public TextureAddressMode AddressModeV;
 
         /// <summary>
-        /// Gets or Sets Border color when AddressModeU is set to Border mode
+        /// Gets or sets Border color when AddressModeU is set to Border mode
         /// </summary>
         public Color? BorderColor;
     }
@@ -310,17 +310,17 @@ namespace SiliconStudio.Paradox.Assets.Texture
     public class TextureAtlas
     {
         /// <summary>
-        /// Gets or Sets a list of packed IntermediateTexture
+        /// Gets or sets a list of packed IntermediateTexture
         /// </summary>
         public readonly List<IntermediateTexture> Textures = new List<IntermediateTexture>();
 
         /// <summary>
-        /// Gets or Sets Width of the texture atlas
+        /// Gets or sets Width of the texture atlas
         /// </summary>
         public int Width;
 
         /// <summary>
-        /// Gets or Sets Height of the texture atlas
+        /// Gets or sets Height of the texture atlas
         /// </summary>
         public int Height;
 

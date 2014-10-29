@@ -68,47 +68,47 @@ namespace SiliconStudio.Paradox.Assets
         public bool PremultiplyAlpha { get; set; }
 
         /// <summary>
-        /// Gets or Sets a value indicating whether to generate texture atlas
+        /// Gets or sets a value indicating whether to generate texture atlas
         /// </summary>
         [DataMember(80)]
         [DefaultValue(true)]
         public bool GenerateTextureAtlas { get; set; }
 
         /// <summary>
-        /// Gets or Sets MaxRects rectangles placement algorithm
+        /// Gets or sets MaxRects rectangles placement algorithm
         /// </summary>
         [DataMember(90)]
         [DefaultValue(TexturePackingMethod.Best)]
         public TexturePackingMethod AtlasPackingAlgorithm { get; set; }
 
         /// <summary>
-        /// Gets or Sets the use of Multipack atlas mode which allows more than one texture atlas to fit all given textures
+        /// Gets or sets the use of Multipack atlas mode which allows more than one texture atlas to fit all given textures
         /// </summary>
         [DataMember(100)]
         [DefaultValue(false)]
         public bool UseMultipackAtlas { get; set; }
 
         /// <summary>
-        /// Gets or Sets whether or not to use Rotation for images inside atlas texture
+        /// Gets or sets whether or not to use Rotation for images inside atlas texture
         /// </summary>
         [DataMember(110)]
         [DefaultValue(true)]
         public bool UseRotationInAtlas { get; set; }
 
         /// <summary>
-        /// Gets or Sets max width for generated atlas textures
+        /// Gets or sets max width for generated atlas textures
         /// </summary>
         [DataMember(120)]
         public int AtlasMaxWidth { get; set; }
 
         /// <summary>
-        /// Gets or Sets max height for generated atlas textures
+        /// Gets or sets max height for generated atlas textures
         /// </summary>
         [DataMember(130)]
         public int AtlasMaxHeight { get; set; }
 
         /// <summary>
-        /// Gets or Sets atlas border size for images inside atlas texture
+        /// Gets or sets atlas border size for images inside atlas texture
         /// </summary>
         [DataMember(140)]
         [DefaultValue(0)]
