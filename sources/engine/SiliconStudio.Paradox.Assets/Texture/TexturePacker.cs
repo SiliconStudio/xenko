@@ -159,7 +159,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
             /// <summary>
             /// Gets or Sets MaxRects heuristic algorithm to place rectangles
             /// </summary>
-            public MaxRectanglesBinPack.FreeRectangleChoiceHeuristic Algorithm;
+            public MaxRectanglesBinPack.HeuristicMethod Algorithm;
 
             /// <summary>
             /// Gets a boolean indicating if border is enabled

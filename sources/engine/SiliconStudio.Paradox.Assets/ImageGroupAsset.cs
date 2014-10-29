@@ -79,8 +79,8 @@ namespace SiliconStudio.Paradox.Assets
         /// Gets or Sets MaxRects rectangles placement algorithm
         /// </summary>
         [DataMember(90)]
-        [DefaultValue(MaxRectanglesBinPack.FreeRectangleChoiceHeuristic.RectangleBestShortSideFit)]
-        public MaxRectanglesBinPack.FreeRectangleChoiceHeuristic AtlasPackingAlgorithm { get; set; }
+        [DefaultValue(MaxRectanglesBinPack.HeuristicMethod.BestShortSideFit)]
+        public MaxRectanglesBinPack.HeuristicMethod AtlasPackingAlgorithm { get; set; }
 
         /// <summary>
         /// Gets or Sets the use of Multipack atlas mode which allows more than one texture atlas to fit all given textures
@@ -140,7 +140,7 @@ namespace SiliconStudio.Paradox.Assets
             PremultiplyAlpha = true;
 
             GenerateTextureAtlas = true;
-            AtlasPackingAlgorithm = MaxRectanglesBinPack.FreeRectangleChoiceHeuristic.RectangleBestShortSideFit;
+            AtlasPackingAlgorithm = MaxRectanglesBinPack.HeuristicMethod.BestShortSideFit;
             UseMultipackAtlas = false;
 
             AtlasBorderMode = TextureAddressMode.Border;
@@ -171,7 +171,7 @@ namespace SiliconStudio.Paradox.Assets
         /// <returns></returns>
         public static string BuildTextureAtlasUrl(UFile textureAbsolutePath, int atlasIndex)
         {
-            return textureAbsolutePath + "__ATLAS_IMAGE_GROUP__" + atlasIndex;
+            return textureAbsolutePath + "__ATLAS_TEXTURE__" + atlasIndex;
         }
     }
 

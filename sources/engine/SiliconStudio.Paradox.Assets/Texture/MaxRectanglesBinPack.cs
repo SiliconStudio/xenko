@@ -14,13 +14,13 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// <summary>
         /// Heuristic methods for choosing a place for a given rectangle
         /// </summary>
-        public enum FreeRectangleChoiceHeuristic
+        public enum HeuristicMethod
         {
-            RectangleBestShortSideFit,
-            RectangleBestLongSideFit,
-            RectangleBestAreaFit,
-            RectangleBottomLeftRule,
-            RectangleContactPointRule
+            BestShortSideFit,
+            BestLongSideFit,
+            BestAreaFit,
+            BottomLeftRule,
+            ContactPointRule
         }
 
         private bool useRotation;
@@ -74,8 +74,8 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// Note that, rectangles is modified when any rectangle could be packed, it will be removed from the collection.
         /// </summary>
         /// <param name="rectangles">a list of rectangles to be packed</param>
-        /// <param name="method">MaxRects heuristic method which default value is RectangleBestShortSideFit</param>
-        public void PackRectangles(List<RotatableRectangle> rectangles, FreeRectangleChoiceHeuristic method = FreeRectangleChoiceHeuristic.RectangleBestShortSideFit)
+        /// <param name="method">MaxRects heuristic method which default value is BestShortSideFit</param>
+        public void PackRectangles(List<RotatableRectangle> rectangles, HeuristicMethod method = HeuristicMethod.BestShortSideFit)
         {
             var bestNode = new RotatableRectangle();
 
@@ -219,7 +219,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// <param name="score1">First score</param>
         /// <param name="score2">Second score</param>
         /// <returns></returns>
-        private RotatableRectangle ChooseTargetPosition(RotatableRectangle rectangle, FreeRectangleChoiceHeuristic method, out int score1, out int score2)
+        private RotatableRectangle ChooseTargetPosition(RotatableRectangle rectangle, HeuristicMethod method, out int score1, out int score2)
         {
             score1 = int.MaxValue;
             score2 = int.MaxValue;
@@ -228,20 +228,20 @@ namespace SiliconStudio.Paradox.Assets.Texture
 
             switch (method)
             {
-                case FreeRectangleChoiceHeuristic.RectangleBestShortSideFit:
+                case HeuristicMethod.BestShortSideFit:
                     bestNode = FindPositionForNewNodeBestShortSideFit(rectangle, out score1, ref score2);
                     break;
-                case FreeRectangleChoiceHeuristic.RectangleBottomLeftRule:
+                case HeuristicMethod.BottomLeftRule:
                     bestNode = FindPositionForNewNodeBottomLeft(rectangle, out score1, ref score2);
                     break;
-                case FreeRectangleChoiceHeuristic.RectangleContactPointRule:
+                case HeuristicMethod.ContactPointRule:
                     bestNode = FindPositionForNewNodeContactPoint(rectangle, out score1);
                     score1 *= -1;
                     break;
-                case FreeRectangleChoiceHeuristic.RectangleBestLongSideFit:
+                case HeuristicMethod.BestLongSideFit:
                     bestNode = FindPositionForNewNodeBestLongSideFit(rectangle, ref score2, out score1);
                     break;
-                case FreeRectangleChoiceHeuristic.RectangleBestAreaFit:
+                case HeuristicMethod.BestAreaFit:
                     bestNode = FindPositionForNewNodeBestAreaFit(rectangle, out score1, ref score2);
                     break;
                 default:
