@@ -18,6 +18,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
 
         #endregion
 
+        #region Public properties
+
         public Dictionary<Entity, CubemapBlendComponent> Cubemaps
         {
             get
@@ -26,23 +28,15 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
             }
         }
 
+        #endregion
+
+        #region Constructor
+
         public CubemapBlendProcessor(GraphicsDevice device)
             : base(new PropertyKey[] { CubemapBlendComponent.Key })
         {
             graphicsDevice = device;
         }
-
-        #region Public methods
-        
-        /*
-        /// <inheritdoc/>
-        public override void Update(GameTime time)
-        {
-            base.Update(time);
-
-            // TODO: check position changes and only update accordingly
-        }
-        */
 
         #endregion
 
@@ -69,11 +63,5 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
         }
 
         #endregion
-    }
-
-    public struct CubemapBlendInformation
-    {
-        public CubemapBlendComponent Component;
-        public int Size;
     }
 }

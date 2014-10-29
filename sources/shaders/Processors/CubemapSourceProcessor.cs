@@ -4,7 +4,6 @@
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;

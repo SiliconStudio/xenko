@@ -432,6 +432,21 @@ namespace SiliconStudio.Paradox.Engine.Data
         /// Data field for <see cref="SiliconStudio.Paradox.Engine.CubemapSourceComponent.InfluenceRadius"/>.
         /// </summary>
         public System.Single InfluenceRadius;
+
+        /// <summary>
+        /// Data field for <see cref="SiliconStudio.Paradox.Engine.CubemapSourceComponent.NearPlane"/>.
+        /// </summary>
+        public System.Single NearPlane;
+
+        /// <summary>
+        /// Data field for <see cref="SiliconStudio.Paradox.Engine.CubemapSourceComponent.FarPlane"/>.
+        /// </summary>
+        public System.Single FarPlane;
+
+        /// <summary>
+        /// Data field for <see cref="SiliconStudio.Paradox.Engine.CubemapSourceComponent.Texture"/>.
+        /// </summary>
+        public SiliconStudio.Core.Serialization.ContentReference<SiliconStudio.Paradox.Graphics.TextureCube> Texture;
     }
 
     /// <summary>
@@ -1294,6 +1309,9 @@ namespace SiliconStudio.Paradox.Engine.Data
             target.GenerateMips = source.GenerateMips;
             target.InfinityCubemap = source.InfinityCubemap;
             target.InfluenceRadius = source.InfluenceRadius;
+            target.NearPlane = source.NearPlane;
+            target.FarPlane = source.FarPlane;
+            context.ConvertToData(ref target.Texture, source.Texture);
         }
 
         public override bool CanConstruct
@@ -1326,6 +1344,13 @@ namespace SiliconStudio.Paradox.Engine.Data
             source.GenerateMips = target.GenerateMips;
             source.InfinityCubemap = target.InfinityCubemap;
             source.InfluenceRadius = target.InfluenceRadius;
+            source.NearPlane = target.NearPlane;
+            source.FarPlane = target.FarPlane;
+            {
+                var temp = source.Texture;
+                context.ConvertFromData(target.Texture, ref temp);
+                source.Texture = temp;
+            }
         }
     }
 

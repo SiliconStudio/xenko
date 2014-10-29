@@ -1,8 +1,6 @@
 // Copyright (c) 2014 Silicon Studio Corporation (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
-
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects.Modules.Processors;
@@ -19,7 +17,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
     {
         #region Private static members
 
-        private static readonly Vector3[] targetPositions = new Vector3[6]
+        private static readonly Vector3[] TargetPositions = new Vector3[6]
         {
             Vector3.UnitX,
             -Vector3.UnitX,
@@ -29,7 +27,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             -Vector3.UnitZ,
         };
 
-        private static readonly Vector3[] cameraUps = new Vector3[6]
+        private static readonly Vector3[] CameraUps = new Vector3[6]
         {
             Vector3.UnitY,
             Vector3.UnitY,
@@ -108,8 +106,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             {
                 Matrix worldToCamera;
                 Matrix projection;
-                ComputeViewProjectionMatrices(cameraPos, targetPositions[i], cameraUps[i], component, out worldToCamera, out projection);
-                cameraViewProjMatrices[i] = worldToCamera * projection;
+                ComputeViewProjectionMatrices(cameraPos, TargetPositions[i], CameraUps[i], component, out worldToCamera, out projection);
 
                 // TODO: set parameters on another collection?
                 GraphicsDevice.Parameters.Set(TransformationKeys.View, worldToCamera);
@@ -153,7 +150,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             {
                 Matrix worldToCamera;
                 Matrix projection;
-                ComputeViewProjectionMatrices(cameraPos, targetPositions[i], cameraUps[i], component, out worldToCamera, out projection);
+                ComputeViewProjectionMatrices(cameraPos, TargetPositions[i], CameraUps[i], component, out worldToCamera, out projection);
                 cameraViewProjMatrices[i] = worldToCamera * projection;
             }
 

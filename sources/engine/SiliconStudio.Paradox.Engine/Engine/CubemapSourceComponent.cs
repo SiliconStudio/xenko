@@ -36,6 +36,8 @@ namespace SiliconStudio.Paradox.Engine
         public CubemapSourceComponent(TextureCube texture) : this()
         {
             textureCube = texture;
+            if (texture != null)
+                Size = texture.Width;
             IsDynamic = false;
         }
 
@@ -92,13 +94,11 @@ namespace SiliconStudio.Paradox.Engine
         [DefaultValue(100.0f)]
         public float FarPlane { get; set; }
 
-        //[DataMemberConvert]
-        //public Texture2D TextureTest { get; set; }
-
         /// <summary>
         /// The texture attached to this component.
         /// </summary>
-        [DataMemberIgnore]
+        [DataMemberConvert]
+        [DataMemberCustomSerializer]
         public TextureCube Texture
         {
             get
