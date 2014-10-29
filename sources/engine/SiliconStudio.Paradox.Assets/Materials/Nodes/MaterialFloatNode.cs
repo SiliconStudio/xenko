@@ -25,5 +25,11 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
             : base(value)
         {
         }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return "Float";
+        }
     }
 }
