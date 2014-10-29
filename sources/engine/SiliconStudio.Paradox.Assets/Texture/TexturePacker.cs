@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
@@ -42,12 +44,91 @@ namespace SiliconStudio.Paradox.Assets.Texture
         }
 
         /// <summary>
-        /// Packs textureElement into textureAtlases.
-        /// Note that, textureElements is modified when any texture element could be packed, it will be removed from the collection.
+        /// Packs textureElement into textureAtlases
+        /// </summary>
+        /// <param name="textureElements"></param>
+        /// <returns></returns>
+        public bool PackTextures(Dictionary<string, IntermediateTexture> textureElements)
+        {
+            if (packConfig.Algorithm == MaxRectanglesBinPack.HeuristicMethod.Best)
+            {
+                var results = new Dictionary<MaxRectanglesBinPack.HeuristicMethod, List<TextureAtlas>>();
+
+                var bestAlgorithm = MaxRectanglesBinPack.HeuristicMethod.BestShortSideFit;
+                var canPackAll = PackTextures(CloneIntermediateTextureDictionary(textureElements), bestAlgorithm);
+                results[bestAlgorithm] = new List<TextureAtlas>(textureAtlases);
+
+                foreach (var heuristicMethod in (MaxRectanglesBinPack.HeuristicMethod[])Enum.GetValues(typeof(MaxRectanglesBinPack.HeuristicMethod)))
+                {
+                    if (heuristicMethod == MaxRectanglesBinPack.HeuristicMethod.Best || heuristicMethod == MaxRectanglesBinPack.HeuristicMethod.BestShortSideFit) 
+                        continue;
+
+                    ResetPacker();
+
+                    // This algorithm can't pack all textures, so discard it 
+                    if (!PackTextures(CloneIntermediateTextureDictionary(textureElements), heuristicMethod)) continue;
+
+                    results[heuristicMethod] = new List<TextureAtlas>(textureAtlases);
+
+                    if (CompareTextureAtlasLists(results[heuristicMethod], results[bestAlgorithm]) > 0 || !canPackAll)
+                    {
+                        canPackAll = true;
+                        bestAlgorithm = heuristicMethod;
+                    }
+                }
+
+                ResetPacker();
+
+                if (canPackAll) textureAtlases.AddRange(results[bestAlgorithm]);
+
+                return canPackAll;
+            }
+
+            return PackTextures(textureElements, packConfig.Algorithm);
+        }
+
+        /// <summary>
+        /// Clones IntermediateTexture dictionary. It copies Region, but keep the same reference to the texture
+        /// </summary>
+        /// <param name="source">Prototype dictionary</param>
+        /// <returns></returns>
+        private static Dictionary<string, IntermediateTexture> CloneIntermediateTextureDictionary(Dictionary<string, IntermediateTexture> source)
+        {
+            return source.Keys.ToDictionary(key => key, key => new IntermediateTexture
+            {
+                Region = source[key].Region, Texture = source[key].Texture
+            });
+        }
+
+        /// <summary>
+        /// Compares two atlas List to check which list is more optimal in term of the number of atlas and areas
+        /// </summary>
+        /// <param name="atlasList1">Source 1</param>
+        /// <param name="atlasList2">Source 2</param>
+        /// <returns>Return -1 if atlasList1 is less optimal, 0 if the two list is the same level of optimal, 1 if atlasList1 is more optimal </returns>
+        private int CompareTextureAtlasLists(List<TextureAtlas> atlasList1, List<TextureAtlas> atlasList2)
+        {
+            // Check the number of pages
+            if (atlasList1.Count != atlasList2.Count) 
+                return (atlasList1.Count > atlasList2.Count) ? -1 : 1;
+
+            // Check area
+            var area1 = atlasList1.SelectMany(atlas => atlas.Textures).Sum(texture => texture.Region.Value.Width * texture.Region.Value.Height);
+            var area2 = atlasList2.SelectMany(atlas => atlas.Textures).Sum(texture => texture.Region.Value.Width * texture.Region.Value.Height);
+
+            if (area1 == area2) 
+                return 0;
+
+            return (area1 > area2) ? -1 : 1;
+        }
+
+        /// <summary>
+        /// Packs textureElement into textureAtlases, given heuristic algorithm
         /// </summary>
         /// <param name="textureElements">Input texture elements</param>
+        /// <param name="algorithm">Packing algorithm</param>
         /// <returns>True indicates all textures could be packed; False otherwise</returns>
-        public bool PackTextures(Dictionary<string, IntermediateTexture> textureElements)
+        public bool PackTextures(Dictionary<string, IntermediateTexture> textureElements, MaxRectanglesBinPack.HeuristicMethod algorithm)
         {
             var binWidth = (packConfig.SizeContraint == SizeConstraints.PowerOfTwo) ? TextureCommandHelper.FloorToNearestPowerOfTwo(packConfig.MaxWidth) : packConfig.MaxWidth;
             var binHeight = (packConfig.SizeContraint == SizeConstraints.PowerOfTwo) ? TextureCommandHelper.FloorToNearestPowerOfTwo(packConfig.MaxHeight) : packConfig.MaxHeight;
@@ -69,7 +150,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 maxRectPacker.Initialize(binWidth, binHeight, packConfig.UseRotation);
 
                 // Pack
-                maxRectPacker.PackRectangles(textureRegions, packConfig.Algorithm);
+                maxRectPacker.PackRectangles(textureRegions, algorithm);
 
                 // Find true size from packed regions
                 var packedSize = CalculatePackedRectanglesBound(maxRectPacker.PackedRectangles);
@@ -98,8 +179,6 @@ namespace SiliconStudio.Paradox.Assets.Texture
                     textureElements[usedRectangle.Key].Region = usedRectangle;
 
                     currentAtlas.Textures.Add(textureElements[usedRectangle.Key]);
-
-                    textureElements.Remove(usedRectangle.Key);
                 }
 
                 textureAtlases.Add( currentAtlas );

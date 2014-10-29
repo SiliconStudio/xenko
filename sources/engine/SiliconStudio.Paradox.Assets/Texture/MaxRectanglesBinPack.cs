@@ -16,6 +16,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// </summary>
         public enum HeuristicMethod
         {
+            Best,
             BestShortSideFit,
             BestLongSideFit,
             BestAreaFit,

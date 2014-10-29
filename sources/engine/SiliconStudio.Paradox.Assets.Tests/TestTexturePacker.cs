@@ -138,7 +138,6 @@ namespace SiliconStudio.Paradox.Assets.Tests
         [Test]
         public void TestTexturePackerWithMultiPack()
         {
-            var textureAtlases = new List<TexturePacker.TextureAtlas>();
             var textureElements = CreateFakeTextureElements();
 
             var packConfiguration = new TexturePacker.Config
@@ -154,10 +153,9 @@ namespace SiliconStudio.Paradox.Assets.Tests
             var texturePacker = new TexturePacker(packConfiguration);
 
             var canPackAllTextures = texturePacker.PackTextures(textureElements);
-            textureAtlases.AddRange(texturePacker.TextureAtlases);
 
-            Assert.AreEqual(1, textureElements.Count);
-            Assert.AreEqual(1, textureAtlases.Count);
+            Assert.AreEqual(2, textureElements.Count);
+            Assert.AreEqual(0, texturePacker.TextureAtlases.Count);
             Assert.IsFalse(canPackAllTextures);
 
             // The current bin cant fit all of textures, resize the bin
@@ -174,20 +172,16 @@ namespace SiliconStudio.Paradox.Assets.Tests
             texturePacker.ResetPacker(newPackConfiguration);
 
             canPackAllTextures = texturePacker.PackTextures(textureElements);
-            textureAtlases.AddRange(texturePacker.TextureAtlases);
 
             Assert.IsTrue(canPackAllTextures);
-            Assert.AreEqual(0, textureElements.Count);
-            Assert.AreEqual(2, textureAtlases.Count);
+            Assert.AreEqual(1, texturePacker.TextureAtlases.Count);
+            Assert.AreEqual(textureElements.Count, texturePacker.TextureAtlases[0].Textures.Count);
 
-            Assert.IsTrue(TextureCommandHelper.IsPowerOfTwo(textureAtlases[0].Width));
-            Assert.IsTrue(TextureCommandHelper.IsPowerOfTwo(textureAtlases[0].Height));
-
-            Assert.IsTrue(TextureCommandHelper.IsPowerOfTwo(textureAtlases[1].Width));
-            Assert.IsTrue(TextureCommandHelper.IsPowerOfTwo(textureAtlases[1].Height));
+            Assert.IsTrue(TextureCommandHelper.IsPowerOfTwo(texturePacker.TextureAtlases[0].Width));
+            Assert.IsTrue(TextureCommandHelper.IsPowerOfTwo(texturePacker.TextureAtlases[0].Height));
 
             // Dispose image
-            foreach (var texture in textureAtlases.SelectMany(textureAtlas => textureAtlas.Textures))
+            foreach (var texture in texturePacker.TextureAtlases.SelectMany(textureAtlas => textureAtlas.Textures))
                 texture.Texture.Dispose();
         }
 
@@ -224,7 +218,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
             textureAtlases.AddRange(texturePacker.TextureAtlases);
 
             Assert.IsTrue(canPackAllTextures);
-            Assert.AreEqual(0, textureElements.Count);
+            Assert.AreEqual(2, textureElements.Count);
             Assert.AreEqual(1, textureAtlases.Count);
 
             Assert.IsTrue(TextureCommandHelper.IsPowerOfTwo(textureAtlases[0].Width));
