@@ -647,7 +647,6 @@ namespace SiliconStudio.Paradox.Assets.Tests
                     BorderSize = 100,
                     SizeContraint = TexturePacker.SizeConstraints.PowerOfTwo,
                     BorderAddressMode = TextureAddressMode.Wrap,
-                    OutputAtlasImageType = ImageFileType.Png,
                     BorderColor = Color.SteelBlue,
                     UseMultipack = false,
                     UseRotation = false,
@@ -666,9 +665,9 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
                 // Create atlas texture
                 var atlasTexture = TexturePacker.Factory.CreateTextureAtlas(textureAtlases[0]);
-                var outputType = packConfiguration.OutputAtlasImageType;
+                const ImageFileType OutputType = ImageFileType.Png;
 
-                atlasTexture.Save(new FileStream(@"C:\Users\Peeranut\Desktop\sprite_output\output2." + GetImageExtension(outputType), FileMode.Create), packConfiguration.OutputAtlasImageType);
+                atlasTexture.Save(new FileStream(@"C:\Users\Peeranut\Desktop\sprite_output\output2." + GetImageExtension(OutputType), FileMode.Create), OutputType);
                 atlasTexture.Dispose();
 
                 foreach (var texture in textureAtlases.SelectMany(textureAtlas => textureAtlas.Textures))

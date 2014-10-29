@@ -278,11 +278,6 @@ namespace SiliconStudio.Paradox.Assets.Texture
             public TextureAddressMode BorderAddressMode;
 
             /// <summary>
-            /// Gets or Sets output image type of texture atlas
-            /// </summary>
-            public ImageFileType OutputAtlasImageType;
-
-            /// <summary>
             /// Gets or Sets Border color when BorderAddressMode is set to Border mode
             /// </summary>
             public Color? BorderColor;
