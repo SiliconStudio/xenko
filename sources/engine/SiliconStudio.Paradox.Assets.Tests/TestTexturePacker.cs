@@ -39,9 +39,9 @@ namespace SiliconStudio.Paradox.Assets.Tests
             maxRectPacker.Initialize(100, 100, false);
 
             // This data set remain only 1 rect that cant be packed
-            var packRectangles = new List<RotatableRectangle>
+            var packRectangles = new List<MaxRectanglesBinPack.RotatableRectangle>
             {
-                new RotatableRectangle(0, 0, 80, 100), new RotatableRectangle(0, 0, 100, 20),
+                new MaxRectanglesBinPack.RotatableRectangle(0, 0, 80, 100), new MaxRectanglesBinPack.RotatableRectangle(0, 0, 100, 20),
             };
 
             maxRectPacker.PackRectangles(packRectangles);
@@ -57,9 +57,9 @@ namespace SiliconStudio.Paradox.Assets.Tests
             maxRectPacker.Initialize(100, 100, true);
 
             // This data set remain only 1 rect that cant be packed
-            var packRectangles = new List<RotatableRectangle>
+            var packRectangles = new List<MaxRectanglesBinPack.RotatableRectangle>
             {
-                new RotatableRectangle(0, 0, 80, 100) { Key = "A" }, new RotatableRectangle(0, 0, 100, 20) { Key = "B"},
+                new MaxRectanglesBinPack.RotatableRectangle(0, 0, 80, 100) { Key = "A" }, new MaxRectanglesBinPack.RotatableRectangle(0, 0, 100, 20) { Key = "B"},
             };
 
             maxRectPacker.PackRectangles(packRectangles);
@@ -79,12 +79,12 @@ namespace SiliconStudio.Paradox.Assets.Tests
             maxRectPacker.Initialize(100, 100, true);
 
             // This data set remain only 1 rect that cant be packed
-            var packRectangles = new List<RotatableRectangle>
+            var packRectangles = new List<MaxRectanglesBinPack.RotatableRectangle>
             {
-                new RotatableRectangle(0, 0, 55, 70), new RotatableRectangle(0, 0, 55, 30),
-                new RotatableRectangle(0, 0, 25, 30), new RotatableRectangle(0, 0, 20, 30),
-                new RotatableRectangle(0, 0, 45, 30),
-                new RotatableRectangle(0, 0, 25, 40), new RotatableRectangle(0, 0, 20, 40)
+                new MaxRectanglesBinPack.RotatableRectangle(0, 0, 55, 70), new MaxRectanglesBinPack.RotatableRectangle(0, 0, 55, 30),
+                new MaxRectanglesBinPack.RotatableRectangle(0, 0, 25, 30), new MaxRectanglesBinPack.RotatableRectangle(0, 0, 20, 30),
+                new MaxRectanglesBinPack.RotatableRectangle(0, 0, 45, 30),
+                new MaxRectanglesBinPack.RotatableRectangle(0, 0, 25, 40), new MaxRectanglesBinPack.RotatableRectangle(0, 0, 20, 40)
             };
 
             maxRectPacker.PackRectangles(packRectangles);
@@ -98,7 +98,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
         {
             var textureElements = CreateFakeTextureElements();
 
-            var packConfiguration = new Config
+            var packConfiguration = new TexturePacker.Config
             {
                 BorderSize = 0,
                 UseMultipack = false,
@@ -118,16 +118,16 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 texture.Texture.Dispose();
         }
 
-        public Dictionary<string, IntermediateTexture> CreateFakeTextureElements()
+        public Dictionary<string, TexturePacker.IntermediateTexture> CreateFakeTextureElements()
         {
-            var textureElements = new Dictionary<string, IntermediateTexture>();
+            var textureElements = new Dictionary<string, TexturePacker.IntermediateTexture>();
 
-            textureElements.Add("A", new IntermediateTexture
+            textureElements.Add("A", new TexturePacker.IntermediateTexture
             {
                 Texture = Image.New2D(100, 200, 1, PixelFormat.R8G8B8A8_UNorm)
             });
 
-            textureElements.Add("B", new IntermediateTexture
+            textureElements.Add("B", new TexturePacker.IntermediateTexture
             {
                 Texture = Image.New2D(400, 300, 1, PixelFormat.R8G8B8A8_UNorm)
             });
@@ -138,15 +138,15 @@ namespace SiliconStudio.Paradox.Assets.Tests
         [Test]
         public void TestTexturePackerWithMultiPack()
         {
-            var textureAtlases = new List<TextureAtlas>();
+            var textureAtlases = new List<TexturePacker.TextureAtlas>();
             var textureElements = CreateFakeTextureElements();
 
-            var packConfiguration = new Config
+            var packConfiguration = new TexturePacker.Config
             {
                 BorderSize = 0,
                 UseMultipack = true,
                 UseRotation = true,
-                SizeContraint = SizeConstraints.PowerOfTwo,
+                SizeContraint = TexturePacker.SizeConstraints.PowerOfTwo,
                 MaxHeight = 300,
                 MaxWidth = 300
             };
@@ -161,12 +161,12 @@ namespace SiliconStudio.Paradox.Assets.Tests
             Assert.IsFalse(canPackAllTextures);
 
             // The current bin cant fit all of textures, resize the bin
-            var newPackConfiguration = new Config
+            var newPackConfiguration = new TexturePacker.Config
             {
                 BorderSize = 0,
                 UseMultipack = true,
                 UseRotation = true,
-                SizeContraint = SizeConstraints.PowerOfTwo,
+                SizeContraint = TexturePacker.SizeConstraints.PowerOfTwo,
                 MaxHeight = 1500,
                 MaxWidth = 800
             };
@@ -194,26 +194,26 @@ namespace SiliconStudio.Paradox.Assets.Tests
         [Test]
         public void TestTexturePackerWithBorder()
         {
-            var textureAtlases = new List<TextureAtlas>();
+            var textureAtlases = new List<TexturePacker.TextureAtlas>();
 
-            var textureElements = new Dictionary<string, IntermediateTexture>();
+            var textureElements = new Dictionary<string, TexturePacker.IntermediateTexture>();
 
-            textureElements.Add("A", new IntermediateTexture
+            textureElements.Add("A", new TexturePacker.IntermediateTexture
             {
                 Texture = Image.New2D(100, 200, 1, PixelFormat.R8G8B8A8_UNorm)
             });
 
-            textureElements.Add("B", new IntermediateTexture
+            textureElements.Add("B", new TexturePacker.IntermediateTexture
             {
                 Texture = Image.New2D(57, 22, 1, PixelFormat.R8G8B8A8_UNorm)
             });
 
-            var packConfiguration = new Config
+            var packConfiguration = new TexturePacker.Config
             {
                 BorderSize = 2,
                 UseMultipack = true,
                 UseRotation = true,
-                SizeContraint = SizeConstraints.PowerOfTwo,
+                SizeContraint = TexturePacker.SizeConstraints.PowerOfTwo,
                 MaxHeight = 512,
                 MaxWidth = 512
             };
@@ -265,20 +265,20 @@ namespace SiliconStudio.Paradox.Assets.Tests
         [Test]
         public void TestTextureAtlasFactory()
         {
-            var textureElements = new Dictionary<string, IntermediateTexture>();
+            var textureElements = new Dictionary<string, TexturePacker.IntermediateTexture>();
 
             var mockTexture = CreateMockTexture(100, 200, Color.MediumPurple);
 
             // Load a test texture asset
-            textureElements.Add("A", new IntermediateTexture
+            textureElements.Add("A", new TexturePacker.IntermediateTexture
             {
                 Texture = mockTexture
             });
 
-            var packConfiguration = new Config
+            var packConfiguration = new TexturePacker.Config
             {
                 BorderSize = 0,
-                SizeContraint = SizeConstraints.PowerOfTwo,
+                SizeContraint = TexturePacker.SizeConstraints.PowerOfTwo,
                 UseMultipack = false,
                 UseRotation = true,
                 MaxHeight = 2000,
@@ -299,7 +299,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
             Assert.IsTrue(TextureCommandHelper.IsPowerOfTwo(textureAtlases[0].Height));
 
             // Create atlas texture
-            var atlasTexture = TextureAtlasFactory.CreateTextureAtlas(textureAtlases[0]);
+            var atlasTexture = TexturePacker.Factory.CreateTextureAtlas(textureAtlases[0]);
 //            atlasTexture.Save(new FileStream(@"C:/Users/Peeranut/Desktop/super_output/img.png", FileMode.CreateNew), ImageFileType.Png);
 
             Assert.AreEqual(textureAtlases[0].Width, atlasTexture.Description.Width);
@@ -313,114 +313,114 @@ namespace SiliconStudio.Paradox.Assets.Tests
         public void TestWrapBorderMode()
         {
             // Positive sets
-            Assert.AreEqual(0, TextureAtlasFactory.GetSourceTextureIndex(0, 10, TextureAddressMode.Wrap));
-            Assert.AreEqual(5, TextureAtlasFactory.GetSourceTextureIndex(5, 10, TextureAddressMode.Wrap));
-            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(9, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(0, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(5, TexturePacker.Factory.GetSourceTextureIndex(5, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(9, 10, TextureAddressMode.Wrap));
 
-            Assert.AreEqual(0, TextureAtlasFactory.GetSourceTextureIndex(10, 10, TextureAddressMode.Wrap));
-            Assert.AreEqual(5, TextureAtlasFactory.GetSourceTextureIndex(15, 10, TextureAddressMode.Wrap));
-            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(19, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(10, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(5, TexturePacker.Factory.GetSourceTextureIndex(15, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(19, 10, TextureAddressMode.Wrap));
 
-            Assert.AreEqual(0, TextureAtlasFactory.GetSourceTextureIndex(20, 10, TextureAddressMode.Wrap));
-            Assert.AreEqual(5, TextureAtlasFactory.GetSourceTextureIndex(25, 10, TextureAddressMode.Wrap));
-            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(29, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(20, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(5, TexturePacker.Factory.GetSourceTextureIndex(25, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(29, 10, TextureAddressMode.Wrap));
 
             // Negative sets
-            Assert.AreEqual(6, TextureAtlasFactory.GetSourceTextureIndex(-4, 10, TextureAddressMode.Wrap));
-            Assert.AreEqual(1, TextureAtlasFactory.GetSourceTextureIndex(-9, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(6, TexturePacker.Factory.GetSourceTextureIndex(-4, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(1, TexturePacker.Factory.GetSourceTextureIndex(-9, 10, TextureAddressMode.Wrap));
 
-            Assert.AreEqual(0, TextureAtlasFactory.GetSourceTextureIndex(-10, 10, TextureAddressMode.Wrap));
-            Assert.AreEqual(6, TextureAtlasFactory.GetSourceTextureIndex(-14, 10, TextureAddressMode.Wrap));
-            Assert.AreEqual(1, TextureAtlasFactory.GetSourceTextureIndex(-19, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(-10, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(6, TexturePacker.Factory.GetSourceTextureIndex(-14, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(1, TexturePacker.Factory.GetSourceTextureIndex(-19, 10, TextureAddressMode.Wrap));
 
-            Assert.AreEqual(0, TextureAtlasFactory.GetSourceTextureIndex(-20, 10, TextureAddressMode.Wrap));
-            Assert.AreEqual(6, TextureAtlasFactory.GetSourceTextureIndex(-24, 10, TextureAddressMode.Wrap));
-            Assert.AreEqual(1, TextureAtlasFactory.GetSourceTextureIndex(-29, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(-20, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(6, TexturePacker.Factory.GetSourceTextureIndex(-24, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(1, TexturePacker.Factory.GetSourceTextureIndex(-29, 10, TextureAddressMode.Wrap));
         }
 
         [Test]
         public void TestClampBorderMode()
         {
             // Positive sets
-            Assert.AreEqual(0, TextureAtlasFactory.GetSourceTextureIndex(0, 10, TextureAddressMode.Clamp));
-            Assert.AreEqual(5, TextureAtlasFactory.GetSourceTextureIndex(5, 10, TextureAddressMode.Clamp));
-            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(9, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(0, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(5, TexturePacker.Factory.GetSourceTextureIndex(5, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(9, 10, TextureAddressMode.Clamp));
 
-            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(10, 10, TextureAddressMode.Clamp));
-            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(15, 10, TextureAddressMode.Clamp));
-            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(19, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(10, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(15, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(19, 10, TextureAddressMode.Clamp));
 
-            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(20, 10, TextureAddressMode.Clamp));
-            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(25, 10, TextureAddressMode.Clamp));
-            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(29, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(20, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(25, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(29, 10, TextureAddressMode.Clamp));
 
             // Negative sets
-            Assert.AreEqual(0, TextureAtlasFactory.GetSourceTextureIndex(-4, 10, TextureAddressMode.Clamp));
-            Assert.AreEqual(0, TextureAtlasFactory.GetSourceTextureIndex(-9, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(-4, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(-9, 10, TextureAddressMode.Clamp));
 
-            Assert.AreEqual(0, TextureAtlasFactory.GetSourceTextureIndex(-10, 10, TextureAddressMode.Clamp));
-            Assert.AreEqual(0, TextureAtlasFactory.GetSourceTextureIndex(-14, 10, TextureAddressMode.Clamp));
-            Assert.AreEqual(0, TextureAtlasFactory.GetSourceTextureIndex(-19, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(-10, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(-14, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(-19, 10, TextureAddressMode.Clamp));
 
-            Assert.AreEqual(0, TextureAtlasFactory.GetSourceTextureIndex(-20, 10, TextureAddressMode.Clamp));
-            Assert.AreEqual(0, TextureAtlasFactory.GetSourceTextureIndex(-24, 10, TextureAddressMode.Clamp));
-            Assert.AreEqual(0, TextureAtlasFactory.GetSourceTextureIndex(-29, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(-20, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(-24, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(-29, 10, TextureAddressMode.Clamp));
         }
 
         [Test]
         public void TestMirrorBorderMode()
         {
             // Positive sets
-            Assert.AreEqual(0, TextureAtlasFactory.GetSourceTextureIndex(0, 10, TextureAddressMode.Mirror));
-            Assert.AreEqual(5, TextureAtlasFactory.GetSourceTextureIndex(5, 10, TextureAddressMode.Mirror));
-            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(9, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(0, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(5, TexturePacker.Factory.GetSourceTextureIndex(5, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(9, 10, TextureAddressMode.Mirror));
 
-            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(10, 10, TextureAddressMode.Mirror));
-            Assert.AreEqual(8, TextureAtlasFactory.GetSourceTextureIndex(11, 10, TextureAddressMode.Mirror));
-            Assert.AreEqual(7, TextureAtlasFactory.GetSourceTextureIndex(12, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(10, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(8, TexturePacker.Factory.GetSourceTextureIndex(11, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(7, TexturePacker.Factory.GetSourceTextureIndex(12, 10, TextureAddressMode.Mirror));
 
-            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(20, 10, TextureAddressMode.Mirror));
-            Assert.AreEqual(8, TextureAtlasFactory.GetSourceTextureIndex(21, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(20, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(8, TexturePacker.Factory.GetSourceTextureIndex(21, 10, TextureAddressMode.Mirror));
 
             // Negative Sets
-            Assert.AreEqual(1, TextureAtlasFactory.GetSourceTextureIndex(-1, 10, TextureAddressMode.Mirror));
-            Assert.AreEqual(2, TextureAtlasFactory.GetSourceTextureIndex(-2, 10, TextureAddressMode.Mirror));
-            Assert.AreEqual(3, TextureAtlasFactory.GetSourceTextureIndex(-3, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(1, TexturePacker.Factory.GetSourceTextureIndex(-1, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(2, TexturePacker.Factory.GetSourceTextureIndex(-2, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(3, TexturePacker.Factory.GetSourceTextureIndex(-3, 10, TextureAddressMode.Mirror));
 
-            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(-9, 10, TextureAddressMode.Mirror));
-            Assert.AreEqual(0, TextureAtlasFactory.GetSourceTextureIndex(-10, 10, TextureAddressMode.Mirror));
-            Assert.AreEqual(1, TextureAtlasFactory.GetSourceTextureIndex(-11, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(-9, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(-10, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(1, TexturePacker.Factory.GetSourceTextureIndex(-11, 10, TextureAddressMode.Mirror));
 
-            Assert.AreEqual(0, TextureAtlasFactory.GetSourceTextureIndex(-20, 10, TextureAddressMode.Mirror));
-            Assert.AreEqual(1, TextureAtlasFactory.GetSourceTextureIndex(-21, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(-20, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(1, TexturePacker.Factory.GetSourceTextureIndex(-21, 10, TextureAddressMode.Mirror));
         }
 
         [Test]
         public void TestMirrorOnceBorderMode()
         {
             // Positive sets
-            Assert.AreEqual(0, TextureAtlasFactory.GetSourceTextureIndex(0, 10, TextureAddressMode.MirrorOnce));
-            Assert.AreEqual(5, TextureAtlasFactory.GetSourceTextureIndex(5, 10, TextureAddressMode.MirrorOnce));
-            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(9, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(0, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(5, TexturePacker.Factory.GetSourceTextureIndex(5, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(9, 10, TextureAddressMode.MirrorOnce));
 
-            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(10, 10, TextureAddressMode.MirrorOnce));
-            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(11, 10, TextureAddressMode.MirrorOnce));
-            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(12, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(10, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(11, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(12, 10, TextureAddressMode.MirrorOnce));
 
-            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(20, 10, TextureAddressMode.MirrorOnce));
-            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(21, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(20, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(21, 10, TextureAddressMode.MirrorOnce));
 
             // Negative Sets
-            Assert.AreEqual(1, TextureAtlasFactory.GetSourceTextureIndex(-1, 10, TextureAddressMode.MirrorOnce));
-            Assert.AreEqual(2, TextureAtlasFactory.GetSourceTextureIndex(-2, 10, TextureAddressMode.MirrorOnce));
-            Assert.AreEqual(3, TextureAtlasFactory.GetSourceTextureIndex(-3, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(1, TexturePacker.Factory.GetSourceTextureIndex(-1, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(2, TexturePacker.Factory.GetSourceTextureIndex(-2, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(3, TexturePacker.Factory.GetSourceTextureIndex(-3, 10, TextureAddressMode.MirrorOnce));
 
-            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(-9, 10, TextureAddressMode.MirrorOnce));
-            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(-10, 10, TextureAddressMode.MirrorOnce));
-            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(-11, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(-9, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(-10, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(-11, 10, TextureAddressMode.MirrorOnce));
 
-            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(-20, 10, TextureAddressMode.MirrorOnce));
-            Assert.AreEqual(9, TextureAtlasFactory.GetSourceTextureIndex(-21, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(-20, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(-21, 10, TextureAddressMode.MirrorOnce));
         }
 
         [Test]
@@ -495,73 +495,73 @@ namespace SiliconStudio.Paradox.Assets.Tests
         public void TestCreateTextureAtlasToOutput()
         {
             const string OutputPath = "./output.png";
-            var textureElements = new Dictionary<string, IntermediateTexture>();
+            var textureElements = new Dictionary<string, TexturePacker.IntermediateTexture>();
 
             // Load a test texture asset
-            textureElements.Add("MediumPurple", new IntermediateTexture
+            textureElements.Add("MediumPurple", new TexturePacker.IntermediateTexture
             {
                 Texture = CreateMockTexture(130, 158, Color.MediumPurple)
             });
 
-            textureElements.Add("Red", new IntermediateTexture
+            textureElements.Add("Red", new TexturePacker.IntermediateTexture
             {
                 Texture = CreateMockTexture(127, 248, Color.Red)
             });
 
-            textureElements.Add("Blue", new IntermediateTexture
+            textureElements.Add("Blue", new TexturePacker.IntermediateTexture
             {
                 Texture = CreateMockTexture(212, 153, Color.Blue)
             });
 
-            textureElements.Add("Gold", new IntermediateTexture
+            textureElements.Add("Gold", new TexturePacker.IntermediateTexture
             {
                 Texture = CreateMockTexture(78, 100, Color.Gold)
             });
 
-            textureElements.Add("RosyBrown", new IntermediateTexture
+            textureElements.Add("RosyBrown", new TexturePacker.IntermediateTexture
             {
                 Texture = CreateMockTexture(78, 100, Color.RosyBrown)
             });
 
-            textureElements.Add("SaddleBrown", new IntermediateTexture
+            textureElements.Add("SaddleBrown", new TexturePacker.IntermediateTexture
             {
                 Texture = CreateMockTexture(400, 100, Color.SaddleBrown)
             });
 
-            textureElements.Add("Salmon", new IntermediateTexture
+            textureElements.Add("Salmon", new TexturePacker.IntermediateTexture
             {
                 Texture = CreateMockTexture(400, 200, Color.Salmon)
             });
 
-            textureElements.Add("PowderBlue", new IntermediateTexture
+            textureElements.Add("PowderBlue", new TexturePacker.IntermediateTexture
             {
                 Texture = CreateMockTexture(190, 200, Color.PowderBlue)
             });
 
-            textureElements.Add("Orange", new IntermediateTexture
+            textureElements.Add("Orange", new TexturePacker.IntermediateTexture
             {
                 Texture = CreateMockTexture(200, 230, Color.Orange)
             });
 
-            textureElements.Add("Silver", new IntermediateTexture
+            textureElements.Add("Silver", new TexturePacker.IntermediateTexture
             {
                 Texture = CreateMockTexture(100, 170, Color.Silver)
             });
 
-            textureElements.Add("SlateGray", new IntermediateTexture
+            textureElements.Add("SlateGray", new TexturePacker.IntermediateTexture
             {
                 Texture = CreateMockTexture(100, 170, Color.SlateGray)
             });
 
-            textureElements.Add("Tan", new IntermediateTexture
+            textureElements.Add("Tan", new TexturePacker.IntermediateTexture
             {
                 Texture = CreateMockTexture(140, 110, Color.Tan)
             });
 
-            var packConfiguration = new Config
+            var packConfiguration = new TexturePacker.Config
             {
                 BorderSize = 10,
-                SizeContraint = SizeConstraints.PowerOfTwo,
+                SizeContraint = TexturePacker.SizeConstraints.PowerOfTwo,
                 BorderAddressMode = TextureAddressMode.Border,
                 BorderColor = Color.SteelBlue,
                 UseMultipack = false,
@@ -581,14 +581,14 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
             Assert.AreEqual(1, textureAtlases.Count);
 
-            if (packConfiguration.SizeContraint == SizeConstraints.PowerOfTwo)
+            if (packConfiguration.SizeContraint == TexturePacker.SizeConstraints.PowerOfTwo)
             {
                 Assert.IsTrue(TextureCommandHelper.IsPowerOfTwo(textureAtlases[0].Width));
                 Assert.IsTrue(TextureCommandHelper.IsPowerOfTwo(textureAtlases[0].Height));
             }
 
             // Create atlas texture
-            var atlasTexture = TextureAtlasFactory.CreateTextureAtlas(textureAtlases[0]);
+            var atlasTexture = TexturePacker.Factory.CreateTextureAtlas(textureAtlases[0]);
             atlasTexture.Save(new FileStream(OutputPath, FileMode.Create), ImageFileType.Png);
 
             Assert.AreEqual(textureAtlases[0].Width, atlasTexture.Description.Width);
@@ -608,14 +608,14 @@ namespace SiliconStudio.Paradox.Assets.Tests
             // Specify where the images are, and uncomment [Test] above
             var inputDir = @".\";
 
-            var textureElements = new Dictionary<string, IntermediateTexture>();
+            var textureElements = new Dictionary<string, TexturePacker.IntermediateTexture>();
 
             using (var texTool = new TextureTool())
             {
                 for (var i = 1; i <= 5; ++i)
                 {
                     var name = "character_idle_0" + i;
-                    textureElements.Add(name, new IntermediateTexture
+                    textureElements.Add(name, new TexturePacker.IntermediateTexture
                     {
                         Texture = LoadImage(texTool, new UFile(inputDir + "/" + name + ".png"))
                     });
@@ -624,7 +624,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 for (var i = 1; i <= 5; ++i)
                 {
                     var name = "character_run_0" + i;
-                    textureElements.Add(name, new IntermediateTexture
+                    textureElements.Add(name, new TexturePacker.IntermediateTexture
                     {
                         Texture = LoadImage(texTool, new UFile(inputDir + "/" + name + ".png"))
                     });
@@ -633,7 +633,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 for (var i = 1; i <= 5; ++i)
                 {
                     var name = "character_shoot_0" + i;
-                    textureElements.Add(name, new IntermediateTexture
+                    textureElements.Add(name, new TexturePacker.IntermediateTexture
                     {
                         Texture = LoadImage(texTool, new UFile(inputDir + "/" + name + ".png"))
                     });
@@ -642,18 +642,18 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 for (var i = 1; i <= 8; ++i)
                 {
                     var name = "ef_0" + i;
-                    textureElements.Add(name, new IntermediateTexture
+                    textureElements.Add(name, new TexturePacker.IntermediateTexture
                     {
                         Texture = LoadImage(texTool, new UFile(inputDir + "/" + name + ".png"))
                     });
                 }
 
-                var packConfiguration = new Config
+                var packConfiguration = new TexturePacker.Config
                 {
                     BorderSize = 100,
-                    SizeContraint = SizeConstraints.PowerOfTwo,
+                    SizeContraint = TexturePacker.SizeConstraints.PowerOfTwo,
                     BorderAddressMode = TextureAddressMode.Wrap,
-                    OutputAtlasImageType = ImageFileType.Dds,
+                    OutputAtlasImageType = ImageFileType.Png,
                     BorderColor = Color.SteelBlue,
                     UseMultipack = false,
                     UseRotation = false,
@@ -671,10 +671,10 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 var textureAtlases = texturePacker.TextureAtlases;
 
                 // Create atlas texture
-                var atlasTexture = TextureAtlasFactory.CreateTextureAtlas(textureAtlases[0]);
-                var outputType = packConfiguration.OutputAtlasImageType ?? ImageFileType.Png;
+                var atlasTexture = TexturePacker.Factory.CreateTextureAtlas(textureAtlases[0]);
+                var outputType = packConfiguration.OutputAtlasImageType;
 
-                atlasTexture.Save(new FileStream(@"C:\Users\Peeranut\Desktop\sprite_output\output2." + GetImageExtension(outputType), FileMode.Create), outputType);
+                atlasTexture.Save(new FileStream(@"C:\Users\Peeranut\Desktop\sprite_output\output2." + GetImageExtension(outputType), FileMode.Create), packConfiguration.OutputAtlasImageType);
                 atlasTexture.Dispose();
 
                 foreach (var texture in textureAtlases.SelectMany(textureAtlas => textureAtlas.Textures))

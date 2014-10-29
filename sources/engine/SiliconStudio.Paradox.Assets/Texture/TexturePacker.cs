@@ -72,7 +72,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 var packedSize = CalculatePackedRectanglesBound(maxRectPacker.PackedRectangles);
 
                 // Alter the size of atlas so that it is a power of two
-                if (packConfig.SizeContraint == SizeConstraints.PowerOfTwo || packConfig.SizeContraint == null)
+                if (packConfig.SizeContraint == SizeConstraints.PowerOfTwo)
                 {
                     packedSize.Width = TextureCommandHelper.CeilingToNearestPowerOfTwo(packedSize.Width);
                     packedSize.Height = TextureCommandHelper.CeilingToNearestPowerOfTwo(packedSize.Height);
@@ -147,8 +147,8 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// </summary>
         public enum SizeConstraints
         {
-            Any,
             PowerOfTwo,
+            Any,
         }
 
         /// <summary>
@@ -188,17 +188,17 @@ namespace SiliconStudio.Paradox.Assets.Texture
             /// - Any would create a texture exactly by a given size.
             /// - PowerOfTwo would create a texture where width and height are of power of two by ceiling a given size to the nearest power of two value.
             /// </summary>
-            public SizeConstraints? SizeContraint;
+            public SizeConstraints SizeContraint;
 
             /// <summary>
             /// Gets or Sets border modes which applies specific TextureAddressMode in the border of each texture element in a given size of border
             /// </summary>
-            public TextureAddressMode? BorderAddressMode;
+            public TextureAddressMode BorderAddressMode;
 
             /// <summary>
             /// Gets or Sets output image type of texture atlas
             /// </summary>
-            public ImageFileType? OutputAtlasImageType;
+            public ImageFileType OutputAtlasImageType;
 
             /// <summary>
             /// Gets or Sets Border color when BorderAddressMode is set to Border mode

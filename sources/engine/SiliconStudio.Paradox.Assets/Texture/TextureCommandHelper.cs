@@ -32,6 +32,14 @@ namespace SiliconStudio.Paradox.Assets.Texture
 
             return (int)Math.Pow(2, Math.Ceiling(Math.Log(value) / Math.Log(2)));
         }
+
+        public static int FloorToNearestPowerOfTwo(int value)
+        {
+            if (IsPowerOfTwo(value)) return value;
+
+            return (int)Math.Pow(2, Math.Floor(Math.Log(value) / Math.Log(2)));
+        }
+
         /// <summary>
         /// Returns true if the provided int is a power of 2.
         /// </summary>
