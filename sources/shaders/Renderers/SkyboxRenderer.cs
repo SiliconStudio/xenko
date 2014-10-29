@@ -31,6 +31,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         public override void Unload()
         {
+            Pass.StartPass -= RenderSky;
+
             skyboxEffect.Dispose();
             skyQuad.Dispose();
         }
