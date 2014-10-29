@@ -223,74 +223,6 @@ namespace SiliconStudio.Paradox.Assets.Texture
 
             return new Size2(maxX - minX, maxY - minY);
         }
-
-        /// <summary>
-        /// Intermediate texture element that is used during Packing and texture atlas creation processes.
-        /// It represents a packed texture.
-        /// </summary>
-        public class IntermediateTexture
-        {
-            /// <summary>
-            /// Gets or Sets CPU-resource texture
-            /// </summary>
-            public Image Texture;
-
-            /// <summary>
-            /// Gets or Sets Region for the texture relative to a texture atlas that contains it
-            /// </summary>
-            public RotatableRectangle Region;
-
-            /// <summary>
-            /// Gets a boolean indicating if border is enabled
-            /// </summary>
-            public bool HasBorder { get { return BorderSize > 0; } }
-
-            /// <summary>
-            /// Gets or Sets border size
-            /// </summary>
-            public int BorderSize;
-
-            /// <summary>
-            /// Gets or Sets border modes in X axis which applies specific TextureAddressMode in the border of each texture element in a given size of border
-            /// </summary>
-            public TextureAddressMode AddressModeU;
-
-            /// <summary>
-            /// Gets or Sets border modes in Y axis which applies specific TextureAddressMode in the border of each texture element in a given size of border
-            /// </summary>
-            public TextureAddressMode AddressModeV;
-
-            /// <summary>
-            /// Gets or Sets Border color when AddressModeU is set to Border mode
-            /// </summary>
-            public Color? BorderColor;
-        }
-
-        /// <summary>
-        /// TextureAtlas contains packed intemediate textures, width and height of this atlas 
-        /// </summary>
-        public class TextureAtlas
-        {
-            /// <summary>
-            /// Gets or Sets a list of packed IntermediateTexture
-            /// </summary>
-            public readonly List<IntermediateTexture> Textures = new List<IntermediateTexture>();
-
-            /// <summary>
-            /// Gets or Sets Width of the texture atlas
-            /// </summary>
-            public int Width;
-
-            /// <summary>
-            /// Gets or Sets Height of the texture atlas
-            /// </summary>
-            public int Height;
-
-            /// <summary>
-            /// Gets or Sets Packing configuration
-            /// </summary>
-            public TexturePackerConfig PackConfig;
-        }
     }
 
     /// <summary>
@@ -342,5 +274,73 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// Gets or Sets MaxHeight for expected TextureAtlas
         /// </summary>
         public int MaxHeight;
+    }
+
+    /// <summary>
+    /// Intermediate texture element that is used during Packing and texture atlas creation processes.
+    /// It represents a packed texture.
+    /// </summary>
+    public class IntermediateTexture
+    {
+        /// <summary>
+        /// Gets or Sets CPU-resource texture
+        /// </summary>
+        public Image Texture;
+
+        /// <summary>
+        /// Gets or Sets Region for the texture relative to a texture atlas that contains it
+        /// </summary>
+        public RotatableRectangle Region;
+
+        /// <summary>
+        /// Gets a boolean indicating if border is enabled
+        /// </summary>
+        public bool HasBorder { get { return BorderSize > 0; } }
+
+        /// <summary>
+        /// Gets or Sets border size
+        /// </summary>
+        public int BorderSize;
+
+        /// <summary>
+        /// Gets or Sets border modes in X axis which applies specific TextureAddressMode in the border of each texture element in a given size of border
+        /// </summary>
+        public TextureAddressMode AddressModeU;
+
+        /// <summary>
+        /// Gets or Sets border modes in Y axis which applies specific TextureAddressMode in the border of each texture element in a given size of border
+        /// </summary>
+        public TextureAddressMode AddressModeV;
+
+        /// <summary>
+        /// Gets or Sets Border color when AddressModeU is set to Border mode
+        /// </summary>
+        public Color? BorderColor;
+    }
+
+    /// <summary>
+    /// TextureAtlas contains packed intemediate textures, width and height of this atlas 
+    /// </summary>
+    public class TextureAtlas
+    {
+        /// <summary>
+        /// Gets or Sets a list of packed IntermediateTexture
+        /// </summary>
+        public readonly List<IntermediateTexture> Textures = new List<IntermediateTexture>();
+
+        /// <summary>
+        /// Gets or Sets Width of the texture atlas
+        /// </summary>
+        public int Width;
+
+        /// <summary>
+        /// Gets or Sets Height of the texture atlas
+        /// </summary>
+        public int Height;
+
+        /// <summary>
+        /// Gets or Sets Packing configuration
+        /// </summary>
+        public TexturePackerConfig PackConfig;
     }
 }

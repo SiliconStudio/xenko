@@ -230,11 +230,11 @@ namespace SiliconStudio.Paradox.Assets
             // Pack textures
             using (var texTool = new TextureTool())
             {
-                var textureElements = new Dictionary<string, TexturePacker.IntermediateTexture>();
+                var textureElements = new Dictionary<string, IntermediateTexture>();
 
                 foreach (var image in asset.GroupAsset.Images)
                     textureElements.Add(ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[image]), 
-                        new TexturePacker.IntermediateTexture { Texture = LoadImage(texTool, new UFile(image.Source)), 
+                        new IntermediateTexture { Texture = LoadImage(texTool, new UFile(image.Source)), 
                             AddressModeU = image.AddressModeU, AddressModeV = image.AddressModeV, BorderSize = image.BorderSize, BorderColor = image.BorderColor});
 
                 var texturePacker = new TexturePacker(packConfig);
