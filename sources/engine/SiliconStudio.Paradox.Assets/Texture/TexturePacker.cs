@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// </summary>
         public List<TextureAtlas> TextureAtlases { get { return textureAtlases; } }
 
-        private Config packConfig;
+        private TexturePackerConfig packConfig;
         private readonly MaxRectanglesBinPack maxRectPacker = new MaxRectanglesBinPack();
         private readonly List<TextureAtlas> textureAtlases = new List<TextureAtlas>();
 
@@ -25,7 +25,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// Initializes a new instance of TexturePacker by a given pack Config
         /// </summary>
         /// <param name="config">Pack configuration</param>
-        public TexturePacker(Config config)
+        public TexturePacker(TexturePackerConfig config)
         {
             packConfig = config;
 
@@ -36,9 +36,9 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// Resets a packer states, and optional set a new Config
         /// </summary>
         /// <param name="config">Pack configuration</param>
-        public void ResetPacker(Config? config = null)
+        public void ResetPacker(TexturePackerConfig? config = null)
         {
-            if(config != null) packConfig = (Config)config;
+            if(config != null) packConfig = (TexturePackerConfig)config;
 
             textureAtlases.Clear();
         }
@@ -132,17 +132,17 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// <returns>True indicates all textures could be packed; False otherwise</returns>
         public bool PackTextures(Dictionary<string, IntermediateTexture> textureElements, TexturePackingMethod algorithm)
         {
-            var binWidth = (packConfig.SizeContraint == SizeConstraints.PowerOfTwo) ? TextureCommandHelper.FloorToNearestPowerOfTwo(packConfig.MaxWidth) : packConfig.MaxWidth;
-            var binHeight = (packConfig.SizeContraint == SizeConstraints.PowerOfTwo) ? TextureCommandHelper.FloorToNearestPowerOfTwo(packConfig.MaxHeight) : packConfig.MaxHeight;
+            var binWidth = (packConfig.AtlasSizeContraint == AtlasSizeConstraints.PowerOfTwo) ? TextureCommandHelper.FloorToNearestPowerOfTwo(packConfig.MaxWidth) : packConfig.MaxWidth;
+            var binHeight = (packConfig.AtlasSizeContraint == AtlasSizeConstraints.PowerOfTwo) ? TextureCommandHelper.FloorToNearestPowerOfTwo(packConfig.MaxHeight) : packConfig.MaxHeight;
 
             // Create data for the packer
-            var textureRegions = new List<MaxRectanglesBinPack.RotatableRectangle>();
+            var textureRegions = new List<RotatableRectangle>();
 
             foreach (var textureElementKey in textureElements.Keys)
             {
                 var textureElement = textureElements[textureElementKey];
 
-                textureRegions.Add(new MaxRectanglesBinPack.RotatableRectangle(0, 0,
+                textureRegions.Add(new RotatableRectangle(0, 0,
                     textureElement.Texture.Description.Width + 2 * textureElement.BorderSize, textureElement.Texture.Description.Height + 2 * textureElement.BorderSize) { Key = textureElementKey });
             }
 
@@ -158,7 +158,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 var packedSize = CalculatePackedRectanglesBound(maxRectPacker.PackedRectangles);
 
                 // Alter the size of atlas so that it is a power of two
-                if (packConfig.SizeContraint == SizeConstraints.PowerOfTwo)
+                if (packConfig.AtlasSizeContraint == AtlasSizeConstraints.PowerOfTwo)
                 {
                     packedSize.Width = TextureCommandHelper.CeilingToNearestPowerOfTwo(packedSize.Width);
                     packedSize.Height = TextureCommandHelper.CeilingToNearestPowerOfTwo(packedSize.Height);
@@ -204,7 +204,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// </summary>
         /// <param name="usedRectangles"></param>
         /// <returns></returns>
-        private Size2 CalculatePackedRectanglesBound(IEnumerable<MaxRectanglesBinPack.RotatableRectangle> usedRectangles)
+        private Size2 CalculatePackedRectanglesBound(IEnumerable<RotatableRectangle> usedRectangles)
         {
             var minX = int.MaxValue;
             var minY = int.MaxValue;
@@ -225,57 +225,6 @@ namespace SiliconStudio.Paradox.Assets.Texture
         }
 
         /// <summary>
-        /// Size constraints enums for TexturePacker where :
-        /// - Any would create a texture exactly by a given size.
-        /// - PowerOfTwo would create a texture where width and height are of power of two by ceiling a given size to the nearest power of two value.
-        /// </summary>
-        public enum SizeConstraints
-        {
-            PowerOfTwo,
-            Any,
-        }
-
-        /// <summary>
-        /// Packing Configuration defines constraints for TexturePacker
-        /// </summary>
-        public struct Config
-        {
-            /// <summary>
-            /// Gets or Sets MaxRects heuristic algorithm to place rectangles
-            /// </summary>
-            public TexturePackingMethod Algorithm;
-
-            /// <summary>
-            /// Gets or Sets the use of rotation for packing
-            /// </summary>
-            public bool UseRotation;
-
-            /// <summary>
-            /// Gets or Sets the use of Multipack.
-            /// If Multipack is enabled, a packer could create more than one texture atlases to fit all textures,
-            /// whereas if Multipack is disabled, a packer always creates only one texture atlas which might not fit all textures.
-            /// </summary>
-            public bool UseMultipack;
-
-            /// <summary>
-            /// Gets or Sets texture atlas size constraints: Any or Power of two
-            /// - Any would create a texture exactly by a given size.
-            /// - PowerOfTwo would create a texture where width and height are of power of two by ceiling a given size to the nearest power of two value.
-            /// </summary>
-            public SizeConstraints SizeContraint;
-
-            /// <summary>
-            /// Gets or Sets MaxWidth for expected TextureAtlas
-            /// </summary>
-            public int MaxWidth;
-
-            /// <summary>
-            /// Gets or Sets MaxHeight for expected TextureAtlas
-            /// </summary>
-            public int MaxHeight;
-        }
-
-        /// <summary>
         /// Intermediate texture element that is used during Packing and texture atlas creation processes.
         /// It represents a packed texture.
         /// </summary>
@@ -289,7 +238,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
             /// <summary>
             /// Gets or Sets Region for the texture relative to a texture atlas that contains it
             /// </summary>
-            public MaxRectanglesBinPack.RotatableRectangle Region;
+            public RotatableRectangle Region;
 
             /// <summary>
             /// Gets a boolean indicating if border is enabled
@@ -340,7 +289,58 @@ namespace SiliconStudio.Paradox.Assets.Texture
             /// <summary>
             /// Gets or Sets Packing configuration
             /// </summary>
-            public Config PackConfig;
+            public TexturePackerConfig PackConfig;
         }
+    }
+
+    /// <summary>
+    /// Size constraints enums for TexturePacker where :
+    /// - Any would create a texture exactly by a given size.
+    /// - PowerOfTwo would create a texture where width and height are of power of two by ceiling a given size to the nearest power of two value.
+    /// </summary>
+    public enum AtlasSizeConstraints
+    {
+        PowerOfTwo,
+        Any,
+    }
+
+    /// <summary>
+    /// Packing Configuration defines constraints for TexturePacker
+    /// </summary>
+    public struct TexturePackerConfig
+    {
+        /// <summary>
+        /// Gets or Sets MaxRects heuristic algorithm to place rectangles
+        /// </summary>
+        public TexturePackingMethod Algorithm;
+
+        /// <summary>
+        /// Gets or Sets the use of rotation for packing
+        /// </summary>
+        public bool UseRotation;
+
+        /// <summary>
+        /// Gets or Sets the use of Multipack.
+        /// If Multipack is enabled, a packer could create more than one texture atlases to fit all textures,
+        /// whereas if Multipack is disabled, a packer always creates only one texture atlas which might not fit all textures.
+        /// </summary>
+        public bool UseMultipack;
+
+        /// <summary>
+        /// Gets or Sets texture atlas size constraints: Any or Power of two
+        /// - Any would create a texture exactly by a given size.
+        /// - PowerOfTwo would create a texture where width and height are of power of two by ceiling a given size to the nearest power of two value.
+        /// </summary>
+        public AtlasSizeConstraints AtlasSizeContraint;
+
+        /// <summary>
+        /// Gets or Sets MaxWidth for expected TextureAtlas
+        /// </summary>
+        public int MaxWidth;
+
+        /// <summary>
+        /// Gets or Sets MaxHeight for expected TextureAtlas
+        /// </summary>
+        public int MaxHeight;
     }
 }

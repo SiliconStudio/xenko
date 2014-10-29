@@ -141,13 +141,13 @@ namespace SiliconStudio.Paradox.Assets
             var imageGroupData = new TImageGroupData { Images = new List<TImageData>() };
 
             // Create atlas texture
-            Dictionary<string, Tuple<int, MaxRectanglesBinPack.RotatableRectangle>> regionDictionary = null;
+            Dictionary<string, Tuple<int, RotatableRectangle>> regionDictionary = null;
 
             // Generate texture atlas
             if (asset.GroupAsset.GenerateTextureAtlas)
             {
                 // Initialize packing configuration from GroupAsset
-                var packConfiguration = new TexturePacker.Config
+                var packConfiguration = new TexturePackerConfig
                 {
                     Algorithm = asset.GroupAsset.AtlasPackingAlgorithm,
                     UseMultipack = asset.GroupAsset.UseMultipackAtlas,
@@ -156,7 +156,7 @@ namespace SiliconStudio.Paradox.Assets
                     MaxWidth = asset.GroupAsset.AtlasMaxWidth,
 
                     // Enforce constraints
-                    SizeContraint = TexturePacker.SizeConstraints.PowerOfTwo,
+                    AtlasSizeContraint = AtlasSizeConstraints.PowerOfTwo,
                 };
 
                 var resultStatus = CreateAndSaveTextureAtlasImage(ref packConfiguration, commandContext.Logger, out regionDictionary);
@@ -222,10 +222,10 @@ namespace SiliconStudio.Paradox.Assets
         /// <param name="logger">Status Logger</param>
         /// <param name="regionDictionary">Output that contains Key for each image and a tuple linking the image with a texture atlas index and its region</param>
         /// <returns>Status of building</returns>
-        private ResultStatus CreateAndSaveTextureAtlasImage(ref TexturePacker.Config packConfig, Logger logger, 
-            out Dictionary<string, Tuple<int, MaxRectanglesBinPack.RotatableRectangle>> regionDictionary)
+        private ResultStatus CreateAndSaveTextureAtlasImage(ref TexturePackerConfig packConfig, Logger logger, 
+            out Dictionary<string, Tuple<int, RotatableRectangle>> regionDictionary)
         {
-            regionDictionary = new Dictionary<string, Tuple<int, MaxRectanglesBinPack.RotatableRectangle>>();
+            regionDictionary = new Dictionary<string, Tuple<int, RotatableRectangle>>();
 
             // Pack textures
             using (var texTool = new TextureTool())
@@ -258,7 +258,7 @@ namespace SiliconStudio.Paradox.Assets
                     {
                         var textureKey = texture.Region.Key;
 
-                        regionDictionary.Add(textureKey, new Tuple<int, MaxRectanglesBinPack.RotatableRectangle>(textureAtlasIndex, texture.Region));
+                        regionDictionary.Add(textureKey, new Tuple<int, RotatableRectangle>(textureAtlasIndex, texture.Region));
 
                         texture.Texture.Dispose();
                     }
