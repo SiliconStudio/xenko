@@ -256,7 +256,7 @@ namespace SiliconStudio.Paradox.UI
                 uiFrustrumHeight = 2 * (float)Math.Tan(uiFieldOfView / 2);
 
                 nearPlane = 1f;
-                farPlane = virtualResolution.Z + 2f;
+                farPlane = 1f + 2 * virtualResolution.Z;
                 var projection = Matrix.PerspectiveFovRH(uiFieldOfView, virtualResolution.X / virtualResolution.Y, nearPlane, farPlane);
                 projection.M22 = -projection.M22;
 
