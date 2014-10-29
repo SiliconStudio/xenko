@@ -225,6 +225,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <summary>
         /// Gets or sets the first row in the matrix; that is M11, M12, M13, and M14.
         /// </summary>
+        [DataMemberIgnore]
         public Vector4 Row1
         {
             get { return new Vector4(M11, M12, M13, M14); }
@@ -234,6 +235,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <summary>
         /// Gets or sets the second row in the matrix; that is M21, M22, M23, and M24.
         /// </summary>
+        [DataMemberIgnore]
         public Vector4 Row2
         {
             get { return new Vector4(M21, M22, M23, M24); }
@@ -243,6 +245,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <summary>
         /// Gets or sets the third row in the matrix; that is M31, M32, M33, and M34.
         /// </summary>
+        [DataMemberIgnore]
         public Vector4 Row3
         {
             get { return new Vector4(M31, M32, M33, M34); }
@@ -252,6 +255,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <summary>
         /// Gets or sets the fourth row in the matrix; that is M41, M42, M43, and M44.
         /// </summary>
+        [DataMemberIgnore]
         public Vector4 Row4
         {
             get { return new Vector4(M41, M42, M43, M44); }
@@ -261,6 +265,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <summary>
         /// Gets or sets the first column in the matrix; that is M11, M21, M31, and M41.
         /// </summary>
+        [DataMemberIgnore]
         public Vector4 Column1
         {
             get { return new Vector4(M11, M21, M31, M41); }
@@ -270,6 +275,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <summary>
         /// Gets or sets the second column in the matrix; that is M12, M22, M32, and M42.
         /// </summary>
+        [DataMemberIgnore]
         public Vector4 Column2
         {
             get { return new Vector4(M12, M22, M32, M42); }
@@ -279,6 +285,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <summary>
         /// Gets or sets the third column in the matrix; that is M13, M23, M33, and M43.
         /// </summary>
+        [DataMemberIgnore]
         public Vector4 Column3
         {
             get { return new Vector4(M13, M23, M33, M43); }
@@ -288,6 +295,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <summary>
         /// Gets or sets the fourth column in the matrix; that is M14, M24, M34, and M44.
         /// </summary>
+        [DataMemberIgnore]
         public Vector4 Column4
         {
             get { return new Vector4(M14, M24, M34, M44); }
@@ -297,6 +305,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <summary>
         /// Gets or sets the translation of the matrix; that is M41, M42, and M43.
         /// </summary>
+        [DataMemberIgnore]
         public Vector3 TranslationVector
         {
             get { return new Vector3(M41, M42, M43); }
@@ -306,6 +315,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <summary>
         /// Gets or sets the scale of the matrix; that is M11, M22, and M33.
         /// </summary>
+        [DataMemberIgnore]
         public Vector3 ScaleVector
         {
             get { return new Vector3(M11, M22, M33); }
