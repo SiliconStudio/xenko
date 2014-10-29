@@ -187,6 +187,7 @@
     <Compile Include="EntityModel\EntityComponentSerializer.cs" />
     <Compile Include="EntityModel\EntityExtensions.cs" />
     <Compile Include="EntityModel\EntitySerializer.cs" />
+    <Compile Include="EntityModel\EntityHierarchyData.cs" />
     <Compile Include="Framework.Extensions\DictionaryExtensions.cs" />
     <Compile Include="GameSystem.cs" />
     <Compile Include="Game.cs" />

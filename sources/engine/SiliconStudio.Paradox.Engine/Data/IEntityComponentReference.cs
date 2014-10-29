@@ -10,10 +10,12 @@ namespace SiliconStudio.Paradox.Data
 {
     public interface IEntityComponentReference
     {
-        ContentReference<EntityData> Entity { get; }
+        EntityReference Entity { get; }
 
-        PropertyKey Component { get; }
+        PropertyKey Component { get; set; }
 
         Type ComponentType { get; }
+
+        EntityComponentData Value { get; set; }
     }
 }

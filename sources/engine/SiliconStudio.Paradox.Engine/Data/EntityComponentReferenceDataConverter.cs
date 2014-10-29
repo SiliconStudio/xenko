@@ -20,36 +20,13 @@ namespace SiliconStudio.Paradox.Data
 
         public override void ConvertFromData(ConverterContext converterContext, EntityComponentReference<TSource> componentReference, ref TSource component)
         {
-            // Load entity
-            var entity = converterContext.ConvertFromData<Entity>(componentReference.Entity);
-
-            // Get its component
-            component = entity.Get(componentReference.Component);
+            // Convert component
+            component = converterContext.ConvertFromData<TSource>(componentReference.Value);
         }
 
         public override void ConvertToData(ConverterContext converterContext, ref EntityComponentReference<TSource> componentReference, TSource component)
         {
-            ContentReference<EntityData> entityReference = null;
-            converterContext.ConvertToData(ref entityReference, component.Entity);
-
-            // Find key of this component
-            PropertyKey<TSource> componentKey = null;
-            if (component.Entity == null)
-                throw new InvalidOperationException("Entity of a referenced component can't be null");
-
-            foreach (var entityComponent in component.Entity.Tags)
-            {
-                if (entityComponent.Value is EntityComponent
-                    && entityComponent.Value == component)
-                {
-                    componentKey = (PropertyKey<TSource>)entityComponent.Key;
-                }
-            }
-
-            if (componentKey == null)
-                throw new InvalidOperationException("Could not find the component in its entity");
-
-            componentReference = new EntityComponentReference<TSource>(entityReference, componentKey);
+            throw new NotImplementedException();
         }
     }
 }

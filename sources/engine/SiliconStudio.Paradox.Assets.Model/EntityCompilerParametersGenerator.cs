@@ -14,6 +14,7 @@ using SiliconStudio.Paradox.Assets.Model;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Data;
 using SiliconStudio.Paradox.Engine.Data;
+using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.EntityModel.Data;
 using SiliconStudio.Paradox.Shaders.Compiler;
 
@@ -59,34 +60,37 @@ namespace SiliconStudio.Paradox.Assets.Effect.Generators
                     var assetPath = entityAssetItem.Location.GetDirectoryAndFileName();
                     try
                     {
-                        var entity = assetManager.Load<EntityData>(assetPath, settings);
-                        
-                        foreach (var modelComponent in entity.Components.Select(x => x.Value).OfType<ModelComponentData>())
-                        {
-                            foreach (var meshData in modelComponent.Model.Value.Meshes)
-                            {
-                                var lightingParameters = GetLightingParameters(meshData);
-                                var materialParameters = GetMeshMaterialParameters(meshData);
+                        var entityHiearchy = assetManager.Load<EntityHierarchyData>(assetPath, settings);
 
-                                if (lightingParameters == null || lightingParameters.Count == 0)
+                        foreach (var entity in entityHiearchy.Entities)
+                        {
+                            foreach (var modelComponent in entity.Components.Select(x => x.Value).OfType<ModelComponentData>())
+                            {
+                                foreach (var meshData in modelComponent.Model.Value.Meshes)
                                 {
-                                    EntityParameters entityParameters;
-                                    entityParameters.MaterialParameters = materialParameters;
-                                    entityParameters.ModelParameters = modelComponent.Parameters;
-                                    entityParameters.MeshParameters = meshData != null ? meshData.Parameters : null;
-                                    entityParameters.LightingParameters = null;
-                                    allEntityParameters.Add(entityParameters);
-                                }
-                                else
-                                {
-                                    foreach (var lightConfig in lightingParameters)
+                                    var lightingParameters = GetLightingParameters(meshData);
+                                    var materialParameters = GetMeshMaterialParameters(meshData);
+
+                                    if (lightingParameters == null || lightingParameters.Count == 0)
                                     {
                                         EntityParameters entityParameters;
                                         entityParameters.MaterialParameters = materialParameters;
                                         entityParameters.ModelParameters = modelComponent.Parameters;
                                         entityParameters.MeshParameters = meshData != null ? meshData.Parameters : null;
-                                        entityParameters.LightingParameters = lightConfig;
+                                        entityParameters.LightingParameters = null;
                                         allEntityParameters.Add(entityParameters);
+                                    }
+                                    else
+                                    {
+                                        foreach (var lightConfig in lightingParameters)
+                                        {
+                                            EntityParameters entityParameters;
+                                            entityParameters.MaterialParameters = materialParameters;
+                                            entityParameters.ModelParameters = modelComponent.Parameters;
+                                            entityParameters.MeshParameters = meshData != null ? meshData.Parameters : null;
+                                            entityParameters.LightingParameters = lightConfig;
+                                            allEntityParameters.Add(entityParameters);
+                                        }
                                     }
                                 }
                             }

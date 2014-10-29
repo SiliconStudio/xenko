@@ -6,6 +6,10 @@
 // and re-save the associated .pdxdata.
 // </auto-generated>
 
+using SiliconStudio.Core.Serialization.Converters;
+using SiliconStudio.Paradox.EntityModel;
+using EntityComponentData = SiliconStudio.Paradox.EntityModel.Data.EntityComponentData;
+
 namespace SiliconStudio.Paradox.Engine.Data
 {
     /// <summary>
@@ -422,7 +426,7 @@ namespace SiliconStudio.Paradox.Engine.Data
         /// <summary>
         /// Data field for <see cref="SiliconStudio.Paradox.Engine.CameraComponent.Target"/>.
         /// </summary>
-        public SiliconStudio.Core.Serialization.ContentReference<SiliconStudio.Paradox.EntityModel.Data.EntityData> Target;
+        public SiliconStudio.Paradox.Data.EntityReference Target;
 
         /// <summary>
         /// Data field for <see cref="SiliconStudio.Paradox.Engine.CameraComponent.TargetUp"/>.

@@ -6,6 +6,7 @@ using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Paradox.Extensions;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Serialization.Contents;
@@ -25,6 +26,12 @@ namespace SiliconStudio.Paradox.EntityModel.Data
     // Entities as they are stored in the git shared scene file
     public partial class EntityData
     {
+        [DataMemberIgnore]
+        public EntityHierarchyData Container;
+
+        [DataMember(5)]
+        public Guid Id;
+
         [DataMember(10)]
         public string Name;
 
@@ -33,6 +40,7 @@ namespace SiliconStudio.Paradox.EntityModel.Data
 
         public EntityData()
         {
+            Id = Guid.NewGuid();
             Components.CollectionChanged += Components_CollectionChanged;
         }
 
@@ -52,43 +60,71 @@ namespace SiliconStudio.Paradox.EntityModel.Data
         }
     }
 
-    public partial class EntityDataConverter : DataConverter<EntityData, Entity>
+    public partial class EntityDataConverter : DataConverter<EntityHierarchyData, Entity>
     {
         public override bool CanConstruct
         {
             get { return true; }
         }
 
-        public override void ConstructFromData(ConverterContext converterContext, EntityData entityData, ref Entity entity)
+        public void SaveEntityData(ConverterContext converterContext, EntityHierarchyData entityHierarchyData, Entity entity)
         {
-            entity = new Entity(entityData.Name);
-            foreach (var component in entityData.Components)
-            {
-                entity.Tags.SetObject(component.Key, converterContext.ConvertFromData<EntityComponent>(component.Value, ConvertFromDataFlags.Construct));
-            }
-        }
-
-        public override void ConvertToData(ConverterContext converterContext, ref EntityData entityData, Entity entity)
-        {
-            entityData = new EntityData
-                {
-                    Name = entity.Name,
-                };
+            var entityData = new EntityData { Name = entity.Name };
 
             foreach (var component in entity.Tags.Where(x => x.Value is EntityComponent))
             {
                 entityData.Components.Add(component.Key, converterContext.ConvertToData<EntityComponentData>(component.Value));
             }
+
+            entityHierarchyData.Entities.Add(entityData);
+
+            foreach (var child in entity.Transformation.Children)
+            {
+                SaveEntityData(converterContext, entityHierarchyData, child.Entity);
+            }
         }
 
-        public override void ConvertFromData(ConverterContext converterContext, EntityData entityData, ref Entity entity)
+        public override void ConvertToData(ConverterContext converterContext, ref EntityHierarchyData entityHierarchyData, Entity entity)
         {
-            foreach (var component in entityData.Components)
+            entityHierarchyData = new EntityHierarchyData();
+
+            SaveEntityData(converterContext, entityHierarchyData, entity);
+        }
+
+        public override void ConvertFromData(ConverterContext converterContext, EntityHierarchyData entityHierarchyData, ref Entity rootEntity)
+        {
+            // Work in two steps: first construct entities and components, and then convert actual data (to avoid problems with circular references)
+            // Note: We could do it in one step (by using ConvertFromDataFlags.Default in first step), but it should help avoid uncontrollable recursion.
+
+            // Keep list of entities. Probably not necessary since converterContext cache should prevent them from being GC anyway.
+            var entities = new Entity[entityHierarchyData.Entities.Count];
+
+            // Build entities first
+            for (int index = 0; index < entityHierarchyData.Entities.Count; index++)
             {
-                var entityComponent = (EntityComponent)entity.Tags.Get(component.Key);
-                converterContext.ConvertFromData(component.Value, ref entityComponent, ConvertFromDataFlags.Convert);
-                entity.Tags.SetObject(component.Key, entityComponent);
+                var entityData = entityHierarchyData.Entities[index];
+                var currentEntity = new Entity(entityData.Name);
+                foreach (var component in entityData.Components)
+                {
+                    currentEntity.Tags.SetObject(component.Key, converterContext.ConvertFromData<EntityComponent>(component.Value, ConvertFromDataFlags.Construct));
+                }
+                entities[index] = currentEntity;
             }
+
+            // Convert entities
+            for (int index = 0; index < entityHierarchyData.Entities.Count; index++)
+            {
+                var entityData = entityHierarchyData.Entities[index];
+                var entity = entities[index];
+                foreach (var component in entityData.Components)
+                {
+                    var entityComponent = (EntityComponent)entity.Tags.Get(component.Key);
+                    converterContext.ConvertFromData(component.Value, ref entityComponent, ConvertFromDataFlags.Convert);
+                    entity.Tags.SetObject(component.Key, entityComponent);
+                }
+            }
+
+            rootEntity = entities[0];
         }
     }
 }

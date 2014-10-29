@@ -12,6 +12,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AdditiveAnimationAsset.cs" />
+    <Compile Include="Analysis\EntityAnalysis.cs" />
     <Compile Include="AnimationAsset.cs" />
     <Compile Include="AnimationAssetCompiler.cs" />
     <Compile Include="AssimpAssetImporter.cs" />
@@ -28,6 +29,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="SharpYaml">
+      <HintPath>..\..\common\deps\SharpYaml\SharpYaml.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>

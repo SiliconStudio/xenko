@@ -13,6 +13,7 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Assets.Materials;
 using SiliconStudio.Paradox.Assets.Materials.Nodes;
 using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
+using SiliconStudio.Paradox.Assets.Model.Analysis;
 using SiliconStudio.Paradox.Assets.Texture;
 using SiliconStudio.Paradox.Data;
 using SiliconStudio.Paradox.Effects;
@@ -102,112 +103,106 @@ namespace SiliconStudio.Paradox.Assets.Model
                 // 4. Entity
                 if (isImportingEntity)
                 {
-                    var entityAsset = ImportEntity(assetReferences, localPath, modelItem, entityInfo);
+                    var entityAssetItem = ImportEntity(assetReferences, localPath, modelItem);
+                    var entityAsset = (EntityAsset)entityAssetItem.Asset;
+                    var rootEntityData = entityAsset.Data.Entities[entityAsset.Data.RootEntity];
 
                     // 5. Camera
                     if (isImportingCamera)
-                        ImportCameras(assetReferences, localPath, entityInfo, entityAsset, modelItem);
+                        ImportCameras(entityInfo, rootEntityData, (ModelAsset)modelItem.Asset);
 
                     // 6. Lights
                     if (isImportingLight)
-                        ImportLights(assetReferences, localPath, entityInfo, entityAsset, modelItem);
+                        ImportLights(entityInfo, rootEntityData, (ModelAsset)modelItem.Asset);
+
+                    // Apply EntityAnalysis 
+                    EntityAnalysis.UpdateEntityReferences((EntityAsset)entityAssetItem.Asset);
                 }
             }
 
             return assetReferences;
         }
 
-        private static void ImportLights(List<AssetItem> assetReferences, UFile localPath, EntityInfo entityInfo, AssetItem entityAsset, AssetItem modelAsset)
+        private static void ImportLights(EntityInfo entityInfo, EntityData rootEntityData, ModelAsset modelAsset)
         {
             if (entityInfo.Lights == null)
                 return;
 
             foreach (var light in entityInfo.Lights)
             {
-                var lightUrl = new UFile(localPath.GetFileName() + "_light_" + light.NodeName, null);
-
-                var cameraEntityAsset = CreateTrackingEntity(entityAsset, modelAsset, lightUrl, light.NodeName);
-                ((EntityAsset)cameraEntityAsset.Asset).Data.Components.Add(LightComponent.Key, light.Data);
-
-                assetReferences.Add(cameraEntityAsset);
+                var cameraEntityAsset = CreateTrackingEntity(rootEntityData, modelAsset, light.NodeName);
+                cameraEntityAsset.Components.Add(LightComponent.Key, light.Data);
             }
         }
 
-        private static void ImportCameras(List<AssetItem> assetReferences, UFile localPath, EntityInfo entityInfo, AssetItem entityAsset, AssetItem modelAsset)
+        private static void ImportCameras(EntityInfo entityInfo, EntityData rootEntityData, ModelAsset modelAsset)
         {
             if (entityInfo.Cameras == null)
                 return;
 
             foreach (var camera in entityInfo.Cameras)
             {
-                var cameraUrl = new UFile(localPath.GetFileName() + "_camera_" + camera.NodeName, null);
-
-                var cameraEntityAsset = CreateTrackingEntity(entityAsset, modelAsset, cameraUrl, camera.NodeName);
-                ((EntityAsset)cameraEntityAsset.Asset).Data.Components.Add(CameraComponent.Key, camera.Data);
+                var cameraEntityAsset = CreateTrackingEntity(rootEntityData, modelAsset, camera.NodeName);
+                cameraEntityAsset.Components.Add(CameraComponent.Key, camera.Data);
 
                 if (camera.TargetNodeName != null)
                 {
                     // We have a target, create an entity for it
-                    var cameraTargetUrl = new UFile(localPath.GetFileName() + "_cameratarget_" + camera.TargetNodeName, null);
-                    var cameraTargetEntityAsset = CreateTrackingEntity(entityAsset, modelAsset, cameraTargetUrl, camera.TargetNodeName);
+                    var cameraTargetEntityAsset = CreateTrackingEntity(rootEntityData, modelAsset, camera.TargetNodeName);
 
                     // Update target
-                    camera.Data.Target = new ContentReference<EntityData>(cameraTargetEntityAsset.Id, cameraTargetEntityAsset.Location);
-
-                    assetReferences.Add(cameraTargetEntityAsset);
+                    camera.Data.Target = new EntityReference { Value = cameraTargetEntityAsset };
                 }
-
-                assetReferences.Add(cameraEntityAsset);
             }
         }
 
-        private static AssetItem CreateTrackingEntity(AssetItem rootEntityAsset, AssetItem modelAsset, UFile cameraUrl, string nodeName)
+        private static EntityData CreateTrackingEntity(EntityData rootEntityAsset, ModelAsset modelAsset, string nodeName)
         {
-            var entity = new EntityData { Name = nodeName };
+            var childEntity = new EntityData { Name = nodeName };
 
             // Add TransformationComponent
-            entity.Components.Add(TransformationComponent.Key, new TransformationComponentData());
-
+            childEntity.Components.Add(TransformationComponent.Key, new TransformationComponentData());
 
             // Add ModelNodeLinkComponent
-            entity.Components.Add(ModelNodeLinkComponent.Key, new ModelNodeLinkComponentData
+            childEntity.Components.Add(ModelNodeLinkComponent.Key, new ModelNodeLinkComponentData
             {
                 NodeName = nodeName,
-                Target = EntityComponentReference.New(rootEntityAsset.Id, rootEntityAsset.Location, ModelComponent.Key),
+                Target = EntityComponentReference.New<ModelComponent>(rootEntityAsset.Components[ModelComponent.Key]),
             });
 
-            var asset = new EntityAsset { Data = entity };
-            var entityAsset = new AssetItem(cameraUrl, asset);
-
-            var parentEntity = (EntityAsset)rootEntityAsset.Asset;
+            // Add this asset to the list
+            rootEntityAsset.Container.Entities.Add(childEntity);
 
             // Get or create transformation component
             EntityComponentData entityComponentData;
-            if (!parentEntity.Data.Components.TryGetValue(TransformationComponent.Key, out entityComponentData))
+            if (!rootEntityAsset.Components.TryGetValue(TransformationComponent.Key, out entityComponentData))
             {
                 entityComponentData = new TransformationComponentData();
-                parentEntity.Data.Components.Add(TransformationComponent.Key, entityComponentData);
+                rootEntityAsset.Components.Add(TransformationComponent.Key, entityComponentData);
             }
 
             // Mark node as preserved
-            ((ModelAsset)modelAsset.Asset).PreserveNodes(new List<string> { nodeName });
+            modelAsset.PreserveNodes(new List<string> { nodeName });
 
             // Add as children of model entity
             ((TransformationComponentData)entityComponentData).Children.Add(
-                EntityComponentReference.New(entityAsset.Id, entityAsset.Location, TransformationComponent.Key));
+                EntityComponentReference.New<TransformationComponent>(childEntity.Components[TransformationComponent.Key]));
 
-
-            return entityAsset;
+            return childEntity;
         }
 
-        private static AssetItem ImportEntity(List<AssetItem> assetReferences, UFile localPath, AssetItem modelItem, EntityInfo entityInfo)
+        private static AssetItem ImportEntity(List<AssetItem> assetReferences, UFile localPath, AssetItem modelItem)
         {
             var entityUrl = new UFile(localPath.GetFileName(), null);
 
             var asset = new EntityAsset();
-            asset.Data.Name = entityUrl;
+            var rootEntityData = new EntityData();
+            asset.Data.Entities.Add(rootEntityData);
+            asset.Data.RootEntity = rootEntityData.Id;
+
+            rootEntityData.Name = entityUrl;
             // Use modelUrl.Path to get the url without the extension
-            asset.Data.Components.Add(ModelComponent.Key, new ModelComponentData { Model = new ContentReference<ModelData>(modelItem.Id, modelItem.Location), Enabled = true });
+            rootEntityData.Components.Add(ModelComponent.Key, new ModelComponentData { Model = new ContentReference<ModelData>(modelItem.Id, modelItem.Location), Enabled = true });
 
             var assetReference = new AssetItem(entityUrl, asset);
             assetReferences.Add(assetReference);
