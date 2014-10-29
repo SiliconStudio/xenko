@@ -37,6 +37,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         private void RenderSky(RenderContext context)
         {
+            GraphicsDevice.SetDepthStencilState(GraphicsDevice.DepthStencilStates.DepthRead);
             skyboxEffect.Apply(context.CurrentPass.Parameters);
             skyQuad.Draw();
         }
