@@ -6,17 +6,8 @@
 /// <remarks>
 /// MRT_COUNT: Macro - Number of render targets.
 /// </remarks>
-class ShadingBaseMRT : ShaderBase
+class ShadingBaseMRT : ShaderBase, MultipleRenderTargetsBase
 {
-    // Default COLOR outputs for PS shader
-    stage stream float4 ColorTarget1 : SV_Target1;
-    stage stream float4 ColorTarget2 : SV_Target2;
-    stage stream float4 ColorTarget3 : SV_Target3;
-    stage stream float4 ColorTarget4 : SV_Target4;
-    stage stream float4 ColorTarget5 : SV_Target5;
-    stage stream float4 ColorTarget6 : SV_Target6;
-    stage stream float4 ColorTarget7 : SV_Target7;
-
 #if MRT_COUNT > 0
     ComputeColor ShadingColor0;
 #endif

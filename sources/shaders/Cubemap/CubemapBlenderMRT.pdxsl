@@ -3,16 +3,8 @@
 /// <summary>
 /// Blends cubemaps and outputs in multiple render targets.
 /// </summary>
-class CubemapBlenderMRT : CubemapBlenderBase, ShaderBase
+class CubemapBlenderMRT : CubemapBlenderBase, ShaderBase, MultipleRenderTargetsBase
 {
-    // TODO: define them in a shared class
-    // Default COLOR outputs for PS shader
-    stage stream float4 ColorTarget1 : SV_Target1;
-    stage stream float4 ColorTarget2 : SV_Target2;
-    stage stream float4 ColorTarget3 : SV_Target3;
-    stage stream float4 ColorTarget4 : SV_Target4;
-    stage stream float4 ColorTarget5 : SV_Target5;
-    
     override stage void PSMain()
     {
         base.PSMain();
