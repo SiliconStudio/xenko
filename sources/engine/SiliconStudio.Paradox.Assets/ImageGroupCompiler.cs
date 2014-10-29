@@ -166,7 +166,8 @@ namespace SiliconStudio.Paradox.Assets
                     var regionData = regionDictionary[ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[image])];
                     var region = regionData.Item2;
 
-                    newImage.Region = new Rectangle(image.BorderSize + region.Value.X, image.BorderSize + region.Value.Y, region.Value.Width - 2 * image.BorderSize, region.Value.Height - 2 * image.BorderSize);
+                    newImage.Region = new Rectangle(asset.GroupAsset.BorderSize + region.Value.X, asset.GroupAsset.BorderSize + region.Value.Y,
+                        region.Value.Width - 2 * asset.GroupAsset.BorderSize, region.Value.Height - 2 * asset.GroupAsset.BorderSize);
                     newImage.Orientation = (region.IsRotated) ? ImageOrientation.Rotated90 : ImageOrientation.AsIs;
                 }
                 else
@@ -221,7 +222,7 @@ namespace SiliconStudio.Paradox.Assets
                 foreach (var image in asset.GroupAsset.Images)
                     textureElements.Add(ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[image]), 
                         new IntermediateTexture { Texture = LoadImage(texTool, new UFile(image.Source)), 
-                            AddressModeU = image.AddressModeU, AddressModeV = image.AddressModeV, BorderSize = image.BorderSize, BorderColor = image.BorderColor});
+                            AddressModeU = image.AddressModeU, AddressModeV = image.AddressModeV, BorderColor = image.BorderColor});
 
                 // Initialize packing configuration from GroupAsset
                 var texturePacker = new TexturePacker
@@ -231,7 +232,7 @@ namespace SiliconStudio.Paradox.Assets
                         MaxHeight = asset.GroupAsset.AtlasMaxHeight,
                         MaxWidth = asset.GroupAsset.AtlasMaxWidth,
                         UseRotation = asset.GroupAsset.UseRotationInAtlas,
-
+                        BorderSize = asset.GroupAsset.BorderSize,
                         AtlasSizeContraint = AtlasSizeConstraints.PowerOfTwo
                     };
 

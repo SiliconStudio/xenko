@@ -47,7 +47,6 @@ namespace SiliconStudio.Paradox.Assets.Texture
                     var sourceTextureWidth = sourceTexture.Description.Width;
                     var sourceTextureHeight = sourceTexture.Description.Height;
 
-                    var borderSize = intemediateTexture.BorderSize;
                     var addressModeU = intemediateTexture.AddressModeU;
                     var addressModeV = intemediateTexture.AddressModeV;
                     var borderColor = intemediateTexture.BorderColor;
@@ -63,8 +62,8 @@ namespace SiliconStudio.Paradox.Assets.Texture
                                 var targetIndexX = intemediateTexture.Region.Value.X + x;
                                 var targetIndexY = intemediateTexture.Region.Value.Y + y;
 
-                                var sourceIndexX = GetSourceTextureIndex(x - borderSize, isRotated ? sourceTextureHeight : sourceTextureWidth, addressModeU);
-                                var sourceIndexY = GetSourceTextureIndex(y - borderSize, isRotated ? sourceTextureWidth : sourceTextureHeight, addressModeV);
+                                var sourceIndexX = GetSourceTextureIndex(x - textureAtlas.BorderSize, isRotated ? sourceTextureHeight : sourceTextureWidth, addressModeU);
+                                var sourceIndexY = GetSourceTextureIndex(y - textureAtlas.BorderSize, isRotated ? sourceTextureWidth : sourceTextureHeight, addressModeV);
 
                                 atlasData[targetIndexY * textureAtlas.Width + targetIndexX] = (sourceIndexX < 0 || sourceIndexY < 0)
                                     ? borderColor ?? Color.Transparent :

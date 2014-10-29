@@ -108,6 +108,13 @@ namespace SiliconStudio.Paradox.Assets
         public int AtlasMaxHeight { get; set; }
 
         /// <summary>
+        /// Gets or Sets atlas border size for images inside atlas texture
+        /// </summary>
+        [DataMember(140)]
+        [DefaultValue(0)]
+        public int BorderSize { get; set; }
+
+        /// <summary>
         /// Sets default values for fields
         /// </summary>
         public override void SetDefaults()
@@ -127,6 +134,8 @@ namespace SiliconStudio.Paradox.Assets
 
             AtlasMaxWidth = 1024;
             AtlasMaxHeight = 1024;
+
+            BorderSize = 0;
         }
 
         /// <summary>

@@ -59,16 +59,9 @@ namespace SiliconStudio.Paradox.Assets
         public TextureAddressMode AddressModeV { get; set; }
 
         /// <summary>
-        /// Gets or Sets atlas border size for images inside atlas texture
-        /// </summary>
-        [DataMember(60)]
-        [DefaultValue(0)]
-        public int BorderSize { get; set; }
-
-        /// <summary>
         /// Gets or Sets atlas border color for images inside atlas texture where Border mode is used in AddressModeU
         /// </summary>
-        [DataMember(70)]
+        [DataMember(60)]
         public Color BorderColor { get; set; }
     }
 }

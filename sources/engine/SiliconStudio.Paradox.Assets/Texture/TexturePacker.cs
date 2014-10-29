@@ -47,6 +47,11 @@ namespace SiliconStudio.Paradox.Assets.Texture
         public int MaxHeight;
 
         /// <summary>
+        /// Gets or Sets border size
+        /// </summary>
+        public int BorderSize;
+
+        /// <summary>
         /// Gets available Texture Atlases which contain a set of textures that are already packed
         /// </summary>
         public List<TextureAtlas> TextureAtlases { get { return textureAtlases; } }
@@ -61,6 +66,18 @@ namespace SiliconStudio.Paradox.Assets.Texture
         {
             textureAtlases.Clear();
         }
+
+        public void ResetPacker(int maxWidth, int maxHeight, TexturePackingMethod algorithm = TexturePackingMethod.Best, 
+            bool useRotation = true, bool useMultipack = false, AtlasSizeConstraints atlasSizeConstraint = AtlasSizeConstraints.PowerOfTwo)
+        {
+            MaxWidth = maxWidth;
+            MaxHeight = maxHeight;
+            Algorithm = algorithm;
+            UseRotation = useRotation;
+            UseMultipack = useMultipack;
+            AtlasSizeContraint = atlasSizeConstraint;
+        }
+
 
         /// <summary>
         /// Packs textureElement into textureAtlases
@@ -117,7 +134,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
             {
                 Region = source[key].Region, Texture = source[key].Texture,
                 AddressModeU = source[key].AddressModeU, AddressModeV = source[key].AddressModeV, 
-                BorderColor = source[key].BorderColor, BorderSize = source[key].BorderSize
+                BorderColor = source[key].BorderColor
             });
         }
 
@@ -162,7 +179,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 var textureElement = textureElements[textureElementKey];
 
                 textureRegions.Add(new RotatableRectangle(0, 0,
-                    textureElement.Texture.Description.Width + 2 * textureElement.BorderSize, textureElement.Texture.Description.Height + 2 * textureElement.BorderSize) { Key = textureElementKey });
+                    textureElement.Texture.Description.Width + 2 * BorderSize, textureElement.Texture.Description.Height + 2 * BorderSize) { Key = textureElementKey });
             }
 
             do
@@ -191,6 +208,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 {
                     Width = packedSize.Width,
                     Height = packedSize.Height,
+                    BorderSize = BorderSize
                 };
 
                 // PackRectangles all packed regions into Atlas
@@ -271,16 +289,6 @@ namespace SiliconStudio.Paradox.Assets.Texture
         public RotatableRectangle Region;
 
         /// <summary>
-        /// Gets a boolean indicating if border is enabled
-        /// </summary>
-        public bool HasBorder { get { return BorderSize > 0; } }
-
-        /// <summary>
-        /// Gets or Sets border size
-        /// </summary>
-        public int BorderSize;
-
-        /// <summary>
         /// Gets or Sets border modes in X axis which applies specific TextureAddressMode in the border of each texture element in a given size of border
         /// </summary>
         public TextureAddressMode AddressModeU;
@@ -315,5 +323,10 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// Gets or Sets Height of the texture atlas
         /// </summary>
         public int Height;
+
+        /// <summary>
+        /// Gets or sets Border size of an image
+        /// </summary>
+        public int BorderSize;
     }
 }
