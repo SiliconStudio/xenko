@@ -31,6 +31,7 @@ namespace SiliconStudio.Paradox.Engine
             textureCube = null;
             NearPlane = 0.1f;
             FarPlane = 100.0f;
+            MaxLod = 0;
         }
 
         public CubemapSourceComponent(TextureCube texture) : this()
@@ -109,12 +110,20 @@ namespace SiliconStudio.Paradox.Engine
             {
                 textureCube = value;
                 // TODO: check previous status to dispose the rendertarget?
-                if (IsDynamic && textureCube != null)
+                if (textureCube != null)
                 {
-                    RenderTarget = textureCube.ToRenderTarget(ViewType.Full, 0, 0);
+                    MaxLod = textureCube.Description.MipLevels - 1;
+                    if (IsDynamic)
+                        RenderTarget = textureCube.ToRenderTarget(ViewType.Full, 0, 0);
                 }
             }
         }
+
+        /// <summary>
+        /// The maximum lod of the texture.
+        /// </summary>
+        [DataMemberIgnore]
+        public int MaxLod { get; private set; }
 
         /// <summary>
         /// The render target of the cubemap.

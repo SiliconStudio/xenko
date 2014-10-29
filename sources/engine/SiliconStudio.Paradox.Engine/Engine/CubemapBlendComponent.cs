@@ -26,6 +26,7 @@ namespace SiliconStudio.Paradox.Engine
         {
             Size = 256;
             MaxBlendCount = 0;
+            MaxLod = 0;
             GenerateMips = false;
             textureCube = null;
         }
@@ -58,6 +59,12 @@ namespace SiliconStudio.Paradox.Engine
         public bool GenerateMips { get; set; }
 
         /// <summary>
+        /// The maximum lod of the texture.
+        /// </summary>
+        [DataMemberIgnore]
+        public int MaxLod { get; private set; }
+
+        /// <summary>
         /// The texture attached to this component.
         /// </summary>
         [DataMemberIgnore]
@@ -73,6 +80,7 @@ namespace SiliconStudio.Paradox.Engine
                 // TODO: check previous status to dispose the rendertarget?
                 if (textureCube != null)
                 {
+                    MaxLod = textureCube.Description.MipLevels - 1;
                     RenderTargets = new RenderTarget[6]
                     {
                         textureCube.ToRenderTarget(ViewType.Single, 0, 0),
