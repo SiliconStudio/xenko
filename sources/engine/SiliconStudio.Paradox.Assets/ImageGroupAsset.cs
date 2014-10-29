@@ -6,7 +6,6 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Assets.Texture;
-using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Assets
 {
@@ -90,41 +89,22 @@ namespace SiliconStudio.Paradox.Assets
         public bool UseMultipackAtlas { get; set; }
 
         /// <summary>
-        /// Gets or Sets atlas border mode for images inside atlas texture
-        /// </summary>
-        [DataMember(110)]
-        public TextureAddressMode AtlasBorderMode { get; set; }
-
-        /// <summary>
-        /// Gets or Sets atlas border size for images inside atlas texture
-        /// </summary>
-        [DataMember(120)]
-        [DefaultValue(0)]
-        public int AtlasBorderSize { get; set; }
-
-        /// <summary>
-        /// Gets or Sets atlas border color for images inside atlas texture where Border mode is used in AtlasBorderMode
-        /// </summary>
-        [DataMember(130)]
-        public Color AtlasBorderColor { get; set; }
-
-        /// <summary>
         /// Gets or Sets whether or not to use Rotation for images inside atlas texture
         /// </summary>
-        [DataMember(140)]
+        [DataMember(110)]
         [DefaultValue(true)]
         public bool UseRotationInAtlas { get; set; }
 
         /// <summary>
         /// Gets or Sets max width for generated atlas textures
         /// </summary>
-        [DataMember(150)]
+        [DataMember(120)]
         public int AtlasMaxWidth { get; set; }
 
         /// <summary>
         /// Gets or Sets max height for generated atlas textures
         /// </summary>
-        [DataMember(160)]
+        [DataMember(130)]
         public int AtlasMaxHeight { get; set; }
 
         /// <summary>
@@ -143,9 +123,6 @@ namespace SiliconStudio.Paradox.Assets
             AtlasPackingAlgorithm = MaxRectanglesBinPack.HeuristicMethod.Best;
             UseMultipackAtlas = false;
 
-            AtlasBorderMode = TextureAddressMode.Border;
-            AtlasBorderSize = 0;
-            AtlasBorderColor = Color.Transparent;
             UseRotationInAtlas = true;
 
             AtlasMaxWidth = 1024;

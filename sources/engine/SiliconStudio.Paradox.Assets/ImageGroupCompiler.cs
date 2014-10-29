@@ -142,7 +142,6 @@ namespace SiliconStudio.Paradox.Assets
 
             // Create atlas texture
             Dictionary<string, Tuple<int, MaxRectanglesBinPack.RotatableRectangle>> regionDictionary = null;
-            var borderSize = 0;
 
             // Generate texture atlas
             if (asset.GroupAsset.GenerateTextureAtlas)
@@ -152,9 +151,6 @@ namespace SiliconStudio.Paradox.Assets
                 {
                     Algorithm = asset.GroupAsset.AtlasPackingAlgorithm,
                     UseMultipack = asset.GroupAsset.UseMultipackAtlas,
-                    BorderAddressMode = asset.GroupAsset.AtlasBorderMode,
-                    BorderSize = asset.GroupAsset.AtlasBorderSize,
-                    BorderColor = asset.GroupAsset.AtlasBorderColor,
                     UseRotation = asset.GroupAsset.UseRotationInAtlas,
                     MaxHeight = asset.GroupAsset.AtlasMaxHeight,
                     MaxWidth = asset.GroupAsset.AtlasMaxWidth,
@@ -162,8 +158,6 @@ namespace SiliconStudio.Paradox.Assets
                     // Enforce constraints
                     SizeContraint = TexturePacker.SizeConstraints.PowerOfTwo,
                 };
-
-                borderSize = packConfiguration.BorderSize;
 
                 var resultStatus = CreateAndSaveTextureAtlasImage(ref packConfiguration, commandContext.Logger, out regionDictionary);
 
@@ -185,7 +179,7 @@ namespace SiliconStudio.Paradox.Assets
                     var regionData = regionDictionary[ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[image])];
                     var region = regionData.Item2;
 
-                    newImage.Region = new Rectangle(borderSize + region.Value.X, borderSize + region.Value.Y, region.Value.Width - 2 * borderSize, region.Value.Height - 2 * borderSize);
+                    newImage.Region = new Rectangle(image.BorderSize + region.Value.X, image.BorderSize + region.Value.Y, region.Value.Width - 2 * image.BorderSize, region.Value.Height - 2 * image.BorderSize);
                     newImage.Orientation = (region.IsRotated) ? ImageOrientation.Rotated90 : ImageOrientation.AsIs;
                 }
                 else
@@ -238,9 +232,10 @@ namespace SiliconStudio.Paradox.Assets
             {
                 var textureElements = new Dictionary<string, TexturePacker.IntermediateTexture>();
 
-                foreach (var uiImage in asset.GroupAsset.Images)
-                    textureElements.Add(ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]), 
-                        new TexturePacker.IntermediateTexture { Texture = LoadImage(texTool, new UFile(uiImage.Source)) });
+                foreach (var image in asset.GroupAsset.Images)
+                    textureElements.Add(ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[image]), 
+                        new TexturePacker.IntermediateTexture { Texture = LoadImage(texTool, new UFile(image.Source)), 
+                            AddressModeU = image.AddressModeU, AddressModeV = image.AddressModeV, BorderSize = image.BorderSize, BorderColor = image.BorderColor});
 
                 var texturePacker = new TexturePacker(packConfig);
                 var canPackAllTextures = texturePacker.PackTextures(textureElements);

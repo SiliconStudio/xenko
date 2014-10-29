@@ -96,7 +96,9 @@ namespace SiliconStudio.Paradox.Assets.Texture
         {
             return source.Keys.ToDictionary(key => key, key => new IntermediateTexture
             {
-                Region = source[key].Region, Texture = source[key].Texture
+                Region = source[key].Region, Texture = source[key].Texture,
+                AddressModeU = source[key].AddressModeU, AddressModeV = source[key].AddressModeV, 
+                BorderColor = source[key].BorderColor, BorderSize = source[key].BorderSize
             });
         }
 
@@ -141,7 +143,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 var textureElement = textureElements[textureElementKey];
 
                 textureRegions.Add(new MaxRectanglesBinPack.RotatableRectangle(0, 0,
-                    textureElement.Texture.Description.Width + 2 * packConfig.BorderSize, textureElement.Texture.Description.Height + 2 * packConfig.BorderSize) { Key = textureElementKey });
+                    textureElement.Texture.Description.Width + 2 * textureElement.BorderSize, textureElement.Texture.Description.Height + 2 * textureElement.BorderSize) { Key = textureElementKey });
             }
 
             do
@@ -244,16 +246,6 @@ namespace SiliconStudio.Paradox.Assets.Texture
             public MaxRectanglesBinPack.HeuristicMethod Algorithm;
 
             /// <summary>
-            /// Gets a boolean indicating if border is enabled
-            /// </summary>
-            public bool HasBorder { get { return BorderSize > 0; } }
-
-            /// <summary>
-            /// Gets or Sets border size
-            /// </summary>
-            public int BorderSize;
-
-            /// <summary>
             /// Gets or Sets the use of rotation for packing
             /// </summary>
             public bool UseRotation;
@@ -271,16 +263,6 @@ namespace SiliconStudio.Paradox.Assets.Texture
             /// - PowerOfTwo would create a texture where width and height are of power of two by ceiling a given size to the nearest power of two value.
             /// </summary>
             public SizeConstraints SizeContraint;
-
-            /// <summary>
-            /// Gets or Sets border modes which applies specific TextureAddressMode in the border of each texture element in a given size of border
-            /// </summary>
-            public TextureAddressMode BorderAddressMode;
-
-            /// <summary>
-            /// Gets or Sets Border color when BorderAddressMode is set to Border mode
-            /// </summary>
-            public Color? BorderColor;
 
             /// <summary>
             /// Gets or Sets MaxWidth for expected TextureAtlas
@@ -308,6 +290,31 @@ namespace SiliconStudio.Paradox.Assets.Texture
             /// Gets or Sets Region for the texture relative to a texture atlas that contains it
             /// </summary>
             public MaxRectanglesBinPack.RotatableRectangle Region;
+
+            /// <summary>
+            /// Gets a boolean indicating if border is enabled
+            /// </summary>
+            public bool HasBorder { get { return BorderSize > 0; } }
+
+            /// <summary>
+            /// Gets or Sets border size
+            /// </summary>
+            public int BorderSize;
+
+            /// <summary>
+            /// Gets or Sets border modes in X axis which applies specific TextureAddressMode in the border of each texture element in a given size of border
+            /// </summary>
+            public TextureAddressMode AddressModeU;
+
+            /// <summary>
+            /// Gets or Sets border modes in Y axis which applies specific TextureAddressMode in the border of each texture element in a given size of border
+            /// </summary>
+            public TextureAddressMode AddressModeV;
+
+            /// <summary>
+            /// Gets or Sets Border color when AddressModeU is set to Border mode
+            /// </summary>
+            public Color? BorderColor;
         }
 
         /// <summary>
