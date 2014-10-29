@@ -58,7 +58,7 @@ namespace SiliconStudio.Paradox.Graphics.Data
         /// <summary>
         /// Data field for <see cref="SiliconStudio.Paradox.Graphics.ImageFragment.Region"/>.
         /// </summary>
-        public SiliconStudio.Core.Mathematics.Rectangle Region;
+        public SiliconStudio.Core.Mathematics.RectangleF Region;
 
         /// <summary>
         /// Data field for <see cref="SiliconStudio.Paradox.Graphics.ImageFragment.IsTransparent"/>.

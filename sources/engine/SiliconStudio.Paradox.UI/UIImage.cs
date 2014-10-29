@@ -101,7 +101,7 @@ namespace SiliconStudio.Paradox.UI
         /// <summary>
         /// Region of the texture (in pixels) defining the image. 
         /// </summary>
-        public override Rectangle Region
+        public override RectangleF Region
         {
             set
             {
@@ -143,7 +143,7 @@ namespace SiliconStudio.Paradox.UI
 
         private void UpdateIdealSize()
         {
-            if (Orientation == ImageOrientation.AsIs || Orientation == ImageOrientation.Rotated180)
+            if (Orientation == ImageOrientation.AsIs)
                 ImageIdealSize = new Vector2(RegionInternal.Width, RegionInternal.Height);
             else
                 ImageIdealSize = new Vector2(RegionInternal.Height, RegionInternal.Width);
