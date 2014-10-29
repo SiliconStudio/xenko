@@ -5,9 +5,9 @@ namespace SiliconStudio.Paradox.Graphics
     /// <summary>
     /// A geometric primitive. Use <see cref="Sphere"/> to learn how to use it.
     /// </summary>
-    public partial class GeometricMultiTexcoordPrimitive : GeometricPrimitive<VertexPositionNormalMultiTexture>
+    public partial class GeometricMultiTexcoordPrimitive : GeometricPrimitive<VertexPositionNormalTangentMultiTexture>
     {
-        public GeometricMultiTexcoordPrimitive(GraphicsDevice graphicsDevice, GeometricMeshData<VertexPositionNormalMultiTexture> geometryMesh)
+        public GeometricMultiTexcoordPrimitive(GraphicsDevice graphicsDevice, GeometricMeshData<VertexPositionNormalTangentMultiTexture> geometryMesh)
             : base(graphicsDevice, geometryMesh)
         {
         }

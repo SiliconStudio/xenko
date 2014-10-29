@@ -11,19 +11,21 @@ namespace SiliconStudio.Paradox.Graphics
     /// Describes a custom vertex format structure that contains position, color and 10 texture coordinates information. 
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct VertexPositionNormalMultiTexture : IEquatable<VertexPositionNormalMultiTexture>, IVertexWindable
+    public struct VertexPositionNormalTangentMultiTexture : IEquatable<VertexPositionNormalTangentMultiTexture>, IVertexWindable
     {
         /// <summary>
-        /// Initializes a new <see cref="SiliconStudio.Paradox.Graphics.VertexPositionNormalTexture"/> instance.
+        /// Initializes a new <see cref="VertexPositionNormalTangentMultiTexture"/> instance.
         /// </summary>
         /// <param name="position">The position of this vertex.</param>
         /// <param name="normal">The vertex normal.</param>
+        /// <param name="tangent">The vertex tangent.</param>
         /// <param name="textureCoordinate">UV texture coordinates.</param>
-        public VertexPositionNormalMultiTexture(Vector3 position, Vector3 normal, Vector2 textureCoordinate)
+        public VertexPositionNormalTangentMultiTexture(Vector3 position, Vector3 normal, Vector4 tangent, Vector2 textureCoordinate)
             : this()
         {
             Position = position;
             Normal = normal;
+            Tangent = tangent;
             TextureCoordinate0 = textureCoordinate;
             TextureCoordinate1 = textureCoordinate;
             TextureCoordinate2 = textureCoordinate;
@@ -47,6 +49,11 @@ namespace SiliconStudio.Paradox.Graphics
         public Vector3 Normal;
 
         /// <summary>
+        /// The vertex tangent.
+        /// </summary>
+        public Vector4 Tangent;
+
+        /// <summary>
         /// UV texture coordinates.
         /// </summary>
         public Vector2 TextureCoordinate0;
@@ -63,7 +70,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// Defines structure byte size.
         /// </summary>
-        public static readonly int Size = 96;
+        public static readonly int Size = 120;
 
 
         /// <summary>
@@ -72,6 +79,7 @@ namespace SiliconStudio.Paradox.Graphics
         public static readonly VertexDeclaration Layout = new VertexDeclaration(
             VertexElement.Position<Vector3>(),
             VertexElement.Normal<Vector3>(),
+            VertexElement.Tangent<Vector4>(),
             VertexElement.TextureCoordinate<Vector2>(0),
             VertexElement.TextureCoordinate<Vector2>(1),
             VertexElement.TextureCoordinate<Vector2>(2),
@@ -85,9 +93,9 @@ namespace SiliconStudio.Paradox.Graphics
             );
 
 
-        public bool Equals(VertexPositionNormalMultiTexture other)
+        public bool Equals(VertexPositionNormalTangentMultiTexture other)
         {
-            return Position.Equals(other.Position) && Normal.Equals(other.Normal)
+            return Position.Equals(other.Position) && Normal.Equals(other.Normal) && Tangent.Equals(other.Tangent)
                    && TextureCoordinate0.Equals(other.TextureCoordinate0)
                    && TextureCoordinate1.Equals(other.TextureCoordinate1)
                    && TextureCoordinate2.Equals(other.TextureCoordinate2)
@@ -103,7 +111,7 @@ namespace SiliconStudio.Paradox.Graphics
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
-            return obj is VertexPositionNormalMultiTexture && Equals((VertexPositionNormalMultiTexture)obj);
+            return obj is VertexPositionNormalTangentMultiTexture && Equals((VertexPositionNormalTangentMultiTexture)obj);
         }
 
         public override int GetHashCode()
@@ -112,6 +120,7 @@ namespace SiliconStudio.Paradox.Graphics
             {
                 int hashCode = Position.GetHashCode();
                 hashCode = (hashCode * 397) ^ Normal.GetHashCode();
+                hashCode = (hashCode * 397) ^ Tangent.GetHashCode();
                 hashCode = (hashCode * 397) ^ TextureCoordinate0.GetHashCode();
                 hashCode = (hashCode * 397) ^ TextureCoordinate1.GetHashCode();
                 hashCode = (hashCode * 397) ^ TextureCoordinate2.GetHashCode();
@@ -138,21 +147,22 @@ namespace SiliconStudio.Paradox.Graphics
             TextureCoordinate7.X = (1.0f - TextureCoordinate7.X);
             TextureCoordinate8.X = (1.0f - TextureCoordinate8.X);
             TextureCoordinate9.X = (1.0f - TextureCoordinate9.X);
+            Tangent = -Tangent;
         }
 
-        public static bool operator ==(VertexPositionNormalMultiTexture left, VertexPositionNormalMultiTexture right)
+        public static bool operator ==(VertexPositionNormalTangentMultiTexture left, VertexPositionNormalTangentMultiTexture right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator !=(VertexPositionNormalMultiTexture left, VertexPositionNormalMultiTexture right)
+        public static bool operator !=(VertexPositionNormalTangentMultiTexture left, VertexPositionNormalTangentMultiTexture right)
         {
             return !left.Equals(right);
         }
 
         public override string ToString()
         {
-            return string.Format("Position: {0}, Normal: {1}, Texcoord: {2}", Position, Normal, TextureCoordinate0);
+            return string.Format("Position: {0}, Normal: {1}, Tangent: {2}, Texcoord0: {3}", Position, Normal, Tangent, TextureCoordinate0);
         }
     }
 }
