@@ -1,6 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corporation (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects.Modules.Processors;
@@ -59,6 +61,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// <param name="singlePass">A flag stating if the cubemap should be rendered in one or 6 passes.</param>
         public CubemapRenderer(IServiceRegistry services, RenderPipeline recursivePipeline, bool singlePass) : base(services, recursivePipeline)
         {
+            // temporary
+            if (GraphicsDevice.Features.Profile < GraphicsProfile.Level_10_0)
+                throw new Exception("Cubemaps not supported on profiles below 10.0.");
             renderInSinglePass = singlePass;
         }
 
