@@ -10,11 +10,19 @@ namespace SiliconStudio.Presentation.Controls
 {
     public class PropertyViewItem : HeaderedItemsControl
     {
+        public enum VerticalPosition
+        {
+            Top,
+            Bottom
+        }
+
         public static readonly DependencyProperty IsExpandedProperty = DependencyProperty.Register("IsExpanded", typeof(bool), typeof(PropertyViewItem), new FrameworkPropertyMetadata(false, OnIsExpandedChanged));
 
         public static readonly DependencyPropertyKey OffsetPropertyKey = DependencyProperty.RegisterReadOnly("Offset", typeof(double), typeof(PropertyViewItem), new FrameworkPropertyMetadata(0.0));
 
         public static readonly DependencyProperty IncrementProperty = DependencyProperty.Register("Increment", typeof(double), typeof(PropertyViewItem), new FrameworkPropertyMetadata(0.0, OnIncrementChanged));
+
+        public static readonly DependencyProperty ExpanderPositionProperty = DependencyProperty.Register("ExpanderPosition", typeof(VerticalPosition), typeof(PropertyViewItem), new FrameworkPropertyMetadata(VerticalPosition.Bottom));
 
         public static readonly RoutedEvent ExpandedEvent = EventManager.RegisterRoutedEvent("Expanded", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(PropertyViewItem));
 
@@ -30,6 +38,8 @@ namespace SiliconStudio.Presentation.Controls
         public double Offset { get { return (double)GetValue(OffsetPropertyKey.DependencyProperty); } private set { SetValue(OffsetPropertyKey, value); } }
 
         public double Increment { get { return (double)GetValue(IncrementProperty); } set { SetValue(IncrementProperty, value); } }
+
+        public VerticalPosition ExpanderPosition { get { return (VerticalPosition)GetValue(ExpanderPositionProperty); } set { SetValue(ExpanderPositionProperty, value); } }
 
         public event RoutedEventHandler Expanded { add { AddHandler(ExpandedEvent, value); } remove { RemoveHandler(ExpandedEvent, value); } }
 
@@ -82,7 +92,7 @@ namespace SiliconStudio.Presentation.Controls
         private static void OnIsExpandedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var item = (PropertyViewItem)d;
-            bool isExpanded = (bool)e.NewValue;
+            var isExpanded = (bool)e.NewValue;
             //ItemsPresenter itemsHostPresenter = item.ItemsHostPresenter;
             //if (itemsHostPresenter != null)
             //{
