@@ -146,20 +146,7 @@ namespace SiliconStudio.Paradox.Assets
             // Generate texture atlas
             if (asset.GroupAsset.GenerateTextureAtlas)
             {
-                // Initialize packing configuration from GroupAsset
-                var packConfiguration = new TexturePackerConfig
-                {
-                    Algorithm = asset.GroupAsset.AtlasPackingAlgorithm,
-                    UseMultipack = asset.GroupAsset.UseMultipackAtlas,
-                    UseRotation = asset.GroupAsset.UseRotationInAtlas,
-                    MaxHeight = asset.GroupAsset.AtlasMaxHeight,
-                    MaxWidth = asset.GroupAsset.AtlasMaxWidth,
-
-                    // Enforce constraints
-                    AtlasSizeContraint = AtlasSizeConstraints.PowerOfTwo,
-                };
-
-                var resultStatus = CreateAndSaveTextureAtlasImage(ref packConfiguration, commandContext.Logger, out regionDictionary);
+                var resultStatus = CreateAndSaveTextureAtlasImage(commandContext.Logger, out regionDictionary);
 
                 if (resultStatus != ResultStatus.Successful) return Task.FromResult(resultStatus);
             }
@@ -218,11 +205,10 @@ namespace SiliconStudio.Paradox.Assets
         /// <summary>
         /// Creates and Saves texture atlas image from images in GroupAsset
         /// </summary>
-        /// <param name="packConfig">Packing configuration</param>
         /// <param name="logger">Status Logger</param>
         /// <param name="regionDictionary">Output that contains Key for each image and a tuple linking the image with a texture atlas index and its region</param>
         /// <returns>Status of building</returns>
-        private ResultStatus CreateAndSaveTextureAtlasImage(ref TexturePackerConfig packConfig, Logger logger, 
+        private ResultStatus CreateAndSaveTextureAtlasImage(Logger logger, 
             out Dictionary<string, Tuple<int, RotatableRectangle>> regionDictionary)
         {
             regionDictionary = new Dictionary<string, Tuple<int, RotatableRectangle>>();
@@ -237,7 +223,18 @@ namespace SiliconStudio.Paradox.Assets
                         new IntermediateTexture { Texture = LoadImage(texTool, new UFile(image.Source)), 
                             AddressModeU = image.AddressModeU, AddressModeV = image.AddressModeV, BorderSize = image.BorderSize, BorderColor = image.BorderColor});
 
-                var texturePacker = new TexturePacker(packConfig);
+                // Initialize packing configuration from GroupAsset
+                var texturePacker = new TexturePacker
+                    {
+                        Algorithm = asset.GroupAsset.AtlasPackingAlgorithm,
+                        UseMultipack = asset.GroupAsset.UseMultipackAtlas,
+                        MaxHeight = asset.GroupAsset.AtlasMaxHeight,
+                        MaxWidth = asset.GroupAsset.AtlasMaxWidth,
+                        UseRotation = asset.GroupAsset.UseRotationInAtlas,
+
+                        AtlasSizeContraint = AtlasSizeConstraints.PowerOfTwo
+                    };
+
                 var canPackAllTextures = texturePacker.PackTextures(textureElements);
 
                 if (!canPackAllTextures)
