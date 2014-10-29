@@ -39,9 +39,9 @@ namespace SiliconStudio.Paradox.Assets.Tests
             maxRectPacker.Initialize(100, 100, false);
 
             // This data set remain only 1 rect that cant be packed
-            var packRectangles = new List<MaxRectanglesBinPack.RotatableRectangle>
+            var packRectangles = new List<RotatableRectangle>
             {
-                new MaxRectanglesBinPack.RotatableRectangle(0, 0, 80, 100), new MaxRectanglesBinPack.RotatableRectangle(0, 0, 100, 20),
+                new RotatableRectangle(0, 0, 80, 100), new RotatableRectangle(0, 0, 100, 20),
             };
 
             maxRectPacker.PackRectangles(packRectangles);
@@ -57,9 +57,9 @@ namespace SiliconStudio.Paradox.Assets.Tests
             maxRectPacker.Initialize(100, 100, true);
 
             // This data set remain only 1 rect that cant be packed
-            var packRectangles = new List<MaxRectanglesBinPack.RotatableRectangle>
+            var packRectangles = new List<RotatableRectangle>
             {
-                new MaxRectanglesBinPack.RotatableRectangle(0, 0, 80, 100) { Key = "A" }, new MaxRectanglesBinPack.RotatableRectangle(0, 0, 100, 20) { Key = "B"},
+                new RotatableRectangle(0, 0, 80, 100) { Key = "A" }, new RotatableRectangle(0, 0, 100, 20) { Key = "B"},
             };
 
             maxRectPacker.PackRectangles(packRectangles);
@@ -79,12 +79,12 @@ namespace SiliconStudio.Paradox.Assets.Tests
             maxRectPacker.Initialize(100, 100, true);
 
             // This data set remain only 1 rect that cant be packed
-            var packRectangles = new List<MaxRectanglesBinPack.RotatableRectangle>
+            var packRectangles = new List<RotatableRectangle>
             {
-                new MaxRectanglesBinPack.RotatableRectangle(0, 0, 55, 70), new MaxRectanglesBinPack.RotatableRectangle(0, 0, 55, 30),
-                new MaxRectanglesBinPack.RotatableRectangle(0, 0, 25, 30), new MaxRectanglesBinPack.RotatableRectangle(0, 0, 20, 30),
-                new MaxRectanglesBinPack.RotatableRectangle(0, 0, 45, 30),
-                new MaxRectanglesBinPack.RotatableRectangle(0, 0, 25, 40), new MaxRectanglesBinPack.RotatableRectangle(0, 0, 20, 40)
+                new RotatableRectangle(0, 0, 55, 70), new RotatableRectangle(0, 0, 55, 30),
+                new RotatableRectangle(0, 0, 25, 30), new RotatableRectangle(0, 0, 20, 30),
+                new RotatableRectangle(0, 0, 45, 30),
+                new RotatableRectangle(0, 0, 25, 40), new RotatableRectangle(0, 0, 20, 40)
             };
 
             maxRectPacker.PackRectangles(packRectangles);
@@ -98,16 +98,13 @@ namespace SiliconStudio.Paradox.Assets.Tests
         {
             var textureElements = CreateFakeTextureElements();
 
-            var packConfiguration = new TexturePacker.Config
-            {
-                BorderSize = 0,
-                UseMultipack = false,
-                UseRotation = true,
-                MaxHeight = 2000,
-                MaxWidth = 2000
-            };
-
-            var texturePacker = new TexturePacker(packConfiguration);
+            var texturePacker = new TexturePacker
+                {
+                    UseMultipack = false,
+                    UseRotation = true,
+                    MaxHeight = 2000,
+                    MaxWidth = 2000
+                };
 
             var canPackAllTextures = texturePacker.PackTextures(textureElements);
 
@@ -118,16 +115,16 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 texture.Texture.Dispose();
         }
 
-        public Dictionary<string, TexturePacker.IntermediateTexture> CreateFakeTextureElements()
+        public Dictionary<string, IntermediateTexture> CreateFakeTextureElements()
         {
-            var textureElements = new Dictionary<string, TexturePacker.IntermediateTexture>();
+            var textureElements = new Dictionary<string, IntermediateTexture>();
 
-            textureElements.Add("A", new TexturePacker.IntermediateTexture
+            textureElements.Add("A", new IntermediateTexture
             {
                 Texture = Image.New2D(100, 200, 1, PixelFormat.R8G8B8A8_UNorm)
             });
 
-            textureElements.Add("B", new TexturePacker.IntermediateTexture
+            textureElements.Add("B", new IntermediateTexture
             {
                 Texture = Image.New2D(400, 300, 1, PixelFormat.R8G8B8A8_UNorm)
             });
@@ -140,17 +137,14 @@ namespace SiliconStudio.Paradox.Assets.Tests
         {
             var textureElements = CreateFakeTextureElements();
 
-            var packConfiguration = new TexturePacker.Config
-            {
-                BorderSize = 0,
-                UseMultipack = true,
-                UseRotation = true,
-                SizeContraint = TexturePacker.SizeConstraints.PowerOfTwo,
-                MaxHeight = 300,
-                MaxWidth = 300
-            };
-
-            var texturePacker = new TexturePacker(packConfiguration);
+            var texturePacker = new TexturePacker
+                {
+                    UseMultipack = true,
+                    UseRotation = true,
+                    AtlasSizeContraint = AtlasSizeConstraints.PowerOfTwo,
+                    MaxHeight = 300,
+                    MaxWidth = 300,
+                };
 
             var canPackAllTextures = texturePacker.PackTextures(textureElements);
 
@@ -158,18 +152,9 @@ namespace SiliconStudio.Paradox.Assets.Tests
             Assert.AreEqual(0, texturePacker.TextureAtlases.Count);
             Assert.IsFalse(canPackAllTextures);
 
-            // The current bin cant fit all of textures, resize the bin
-            var newPackConfiguration = new TexturePacker.Config
-            {
-                BorderSize = 0,
-                UseMultipack = true,
-                UseRotation = true,
-                SizeContraint = TexturePacker.SizeConstraints.PowerOfTwo,
-                MaxHeight = 1500,
-                MaxWidth = 800
-            };
-
-            texturePacker.ResetPacker(newPackConfiguration);
+            texturePacker.ResetPacker();
+            texturePacker.MaxWidth = 1500;
+            texturePacker.MaxHeight = 800;
 
             canPackAllTextures = texturePacker.PackTextures(textureElements);
 
@@ -188,31 +173,29 @@ namespace SiliconStudio.Paradox.Assets.Tests
         [Test]
         public void TestTexturePackerWithBorder()
         {
-            var textureAtlases = new List<TexturePacker.TextureAtlas>();
+            var textureAtlases = new List<TextureAtlas>();
 
-            var textureElements = new Dictionary<string, TexturePacker.IntermediateTexture>();
+            var textureElements = new Dictionary<string, IntermediateTexture>();
 
-            textureElements.Add("A", new TexturePacker.IntermediateTexture
+            textureElements.Add("A", new IntermediateTexture
             {
                 Texture = Image.New2D(100, 200, 1, PixelFormat.R8G8B8A8_UNorm)
             });
 
-            textureElements.Add("B", new TexturePacker.IntermediateTexture
+            textureElements.Add("B", new IntermediateTexture
             {
                 Texture = Image.New2D(57, 22, 1, PixelFormat.R8G8B8A8_UNorm)
             });
 
-            var packConfiguration = new TexturePacker.Config
-            {
-                BorderSize = 2,
-                UseMultipack = true,
-                UseRotation = true,
-                SizeContraint = TexturePacker.SizeConstraints.PowerOfTwo,
-                MaxHeight = 512,
-                MaxWidth = 512
-            };
-
-            var texturePacker = new TexturePacker(packConfiguration);
+            var texturePacker = new TexturePacker
+                {
+                    BorderSize = 2,
+                    UseMultipack = true,
+                    UseRotation = true,
+                    AtlasSizeContraint = AtlasSizeConstraints.PowerOfTwo,
+                    MaxHeight = 512,
+                    MaxWidth = 512
+                };
 
             var canPackAllTextures = texturePacker.PackTextures(textureElements);
             textureAtlases.AddRange(texturePacker.TextureAtlases);
@@ -228,12 +211,12 @@ namespace SiliconStudio.Paradox.Assets.Tests
             var textureA = textureAtlases[0].Textures.Find(rectangle => rectangle.Region.Key == "A");
             var textureB = textureAtlases[0].Textures.Find(rectangle => rectangle.Region.Key == "B");
 
-            Assert.AreEqual(textureA.Texture.Description.Width + 2 * packConfiguration.BorderSize, textureA.Region.Value.Width);
-            Assert.AreEqual(textureA.Texture.Description.Height + 2 * packConfiguration.BorderSize, textureA.Region.Value.Height);
+            Assert.AreEqual(textureA.Texture.Description.Width + 2 * textureAtlases[0].BorderSize, textureA.Region.Value.Width);
+            Assert.AreEqual(textureA.Texture.Description.Height + 2 * textureAtlases[0].BorderSize, textureA.Region.Value.Height);
 
-            Assert.AreEqual(textureB.Texture.Description.Width + 2 * packConfiguration.BorderSize,
+            Assert.AreEqual(textureB.Texture.Description.Width + 2 * textureAtlases[0].BorderSize,
                 (!textureB.Region.IsRotated) ? textureB.Region.Value.Width : textureB.Region.Value.Height);
-            Assert.AreEqual(textureB.Texture.Description.Height + 2 * packConfiguration.BorderSize,
+            Assert.AreEqual(textureB.Texture.Description.Height + 2 * textureAtlases[0].BorderSize,
                 (!textureB.Region.IsRotated) ? textureB.Region.Value.Height : textureB.Region.Value.Width);
         }
 
@@ -259,27 +242,24 @@ namespace SiliconStudio.Paradox.Assets.Tests
         [Test]
         public void TestTextureAtlasFactory()
         {
-            var textureElements = new Dictionary<string, TexturePacker.IntermediateTexture>();
+            var textureElements = new Dictionary<string, IntermediateTexture>();
 
             var mockTexture = CreateMockTexture(100, 200, Color.MediumPurple);
 
             // Load a test texture asset
-            textureElements.Add("A", new TexturePacker.IntermediateTexture
+            textureElements.Add("A", new IntermediateTexture
             {
                 Texture = mockTexture
             });
 
-            var packConfiguration = new TexturePacker.Config
-            {
-                BorderSize = 0,
-                SizeContraint = TexturePacker.SizeConstraints.PowerOfTwo,
-                UseMultipack = false,
-                UseRotation = true,
-                MaxHeight = 2000,
-                MaxWidth = 2000
-            };
-
-            var texturePacker = new TexturePacker(packConfiguration);
+            var texturePacker = new TexturePacker
+                {
+                    AtlasSizeContraint = AtlasSizeConstraints.PowerOfTwo,
+                    UseMultipack = false,
+                    UseRotation = true,
+                    MaxHeight = 2000,
+                    MaxWidth = 2000
+                };
 
             var canPackAllTextures = texturePacker.PackTextures(textureElements);
 
@@ -489,82 +469,114 @@ namespace SiliconStudio.Paradox.Assets.Tests
         public void TestCreateTextureAtlasToOutput()
         {
             const string OutputPath = "./output.png";
-            var textureElements = new Dictionary<string, TexturePacker.IntermediateTexture>();
+            var textureElements = new Dictionary<string, IntermediateTexture>();
 
             // Load a test texture asset
-            textureElements.Add("MediumPurple", new TexturePacker.IntermediateTexture
+            textureElements.Add("MediumPurple", new IntermediateTexture
             {
-                Texture = CreateMockTexture(130, 158, Color.MediumPurple)
+                Texture = CreateMockTexture(130, 158, Color.MediumPurple),
+                AddressModeU = TextureAddressMode.Border,
+                AddressModeV = TextureAddressMode.Border,
+                BorderColor = Color.SteelBlue
             });
 
-            textureElements.Add("Red", new TexturePacker.IntermediateTexture
+            textureElements.Add("Red", new IntermediateTexture
             {
-                Texture = CreateMockTexture(127, 248, Color.Red)
+                Texture = CreateMockTexture(127, 248, Color.Red),
+                AddressModeU = TextureAddressMode.Border,
+                AddressModeV = TextureAddressMode.Border,
+                BorderColor = Color.SteelBlue
             });
 
-            textureElements.Add("Blue", new TexturePacker.IntermediateTexture
+            textureElements.Add("Blue", new IntermediateTexture
             {
-                Texture = CreateMockTexture(212, 153, Color.Blue)
+                Texture = CreateMockTexture(212, 153, Color.Blue),
+                AddressModeU = TextureAddressMode.Border,
+                AddressModeV = TextureAddressMode.Border,
+                BorderColor = Color.SteelBlue
             });
 
-            textureElements.Add("Gold", new TexturePacker.IntermediateTexture
+            textureElements.Add("Gold", new IntermediateTexture
             {
-                Texture = CreateMockTexture(78, 100, Color.Gold)
+                Texture = CreateMockTexture(78, 100, Color.Gold),
+                AddressModeU = TextureAddressMode.Border,
+                AddressModeV = TextureAddressMode.Border,
+                BorderColor = Color.SteelBlue
             });
 
-            textureElements.Add("RosyBrown", new TexturePacker.IntermediateTexture
+            textureElements.Add("RosyBrown", new IntermediateTexture
             {
-                Texture = CreateMockTexture(78, 100, Color.RosyBrown)
+                Texture = CreateMockTexture(78, 100, Color.RosyBrown),
+                AddressModeU = TextureAddressMode.Border,
+                AddressModeV = TextureAddressMode.Border,
+                BorderColor = Color.SteelBlue
             });
 
-            textureElements.Add("SaddleBrown", new TexturePacker.IntermediateTexture
+            textureElements.Add("SaddleBrown", new IntermediateTexture
             {
-                Texture = CreateMockTexture(400, 100, Color.SaddleBrown)
+                Texture = CreateMockTexture(400, 100, Color.SaddleBrown),
+                AddressModeU = TextureAddressMode.Border,
+                AddressModeV = TextureAddressMode.Border,
+                BorderColor = Color.SteelBlue
             });
 
-            textureElements.Add("Salmon", new TexturePacker.IntermediateTexture
+            textureElements.Add("Salmon", new IntermediateTexture
             {
-                Texture = CreateMockTexture(400, 200, Color.Salmon)
+                Texture = CreateMockTexture(400, 200, Color.Salmon),
+                AddressModeU = TextureAddressMode.Border,
+                AddressModeV = TextureAddressMode.Border,
+                BorderColor = Color.SteelBlue
             });
 
-            textureElements.Add("PowderBlue", new TexturePacker.IntermediateTexture
+            textureElements.Add("PowderBlue", new IntermediateTexture
             {
-                Texture = CreateMockTexture(190, 200, Color.PowderBlue)
+                Texture = CreateMockTexture(190, 200, Color.PowderBlue),
+                AddressModeU = TextureAddressMode.Border,
+                AddressModeV = TextureAddressMode.Border,
+                BorderColor = Color.SteelBlue
             });
 
-            textureElements.Add("Orange", new TexturePacker.IntermediateTexture
+            textureElements.Add("Orange", new IntermediateTexture
             {
-                Texture = CreateMockTexture(200, 230, Color.Orange)
+                Texture = CreateMockTexture(200, 230, Color.Orange),
+                AddressModeU = TextureAddressMode.Border,
+                AddressModeV = TextureAddressMode.Border,
+                BorderColor = Color.SteelBlue
             });
 
-            textureElements.Add("Silver", new TexturePacker.IntermediateTexture
+            textureElements.Add("Silver", new IntermediateTexture
             {
-                Texture = CreateMockTexture(100, 170, Color.Silver)
+                Texture = CreateMockTexture(100, 170, Color.Silver),
+                AddressModeU = TextureAddressMode.Border,
+                AddressModeV = TextureAddressMode.Border,
+                BorderColor = Color.SteelBlue
             });
 
-            textureElements.Add("SlateGray", new TexturePacker.IntermediateTexture
+            textureElements.Add("SlateGray", new IntermediateTexture
             {
-                Texture = CreateMockTexture(100, 170, Color.SlateGray)
+                Texture = CreateMockTexture(100, 170, Color.SlateGray),
+                AddressModeU = TextureAddressMode.Border,
+                AddressModeV = TextureAddressMode.Border,
+                BorderColor = Color.SteelBlue
             });
 
-            textureElements.Add("Tan", new TexturePacker.IntermediateTexture
+            textureElements.Add("Tan", new IntermediateTexture
             {
-                Texture = CreateMockTexture(140, 110, Color.Tan)
+                Texture = CreateMockTexture(140, 110, Color.Tan),
+                AddressModeU = TextureAddressMode.Border,
+                AddressModeV = TextureAddressMode.Border,
+                BorderColor = Color.SteelBlue
             });
 
-            var packConfiguration = new TexturePacker.Config
-            {
-                BorderSize = 10,
-                SizeContraint = TexturePacker.SizeConstraints.PowerOfTwo,
-                BorderAddressMode = TextureAddressMode.Border,
-                BorderColor = Color.SteelBlue,
-                UseMultipack = false,
-                UseRotation = true,
-                MaxHeight = 1024,
-                MaxWidth = 1024
-            };
-
-            var texturePacker = new TexturePacker(packConfiguration);
+            var texturePacker = new TexturePacker
+                {
+                    BorderSize = 10,
+                    AtlasSizeContraint = AtlasSizeConstraints.PowerOfTwo,
+                    UseMultipack = false,
+                    UseRotation = true,
+                    MaxHeight = 1024,
+                    MaxWidth = 1024
+                };
 
             var canPackAllTextures = texturePacker.PackTextures(textureElements);
 
@@ -575,7 +587,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
             Assert.AreEqual(1, textureAtlases.Count);
 
-            if (packConfiguration.SizeContraint == TexturePacker.SizeConstraints.PowerOfTwo)
+            if (texturePacker.AtlasSizeContraint == AtlasSizeConstraints.PowerOfTwo)
             {
                 Assert.IsTrue(TextureCommandHelper.IsPowerOfTwo(textureAtlases[0].Width));
                 Assert.IsTrue(TextureCommandHelper.IsPowerOfTwo(textureAtlases[0].Height));
@@ -602,59 +614,67 @@ namespace SiliconStudio.Paradox.Assets.Tests
             // Specify where the images are, and uncomment [Test] above
             var inputDir = @".\";
 
-            var textureElements = new Dictionary<string, TexturePacker.IntermediateTexture>();
+            var textureElements = new Dictionary<string, IntermediateTexture>();
 
             using (var texTool = new TextureTool())
             {
                 for (var i = 1; i <= 5; ++i)
                 {
                     var name = "character_idle_0" + i;
-                    textureElements.Add(name, new TexturePacker.IntermediateTexture
+                    textureElements.Add(name, new IntermediateTexture
                     {
-                        Texture = LoadImage(texTool, new UFile(inputDir + "/" + name + ".png"))
+                        Texture = LoadImage(texTool, new UFile(inputDir + "/" + name + ".png")),
+                        BorderColor = Color.SteelBlue,
+                        AddressModeU = TextureAddressMode.Wrap,
+                        AddressModeV = TextureAddressMode.Wrap
                     });
                 }
 
                 for (var i = 1; i <= 5; ++i)
                 {
                     var name = "character_run_0" + i;
-                    textureElements.Add(name, new TexturePacker.IntermediateTexture
+                    textureElements.Add(name, new IntermediateTexture
                     {
-                        Texture = LoadImage(texTool, new UFile(inputDir + "/" + name + ".png"))
+                        Texture = LoadImage(texTool, new UFile(inputDir + "/" + name + ".png")),
+                        BorderColor = Color.SteelBlue,
+                        AddressModeU = TextureAddressMode.Wrap,
+                        AddressModeV = TextureAddressMode.Wrap
                     });
                 }
 
                 for (var i = 1; i <= 5; ++i)
                 {
                     var name = "character_shoot_0" + i;
-                    textureElements.Add(name, new TexturePacker.IntermediateTexture
+                    textureElements.Add(name, new IntermediateTexture
                     {
-                        Texture = LoadImage(texTool, new UFile(inputDir + "/" + name + ".png"))
+                        Texture = LoadImage(texTool, new UFile(inputDir + "/" + name + ".png")),
+                        BorderColor = Color.SteelBlue,
+                        AddressModeU = TextureAddressMode.Wrap,
+                        AddressModeV = TextureAddressMode.Wrap
                     });
                 }
 
                 for (var i = 1; i <= 8; ++i)
                 {
                     var name = "ef_0" + i;
-                    textureElements.Add(name, new TexturePacker.IntermediateTexture
+                    textureElements.Add(name, new IntermediateTexture
                     {
-                        Texture = LoadImage(texTool, new UFile(inputDir + "/" + name + ".png"))
+                        Texture = LoadImage(texTool, new UFile(inputDir + "/" + name + ".png")),
+                        BorderColor = Color.SteelBlue,
+                        AddressModeU = TextureAddressMode.Wrap,
+                        AddressModeV = TextureAddressMode.Wrap
                     });
                 }
 
-                var packConfiguration = new TexturePacker.Config
-                {
-                    BorderSize = 100,
-                    SizeContraint = TexturePacker.SizeConstraints.PowerOfTwo,
-                    BorderAddressMode = TextureAddressMode.Wrap,
-                    BorderColor = Color.SteelBlue,
-                    UseMultipack = false,
-                    UseRotation = false,
-                    MaxHeight = 2048,
-                    MaxWidth = 2048
-                };
-
-                var texturePacker = new TexturePacker(packConfiguration);
+                var texturePacker = new TexturePacker
+                    {
+                        BorderSize = 100,
+                        AtlasSizeContraint = AtlasSizeConstraints.PowerOfTwo,
+                        UseMultipack = false,
+                        UseRotation = false,
+                        MaxHeight = 2048,
+                        MaxWidth = 2048
+                    };
 
                 var canPackAllTextures = texturePacker.PackTextures(textureElements);
 
