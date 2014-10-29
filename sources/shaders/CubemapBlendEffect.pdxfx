@@ -8,28 +8,28 @@ namespace CubemapBlendShader
 {
     shader SingleCubemapShader
     {
-        using params CubeMapBlender;
-        mixin CubemapFace<CubeMapBlender.CubemapKey>;
+        using params CubemapBlendRenderer;
+        mixin CubemapFace<CubemapBlendRenderer.CubemapKey>;
     }
 
     shader CubemapBlendEffect
     {
         using params MaterialParameters;
         using params BasicShadersParameters;
-        using params CubeMapBlender;
+        using params CubemapBlendRenderer;
 
         mixin ShaderBase;
         mixin PostEffectBase;
         
         // TODO: make this configurable
-        mixin macro TEXTURECUBE_BLEND_COUNT = CubeMapBlender.CubemapCount;
+        mixin macro TEXTURECUBE_BLEND_COUNT = CubemapBlendRenderer.CubemapCount;
 
-        if (CubeMapBlender.UseMultipleRenderTargets)
+        if (CubemapBlendRenderer.UseMultipleRenderTargets)
             mixin CubemapBlenderMRT;
         else
             mixin CubemapBlender;
 
-        foreach(params CubeMapBlender.Cubemaps)
+        foreach(params CubemapBlendRenderer.Cubemaps)
         {
             mixin compose Cubemaps += SingleCubemapShader;
         }

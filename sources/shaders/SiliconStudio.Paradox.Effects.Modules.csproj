@@ -444,7 +444,7 @@
     </Compile>
     <Compile Include="Processors\CubemapBlendProcessor.cs" />
     <Compile Include="Processors\CubemapSourceProcessor.cs" />
-    <Compile Include="Renderers\CubeMapBlender.cs" />
+    <Compile Include="Renderers\CubemapBlendRenderer.cs" />
     <Compile Include="Processors\DynamicLightShadowProcessor.cs" />
     <Compile Include="Processors\EntityLightShadow.cs" />
     <Compile Include="Processors\GuillotinePacker.cs" />

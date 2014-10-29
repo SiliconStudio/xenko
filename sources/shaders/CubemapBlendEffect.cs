@@ -33,7 +33,7 @@ namespace CubemapBlendShader
         {
 
             #line 12
-            context.Mixin(mixin, "CubemapFace", context.GetParam(CubeMapBlender.CubemapKey));
+            context.Mixin(mixin, "CubemapFace", context.GetParam(CubemapBlendRenderer.CubemapKey));
         }
 
         [ModuleInitializer]
@@ -57,10 +57,10 @@ namespace CubemapBlendShader
             context.Mixin(mixin, "PostEffectBase");
 
             #line 25
-            mixin.Mixin.AddMacro("TEXTURECUBE_BLEND_COUNT", context.GetParam(CubeMapBlender.CubemapCount));
+            mixin.Mixin.AddMacro("TEXTURECUBE_BLEND_COUNT", context.GetParam(CubemapBlendRenderer.CubemapCount));
 
             #line 27
-            if (context.GetParam(CubeMapBlender.UseMultipleRenderTargets))
+            if (context.GetParam(CubemapBlendRenderer.UseMultipleRenderTargets))
 
                 #line 28
                 context.Mixin(mixin, "CubemapBlenderMRT");
@@ -72,7 +72,7 @@ namespace CubemapBlendShader
                 context.Mixin(mixin, "CubemapBlender");
 
             #line 32
-            foreach(var ____1 in context.GetParam(CubeMapBlender.Cubemaps))
+            foreach(var ____1 in context.GetParam(CubemapBlendRenderer.Cubemaps))
 
             {
 

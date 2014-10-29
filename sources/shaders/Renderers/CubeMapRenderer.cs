@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
     /// <summary>
     /// Cubemap renderer
     /// </summary>
-    public class CubeMapRenderer : RecursiveRenderer
+    public class CubemapRenderer : RecursiveRenderer
     {
         #region Private static members
 
@@ -52,12 +52,12 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         #region Constructor
 
         /// <summary>
-        /// CubeMapRenderer constructor.
+        /// CubemapRenderer constructor.
         /// </summary>
         /// <param name="services">The IServiceRegistry.</param>
         /// <param name="recursivePipeline">The recursive pipeline.</param>
         /// <param name="singlePass">A flag stating if the cubemap should be rendered in one or 6 passes.</param>
-        public CubeMapRenderer(IServiceRegistry services, RenderPipeline recursivePipeline, bool singlePass) : base(services, recursivePipeline)
+        public CubemapRenderer(IServiceRegistry services, RenderPipeline recursivePipeline, bool singlePass) : base(services, recursivePipeline)
         {
             renderInSinglePass = singlePass;
         }

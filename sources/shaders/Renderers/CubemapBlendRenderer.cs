@@ -16,7 +16,7 @@ using SiliconStudio.Paradox.Shaders.Compiler;
 
 namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 {
-    public class CubeMapBlender : Renderer
+    public class CubemapBlendRenderer : Renderer
     {
         #region Static members
 
@@ -73,7 +73,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         #region Constructor
 
-        public CubeMapBlender(IServiceRegistry services)
+        public CubemapBlendRenderer(IServiceRegistry services)
             : base(services)
         {
             cubemapBlendEffects = new Dictionary<int, Effect>();
@@ -98,12 +98,12 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 for (var i = 0; i < maxBlendCount; ++i)
                 {
                     var param = new ShaderMixinParameters();
-                    param.Add(CubeMapBlender.CubemapKey, GetTextureCubeKey(i));
+                    param.Add(CubemapBlendRenderer.CubemapKey, GetTextureCubeKey(i));
                     compilerParameterChild[i] = param;
                 }
-                compilerParameter.Set(CubeMapBlender.Cubemaps, compilerParameterChild);
-                compilerParameter.Set(CubeMapBlender.CubemapCount, maxBlendCount);
-                compilerParameter.Set(CubeMapBlender.UseMultipleRenderTargets, useMultipleRenderTargets);
+                compilerParameter.Set(CubemapBlendRenderer.Cubemaps, compilerParameterChild);
+                compilerParameter.Set(CubemapBlendRenderer.CubemapCount, maxBlendCount);
+                compilerParameter.Set(CubemapBlendRenderer.UseMultipleRenderTargets, useMultipleRenderTargets);
                 cubemapBlendEffects.Add(maxBlendCount, EffectSystem.LoadEffect("CubemapBlendEffect", compilerParameter));
             }
             drawQuad = new PostEffectQuad(GraphicsDevice, cubemapBlendEffects[2]);
