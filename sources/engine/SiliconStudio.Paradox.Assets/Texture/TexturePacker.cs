@@ -49,6 +49,9 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// <returns>True indicates all textures could be packed; False otherwise</returns>
         public bool PackTextures(Dictionary<string, IntermediateTexture> textureElements)
         {
+            var binWidth = (packConfig.SizeContraint == SizeConstraints.PowerOfTwo) ? TextureCommandHelper.FloorToNearestPowerOfTwo(packConfig.MaxWidth) : packConfig.MaxWidth;
+            var binHeight = (packConfig.SizeContraint == SizeConstraints.PowerOfTwo) ? TextureCommandHelper.FloorToNearestPowerOfTwo(packConfig.MaxHeight) : packConfig.MaxHeight;
+
             // Create data for the packer
             var textureRegions = new List<MaxRectanglesBinPack.RotatableRectangle>();
 
@@ -63,7 +66,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
             do
             {
                 // Reset packer state
-                maxRectPacker.Initialize(packConfig.MaxWidth, packConfig.MaxHeight, packConfig.UseRotation);
+                maxRectPacker.Initialize(binWidth, binHeight, packConfig.UseRotation);
 
                 // Pack
                 maxRectPacker.PackRectangles(textureRegions, packConfig.Algorithm);
