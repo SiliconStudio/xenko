@@ -7,6 +7,7 @@ Release date: 2014/??/??
 - Graphics: CopyRegion now contains additional parameters for subresource indices and destination offset.
 
 #### Issues fixed
+- Gamestudio: Fix preview and thumbnail of materials with normal map.
 - Shaders: Geometry shaders are forced to transmit SV_Position stream to pixel shaders.
 - Shaders: Compositions (especially arrays) couldn't be used in child classes of the one containing their declaration. Function and member calls weren't correctly resolved.
 
