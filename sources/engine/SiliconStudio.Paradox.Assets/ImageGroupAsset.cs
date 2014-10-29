@@ -78,8 +78,8 @@ namespace SiliconStudio.Paradox.Assets
         /// Gets or Sets MaxRects rectangles placement algorithm
         /// </summary>
         [DataMember(90)]
-        [DefaultValue(MaxRectanglesBinPack.HeuristicMethod.Best)]
-        public MaxRectanglesBinPack.HeuristicMethod AtlasPackingAlgorithm { get; set; }
+        [DefaultValue(TexturePackingMethod.Best)]
+        public TexturePackingMethod AtlasPackingAlgorithm { get; set; }
 
         /// <summary>
         /// Gets or Sets the use of Multipack atlas mode which allows more than one texture atlas to fit all given textures
@@ -120,7 +120,7 @@ namespace SiliconStudio.Paradox.Assets
             PremultiplyAlpha = true;
 
             GenerateTextureAtlas = true;
-            AtlasPackingAlgorithm = MaxRectanglesBinPack.HeuristicMethod.Best;
+            AtlasPackingAlgorithm = TexturePackingMethod.Best;
             UseMultipackAtlas = false;
 
             UseRotationInAtlas = true;

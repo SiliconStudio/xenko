@@ -50,17 +50,17 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// <returns></returns>
         public bool PackTextures(Dictionary<string, IntermediateTexture> textureElements)
         {
-            if (packConfig.Algorithm == MaxRectanglesBinPack.HeuristicMethod.Best)
+            if (packConfig.Algorithm == TexturePackingMethod.Best)
             {
-                var results = new Dictionary<MaxRectanglesBinPack.HeuristicMethod, List<TextureAtlas>>();
+                var results = new Dictionary<TexturePackingMethod, List<TextureAtlas>>();
 
-                var bestAlgorithm = MaxRectanglesBinPack.HeuristicMethod.BestShortSideFit;
+                var bestAlgorithm = TexturePackingMethod.BestShortSideFit;
                 var canPackAll = PackTextures(CloneIntermediateTextureDictionary(textureElements), bestAlgorithm);
                 results[bestAlgorithm] = new List<TextureAtlas>(textureAtlases);
 
-                foreach (var heuristicMethod in (MaxRectanglesBinPack.HeuristicMethod[])Enum.GetValues(typeof(MaxRectanglesBinPack.HeuristicMethod)))
+                foreach (var heuristicMethod in (TexturePackingMethod[])Enum.GetValues(typeof(TexturePackingMethod)))
                 {
-                    if (heuristicMethod == MaxRectanglesBinPack.HeuristicMethod.Best || heuristicMethod == MaxRectanglesBinPack.HeuristicMethod.BestShortSideFit) 
+                    if (heuristicMethod == TexturePackingMethod.Best || heuristicMethod == TexturePackingMethod.BestShortSideFit) 
                         continue;
 
                     ResetPacker();
@@ -130,7 +130,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// <param name="textureElements">Input texture elements</param>
         /// <param name="algorithm">Packing algorithm</param>
         /// <returns>True indicates all textures could be packed; False otherwise</returns>
-        public bool PackTextures(Dictionary<string, IntermediateTexture> textureElements, MaxRectanglesBinPack.HeuristicMethod algorithm)
+        public bool PackTextures(Dictionary<string, IntermediateTexture> textureElements, TexturePackingMethod algorithm)
         {
             var binWidth = (packConfig.SizeContraint == SizeConstraints.PowerOfTwo) ? TextureCommandHelper.FloorToNearestPowerOfTwo(packConfig.MaxWidth) : packConfig.MaxWidth;
             var binHeight = (packConfig.SizeContraint == SizeConstraints.PowerOfTwo) ? TextureCommandHelper.FloorToNearestPowerOfTwo(packConfig.MaxHeight) : packConfig.MaxHeight;
@@ -243,7 +243,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
             /// <summary>
             /// Gets or Sets MaxRects heuristic algorithm to place rectangles
             /// </summary>
-            public MaxRectanglesBinPack.HeuristicMethod Algorithm;
+            public TexturePackingMethod Algorithm;
 
             /// <summary>
             /// Gets or Sets the use of rotation for packing

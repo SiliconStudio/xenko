@@ -6,24 +6,24 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Paradox.Assets.Texture
 {
     /// <summary>
+    /// Heuristic methods for choosing a place for a given rectangle
+    /// </summary>
+    public enum TexturePackingMethod
+    {
+        Best,
+        BestShortSideFit,
+        BestLongSideFit,
+        BestAreaFit,
+        BottomLeftRule,
+        ContactPointRule
+    }
+
+    /// <summary>
     /// Implementation of texture packer using MaxRects algorithm.
     /// Reference: http://clb.demon.fi/files/RectangleBinPack.pdf by Jukka Jylanki.
     /// </summary>
     public partial class MaxRectanglesBinPack
     {
-        /// <summary>
-        /// Heuristic methods for choosing a place for a given rectangle
-        /// </summary>
-        public enum HeuristicMethod
-        {
-            Best,
-            BestShortSideFit,
-            BestLongSideFit,
-            BestAreaFit,
-            BottomLeftRule,
-            ContactPointRule
-        }
-
         private bool useRotation;
         private int binWidth;
         private int binHeight;
@@ -76,7 +76,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// </summary>
         /// <param name="rectangles">a list of rectangles to be packed</param>
         /// <param name="method">MaxRects heuristic method which default value is BestShortSideFit</param>
-        public void PackRectangles(List<RotatableRectangle> rectangles, HeuristicMethod method = HeuristicMethod.BestShortSideFit)
+        public void PackRectangles(List<RotatableRectangle> rectangles, TexturePackingMethod method = TexturePackingMethod.BestShortSideFit)
         {
             var bestNode = new RotatableRectangle();
 
@@ -220,7 +220,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// <param name="score1">First score</param>
         /// <param name="score2">Second score</param>
         /// <returns></returns>
-        private RotatableRectangle ChooseTargetPosition(RotatableRectangle rectangle, HeuristicMethod method, out int score1, out int score2)
+        private RotatableRectangle ChooseTargetPosition(RotatableRectangle rectangle, TexturePackingMethod method, out int score1, out int score2)
         {
             score1 = int.MaxValue;
             score2 = int.MaxValue;
@@ -229,20 +229,20 @@ namespace SiliconStudio.Paradox.Assets.Texture
 
             switch (method)
             {
-                case HeuristicMethod.BestShortSideFit:
+                case TexturePackingMethod.BestShortSideFit:
                     bestNode = FindPositionForNewNodeBestShortSideFit(rectangle, out score1, ref score2);
                     break;
-                case HeuristicMethod.BottomLeftRule:
+                case TexturePackingMethod.BottomLeftRule:
                     bestNode = FindPositionForNewNodeBottomLeft(rectangle, out score1, ref score2);
                     break;
-                case HeuristicMethod.ContactPointRule:
+                case TexturePackingMethod.ContactPointRule:
                     bestNode = FindPositionForNewNodeContactPoint(rectangle, out score1);
                     score1 *= -1;
                     break;
-                case HeuristicMethod.BestLongSideFit:
+                case TexturePackingMethod.BestLongSideFit:
                     bestNode = FindPositionForNewNodeBestLongSideFit(rectangle, ref score2, out score1);
                     break;
-                case HeuristicMethod.BestAreaFit:
+                case TexturePackingMethod.BestAreaFit:
                     bestNode = FindPositionForNewNodeBestAreaFit(rectangle, out score1, ref score2);
                     break;
                 default:
