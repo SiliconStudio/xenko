@@ -8,7 +8,7 @@ using SiliconStudio.Paradox.Graphics;
 namespace SiliconStudio.Paradox.Assets.Texture
 {
     /// <summary>
-    /// TexturePacker class for packing several textures, using MaxRects (MaxRectanglesBinPack), into one or more texture atlases
+    /// TexturePacker class for packing several textures, using MaxRects <see cref="MaxRectanglesBinPack"/>, into one or more texture atlases
     /// </summary>
     public partial class TexturePacker
     {
