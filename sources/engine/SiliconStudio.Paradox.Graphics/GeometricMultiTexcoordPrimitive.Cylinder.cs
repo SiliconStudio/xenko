@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox.Graphics
             }
 
             // Helper creates a triangle fan to close the end of a cylinder.
-            private static void CreateCylinderCap(List<VertexPositionNormalMultiTexture> vertices, List<int> indices, int tessellation, float height, float radius, bool isTop)
+            private static void CreateCylinderCap(List<VertexPositionNormalTangentMultiTexture> vertices, List<int> indices, int tessellation, float height, float radius, bool isTop)
             {
                 // Create cap indices.
                 for (int i = 0; i < tessellation - 2; i++)
@@ -62,7 +62,7 @@ namespace SiliconStudio.Paradox.Graphics
                     var position = (circleVector * radius) + (normal * height);
                     var textureCoordinate = new Vector2(circleVector.X * textureScale.X + 0.5f, circleVector.Z * textureScale.Y + 0.5f);
 
-                    vertices.Add(new VertexPositionNormalMultiTexture(position, normal, textureCoordinate));
+                    vertices.Add(new VertexPositionNormalTangentMultiTexture(position, normal, new Vector4(isTop ? -1 : 1, 0, 0, 0), textureCoordinate));
                 }
             }
 
@@ -91,12 +91,12 @@ namespace SiliconStudio.Paradox.Graphics
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
             /// <returns>A cylinder primitive.</returns>
             /// <exception cref="System.ArgumentOutOfRangeException">tessellation;tessellation must be &gt;= 3</exception>
-            public static GeometricMeshData<VertexPositionNormalMultiTexture> New(float height = 1.0f, float diameter = 1.0f, int tessellation = 32, bool toLeftHanded = false)
+            public static GeometricMeshData<VertexPositionNormalTangentMultiTexture> New(float height = 1.0f, float diameter = 1.0f, int tessellation = 32, bool toLeftHanded = false)
             {
                 if (tessellation < 3)
                     throw new ArgumentOutOfRangeException("tessellation", @"tessellation must be >= 3");
 
-                var vertices = new List<VertexPositionNormalMultiTexture>();
+                var vertices = new List<VertexPositionNormalTangentMultiTexture>();
                 var indices = new List<int>();
 
                 height /= 2;
@@ -115,8 +115,9 @@ namespace SiliconStudio.Paradox.Graphics
 
                     var textureCoordinate = new Vector2((float)i / tessellation, 0);
 
-                    vertices.Add(new VertexPositionNormalMultiTexture(sideOffset + topOffset, normal, textureCoordinate));
-                    vertices.Add(new VertexPositionNormalMultiTexture(sideOffset - topOffset, normal, textureCoordinate + Vector2.UnitY));
+                    var tangent = new Vector4(normal.Z, 0, -normal.X, 0); // Y ^ normal
+                    vertices.Add(new VertexPositionNormalTangentMultiTexture(sideOffset + topOffset, normal, tangent, textureCoordinate));
+                    vertices.Add(new VertexPositionNormalTangentMultiTexture(sideOffset - topOffset, normal, tangent, textureCoordinate + Vector2.UnitY));
 
                     indices.Add(i * 2);
                     indices.Add((i * 2 + 2) % (stride * 2));
@@ -132,7 +133,7 @@ namespace SiliconStudio.Paradox.Graphics
                 CreateCylinderCap(vertices, indices, tessellation, height, radius, false);
 
                 // Create the primitive object.
-                return new GeometricMeshData<VertexPositionNormalMultiTexture>(vertices.ToArray(), indices.ToArray(), toLeftHanded, VertexPositionNormalTexture.Layout) { Name = "Cylinder" };
+                return new GeometricMeshData<VertexPositionNormalTangentMultiTexture>(vertices.ToArray(), indices.ToArray(), toLeftHanded, VertexPositionNormalTexture.Layout) { Name = "Cylinder" };
             }
         }
     }
