@@ -825,7 +825,7 @@ public:
 					// Do not create the node if the value has not been explicitly specified by the user.
 					if(reflectionValue != FbxDouble3(0))
 					{
-						reflectionMapTree = gcnew MaterialFloat4Node(FbxDouble3ToVector4(reflectionValue));
+						reflectionMapTree = gcnew MaterialColorNode(FbxDouble3ToColor4(reflectionValue));
 						((MaterialColorNode^)reflectionMapTree)->Key = MaterialKeys::ReflectionColorValue;
 						((MaterialColorNode^)reflectionMapTree)->AutoAssignKey = false;
 						((MaterialColorNode^)reflectionMapTree)->IsReducible = false;
