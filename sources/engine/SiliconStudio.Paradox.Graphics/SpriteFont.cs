@@ -25,7 +25,6 @@ namespace SiliconStudio.Paradox.Graphics
     [ContentSerializer(typeof(DataContentConverterSerializer<StaticSpriteFontData, SpriteFont>))]
     public class SpriteFont : ComponentBase
     {
-        private Vector2 nullVector2 = Vector2.Zero;
         private Vector4 nullVector4 = Vector4.Zero; 
 
         /// <summary>
@@ -253,7 +252,7 @@ namespace SiliconStudio.Paradox.Graphics
             var elementSize = new Vector3(glyph.Subrect.Width / parameters.FontScale.X, glyph.Subrect.Height / parameters.FontScale.Y, 0);
 
             RectangleF sourceRectangle = glyph.Subrect;
-            parameters.Batch.DrawImage(Textures[glyph.BitmapIndex], null, ref worldMatrix, ref sourceRectangle, ref elementSize, ref nullVector2, ref nullVector4, 
+            parameters.Batch.DrawImage(Textures[glyph.BitmapIndex], null, ref worldMatrix, ref sourceRectangle, ref elementSize, ref nullVector4, 
                 ref parameters.Color, parameters.DepthBias, ImageOrientation.AsIs, Swizzle, parameters.SnapText);
         }
 
