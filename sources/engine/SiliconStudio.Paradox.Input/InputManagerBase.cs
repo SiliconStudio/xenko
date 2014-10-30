@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.Input
     /// <summary>
     /// Interface for input management system, including keyboard, mouse, gamepads and touch.
     /// </summary>
-    public abstract class InputManagerBase : GameSystemBase, IInputManager
+    public abstract class InputManagerBase : GameSystemBase
     {
         #region Constants and Fields
 
@@ -69,12 +69,23 @@ namespace SiliconStudio.Paradox.Input
 
         private readonly List<GestureEvent> currentGestureEvents = new List<GestureEvent>();
 
-        private readonly Dictionary<GestureConfig, GestureRecognizer> gestureConfigToRecognizer = new Dictionary<GestureConfig, GestureRecognizer>(); 
+        private readonly Dictionary<GestureConfig, GestureRecognizer> gestureConfigToRecognizer = new Dictionary<GestureConfig, GestureRecognizer>();
 
+        /// <summary>
+        /// List of the gestures to recognize.
+        /// </summary>
+        /// <remarks>To detect a new gesture add its configuration to the list. 
+        /// To stop detecting a gesture remove its configuration from the list. 
+        /// To all gestures detection clear the list.
+        /// Note that once added to the list the <see cref="GestureConfig"/>s are frozen by the system and cannot be modified anymore.</remarks>
+        /// <seealso cref="GestureConfig"/>
         public GestureConfigCollection ActivatedGestures { get; private set; }
 
         internal readonly Dictionary<int, PointerInfo> PointerInfos = new Dictionary<int, PointerInfo>();
-        
+
+        /// <summary>
+        /// Gets the delta value of the mouse wheel button since last frame.
+        /// </summary>
         public float MouseWheelDelta { get; private set; }
 
         /// <summary>
@@ -177,7 +188,6 @@ namespace SiliconStudio.Paradox.Input
             ActivatedGestures.CollectionChanged += ActivatedGesturesChanged;
 
             Services.AddService(typeof(InputManager), this);
-            Services.AddService(typeof(IInputManager), this);
 
             Accelerometer = new AccelerometerSensor();
             Compass = new CompassSensor();
@@ -290,12 +300,28 @@ namespace SiliconStudio.Paradox.Input
             Wheel,
         }
 
+        /// <summary>
+        /// Gets or sets the configuration for virtual buttons.
+        /// </summary>
+        /// <value>The current binding.</value>
         public VirtualButtonConfigSet VirtualButtonConfigSet { get; set; }
 
+        /// <summary>
+        /// Gets a collection of pointer events since the previous updates.
+        /// </summary>
+        /// <value>The pointer events.</value>
         public List<PointerEvent> PointerEvents { get; private set; }
 
+        /// <summary>
+        /// Gets the collection of gesture events since the previous updates.
+        /// </summary>
+        /// <value>The gesture events.</value>
         public List<GestureEvent> GestureEvents { get; private set; }
-        
+
+        /// <summary>
+        /// Gets a value indicating whether gamepads are available.
+        /// </summary>
+        /// <value><c>true</c> if gamepads are available; otherwise, <c>false</c>.</value>
         public bool HasGamePad
         {
             get
@@ -304,6 +330,10 @@ namespace SiliconStudio.Paradox.Input
             }
         }
 
+        /// <summary>
+        /// Gets the number of gamepad connected.
+        /// </summary>
+        /// <value>The number of gamepad connected.</value>
         public int GamePadCount
         {
             get
@@ -312,16 +342,48 @@ namespace SiliconStudio.Paradox.Input
             }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the keyboard is available.
+        /// </summary>
+        /// <value><c>true</c> if the keyboard is available; otherwise, <c>false</c>.</value>
         public bool HasKeyboard { get; internal set; }
+
+        /// <summary>
+        /// Gets a value indicating whether the mouse is available.
+        /// </summary>
+        /// <value><c>true</c> if the mouse is available; otherwise, <c>false</c>.</value>
         public bool HasMouse { get; internal set; }
+
+        /// <summary>
+        /// Gets a value indicating whether pointer device is available.
+        /// </summary>
+        /// <value><c>true</c> if pointer devices are available; otherwise, <c>false</c>.</value>
         public bool HasPointer { get; internal set; }
 
+        /// <summary>
+        /// Gets the list of keys being pressed down.
+        /// </summary>
+        /// <value>The key pressed.</value>
         public List<Keys> KeyDown { get; private set; }
 
+        /// <summary>
+        /// Gets the list of key events (pressed or released) since the previous update.
+        /// </summary>
+        /// <value>The key events.</value>
         public List<KeyEvent> KeyEvents { get; private set; }
-        
+
+        /// <summary>
+        /// Gets the mouse position.
+        /// </summary>
+        /// <value>The mouse position.</value>
         public Vector2 MousePosition { get; private set; }
 
+        /// <summary>
+        /// Gets a binding value for the specified name and the specified config extract from the current <see cref="VirtualButtonConfigSet"/>.
+        /// </summary>
+        /// <param name="configIndex">An index to a <see cref="VirtualButtonConfig"/> stored in the <see cref="VirtualButtonConfigSet"/></param>
+        /// <param name="bindingName">Name of the binding.</param>
+        /// <returns>The value of the binding.</returns>
         public virtual float GetVirtualButton(int configIndex, object bindingName)
         {
             if (VirtualButtonConfigSet == null || configIndex < 0 || configIndex >= virtualButtonValues.Count)
@@ -334,6 +396,11 @@ namespace SiliconStudio.Paradox.Input
             return value;
         }
 
+        /// <summary>
+        /// Gets the state of the specified gamepad.
+        /// </summary>
+        /// <param name="gamepadIndex">Index of the gamepad. -1 to return the first connected gamepad</param>
+        /// <returns>The state of the gamepad.</returns>
         public virtual GamePadState GetGamePad(int gamepadIndex)
         {
             // If the game pad index is negative or larger, take the first connected gamepad
@@ -363,6 +430,11 @@ namespace SiliconStudio.Paradox.Input
             return gamePadStates[gamepadIndex];
         }
 
+        /// <summary>
+        /// Determines whether the specified key is being pressed down.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns><c>true</c> if the specified key is being pressed down; otherwise, <c>false</c>.</returns>
         public bool IsKeyDown(Keys key)
         {
             bool pressed;
@@ -370,16 +442,30 @@ namespace SiliconStudio.Paradox.Input
             return pressed;
         }
 
+        /// <summary>
+        /// Determines whether the specified key is pressed since the previous update.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns><c>true</c> if the specified key is pressed; otherwise, <c>false</c>.</returns>
         public bool IsKeyPressed(Keys key)
         {
             return pressedKeysSet.Contains(key);
         }
 
+        /// <summary>
+        /// Determines whether the specified key is released since the previous update.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns><c>true</c> if the specified key is released; otherwise, <c>false</c>.</returns>
         public bool IsKeyReleased(Keys key)
         {
             return releasedKeysSet.Contains(key);
         }
 
+        /// <summary>
+        /// Determines whether one or more of the mouse buttons are down
+        /// </summary>
+        /// <returns><c>true</c> if one or more of the mouse buttons are down; otherwise, <c>false</c>.</returns>
         public bool HasDownMouseButtons()
         {
             for (int i = 0; i < mouseButtons.Length; ++i)
@@ -389,6 +475,10 @@ namespace SiliconStudio.Paradox.Input
             return false;
         }
 
+        /// <summary>
+        /// Determines whether one or more of the mouse buttons are released
+        /// </summary>
+        /// <returns><c>true</c> if one or more of the mouse buttons are released; otherwise, <c>false</c>.</returns>
         public bool HasReleasedMouseButtons()
         {
             for (int i = 0; i < mouseButtons.Length; ++i)
@@ -398,6 +488,10 @@ namespace SiliconStudio.Paradox.Input
             return false;
         }
 
+        /// <summary>
+        /// Determines whether one or more of the mouse buttons are pressed
+        /// </summary>
+        /// <returns><c>true</c> if one or more of the mouse buttons are pressed; otherwise, <c>false</c>.</returns>
         public bool HasPressedMouseButtons()
         {
             for (int i = 0; i < mouseButtons.Length; ++i)
@@ -407,21 +501,42 @@ namespace SiliconStudio.Paradox.Input
             return false;
         }
 
+        /// <summary>
+        /// Determines whether the specified mouse button is being pressed down.
+        /// </summary>
+        /// <param name="mouseButton">The mouse button.</param>
+        /// <returns><c>true</c> if the specified mouse button is being pressed down; otherwise, <c>false</c>.</returns>
         public bool IsMouseButtonDown(MouseButton mouseButton)
         {
             return mouseButtons[(int)mouseButton];
         }
 
+        /// <summary>
+        /// Determines whether the specified mouse button is pressed since the previous update.
+        /// </summary>
+        /// <param name="mouseButton">The mouse button.</param>
+        /// <returns><c>true</c> if the specified mouse button is pressed since the previous update; otherwise, <c>false</c>.</returns>
         public bool IsMouseButtonPressed(MouseButton mouseButton)
         {
             return !mouseButtonsPrevious[(int)mouseButton] && mouseButtons[(int)mouseButton];
         }
 
+        /// <summary>
+        /// Determines whether the specified mouse button is released.
+        /// </summary>
+        /// <param name="mouseButton">The mouse button.</param>
+        /// <returns><c>true</c> if the specified mouse button is released; otherwise, <c>false</c>.</returns>
         public bool IsMouseButtonReleased(MouseButton mouseButton)
         {
             return mouseButtonsPrevious[(int)mouseButton] && !mouseButtons[(int)mouseButton];
         }
 
+        /// <summary>
+        /// Rescans all input devices in order to query new device connected. See remarks.
+        /// </summary>
+        /// <remarks>
+        /// This method could take several milliseconds and should be used at specific time in a game where performance is not crucial (pause, configuration screen...etc.)
+        /// </remarks>
         public virtual void Scan()
         {
             lock (gamePads)
@@ -800,6 +915,10 @@ namespace SiliconStudio.Paradox.Input
             #endregion
         }
 
+        /// <summary>
+        /// Gets or sets the value indicating if simultaneous multiple finger touches are enabled or not.
+        /// If not enabled only the events of one finger at a time are triggered.
+        /// </summary>
         public abstract bool MultiTouchEnabled { get; set; }
 
         public virtual void OnApplicationPaused(object sender, EventArgs e)

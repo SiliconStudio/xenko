@@ -15,17 +15,17 @@ namespace SiliconStudio.Paradox.UI.Controls
         /// <summary>
         /// The key to the NotPressedImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<UIImage> NotPressedImagePropertyKey = new PropertyKey<UIImage>("NotPressedImageModeKey", typeof(Button), DefaultValueMetadata.Static<UIImage>(null), ObjectInvalidationMetadata.New<UIImage>(OnAspectImageInvalidated));
+        public static readonly PropertyKey<UIImage> NotPressedImagePropertyKey = new PropertyKey<UIImage>("NotPressedImageKey", typeof(Button), DefaultValueMetadata.Static<UIImage>(null), ObjectInvalidationMetadata.New<UIImage>(OnAspectImageInvalidated));
 
         /// <summary>
         /// The key to the PressedImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<UIImage> PressedImagePropertyKey = new PropertyKey<UIImage>("PressedImageModeKey", typeof(Button), DefaultValueMetadata.Static<UIImage>(null), ObjectInvalidationMetadata.New<UIImage>(OnAspectImageInvalidated));
+        public static readonly PropertyKey<UIImage> PressedImagePropertyKey = new PropertyKey<UIImage>("PressedImageKey", typeof(Button), DefaultValueMetadata.Static<UIImage>(null), ObjectInvalidationMetadata.New<UIImage>(OnAspectImageInvalidated));
 
         /// <summary>
         /// The key to the MouseOverImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<UIImage> MouseOverImagePropertyKey = new PropertyKey<UIImage>("MouseOverImageModeKey", typeof(Button), DefaultValueMetadata.Static<UIImage>(null), ObjectInvalidationMetadata.New<UIImage>(OnAspectImageInvalidated));
+        public static readonly PropertyKey<UIImage> MouseOverImagePropertyKey = new PropertyKey<UIImage>("MouseOverImageKey", typeof(Button), DefaultValueMetadata.Static<UIImage>(null), ObjectInvalidationMetadata.New<UIImage>(OnAspectImageInvalidated));
 
         public Button()
         {

@@ -38,9 +38,9 @@ namespace SiliconStudio.Paradox.Graphics
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
             /// <returns>A Torus primitive.</returns>
             /// <exception cref="System.ArgumentOutOfRangeException">tessellation;tessellation parameter out of range</exception>
-            public static GeometricMeshData<VertexPositionNormalMultiTexture> New(float diameter = 1.0f, float thickness = 0.33333f, int tessellation = 32, bool toLeftHanded = false)
+            public static GeometricMeshData<VertexPositionNormalTangentMultiTexture> New(float diameter = 1.0f, float thickness = 0.33333f, int tessellation = 32, bool toLeftHanded = false)
             {
-                var vertices = new List<VertexPositionNormalMultiTexture>();
+                var vertices = new List<VertexPositionNormalTangentMultiTexture>();
                 var indices = new List<int>();
 
                 if (tessellation < 3)
@@ -75,7 +75,8 @@ namespace SiliconStudio.Paradox.Graphics
                         Vector3.TransformCoordinate(ref position, ref transform, out position);
                         Vector3.TransformNormal(ref normal, ref transform, out normal);
 
-                        vertices.Add(new VertexPositionNormalMultiTexture(position, normal, textureCoordinate));
+                        var tangent = new Vector4((float)Math.Sin(outerAngle), 0, -(float)Math.Cos(outerAngle), 0); // Y ^ (cos, 0, sin)
+                        vertices.Add(new VertexPositionNormalTangentMultiTexture(position, normal, tangent, textureCoordinate));
 
                         // And create indices for two triangles.
                         int nextI = (i + 1) % stride;
@@ -92,7 +93,7 @@ namespace SiliconStudio.Paradox.Graphics
                 }
 
                 // Create the primitive object.
-                return new GeometricMeshData<VertexPositionNormalMultiTexture>(vertices.ToArray(), indices.ToArray(), toLeftHanded, VertexPositionNormalTexture.Layout) { Name = "Torus" };
+                return new GeometricMeshData<VertexPositionNormalTangentMultiTexture>(vertices.ToArray(), indices.ToArray(), toLeftHanded, VertexPositionNormalTexture.Layout) { Name = "Torus" };
             }
         }
     }

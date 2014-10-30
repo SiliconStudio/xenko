@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Audio
                     Velocity = emitter.Velocity.ToSharpDX(),
                     DopplerScaler = emitter.DopplerScale,
                     CurveDistanceScaler = emitter.DistanceScale,
-                    ChannelRadius = 0f, // Multi-channels localizable sound are considered as source of multiple sounds comming from the same location.
+                    ChannelRadius = 0f, // Multi-channels localizable sound are considered as source of multiple sounds coming from the same location.
                     ChannelCount = inputChannels
                 };
             
@@ -48,9 +48,9 @@ namespace SiliconStudio.Paradox.Audio
             AudioEngine.X3DAudio.Calculate(list, emit, CalculateFlags.Matrix | CalculateFlags.LpfDirect, dspSettings);
 
             /////////////////////////////////////////////////////////////
-            // 2. Now let's set the voice paramerters to simulate a 3D voice.
+            // 2. Now let's set the voice parameters to simulate a 3D voice.
 
-            // 2.1 The doppler effect due to the difference of speed between the emitter and listener
+            // 2.1 The Doppler effect due to the difference of speed between the emitter and listener
             ComputeDopplerFactor(listener, emitter);
             UpdatePitch();
 
@@ -132,7 +132,7 @@ namespace SiliconStudio.Paradox.Audio
 
         internal void CreateVoice(WaveFormat format)
         {   
-            SourceVoice = new SourceVoice(AudioEngine.XAudio2, format.ToSharpDX(), VoiceFlags.None, 2f, true); // '2f' -> allow to modify ptich up to one octave, 'true' -> enable callback
+            SourceVoice = new SourceVoice(AudioEngine.XAudio2, format.ToSharpDX(), VoiceFlags.None, 2f, true); // '2f' -> allow to modify pitch up to one octave, 'true' -> enable callback
             SourceVoice.StreamEnd += Stop;
         }
 

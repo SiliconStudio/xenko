@@ -103,8 +103,8 @@
     <None Include="Templates\Common.PropertyGroups.targets.t4" />
     <None Include="Templates\Paradox.UnitTests\%24ProjectName%24.WindowsPhone.csproj.t4" />
     <None Include="Templates\Paradox.UnitTests\%24ProjectName%24.WindowsStore.csproj.t4" />
-    <None Include="Templates\Paradox.UnitTests\%24ProjectName%24MainPage.xaml.cs.t4" />
-    <None Include="Templates\Paradox.UnitTests\%24ProjectName%24MainPage.xaml.t4" />
+    <None Include="Templates\Paradox.UnitTests\MainPage.xaml.cs.t4" />
+    <None Include="Templates\Paradox.UnitTests\MainPage.xaml.t4" />
     <None Include="Templates\Paradox.UnitTests\App.xaml.cs.t4" />
     <None Include="Templates\Paradox.UnitTests\App.xaml.t4" />
     <None Include="Templates\Paradox.UnitTests\Info.plist.t4" />

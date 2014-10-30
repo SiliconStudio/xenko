@@ -304,7 +304,7 @@
     <Compile Include="VertexPosition2.cs" />
     <Compile Include="VertexPositionColorTexture.cs" />
     <Compile Include="VertexPositionColorTextureSwizzle.cs" />
-    <Compile Include="VertexPositionNormalMultiTexture.cs" />
+    <Compile Include="VertexPositionNormalTangentMultiTexture.cs" />
     <Compile Include="VertexPositionNormalTexture.cs" />
     <Compile Include="VertexPositionTexture.cs" />
     <Compile Include="WindowContext.cs" />
