@@ -87,9 +87,6 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                         RenderInSinglePass(context, source.Key, source.Value);
                     else
                         RenderInSixPasses(context, source.Key, source.Value);
-
-                    if (source.Value.GenerateMips)
-                        GraphicsDevice. GenerateMips(source.Value.Texture);
                 }
             }
         }

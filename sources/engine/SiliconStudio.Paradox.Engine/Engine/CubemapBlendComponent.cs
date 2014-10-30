@@ -6,7 +6,6 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Modules;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
 
@@ -29,7 +28,6 @@ namespace SiliconStudio.Paradox.Engine
             Size = 256;
             MaxBlendCount = 0;
             MaxLod = 0;
-            GenerateMips = false;
             textureCube = null;
             RenderTargets = null;
             TextureKey = null;
@@ -54,13 +52,6 @@ namespace SiliconStudio.Paradox.Engine
         [DataMemberConvert]
         [DefaultValue(0)]
         public int MaxBlendCount { get; set; }
-
-        /// <summary>
-        /// Enables mip maps generation.
-        /// </summary>
-        [DataMemberConvert]
-        [DefaultValue(false)]
-        public bool GenerateMips { get; set; }
 
         /// <summary>
         /// The maximum lod of the texture.

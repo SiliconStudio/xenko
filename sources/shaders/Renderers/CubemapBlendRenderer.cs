@@ -207,9 +207,6 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                         drawQuad.Draw();
                     }
                 }
-
-                if (cubemap.Value.GenerateMips)
-                    GraphicsDevice.GenerateMips(cubemap.Value.Texture);
             }
         }
 

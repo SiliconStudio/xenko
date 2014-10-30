@@ -46,7 +46,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
         protected override void OnEntityAdding(Entity entity, CubemapBlendComponent data)
         {
             base.OnEntityAdding(entity, data);
-            data.Texture = TextureCube.New(graphicsDevice, data.Size, data.GenerateMips ? 0 : 1, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
+            data.Texture = TextureCube.New(graphicsDevice, data.Size, 1, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
 
             // add parameter to model
             var model = entity.Get<ModelComponent>();

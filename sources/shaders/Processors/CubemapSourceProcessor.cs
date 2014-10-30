@@ -42,7 +42,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
             if (data.IsDynamic)
             {
                 // TODO: move texture creation when it is actually needed (first time use)?
-                data.Texture = TextureCube.New(graphicsDevice, data.Size, data.GenerateMips? 0 : 1, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
+                data.Texture = TextureCube.New(graphicsDevice, data.Size, 1, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
             }
         }
 

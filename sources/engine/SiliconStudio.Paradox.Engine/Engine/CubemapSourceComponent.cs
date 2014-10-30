@@ -27,7 +27,6 @@ namespace SiliconStudio.Paradox.Engine
             Size = 256;
             InfluenceRadius = 1.0f;
             InfinityCubemap = false;
-            GenerateMips = false;
             textureCube = null;
             NearPlane = 0.1f;
             FarPlane = 100.0f;
@@ -62,13 +61,6 @@ namespace SiliconStudio.Paradox.Engine
         [DataMemberConvert]
         [DefaultValue(256)]
         public int Size { get; set; }
-
-        /// <summary>
-        /// Enables mip maps generation.
-        /// </summary>
-        [DataMemberConvert]
-        [DefaultValue(false)]
-        public bool GenerateMips { get; set; }
 
         /// <summary>
         /// The cubemap has no location.
