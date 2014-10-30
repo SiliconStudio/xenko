@@ -47,6 +47,12 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
         {
             base.OnEntityAdding(entity, data);
             data.Texture = TextureCube.New(graphicsDevice, data.Size, data.GenerateMips ? 0 : 1, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
+
+            // TODO: get key from interface?
+            // add parameter to model
+            var model = entity.Get<ModelComponent>();
+            if (model != null)
+                model.Parameters.Set(TexturingKeys.TextureCube0, data.Texture);
         }
 
         /// <inheritdoc/>

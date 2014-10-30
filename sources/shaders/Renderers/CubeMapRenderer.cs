@@ -62,9 +62,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         public CubemapRenderer(IServiceRegistry services, RenderPipeline recursivePipeline, bool singlePass) : base(services, recursivePipeline)
         {
             // temporary
-            if (GraphicsDevice.Features.Profile < GraphicsProfile.Level_10_0)
-                throw new Exception("Cubemaps not supported on profiles below 10.0.");
-            renderInSinglePass = singlePass;
+            if (GraphicsDevice.Features.Profile < GraphicsProfile.Level_10_1)
+                throw new Exception("Cubemaps not supported on profiles below 10.1.");
+            renderInSinglePass = singlePass && (GraphicsDevice.Features.Profile >= GraphicsProfile.Level_10_1);
         }
 
         #endregion
@@ -121,13 +121,15 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 GraphicsDevice.Parameters.Set(CameraKeys.FieldOfView, MathUtil.PiOverTwo);
                 GraphicsDevice.Parameters.Set(CameraKeys.Aspect, 1);
 
+                if (component.RenderTargets == null)
+                    component.CreateSingleViewRenderTargets();
+
+                var renderTarget = component.RenderTargets[i];
                 GraphicsDevice.Clear(component.DepthStencil, DepthStencilClearOptions.DepthBuffer);
+                GraphicsDevice.Clear(renderTarget, Color.Black);
 
-                // temp
-                var rt = component.Texture.ToRenderTarget(ViewType.Single, i, 0);
-
-                GraphicsDevice.Clear(rt, Color.Black);
-                GraphicsDevice.SetRenderTargets(component.DepthStencil, rt);
+                GraphicsDevice.SetRenderTargets(component.DepthStencil, renderTarget);
+                
                 base.Render(context);
             }
 
@@ -162,6 +164,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             // TODO: set parameters on another collection?
             GraphicsDevice.Parameters.Set(CameraCubeKeys.CameraViewProjectionMatrices, cameraViewProjMatrices);
             GraphicsDevice.Parameters.Set(CameraCubeKeys.CameraWorldPosition, cameraPos);
+
+            if (component.RenderTarget == null)
+                component.CreateFullViewRenderTarget();
 
             GraphicsDevice.Clear(component.DepthStencil, DepthStencilClearOptions.DepthBuffer);
             GraphicsDevice.Clear(component.RenderTarget, Color.Black);

@@ -74,10 +74,6 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         public CubemapBlendRenderer(IServiceRegistry services) : base(services)
         {
-            // temporary
-            if (GraphicsDevice.Features.Profile < GraphicsProfile.Level_10_0)
-                throw new Exception("Cubemaps not supported on profiles below 10.0.");
-
             cubemapBlendEffects = new Dictionary<int, Effect>();
             useMultipleRenderTargets = false;
             selectedCubemaps = new List<Tuple<TextureCube, float>>();

@@ -41,9 +41,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
             base.OnEntityAdding(entity, data);
             if (data.IsDynamic)
             {
+                // TODO: move texture creation when it is actually needed (first time use)?
                 data.Texture = TextureCube.New(graphicsDevice, data.Size, data.GenerateMips? 0 : 1, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
-                // TODO: change this depending on single pass rendering or not
-                data.DepthStencil = Texture2D.New(graphicsDevice, data.Size, data.Size, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil, 6).ToDepthStencilBuffer(false);
             }
         }
 

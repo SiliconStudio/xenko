@@ -32,6 +32,8 @@ namespace SiliconStudio.Paradox.Engine
             NearPlane = 0.1f;
             FarPlane = 100.0f;
             MaxLod = 0;
+            RenderTarget = null;
+            RenderTargets = null;
         }
 
         public CubemapSourceComponent(TextureCube texture) : this()
@@ -109,13 +111,8 @@ namespace SiliconStudio.Paradox.Engine
             set
             {
                 textureCube = value;
-                // TODO: check previous status to dispose the rendertarget?
                 if (textureCube != null)
-                {
                     MaxLod = textureCube.Description.MipLevels - 1;
-                    if (IsDynamic)
-                        RenderTarget = textureCube.ToRenderTarget(ViewType.Full, 0, 0);
-                }
             }
         }
 
@@ -132,10 +129,50 @@ namespace SiliconStudio.Paradox.Engine
         public RenderTarget RenderTarget { get; private set; }
 
         /// <summary>
+        /// The render targets of the cubemap.
+        /// </summary>
+        [DataMemberIgnore]
+        public RenderTarget[] RenderTargets { get; private set; }
+
+        /// <summary>
         /// The texture attached to this component.
         /// </summary>
         [DataMemberIgnore]
         public DepthStencilBuffer DepthStencil { get; set; }
+
+        /// <summary>
+        /// Creates full view render targets on demand.
+        /// </summary>
+        public void CreateFullViewRenderTarget()
+        {
+            // TODO: check previous status to dispose the rendertarget?
+            if (textureCube != null)
+            {
+                RenderTarget = textureCube.ToRenderTarget(ViewType.Full, 0, 0);
+                DepthStencil = Texture2D.New(textureCube.GraphicsDevice, Size, Size, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil, 6).ToDepthStencilBuffer(false);
+            }
+        }
+
+        /// <summary>
+        /// Creates single view render targets on demand.
+        /// </summary>
+        public void CreateSingleViewRenderTargets()
+        {
+            // TODO: check previous status to dispose the rendertarget?
+            if (textureCube != null)
+            {
+                RenderTargets = new[]
+                {
+                    textureCube.ToRenderTarget(ViewType.Single, 0, 0),
+                    textureCube.ToRenderTarget(ViewType.Single, 1, 0),
+                    textureCube.ToRenderTarget(ViewType.Single, 2, 0),
+                    textureCube.ToRenderTarget(ViewType.Single, 3, 0),
+                    textureCube.ToRenderTarget(ViewType.Single, 4, 0),
+                    textureCube.ToRenderTarget(ViewType.Single, 5, 0)
+                };
+                DepthStencil = Texture2D.New(textureCube.GraphicsDevice, Size, Size, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil).ToDepthStencilBuffer(false);
+            }
+        }
 
         public override PropertyKey DefaultKey
         {

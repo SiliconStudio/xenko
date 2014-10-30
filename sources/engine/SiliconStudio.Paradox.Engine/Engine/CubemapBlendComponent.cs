@@ -29,6 +29,7 @@ namespace SiliconStudio.Paradox.Engine
             MaxLod = 0;
             GenerateMips = false;
             textureCube = null;
+            RenderTargets = null;
         }
 
         /// <summary>
@@ -98,7 +99,7 @@ namespace SiliconStudio.Paradox.Engine
         /// The render targets of the cubemap.
         /// </summary>
         [DataMemberIgnore]
-        public RenderTarget[] RenderTargets { get; set; }
+        public RenderTarget[] RenderTargets { get; private set; }
 
         public override PropertyKey DefaultKey
         {
