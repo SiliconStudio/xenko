@@ -48,7 +48,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ModelNodeCommandWrapper.cs" />
     <Compile Include="ValueChangedActionItem.cs" />
-    <Compile Include="View\AnyNodeTemplateProvider.cs" />
     <Compile Include="View\ObservableNodeTemplateProvider.cs" />
     <Compile Include="View\TypeMatchTemplateProvider.cs" />
     <Compile Include="VirtualObservableNode.cs" />
