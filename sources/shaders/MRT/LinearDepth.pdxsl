@@ -1,5 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Computes the linear depth in [0,1].
+/// </summary>
 class LinearDepth : ComputeColor, Camera
 {
     PositionVSBase positionVS = stage;

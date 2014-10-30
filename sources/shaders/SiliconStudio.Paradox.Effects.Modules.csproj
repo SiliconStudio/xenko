@@ -418,23 +418,11 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LinearDepth.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="MRT\MultipleRenderTargetsBase.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>MultipleRenderTargetsBase.pdxsl</DependentUpon>
-    </Compile>
     <Compile Include="MRT\NormalColor.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>NormalColor.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="MRT\ShadingBaseMRT.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ShadingBaseMRT.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="PostEffect\PostEffectBack.cs">
       <AutoGen>True</AutoGen>
@@ -1812,17 +1800,9 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LinearDepth.cs</LastGenOutput>
     </None>
-    <None Include="MRT\MultipleRenderTargetsBase.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MultipleRenderTargetsBase.cs</LastGenOutput>
-    </None>
     <None Include="MRT\NormalColor.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>NormalColor.cs</LastGenOutput>
-    </None>
-    <None Include="MRT\ShadingBaseMRT.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ShadingBaseMRT.cs</LastGenOutput>
     </None>
     <None Include="Core\ShadingColor.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

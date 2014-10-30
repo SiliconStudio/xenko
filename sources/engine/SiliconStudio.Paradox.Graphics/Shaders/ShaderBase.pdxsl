@@ -12,8 +12,15 @@ class ShaderBase
     // Default SV_POSITION output for VS/GS shaders
     stage stream float4 ShadingPosition : SV_Position;
 
-    // Default COLOR output for PS shader
-    stage stream float4 ColorTarget : SV_Target;
+    // Default COLOR outputs for PS shader
+    stage stream float4 ColorTarget : SV_Target0;
+    stage stream float4 ColorTarget1 : SV_Target1;
+    stage stream float4 ColorTarget2 : SV_Target2;
+    stage stream float4 ColorTarget3 : SV_Target3;
+    stage stream float4 ColorTarget4 : SV_Target4;
+    stage stream float4 ColorTarget5 : SV_Target5;
+    stage stream float4 ColorTarget6 : SV_Target6;
+    stage stream float4 ColorTarget7 : SV_Target7;
 
     // Default DEPTH output for PS shader
     stage stream float Depth : SV_Depth;
