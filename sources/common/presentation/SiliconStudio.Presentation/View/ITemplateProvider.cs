@@ -43,11 +43,6 @@ namespace SiliconStudio.Presentation.View
         /// Gets or sets the template associated with this <see cref="ITemplateProvider"/>
         /// </summary>
         DataTemplate Template { get; set; }
-
-        /// <summary>
-        /// Gets or sets whether this provider provides a root template.
-        /// </summary>
-        bool IsRoot { get; set; }
         
         /// <summary>
         /// Gets or sets the rule to use when this provider can potentially override other providers that matches the same object.

@@ -11,14 +11,13 @@ namespace SiliconStudio.Presentation.View
     /// An abstract implementation of the <see cref="ITemplateProvider"/> interface.
     /// </summary>
     [ContentProperty("Template")]
-    public abstract class TemplateProviderBase : ITemplateProvider
+    public abstract class TemplateProviderBase : DependencyObject, ITemplateProvider
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateProviderBase"/> class.
         /// </summary>
         protected TemplateProviderBase()
         {
-            IsRoot = true;
             OverriddenProviderNames = new List<string>();
             OverrideRule = OverrideRule.Some;
         }
@@ -28,9 +27,6 @@ namespace SiliconStudio.Presentation.View
 
         /// <inheritdoc/>
         public DataTemplate Template { get; set; }
-
-        /// <inheritdoc/>
-        public bool IsRoot { get; set; }
 
         /// <inheritdoc/>
         public OverrideRule OverrideRule { get; set; }

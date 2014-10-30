@@ -15,65 +15,54 @@ namespace SiliconStudio.Presentation.View
     /// <summary>
     /// An implementation of <see cref="DataTemplateSelector"/> that can select a template from a set of statically registered <see cref="ITemplateProvider"/> objects.
     /// </summary>
-    /// <remarks>This class is a singleton and cannot be instanced. To reference this selector, use the static member <see cref="Instance"/>.</remarks>
     public class TemplateProviderSelector : DataTemplateSelector
     {
-        /// <summary>
-        /// The singleton instance of the <see cref="TemplateProviderSelector"/> class.
-        /// </summary>
-        public static readonly TemplateProviderSelector Instance = new TemplateProviderSelector();
-        
+       
         /// <summary>
         /// The list of all template providers registered for the <see cref="TemplateProviderSelector"/>, indexed by their name.
         /// </summary>
-        private static readonly List<ITemplateProvider> TemplateProviders = new List<ITemplateProvider>();
+        private readonly List<ITemplateProvider> templateProviders = new List<ITemplateProvider>();
 
         /// <summary>
         /// A hashset of template provider names, used only to ensure unicity.
         /// </summary>
-        private static readonly HashSet<string> TemplateProviderNames = new HashSet<string>();
+        private readonly HashSet<string> templateProviderNames = new HashSet<string>();
 
         /// <summary>
         /// A map of all providers that have already been used for each object, indexed by <see cref="Guid"/>.
         /// </summary>
-        private static readonly ConditionalWeakTable<object, List<string>> UsedProviders = new ConditionalWeakTable<object, List<string>>();
+        private readonly ConditionalWeakTable<object, List<string>> usedProviders = new ConditionalWeakTable<object, List<string>>();
 
         /// <summary>
         /// A map containing the last container for a given object.
         /// </summary>
-        private static readonly ConditionalWeakTable<object, WeakReference> LastContainers = new ConditionalWeakTable<object, WeakReference>();
+        private readonly ConditionalWeakTable<object, WeakReference> lastContainers = new ConditionalWeakTable<object, WeakReference>();
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TemplateProviderSelector"/> class.
-        /// </summary>
-        /// <remarks>This constructor is private because this class is a singleton.</remarks>
-        private TemplateProviderSelector()
-        {
-        }
-        
         /// <summary>
         /// Registers the given template into the static <see cref="TemplateProviderSelector"/>.
         /// </summary>
         /// <param name="templateProvider"></param>
-        public static void RegisterTemplateProvider(ITemplateProvider templateProvider)
+        public void RegisterTemplateProvider(ITemplateProvider templateProvider)
         {
             if (templateProvider == null) throw new ArgumentNullException("templateProvider");
 
-            if (TemplateProviderNames.Contains(templateProvider.Name))
+            if (templateProviderNames.Contains(templateProvider.Name))
                 throw new InvalidOperationException("A template provider with the same name has already been registered in this template selector.");
 
-            InsertTemplateProvider(TemplateProviders, templateProvider, new List<ITemplateProvider>());
-            TemplateProviderNames.Add(templateProvider.Name);
+            InsertTemplateProvider(templateProviders, templateProvider, new List<ITemplateProvider>());
+            templateProviderNames.Add(templateProvider.Name);
         }
 
         /// <summary>
         /// Unregisters the given template into the static <see cref="TemplateProviderSelector"/>.
         /// </summary>
         /// <param name="templateProvider"></param>
-        public static void UnregisterTemplateProvider(ITemplateProvider templateProvider)
+        public void UnregisterTemplateProvider(ITemplateProvider templateProvider)
         {
-            TemplateProviderNames.Remove(templateProvider.Name);
-            TemplateProviders.Remove(templateProvider);
+            if (templateProviderNames.Remove(templateProvider.Name))
+            {
+                templateProviders.Remove(templateProvider);
+            }
         }
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
@@ -120,14 +109,14 @@ namespace SiliconStudio.Presentation.View
             }
         }
 
-        private static ITemplateProvider FindTemplateProvider(object item, DependencyObject container)
+        private ITemplateProvider FindTemplateProvider(object item, DependencyObject container)
         {
-            List<string> usedProvidersForItem = UsedProviders.GetOrCreateValue(item);
+            List<string> usedProvidersForItem = usedProviders.GetOrCreateValue(item);
 
             bool shouldClear = true;
             WeakReference lastContainer;
             // We check if this item has been templated recently.
-            if (LastContainers.TryGetValue(item, out lastContainer) && lastContainer.IsAlive)
+            if (lastContainers.TryGetValue(item, out lastContainer) && lastContainer.IsAlive)
             {
                 // If so, check if the last container used is a parent of the container to use now.
                 DependencyObject parent = VisualTreeHelper.GetParent(container);
@@ -149,16 +138,16 @@ namespace SiliconStudio.Presentation.View
                 usedProvidersForItem.Clear();
             }
 
-            LastContainers.Remove(item);
+            lastContainers.Remove(item);
 
-            var availableSelectors = TemplateProviders.Where(x => x.Match(item)).ToList();
+            var availableSelectors = templateProviders.Where(x => x.Match(item)).ToList();
 
-            bool isRoot = usedProvidersForItem.Count == 0;
-            ITemplateProvider result = availableSelectors.FirstOrDefault(x => !usedProvidersForItem.Contains(x.Name) && isRoot == x.IsRoot);
+            ITemplateProvider result = availableSelectors.FirstOrDefault(x => !usedProvidersForItem.Contains(x.Name));
+
             if (result != null)
             {
                 usedProvidersForItem.Add(result.Name);
-                LastContainers.Add(item, new WeakReference(container));
+                lastContainers.Add(item, new WeakReference(container));
             }
             return result;
         }

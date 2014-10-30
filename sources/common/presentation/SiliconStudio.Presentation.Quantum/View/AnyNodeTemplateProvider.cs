@@ -8,12 +8,7 @@ namespace SiliconStudio.Presentation.Quantum.View
     public class AnyNodeTemplateProvider : ObservableNodeTemplateProvider
     {
         /// <inheritdoc/>
-        public override string Name { get { return "AnyNodeTemplateProvider" + Suffix; } }
-
-        /// <summary>
-        /// Gets or sets a suffix for this template provider to be used to create its unique <see cref="Name"/>.
-        /// </summary>
-        public string Suffix { get; set; }
+        public override string Name { get { return "AnyNodeTemplateProvider"; } }
 
         /// <inheritdoc/>
         public override bool MatchNode(IObservableNode node)
