@@ -226,6 +226,15 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 if (!TextureSizeSupported(textureAsset.Format, parameters.GraphicsPlatform, parameters.GraphicsProfile, textureSize, textureAsset.GenerateMipmaps, logger))
                     return ResultStatus.Failed;
 
+
+                // flip the image if texture cube
+                if (texImage.Dimension == TexImage.TextureDimension.TextureCube && parameters.GraphicsPlatform == GraphicsPlatform.Direct3D11)
+                    texTool.Flip(texImage, Orientation.Horizontal);
+
+                if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
+                    return ResultStatus.Cancelled;
+
+
                 // Apply the color key
                 if (textureAsset.ColorKeyEnabled)
                     texTool.ColorKey(texImage, textureAsset.ColorKeyColor);
