@@ -5,6 +5,8 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Converters;
+using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Effects.Modules;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
 
@@ -30,6 +32,7 @@ namespace SiliconStudio.Paradox.Engine
             GenerateMips = false;
             textureCube = null;
             RenderTargets = null;
+            TextureKey = null;
         }
 
         /// <summary>
@@ -94,6 +97,13 @@ namespace SiliconStudio.Paradox.Engine
                 }
             }
         }
+
+        /// <summary>
+        /// The parameter key the texture will be associated to.
+        /// </summary>
+        [DataMemberConvert]
+        [DefaultValue(null)]
+        public ParameterKey<Texture> TextureKey { get; set; }
 
         /// <summary>
         /// The render targets of the cubemap.
