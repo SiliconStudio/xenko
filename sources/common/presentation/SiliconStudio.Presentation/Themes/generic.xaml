@@ -84,6 +84,7 @@
         <!-- TODO: Replace DynamicResource by StaticResource once it is stylized in the correct theme -->
         <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
