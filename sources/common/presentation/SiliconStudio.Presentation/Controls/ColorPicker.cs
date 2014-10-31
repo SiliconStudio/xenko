@@ -40,6 +40,8 @@ namespace SiliconStudio.Presentation.Controls
         private bool interlock;
         private Color4 internalColor;
         private bool suspendBindingUpdates;
+        private bool templateApplied;
+        private DependencyProperty initializingProperty;
 
         /// <summary>
         /// Identifies the <see cref="Color"/> dependency property.
@@ -130,6 +132,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <inheritdoc/>
         public override void OnApplyTemplate()
         {
+            templateApplied = false;
             base.OnApplyTemplate();
 
             if (colorPickerRenderSurface != null)
@@ -178,6 +181,7 @@ namespace SiliconStudio.Presentation.Controls
             {
                 Canvas.SetLeft(huePickerSelector, Hue * huePickerRenderSurface.Width / 360.0);
             }
+            templateApplied = true;
         }
 
         /// <summary>
@@ -337,6 +341,10 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         private void OnColorChanged()
         {
+            bool isInitializing = !templateApplied && initializingProperty == null;
+            if (isInitializing)
+                initializingProperty = ColorProperty;
+
             if (!interlock)
             {
                 internalColor = Color;
@@ -356,6 +364,9 @@ namespace SiliconStudio.Presentation.Controls
             RenderColorPickerSurface();
 
             UpdateBinding(ColorProperty);
+
+            if (isInitializing)
+                initializingProperty = null;
         }
 
         /// <summary>
@@ -364,6 +375,10 @@ namespace SiliconStudio.Presentation.Controls
         /// <param name="e">The dependency property that has changed.</param>
         private void OnRGBAValueChanged(DependencyPropertyChangedEventArgs e)
         {
+            bool isInitializing = !templateApplied && initializingProperty == null;
+            if (isInitializing)
+                initializingProperty = e.Property;
+
             if (!interlock)
             {
                 if (e.Property == RedProperty)
@@ -386,6 +401,8 @@ namespace SiliconStudio.Presentation.Controls
             }
             
             UpdateBinding(e.Property);
+            if (isInitializing)
+                initializingProperty = null;
         }
 
         /// <summary>
@@ -394,6 +411,10 @@ namespace SiliconStudio.Presentation.Controls
         /// <param name="e">The dependency property that has changed.</param>
         private void OnHSVValueChanged(DependencyPropertyChangedEventArgs e)
         {
+            bool isInitializing = !templateApplied && initializingProperty == null;
+            if (isInitializing)
+                initializingProperty = e.Property;
+            
             if (!interlock)
             {
                 ColorHSV colorHSV;
@@ -431,6 +452,9 @@ namespace SiliconStudio.Presentation.Controls
             {
                 Canvas.SetLeft(huePickerSelector, Hue * huePickerRenderSurface.Width / 360.0);
             }
+
+            if (isInitializing)
+                initializingProperty = null;
         }
 
         /// <summary>
@@ -439,7 +463,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <param name="dependencyProperty">The dependency property.</param>
         private void UpdateBinding(DependencyProperty dependencyProperty)
         {
-            if (!suspendBindingUpdates)
+            if (!suspendBindingUpdates && dependencyProperty != initializingProperty)
             {
                 BindingExpression expression = GetBindingExpression(dependencyProperty);
                 if (expression != null)
