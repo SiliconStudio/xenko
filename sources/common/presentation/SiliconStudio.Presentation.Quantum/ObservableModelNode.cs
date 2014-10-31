@@ -116,7 +116,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         internal Guid ModelGuid { get { return targetNode.Guid; } }
 
-        private ObservableModelNode ModelNodeParent { get { AssertInit(); return Parent is ObservableModelNode ? (ObservableModelNode)Parent : null; } }
+        private ObservableModelNode ModelNodeParent { get { AssertInit(); for (var p = Parent; p != null; p = p.Parent) { var mp = p as ObservableModelNode; if (mp != null) return mp; } return null; } }
                 
         /// <summary>
         /// Retrieves a <see cref="ModelNodePath"/> object corresponding to the path of the model node contained in this <see cref="ObservableModelNode"/>.
