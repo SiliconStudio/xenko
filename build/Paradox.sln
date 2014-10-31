@@ -72,6 +72,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-UserTargets", "00-UserTa
 		..\Targets\Paradox.iOS.targets = ..\Targets\Paradox.iOS.targets
 		..\Targets\Paradox.targets = ..\Targets\Paradox.targets
 		..\Targets\Paradox.Windows.targets = ..\Targets\Paradox.Windows.targets
+		..\Targets\Paradox.WindowsPhone.targets = ..\Targets\Paradox.WindowsPhone.targets
+		..\Targets\Paradox.WindowsStore.targets = ..\Targets\Paradox.WindowsStore.targets
 		..\Targets\SiliconStudio.Common.targets = ..\Targets\SiliconStudio.Common.targets
 	EndProjectSection
 EndProject
