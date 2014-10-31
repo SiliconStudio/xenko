@@ -23,7 +23,7 @@ class ComputeColorTextureCube<TextureCube TTexture> : ComputeColor
 
     float4 SampleCubemap(float3 samplingDir)
     {
-        return TTexture.Sample(Texturing.LinearSampler, CubemapUtils.CorrectSamplingDir(samplingDir));
+        return TTexture.Sample(Texturing.LinearSampler, samplingDir);
     }
 
     

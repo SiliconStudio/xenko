@@ -33,8 +33,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         {
             Vector3.UnitY,
             Vector3.UnitY,
-            Vector3.UnitZ,
             -Vector3.UnitZ,
+            Vector3.UnitZ,
             Vector3.UnitY,
             Vector3.UnitY
         };

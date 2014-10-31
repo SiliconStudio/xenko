@@ -11,6 +11,7 @@ class CameraCube : PositionStream4, ShaderBase
 
     stream uint RTAIndex : SV_RenderTargetArrayIndex;
 
+    // flip render
     [maxvertexcount(18)]
     stage void GSMain(triangle Input input[3], inout TriangleStream<Output> triangleStream)
     {
@@ -19,10 +20,11 @@ class CameraCube : PositionStream4, ShaderBase
         {
             streams.RTAIndex = i;
             
-            for (int j = 0; j < 3; ++j)
+            for (int j = 2; j >= 0; --j)
             {
                 streams = input[j];
                 streams.ShadingPosition = mul(streams.PositionWS, CameraViewProjectionMatrices[i]);
+                streams.ShadingPosition.x = -streams.ShadingPosition.x;
                 triangleStream.Append(streams);
             }
             

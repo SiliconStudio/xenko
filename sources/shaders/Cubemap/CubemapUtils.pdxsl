@@ -7,7 +7,15 @@ class CubemapUtils
 {
     // TODO: this might change on OpenGL
 
-    // This is for indirect coordinate system
+    // This is for indirect coordinate system cubemap sampling = Direct3D
+    //  ________ ________ ________ ________ ________ ________
+    // |     y  |  y     |   ___x |  z     |  y     |     y  |
+    // |     |  |  |     |  |     |  |     |  |     |     |  |
+    // | z___|  |  |___z |  |     |  |___x |  |___x | x___|  |
+    // |        |        |  z     |        |        |        |
+    // |________|________|________|________|________|________|
+    //   face X  face -X   face Y  face -Y   face Z   face -Z
+    //
     float3 ConvertTexcoordsNoFlip(float2 inputTexcoord, int viewIndex)
     {
         float2 position = 2 * inputTexcoord - 1;
@@ -27,7 +35,7 @@ class CubemapUtils
         
         return 0;
     }
-
+    
     float3 ConvertTexcoordsFlip(float2 inputTexcoord, int viewIndex)
     {
         float2 position = float2(2, -2) * inputTexcoord + float2(-1, 1);
@@ -46,22 +54,5 @@ class CubemapUtils
             return float3(position.x, position.y, -1); // face -Z
         
         return 0;
-    }
-
-    // TODO: this may create artifacts at the border since the sampling face is ambiguous.
-    // correct the sampling direction from Paradox's direct coordinate system to cubemap sampling's indirect coordinate system
-    float3 CorrectSamplingDir(float3 samplingDir)
-    {
-        var absSamplingDir = abs(samplingDir);
-        if (absSamplingDir.x >= absSamplingDir.y && absSamplingDir.x > absSamplingDir.z // face x or -x
-            || absSamplingDir.y >= absSamplingDir.x && absSamplingDir.y > absSamplingDir.z) // face y or -y
-        {
-            samplingDir.z = -samplingDir.z;
-        }
-        else // face z or -z
-        {
-            samplingDir.x = -samplingDir.x;
-        }
-        return samplingDir;
     }
 };
