@@ -22,6 +22,7 @@ namespace SiliconStudio.Paradox.UI.Renderers
             base.RenderColor(element, context);
 
             var button = (Button)element;
+            var color = button.RenderOpacity * Color.White;
 
             var image = button.PressedImage;
             if(!button.IsPressed)
@@ -29,11 +30,8 @@ namespace SiliconStudio.Paradox.UI.Renderers
 
             if(image == null || image.Texture == null)
                 return;
-
-            var imageSize = image.ImageIdealSize;
-            var color = button.RenderOpacity * Color.White;
-
-            Batch.DrawImage(image.Texture, image.TextureAlpha, ref button.WorldMatrixInternal, ref image.RegionInternal, ref button.RenderSizeInternal, ref imageSize, ref image.BordersInternal, ref color, context.DepthBias, image.Orientation);
+            
+            Batch.DrawImage(image.Texture, image.TextureAlpha, ref button.WorldMatrixInternal, ref image.RegionInternal, ref button.RenderSizeInternal, ref image.BordersInternal, ref color, context.DepthBias, image.Orientation);
         }
     }
 }

@@ -2,11 +2,19 @@
 
 Release date: 2014/??/??
 
+#### New Features
+- UI: Add new UI element: Slider
+
+#### Issues fixed
+- UI: UIImage borders were not properly rendered when image had Orientation.Rotated90.
+
 #### Breaking changes
 - Graphics: Remove Rotated180 and Rotated90C from ImageOrientation enumeration for code simplicity and efficiency purpose.
+- Graphics: Change ImageFragment.Region type from Rectangle to RectangleF and corresponding batch draw function API (SpriteBatch/UIBatch).
 - Graphics: CopyRegion now contains additional parameters for subresource indices and destination offset.
 
 #### Issues fixed
+- Gamestudio: Fix preview and thumbnail of materials with normal map.
 - Shaders: Geometry shaders are forced to transmit SV_Position stream to pixel shaders.
 - Shaders: Compositions (especially arrays) couldn't be used in child classes of the one containing their declaration. Function and member calls weren't correctly resolved.
 

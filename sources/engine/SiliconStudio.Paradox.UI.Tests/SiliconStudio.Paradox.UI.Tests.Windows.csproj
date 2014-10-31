@@ -47,7 +47,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SiliconStudio.Paradox.UI.Tests.Regression.MouseOverTest</StartupObject>
+    <StartupObject>SiliconStudio.Paradox.UI.Tests.Regression.EditTextTest</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
@@ -156,6 +156,7 @@
     <Compile Include="Layering\ButtonBaseTests.cs" />
     <Compile Include="Layering\ButtonTests.cs" />
     <Compile Include="Layering\CanvasTests.cs" />
+    <Compile Include="Layering\SliderTests.cs" />
     <Compile Include="Layering\ContentControlTest.cs" />
     <Compile Include="Layering\ContentPresenterTests.cs" />
     <Compile Include="Layering\ControlTests.cs" />
@@ -208,6 +209,7 @@
     <Compile Include="Regression\ScrollingTextTest.cs" />
     <Compile Include="Regression\ScrollViewerAnchorTest.cs" />
     <Compile Include="Regression\ScrollViewerTest.cs" />
+    <Compile Include="Regression\SliderTest.cs" />
     <Compile Include="Regression\StackPanelTest.cs" />
     <Compile Include="Regression\TextBlockTest.cs" />
     <Compile Include="Regression\TextBlockWrappingTest.cs" />
@@ -233,9 +235,9 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\ToggleChecked.dds" />
-    <Content Include="Resources\ToggleIndetermate.dds" />
-    <Content Include="Resources\ToggleUnchecked.dds" />
+    <None Include="Resources\ToggleChecked.dds" />
+    <None Include="Resources\ToggleIndetermate.dds" />
+    <None Include="Resources\ToggleUnchecked.dds" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SiliconStudioPackageProps)" Condition="Exists('$(SiliconStudioPackageProps)')" />

@@ -46,6 +46,7 @@
     <Compile Include="Controls\EditText.Windows.Mobile.cs" />
     <Compile Include="Controls\ModalElement.cs" />
     <Compile Include="Controls\ScrollBar.cs" />
+    <Compile Include="Controls\Slider.cs" />
     <Compile Include="Data\UIData.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -97,6 +98,7 @@
     </Compile>
     <Compile Include="Renderers\DefaultScrollingTextRenderer.cs" />
     <Compile Include="Renderers\DefaultScrollBarRenderer.cs" />
+    <Compile Include="Renderers\DefaultSliderRenderer.cs" />
     <Compile Include="Renderers\DefaultTextBlockRenderer.cs" />
     <Compile Include="Renderers\DefaultToggleButtonRenderer.cs" />
     <Compile Include="Renderers\ElementRenderer.cs" />
@@ -176,15 +178,12 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>DefaultDesigns.cs</LastGenOutput>
     </None>
-    <None Include="Resources\EditTextActive.dds" />
-    <None Include="Resources\ButtonNotPressed.dds" />
-    <None Include="Resources\ButtonOverred.dds" />
-    <None Include="Resources\ButtonPressed.dds" />
-    <None Include="Resources\EditTextInactive.dds" />
-    <None Include="Resources\EditTextOverred.dds" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\UIDesigns.dds" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
