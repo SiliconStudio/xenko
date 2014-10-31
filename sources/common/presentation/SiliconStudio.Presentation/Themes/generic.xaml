@@ -103,10 +103,6 @@
                         <Trigger Property="UIElement.IsEnabled" Value="False">
                             <Setter TargetName="Bd" Property="Panel.Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
                         </Trigger>
-                        <Trigger Property="VirtualizingStackPanel.IsVirtualizing" Value="True">
-                            <Setter TargetName="_pv_scrollviewer_" Property="ScrollViewer.CanContentScroll" Value="True">
-                            </Setter>
-                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
