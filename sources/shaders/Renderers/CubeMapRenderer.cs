@@ -25,16 +25,17 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             -Vector3.UnitX,
             Vector3.UnitY,
             -Vector3.UnitY,
-            Vector3.UnitZ,
+            // since the shader will flip the z coordinate, we need to swap the Z and -Z faces render target.
             -Vector3.UnitZ,
+            Vector3.UnitZ,
         };
 
         private static readonly Vector3[] CameraUps = new Vector3[6]
         {
             Vector3.UnitY,
             Vector3.UnitY,
-            -Vector3.UnitZ,
             Vector3.UnitZ,
+            -Vector3.UnitZ,
             Vector3.UnitY,
             Vector3.UnitY
         };
@@ -127,6 +128,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
                 GraphicsDevice.SetRenderTargets(component.DepthStencil, renderTarget);
                 
+                // TODO: flip face culling
+
                 base.Render(context);
             }
 
@@ -185,6 +188,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         private static void ComputeViewProjectionMatrices(Vector3 position, Vector3 faceOffset, Vector3 up, CubemapSourceComponent source, out Matrix viewMatrix, out Matrix projection)
         {
             viewMatrix = Matrix.LookAtRH(position, position + faceOffset, up);
+            // patch viewMatrix to flip the z coordinate.
+            viewMatrix.Row3 = -viewMatrix.Row3;
+            
             Matrix.PerspectiveFovRH(MathUtil.PiOverTwo, 1, source.NearPlane, source.FarPlane, out projection);
         }
 

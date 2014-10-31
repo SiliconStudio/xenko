@@ -15,16 +15,15 @@ class CameraCube : PositionStream4, ShaderBase
     [maxvertexcount(18)]
     stage void GSMain(triangle Input input[3], inout TriangleStream<Output> triangleStream)
     {
-        // TODO: verify that for OpenGL. This is likely to be wrong
         for (int i = 0; i < 6; ++i)
         {
             streams.RTAIndex = i;
             
+            // TODO: verify that for OpenGL. This is likely to be wrong. Perhaps we don't have to change face winding.
             for (int j = 2; j >= 0; --j)
             {
                 streams = input[j];
                 streams.ShadingPosition = mul(streams.PositionWS, CameraViewProjectionMatrices[i]);
-                streams.ShadingPosition.x = -streams.ShadingPosition.x;
                 triangleStream.Append(streams);
             }
             
