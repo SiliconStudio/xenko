@@ -48,16 +48,13 @@ class CubemapUtils
         return 0;
     }
 
-    // TODO: this will create artifact at the border since the sampling face is ambiguous.
+    // TODO: this may create artifacts at the border since the sampling face is ambiguous.
     // correct the sampling direction from Paradox's direct coordinate system to cubemap sampling's indirect coordinate system
     float3 CorrectSamplingDir(float3 samplingDir)
     {
         var absSamplingDir = abs(samplingDir);
-        if (absSamplingDir.x >= absSamplingDir.y && absSamplingDir.x > absSamplingDir.z) // face x or -x
-        {
-            samplingDir.z = -samplingDir.z;
-        }
-        else if (absSamplingDir.y >= absSamplingDir.x && absSamplingDir.y > absSamplingDir.z) // face y or -y
+        if (absSamplingDir.x >= absSamplingDir.y && absSamplingDir.x > absSamplingDir.z // face x or -x
+            || absSamplingDir.y >= absSamplingDir.x && absSamplingDir.y > absSamplingDir.z) // face y or -y
         {
             samplingDir.z = -samplingDir.z;
         }
