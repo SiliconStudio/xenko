@@ -1,15 +1,35 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
+using SiliconStudio.Presentation.Collections;
 using SiliconStudio.Presentation.Extensions;
 
 namespace SiliconStudio.Presentation.Controls
 {
+    public delegate void PropertyViewItemEventHandler(object sender, PropertyViewItemEventArgs e);
+
+    public class PropertyViewItemEventArgs : RoutedEventArgs
+    {
+        public PropertyViewItem Container { get; private set; }
+
+        public object Item { get; private set; }
+
+        public PropertyViewItemEventArgs(RoutedEvent routedEvent, object source, PropertyViewItem container, object item)
+            : base(routedEvent, source)
+        {
+            Container = container;
+            Item = item;
+        }
+    }
     public class PropertyViewItem : HeaderedItemsControl
     {
+        private readonly ObservableList<PropertyViewItem> properties = new ObservableList<PropertyViewItem>();
+        
         public enum VerticalPosition
         {
             Top,
@@ -32,6 +52,8 @@ namespace SiliconStudio.Presentation.Controls
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(PropertyViewItem), new FrameworkPropertyMetadata(typeof(PropertyViewItem)));
         }
+
+        public IReadOnlyCollection<PropertyViewItem> Properties { get { return properties; } }
 
         public bool IsExpanded { get { return (bool)GetValue(IsExpandedProperty); } set { SetValue(IsExpandedProperty, value); } }
 
@@ -73,6 +95,22 @@ namespace SiliconStudio.Presentation.Controls
             base.OnMouseLeftButtonDown(e);
         }
 
+        protected override void PrepareContainerForItemOverride(DependencyObject element, object item)
+        {
+            base.PrepareContainerForItemOverride(element, item);
+            var container = (PropertyViewItem)element;
+            properties.Add(container);
+            RaiseEvent(new PropertyViewItemEventArgs(PropertyView.PrepareItemEvent, this, container, item));
+        }
+
+        protected override void ClearContainerForItemOverride(DependencyObject element, object item)
+        {
+            var container = (PropertyViewItem)element;
+            RaiseEvent(new PropertyViewItemEventArgs(PropertyView.ClearItemEvent, this, (PropertyViewItem)element, item));
+            properties.Remove(container);
+            base.ClearContainerForItemOverride(element, item);
+        }
+
         // TODO
         //protected override AutomationPeer OnCreateAutomationPeer()
         //{
@@ -103,9 +141,9 @@ namespace SiliconStudio.Presentation.Controls
             //if (itemAutomationPeer != null)
             //    itemAutomationPeer.RaiseExpandCollapseAutomationEvent((bool)e.OldValue, newValue);
             if (isExpanded)
-                item.OnExpanded(new RoutedEventArgs(TreeViewItem.ExpandedEvent, item));
+                item.OnExpanded(new RoutedEventArgs(ExpandedEvent, item));
             else
-                item.OnCollapsed(new RoutedEventArgs(TreeViewItem.CollapsedEvent, item));
+                item.OnCollapsed(new RoutedEventArgs(CollapsedEvent, item));
         }
 
         private static void OnIncrementChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
