@@ -5,43 +5,66 @@
 /// </summary>
 class CubemapUtils
 {
-    float3 ConvertTexcoordsNoFlip(float2 inputTexcoords, int viewIndex)
+    // TODO: this might change on OpenGL
+
+    // This is for indirect coordinate system
+    float3 ConvertTexcoordsNoFlip(float2 inputTexcoord, int viewIndex)
     {
-        float2 texcoords = 2 * inputTexcoords - 1;
+        float2 position = 2 * inputTexcoord - 1;
 
         if (viewIndex == 0)
-            return float3(1, -texcoords.y, -texcoords.x); // face X
+            return float3(1, -position.y, -position.x); // face X
         if (viewIndex == 1)
-            return float3(-1, -texcoords.y, texcoords.x); // face -X
+            return float3(-1, -position.y, position.x); // face -X
         if (viewIndex == 2)
-            return float3(texcoords.x, 1, texcoords.y); // face Y
+            return float3(position.x, 1, position.y); // face Y
         if (viewIndex == 3)
-            return float3(texcoords.x, -1, -texcoords.y); // face -Y
+            return float3(position.x, -1, -position.y); // face -Y
         if (viewIndex == 4)
-            return float3(texcoords.x, -texcoords.y, 1); // face Z
+            return float3(position.x, -position.y, 1); // face Z
         if (viewIndex == 5)
-            return float3(-texcoords.x, -texcoords.y, -1); // face -Z
+            return float3(-position.x, -position.y, -1); // face -Z
         
         return 0;
-     }
+    }
 
-    float3 ConvertTexcoordsFlip(float2 inputTexcoords, int viewIndex)
+    float3 ConvertTexcoordsFlip(float2 inputTexcoord, int viewIndex)
     {
-        float2 texcoords = float2(2, -2) * inputTexcoords + float2(-1, 1);
+        float2 position = float2(2, -2) * inputTexcoord + float2(-1, 1);
 
         if (viewIndex == 0)
-            return float3(1, texcoords.y, texcoords.x); // face X
+            return float3(1, position.y, position.x); // face X
         if (viewIndex == 1)
-            return float3(-1, texcoords.y, -texcoords.x); // face -X
+            return float3(-1, position.y, -position.x); // face -X
         if (viewIndex == 2)
-            return float3(texcoords.x, 1, -texcoords.y); // face Y
+            return float3(position.x, 1, -position.y); // face Y
         if (viewIndex == 3)
-            return float3(-texcoords.x, -1, texcoords.y); // face -Y
+            return float3(-position.x, -1, position.y); // face -Y
         if (viewIndex == 4)
-            return float3(-texcoords.x, texcoords.y, 1); // face Z
+            return float3(-position.x, position.y, 1); // face Z
         if (viewIndex == 5)
-            return float3(texcoords.x, texcoords.y, -1); // face -Z
+            return float3(position.x, position.y, -1); // face -Z
         
         return 0;
+    }
+
+    // TODO: this will create artifact at the border since the sampling face is ambiguous.
+    // correct the sampling direction from Paradox's direct coordinate system to cubemap sampling's indirect coordinate system
+    float3 CorrectSamplingDir(float3 samplingDir)
+    {
+        var absSamplingDir = abs(samplingDir);
+        if (absSamplingDir.x >= absSamplingDir.y && absSamplingDir.x > absSamplingDir.z) // face x or -x
+        {
+            samplingDir.z = -samplingDir.z;
+        }
+        else if (absSamplingDir.y >= absSamplingDir.x && absSamplingDir.y > absSamplingDir.z) // face y or -y
+        {
+            samplingDir.z = -samplingDir.z;
+        }
+        else // face z or -z
+        {
+            samplingDir.x = -samplingDir.x;
+        }
+        return samplingDir;
     }
 };
