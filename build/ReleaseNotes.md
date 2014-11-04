@@ -20,7 +20,6 @@ Release date: 2014/11/??
 - Graphics: Remove Rotated180 and Rotated90C from ImageOrientation enumeration for code simplicity and efficiency purpose.
 - Graphics: Change ImageFragment.Region type from Rectangle to RectangleF and corresponding batch draw function API (SpriteBatch/UIBatch).
 - Graphics: CopyRegion now contains additional parameters for subresource indices and destination offset.
-- Studio: Windows Phone projects can't be deployed from Paradox Studio anymore. Please use Visual Studio for now.
 
 ### Version 1.0.0-beta02
 
