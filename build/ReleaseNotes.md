@@ -5,6 +5,9 @@ Release date: 2014/11/??
 #### New Features
 - UI: Add new UI element: Slider
 
+#### Enhancements
+- Studio: Property grids have been reworked to be more efficient and easily extendable.
+
 #### Issues fixed
 - Core: EnumerableExtensions.LastIndexOf() wasn't working properly ([#62](https://github.com/SiliconStudio/paradox/issues/62)).
 - Game: Properly support windows with height 0 when AllowUserResizing is true ([#65](https://github.com/SiliconStudio/paradox/issues/65)).
@@ -14,6 +17,7 @@ Release date: 2014/11/??
 - Shaders: Geometry shaders are forced to transmit SV_Position stream to pixel shaders.
 - Shaders: Compositions (especially arrays) couldn't be used in child classes of the one containing their declaration. Function and member calls weren't correctly resolved.
 - Studio: Fix preview and thumbnail of materials with normal map.
+- Studio: Fix binding errors in the property grid ([#29](https://github.com/SiliconStudio/paradox/issues/29)).
 - UI: UIImage borders were not properly rendered when image had Orientation.Rotated90.
 
 #### Breaking changes
