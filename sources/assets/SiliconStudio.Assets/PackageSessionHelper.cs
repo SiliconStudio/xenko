@@ -269,10 +269,7 @@ MinimumVisualStudioVersion = 10.0.40219.1";
                                 var solutionConfigPlatform = string.Format("{0}|{1}", configName, platformName);
 
                                 var configNameInProject = configName;
-                                var platformNameInProject = platformPart.Alias ?? platformName;
-
-                                if (platformPart.LibraryAlias != null && project.Type == ProjectType.Library)
-                                    platformNameInProject = platformPart.LibraryAlias;
+                                var platformNameInProject = platformPart.GetProjectName(project.Type);
 
                                 var platformTarget = platform;
                                 if (profile.Platform != PlatformType.Shared)
@@ -289,7 +286,7 @@ MinimumVisualStudioVersion = 10.0.40219.1";
                                 }
 
                                 // If the config doesn't exist for this platform, just use the default config name 
-                                if (platformTarget.GetParts().All(part => part.SafeSolutionName != platformNameInProject))
+                                if (platformTarget.GetParts().All(part => part.GetProjectName(project.Type) != platformNameInProject))
                                 {
                                     platformNameInProject = platformTarget.GetParts().FirstOrDefault(part => part.IsProjectHandled(project.Type)).SafeSolutionName;
                                     isPartOfBuild = false;
