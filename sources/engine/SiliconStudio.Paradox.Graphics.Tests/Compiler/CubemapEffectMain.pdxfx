@@ -1,0 +1,35 @@
+﻿using SiliconStudio.Paradox.Effects.Data;
+using SiliconStudio.Paradox.Effects.Modules;
+
+namespace Cubemap.Effects
+{
+	shader CubemapEffectMain
+	{
+		using params MaterialParameters;
+
+		mixin ShaderBase;
+		mixin TransformationWAndVP;
+		mixin AlbedoFlatShading;
+
+		if (MaterialParameters.AlbedoDiffuse != null)
+			mixin compose albedoDiffuse = MaterialParameters.AlbedoDiffuse;
+        else
+            mixin compose albedoDiffuse = ComputeColorTextureCubeReflect<TexturingKeys.TextureCube0>;
+	};
+
+    shader CubemapGeomEffect
+    {
+		using params MaterialParameters;
+
+		mixin ShaderBase;
+		mixin TransformationWAndVP;
+
+        mixin macro MAX_VERTEX_COUNT = 9;
+        mixin CameraCube;
+
+		mixin AlbedoFlatShading;
+
+        if (MaterialParameters.AlbedoDiffuse != null)
+			mixin compose albedoDiffuse = MaterialParameters.AlbedoDiffuse;
+    };
+}

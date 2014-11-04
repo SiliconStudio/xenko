@@ -25,7 +25,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             -Vector3.UnitX,
             Vector3.UnitY,
             -Vector3.UnitY,
-            // since the shader will flip the z coordinate, we need to swap the Z and -Z faces render target.
+            // since camera matrices will flip the z coordinate, we need to swap the Z and -Z faces render target.
             -Vector3.UnitZ,
             Vector3.UnitZ,
         };
