@@ -227,12 +227,51 @@ namespace SiliconStudio.Paradox.Assets.Texture
                     return ResultStatus.Failed;
 
 
-                // flip the image if texture cube
+                // if this is a texture cube, we assume for now that it was rendered in the Direct3D convention. So we need to modify the data
                 if (texImage.Dimension == TexImage.TextureDimension.TextureCube && parameters.GraphicsPlatform == GraphicsPlatform.Direct3D11)
-                    texTool.Flip(texImage, Orientation.Horizontal);
+                {
+                    // flip X face
+                    texTool.FlipSub(texImage, 0, Orientation.Horizontal);
+                    
+                    if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
+                        return ResultStatus.Cancelled;
 
-                if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
-                    return ResultStatus.Cancelled;
+                    // flip -X face
+                    texTool.FlipSub(texImage, 1, Orientation.Horizontal);
+
+                    if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
+                        return ResultStatus.Cancelled;
+
+                    // flip Y face
+                    texTool.FlipSub(texImage, 2, Orientation.Vertical);
+
+                    if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
+                        return ResultStatus.Cancelled;
+
+                    // flip -Y face
+                    texTool.FlipSub(texImage, 3, Orientation.Vertical);
+
+                    if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
+                        return ResultStatus.Cancelled;
+
+                    // flip Z face
+                    texTool.FlipSub(texImage, 4, Orientation.Horizontal);
+
+                    if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
+                        return ResultStatus.Cancelled;
+
+                    // flip -Z face
+                    texTool.FlipSub(texImage, 5, Orientation.Horizontal);
+
+                    if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
+                        return ResultStatus.Cancelled;
+
+                    // swap Z faces
+                    texTool.Swap(texImage, 4, 5);
+
+                    if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
+                        return ResultStatus.Cancelled;
+                }
 
                 
                 // Apply the color key
