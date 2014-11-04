@@ -50,9 +50,9 @@ namespace SiliconStudio.Paradox.Graphics
             /// <param name="size">The size.</param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
             /// <returns>A cube.</returns>
-            public static GeometricMeshData<VertexPositionNormalMultiTexture> New(float size = 1.0f, bool toLeftHanded = false)
+            public static GeometricMeshData<VertexPositionNormalTangentMultiTexture> New(float size = 1.0f, bool toLeftHanded = false)
             {
-                var vertices = new VertexPositionNormalMultiTexture[CubeFaceCount * 4];
+                var vertices = new VertexPositionNormalTangentMultiTexture[CubeFaceCount * 4];
                 var indices = new int[CubeFaceCount * 6];
 
                 size /= 2.0f;
@@ -84,14 +84,14 @@ namespace SiliconStudio.Paradox.Graphics
                     indices[indexCount++] = (vbase + 3);
 
                     // Four vertices per face.
-                    vertices[vertexCount++] = new VertexPositionNormalMultiTexture((normal - side1 - side2) * size, normal, textureCoordinates[0]);
-                    vertices[vertexCount++] = new VertexPositionNormalMultiTexture((normal - side1 + side2) * size, normal, textureCoordinates[1]);
-                    vertices[vertexCount++] = new VertexPositionNormalMultiTexture((normal + side1 + side2) * size, normal, textureCoordinates[2]);
-                    vertices[vertexCount++] = new VertexPositionNormalMultiTexture((normal + side1 - side2) * size, normal, textureCoordinates[3]);
+                    vertices[vertexCount++] = new VertexPositionNormalTangentMultiTexture((normal - side1 - side2) * size, normal, new Vector4(-side1, 0), textureCoordinates[0]);
+                    vertices[vertexCount++] = new VertexPositionNormalTangentMultiTexture((normal - side1 + side2) * size, normal, new Vector4(-side1, 0), textureCoordinates[1]);
+                    vertices[vertexCount++] = new VertexPositionNormalTangentMultiTexture((normal + side1 + side2) * size, normal, new Vector4(-side1, 0), textureCoordinates[2]);
+                    vertices[vertexCount++] = new VertexPositionNormalTangentMultiTexture((normal + side1 - side2) * size, normal, new Vector4(-side1, 0), textureCoordinates[3]);
                 }
 
                 // Create the primitive object.
-                return new GeometricMeshData<VertexPositionNormalMultiTexture>(vertices, indices, toLeftHanded, VertexPositionNormalTexture.Layout) { Name = "Cube" };
+                return new GeometricMeshData<VertexPositionNormalTangentMultiTexture>(vertices, indices, toLeftHanded, VertexPositionNormalTexture.Layout) { Name = "Cube" };
             }
         }
     }

@@ -39,7 +39,8 @@ namespace SiliconStudio.Core.Mathematics
     /// <summary>
     /// Represents a four dimensional mathematical quaternion.
     /// </summary>
-    [DataContract]
+    [DataContract("quaternion")]
+    [DataStyle(DataStyle.Compact)]
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct Quaternion : IEquatable<Quaternion>, IFormattable
     {

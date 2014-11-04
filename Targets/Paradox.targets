@@ -2,6 +2,15 @@
   <!--Check requirements when running this build file -->
   <Target Name="SiliconStudioParadoxCheckRequirements">
     <Error Condition="'$(SiliconStudioPlatform)' == ''" Text="The property %24(SiliconStudioPlatform) must be defined by the project"/>
+
+    <!-- If we compile without Visual Studio, still properly resolve platform if SolutionPath is given -->
+    <MSBuild Projects="$(SolutionPath)"
+             Condition="'$(BuildingInsideVisualStudio)' != 'true' and '$(BuildingSolutionFile)' != 'true' and '$(SolutionPath)' != '' and '$(SolutionPath)' != '*Undefined*'"
+             Targets="GetSolutionConfigurationContents"
+             Properties="Configuration=$(Configuration);Platform=$(SolutionPlatform)"
+             ContinueOnError="$(ContinueOnError)">
+      <Output TaskParameter="TargetOutputs" PropertyName="CurrentSolutionConfigurationContents"/>
+    </MSBuild>
   </Target>
 
   <PropertyGroup>
@@ -167,5 +176,4 @@
     <RemoveDir Condition="Exists('$(SiliconStudioCompileAssetBuildPath)')" ContinueOnError="true"  Directories="$(SiliconStudioCompileAssetBuildPath)"/>
     <RemoveDir Condition="Exists('$(SiliconStudioCompileAssetOutputPath)')" ContinueOnError="true"  Directories="$(SiliconStudioCompileAssetOutputPath)"/>
   </Target>
-
 </Project>

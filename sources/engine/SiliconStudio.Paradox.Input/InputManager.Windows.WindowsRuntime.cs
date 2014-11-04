@@ -251,22 +251,24 @@ namespace SiliconStudio.Paradox.Input
             ControlWidth = (float)size.Width;
         }
 
-        private void HandleKeyFrameworkElement(KeyRoutedEventArgs keyRoutedEventArgs, InputEventType inputEventType)
+        private void HandleKeyFrameworkElement(KeyRoutedEventArgs args, InputEventType inputEventType)
         {
-            HandleKey(keyRoutedEventArgs.Key, inputEventType);
-
-            keyRoutedEventArgs.Handled = true;
+            if (HandleKey(args.Key, inputEventType))
+                args.Handled = true;
         }
 
         private void HandleKeyCoreWindow(KeyEventArgs args, InputEventType inputEventType)
         {
-            HandleKey(args.VirtualKey, inputEventType);
-
-            args.Handled = true;
+            if (HandleKey(args.VirtualKey, inputEventType))
+                args.Handled = true;
         }
 
-        private void HandleKey(VirtualKey virtualKey, InputEventType type)
+        private bool HandleKey(VirtualKey virtualKey, InputEventType type)
         {
+            // Let Alt + F4 go through
+            if (virtualKey == VirtualKey.F4 && IsKeyDownNow(Keys.LeftAlt))
+                return false;
+
             Keys key;
             if (!_keysDictionary.TryGetValue(virtualKey, out key))
                 key = Keys.None;
@@ -275,6 +277,33 @@ namespace SiliconStudio.Paradox.Input
             {
                 KeyboardInputEvents.Add(new KeyboardInputEvent { Key = key, Type = type });
             }
+
+            return true;
+        }
+
+        private bool IsKeyDownNow(Keys key)
+        {
+            // Check unprocessed up/down events that happened during this frame (in case key has just been pressed)
+            lock (KeyboardInputEvents)
+            {
+                for (int index = KeyboardInputEvents.Count - 1; index >= 0; --index)
+                {
+                    var keyboardInputEvent = KeyboardInputEvents[index];
+                    if (keyboardInputEvent.Key == key)
+                    {
+                        if (keyboardInputEvent.Type == InputEventType.Down)
+                            return true;
+                        if (keyboardInputEvent.Type == InputEventType.Up)
+                            return false;
+                    }
+                }
+            }
+
+            // If nothing was done this frame, check if Alt was already considered down in previous frames
+            if (IsKeyDown(key))
+                return true;
+
+            return false;
         }
 
         private void HandlePointerEventFrameworkElement(FrameworkElement uiElement, PointerRoutedEventArgs pointerRoutedEventArgs, PointerState pointerState)

@@ -9,12 +9,7 @@ namespace SiliconStudio.Paradox.UI
 {
     public static class DefaultDesigns
     {
-		public static byte[] EditTextActive = <#= ConvertFileToByteArray(@"Resources\EditTextActive.dds") #>;
-		public static byte[] EditTextInactive = <#= ConvertFileToByteArray(@"Resources\EditTextInactive.dds") #>;
-		public static byte[] EditTextOverred = <#= ConvertFileToByteArray(@"Resources\EditTextOverred.dds") #>;
-		public static byte[] ButtonNotPressed = <#= ConvertFileToByteArray(@"Resources\ButtonNotPressed.dds") #>;
-		public static byte[] ButtonPressed = <#= ConvertFileToByteArray(@"Resources\ButtonPressed.dds") #>;
-		public static byte[] ButtonOverred = <#= ConvertFileToByteArray(@"Resources\ButtonOverred.dds") #>;
+		public static byte[] Designs = <#= ConvertFileToByteArray(@"Resources\UIDesigns.dds") #>;
     }
 }
 

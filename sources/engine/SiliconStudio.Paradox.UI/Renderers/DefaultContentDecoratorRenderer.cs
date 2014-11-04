@@ -26,11 +26,10 @@ namespace SiliconStudio.Paradox.UI.Renderers
                 return;
 
             var image = decorator.BackgroundImage;
-            var imageSize = image.ImageIdealSize;
             var color = decorator.RenderOpacity * Color.White;
 
             Batch.DrawImage(image.Texture, image.TextureAlpha, ref decorator.WorldMatrixInternal, ref image.RegionInternal,
-                            ref decorator.RenderSizeInternal, ref imageSize, ref image.BordersInternal, ref color, context.DepthBias, image.Orientation);
+                            ref decorator.RenderSizeInternal, ref image.BordersInternal, ref color, context.DepthBias, image.Orientation);
         }
     }
 }
