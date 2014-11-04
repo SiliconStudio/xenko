@@ -320,8 +320,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         internal void Refresh()
         {
-            if (Parent == null) throw new InvalidOperationException("The node to refresh can be a root node.");
-            ((ObservableNode)Parent).RemoveChild(this);
+            if (Parent == null) throw new InvalidOperationException("The node to refresh can't be a root node.");
             
             OnPropertyChanging("IsPrimitive", "HasList", "HasDictionary");
 
@@ -335,7 +334,6 @@ namespace SiliconStudio.Presentation.Quantum
             Initialize();
 
             OnPropertyChanged("IsPrimitive", "HasList", "HasDictionary");
-            ((ObservableNode)Parent).AddChild(this);
         }
 
         private static IModelNode GetTargetNode(IModelNode sourceNode, object index)
