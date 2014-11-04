@@ -188,7 +188,12 @@ namespace SiliconStudio.Presentation.Quantum
             }
 #endif
         }
-        
+
+        public new void ClearCommands()
+        {
+            base.ClearCommands();
+        }
+
         protected void AssertInit()
         {
             if (!isInitialized)
