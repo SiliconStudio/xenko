@@ -6,8 +6,10 @@ Release date: 2014/11/??
 - UI: Add new UI element: Slider
 
 #### Issues fixed
-- Gamestudio: Fix preview and thumbnail of materials with normal map.
-- Input: Alt+F4 is now properly working on Windows Store/Phone platforms.
+- Studio: Fix preview and thumbnail of materials with normal map.
+- Input: Alt+F4 is now properly working on Windows Store/Phone platforms ([#74](https://github.com/SiliconStudio/paradox/issues/74)).
+- Misc: PCL can now be used in Windows Store/Phone platforms ([#72](https://github.com/SiliconStudio/paradox/issues/72)).
+- Samples: SimpleDynamicTexture was using expected screen size instead of actual screen size, resulting in incorrect picking in fullscreen mode ([#75](https://github.com/SiliconStudio/paradox/issues/75)).
 - Shaders: Geometry shaders are forced to transmit SV_Position stream to pixel shaders.
 - Shaders: Compositions (especially arrays) couldn't be used in child classes of the one containing their declaration. Function and member calls weren't correctly resolved.
 - UI: UIImage borders were not properly rendered when image had Orientation.Rotated90.
@@ -16,6 +18,7 @@ Release date: 2014/11/??
 - Graphics: Remove Rotated180 and Rotated90C from ImageOrientation enumeration for code simplicity and efficiency purpose.
 - Graphics: Change ImageFragment.Region type from Rectangle to RectangleF and corresponding batch draw function API (SpriteBatch/UIBatch).
 - Graphics: CopyRegion now contains additional parameters for subresource indices and destination offset.
+- Studio: Windows Phone projects can't be deployed from Paradox Studio anymore. Please use Visual Studio for now.
 
 ### Version 1.0.0-beta02
 
