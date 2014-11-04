@@ -14,7 +14,7 @@ class ComputeColorTextureCubeLod<TextureCube TTextureLod> : ComputeColorTextureC
     override float4 SampleCubemap(float3 samplingDir)
     {
         float4 baseColor = base.SampleCubemap(samplingDir);
-        // TODO: replace with correct number of mipmaps
-        return TTextureLod.SampleLevel(Texturing.LinearSampler, samplingDir, MaxLod * CubemapRoughness);
+        // TODO: automatically get the number of mipmaps?
+        return TTextureLod.SampleLevel(Texturing.LinearSampler, float3(samplingDir.xy, -samplingDir.z), MaxLod * CubemapRoughness);
     }
 };

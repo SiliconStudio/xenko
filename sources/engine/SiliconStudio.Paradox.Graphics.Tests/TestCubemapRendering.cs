@@ -134,8 +134,6 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             // Rendering pipeline
             var cubeMapPipeline = new RenderPipeline("CubeMap");
-            if (!renderInOnePass) // change face culling when rendering with 6 passes because the cubemap rendering is mirrored along Z.
-                cubeMapPipeline.Renderers.Add(new RenderStateSetter(Services) { RasterizerState = GraphicsDevice.RasterizerStates.CullFront });
             cubeMapPipeline.Renderers.Add(new LayerModelRenderer(Services, renderInOnePass ? "CubemapGeomEffect" : "CubemapEffectMain", RenderLayers.RenderLayer1));
             RenderSystem.Pipeline.Renderers.Add(new CubemapRenderer(Services, cubeMapPipeline, renderInOnePass));
             RenderSystem.Pipeline.Renderers.Add(new CameraSetter(Services));

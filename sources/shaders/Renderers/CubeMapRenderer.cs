@@ -188,9 +188,6 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         private static void ComputeViewProjectionMatrices(Vector3 position, Vector3 faceOffset, Vector3 up, CubemapSourceComponent source, out Matrix viewMatrix, out Matrix projection)
         {
             viewMatrix = Matrix.LookAtRH(position, position + faceOffset, up);
-            // patch viewMatrix to flip the z coordinate.
-            viewMatrix.Row3 = -viewMatrix.Row3;
-            
             Matrix.PerspectiveFovRH(MathUtil.PiOverTwo, 1, source.NearPlane, source.FarPlane, out projection);
         }
 
