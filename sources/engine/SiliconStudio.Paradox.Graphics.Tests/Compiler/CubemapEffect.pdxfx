@@ -1,9 +1,11 @@
-﻿using SiliconStudio.Paradox.Effects.Data;
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using SiliconStudio.Paradox.Effects.Data;
 using SiliconStudio.Paradox.Effects.Modules;
 
-namespace Cubemap.Effects
+namespace Test
 {
-	shader CubemapEffectMain
+	shader CubemapEffect
 	{
 		using params MaterialParameters;
 

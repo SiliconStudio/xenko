@@ -107,7 +107,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             {
                 new CameraComponent
                 {
-                    AspectRatio = 16/9.0f,
+                    AspectRatio = 8/4.8f,
                     FarPlane = 1000,
                     NearPlane = 1,
                     VerticalFieldOfView = 0.6f,
@@ -134,11 +134,11 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             // Rendering pipeline
             var cubeMapPipeline = new RenderPipeline("CubeMap");
-            cubeMapPipeline.Renderers.Add(new LayerModelRenderer(Services, renderInOnePass ? "CubemapGeomEffect" : "CubemapEffectMain", RenderLayers.RenderLayer1));
+            cubeMapPipeline.Renderers.Add(new LayerModelRenderer(Services, renderInOnePass ? "CubemapGeomEffect" : "CubemapEffect", RenderLayers.RenderLayer1));
             RenderSystem.Pipeline.Renderers.Add(new CubemapRenderer(Services, cubeMapPipeline, renderInOnePass));
             RenderSystem.Pipeline.Renderers.Add(new CameraSetter(Services));
             RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services) { ClearColor = Color.CornflowerBlue });
-            RenderSystem.Pipeline.Renderers.Add(new ModelRenderer(Services, "CubemapEffectMain"));
+            RenderSystem.Pipeline.Renderers.Add(new ModelRenderer(Services, "CubemapEffect"));
         }
 
         private async Task GameScript1()
