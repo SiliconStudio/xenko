@@ -96,7 +96,7 @@ namespace SiliconStudio.Paradox.Graphics
             }
             catch (Exception) { }
 
-            var descriprtion = new SharpDX.DXGI.ModeDescription()
+            var description = new SharpDX.DXGI.ModeDescription()
             {
                 Width = mode.Width,
                 Height = mode.Height,
@@ -106,7 +106,7 @@ namespace SiliconStudio.Paradox.Graphics
                 ScanlineOrdering = DisplayModeScanlineOrder.Unspecified
             };
             using (var device = deviceTemp)
-                output.GetClosestMatchingMode(device, descriprtion, out closestDescription);
+                output.GetClosestMatchingMode(device, description, out closestDescription);
 
             return DisplayMode.FromDescription(closestDescription);
         }
