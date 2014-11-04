@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,38 +10,15 @@ using SiliconStudio.Presentation.Extensions;
 
 namespace SiliconStudio.Presentation.Controls
 {
-    public delegate void PropertyViewItemEventHandler(object sender, PropertyViewItemEventArgs e);
-
-    public class PropertyViewItemEventArgs : RoutedEventArgs
-    {
-        public PropertyViewItem Container { get; private set; }
-
-        public object Item { get; private set; }
-
-        public PropertyViewItemEventArgs(RoutedEvent routedEvent, object source, PropertyViewItem container, object item)
-            : base(routedEvent, source)
-        {
-            Container = container;
-            Item = item;
-        }
-    }
     public class PropertyViewItem : HeaderedItemsControl
     {
         private readonly ObservableList<PropertyViewItem> properties = new ObservableList<PropertyViewItem>();
         
-        public enum VerticalPosition
-        {
-            Top,
-            Bottom
-        }
-
         public static readonly DependencyProperty IsExpandedProperty = DependencyProperty.Register("IsExpanded", typeof(bool), typeof(PropertyViewItem), new FrameworkPropertyMetadata(false, OnIsExpandedChanged));
 
         public static readonly DependencyPropertyKey OffsetPropertyKey = DependencyProperty.RegisterReadOnly("Offset", typeof(double), typeof(PropertyViewItem), new FrameworkPropertyMetadata(0.0));
 
         public static readonly DependencyProperty IncrementProperty = DependencyProperty.Register("Increment", typeof(double), typeof(PropertyViewItem), new FrameworkPropertyMetadata(0.0, OnIncrementChanged));
-
-        public static readonly DependencyProperty ExpanderPositionProperty = DependencyProperty.Register("ExpanderPosition", typeof(VerticalPosition), typeof(PropertyViewItem), new FrameworkPropertyMetadata(VerticalPosition.Bottom));
 
         public static readonly RoutedEvent ExpandedEvent = EventManager.RegisterRoutedEvent("Expanded", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(PropertyViewItem));
 
@@ -60,8 +36,6 @@ namespace SiliconStudio.Presentation.Controls
         public double Offset { get { return (double)GetValue(OffsetPropertyKey.DependencyProperty); } private set { SetValue(OffsetPropertyKey, value); } }
 
         public double Increment { get { return (double)GetValue(IncrementProperty); } set { SetValue(IncrementProperty, value); } }
-
-        public VerticalPosition ExpanderPosition { get { return (VerticalPosition)GetValue(ExpanderPositionProperty); } set { SetValue(ExpanderPositionProperty, value); } }
 
         public event RoutedEventHandler Expanded { add { AddHandler(ExpandedEvent, value); } remove { RemoveHandler(ExpandedEvent, value); } }
 
