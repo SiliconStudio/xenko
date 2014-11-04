@@ -13,7 +13,7 @@ using SiliconStudio.Paradox.Graphics;
 namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 {
     /// <summary>
-    /// Cubemap renderer
+    /// Render dynamic cubemaps.
     /// </summary>
     public class CubemapRenderer : RecursiveRenderer
     {

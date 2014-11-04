@@ -15,6 +15,9 @@ using SiliconStudio.Paradox.Shaders.Compiler;
 
 namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 {
+    /// <summary>
+    /// Blends the cubemaps at the defined locations.
+    /// </summary>
     public class CubemapBlendRenderer : Renderer
     {
         #region Static members

@@ -11,6 +11,9 @@ using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Engine
 {
+    /// <summary>
+    /// Performs a blend at the location of the containing entity. When enabled, takes the up to the MaxBlendCount-most important cubemaps and blends them.
+    /// </summary>
     [DataConverter(AutoGenerate = true)]
     [DataContract("CubemapBlendComponent")]
     public sealed class CubemapBlendComponent : EntityComponent

@@ -10,6 +10,9 @@ using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Engine
 {
+    /// <summary>
+    /// Puts a cubemap at the containing entity location. This could be dynamic (runtime rendered) or static (from a file).
+    /// </summary>
     [DataConverter(AutoGenerate = true)]
     [DataContract("CubemapSourceComponent")]
     public class CubemapSourceComponent : EntityComponent

@@ -10,6 +10,9 @@ using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects.Modules.Processors
 {
+    /// <summary>
+    /// Keeps track of active cubemap blending locations.
+    /// </summary>
     public class CubemapBlendProcessor : EntityProcessor<CubemapBlendComponent>
     {
         #region Private members
@@ -20,6 +23,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
 
         #region Public properties
 
+        /// <summary>
+        /// The enabled cubemap blends
+        /// </summary>
         public Dictionary<Entity, CubemapBlendComponent> Cubemaps
         {
             get

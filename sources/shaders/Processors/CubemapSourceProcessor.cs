@@ -10,6 +10,9 @@ using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects.Modules.Processors
 {
+    /// <summary>
+    /// Keeps tracks of the active cubemaps.
+    /// </summary>
     public sealed class CubemapSourceProcessor : EntityProcessor<CubemapSourceComponent>
     {
         #region Private members
@@ -18,6 +21,11 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
 
         #endregion
 
+        #region Public properties
+
+        /// <summary>
+        /// The active cubemaps.
+        /// </summary>
         public Dictionary<Entity, CubemapSourceComponent> Cubemaps
         {
             get
@@ -26,12 +34,17 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
             }
         }
 
+        #endregion
+
+        #region Constructor
 
         public CubemapSourceProcessor(GraphicsDevice device)
             : base(new PropertyKey[] { CubemapSourceComponent.Key })
         {
             graphicsDevice = device;
         }
+
+        #endregion
 
         #region Protected methods
 
