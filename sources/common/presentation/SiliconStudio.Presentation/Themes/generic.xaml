@@ -185,8 +185,6 @@
 
     <Style TargetType="ctrl:TextBox" BasedOn="{StaticResource DefaultTextBoxStyle}"/>
 
-    <Style TargetType="ctrl:TimerTextBox" BasedOn="{StaticResource {x:Type ctrl:TextBox}}"/>
-
     <Style TargetType="ctrl:NumericTextBox" BasedOn="{StaticResource {x:Type TextBox}}">
         <Setter Property="Template">
             <Setter.Value>
@@ -305,7 +303,7 @@
                                 <Separator/>
                             </ToolBar>
                             <ToolBar Header="Search" Visibility="{Binding CanSearchLog, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:VisibleOrCollapsed}}">
-                                <ctrl:TimerTextBox x:Name="PART_SearchTextBox" Width="150" Text="{Binding SearchToken, RelativeSource={RelativeSource Mode=TemplatedParent}}" WatermarkContent="Search"/>
+                                <ctrl:TextBox UseTimedValidation="True" x:Name="PART_SearchTextBox" Width="150" Text="{Binding SearchToken, RelativeSource={RelativeSource Mode=TemplatedParent}}" WatermarkContent="Search"/>
                                 <Button Padding="4,0" x:Name="PART_PreviousResult" Content="&lt;"/>
                                 <Button Padding="4,0" x:Name="PART_NextResult" Content="&gt;"/>
                                 <ToggleButton Padding="4,0" IsChecked="{Binding SearchMatchCase, RelativeSource={RelativeSource Mode=TemplatedParent}}" Content="Match case"/>

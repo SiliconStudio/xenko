@@ -1750,8 +1750,6 @@
         </Setter>
     </Style>
 
-    <Style TargetType="ctrl:TimerTextBox" BasedOn="{StaticResource {x:Type ctrl:TextBox}}"/>
-
     <Style TargetType="ctrl:NumericTextBox" BasedOn="{StaticResource {x:Type TextBox}}">
         <Setter Property="BorderThickness" Value="1,1,1,1"/>
         <Setter Property="Padding" Value="1,1,1,1"/>
@@ -3887,7 +3885,7 @@
                                 </ToggleButton>
                             </ToolBar>
                             <ToolBar ToolBarTray.IsLocked="True" Header="Search:" Visibility="{Binding CanSearchLog, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:VisibleOrCollapsed}}">
-                                    <ctrl:TimerTextBox Width="150" Text="{Binding SearchToken, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=OneWayToSource}" WatermarkContent="Search"/>
+                                <ctrl:TextBox UseTimedValidation="True" Width="150" Text="{Binding SearchToken, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=OneWayToSource}" WatermarkContent="Search"/>
                                 <Button x:Name="PART_PreviousResult">
                                     <Path Width="8" Height="8" Stretch="Uniform" Fill="{StaticResource TextBrush}" Data="{StaticResource GeometryPrevious}"/>
                                 </Button>

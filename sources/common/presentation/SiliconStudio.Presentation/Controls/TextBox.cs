@@ -2,9 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -27,7 +29,18 @@ namespace SiliconStudio.Presentation.Controls
     public class TextBox : TextBoxBase
     {
         private TextBlock trimmedTextBlock;
+        private readonly Timer validationTimer;
 
+        /// <summary>
+        /// Identifies the <see cref="UseTimedValidation"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty UseTimedValidationProperty = DependencyProperty.Register("UseTimedValidation", typeof(bool), typeof(TextBox), new PropertyMetadata(false, OnUseTimedValidationPropertyChanged));
+
+        /// <summary>
+        /// Identifies the <see cref="ValidationDelay"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ValidationDelayProperty = DependencyProperty.Register("ValidationDelay", typeof(int), typeof(TextBox), new PropertyMetadata(500));
+        
         /// <summary>
         /// Identifies the <see cref="TrimmedText"/> dependency property.
         /// </summary>
@@ -73,8 +86,22 @@ namespace SiliconStudio.Presentation.Controls
         public TextBox()
         {
             WordSeparators = " \t";
+            if (DesignerProperties.GetIsInDesignMode(this) == false)
+                validationTimer = new Timer(x => Dispatcher.InvokeAsync(Validate), null, Timeout.Infinite, Timeout.Infinite);
         }
 
+        /// <summary>
+        /// Gets or sets whether the text should be automatically validated after a delay defined by the <see cref="ValidationDelay"/> property.
+        /// </summary>
+        public bool UseTimedValidation { get { return (bool)GetValue(UseTimedValidationProperty); } set { SetValue(UseTimedValidationProperty, value); } }
+
+        /// <summary>
+        /// Gets or sets the amount of time before a validation of input text happens, in milliseconds.
+        /// Every change to the <see cref="TextBox.Text"/> property reset the timer to this value.
+        /// </summary>
+        /// <remarks>The default value is <c>500</c> milliseconds.</remarks>
+        public int ValidationDelay { get { return (int)GetValue(ValidationDelayProperty); } set { SetValue(ValidationDelayProperty, value); } }
+        
         /// <summary>
         /// Gets the trimmed text to display when the control does not have the focus, depending of the value of the <see cref="TextTrimming"/> property.
         /// </summary>
@@ -122,6 +149,19 @@ namespace SiliconStudio.Presentation.Controls
         /// <param name="newValue">The new value of the <see cref="TextBox.Text"/> property.</param>
         protected override void OnTextChanged(string oldValue, string newValue)
         {
+            if (UseTimedValidation)
+            {
+                if (ValidationDelay > 0.0)
+                {
+                    if (validationTimer != null)
+                        validationTimer.Change(ValidationDelay, Timeout.Infinite);
+                }
+                else
+                {
+                    Validate();
+                }
+            }
+            
             var availableWidth = ActualWidth;
             if (trimmedTextBlock != null)
                 availableWidth -= trimmedTextBlock.Margin.Left + trimmedTextBlock.Margin.Right;
@@ -347,6 +387,15 @@ namespace SiliconStudio.Presentation.Controls
                 words.Add(sb.ToString());
 
             return words.ToArray();
+        }
+
+        private static void OnUseTimedValidationPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            var txt = (TextBox)sender;
+            if ((bool)e.NewValue)
+            {
+                txt.Validate();
+            }
         }
 
         private static void OnClearTextCommand(object sender, ExecutedRoutedEventArgs e)
