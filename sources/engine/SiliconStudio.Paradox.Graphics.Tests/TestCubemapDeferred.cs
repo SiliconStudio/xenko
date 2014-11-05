@@ -22,6 +22,8 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         private Entity teapotEntity;
 
+        private Entity cubemapEntity;
+
         public TestCubemapDeferred()
         {
             // cannot render cubemap in level below 10.1
@@ -55,9 +57,9 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             Entities.Add(teapotEntity);
 
             var textureCube = Asset.Load<TextureCube>("uv_cube");
-            var cubemapEntity = new Entity()
+            cubemapEntity = new Entity()
             {
-                new CubemapSourceComponent(textureCube) { Enabled = true, InfluenceRadius = 3, IsDynamic = false },
+                new CubemapSourceComponent(textureCube) { Enabled = true, InfluenceRadius = 1.5f, IsDynamic = false },
                 new TransformationComponent() { Translation = Vector3.UnitZ }
             };
             Entities.Add(cubemapEntity);
@@ -101,7 +103,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             // Add sthe G-buffer pass to the pipeline.
             RenderSystem.Pipeline.Renderers.Add(gbufferProcessor);
-            IBLRenderer = new LightingIBLRenderer(Services);
+            IBLRenderer = new LightingIBLRenderer(Services, GraphicsDevice.DepthStencilBuffer);
             RenderSystem.Pipeline.Renderers.Add(IBLRenderer);
             RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services) { ClearColor = Color.CornflowerBlue });
             RenderSystem.Pipeline.Renderers.Add(new ModelRenderer(Services, "CubemapIBLEffect"));
@@ -121,6 +123,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 await Script.NextFrame();
 
                 teapotEntity.Transformation.Rotation = Quaternion.RotationY((float)(2 * Math.PI * UpdateTime.Total.TotalMilliseconds / 5000.0f));
+                cubemapEntity.Transformation.Translation = new Vector3(0, 0, 1 + (float)Math.Cos(2 * Math.PI * UpdateTime.Total.TotalMilliseconds / 5000.0f));
             }
         }
 

@@ -13,11 +13,11 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
     {
         #region Private members
 
-        public Texture IBLTexture;
-
         private RenderTarget IBLRenderTarget;
 
-        private DepthStencilBuffer depthBuffer;
+        private DepthStencilBuffer inputDepthStencilBuffer;
+
+        private Texture depthBufferTexture;
 
         private GeometricPrimitive cubemapMesh;
 
@@ -31,10 +31,17 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         #endregion
 
+        #region Properties
+
+        public Texture IBLTexture { get; private set; }
+
+        #endregion
+
         #region Constructor
 
-        public LightingIBLRenderer(IServiceRegistry services) : base(services)
+        public LightingIBLRenderer(IServiceRegistry services, DepthStencilBuffer depthStencilBuffer) : base(services)
         {
+            inputDepthStencilBuffer = depthStencilBuffer;
         }
 
         #endregion
@@ -46,10 +53,10 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         {
             // Create necessary objects
             // TODO: support custom resolution
-            IBLTexture = Texture2D.New(GraphicsDevice, GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
+            IBLTexture = Texture2D.New(GraphicsDevice, inputDepthStencilBuffer.Description.Width, inputDepthStencilBuffer.Description.Height, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
             IBLRenderTarget = IBLTexture.ToRenderTarget();
 
-            cubemapMesh = GeometricPrimitive.Cube.New(GraphicsDevice);
+            cubemapMesh = GeometricPrimitive.Sphere.New(GraphicsDevice);
 
             var blendStateDescr = new BlendStateDescription()
             {
@@ -58,7 +65,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                     new BlendStateRenderTargetDescription()
                     {
                         BlendEnable = true,
-                        ColorSourceBlend = Blend.One,
+                        ColorSourceBlend = Blend.SourceAlpha,
                         ColorDestinationBlend = Blend.One,
                         ColorBlendFunction = BlendFunction.Add,
                         AlphaSourceBlend = Blend.One,
@@ -78,13 +85,10 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
             IBLEffect = EffectSystem.LoadEffect("CubemapIBL");
 
-            if (GraphicsDevice.Features.Profile >= GraphicsProfile.Level_11_0)
-                depthBuffer = GraphicsDevice.DepthStencilBuffer.Texture.ToDepthStencilBuffer(true);
-            else
-                depthBuffer = GraphicsDevice.DepthStencilBuffer;
+            depthBufferTexture = Texture2D.New(GraphicsDevice, inputDepthStencilBuffer.Description.Width, inputDepthStencilBuffer.Description.Height, inputDepthStencilBuffer.Description.Format, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
 
             parameters = new ParameterCollection();
-            parameters.Set(RenderTargetKeys.DepthStencilSource, GraphicsDevice.DepthStencilBuffer.Texture);
+            parameters.Set(RenderTargetKeys.DepthStencilSource, depthBufferTexture);
 
             // Add to pipeline
             Pass.StartPass += RenderIBL;
@@ -95,6 +99,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         {
             parameters.Clear();
 
+            depthBufferTexture.Dispose();
             IBLEffect.Dispose();
             IBLDepthStencilState.Dispose();
             IBLBlendState.Dispose();
@@ -117,15 +122,15 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             if (cubemapSourceProcessor.Cubemaps.Count <= 0)
                 return;
 
+            // copy depth buffer
+            GraphicsDevice.Copy(inputDepthStencilBuffer.Texture, depthBufferTexture);
+
             // clear render target
             GraphicsDevice.Clear(IBLRenderTarget, new Color4(0, 0, 0, 0));
 
             // set render target
-            // TODO: use a correctly defined depth buffer so that size matches
-            // Depth buffer is read and used for depth test too.
-            GraphicsDevice.SetRenderTarget(depthBuffer, IBLRenderTarget);
-            //GraphicsDevice.SetRenderTarget(null, IBLRenderTarget);
-
+            GraphicsDevice.SetRenderTarget(GraphicsDevice.DepthStencilBuffer, IBLRenderTarget);
+            
             // set blend state
             GraphicsDevice.SetBlendState(IBLBlendState);
 
@@ -158,7 +163,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         private static Matrix ComputeTransformatioMatrix(float size, Vector3 position)
         {
-            return Matrix.Scaling(size) * Matrix.Translation(position);
+            // x2 because the size is a radius
+            return Matrix.Scaling(2 * size) * Matrix.Translation(position);
         }
 
         #endregion

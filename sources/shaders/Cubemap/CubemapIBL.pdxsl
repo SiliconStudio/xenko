@@ -32,7 +32,7 @@ class CubemapIBL : ShadingBase, TransformationWAndVP, Transformation, PositionVS
 
         // TODO: change mip level based on roughness
         float4 color = Cubemap.Sample(Texturing.LinearSampler, samplingDir);
-        color.a = 1;//alpha;
+        color.a = alpha;
 
         return color;
     }
