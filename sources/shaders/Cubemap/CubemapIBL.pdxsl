@@ -39,6 +39,6 @@ class CubemapIBL : ShadingBase, TransformationWAndVP, Transformation, PositionVS
 
     float4 SampleCubemap(float3 samplingDir)
     {
-        return Cubemap.Sample(Texturing.LinearSampler, samplingDir);
+        return Cubemap.SampleLevel(Texturing.LinearSampler, samplingDir, 0);
     }
 };

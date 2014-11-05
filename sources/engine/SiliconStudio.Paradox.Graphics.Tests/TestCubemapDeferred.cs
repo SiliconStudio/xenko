@@ -27,9 +27,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         public TestCubemapDeferred()
         {
-            // cannot render cubemap in level below 10.1
-            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0 };
-            GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
+            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_1 };
         }
 
         protected override async Task LoadContent()

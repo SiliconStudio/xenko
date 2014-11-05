@@ -87,7 +87,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 });
 
             // effect
-            IBLEffect = EffectSystem.LoadEffect("CubemapIBLWithRoughness");
+            IBLEffect = EffectSystem.LoadEffect("CubemapIBL");
 
             // copy of the depth buffer
             depthBufferTexture = Texture2D.New(GraphicsDevice, inputDepthStencilBuffer.Description.Width, inputDepthStencilBuffer.Description.Height, inputDepthStencilBuffer.Description.Format, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
