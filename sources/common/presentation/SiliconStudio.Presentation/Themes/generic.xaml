@@ -31,7 +31,7 @@
                         <Grid Focusable="False">
                             <ScrollViewer x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Padding="{TemplateBinding Padding}" Visibility="{TemplateBinding IsFocused, Converter={cvt:VisibleOrCollapsed}}"/>
                             <ContentControl x:Name="Watermark" Content="{TemplateBinding WatermarkContent}" ContentTemplate="{TemplateBinding WatermarkContentTemplate}" VerticalAlignment="Center" Margin="6,2,2,2" Focusable="False"/>
-                            <TextBlock x:Name="PART_TrimmedText" Text="{TemplateBinding TrimmedText}" Cursor="IBeam" Margin="3,2" Focusable="False" Visibility="{TemplateBinding IsFocused, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                            <TextBlock x:Name="PART_TrimmedText" Text="{TemplateBinding TrimmedText}" Cursor="IBeam" Margin="3,1" Focusable="False" Visibility="{TemplateBinding IsFocused, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                         </Grid>
                     </mwt:ListBoxChrome>
                     <ControlTemplate.Triggers>
@@ -192,26 +192,22 @@
             <Setter.Value>
                 <ControlTemplate TargetType="ctrl:NumericTextBox">
                     <DockPanel LastChildFill="True" Focusable="False">
-                        <UniformGrid x:Name="upDownButtons" Rows="2" DockPanel.Dock="Right" Width="11" Height="22" Margin="0,1,1,1" Focusable="False" Visibility="Collapsed">
+                        <UniformGrid x:Name="upDownButtons" Rows="2" DockPanel.Dock="Right" Focusable="False" Visibility="Collapsed" MaxWidth="20">
                             <RepeatButton x:Name="PART_IncreaseButton" Command="{x:Static ctrl:NumericTextBox.SmallIncreaseCommand}">
                                 <Grid Margin="0" Background="Transparent">
-                                    <Path HorizontalAlignment="Stretch" Width="Auto" Fill="{StaticResource GlyphBrush}" Stretch="Fill" Stroke="{StaticResource GlyphBrush}" StrokeThickness="1" Data="M5.2422477,11.132184 L11.5544,11.132184 8.6412958,4.4969033 z" RenderTransformOrigin="0.5,0.5"/>
+                                    <Path HorizontalAlignment="Stretch" Width="Auto" Height="Auto" Fill="{StaticResource GlyphBrush}" Stretch="Uniform" Stroke="{StaticResource GlyphBrush}" StrokeThickness="1" Data="M-2,1 L2,1 0,-1 z"/>
                                 </Grid>
                             </RepeatButton>
                             <RepeatButton x:Name="PART_DecreaseButton" Command="{x:Static ctrl:NumericTextBox.SmallDecreaseCommand}">
                                 <Grid Margin="0" Background="Transparent">
-                                    <Path HorizontalAlignment="Stretch" Width="Auto" Fill="{StaticResource GlyphBrush}" Stretch="Fill" Stroke="{StaticResource GlyphBrush}" StrokeThickness="1" Data="M5.2422477,11.132184 L11.5544,11.132184 8.6412958,4.4969033 z" RenderTransformOrigin="0.5,0.5">
-                                        <Path.RenderTransform>
-                                            <RotateTransform Angle="180"/>
-                                        </Path.RenderTransform>
-                                    </Path>
+                                    <Path HorizontalAlignment="Stretch" Width="Auto" Height="Auto" Fill="{StaticResource GlyphBrush}" Stretch="Uniform" Stroke="{StaticResource GlyphBrush}" StrokeThickness="1" Data="M2,-1 L-2,-1 0,1 z"/>
                                 </Grid>
                             </RepeatButton>
                         </UniformGrid>
                         <mwt:ListBoxChrome Background="{TemplateBinding Panel.Background}" BorderBrush="{TemplateBinding Border.BorderBrush}" BorderThickness="{TemplateBinding Border.BorderThickness}" RenderMouseOver="{TemplateBinding UIElement.IsMouseOver}" RenderFocused="{TemplateBinding UIElement.IsKeyboardFocusWithin}" Name="Bd" SnapsToDevicePixels="True">
                             <Grid>
                                 <ScrollViewer x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Padding="{TemplateBinding Padding}" Visibility="{TemplateBinding IsFocused, Converter={cvt:VisibleOrCollapsed}}"/>
-                                <TextBlock x:Name="PART_TrimmedText" Text="{TemplateBinding TrimmedText}" Margin="3,2" Focusable="False" Visibility="{TemplateBinding IsFocused, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                <TextBlock x:Name="PART_TrimmedText" Text="{TemplateBinding TrimmedText}" Margin="3,1" Focusable="False" Visibility="{TemplateBinding IsFocused, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                             </Grid>
                         </mwt:ListBoxChrome>
                     </DockPanel>
@@ -233,19 +229,15 @@
             <Setter.Value>
                 <ControlTemplate TargetType="ctrl:SliderTextBox">
                     <DockPanel LastChildFill="True" Focusable="False">
-                        <UniformGrid x:Name="upDownButtons" Rows="2" DockPanel.Dock="Right" Width="11" Height="22" Margin="0,1,1,1" Focusable="False" Visibility="Collapsed">
-                            <RepeatButton x:Name="PART_IncreaseButton" Command="{x:Static ctrl:SliderTextBox.SmallIncreaseCommand}">
+                        <UniformGrid x:Name="upDownButtons" Rows="2" DockPanel.Dock="Right" Focusable="False" Visibility="Collapsed" MaxWidth="20">
+                            <RepeatButton x:Name="PART_IncreaseButton" Command="{x:Static ctrl:NumericTextBox.SmallIncreaseCommand}">
                                 <Grid Margin="0" Background="Transparent">
-                                    <Path HorizontalAlignment="Stretch" Width="Auto" Fill="{StaticResource GlyphBrush}" Stretch="Fill" Stroke="{StaticResource GlyphBrush}" StrokeThickness="1" Data="M5.2422477,11.132184 L11.5544,11.132184 8.6412958,4.4969033 z" RenderTransformOrigin="0.5,0.5"/>
+                                    <Path HorizontalAlignment="Stretch" Width="Auto" Height="Auto" Fill="{StaticResource GlyphBrush}" Stretch="Uniform" Stroke="{StaticResource GlyphBrush}" StrokeThickness="1" Data="M-2,1 L2,1 0,-1 z"/>
                                 </Grid>
                             </RepeatButton>
-                            <RepeatButton x:Name="PART_DecreaseButton" Command="{x:Static ctrl:SliderTextBox.SmallDecreaseCommand}">
+                            <RepeatButton x:Name="PART_DecreaseButton" Command="{x:Static ctrl:NumericTextBox.SmallDecreaseCommand}">
                                 <Grid Margin="0" Background="Transparent">
-                                    <Path HorizontalAlignment="Stretch" Width="Auto" Fill="{StaticResource GlyphBrush}" Stretch="Fill" Stroke="{StaticResource GlyphBrush}" StrokeThickness="1" Data="M5.2422477,11.132184 L11.5544,11.132184 8.6412958,4.4969033 z" RenderTransformOrigin="0.5,0.5">
-                                        <Path.RenderTransform>
-                                            <RotateTransform Angle="180"/>
-                                        </Path.RenderTransform>
-                                    </Path>
+                                    <Path HorizontalAlignment="Stretch" Width="Auto" Height="Auto" Fill="{StaticResource GlyphBrush}" Stretch="Uniform" Stroke="{StaticResource GlyphBrush}" StrokeThickness="1" Data="M2,-1 L-2,-1 0,1 z"/>
                                 </Grid>
                             </RepeatButton>
                         </UniformGrid>
@@ -257,7 +249,7 @@
                             <mwt:ListBoxChrome Background="{TemplateBinding Panel.Background}" BorderBrush="{TemplateBinding Border.BorderBrush}" BorderThickness="{TemplateBinding Border.BorderThickness}" RenderMouseOver="{TemplateBinding UIElement.IsMouseOver}" RenderFocused="{TemplateBinding UIElement.IsKeyboardFocusWithin}" Name="Bd" SnapsToDevicePixels="True">
                                 <Grid>
                                     <ScrollViewer x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Padding="{TemplateBinding Padding}" Visibility="{TemplateBinding IsFocused, Converter={cvt:VisibleOrCollapsed}}"/>
-                                    <TextBlock x:Name="PART_TrimmedText" Text="{TemplateBinding TrimmedText}" Margin="3,2" Focusable="False" Visibility="{TemplateBinding IsFocused, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                    <TextBlock x:Name="PART_TrimmedText" Text="{TemplateBinding TrimmedText}" Margin="3,1" Focusable="False" Visibility="{TemplateBinding IsFocused, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                                 </Grid>
                             </mwt:ListBoxChrome>
                             <Rectangle x:Name="range" Grid.Row="1" Height="3" Fill="{TemplateBinding RangeIndicatorBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
