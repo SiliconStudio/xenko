@@ -394,6 +394,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>CubemapFaceDisplayNoFlip.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Cubemap\CubemapIBL.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapIBL.pdxsl</DependentUpon>
+    </Compile>
     <Compile Include="Cubemap\CubemapSkybox.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -444,6 +450,7 @@
     <Compile Include="Processors\ShadowMapTexture.cs" />
     <Compile Include="Renderers\CubeMapRenderer.cs" />
     <Compile Include="Renderers\LightForwardModelRenderer.cs" />
+    <Compile Include="Renderers\LightingIBLRenderer.cs" />
     <Compile Include="Renderers\LightingPrepassRenderer.cs" />
     <Compile Include="Renderers\PostProcessRenderer.cs" />
     <Compile Include="Renderers\ShadowMapRenderer.cs" />
@@ -1783,6 +1790,10 @@
     <None Include="Cubemap\CubemapFaceDisplayNoFlip.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CubemapFaceDisplayNoFlip.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapIBL.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapIBL.cs</LastGenOutput>
     </None>
     <None Include="Cubemap\CubemapSkybox.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

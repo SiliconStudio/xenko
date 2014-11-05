@@ -11,20 +11,6 @@ class ComputeColorTextureCubeParallax<TextureCube TTexturePara> : ComputeColorTe
     stage float CubemapRange = 1;
     stage float3 CubemapCenterWS = float3(0,0,0);
     
-    float3 ParallaxCorrection(float3 samplingDir, float3 reflectionPoint)
-    {
-        // TODO: evolve to a more generic transformation (rotation, scale of the BB)
-        reflectionPoint -= CubemapCenterWS;
-        float3 lambdaPos =  (CubemapRange - reflectionPoint) / samplingDir;
-        float3 lambdaNeg = (-CubemapRange - reflectionPoint) / samplingDir;
-
-        float3 maxLambda = max(lambdaPos, lambdaNeg); // only take strictly positive values
-        float minLambda = min(maxLambda.x, min(maxLambda.y, maxLambda.z)); // take the smallest one
-
-        // no need to normalize
-        return reflectionPoint + minLambda * samplingDir;
-    }
-    
     override float3 GetSamplingDir()
     {
         float3 samplingDir = base.GetSamplingDir();
@@ -33,7 +19,7 @@ class ComputeColorTextureCubeParallax<TextureCube TTexturePara> : ComputeColorTe
 
         // parallax correction.
         float4 reflectionPoint = mul(float4(samplePos, 1), ViewInverse);
-        float3 correctedSamplingDir = ParallaxCorrection(samplingDir, reflectionPoint.xyz / reflectionPoint.w);
+        float3 correctedSamplingDir = CubemapUtils.ParallaxCorrection(samplingDir, reflectionPoint.xyz / reflectionPoint.w, CubemapCenterWS, CubemapRange);
         
         return correctedSamplingDir;
     }

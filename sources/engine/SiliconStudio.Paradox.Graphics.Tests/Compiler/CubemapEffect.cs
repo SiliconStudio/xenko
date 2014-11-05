@@ -115,4 +115,38 @@ namespace Test
             ShaderMixinManager.Register("CubemapGeomEffect", new CubemapGeomEffect());
         }
     }
+
+    #line 38
+    public partial class CubemapIBLEffect  : IShaderMixinBuilder
+    {
+        public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+        {
+
+            #line 40
+            context.Mixin(mixin, "ParadoxBaseShader");
+
+            {
+
+                #line 41
+                var __subMixin = new ShaderMixinSourceTree() { Name = "ParadoxGBufferShaderPass", Parent = mixin };
+                mixin.Children.Add(__subMixin);
+
+                #line 41
+                context.BeginChild(__subMixin);
+
+                #line 41
+                context.Mixin(__subMixin, "ParadoxGBufferShaderPass");
+
+                #line 41
+                context.EndChild();
+            }
+        }
+
+        [ModuleInitializer]
+        internal static void __Initialize__()
+
+        {
+            ShaderMixinManager.Register("CubemapIBLEffect", new CubemapIBLEffect());
+        }
+    }
 }

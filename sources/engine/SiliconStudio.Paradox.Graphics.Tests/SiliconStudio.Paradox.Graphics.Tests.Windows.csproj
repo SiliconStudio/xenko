@@ -49,7 +49,7 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SiliconStudio.Paradox.Graphics.Tests.TestMultipleRenderTargets</StartupObject>
+    <StartupObject>SiliconStudio.Paradox.Graphics.Tests.TestCubemapDeferred</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
@@ -206,6 +206,7 @@
     <Compile Include="Regression\TestMultipleTextures.cs" />
     <Compile Include="Regression\TestSimpleTexture.cs" />
     <Compile Include="TestBitmapSpriteFont.cs" />
+    <Compile Include="TestCubemapDeferred.cs" />
     <Compile Include="TestCubemapRendering.cs" />
     <Compile Include="TestDynamicSpriteFont.cs" />
     <Compile Include="TestDynamicSpriteFontJapanese.cs" />

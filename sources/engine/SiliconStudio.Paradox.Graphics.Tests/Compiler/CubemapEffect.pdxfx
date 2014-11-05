@@ -34,4 +34,10 @@ namespace Test
         if (MaterialParameters.AlbedoDiffuse != null)
 			mixin compose albedoDiffuse = MaterialParameters.AlbedoDiffuse;
     };
+
+    shader CubemapIBLEffect
+    {
+        mixin ParadoxBaseShader;
+        mixin child ParadoxGBufferShaderPass;
+    };
 }

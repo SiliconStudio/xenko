@@ -190,7 +190,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         /// Run the test
         /// </summary>
         [Test]
-        public void RunCustomEffect()
+        public void RunCubemapRendering()
         {
             RunGameTest(new TestCubemapRendering());
         }
