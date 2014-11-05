@@ -33,6 +33,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         #region Properties
 
+        /// <summary>
+        /// The texture the lighting will be rendered into.
+        /// </summary>
         public Texture IBLTexture { get; private set; }
 
         #endregion
@@ -52,7 +55,6 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         public override void Load()
         {
             // Create necessary objects
-            // TODO: support custom resolution
             IBLTexture = Texture2D.New(GraphicsDevice, inputDepthStencilBuffer.Description.Width, inputDepthStencilBuffer.Description.Height, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
             IBLRenderTarget = IBLTexture.ToRenderTarget();
 
@@ -77,14 +79,17 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             };
             IBLBlendState = BlendState.New(GraphicsDevice, blendStateDescr);
 
+            // depth state to test z-fail of backfaces
             IBLDepthStencilState = DepthStencilState.New(GraphicsDevice, new DepthStencilStateDescription(true, false)
                 {
                     StencilEnable = false,
                     DepthBufferFunction = CompareFunction.GreaterEqual,
                 });
 
-            IBLEffect = EffectSystem.LoadEffect("CubemapIBL");
+            // effect
+            IBLEffect = EffectSystem.LoadEffect("CubemapIBLWithRoughness");
 
+            // copy of the depth buffer
             depthBufferTexture = Texture2D.New(GraphicsDevice, inputDepthStencilBuffer.Description.Width, inputDepthStencilBuffer.Description.Height, inputDepthStencilBuffer.Description.Format, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
 
             parameters = new ParameterCollection();
@@ -97,6 +102,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// <inheritdoc/>
         public override void Unload()
         {
+            // Remove from pipeline
+            Pass.StartPass -= RenderIBL;
+
             parameters.Clear();
 
             depthBufferTexture.Dispose();
@@ -119,14 +127,15 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             if (cubemapSourceProcessor == null)
                 return;
 
+            // clear render target
+            GraphicsDevice.Clear(IBLRenderTarget, new Color4(0, 0, 0, 0));
+
+            // if no cubemap, exit
             if (cubemapSourceProcessor.Cubemaps.Count <= 0)
                 return;
 
             // copy depth buffer
             GraphicsDevice.Copy(inputDepthStencilBuffer.Texture, depthBufferTexture);
-
-            // clear render target
-            GraphicsDevice.Clear(IBLRenderTarget, new Color4(0, 0, 0, 0));
 
             // set render target
             GraphicsDevice.SetRenderTarget(GraphicsDevice.DepthStencilBuffer, IBLRenderTarget);
@@ -144,10 +153,11 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             {
                 // set world matrix matrices
                 // TODO: rotation of cubemap & sphere mesh
-                parameters.Set(TransformationKeys.World, ComputeTransformatioMatrix(cubemap.Value.InfluenceRadius, cubemap.Key.Transformation.Translation));
+                parameters.Set(TransformationKeys.World, ComputeTransformationMatrix(cubemap.Value.InfluenceRadius, cubemap.Key.Transformation.Translation));
                 parameters.Set(CubemapIBLKeys.CubemapRadius, cubemap.Value.InfluenceRadius);
                 parameters.Set(CubemapIBLKeys.Cubemap, cubemap.Value.Texture);
                 parameters.Set(CubemapIBLKeys.CubemapPosition, cubemap.Key.Transformation.Translation);
+                parameters.Set(CubemapIBLWithRoughnessKeys.CubemapRoughness, 0.5f);
 
                 // apply effect
                 IBLEffect.Apply(parameters, context.CurrentPass.Parameters);
@@ -161,7 +171,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         #region Helpers
 
-        private static Matrix ComputeTransformatioMatrix(float size, Vector3 position)
+        private static Matrix ComputeTransformationMatrix(float size, Vector3 position)
         {
             // x2 because the size is a radius
             return Matrix.Scaling(2 * size) * Matrix.Translation(position);

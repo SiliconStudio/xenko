@@ -22,7 +22,8 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         private Entity teapotEntity;
 
-        private Entity cubemapEntity;
+        private Entity cubemapEntity0;
+        private Entity cubemapEntity1;
 
         public TestCubemapDeferred()
         {
@@ -57,12 +58,19 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             Entities.Add(teapotEntity);
 
             var textureCube = Asset.Load<TextureCube>("uv_cube");
-            cubemapEntity = new Entity()
+            cubemapEntity0 = new Entity()
             {
                 new CubemapSourceComponent(textureCube) { Enabled = true, InfluenceRadius = 1.5f, IsDynamic = false },
                 new TransformationComponent() { Translation = Vector3.UnitZ }
             };
-            Entities.Add(cubemapEntity);
+            Entities.Add(cubemapEntity0);
+
+            cubemapEntity1 = new Entity()
+            {
+                new CubemapSourceComponent(textureCube) { Enabled = true, InfluenceRadius = 0.5f, IsDynamic = false },
+                new TransformationComponent() { Translation = Vector3.UnitX }
+            };
+            Entities.Add(cubemapEntity1);
 
             var mainCamera = new Entity()
             {
@@ -123,7 +131,8 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 await Script.NextFrame();
 
                 teapotEntity.Transformation.Rotation = Quaternion.RotationY((float)(2 * Math.PI * UpdateTime.Total.TotalMilliseconds / 5000.0f));
-                cubemapEntity.Transformation.Translation = new Vector3(0, 0, 1 + (float)Math.Cos(2 * Math.PI * UpdateTime.Total.TotalMilliseconds / 5000.0f));
+                cubemapEntity0.Transformation.Translation = new Vector3(0, 0, 1 + (float)Math.Cos(2 * Math.PI * UpdateTime.Total.TotalMilliseconds / 5000.0f));
+                cubemapEntity1.Transformation.Translation = new Vector3(2 * (float)Math.Sin(2 * Math.PI * UpdateTime.Total.TotalMilliseconds / 7000.0f), 0, 0);
             }
         }
 

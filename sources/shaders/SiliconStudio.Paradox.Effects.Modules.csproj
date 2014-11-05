@@ -400,6 +400,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>CubemapIBL.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Cubemap\CubemapIBLWithRoughness.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapIBLWithRoughness.pdxsl</DependentUpon>
+    </Compile>
     <Compile Include="Cubemap\CubemapSkybox.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1794,6 +1800,10 @@
     <None Include="Cubemap\CubemapIBL.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CubemapIBL.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapIBLWithRoughness.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapIBLWithRoughness.cs</LastGenOutput>
     </None>
     <None Include="Cubemap\CubemapSkybox.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
