@@ -9,7 +9,6 @@ namespace SiliconStudio.Paradox.Effects.Modules
 {
     public static partial class ComputeBRDFDiffuseOrenNayarKeys
     {
-        public static readonly ParameterKey<float> Roughness = ParameterKeys.New<float>();
         public static readonly ParameterKey<float> DistributionVariance = ParameterKeys.New<float>();
     }
 }

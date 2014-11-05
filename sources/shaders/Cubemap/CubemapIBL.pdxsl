@@ -18,7 +18,7 @@ class CubemapIBL : ShadingBase, TransformationWAndVP, Transformation, PositionVS
         
         float4 cubemapPositionVS4 = mul(float4(CubemapPosition, 1), View);
 
-        float alpha = max(1 - (length(cubemapPositionVS4.xyz / cubemapPositionVS4.w - positionVS) / CubemapRadius), 0);
+        float alpha = max(1 - (distance(cubemapPositionVS4.xyz / cubemapPositionVS4.w, positionVS) / CubemapRadius), 0);
 
         if (alpha == 0)
             discard;

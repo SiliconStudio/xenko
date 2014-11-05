@@ -7,8 +7,7 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 namespace SiliconStudio.Paradox.Effects.Modules
 {
-    public static partial class ComputeBRDFColorSpecularCookTorranceKeys
+    public static partial class MaterialRoughnessGBufferKeys
     {
-        public static readonly ParameterKey<float> Reflection = ParameterKeys.New<float>();
     }
 }

@@ -32,4 +32,7 @@ class Material
     
     // Specular intensity - used in other classes
     stage float SpecularIntensity;
+
+    // Roughness of the material
+    stage float Roughness;
 };

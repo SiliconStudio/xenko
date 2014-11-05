@@ -9,6 +9,5 @@ namespace SiliconStudio.Paradox.Effects.Modules
 {
     public static partial class CubemapIBLWithRoughnessKeys
     {
-        public static readonly ParameterKey<float> CubemapRoughness = ParameterKeys.New<float>(0);
     }
 }

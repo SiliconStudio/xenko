@@ -418,6 +418,18 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>CubemapUtils.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Shading\MaterialRoughnessBase.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialRoughnessBase.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Deferred\MaterialRoughnessGBuffer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialRoughnessGBuffer.pdxsl</DependentUpon>
+    </Compile>
     <Compile Include="Geometry\CameraCube.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1812,6 +1824,14 @@
     <None Include="Cubemap\CubemapUtils.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CubemapUtils.cs</LastGenOutput>
+    </None>
+    <None Include="Shading\MaterialRoughnessBase.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialRoughnessBase.cs</LastGenOutput>
+    </None>
+    <None Include="Deferred\MaterialRoughnessGBuffer.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialRoughnessGBuffer.cs</LastGenOutput>
     </None>
     <None Include="Geometry\CameraCube.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

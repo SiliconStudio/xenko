@@ -6,16 +6,12 @@
 /// <remarks>
 /// TTextureLod: generic TextureCube - The cubemap to sample.
 /// </remarks>
-class ComputeColorTextureCubeLod<TextureCube TTextureLod> : ComputeColorTextureCube<TTextureLod>
+class ComputeColorTextureCubeLod<TextureCube TTextureLod> : ComputeColorTextureCube<TTextureLod>, MaterialRoughnessBase
 {
-    stage float CubemapRoughness = 0.5f;
-
     override float4 SampleCubemap(float3 samplingDir)
     {
-        float4 baseColor = base.SampleCubemap(samplingDir);
-        
         uint width, height, numberOfLevels;
         Cubemap.GetDimensions(0, width, height, numberOfLevels);
-        return TTextureLod.SampleLevel(Texturing.LinearSampler, float3(samplingDir.xy, -samplingDir.z), numberOfLevels * CubemapRoughness);
+        return TTextureLod.SampleLevel(Texturing.LinearSampler, float3(samplingDir.xy, -samplingDir.z), numberOfLevels * GetRoughness());
     }
 };
