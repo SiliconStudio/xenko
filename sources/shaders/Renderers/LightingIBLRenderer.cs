@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects.Modules.Processors;
@@ -12,6 +14,10 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
     public class LightingIBLRenderer : Renderer
     {
         #region Private members
+
+        private bool clearTarget;
+
+        private bool externRenderTarget;
 
         private RenderTarget IBLRenderTarget;
 
@@ -31,20 +37,47 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         #endregion
 
-        #region Properties
+        #region Public properties
 
         /// <summary>
         /// The texture the lighting will be rendered into.
         /// </summary>
-        public Texture IBLTexture { get; private set; }
+        public Texture IBLTexture
+        {
+            get
+            {
+                return IBLRenderTarget == null ? null : IBLRenderTarget.Texture;
+            }
+        }
 
         #endregion
 
         #region Constructor
 
-        public LightingIBLRenderer(IServiceRegistry services, DepthStencilBuffer depthStencilBuffer) : base(services)
+        /// <summary>
+        /// This renderer will compute the cubemap influence on the scene. It supposes a deferred shading/rendering pipeline.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        /// <param name="depthStencilBuffer">The depth buffer.</param>
+        /// <param name="renderTarget">The render target. If null, a new render target will be created.</param>
+        /// <param name="clearRenderTarget">A flag to enable the clear of the render target.</param>
+        public LightingIBLRenderer(IServiceRegistry services, DepthStencilBuffer depthStencilBuffer, RenderTarget renderTarget = null, bool clearRenderTarget = true) : base(services)
         {
+            if (depthStencilBuffer == null)
+                throw new ArgumentNullException("depthStencilBuffer");
+
             inputDepthStencilBuffer = depthStencilBuffer;
+
+            if (renderTarget != null)
+            {
+                if (renderTarget.Width != depthStencilBuffer.Description.Width
+                    || renderTarget.Height != depthStencilBuffer.Description.Height)
+                    throw new Exception("Size of depthStencilBuffer and renderTarget do not match.");
+                IBLRenderTarget = renderTarget;
+                externRenderTarget = true;
+            }
+
+            clearTarget = clearRenderTarget;
         }
 
         #endregion
@@ -55,8 +88,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         public override void Load()
         {
             // Create necessary objects
-            IBLTexture = Texture2D.New(GraphicsDevice, inputDepthStencilBuffer.Description.Width, inputDepthStencilBuffer.Description.Height, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
-            IBLRenderTarget = IBLTexture.ToRenderTarget();
+            if (IBLRenderTarget == null)
+                IBLRenderTarget = Texture2D.New(GraphicsDevice, inputDepthStencilBuffer.Description.Width, inputDepthStencilBuffer.Description.Height, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget).ToRenderTarget();
 
             cubemapMesh = GeometricPrimitive.Sphere.New(GraphicsDevice);
 
@@ -112,8 +145,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             IBLDepthStencilState.Dispose();
             IBLBlendState.Dispose();
             cubemapMesh.Dispose();
-            IBLRenderTarget.Dispose();
-            IBLTexture.Dispose();
+            if (!externRenderTarget)
+                IBLRenderTarget.Dispose();
         }
 
         #endregion
@@ -128,7 +161,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 return;
 
             // clear render target
-            GraphicsDevice.Clear(IBLRenderTarget, new Color4(0, 0, 0, 0));
+            if (clearTarget)
+                GraphicsDevice.Clear(IBLRenderTarget, new Color4(0, 0, 0, 0));
 
             // if no cubemap, exit
             if (cubemapSourceProcessor.Cubemaps.Count <= 0)
@@ -152,12 +186,11 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             foreach (var cubemap in cubemapSourceProcessor.Cubemaps)
             {
                 // set world matrix matrices
-                // TODO: rotation of cubemap & sphere mesh
+                // TODO: rotation of cubemap & cube mesh
                 parameters.Set(TransformationKeys.World, ComputeTransformationMatrix(cubemap.Value.InfluenceRadius, cubemap.Key.Transformation.Translation));
                 parameters.Set(CubemapIBLKeys.CubemapRadius, cubemap.Value.InfluenceRadius);
                 parameters.Set(CubemapIBLKeys.Cubemap, cubemap.Value.Texture);
                 parameters.Set(CubemapIBLKeys.CubemapPosition, cubemap.Key.Transformation.Translation);
-                parameters.Set(CubemapIBLWithRoughnessKeys.CubemapRoughness, 0.5f);
 
                 // apply effect
                 IBLEffect.Apply(parameters, context.CurrentPass.Parameters);
