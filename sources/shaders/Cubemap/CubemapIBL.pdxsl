@@ -30,7 +30,6 @@ class CubemapIBL : ShadingBase, TransformationWAndVP, Transformation, PositionVS
         // always flip z
         samplingDir.z = -samplingDir.z;
 
-        // TODO: change mip level based on roughness
         float4 color = SampleCubemap(samplingDir);
         color.a = alpha;
 

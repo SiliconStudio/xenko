@@ -99,7 +99,6 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             };
             Entities.Add(reflectEntity);
             reflectEntity.Get<ModelComponent>().Parameters.Set(TexturingKeys.TextureCube0, reflectEntity.Get<CubemapSourceComponent>().Texture);
-            GraphicsDevice.Parameters.Set(ComputeColorTextureCubeLodKeys.MaxLod, reflectEntity.Get<CubemapSourceComponent>().MaxLod);
 
             var mainCameraTargetEntity = new Entity(Vector3.Zero);
             Entities.Add(mainCameraTargetEntity);
