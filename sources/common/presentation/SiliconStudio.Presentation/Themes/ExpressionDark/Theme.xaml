@@ -1754,6 +1754,7 @@
         <Setter Property="BorderThickness" Value="1,1,1,1"/>
         <Setter Property="Padding" Value="1,1,1,1"/>
         <Setter Property="SelectAllOnFocus" Value="True"/>
+        <Setter Property="DragCursor" Value="/SiliconStudio.Presentation;component/Resources/Cursors/CursorDrag.cur"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ctrl:NumericTextBox">

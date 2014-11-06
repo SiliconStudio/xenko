@@ -2,17 +2,38 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Globalization;
+using System.Reflection;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Presentation.Core;
 using SiliconStudio.Presentation.Extensions;
 
+using Point = System.Windows.Point;
+
 namespace SiliconStudio.Presentation.Controls
 {
+    /// <summary>
+    /// An enum describing when the related <see cref="NumericTextBox"/> should be validated, when the user uses the mouse to change its value.
+    /// </summary>
+    public enum MouseValidationTrigger
+    {
+        /// <summary>
+        /// The validation occurs every time the mouse moves.
+        /// </summary>
+        OnMouseMove,
+        /// <summary>
+        /// The validation occurs when the mouse button is released.
+        /// </summary>
+        OnMouseUp,
+    }
+
     public class RepeatButtonPressedRoutedEventArgs : RoutedEventArgs
     {
         public RepeatButtonPressedRoutedEventArgs(NumericTextBox.RepeatButtons button, RoutedEvent routedEvent)
@@ -28,6 +49,10 @@ namespace SiliconStudio.Presentation.Controls
     /// A specialization of the <see cref="TextBoxBase"/> control that can be used for numeric values.
     /// It contains a <see cref="Value"/> property that is updated on validation.
     /// </summary>
+    /// PART_IncreaseButton") as RepeatButton;
+    [TemplatePart(Name = "PART_IncreaseButton", Type = typeof(RepeatButton))]
+    [TemplatePart(Name = "PART_DecreaseButton", Type = typeof(RepeatButton))]
+    [TemplatePart(Name = "PART_ContentHost", Type = typeof(ScrollViewer))]
     public class NumericTextBox : TextBoxBase
     {
         public enum RepeatButtons
@@ -36,8 +61,20 @@ namespace SiliconStudio.Presentation.Controls
             DecreaseButton,
         }
 
+        private enum DragState
+        {
+            None,
+            Starting,
+            Dragging,
+        }
+
+        private DragState dragState;
+        private Point mouseDownPosition;
+        private DragDirectionAdorner adorner;
+        private Orientation dragOrientation;
         private RepeatButton increaseButton;
         private RepeatButton decreaseButton;
+        private ScrollViewer contentHost;
         private bool updatingValue;
 
         /// <summary>
@@ -79,6 +116,21 @@ namespace SiliconStudio.Presentation.Controls
         /// Identifies the <see cref="DisplayUpDownButtons"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty DisplayUpDownButtonsProperty = DependencyProperty.Register("DisplayUpDownButtons", typeof(bool), typeof(NumericTextBox), new PropertyMetadata(true));
+
+        /// <summary>
+        /// Identifies the <see cref="AllowMouseDrag"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty AllowMouseDragProperty = DependencyProperty.Register("AllowMouseDrag", typeof(bool), typeof(NumericTextBox), new PropertyMetadata(true));
+
+        /// <summary>
+        /// Identifies the <see cref="MouseValidationTrigger"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty MouseValidationTriggerProperty = DependencyProperty.Register("MouseValidationTrigger", typeof(MouseValidationTrigger), typeof(NumericTextBox), new PropertyMetadata(MouseValidationTrigger.OnMouseUp));
+
+        /// <summary>
+        /// Identifies the <see cref="MouseValidationTrigger"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty DragCursorProperty = DependencyProperty.Register("DragCursor", typeof(Cursor), typeof(NumericTextBox), new PropertyMetadata(Cursors.ScrollAll));
         
         /// <summary>
         /// Raised when the <see cref="Value"/> property has changed.
@@ -182,6 +234,21 @@ namespace SiliconStudio.Presentation.Controls
         public bool DisplayUpDownButtons { get { return (bool)GetValue(DisplayUpDownButtonsProperty); } set { SetValue(DisplayUpDownButtonsProperty, value); } }
 
         /// <summary>
+        /// Gets or sets whether dragging the value of the <see cref="NumericTextBox"/> is enabled.
+        /// </summary>
+        public bool AllowMouseDrag { get { return (bool)GetValue(AllowMouseDragProperty); } set { SetValue(AllowMouseDragProperty, value); } }
+
+        /// <summary>
+        /// Gets or sets the <see cref="Cursor"/> to display when the value can be modified via dragging.
+        /// </summary>
+        public Cursor DragCursor { get { return (Cursor)GetValue(DragCursorProperty); } set { SetValue(DragCursorProperty, value); } }
+
+        /// <summary>
+        /// Gets or sets when the <see cref="SliderTextBox"/> should be validated when the user uses the mouse to change its value.
+        /// </summary>
+        public MouseValidationTrigger MouseValidationTrigger { get { return (MouseValidationTrigger)GetValue(MouseValidationTriggerProperty); } set { SetValue(MouseValidationTriggerProperty, value); } }
+        
+        /// <summary>
         /// Raised when the <see cref="Value"/> property has changed.
         /// </summary>
         public event RoutedPropertyChangedEventHandler<double> ValueChanged { add { AddHandler(ValueChangedEvent, value); } remove { RemoveHandler(ValueChangedEvent, value); } }
@@ -209,13 +276,19 @@ namespace SiliconStudio.Presentation.Controls
             if (decreaseButton == null)
                 throw new InvalidOperationException("A part named 'PART_DecreaseButton' must be present in the ControlTemplate, and must be of type 'RepeatButton'.");
 
+            contentHost = GetTemplateChild("PART_ContentHost") as ScrollViewer;
+            if (contentHost == null)
+                throw new InvalidOperationException("A part named 'PART_ContentHost' must be present in the ControlTemplate, and must be of type 'ScrollViewer'.");
+
             var increasePressedWatcher = new DependencyPropertyWatcher(increaseButton);
             increasePressedWatcher.RegisterValueChangedHandler(ButtonBase.IsPressedProperty, RepeatButtonIsPressedChanged);
             var decreasePressedWatcher = new DependencyPropertyWatcher(decreaseButton);
             decreasePressedWatcher.RegisterValueChangedHandler(ButtonBase.IsPressedProperty, RepeatButtonIsPressedChanged);
             var textValue = FormatValue(Value);
-            
+
             SetCurrentValue(TextProperty, textValue);
+
+            contentHost.QueryCursor += HostQueryCursor;
         }
 
         /// <summary>
@@ -231,6 +304,109 @@ namespace SiliconStudio.Presentation.Controls
             base.OnInitialized(e);
             var textValue = FormatValue(Value);
             SetCurrentValue(TextProperty, textValue);
+        }
+
+        /// <inheritdoc/>
+        protected override void OnPreviewMouseDown(MouseButtonEventArgs e)
+        {
+            base.OnPreviewMouseDown(e);
+
+            if (AllowMouseDrag && IsReadOnly == false && IsFocused == false)
+            {
+                dragState = DragState.Starting;
+
+                if (adorner == null)
+                {
+                    adorner = new DragDirectionAdorner(this);
+                    var adornerLayer = AdornerLayer.GetAdornerLayer(this);
+                    if (adornerLayer != null)
+                        adornerLayer.Add(adorner);
+                }
+
+                mouseDownPosition = e.GetPosition(this);
+
+                Mouse.OverrideCursor = Cursors.None;
+                e.Handled = true;
+            }
+        }
+
+
+        /// <inheritdoc/>
+        protected override void OnPreviewMouseMove(MouseEventArgs e)
+        {
+            base.OnPreviewMouseMove(e);
+
+            Point position = e.GetPosition(this);
+
+            if (AllowMouseDrag && dragState == DragState.Starting && e.LeftButton == MouseButtonState.Pressed)
+            {
+                double dx = Math.Abs(position.X - mouseDownPosition.X);
+                double dy = Math.Abs(position.Y - mouseDownPosition.Y);
+                dragOrientation = dx >= dy ? Orientation.Horizontal : Orientation.Vertical;
+
+                if (dx > SystemParameters.MinimumHorizontalDragDistance || dy > SystemParameters.MinimumVerticalDragDistance)
+                {
+                    e.MouseDevice.Capture(this);
+                    dragState = DragState.Dragging;
+                    SelectAll();
+                    if (adorner != null)
+                        adorner.SetOrientation(dragOrientation);
+                }
+            }
+
+            if (dragState == DragState.Dragging)
+            {
+                double delta;
+
+                if (dragOrientation == Orientation.Horizontal)
+                    delta = position.X - mouseDownPosition.X;
+                else
+                    delta = mouseDownPosition.Y - position.Y;
+
+                var newValue = Value + delta * SmallChange;
+
+                SetCurrentValue(ValueProperty, newValue);
+
+                if (MouseValidationTrigger == MouseValidationTrigger.OnMouseMove)
+                {
+                    Validate();
+                }
+                NativeHelper.SetCursorPos(PointToScreen(mouseDownPosition));
+            }
+        }
+
+        /// <inheritdoc/>
+        protected override void OnPreviewMouseUp(MouseButtonEventArgs e)
+        {
+            base.OnPreviewMouseUp(e);
+
+            if (ReferenceEquals(e.MouseDevice.Captured, this))
+                e.MouseDevice.Capture(null);
+
+            if (dragState == DragState.Starting)
+            {
+                Select(0, Text.Length);
+                if (!IsFocused)
+                {
+                    Keyboard.Focus(this);
+                }
+            }
+            else if (dragState == DragState.Dragging && AllowMouseDrag)
+            {
+                if (adorner != null)
+                {
+                    var adornerLayer = AdornerLayer.GetAdornerLayer(this);
+                    if (adornerLayer != null)
+                    {
+                        adornerLayer.Remove(adorner);
+                        adorner = null;
+                    }
+                }
+                Validate();
+            }
+
+            Mouse.OverrideCursor = null;
+            dragState = DragState.None;
         }
 
         protected sealed override void OnCancelled()
@@ -352,7 +528,20 @@ namespace SiliconStudio.Presentation.Controls
                 SetCurrentValue(ValueProperty, value);
             }
         }
-        
+
+        private void HostQueryCursor(object sender, QueryCursorEventArgs e)
+        {
+            var frameworkElementSource = e.Source as FrameworkElement;
+            if (!Equals(e.Source, contentHost) && (frameworkElementSource == null || !(Equals(frameworkElementSource.Parent, contentHost))))
+                return;
+
+            if (AllowMouseDrag && !IsFocused && DragCursor != null)
+            {
+                e.Cursor = DragCursor;
+                e.Handled = true;
+            }
+        }
+
         private static void OnValuePropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             ((NumericTextBox)sender).OnValuePropertyChanged((double)e.OldValue, (double)e.NewValue);
@@ -453,6 +642,53 @@ namespace SiliconStudio.Presentation.Controls
         private static void OnSmallDecreaseCommand(object sender, ExecutedRoutedEventArgs e)
         {
             UpdateValueCommand(sender, x => x.Value - x.SmallChange);
+        }
+
+        private class DragDirectionAdorner : Adorner
+        {
+            private static readonly ImageSource CursorHorizontalImageSource;
+            private static readonly ImageSource CursorVerticalImageSource;
+
+            static DragDirectionAdorner()
+            {
+                var asmName = Assembly.GetExecutingAssembly().GetName().Name;
+                CursorHorizontalImageSource = ImageExtensions.ImageSourceFromFile(string.Format("pack://application:,,,/{0};component/Resources/Images/cursor_west_east.png", asmName));
+                CursorVerticalImageSource = ImageExtensions.ImageSourceFromFile(string.Format("pack://application:,,,/{0};component/Resources/Images/cursor_north_south.png", asmName));
+            }
+
+            private Orientation dragOrientation;
+            private bool ready;
+
+            internal DragDirectionAdorner(UIElement adornedElement)
+                : base(adornedElement)
+            {
+            }
+
+            internal void SetOrientation(Orientation orientation)
+            {
+                ready = true;
+                dragOrientation = orientation;
+                InvalidateVisual();
+            }
+
+            protected override void OnRender(DrawingContext drawingContext)
+            {
+                base.OnRender(drawingContext);
+
+                if (ready == false)
+                    return;
+
+                if (dragOrientation == Orientation.Horizontal)
+                {
+                    var source = CursorHorizontalImageSource;
+                    drawingContext.DrawImage(source, new Rect(new Point(AdornedElement.RenderSize.Width - source.Width, 0.0), new Size(source.Width, source.Height)));
+                }
+                else
+                {
+                    var source = CursorVerticalImageSource;
+                    drawingContext.DrawImage(source, new Rect(new Point(AdornedElement.RenderSize.Width - source.Width, 0.0), new Size(source.Width, source.Height)));
+                }
+            }
         }
 
         // TODO: Constraint accepted characters? Legacy code that can help here:
