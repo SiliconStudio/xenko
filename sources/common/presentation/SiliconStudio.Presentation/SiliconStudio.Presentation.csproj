@@ -123,7 +123,6 @@
     <Compile Include="Interactivity\BehaviorCollection.cs" />
     <Compile Include="Behaviors\DeferredBehaviorBase.cs" />
     <Compile Include="Interactivity\Interaction.cs" />
-    <Compile Include="Controls\TimerTextBox.cs" />
     <Compile Include="Extensions\ColorExtensions.cs" />
     <Compile Include="Extensions\DrawingContextExtensions.cs" />
     <Compile Include="Extensions\FrameworkElementExtensions.cs" />
