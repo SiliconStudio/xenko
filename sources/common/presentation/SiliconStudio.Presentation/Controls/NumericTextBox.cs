@@ -324,7 +324,7 @@ namespace SiliconStudio.Presentation.Controls
 
                 if (adorner == null)
                 {
-                    adorner = new DragDirectionAdorner(this);
+                    adorner = new DragDirectionAdorner(this, contentHost.ActualWidth);
                     var adornerLayer = AdornerLayer.GetAdornerLayer(this);
                     if (adornerLayer != null)
                         adornerLayer.Add(adorner);
@@ -668,8 +668,10 @@ namespace SiliconStudio.Presentation.Controls
 
         private class DragDirectionAdorner : Adorner
         {
+            private readonly double contentWidth;
             private static readonly ImageSource CursorHorizontalImageSource;
             private static readonly ImageSource CursorVerticalImageSource;
+            private const double ImageMargin = 2.0;
 
             static DragDirectionAdorner()
             {
@@ -681,9 +683,10 @@ namespace SiliconStudio.Presentation.Controls
             private Orientation dragOrientation;
             private bool ready;
 
-            internal DragDirectionAdorner(UIElement adornedElement)
+            internal DragDirectionAdorner(UIElement adornedElement, double contentWidth)
                 : base(adornedElement)
             {
+                this.contentWidth = contentWidth;
             }
 
             internal void SetOrientation(Orientation orientation)
@@ -700,16 +703,11 @@ namespace SiliconStudio.Presentation.Controls
                 if (ready == false)
                     return;
 
-                if (dragOrientation == Orientation.Horizontal)
-                {
-                    var source = CursorHorizontalImageSource;
-                    drawingContext.DrawImage(source, new Rect(new Point(AdornedElement.RenderSize.Width - source.Width, 0.0), new Size(source.Width, source.Height)));
-                }
-                else
-                {
-                    var source = CursorVerticalImageSource;
-                    drawingContext.DrawImage(source, new Rect(new Point(AdornedElement.RenderSize.Width - source.Width, 0.0), new Size(source.Width, source.Height)));
-                }
+                VisualEdgeMode = EdgeMode.Aliased;
+                var source = dragOrientation == Orientation.Horizontal ? CursorHorizontalImageSource : CursorVerticalImageSource;
+                double left = Math.Round(contentWidth - source.Width);
+                double top = Math.Round((AdornedElement.RenderSize.Height - source.Height) * 0.5);
+                drawingContext.DrawImage(source, new Rect(new Point(left, top), new Size(source.Width, source.Height)));
             }
         }
 
