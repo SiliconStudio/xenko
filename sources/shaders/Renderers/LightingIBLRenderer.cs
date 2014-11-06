@@ -21,9 +21,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         private RenderTarget IBLRenderTarget;
 
-        private DepthStencilBuffer inputDepthStencilBuffer;
-
-        private Texture depthBufferTexture;
+        private DepthStencilBuffer readOnlyDepthBuffer;
 
         private GeometricPrimitive cubemapMesh;
 
@@ -55,24 +53,24 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         #region Constructor
 
         /// <summary>
-        /// This renderer will compute the cubemap influence on the scene. It supposes a deferred shading/rendering pipeline.
+        /// This renderer will compute the cubemap influence on the scene. It supposes a deferred shading/rendering pipeline. Will set a RenderTarget and a DepthStencilBuffer.
         /// </summary>
         /// <param name="services">The services.</param>
-        /// <param name="depthStencilBuffer">The depth buffer.</param>
+        /// <param name="depthBuffer">The depth buffer. Should be read only.</param>
         /// <param name="renderTarget">The render target. If null, a new render target will be created.</param>
         /// <param name="clearRenderTarget">A flag to enable the clear of the render target.</param>
-        public LightingIBLRenderer(IServiceRegistry services, DepthStencilBuffer depthStencilBuffer, RenderTarget renderTarget = null, bool clearRenderTarget = true) : base(services)
+        public LightingIBLRenderer(IServiceRegistry services, DepthStencilBuffer depthBuffer, RenderTarget renderTarget = null, bool clearRenderTarget = true) : base(services)
         {
-            if (depthStencilBuffer == null)
-                throw new ArgumentNullException("depthStencilBuffer");
+            if (depthBuffer == null)
+                throw new ArgumentNullException("depthBuffer");
 
-            inputDepthStencilBuffer = depthStencilBuffer;
+            readOnlyDepthBuffer = depthBuffer;
 
             if (renderTarget != null)
             {
-                if (renderTarget.Width != depthStencilBuffer.Description.Width
-                    || renderTarget.Height != depthStencilBuffer.Description.Height)
-                    throw new Exception("Size of depthStencilBuffer and renderTarget do not match.");
+                if (renderTarget.Width != readOnlyDepthBuffer.Description.Width
+                    || renderTarget.Height != readOnlyDepthBuffer.Description.Height)
+                    throw new Exception("Size of readOnlyDepthBuffer and renderTarget do not match.");
                 IBLRenderTarget = renderTarget;
                 externRenderTarget = true;
             }
@@ -89,7 +87,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         {
             // Create necessary objects
             if (IBLRenderTarget == null)
-                IBLRenderTarget = Texture2D.New(GraphicsDevice, inputDepthStencilBuffer.Description.Width, inputDepthStencilBuffer.Description.Height, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget).ToRenderTarget();
+                IBLRenderTarget = Texture2D.New(GraphicsDevice, readOnlyDepthBuffer.Description.Width, readOnlyDepthBuffer.Description.Height, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget).ToRenderTarget();
 
             cubemapMesh = GeometricPrimitive.Sphere.New(GraphicsDevice);
 
@@ -122,11 +120,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             // effect
             IBLEffect = EffectSystem.LoadEffect("CubemapIBL");
 
-            // copy of the depth buffer
-            depthBufferTexture = Texture2D.New(GraphicsDevice, inputDepthStencilBuffer.Description.Width, inputDepthStencilBuffer.Description.Height, inputDepthStencilBuffer.Description.Format, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
-
             parameters = new ParameterCollection();
-            parameters.Set(RenderTargetKeys.DepthStencilSource, depthBufferTexture);
+            parameters.Set(RenderTargetKeys.DepthStencilSource, readOnlyDepthBuffer.Texture);
 
             // Add to pipeline
             Pass.StartPass += RenderIBL;
@@ -140,7 +135,6 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
             parameters.Clear();
 
-            depthBufferTexture.Dispose();
             IBLEffect.Dispose();
             IBLDepthStencilState.Dispose();
             IBLBlendState.Dispose();
@@ -168,20 +162,17 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             if (cubemapSourceProcessor.Cubemaps.Count <= 0)
                 return;
 
-            // copy depth buffer
-            GraphicsDevice.Copy(inputDepthStencilBuffer.Texture, depthBufferTexture);
-
             // set render target
-            GraphicsDevice.SetRenderTarget(GraphicsDevice.DepthStencilBuffer, IBLRenderTarget);
+            GraphicsDevice.SetRenderTarget(readOnlyDepthBuffer, IBLRenderTarget);
             
-            // set blend state
-            GraphicsDevice.SetBlendState(IBLBlendState);
-
             // set depth state
             GraphicsDevice.SetDepthStencilState(IBLDepthStencilState);
 
             // set culling
             GraphicsDevice.SetRasterizerState(GraphicsDevice.RasterizerStates.CullFront);
+
+            // set blend state
+            GraphicsDevice.SetBlendState(IBLBlendState);
 
             foreach (var cubemap in cubemapSourceProcessor.Cubemaps)
             {
@@ -198,6 +189,13 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 // render cubemap
                 cubemapMesh.Draw(GraphicsDevice);
             }
+            
+            IBLEffect.UnbindResources();
+
+            // TODO: revert to correct old settings
+            GraphicsDevice.SetDepthStencilState(GraphicsDevice.DepthStencilStates.None);
+            GraphicsDevice.SetRasterizerState(GraphicsDevice.RasterizerStates.CullBack);
+            GraphicsDevice.SetBlendState(GraphicsDevice.BlendStates.Default);
         }
 
         #endregion

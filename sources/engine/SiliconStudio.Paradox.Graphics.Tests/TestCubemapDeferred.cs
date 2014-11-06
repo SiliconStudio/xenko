@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 
 using NUnit.Framework;
+
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.Effects;
@@ -22,12 +23,11 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         private Entity teapotEntity;
 
-        private Entity cubemapEntity0;
-        private Entity cubemapEntity1;
+        private Entity dynamicCubemapEntity;
 
         public TestCubemapDeferred()
         {
-            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_1 };
+            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0 };
         }
 
         protected override async Task LoadContent()
@@ -56,26 +56,26 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             Entities.Add(teapotEntity);
 
             var textureCube = Asset.Load<TextureCube>("uv_cube");
-            cubemapEntity0 = new Entity()
+            var staticCubemapEntity = new Entity()
             {
-                new CubemapSourceComponent(textureCube) { Enabled = true, InfluenceRadius = 1.5f, IsDynamic = false },
+                new CubemapSourceComponent(textureCube) { Enabled = true, InfluenceRadius = 2f, IsDynamic = false },
                 new TransformationComponent() { Translation = Vector3.UnitZ }
             };
-            Entities.Add(cubemapEntity0);
+            Entities.Add(staticCubemapEntity);
 
-            cubemapEntity1 = new Entity()
+            dynamicCubemapEntity = new Entity()
             {
                 new CubemapSourceComponent(textureCube) { Enabled = true, InfluenceRadius = 0.5f, IsDynamic = false },
-                new TransformationComponent() { Translation = Vector3.UnitX }
+                new TransformationComponent() { Translation = Vector3.Zero }
             };
-            Entities.Add(cubemapEntity1);
+            Entities.Add(dynamicCubemapEntity);
 
             var mainCamera = new Entity()
             {
                 new CameraComponent
                 {
                     AspectRatio = 8/4.8f,
-                    FarPlane = 1000,
+                    FarPlane = 20,
                     NearPlane = 1,
                     VerticalFieldOfView = 0.6f,
                     Target = teapotEntity,
@@ -100,7 +100,14 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             // Rendering pipeline
             RenderSystem.Pipeline.Renderers.Add(new CameraSetter(Services));
-            
+
+            RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services)
+            {
+                ClearColor = Color.CornflowerBlue,
+                EnableClearDepth = true,
+                ClearDepth = 1f
+            });
+
             // Create G-buffer pass
             var gbufferPipeline = new RenderPipeline("GBuffer");
             // Renders the G-buffer for opaque geometry.
@@ -109,10 +116,15 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             // Add sthe G-buffer pass to the pipeline.
             RenderSystem.Pipeline.Renderers.Add(gbufferProcessor);
-            IBLRenderer = new LightingIBLRenderer(Services, GraphicsDevice.DepthStencilBuffer);
+
+            var readOnlyDepthBuffer = GraphicsDevice.DepthStencilBuffer.Texture.ToDepthStencilBuffer(true);
+            IBLRenderer = new LightingIBLRenderer(Services, readOnlyDepthBuffer);
             RenderSystem.Pipeline.Renderers.Add(IBLRenderer);
-            RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services) { ClearColor = Color.CornflowerBlue });
-            RenderSystem.Pipeline.Renderers.Add(new ModelRenderer(Services, "CubemapIBLEffect"));
+            RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services)
+            {
+                ClearColor = Color.CornflowerBlue,
+                EnableClearDepth = false,
+            });
             RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = ShowIBL });
         }
 
@@ -129,8 +141,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 await Script.NextFrame();
 
                 teapotEntity.Transformation.Rotation = Quaternion.RotationY((float)(2 * Math.PI * UpdateTime.Total.TotalMilliseconds / 5000.0f));
-                cubemapEntity0.Transformation.Translation = new Vector3(0, 0, 1 + (float)Math.Cos(2 * Math.PI * UpdateTime.Total.TotalMilliseconds / 5000.0f));
-                cubemapEntity1.Transformation.Translation = new Vector3(2 * (float)Math.Sin(2 * Math.PI * UpdateTime.Total.TotalMilliseconds / 7000.0f), 0, 0);
+                dynamicCubemapEntity.Transformation.Translation = new Vector3(2f * (float)Math.Sin(2 * Math.PI * UpdateTime.Total.TotalMilliseconds / 15000.0f), 0, 0);
             }
         }
 

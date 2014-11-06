@@ -7,7 +7,6 @@ class CubemapIBLWithRoughness : CubemapIBL, MaterialRoughnessBase
 {
     override float4 SampleCubemap(float3 samplingDir)
     {
-        // TODO: roughness should come from the GBuffer
         uint width, height, numberOfLevels;
         Cubemap.GetDimensions(0, width, height, numberOfLevels);
         return Cubemap.SampleLevel(Texturing.LinearSampler, samplingDir, numberOfLevels * GetRoughness());
