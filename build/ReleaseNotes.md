@@ -7,6 +7,7 @@ Release date: 2014/11/??
 
 #### Enhancements
 - Studio: Property grids have been reworked to be more efficient and easily extendable.
+- Studio: Numeric input controls have been improved.
 
 #### Issues fixed
 - Core: EnumerableExtensions.LastIndexOf() wasn't working properly ([#62](https://github.com/SiliconStudio/paradox/issues/62)).

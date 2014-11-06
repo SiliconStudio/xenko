@@ -671,7 +671,6 @@ namespace SiliconStudio.Presentation.Controls
             private readonly double contentWidth;
             private static readonly ImageSource CursorHorizontalImageSource;
             private static readonly ImageSource CursorVerticalImageSource;
-            private const double ImageMargin = 2.0;
 
             static DragDirectionAdorner()
             {
