@@ -13,6 +13,12 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 {
     public class LightingIBLRenderer : Renderer
     {
+        #region Public static members
+
+        public static readonly ParameterKey<Texture> IBLLightingTexture = ParameterKeys.New<Texture>();
+
+        #endregion
+
         #region Private members
 
         private bool clearTarget;
@@ -88,6 +94,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             // Create necessary objects
             if (IBLRenderTarget == null)
                 IBLRenderTarget = Texture2D.New(GraphicsDevice, readOnlyDepthBuffer.Description.Width, readOnlyDepthBuffer.Description.Height, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget).ToRenderTarget();
+
+            GraphicsDevice.Parameters.Add(LightingIBLRenderer.IBLLightingTexture, IBLRenderTarget.Texture);
 
             cubemapMesh = GeometricPrimitive.Sphere.New(GraphicsDevice);
 

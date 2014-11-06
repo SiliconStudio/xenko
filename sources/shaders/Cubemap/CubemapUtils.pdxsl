@@ -70,13 +70,13 @@ class CubemapUtils
         return reflectionPoint + minLambda * samplingDir;
     }
 
-    float3 ParallaxCorrectionSphere(float3 samplingDir, float3 reflectionPoint, float3 cubemapCenter, float cubemapRange)
+    float3 ParallaxCorrectionSphere(float3 samplingDir, float3 reflectionPoint, float3 cubemapCenter, float cubemapRadius)
     {
         samplingDir = normalize(samplingDir);
         reflectionPoint -= cubemapCenter;
         
         float b = 2 * dot(reflectionPoint, samplingDir);
-        float c = dot(reflectionPoint, reflectionPoint) - cubemapRange * cubemapRange;
+        float c = dot(reflectionPoint, reflectionPoint) - cubemapRadius * cubemapRadius;
         float sqrtDelta = sqrt(b*b - 4*c);
         float lambda = 0.5 * max(-b - sqrtDelta, -b + sqrtDelta);
 
