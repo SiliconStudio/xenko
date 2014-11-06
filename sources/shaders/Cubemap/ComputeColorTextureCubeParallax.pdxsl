@@ -19,7 +19,7 @@ class ComputeColorTextureCubeParallax<TextureCube TTexturePara> : ComputeColorTe
 
         // parallax correction.
         float4 reflectionPoint = mul(float4(samplePos, 1), ViewInverse);
-        float3 correctedSamplingDir = CubemapUtils.ParallaxCorrection(samplingDir, reflectionPoint.xyz / reflectionPoint.w, CubemapCenterWS, CubemapRange);
+        float3 correctedSamplingDir = CubemapUtils.ParallaxCorrectionCube(samplingDir, reflectionPoint.xyz / reflectionPoint.w, CubemapCenterWS, CubemapRange);
         
         return correctedSamplingDir;
     }

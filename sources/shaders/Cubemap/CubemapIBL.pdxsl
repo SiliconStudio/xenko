@@ -26,7 +26,7 @@ class CubemapIBL : ShadingBase, TransformationWAndVP, Transformation, PositionVS
             discard;
 
         // parallax correction done in view space
-        samplingDirVS = CubemapUtils.ParallaxCorrection(samplingDirVS, positionVS, cubemapPositionVS4.xyz / cubemapPositionVS4.w, CubemapRadius);
+        samplingDirVS = CubemapUtils.ParallaxCorrectionSphere(samplingDirVS, positionVS, cubemapPositionVS4.xyz / cubemapPositionVS4.w, CubemapRadius);
         float3 samplingDir = mul(float4(samplingDirVS, 0), ViewInverse).xyz;
 
         // always flip z

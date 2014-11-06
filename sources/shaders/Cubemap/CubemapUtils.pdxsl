@@ -56,7 +56,7 @@ class CubemapUtils
         return 0;
     }
 
-    float3 ParallaxCorrection(float3 samplingDir, float3 reflectionPoint, float3 cubemapCenter, float cubemapRange)
+    float3 ParallaxCorrectionCube(float3 samplingDir, float3 reflectionPoint, float3 cubemapCenter, float cubemapRange)
     {
         // TODO: evolve to a more generic transformation (rotation, scale of the BB)
         reflectionPoint -= cubemapCenter;
@@ -68,5 +68,19 @@ class CubemapUtils
 
         // no need to normalize
         return reflectionPoint + minLambda * samplingDir;
+    }
+
+    float3 ParallaxCorrectionSphere(float3 samplingDir, float3 reflectionPoint, float3 cubemapCenter, float cubemapRange)
+    {
+        samplingDir = normalize(samplingDir);
+        reflectionPoint -= cubemapCenter;
+        
+        float b = 2 * dot(reflectionPoint, samplingDir);
+        float c = dot(reflectionPoint, reflectionPoint) - cubemapRange * cubemapRange;
+        float sqrtDelta = sqrt(b*b - 4*c);
+        float lambda = 0.5 * max(-b - sqrtDelta, -b + sqrtDelta);
+
+        // no need to normalize
+        return reflectionPoint + lambda * samplingDir;
     }
 };
