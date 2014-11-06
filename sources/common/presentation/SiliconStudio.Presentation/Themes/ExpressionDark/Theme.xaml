@@ -1720,7 +1720,6 @@
     </Style>
     
     <Style TargetType="ctrl:TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-        <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ctrl:TextBox">
@@ -1751,9 +1750,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="ctrl:TimerTextBox" BasedOn="{StaticResource {x:Type ctrl:TextBox}}"/>
-
-    <Style TargetType="ctrl:NumericTextBox" BasedOn="{StaticResource {x:Type ctrl:TextBox}}">
+    <Style TargetType="ctrl:NumericTextBox" BasedOn="{StaticResource {x:Type TextBox}}">
         <Setter Property="BorderThickness" Value="1,1,1,1"/>
         <Setter Property="Padding" Value="1,1,1,1"/>
         <Setter Property="SelectAllOnFocus" Value="True"/>
@@ -1780,10 +1777,7 @@
                             </UniformGrid>
                         </Border>
                         <Border BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}" CornerRadius="4">
-                            <Grid>
-                                <ScrollViewer x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Padding="{TemplateBinding Padding}"  Visibility="{TemplateBinding IsFocused, Converter={cvt:VisibleOrCollapsed}}"/>
-                                <TextBlock x:Name="PART_TrimmedText" Text="{TemplateBinding TrimmedText}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="3,2" Focusable="False" Visibility="{TemplateBinding IsFocused, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                            </Grid>
+                            <ScrollViewer x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Padding="{TemplateBinding Padding}"/>
                         </Border>
                     </DockPanel>
                     <ControlTemplate.Triggers>
@@ -1791,7 +1785,7 @@
                             <Setter TargetName="upDownButtons" Property="Visibility" Value="Visible"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="PART_TrimmedText" Property="Foreground" Value="Gray"/>
+                            <Setter Property="Foreground" Value="Gray"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -1828,10 +1822,7 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <Border BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}" CornerRadius="4">
-                                <Grid>
-                                    <ScrollViewer x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Padding="{TemplateBinding Padding}" Visibility="{TemplateBinding IsFocused, Converter={cvt:VisibleOrCollapsed}}"/>
-                                    <TextBlock x:Name="PART_TrimmedText" Text="{TemplateBinding TrimmedText}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="3,2" Focusable="False" Visibility="{TemplateBinding IsFocused, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                                </Grid>
+                                <ScrollViewer x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Padding="{TemplateBinding Padding}"/>
                             </Border>
                             <Rectangle x:Name="range" Grid.Row="1" Height="3" Fill="{TemplateBinding RangeIndicatorBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                                 <Rectangle.RenderTransform>
@@ -1848,7 +1839,7 @@
                             <Setter TargetName="upDownButtons" Property="Visibility" Value="Visible"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="PART_TrimmedText" Property="Foreground" Value="Gray"/>
+                            <Setter Property="Foreground" Value="Gray"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -3894,7 +3885,7 @@
                                 </ToggleButton>
                             </ToolBar>
                             <ToolBar ToolBarTray.IsLocked="True" Header="Search:" Visibility="{Binding CanSearchLog, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:VisibleOrCollapsed}}">
-                                    <ctrl:TimerTextBox Width="150" Text="{Binding SearchToken, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=OneWayToSource}" WatermarkContent="Search"/>
+                                <ctrl:TextBox UseTimedValidation="True" Width="150" Text="{Binding SearchToken, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=OneWayToSource}" WatermarkContent="Search"/>
                                 <Button x:Name="PART_PreviousResult">
                                     <Path Width="8" Height="8" Stretch="Uniform" Fill="{StaticResource TextBrush}" Data="{StaticResource GeometryPrevious}"/>
                                 </Button>

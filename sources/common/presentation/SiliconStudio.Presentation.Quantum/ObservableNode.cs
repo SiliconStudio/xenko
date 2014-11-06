@@ -171,7 +171,8 @@ namespace SiliconStudio.Presentation.Quantum
         /// Moves the node by setting it a new parent.
         /// </summary>
         /// <param name="newParent">The new parent of the node once moved.</param>
-        public void Move(IObservableNode newParent)
+        /// <param name="newName">The new name to give to the node once moved. This will modify its path. If <c>null</c>, it does not modify the name.</param>
+        public void Move(IObservableNode newParent, string newName = null)
         {
             if (this is CombinedObservableNode)
                 throw new InvalidOperationException("A CombinedObservableNode cannot be moved.");
@@ -185,16 +186,22 @@ namespace SiliconStudio.Presentation.Quantum
                     throw new InvalidOperationException("A node cannot be moved into itself or one of its children.");
                 parent = (ObservableNode)parent.Parent;
             }
-            
+
+            if (newParent.Children.Any(x => (newName == null && x.Name == Name) || x.Name == newName))
+                throw new InvalidOperationException("Unable to move this node, a node with the same name already exists.");
+
             if (Parent != null)
             {
                 parent = (ObservableNode)Parent;
                 parent.RemoveChild(this);
             }
 
+            if (newName != null)
+            {
+                Name = newName;
+            }
             Parent = newParent;
             ((ObservableNode)newParent).AddChild(this);
-
             UpdateCommandPath();
         }
         

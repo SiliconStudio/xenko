@@ -25,10 +25,10 @@ namespace SiliconStudio.Presentation.Controls
     }
 
     /// <summary>
-    /// A specialization of the <see cref="TextBox"/> control that can be used for numeric values.
+    /// A specialization of the <see cref="TextBoxBase"/> control that can be used for numeric values.
     /// It contains a <see cref="Value"/> property that is updated on validation.
     /// </summary>
-    public class NumericTextBox : TextBox
+    public class NumericTextBox : TextBoxBase
     {
         public enum RepeatButtons
         {
@@ -180,7 +180,7 @@ namespace SiliconStudio.Presentation.Controls
         /// Gets or sets whether to display Up and Down buttons on the side of the <see cref="NumericTextBox"/>.
         /// </summary>
         public bool DisplayUpDownButtons { get { return (bool)GetValue(DisplayUpDownButtonsProperty); } set { SetValue(DisplayUpDownButtonsProperty, value); } }
-        
+
         /// <summary>
         /// Raised when the <see cref="Value"/> property has changed.
         /// </summary>
@@ -306,7 +306,7 @@ namespace SiliconStudio.Presentation.Controls
         {
             int decimalPlaces = DecimalPlaces;
             double coercedValue = decimalPlaces < 0 ? value : Math.Round(value, decimalPlaces);
-            return coercedValue.ToString();
+            return coercedValue.ToString(CultureInfo.InvariantCulture);
         }
 
         private void RepeatButtonIsPressedChanged(object sender, EventArgs e)

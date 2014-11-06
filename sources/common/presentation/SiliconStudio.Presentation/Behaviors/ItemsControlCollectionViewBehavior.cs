@@ -16,25 +16,13 @@ namespace SiliconStudio.Presentation.Behaviors
 
         public static readonly DependencyProperty GroupingPropertyNameProperty = DependencyProperty.Register("GroupingPropertyName", typeof(string), typeof(ItemsControlCollectionViewBehavior), new PropertyMetadata(null, GroupingPropertyNameChanged));
 
-        public static readonly DependencyProperty FilterPredicateProperty = DependencyProperty.Register("FilterPredicate", typeof(Predicate<object>), typeof(ItemsControlCollectionViewBehavior), new PropertyMetadata(null, FiterPredicateChanged));
+        public static readonly DependencyProperty FilterPredicateProperty = DependencyProperty.Register("FilterPredicate", typeof(Predicate<object>), typeof(ItemsControlCollectionViewBehavior), new PropertyMetadata(null, FilterPredicateChanged));
 
         public string GroupingPropertyName { get { return (string)GetValue(GroupingPropertyNameProperty); } set { SetValue(GroupingPropertyNameProperty, value); } }
   
         public Predicate<object> FilterPredicate { get { return (Predicate<object>)GetValue(FilterPredicateProperty); } set { SetValue(FilterPredicateProperty, value); } }
 
         public IValueConverter GroupingPropertyConverter { get; set; }
-
-        private static void GroupingPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var behavior = (ItemsControlCollectionViewBehavior)d;
-            behavior.UpdateCollectionView();
-        }
-
-        private static void FiterPredicateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var behavior = (ItemsControlCollectionViewBehavior)d;
-            behavior.UpdateCollectionView();
-        }
 
         protected override void OnAttached()
         {
@@ -50,34 +38,49 @@ namespace SiliconStudio.Presentation.Behaviors
             base.OnDetaching();
         }
 
-        private void ItemsSourceChanged(object sender, EventArgs e)
-        {
-            UpdateCollectionView();
-        }
-
         private void UpdateCollectionView()
         {
             if (AssociatedObject != null && AssociatedObject.ItemsSource != null)
             {
                 var collectionView = (CollectionView)CollectionViewSource.GetDefaultView(AssociatedObject.ItemsSource);
                 if (collectionView == null) throw new InvalidOperationException("CollectionViewSource.GetDefaultView returned null for the items source of the associated object.");
-                bool removeGrouping = string.IsNullOrWhiteSpace(GroupingPropertyName);
-                if (collectionView.CanGroup)
+                using (collectionView.DeferRefresh())
                 {
-                    if (collectionView.GroupDescriptions == null) throw new InvalidOperationException("CollectionView does not have a group description collection.");
-                    collectionView.GroupDescriptions.Clear();
-
-                    if (!removeGrouping)
+                    bool removeGrouping = string.IsNullOrWhiteSpace(GroupingPropertyName);
+                    if (collectionView.CanGroup)
                     {
-                        var groupDescription = new PropertyGroupDescription(GroupingPropertyName, GroupingPropertyConverter);
-                        collectionView.GroupDescriptions.Add(groupDescription);
+                        if (collectionView.GroupDescriptions == null) throw new InvalidOperationException("CollectionView does not have a group description collection.");
+                        collectionView.GroupDescriptions.Clear();
+
+                        if (!removeGrouping)
+                        {
+                            var groupDescription = new PropertyGroupDescription(GroupingPropertyName, GroupingPropertyConverter);
+                            collectionView.GroupDescriptions.Add(groupDescription);
+                        }
+                    }
+                    if (collectionView.CanFilter)
+                    {
+                        collectionView.Filter = FilterPredicate;
                     }
                 }
-                if (collectionView.CanFilter)
-                {
-                    collectionView.Filter = FilterPredicate;
-                }
             }
+        }
+
+        private void ItemsSourceChanged(object sender, EventArgs e)
+        {
+            UpdateCollectionView();
+        }
+
+        private static void GroupingPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var behavior = (ItemsControlCollectionViewBehavior)d;
+            behavior.UpdateCollectionView();
+        }
+
+        private static void FilterPredicateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var behavior = (ItemsControlCollectionViewBehavior)d;
+            behavior.UpdateCollectionView();
         }
     }
 }

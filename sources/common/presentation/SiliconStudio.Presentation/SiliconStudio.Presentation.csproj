@@ -46,6 +46,10 @@
     <Compile Include="Commands\DisabledCommand.cs" />
     <Compile Include="Controls\FilteringComboBox.cs" />
     <Compile Include="Controls\MatrixEditor.cs" />
+    <Compile Include="Controls\PropertyView.cs" />
+    <Compile Include="Controls\PropertyViewItem.cs" />
+    <Compile Include="Controls\PropertyViewItemEventArgs.cs" />
+    <Compile Include="Controls\TextBoxBase.cs" />
     <Compile Include="Core\AnonymousComparer.cs" />
     <Compile Include="Core\AnonymousEqualityComparer.cs" />
     <Compile Include="Behaviors\CharInputBehavior.cs" />
@@ -119,7 +123,6 @@
     <Compile Include="Interactivity\BehaviorCollection.cs" />
     <Compile Include="Behaviors\DeferredBehaviorBase.cs" />
     <Compile Include="Interactivity\Interaction.cs" />
-    <Compile Include="Controls\TimerTextBox.cs" />
     <Compile Include="Extensions\ColorExtensions.cs" />
     <Compile Include="Extensions\DrawingContextExtensions.cs" />
     <Compile Include="Extensions\FrameworkElementExtensions.cs" />

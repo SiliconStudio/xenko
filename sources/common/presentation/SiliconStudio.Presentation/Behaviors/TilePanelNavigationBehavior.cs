@@ -90,12 +90,12 @@ namespace SiliconStudio.Presentation.Behaviors
                 case Key.PageUp:
                     if (AssociatedObject.Orientation == Orientation.Vertical)
                     {
-                        var itemHeight = AssociatedObject.LargestItemSize.Height + AssociatedObject.MinimumItemSpacing * 2.0f;
+                        var itemHeight = AssociatedObject.ItemSlotSize.Height + AssociatedObject.MinimumItemSpacing * 2.0f;
                         moved = MoveToPreviousLineItem((int)(AssociatedObject.ViewportHeight / itemHeight));
                     }
                     else
                     {
-                        var itemWidth = AssociatedObject.LargestItemSize.Width + AssociatedObject.MinimumItemSpacing * 2.0f;
+                        var itemWidth = AssociatedObject.ItemSlotSize.Width + AssociatedObject.MinimumItemSpacing * 2.0f;
                         moved = MoveToPreviousLineItem((int)(AssociatedObject.ViewportWidth / itemWidth));
                     }
                     break;
@@ -103,12 +103,12 @@ namespace SiliconStudio.Presentation.Behaviors
                 case Key.PageDown:
                     if (AssociatedObject.Orientation == Orientation.Vertical)
                     {
-                        var itemHeight = AssociatedObject.LargestItemSize.Height + AssociatedObject.MinimumItemSpacing * 2.0f;
+                        var itemHeight = AssociatedObject.ItemSlotSize.Height + AssociatedObject.MinimumItemSpacing * 2.0f;
                         moved = MoveToNextLineItem((int)(AssociatedObject.ViewportHeight / itemHeight));
                     }
                     else
                     {
-                        var itemWidth = AssociatedObject.LargestItemSize.Width + AssociatedObject.MinimumItemSpacing * 2.0f;
+                        var itemWidth = AssociatedObject.ItemSlotSize.Width + AssociatedObject.MinimumItemSpacing * 2.0f;
                         moved = MoveToNextLineItem((int)(AssociatedObject.ViewportWidth / itemWidth));
                     }
                     break;

@@ -11,7 +11,7 @@ using SiliconStudio.Core.Serialization.Serializers;
 namespace SiliconStudio.Core
 {
     /// <summary>
-    /// Represents an object that could hold tag properties.
+    /// Represents a container that can hold properties, lightweight to embed (lazy initialized).
     /// </summary>
     /// <remarks>
     /// Tag properties system purpose is to allow binding of properties that aren't logically supposed to be
@@ -21,9 +21,8 @@ namespace SiliconStudio.Core
     /// And the other well known solution, which consist of maintaining a Dictionary of object to properties
     /// isn't really nice either (especially with non-deterministic object destruction, it's hard to clean it up, would require lot of events).
     /// As a result, a specific system has been implemented.
-    /// A class that could hold such tag properties should either inherits from <see cref="PropertyContainer"/>,
-    /// or have an instance of it as a member.
-    /// An cool feature of this system is that if a property doesn't exist, it could be generated at first access from a delegate or come from a default value.
+    /// A class that could hold such tag properties should have an instance of <see cref="PropertyContainer"/> as a mutable field member.
+    /// An cool feature of this system is that if a property doesn't exist, it could be generated during first access from a delegate or come from a default value.
     /// </remarks>
     [DataContract]
     [DataSerializer(typeof(PropertyContainer.Serializer))]

@@ -83,7 +83,7 @@ namespace SiliconStudio.Core.Extensions
             if (list != null)
             {
                 // Faster search for lists.
-                for (int i = list.Count - 1; i > 0; --i)
+                for (int i = list.Count - 1; i >= 0; --i)
                 {
                     if (predicate(list[i]))
                         return i;
@@ -91,13 +91,14 @@ namespace SiliconStudio.Core.Extensions
                 return -1;
             }
             int index = 0;
+            int lastIndex = -1;
             foreach (T item in source)
             {
                 if (predicate(item))
-                    return index;
+                    lastIndex = index;
                 index++;
             }
-            return -1;
+            return lastIndex;
         }
 
         /// <summary>
