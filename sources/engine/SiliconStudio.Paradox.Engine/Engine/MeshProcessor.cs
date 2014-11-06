@@ -52,6 +52,10 @@ namespace SiliconStudio.Paradox.Engine
             foreach (var pipeline in renderSystem.Pipelines)
             {
                 var renderModel = new RenderModel(pipeline, associatedData.ModelComponent.Model, associatedData.ModelComponent.Parameters);
+
+                if (renderModel.InternalMeshes == null)
+                    continue;
+
                 var meshRenderState = pipeline.GetOrCreateMeshRenderState();
 
                 // Register RenderModel
