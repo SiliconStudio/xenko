@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -11,6 +12,7 @@ namespace SiliconStudio.Presentation.Controls
     /// A specialization of the <see cref="NumericTextBox"/> class that allows to uses the mouse to drag the value in the range defined by the
     /// <see cref="NumericTextBox.Minimum"/> and the <see cref="NumericTextBox.Maximum"/> properties, just like a <see cref="Slider"/>.
     /// </summary>
+    [Obsolete("This control is deprecated and will be removed in the future.")]
     public class SliderTextBox : NumericTextBox
     {
 

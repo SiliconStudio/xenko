@@ -170,6 +170,10 @@ namespace SiliconStudio.Presentation.Controls
         static NumericTextBox()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(NumericTextBox), new FrameworkPropertyMetadata(typeof(NumericTextBox)));
+            HorizontalScrollBarVisibilityProperty.OverrideMetadata(typeof(NumericTextBox), new FrameworkPropertyMetadata(ScrollBarVisibility.Hidden, OnForbiddenPropertyChanged));
+            VerticalScrollBarVisibilityProperty.OverrideMetadata(typeof(NumericTextBox), new FrameworkPropertyMetadata(ScrollBarVisibility.Hidden, OnForbiddenPropertyChanged));
+            AcceptsReturnProperty.OverrideMetadata(typeof(NumericTextBox), new FrameworkPropertyMetadata(false, OnForbiddenPropertyChanged));
+            AcceptsTabProperty.OverrideMetadata(typeof(NumericTextBox), new FrameworkPropertyMetadata(false, OnForbiddenPropertyChanged));
 
             // Since the NumericTextBox is not focusable itself, we have to bind the commands to the inner text box of the control.
             // The handlers will then find the parent that is a NumericTextBox and process the command on this control if it is found.
@@ -244,7 +248,7 @@ namespace SiliconStudio.Presentation.Controls
         public Cursor DragCursor { get { return (Cursor)GetValue(DragCursorProperty); } set { SetValue(DragCursorProperty, value); } }
 
         /// <summary>
-        /// Gets or sets when the <see cref="SliderTextBox"/> should be validated when the user uses the mouse to change its value.
+        /// Gets or sets when the <see cref="NumericTextBox"/> should be validated when the user uses the mouse to change its value.
         /// </summary>
         public MouseValidationTrigger MouseValidationTrigger { get { return (MouseValidationTrigger)GetValue(MouseValidationTriggerProperty); } set { SetValue(MouseValidationTriggerProperty, value); } }
         
@@ -650,6 +654,16 @@ namespace SiliconStudio.Presentation.Controls
         private static void OnSmallDecreaseCommand(object sender, ExecutedRoutedEventArgs e)
         {
             UpdateValueCommand(sender, x => x.Value - x.SmallChange);
+        }
+
+        private static void OnForbiddenPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var metadata = e.Property.GetMetadata(d);
+            if (!Equals(e.NewValue, metadata.DefaultValue))
+            {
+                var message = string.Format("The value of the property '{0}' cannot be different from the value '{1}'", e.Property.Name, metadata.DefaultValue);
+                throw new InvalidOperationException(message);
+            }
         }
 
         private class DragDirectionAdorner : Adorner
