@@ -23,39 +23,6 @@
     <!-- ### EditableListBox ################################################################################################################################################# -->
     <SolidColorBrush x:Key="GlyphBrush" Color="Black"/>
     
-    <Style x:Key="DefaultTextBoxStyle" TargetType="ctrl:TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="ctrl:TextBox">
-                    <mwt:ListBoxChrome Background="{TemplateBinding Panel.Background}" BorderBrush="{TemplateBinding Border.BorderBrush}" BorderThickness="{TemplateBinding Border.BorderThickness}" RenderMouseOver="{TemplateBinding UIElement.IsMouseOver}" RenderFocused="{TemplateBinding UIElement.IsKeyboardFocusWithin}" Name="Bd" SnapsToDevicePixels="True">
-                        <Grid Focusable="False">
-                            <ScrollViewer x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Padding="{TemplateBinding Padding}" Visibility="{TemplateBinding IsFocused, Converter={cvt:VisibleOrCollapsed}}"/>
-                            <ContentControl x:Name="Watermark" Content="{TemplateBinding WatermarkContent}" ContentTemplate="{TemplateBinding WatermarkContentTemplate}" VerticalAlignment="Center" Margin="6,2,2,2" Focusable="False"/>
-                            <TextBlock x:Name="PART_TrimmedText" Text="{TemplateBinding TrimmedText}" Cursor="IBeam" Margin="3,1" Focusable="False" Visibility="{TemplateBinding IsFocused, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                        </Grid>
-                    </mwt:ListBoxChrome>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="HasText" Value="True">
-                            <Setter TargetName="Watermark" Property="Visibility" Value="Hidden"/>
-                        </Trigger>
-                        <Trigger Property="UIElement.IsEnabled" Value="False">
-                            <Setter TargetName="Bd" Property="Panel.Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
-                            <Setter Property="TextElement.Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
-                            <Setter TargetName="PART_TrimmedText" Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-        <Setter Property="WatermarkContentTemplate">
-            <Setter.Value>
-                <DataTemplate>
-                    <TextBlock Text="{Binding Mode=OneTime}" IsHitTestVisible="False" FontStyle="Italic"/>
-                </DataTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
     <Style x:Key="PropertyExpanderStyle" TargetType="{x:Type Expander}">
         <Setter Property="Padding" Value="10,0,0,0"/>
         <Setter Property="Template">
@@ -183,6 +150,39 @@
         </Setter>-->
     </Style>
 
+    <Style x:Key="DefaultTextBoxStyle" TargetType="ctrl:TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ctrl:TextBox">
+                    <mwt:ListBoxChrome Background="{TemplateBinding Panel.Background}" BorderBrush="{TemplateBinding Border.BorderBrush}" BorderThickness="{TemplateBinding Border.BorderThickness}" RenderMouseOver="{TemplateBinding UIElement.IsMouseOver}" RenderFocused="{TemplateBinding UIElement.IsKeyboardFocusWithin}" Name="Bd" SnapsToDevicePixels="True">
+                        <Grid Focusable="False">
+                            <ScrollViewer x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Padding="{TemplateBinding Padding}" Visibility="{TemplateBinding IsFocused, Converter={cvt:VisibleOrCollapsed}}"/>
+                            <ContentControl x:Name="Watermark" Content="{TemplateBinding WatermarkContent}" ContentTemplate="{TemplateBinding WatermarkContentTemplate}" VerticalAlignment="Center" Margin="6,2,2,2" Focusable="False"/>
+                            <TextBlock x:Name="PART_TrimmedText" Text="{TemplateBinding TrimmedText}" Cursor="IBeam" Margin="3,1" Focusable="False" Visibility="{TemplateBinding IsFocused, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Grid>
+                    </mwt:ListBoxChrome>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="HasText" Value="True">
+                            <Setter TargetName="Watermark" Property="Visibility" Value="Hidden"/>
+                        </Trigger>
+                        <Trigger Property="UIElement.IsEnabled" Value="False">
+                            <Setter TargetName="Bd" Property="Panel.Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
+                            <Setter Property="TextElement.Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                            <Setter TargetName="PART_TrimmedText" Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="WatermarkContentTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Mode=OneTime}" IsHitTestVisible="False" FontStyle="Italic"/>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="ctrl:TextBox" BasedOn="{StaticResource DefaultTextBoxStyle}"/>
 
     <Style TargetType="ctrl:NumericTextBox" BasedOn="{StaticResource {x:Type TextBox}}">
@@ -207,55 +207,6 @@
                         </DockPanel>
                     </mwt:ListBoxChrome>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="DisplayUpDownButtons" Value="True">
-                            <Setter TargetName="upDownButtons" Property="Visibility" Value="Visible"/>
-                        </Trigger>
-                        <Trigger Property="UIElement.IsEnabled" Value="False">
-                            <Setter TargetName="Bd" Property="Panel.Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
-                            <Setter Property="TextElement.Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style TargetType="ctrl:SliderTextBox" BasedOn="{StaticResource {x:Type ctrl:NumericTextBox}}">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="ctrl:SliderTextBox">
-                    <DockPanel LastChildFill="True" Focusable="False">
-                        <UniformGrid x:Name="upDownButtons" Rows="2" DockPanel.Dock="Right" Focusable="False" Visibility="Collapsed" MaxWidth="20">
-                            <RepeatButton x:Name="PART_IncreaseButton" Command="{x:Static ctrl:NumericTextBox.SmallIncreaseCommand}">
-                                <Grid Margin="0" Background="Transparent">
-                                    <Path HorizontalAlignment="Stretch" Width="Auto" Height="Auto" Fill="{StaticResource GlyphBrush}" Stretch="Uniform" Stroke="{StaticResource GlyphBrush}" StrokeThickness="1" Data="M-2,1 L2,1 0,-1 z"/>
-                                </Grid>
-                            </RepeatButton>
-                            <RepeatButton x:Name="PART_DecreaseButton" Command="{x:Static ctrl:NumericTextBox.SmallDecreaseCommand}">
-                                <Grid Margin="0" Background="Transparent">
-                                    <Path HorizontalAlignment="Stretch" Width="Auto" Height="Auto" Fill="{StaticResource GlyphBrush}" Stretch="Uniform" Stroke="{StaticResource GlyphBrush}" StrokeThickness="1" Data="M2,-1 L-2,-1 0,1 z"/>
-                                </Grid>
-                            </RepeatButton>
-                        </UniformGrid>
-                        <Grid Focusable="False">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <mwt:ListBoxChrome Background="{TemplateBinding Panel.Background}" BorderBrush="{TemplateBinding Border.BorderBrush}" BorderThickness="{TemplateBinding Border.BorderThickness}" RenderMouseOver="{TemplateBinding UIElement.IsMouseOver}" RenderFocused="{TemplateBinding UIElement.IsKeyboardFocusWithin}" Name="Bd" SnapsToDevicePixels="True">
-                                <ScrollViewer x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Padding="{TemplateBinding Padding}"/>
-                            </mwt:ListBoxChrome>
-                            <Rectangle x:Name="range" Grid.Row="1" Height="3" Fill="{TemplateBinding RangeIndicatorBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
-                                <Rectangle.RenderTransform>
-                                    <ScaleTransform ScaleX="{Binding ValueRatio, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
-                                </Rectangle.RenderTransform>
-                            </Rectangle>
-                        </Grid>
-                    </DockPanel>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="DisplayRangeIndicator" Value="False">
-                            <Setter TargetName="range" Property="Visibility" Value="Hidden"/>
-                        </Trigger>
                         <Trigger Property="DisplayUpDownButtons" Value="True">
                             <Setter TargetName="upDownButtons" Property="Visibility" Value="Visible"/>
                         </Trigger>

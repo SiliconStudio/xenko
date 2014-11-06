@@ -461,35 +461,75 @@
                                 <RowDefinition Height="0.5*"/>
                                 <RowDefinition Height="0.5*"/>
                             </Grid.RowDefinitions>
-                            <GroupBox x:Name="RGBGroup" Header="RGBA" VerticalAlignment="Top" Grid.Column="0" HorizontalContentAlignment="Stretch" BorderThickness="0" Margin="2" Focusable="False">
+                            <GroupBox Header="RGBA" VerticalAlignment="Top" Grid.Column="0" HorizontalContentAlignment="Stretch" BorderThickness="0" Margin="2" Focusable="False">
                                 <ctrl:KeyValueGrid x:Name="RGBGrid" HorizontalAlignment="Stretch" Focusable="False">
-
-                                    <TextBlock x:Name="RedLabel" Text="R: " ToolTipService.ToolTip="Red" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
-                                    <ctrl:SliderTextBox Value="{Binding Red, RelativeSource={RelativeSource Mode=TemplatedParent}}" RangeIndicatorBrush="#FFF95A5A" SelectionBrush="#FFF95A5A" Minimum="0" Maximum="255" DisplayUpDownButtons="False" Grid.Row="0" Grid.Column="1" Margin="0,2"/>
-
-                                    <TextBlock x:Name="GreenLabel" Text="G: " ToolTipService.ToolTip="Green" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
-                                    <ctrl:SliderTextBox Value="{Binding Green, RelativeSource={RelativeSource Mode=TemplatedParent}}" RangeIndicatorBrush="#FF64ED6C" SelectionBrush="#FF64ED6C" Minimum="0" Maximum="255" DisplayUpDownButtons="False" Grid.Row="1" Grid.Column="1" Margin="0,2"/>
-
-                                    <TextBlock x:Name="BlueLabel" Text="B: " ToolTipService.ToolTip="Blue" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
-                                    <ctrl:SliderTextBox Value="{Binding Blue, RelativeSource={RelativeSource Mode=TemplatedParent}}" RangeIndicatorBrush="CornflowerBlue" SelectionBrush="CornflowerBlue" Minimum="0" Maximum="255" DisplayUpDownButtons="False" Grid.Row="2" Grid.Column="1" Margin="0,2"/>
-
-                                    <TextBlock x:Name="AlphaLabel" Text="A: " ToolTipService.ToolTip="Alpha" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
-                                    <ctrl:SliderTextBox Value="{Binding Alpha, RelativeSource={RelativeSource Mode=TemplatedParent}}" RangeIndicatorBrush="#FFBCBCBC" SelectionBrush="White" Minimum="0" Maximum="255" DisplayUpDownButtons="False" Grid.Row="3" Grid.Column="1" Margin="0,2"/>
-
+                                    <TextBlock Margin="4,0" Text="R:" ToolTipService.ToolTip="Red" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
+                                    <StackPanel Margin="0,2">
+                                        <ctrl:NumericTextBox x:Name="RedTextBox" Value="{Binding Red, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="#FFF95A5A" Minimum="0" Maximum="255" Margin="0"/>
+                                        <Rectangle Height="3" Fill="#FFF95A5A" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                            <Rectangle.RenderTransform>
+                                                <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=RedTextBox}"/>
+                                            </Rectangle.RenderTransform>
+                                        </Rectangle>
+                                    </StackPanel>
+                                    <TextBlock Margin="4,0" Text="G:" ToolTipService.ToolTip="Green" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
+                                    <StackPanel Margin="0,2">
+                                        <ctrl:NumericTextBox x:Name="GreenTextBox" Value="{Binding Green, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="#FF64ED6C" Minimum="0" Maximum="255" Margin="0"/>
+                                        <Rectangle Height="3" Fill="#FF64ED6C" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                            <Rectangle.RenderTransform>
+                                                <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=GreenTextBox}"/>
+                                            </Rectangle.RenderTransform>
+                                        </Rectangle>
+                                    </StackPanel>
+                                    <TextBlock Margin="4,0" Text="B:" ToolTipService.ToolTip="Blue" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
+                                    <StackPanel Margin="0,2">
+                                        <ctrl:NumericTextBox x:Name="BlueTextBox" Value="{Binding Blue, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="CornflowerBlue" Minimum="0" Maximum="255" Margin="0"/>
+                                        <Rectangle Height="3" Fill="CornflowerBlue" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                            <Rectangle.RenderTransform>
+                                                <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=BlueTextBox}"/>
+                                            </Rectangle.RenderTransform>
+                                        </Rectangle>
+                                    </StackPanel>
+                                    <TextBlock Margin="4,0" Text="A:" ToolTipService.ToolTip="Alpha" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
+                                    <StackPanel Margin="0,2">
+                                        <ctrl:NumericTextBox x:Name="AlphaTextBox" Value="{Binding Alpha, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="#FFBCBCBC" Minimum="0" Maximum="255" Margin="0"/>
+                                        <Rectangle Height="3" Fill="#FFBCBCBC" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                            <Rectangle.RenderTransform>
+                                                <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=AlphaTextBox}"/>
+                                            </Rectangle.RenderTransform>
+                                        </Rectangle>
+                                    </StackPanel>
                                 </ctrl:KeyValueGrid>
                             </GroupBox>
-                            <GroupBox x:Name="HSBGroup" Header="HSB" VerticalAlignment="Top" d:LayoutOverrides="Width" BorderThickness="0" Grid.Row="1" Margin="2" Focusable="False">
+                            <GroupBox Header="HSB" VerticalAlignment="Top" d:LayoutOverrides="Width" BorderThickness="0" Grid.Row="1" Margin="2" Focusable="False">
                                 <ctrl:KeyValueGrid Focusable="False">
-
-                                    <TextBlock x:Name="HueLabel" ToolTipService.ToolTip="Hue" Text="H: " Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
-                                    <ctrl:SliderTextBox Value="{Binding Hue, RelativeSource={RelativeSource Mode=TemplatedParent}}" RangeIndicatorBrush="#FFBCBCBC" Minimum="0" Maximum="360" DisplayUpDownButtons="False" DecimalPlaces="0" Grid.Row="0" Grid.Column="1" Margin="0,2"/>
-
-                                    <TextBlock x:Name="SaturationLabel" ToolTipService.ToolTip="Saturation" Text="S: " Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
-                                    <ctrl:SliderTextBox Value="{Binding Saturation, RelativeSource={RelativeSource Mode=TemplatedParent}}" RangeIndicatorBrush="#FFBCBCBC" Minimum="0" Maximum="100" DisplayUpDownButtons="False" DecimalPlaces="0" Grid.Row="1" Grid.Column="1" Margin="0,2"/>
-
-                                    <TextBlock x:Name="BrightnessLabel" ToolTipService.ToolTip="Brightness" Text="V: " Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
-                                    <ctrl:SliderTextBox Value="{Binding Brightness, RelativeSource={RelativeSource Mode=TemplatedParent}}" RangeIndicatorBrush="#FFBCBCBC" Minimum="0" Maximum="100" DisplayUpDownButtons="False" DecimalPlaces="0" Grid.Row="2" Grid.Column="1" Margin="0,2"/>
-
+                                    <TextBlock Margin="4,0" Text="H:" ToolTipService.ToolTip="Hue" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
+                                    <StackPanel Margin="0,2">
+                                        <ctrl:NumericTextBox x:Name="HueTextBox" Value="{Binding Hue, RelativeSource={RelativeSource Mode=TemplatedParent}}" DecimalPlaces="0" SelectionBrush="#FFBCBCBC" Minimum="0" Maximum="360" Margin="0"/>
+                                        <Rectangle Height="3" Fill="#FFBCBCBC" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                            <Rectangle.RenderTransform>
+                                                <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=HueTextBox}"/>
+                                            </Rectangle.RenderTransform>
+                                        </Rectangle>
+                                    </StackPanel>
+                                    <TextBlock Margin="4,0" Text="S:" ToolTipService.ToolTip="Saturation" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
+                                    <StackPanel Margin="0,2">
+                                        <ctrl:NumericTextBox x:Name="SaturationTextBox" Value="{Binding Saturation, RelativeSource={RelativeSource Mode=TemplatedParent}}" DecimalPlaces="0" SelectionBrush="#FFBCBCBC" Minimum="0" Maximum="100" Margin="0"/>
+                                        <Rectangle Height="3" Fill="#FFBCBCBC" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                            <Rectangle.RenderTransform>
+                                                <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=SaturationTextBox}"/>
+                                            </Rectangle.RenderTransform>
+                                        </Rectangle>
+                                    </StackPanel>
+                                    <TextBlock Margin="4,0" Text="V:" ToolTipService.ToolTip="Value" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
+                                    <StackPanel Margin="0,2">
+                                        <ctrl:NumericTextBox x:Name="BrightnessTextBox" Value="{Binding Brightness, RelativeSource={RelativeSource Mode=TemplatedParent}}" DecimalPlaces="0" SelectionBrush="#FFBCBCBC" Minimum="0" Maximum="100" Margin="0"/>
+                                        <Rectangle Height="3" Fill="#FFBCBCBC" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                            <Rectangle.RenderTransform>
+                                                <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=BrightnessTextBox}"/>
+                                            </Rectangle.RenderTransform>
+                                        </Rectangle>
+                                    </StackPanel>
                                 </ctrl:KeyValueGrid>
                             </GroupBox>
                         </Grid>
@@ -1789,61 +1829,6 @@
             </Setter.Value>
         </Setter>
     </Style>
-
-    <Style TargetType="ctrl:SliderTextBox" BasedOn="{StaticResource {x:Type ctrl:NumericTextBox}}">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="ctrl:SliderTextBox">
-                    <DockPanel LastChildFill="True">
-                        <Border Width="12" Height="22" Opacity="0.3" x:Name="upDownButtons" BorderBrush="{DynamicResource GlyphBrush}" BorderThickness="1" DockPanel.Dock="Right" Visibility="Collapsed">
-                            <UniformGrid Rows="2" Width="10" Height="20">
-                                <RepeatButton x:Name="PART_IncreaseButton" Command="{x:Static ctrl:NumericTextBox.SmallIncreaseCommand}">
-                                    <Grid Margin="0" Background="Transparent">
-                                        <Path Margin="2" HorizontalAlignment="Stretch" Width="Auto" Fill="{DynamicResource GlyphBrush}" Stretch="Fill" Stroke="{DynamicResource GlyphBrush}" StrokeThickness="1" Data="M5.2422477,11.132184 L11.5544,11.132184 8.6412958,4.4969033 z" RenderTransformOrigin="0.5,0.5"/>
-                                    </Grid>
-                                </RepeatButton>
-                                <RepeatButton x:Name="PART_DecreaseButton" Command="{x:Static ctrl:NumericTextBox.SmallDecreaseCommand}">
-                                    <Grid Margin="0" Background="Transparent">
-                                        <Path Margin="2" HorizontalAlignment="Stretch" Width="Auto" Fill="{DynamicResource GlyphBrush}" Stretch="Fill" Stroke="{DynamicResource GlyphBrush}" StrokeThickness="1" Data="M5.2422477,11.132184 L11.5544,11.132184 8.6412958,4.4969033 z" RenderTransformOrigin="0.5,0.5">
-                                            <Path.RenderTransform>
-                                                <RotateTransform Angle="180"/>
-                                            </Path.RenderTransform>
-                                        </Path>
-                                    </Grid>
-                                </RepeatButton>
-                            </UniformGrid>
-                        </Border>
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <Border BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}" CornerRadius="4">
-                                <ScrollViewer x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Padding="{TemplateBinding Padding}"/>
-                            </Border>
-                            <Rectangle x:Name="range" Grid.Row="1" Height="3" Fill="{TemplateBinding RangeIndicatorBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
-                                <Rectangle.RenderTransform>
-                                    <ScaleTransform ScaleX="{Binding ValueRatio, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
-                                </Rectangle.RenderTransform>
-                            </Rectangle>
-                        </Grid>
-                    </DockPanel>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="DisplayRangeIndicator" Value="False">
-                            <Setter TargetName="range" Property="Visibility" Value="Hidden"/>
-                        </Trigger>
-                        <Trigger Property="DisplayUpDownButtons" Value="True">
-                            <Setter TargetName="upDownButtons" Property="Visibility" Value="Visible"/>
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Foreground" Value="Gray"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
 
     <Color x:Key="TextBoxFocusBrush">#FF374C5C</Color>
     

@@ -132,7 +132,6 @@
     <Compile Include="Commands\AnonymousCommand.cs" />
     <Compile Include="Controls\TextBox.cs" />
     <Compile Include="Controls\NumericTextBox.cs" />
-    <Compile Include="Controls\SliderTextBox.cs" />
     <Compile Include="Controls\ScaleBar.cs" />
     <Compile Include="Extensions\DependencyObjectExtensions.cs" />
     <Compile Include="Controls\KeyValueGrid.cs" />
