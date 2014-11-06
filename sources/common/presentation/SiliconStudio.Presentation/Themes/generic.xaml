@@ -189,23 +189,23 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ctrl:NumericTextBox">
-                    <DockPanel LastChildFill="True" Focusable="False">
-                        <UniformGrid x:Name="upDownButtons" Rows="2" DockPanel.Dock="Right" Focusable="False" Visibility="Collapsed" MaxWidth="20">
-                            <RepeatButton x:Name="PART_IncreaseButton" Command="{x:Static ctrl:NumericTextBox.SmallIncreaseCommand}">
-                                <Grid Margin="0" Background="Transparent">
-                                    <Path HorizontalAlignment="Stretch" Width="Auto" Height="Auto" Fill="{StaticResource GlyphBrush}" Stretch="Uniform" Stroke="{StaticResource GlyphBrush}" StrokeThickness="1" Data="M-2,1 L2,1 0,-1 z"/>
-                                </Grid>
-                            </RepeatButton>
-                            <RepeatButton x:Name="PART_DecreaseButton" Command="{x:Static ctrl:NumericTextBox.SmallDecreaseCommand}">
-                                <Grid Margin="0" Background="Transparent">
-                                    <Path HorizontalAlignment="Stretch" Width="Auto" Height="Auto" Fill="{StaticResource GlyphBrush}" Stretch="Uniform" Stroke="{StaticResource GlyphBrush}" StrokeThickness="1" Data="M2,-1 L-2,-1 0,1 z"/>
-                                </Grid>
-                            </RepeatButton>
-                        </UniformGrid>
-                        <mwt:ListBoxChrome Background="{TemplateBinding Panel.Background}" BorderBrush="{TemplateBinding Border.BorderBrush}" BorderThickness="{TemplateBinding Border.BorderThickness}" RenderMouseOver="{TemplateBinding UIElement.IsMouseOver}" RenderFocused="{TemplateBinding UIElement.IsKeyboardFocusWithin}" Name="Bd" SnapsToDevicePixels="True">
+                    <mwt:ListBoxChrome Background="{TemplateBinding Panel.Background}" BorderBrush="{TemplateBinding Border.BorderBrush}" BorderThickness="{TemplateBinding Border.BorderThickness}" RenderMouseOver="{TemplateBinding UIElement.IsMouseOver}" RenderFocused="{TemplateBinding UIElement.IsKeyboardFocusWithin}" Name="Bd" SnapsToDevicePixels="True">
+                        <DockPanel LastChildFill="True" Focusable="False">
+                            <UniformGrid x:Name="upDownButtons" Rows="2" DockPanel.Dock="Right" Focusable="False" Visibility="Collapsed" MaxWidth="20">
+                                <RepeatButton x:Name="PART_IncreaseButton" Command="{x:Static ctrl:NumericTextBox.SmallIncreaseCommand}">
+                                    <Grid Margin="0" Background="Transparent">
+                                        <Path HorizontalAlignment="Stretch" Width="Auto" Height="Auto" Fill="{StaticResource GlyphBrush}" Stretch="Uniform" Stroke="{StaticResource GlyphBrush}" StrokeThickness="1" Data="M-2,1 L2,1 0,-1 z"/>
+                                    </Grid>
+                                </RepeatButton>
+                                <RepeatButton x:Name="PART_DecreaseButton" Command="{x:Static ctrl:NumericTextBox.SmallDecreaseCommand}">
+                                    <Grid Margin="0" Background="Transparent">
+                                        <Path HorizontalAlignment="Stretch" Width="Auto" Height="Auto" Fill="{StaticResource GlyphBrush}" Stretch="Uniform" Stroke="{StaticResource GlyphBrush}" StrokeThickness="1" Data="M2,-1 L-2,-1 0,1 z"/>
+                                    </Grid>
+                                </RepeatButton>
+                            </UniformGrid>
                             <ScrollViewer x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Padding="{TemplateBinding Padding}"/>
-                        </mwt:ListBoxChrome>
-                    </DockPanel>
+                        </DockPanel>
+                    </mwt:ListBoxChrome>
                     <ControlTemplate.Triggers>
                         <Trigger Property="DisplayUpDownButtons" Value="True">
                             <Setter TargetName="upDownButtons" Property="Visibility" Value="Visible"/>

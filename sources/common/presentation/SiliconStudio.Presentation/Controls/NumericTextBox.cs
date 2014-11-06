@@ -311,6 +311,9 @@ namespace SiliconStudio.Presentation.Controls
         {
             base.OnPreviewMouseDown(e);
 
+            if (!IsContentHostPart(e.OriginalSource))
+                return;
+
             if (AllowMouseDrag && IsReadOnly == false && IsFocused == false)
             {
                 dragState = DragState.Starting;
@@ -531,8 +534,7 @@ namespace SiliconStudio.Presentation.Controls
 
         private void HostQueryCursor(object sender, QueryCursorEventArgs e)
         {
-            var frameworkElementSource = e.Source as FrameworkElement;
-            if (!Equals(e.Source, contentHost) && (frameworkElementSource == null || !(Equals(frameworkElementSource.Parent, contentHost))))
+            if (!IsContentHostPart(e.OriginalSource))
                 return;
 
             if (AllowMouseDrag && !IsFocused && DragCursor != null)
@@ -540,6 +542,12 @@ namespace SiliconStudio.Presentation.Controls
                 e.Cursor = DragCursor;
                 e.Handled = true;
             }
+        }
+
+        private bool IsContentHostPart(object obj)
+        {
+            var frameworkElement = obj as FrameworkElement;
+            return Equals(obj, contentHost) || (frameworkElement != null && Equals(frameworkElement.Parent, contentHost));
         }
 
         private static void OnValuePropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
