@@ -35,4 +35,6 @@ class Material
 
     // Roughness of the material
     stage float Roughness;
+    float OrenNayarDistributionVariance;
+    float CookTorranceReflection;
 };

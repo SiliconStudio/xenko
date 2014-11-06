@@ -160,7 +160,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         private MeshDraw meshDraw;
 
         // External references
-        private DepthStencilBuffer depthStencilBuffer;
+        private Texture2D depthStencilTexture;
         
         // External references
         private Texture2D gbufferTexture;
@@ -169,7 +169,14 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         #region Contructor
 
-        public LightingPrepassRenderer(IServiceRegistry services, string effectName, DepthStencilBuffer depthStencilBuffer, Texture2D gbufferTexture)
+        /// <summary>
+        /// LightPrepassRenderer constructor.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        /// <param name="effectName">The name of the effect used to compute lighting.</param>
+        /// <param name="depthStencilTexture">The depth texture.</param>
+        /// <param name="gbufferTexture">The gbuffer texture.</param>
+        public LightingPrepassRenderer(IServiceRegistry services, string effectName, Texture2D depthStencilTexture, Texture2D gbufferTexture)
             : base(services)
         {
             validLights = new List<EntityLightShadow>();
@@ -192,7 +199,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             cascadeInfos = new ShadowMapCascadeReceiverInfo[16];
 
             this.effectName = effectName;
-            this.depthStencilBuffer = depthStencilBuffer;
+            this.depthStencilTexture = depthStencilTexture;
             this.gbufferTexture = gbufferTexture;
         }
 
@@ -243,7 +250,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             lightRenderTarget = lightTexture.ToRenderTarget();
 
             // Set GBuffer and depth stencil as input, as well as light texture
-            Pass.Parameters.Set(RenderTargetKeys.DepthStencilSource, depthStencilBuffer.Texture);
+            Pass.Parameters.Set(RenderTargetKeys.DepthStencilSource, depthStencilTexture);
             Pass.Parameters.Set(GBufferBaseKeys.GBufferTexture, gbufferTexture);
             Pass.Parameters.Set(LightDeferredShadingKeys.LightTexture, lightTexture);
 

@@ -17,11 +17,6 @@ namespace SiliconStudio.Paradox.Effects
         bool UseTransparentMask;
         float AlphaDiscardThreshold;
 
-        float OrenNayarRoughness;
-        float OrenNayarDistributionVariance;
-        float CookTorranceReflection;
-        float CookTorranceRoughness;
-
         ShaderMixinSource DiffuseShader;
         ShaderMixinSource SpecularShader;
         ShaderMixinSource BumpMap;
