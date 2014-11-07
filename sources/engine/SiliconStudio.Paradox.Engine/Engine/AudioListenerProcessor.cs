@@ -53,7 +53,7 @@ namespace SiliconStudio.Paradox.Engine
                                         ListenerComponent = entity.Get(AudioListenerComponent.Key) };
         }
 
-        public override void OnSystemAdd()
+        protected internal override void OnSystemAdd()
         {
             base.OnSystemAdd();
 
@@ -62,7 +62,7 @@ namespace SiliconStudio.Paradox.Engine
             audioSystem.Listeners.CollectionChanged += OnListenerCollectionChanged;
         }
 
-        public override void OnSystemRemove()
+        protected internal override void OnSystemRemove()
         {
             base.OnSystemRemove();
 

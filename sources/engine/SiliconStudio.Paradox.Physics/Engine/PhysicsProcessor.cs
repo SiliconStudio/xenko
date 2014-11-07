@@ -319,7 +319,7 @@ namespace SiliconStudio.Paradox.Physics
             }
         }
 
-        public override void OnSystemAdd()
+        protected override void OnSystemAdd()
         {
             mPhysicsSystem = (Bullet2PhysicsSystem)Services.GetSafeServiceAs<IPhysicsSystem>();
             mRenderSystem = Services.GetSafeServiceAs<RenderSystem>();
@@ -332,7 +332,7 @@ namespace SiliconStudio.Paradox.Physics
             mRenderSystem.Pipeline.EndPass += DebugShapesDraw;
         }
 
-        public override void OnSystemRemove()
+        protected override void OnSystemRemove()
         {
             //remove all elements from the engine
             foreach (var element in mElements)

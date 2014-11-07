@@ -54,12 +54,12 @@ namespace SiliconStudio.Paradox.EntityModel
         /// <summary>
         /// Run when this <see cref="EntityProcessor" /> is added to an <see cref="EntitySystem" />.
         /// </summary>
-        public abstract void OnSystemAdd();
+        protected internal abstract void OnSystemAdd();
 
         /// <summary>
         /// Run when this <see cref="EntityProcessor" /> is removed from an <see cref="EntitySystem" />.
         /// </summary>
-        public abstract void OnSystemRemove();
+        protected internal abstract void OnSystemRemove();
 
         /// <summary>
         /// Specifies weither an entity is enabled or not.
@@ -123,12 +123,12 @@ namespace SiliconStudio.Paradox.EntityModel
         }
 
         /// <inheritdoc/>
-        public override void OnSystemAdd()
+        protected internal override void OnSystemAdd()
         {
         }
 
         /// <inheritdoc/>
-        public override void OnSystemRemove()
+        protected internal override void OnSystemRemove()
         {
         }
 

@@ -67,7 +67,7 @@ namespace SiliconStudio.Paradox.Engine
         {
         }
 
-        public override void OnSystemAdd()
+        protected internal override void OnSystemAdd()
         {
             base.OnSystemAdd();
 
@@ -86,7 +86,7 @@ namespace SiliconStudio.Paradox.Engine
             };
         }
 
-        public override void OnSystemRemove()
+        protected internal override void OnSystemRemove()
         {
             base.OnSystemRemove();
 

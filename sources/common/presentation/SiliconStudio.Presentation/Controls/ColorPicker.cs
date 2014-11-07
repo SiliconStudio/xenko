@@ -374,7 +374,10 @@ namespace SiliconStudio.Presentation.Controls
             {
                 RenderColorPickerSurface();
             }
-
+            else if (colorPreviewRenderSurface != null)
+            {
+                colorPreviewRenderSurface.Fill = new SolidColorBrush(Color.ToSystemColor());
+            }
             UpdateBinding(ColorProperty);
 
             if (isInitializing)

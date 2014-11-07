@@ -33,7 +33,7 @@ namespace SiliconStudio.Paradox.Engine
         {
         }
 
-        public override void OnSystemAdd()
+        protected internal override void OnSystemAdd()
         {
             renderSystem = Services.GetSafeServiceAs<RenderSystem>();
         }

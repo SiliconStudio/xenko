@@ -57,7 +57,7 @@ namespace SiliconStudio.Paradox.Effects.Modules
 
         #region Protected methods
 
-        public override void OnSystemRemove()
+        protected override void OnSystemRemove()
         {
             foreach (var shadowMap in InternalShadowMaps)
                 shadowMap.Texture = null;

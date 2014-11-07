@@ -40,7 +40,7 @@ namespace SiliconStudio.Paradox.Engine
         }
 
         /// <inheritdoc/>
-        public override void OnSystemAdd()
+        protected internal override void OnSystemAdd()
         {
             
         }

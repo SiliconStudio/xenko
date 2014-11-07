@@ -521,7 +521,7 @@
                                             </Rectangle.RenderTransform>
                                         </Rectangle>
                                     </StackPanel>
-                                    <TextBlock Margin="4,0" Text="V:" ToolTipService.ToolTip="Value" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
+                                    <TextBlock Margin="4,0" Text="B:" ToolTipService.ToolTip="Value" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
                                     <StackPanel Margin="0,2">
                                         <ctrl:NumericTextBox x:Name="BrightnessTextBox" Value="{Binding Brightness, RelativeSource={RelativeSource Mode=TemplatedParent}}" DecimalPlaces="0" SelectionBrush="#FFBCBCBC" Minimum="0" Maximum="100" Margin="0" MouseValidationTrigger="OnMouseMove"/>
                                         <Rectangle Height="3" Fill="#FFBCBCBC" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
