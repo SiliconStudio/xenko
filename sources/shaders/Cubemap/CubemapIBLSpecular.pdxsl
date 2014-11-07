@@ -3,7 +3,7 @@
 /// <summary>
 /// Computes the lighting from the cubemap in a deferred pass.
 /// </summary>
-class CubemapIBL : ShadingBase, TransformationWAndVP, Transformation, PositionVSGBuffer, NormalVSGBuffer, Texturing
+class CubemapIBLSpecular : ShadingBase, TransformationWAndVP, Transformation, PositionVSGBuffer, NormalVSGBuffer, Texturing
 {
     // TODO: transformation
     float CubemapRadius;
@@ -16,6 +16,12 @@ class CubemapIBL : ShadingBase, TransformationWAndVP, Transformation, PositionVS
         float3 normalVS = NormalVS();
         float3 samplingDirVS = reflect(positionVS, normalVS);
         
+        // test
+        float3 specularColor = 0.15; // dielectric
+        float3 eye = -normalize(positionVS);
+        float3 fresnelTerm = Utilities.FresnelSchlick(specularColor, eye, normalVS, 1);
+        //float3 fresnelTerm = Utilities.FresnelSchlick(specularColor, eye, normalize(normalize(samplingDirVS) + eye), 1);
+
         float4 cubemapPositionVS4 = mul(float4(CubemapPosition, 1), View);
 
         // TODO: support distance for a cube or a box?
@@ -33,6 +39,7 @@ class CubemapIBL : ShadingBase, TransformationWAndVP, Transformation, PositionVS
         samplingDir.z = -samplingDir.z;
 
         float4 color = SampleCubemap(samplingDir);
+        color.xyz *= fresnelTerm;
         color.a = alpha;
 
         return color;

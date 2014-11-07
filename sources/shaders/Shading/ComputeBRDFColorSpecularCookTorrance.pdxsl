@@ -13,12 +13,12 @@ class ComputeBRDFColorSpecularCookTorrance : ComputeBRDFColorSpecularBase, Mater
         float intensity = SpecularIntensityMap.Compute().x;
 
         float3 HalfWay = normalize(eye + lightDir);
-        float EH = dot(eye, HalfWay);
-        float F = Reflection + ((1 - Reflection) * EH * EH * EH * EH * EH);
+        float EH = saturate(dot(eye, HalfWay));
+        float F = Reflection + ((1 - Reflection) * pow(EH, 5));
 
-        float HN = dot(HalfWay, normal);
-        float LN = dot(lightDir, normal);
-        float EN = dot(eye, normal);
+        float HN = saturate(dot(HalfWay, normal));
+        float LN = saturate(dot(lightDir, normal));
+        float EN = saturate(dot(eye, normal));
         float G = min (1, 2 * HN * EN / EH);
         G = min(G, 2 * HN * LN / EH);
 

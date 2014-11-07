@@ -95,8 +95,6 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             if (IBLRenderTarget == null)
                 IBLRenderTarget = Texture2D.New(GraphicsDevice, readOnlyDepthBuffer.Description.Width, readOnlyDepthBuffer.Description.Height, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget).ToRenderTarget();
 
-            GraphicsDevice.Parameters.Add(LightingIBLRenderer.IBLLightingTexture, IBLRenderTarget.Texture);
-
             cubemapMesh = GeometricPrimitive.Sphere.New(GraphicsDevice);
 
             var blendStateDescr = new BlendStateDescription()
@@ -126,7 +124,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 });
 
             // effect
-            IBLEffect = EffectSystem.LoadEffect("CubemapIBL");
+            IBLEffect = EffectSystem.LoadEffect("CubemapIBLDiffuse");
 
             parameters = new ParameterCollection();
             parameters.Set(RenderTargetKeys.DepthStencilSource, readOnlyDepthBuffer.Texture);
@@ -187,9 +185,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 // set world matrix matrices
                 // TODO: rotation of cubemap & cube mesh
                 parameters.Set(TransformationKeys.World, ComputeTransformationMatrix(cubemap.Value.InfluenceRadius, cubemap.Key.Transformation.Translation));
-                parameters.Set(CubemapIBLKeys.CubemapRadius, cubemap.Value.InfluenceRadius);
-                parameters.Set(CubemapIBLKeys.Cubemap, cubemap.Value.Texture);
-                parameters.Set(CubemapIBLKeys.CubemapPosition, cubemap.Key.Transformation.Translation);
+                parameters.Set(CubemapIBLDiffuseKeys.CubemapRadius, cubemap.Value.InfluenceRadius);
+                parameters.Set(CubemapIBLDiffuseKeys.Cubemap, cubemap.Value.Texture);
+                parameters.Set(CubemapIBLDiffuseKeys.CubemapPosition, cubemap.Key.Transformation.Translation);
 
                 // apply effect
                 IBLEffect.Apply(parameters, context.CurrentPass.Parameters);

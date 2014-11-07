@@ -91,6 +91,12 @@ class Utilities
         return specularColor + (1.0f - specularColor) * pow(1.0f - saturate(dot(eye, h)), 5.0f) * factor;
     }
 
+    // Commpute Schlick's approximation of Fresnel
+    float3 FresnelSchlickWithGloss(float3 specularColor, float3 eye, float3 h, float factor, float gloss)
+    {
+        return specularColor + (max(specularColor, gloss) - specularColor) * pow(1.0f - saturate(dot(eye, h)), 5.0f) * factor;
+    }
+
     // Computes the luminance of a color
     float Luminance(float3 color) {
         return dot(color, float3(0.2126, 0.7152, 0.0722));

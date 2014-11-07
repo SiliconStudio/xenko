@@ -7,7 +7,7 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 namespace SiliconStudio.Paradox.Effects.Modules
 {
-    public static partial class CubemapIBLKeys
+    public static partial class CubemapIBLSpecularKeys
     {
         public static readonly ParameterKey<float> CubemapRadius = ParameterKeys.New<float>();
         public static readonly ParameterKey<Vector3> CubemapPosition = ParameterKeys.New<Vector3>();

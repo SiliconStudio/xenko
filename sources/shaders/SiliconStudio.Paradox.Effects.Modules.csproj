@@ -394,11 +394,17 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>CubemapFaceDisplayNoFlip.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Cubemap\CubemapIBL.cs">
+    <Compile Include="Cubemap\CubemapIBLSpecular.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>CubemapIBL.pdxsl</DependentUpon>
+      <DependentUpon>CubemapIBLSpecular.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapIBLDiffuse.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapIBLDiffuse.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Cubemap\CubemapIBLWithRoughness.cs">
       <AutoGen>True</AutoGen>
@@ -1809,9 +1815,13 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CubemapFaceDisplayNoFlip.cs</LastGenOutput>
     </None>
-    <None Include="Cubemap\CubemapIBL.pdxsl">
+    <None Include="Cubemap\CubemapIBLSpecular.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>CubemapIBL.cs</LastGenOutput>
+      <LastGenOutput>CubemapIBLSpecular.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapIBLDiffuse.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapIBLDiffuse.cs</LastGenOutput>
     </None>
     <None Include="Cubemap\CubemapIBLWithRoughness.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
