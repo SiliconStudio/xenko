@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Physics
@@ -9,7 +10,107 @@ namespace SiliconStudio.Paradox.Physics
         internal BulletSharp.ConeTwistConstraint InternalConeTwistConstraint;
 
         /// <summary>
-        /// Sets the frames.
+        ///     Gets or sets the fix thresh.
+        /// </summary>
+        /// <value>
+        ///     The fix thresh.
+        /// </value>
+        public float FixThresh
+        {
+            get { return InternalConeTwistConstraint.FixThresh; }
+            set { InternalConeTwistConstraint.FixThresh = value; }
+        }
+
+        /// <summary>
+        ///     Gets the swing span1.
+        /// </summary>
+        /// <value>
+        ///     The swing span1.
+        /// </value>
+        public float SwingSpan1
+        {
+            get { return InternalConeTwistConstraint.SwingSpan1; }
+        }
+
+        /// <summary>
+        ///     Gets the swing span2.
+        /// </summary>
+        /// <value>
+        ///     The swing span2.
+        /// </value>
+        public float SwingSpan2
+        {
+            get { return InternalConeTwistConstraint.SwingSpan2; }
+        }
+
+        /// <summary>
+        ///     Gets the twist angle.
+        /// </summary>
+        /// <value>
+        ///     The twist angle.
+        /// </value>
+        public float TwistAngle
+        {
+            get { return InternalConeTwistConstraint.TwistAngle; }
+        }
+
+        /// <summary>
+        ///     Gets the twist limit sign.
+        /// </summary>
+        /// <value>
+        ///     The twist limit sign.
+        /// </value>
+        public float TwistLimitSign
+        {
+            get { return InternalConeTwistConstraint.TwistLimitSign; }
+        }
+
+        /// <summary>
+        ///     Gets the twist span.
+        /// </summary>
+        /// <value>
+        ///     The twist span.
+        /// </value>
+        public float TwistSpan
+        {
+            get { return InternalConeTwistConstraint.TwistSpan; }
+        }
+
+        /// <summary>
+        ///     Gets a value indicating whether this instance is past swing limit.
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if this instance is past swing limit; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsPastSwingLimit
+        {
+            get { return InternalConeTwistConstraint.IsPastSwingLimit; }
+        }
+
+        /// <summary>
+        ///     Gets the solve swing limit.
+        /// </summary>
+        /// <value>
+        ///     The solve swing limit.
+        /// </value>
+        public int SolveSwingLimit
+        {
+            get { return InternalConeTwistConstraint.SolveSwingLimit; }
+        }
+
+        /// <summary>
+        ///     Gets the solve twist limit.
+        /// </summary>
+        /// <value>
+        ///     The solve twist limit.
+        /// </value>
+        public int SolveTwistLimit
+        {
+            get { return InternalConeTwistConstraint.SolveTwistLimit; }
+        }
+
+        /// <summary>
+        ///     Sets the frames.
         /// </summary>
         /// <param name="frameA">The frame a.</param>
         /// <param name="frameB">The frame b.</param>
@@ -19,107 +120,7 @@ namespace SiliconStudio.Paradox.Physics
         }
 
         /// <summary>
-        /// Gets or sets the fix thresh.
-        /// </summary>
-        /// <value>
-        /// The fix thresh.
-        /// </value>
-        public float FixThresh
-        {
-            get { return InternalConeTwistConstraint.FixThresh; }
-            set { InternalConeTwistConstraint.FixThresh = value; }
-        }
-
-        /// <summary>
-        /// Gets the swing span1.
-        /// </summary>
-        /// <value>
-        /// The swing span1.
-        /// </value>
-        public float SwingSpan1
-        {
-            get { return InternalConeTwistConstraint.SwingSpan1; }
-        }
-
-        /// <summary>
-        /// Gets the swing span2.
-        /// </summary>
-        /// <value>
-        /// The swing span2.
-        /// </value>
-        public float SwingSpan2
-        {
-            get { return InternalConeTwistConstraint.SwingSpan2; }
-        }
-
-        /// <summary>
-        /// Gets the twist angle.
-        /// </summary>
-        /// <value>
-        /// The twist angle.
-        /// </value>
-        public float TwistAngle
-        {
-            get { return InternalConeTwistConstraint.TwistAngle; }
-        }
-
-        /// <summary>
-        /// Gets the twist limit sign.
-        /// </summary>
-        /// <value>
-        /// The twist limit sign.
-        /// </value>
-        public float TwistLimitSign
-        {
-            get { return InternalConeTwistConstraint.TwistLimitSign; }
-        }
-
-        /// <summary>
-        /// Gets the twist span.
-        /// </summary>
-        /// <value>
-        /// The twist span.
-        /// </value>
-        public float TwistSpan
-        {
-            get { return InternalConeTwistConstraint.TwistSpan; }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether this instance is past swing limit.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if this instance is past swing limit; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsPastSwingLimit
-        {
-            get { return InternalConeTwistConstraint.IsPastSwingLimit; }
-        }
-
-        /// <summary>
-        /// Gets the solve swing limit.
-        /// </summary>
-        /// <value>
-        /// The solve swing limit.
-        /// </value>
-        public int SolveSwingLimit
-        {
-            get { return InternalConeTwistConstraint.SolveSwingLimit; }
-        }
-
-        /// <summary>
-        /// Gets the solve twist limit.
-        /// </summary>
-        /// <value>
-        /// The solve twist limit.
-        /// </value>
-        public int SolveTwistLimit
-        {
-            get { return InternalConeTwistConstraint.SolveTwistLimit; }
-        }
-
-        /// <summary>
-        /// Sets the limit.
+        ///     Sets the limit.
         /// </summary>
         /// <param name="swingSpan1">The swing span1.</param>
         /// <param name="swingSpan2">The swing span2.</param>
@@ -130,7 +131,7 @@ namespace SiliconStudio.Paradox.Physics
         }
 
         /// <summary>
-        /// Sets the limit.
+        ///     Sets the limit.
         /// </summary>
         /// <param name="swingSpan1">The swing span1.</param>
         /// <param name="swingSpan2">The swing span2.</param>
@@ -143,7 +144,7 @@ namespace SiliconStudio.Paradox.Physics
         }
 
         /// <summary>
-        /// Sets the limit.
+        ///     Sets the limit.
         /// </summary>
         /// <param name="swingSpan1">The swing span1.</param>
         /// <param name="swingSpan2">The swing span2.</param>
@@ -157,7 +158,7 @@ namespace SiliconStudio.Paradox.Physics
         }
 
         /// <summary>
-        /// Sets the angular only.
+        ///     Sets the angular only.
         /// </summary>
         /// <param name="angularOnly">if set to <c>true</c> [angular only].</param>
         public void SetAngularOnly(bool angularOnly)
@@ -166,7 +167,7 @@ namespace SiliconStudio.Paradox.Physics
         }
 
         /// <summary>
-        /// Sets the damping.
+        ///     Sets the damping.
         /// </summary>
         /// <param name="damping">The damping.</param>
         public void SetDamping(float damping)
@@ -175,7 +176,7 @@ namespace SiliconStudio.Paradox.Physics
         }
 
         /// <summary>
-        /// Enables the motor.
+        ///     Enables the motor.
         /// </summary>
         /// <param name="b">if set to <c>true</c> [b].</param>
         public void EnableMotor(bool b)
@@ -184,7 +185,7 @@ namespace SiliconStudio.Paradox.Physics
         }
 
         /// <summary>
-        /// Sets the maximum motor impulse.
+        ///     Sets the maximum motor impulse.
         /// </summary>
         /// <param name="maxMotorImpulse">The maximum motor impulse.</param>
         public void SetMaxMotorImpulse(float maxMotorImpulse)
@@ -193,7 +194,7 @@ namespace SiliconStudio.Paradox.Physics
         }
 
         /// <summary>
-        /// Sets the maximum motor impulse normalized.
+        ///     Sets the maximum motor impulse normalized.
         /// </summary>
         /// <param name="maxMotorImpulse">The maximum motor impulse.</param>
         public void SetMaxMotorImpulseNormalized(float maxMotorImpulse)
@@ -202,7 +203,7 @@ namespace SiliconStudio.Paradox.Physics
         }
 
         /// <summary>
-        /// Sets the motor target.
+        ///     Sets the motor target.
         /// </summary>
         /// <param name="q">The q.</param>
         public void SetMotorTarget(Quaternion q)
@@ -211,7 +212,7 @@ namespace SiliconStudio.Paradox.Physics
         }
 
         /// <summary>
-        /// Sets the motor target in constraint space.
+        ///     Sets the motor target in constraint space.
         /// </summary>
         /// <param name="q">The q.</param>
         public void SetMotorTargetInConstraintSpace(Quaternion q)
