@@ -26,6 +26,4 @@ class ComputeColorTextureCube<TextureCube TTexture> : ComputeColor
         // note: sampling dir is flipped because Paradox use a direct coordinate system and Direct3D samples as a indirect coordinate system.
         return TTexture.Sample(Texturing.LinearSampler, float3(samplingDir.xy, -samplingDir.z));
     }
-
-    
 };

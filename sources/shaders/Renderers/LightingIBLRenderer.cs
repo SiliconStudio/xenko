@@ -124,7 +124,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 });
 
             // effect
-            IBLEffect = EffectSystem.LoadEffect("CubemapIBLDiffuse");
+            IBLEffect = EffectSystem.LoadEffect("CubemapIBLSpecular");
 
             parameters = new ParameterCollection();
             parameters.Set(RenderTargetKeys.DepthStencilSource, readOnlyDepthBuffer.Texture);

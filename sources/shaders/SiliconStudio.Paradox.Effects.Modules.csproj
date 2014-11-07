@@ -430,6 +430,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>CubemapUtils.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Deferred\EnvironmentMapDeferredShading.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>EnvironmentMapDeferredShading.pdxsl</DependentUpon>
+    </Compile>
     <Compile Include="Deferred\MaterialReflectanceGBuffer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1856,6 +1862,10 @@
     <None Include="Cubemap\CubemapUtils.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CubemapUtils.cs</LastGenOutput>
+    </None>
+    <None Include="Deferred\EnvironmentMapDeferredShading.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>EnvironmentMapDeferredShading.cs</LastGenOutput>
     </None>
     <None Include="Deferred\MaterialReflectanceGBuffer.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
