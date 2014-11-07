@@ -71,9 +71,14 @@ namespace SiliconStudio.Paradox.Games
         public Rational PreferredRefreshRate;
 
         /// <summary>
-        ///   Gets or sets a value indicating the number of sample locations during multisampling.
+        ///  Gets or sets a value indicating whether multisample anti-aliasing is enabled.
         /// </summary>
         public bool PreferMultiSampling;
+
+        /// <summary>
+        /// Gets or sets a value indicating the number of sample locations during multisampling.
+        /// </summary>
+        public MSAALevel PreferredMSAALevel;
 
         /// <summary>
         /// Gets or sets a value indicating whether to synochrnize present with vertical blanking.
