@@ -94,6 +94,7 @@ namespace SiliconStudio.Paradox.Games
         public GameForm(String text)
         {
             Text = text;
+            BackColor = System.Drawing.Color.Black;
             ClientSize = new System.Drawing.Size(800, 600);
 
             ResizeRedraw = true;
