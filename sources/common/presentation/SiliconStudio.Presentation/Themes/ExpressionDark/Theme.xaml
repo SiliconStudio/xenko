@@ -465,7 +465,7 @@
                                 <ctrl:KeyValueGrid x:Name="RGBGrid" HorizontalAlignment="Stretch" Focusable="False">
                                     <TextBlock Margin="4,0" Text="R:" ToolTipService.ToolTip="Red" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
                                     <StackPanel Margin="0,2">
-                                        <ctrl:NumericTextBox x:Name="RedTextBox" Value="{Binding Red, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="#FFF95A5A" Minimum="0" Maximum="255" Margin="0"/>
+                                        <ctrl:NumericTextBox x:Name="RedTextBox" Value="{Binding Red, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="#FFF95A5A" Minimum="0" Maximum="255" Margin="0" MouseValidationTrigger="OnMouseMove"/>
                                         <Rectangle Height="3" Fill="#FFF95A5A" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                                             <Rectangle.RenderTransform>
                                                 <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=RedTextBox}"/>
@@ -474,7 +474,7 @@
                                     </StackPanel>
                                     <TextBlock Margin="4,0" Text="G:" ToolTipService.ToolTip="Green" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
                                     <StackPanel Margin="0,2">
-                                        <ctrl:NumericTextBox x:Name="GreenTextBox" Value="{Binding Green, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="#FF64ED6C" Minimum="0" Maximum="255" Margin="0"/>
+                                        <ctrl:NumericTextBox x:Name="GreenTextBox" Value="{Binding Green, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="#FF64ED6C" Minimum="0" Maximum="255" Margin="0" MouseValidationTrigger="OnMouseMove"/>
                                         <Rectangle Height="3" Fill="#FF64ED6C" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                                             <Rectangle.RenderTransform>
                                                 <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=GreenTextBox}"/>
@@ -483,7 +483,7 @@
                                     </StackPanel>
                                     <TextBlock Margin="4,0" Text="B:" ToolTipService.ToolTip="Blue" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
                                     <StackPanel Margin="0,2">
-                                        <ctrl:NumericTextBox x:Name="BlueTextBox" Value="{Binding Blue, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="CornflowerBlue" Minimum="0" Maximum="255" Margin="0"/>
+                                        <ctrl:NumericTextBox x:Name="BlueTextBox" Value="{Binding Blue, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="CornflowerBlue" Minimum="0" Maximum="255" Margin="0" MouseValidationTrigger="OnMouseMove"/>
                                         <Rectangle Height="3" Fill="CornflowerBlue" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                                             <Rectangle.RenderTransform>
                                                 <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=BlueTextBox}"/>
@@ -505,7 +505,7 @@
                                 <ctrl:KeyValueGrid Focusable="False">
                                     <TextBlock Margin="4,0" Text="H:" ToolTipService.ToolTip="Hue" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
                                     <StackPanel Margin="0,2">
-                                        <ctrl:NumericTextBox x:Name="HueTextBox" Value="{Binding Hue, RelativeSource={RelativeSource Mode=TemplatedParent}}" DecimalPlaces="0" SelectionBrush="#FFBCBCBC" Minimum="0" Maximum="360" Margin="0"/>
+                                        <ctrl:NumericTextBox x:Name="HueTextBox" Value="{Binding Hue, RelativeSource={RelativeSource Mode=TemplatedParent}}" DecimalPlaces="0" SelectionBrush="#FFBCBCBC" Minimum="0" Maximum="360" Margin="0" MouseValidationTrigger="OnMouseMove"/>
                                         <Rectangle Height="3" Fill="#FFBCBCBC" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                                             <Rectangle.RenderTransform>
                                                 <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=HueTextBox}"/>
@@ -514,7 +514,7 @@
                                     </StackPanel>
                                     <TextBlock Margin="4,0" Text="S:" ToolTipService.ToolTip="Saturation" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
                                     <StackPanel Margin="0,2">
-                                        <ctrl:NumericTextBox x:Name="SaturationTextBox" Value="{Binding Saturation, RelativeSource={RelativeSource Mode=TemplatedParent}}" DecimalPlaces="0" SelectionBrush="#FFBCBCBC" Minimum="0" Maximum="100" Margin="0"/>
+                                        <ctrl:NumericTextBox x:Name="SaturationTextBox" Value="{Binding Saturation, RelativeSource={RelativeSource Mode=TemplatedParent}}" DecimalPlaces="0" SelectionBrush="#FFBCBCBC" Minimum="0" Maximum="100" Margin="0" MouseValidationTrigger="OnMouseMove"/>
                                         <Rectangle Height="3" Fill="#FFBCBCBC" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                                             <Rectangle.RenderTransform>
                                                 <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=SaturationTextBox}"/>
@@ -523,7 +523,7 @@
                                     </StackPanel>
                                     <TextBlock Margin="4,0" Text="V:" ToolTipService.ToolTip="Value" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
                                     <StackPanel Margin="0,2">
-                                        <ctrl:NumericTextBox x:Name="BrightnessTextBox" Value="{Binding Brightness, RelativeSource={RelativeSource Mode=TemplatedParent}}" DecimalPlaces="0" SelectionBrush="#FFBCBCBC" Minimum="0" Maximum="100" Margin="0"/>
+                                        <ctrl:NumericTextBox x:Name="BrightnessTextBox" Value="{Binding Brightness, RelativeSource={RelativeSource Mode=TemplatedParent}}" DecimalPlaces="0" SelectionBrush="#FFBCBCBC" Minimum="0" Maximum="100" Margin="0" MouseValidationTrigger="OnMouseMove"/>
                                         <Rectangle Height="3" Fill="#FFBCBCBC" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                                             <Rectangle.RenderTransform>
                                                 <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=BrightnessTextBox}"/>
