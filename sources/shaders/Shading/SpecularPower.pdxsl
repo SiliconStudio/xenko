@@ -3,9 +3,12 @@
 /// <summary>
 /// Computes the specular power of the material.
 /// </summary>
+/// <remarks>
+/// SPECULAR_POWER_SCALE: Macro - scales the specular power.
+/// </remarks>
 
-#ifndef POWER_SCALE
-# POWER_SCALE 13
+#ifndef SPECULAR_POWER_SCALE
+# define SPECULAR_POWER_SCALE 13
 #endif
 
 class SpecularPower : SpecularPowerBase
@@ -16,6 +19,6 @@ class SpecularPower : SpecularPowerBase
     override float SpecularPowerValue()
     { 
         float power = SpecularPowerMap.Compute().x;
-        return exp2(POWER_SCALE * power + 1);
+        return exp2(SPECULAR_POWER_SCALE * power + 1);
     }
 };
