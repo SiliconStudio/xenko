@@ -32,7 +32,7 @@ namespace SiliconStudio.Paradox.Physics
             base.Dispose();
         }
 
-        float mMass;
+        float mass;
         /// <summary>
         /// Gets or sets the mass.
         /// </summary>
@@ -43,11 +43,11 @@ namespace SiliconStudio.Paradox.Physics
         {
             get
             {
-                return mMass;
+                return mass;
             }
             set
             {
-                mMass = value;
+                mass = value;
                 var inertia = ColliderShape.InternalShape.CalculateLocalInertia(value);
                 InternalRigidBody.SetMassProps(value, inertia);
                 InternalRigidBody.UpdateInertiaTensor(); //this was the major headache when I had to debug Slider and Hinge constraint

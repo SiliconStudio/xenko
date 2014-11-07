@@ -186,7 +186,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <value>
         /// The normal CFM.
         /// </value>
-        public float NormalCFM
+        public float NormalCfm
         {
             get { return mMotor.NormalCFM; }
             set { mMotor.NormalCFM = value; }
@@ -198,7 +198,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <value>
         /// The stop CFM.
         /// </value>
-        public float StopCFM
+        public float StopCfm
         {
             get { return mMotor.StopCFM; }
             set { mMotor.StopCFM = value; }
@@ -210,7 +210,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <value>
         /// The stop erp.
         /// </value>
-        public float StopERP
+        public float StopErp
         {
             get { return mMotor.StopERP; }
             set { mMotor.StopERP = value; }

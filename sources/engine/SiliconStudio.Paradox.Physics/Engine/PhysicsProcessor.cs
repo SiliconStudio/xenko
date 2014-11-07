@@ -13,7 +13,6 @@ using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Physics;
 using SiliconStudio.Paradox.Threading;
 
 namespace SiliconStudio.Paradox.Physics
@@ -27,11 +26,11 @@ namespace SiliconStudio.Paradox.Physics
             public ModelComponent ModelComponent; //not mandatory, could be null e.g. invisible triggers
         }
 
-        readonly FastList<PhysicsElement> mElements = new FastList<PhysicsElement>();
-        readonly FastList<PhysicsElement> mCharacters = new FastList<PhysicsElement>();
+        readonly FastList<PhysicsElement> elements = new FastList<PhysicsElement>();
+        readonly FastList<PhysicsElement> characters = new FastList<PhysicsElement>();
 
-        Bullet2PhysicsSystem mPhysicsSystem;
-        RenderSystem mRenderSystem;
+        Bullet2PhysicsSystem physicsSystem;
+        RenderSystem renderSystem;
 
         public PhysicsProcessor()
             : base(new PropertyKey[] { PhysicsComponent.Key, TransformationComponent.Key })
@@ -99,7 +98,7 @@ namespace SiliconStudio.Paradox.Physics
             {
                 case PhysicsElement.Types.PhantomCollider:
                     {
-                        var c = mPhysicsSystem.PhysicsEngine.CreateCollider(shape);
+                        var c = physicsSystem.PhysicsEngine.CreateCollider(shape);
 
                         element.Collider = c; //required by the next call
                         element.Collider.EntityObject = entity; //required by the next call
@@ -109,17 +108,17 @@ namespace SiliconStudio.Paradox.Physics
 
                         if (defaultGroups)
                         {
-                            mPhysicsSystem.PhysicsEngine.AddCollider(c);
+                            physicsSystem.PhysicsEngine.AddCollider(c);
                         }
                         else
                         {
-                            mPhysicsSystem.PhysicsEngine.AddCollider(c, (CollisionFilterGroups)element.CollisionGroup, element.CanCollideWith);
+                            physicsSystem.PhysicsEngine.AddCollider(c, (CollisionFilterGroups)element.CollisionGroup, element.CanCollideWith);
                         }
                     }
                     break;
                 case PhysicsElement.Types.StaticCollider:
                     {
-                        var c = mPhysicsSystem.PhysicsEngine.CreateCollider(shape);
+                        var c = physicsSystem.PhysicsEngine.CreateCollider(shape);
 
                         element.Collider = c; //required by the next call
                         element.Collider.EntityObject = entity; //required by the next call
@@ -129,17 +128,17 @@ namespace SiliconStudio.Paradox.Physics
 
                         if (defaultGroups)
                         {
-                            mPhysicsSystem.PhysicsEngine.AddCollider(c);
+                            physicsSystem.PhysicsEngine.AddCollider(c);
                         }
                         else
                         {
-                            mPhysicsSystem.PhysicsEngine.AddCollider(c, (CollisionFilterGroups)element.CollisionGroup, element.CanCollideWith);
+                            physicsSystem.PhysicsEngine.AddCollider(c, (CollisionFilterGroups)element.CollisionGroup, element.CanCollideWith);
                         }
                     }
                     break;
                 case PhysicsElement.Types.StaticRigidBody:
                     {
-                        var rb = mPhysicsSystem.PhysicsEngine.CreateRigidBody(shape);
+                        var rb = physicsSystem.PhysicsEngine.CreateRigidBody(shape);
 
                         rb.EntityObject = entity;
                         rb.GetWorldTransformCallback = (out Matrix transform) => RigidBodyGetWorldTransform(element, out transform);
@@ -151,17 +150,17 @@ namespace SiliconStudio.Paradox.Physics
 
                         if (defaultGroups)
                         {
-                            mPhysicsSystem.PhysicsEngine.AddRigidBody(rb);
+                            physicsSystem.PhysicsEngine.AddRigidBody(rb);
                         }
                         else
                         {
-                            mPhysicsSystem.PhysicsEngine.AddRigidBody(rb, (CollisionFilterGroups)element.CollisionGroup, element.CanCollideWith);
+                            physicsSystem.PhysicsEngine.AddRigidBody(rb, (CollisionFilterGroups)element.CollisionGroup, element.CanCollideWith);
                         }
                     }
                     break;
                 case PhysicsElement.Types.DynamicRigidBody:
                     {
-                        var rb = mPhysicsSystem.PhysicsEngine.CreateRigidBody(shape);
+                        var rb = physicsSystem.PhysicsEngine.CreateRigidBody(shape);
 
                         rb.EntityObject = entity;
                         rb.GetWorldTransformCallback = (out Matrix transform) => RigidBodyGetWorldTransform(element, out transform);
@@ -174,17 +173,17 @@ namespace SiliconStudio.Paradox.Physics
 
                         if (defaultGroups)
                         {
-                            mPhysicsSystem.PhysicsEngine.AddRigidBody(rb);
+                            physicsSystem.PhysicsEngine.AddRigidBody(rb);
                         }
                         else
                         {
-                            mPhysicsSystem.PhysicsEngine.AddRigidBody(rb, (CollisionFilterGroups)element.CollisionGroup, element.CanCollideWith);
+                            physicsSystem.PhysicsEngine.AddRigidBody(rb, (CollisionFilterGroups)element.CollisionGroup, element.CanCollideWith);
                         }
                     }
                     break;
                 case PhysicsElement.Types.KinematicRigidBody:
                     {
-                        var rb = mPhysicsSystem.PhysicsEngine.CreateRigidBody(shape);
+                        var rb = physicsSystem.PhysicsEngine.CreateRigidBody(shape);
 
                         rb.EntityObject = entity;
                         rb.GetWorldTransformCallback = (out Matrix transform) => RigidBodyGetWorldTransform(element, out transform);
@@ -197,17 +196,17 @@ namespace SiliconStudio.Paradox.Physics
 
                         if (defaultGroups)
                         {
-                            mPhysicsSystem.PhysicsEngine.AddRigidBody(rb);
+                            physicsSystem.PhysicsEngine.AddRigidBody(rb);
                         }
                         else
                         {
-                            mPhysicsSystem.PhysicsEngine.AddRigidBody(rb, (CollisionFilterGroups)element.CollisionGroup, element.CanCollideWith);
+                            physicsSystem.PhysicsEngine.AddRigidBody(rb, (CollisionFilterGroups)element.CollisionGroup, element.CanCollideWith);
                         }
                     }
                     break;
                 case PhysicsElement.Types.CharacterController:
                     {
-                        var ch = mPhysicsSystem.PhysicsEngine.CreateCharacter(shape, element.StepHeight);
+                        var ch = physicsSystem.PhysicsEngine.CreateCharacter(shape, element.StepHeight);
 
                         element.Collider = ch;
                         element.Collider.EntityObject = entity;
@@ -215,19 +214,19 @@ namespace SiliconStudio.Paradox.Physics
 
                         if (defaultGroups)
                         {
-                            mPhysicsSystem.PhysicsEngine.AddCharacter(ch);
+                            physicsSystem.PhysicsEngine.AddCharacter(ch);
                         }
                         else
                         {
-                            mPhysicsSystem.PhysicsEngine.AddCharacter(ch, (CollisionFilterGroups)element.CollisionGroup, element.CanCollideWith);
+                            physicsSystem.PhysicsEngine.AddCharacter(ch, (CollisionFilterGroups)element.CollisionGroup, element.CanCollideWith);
                         }
 
-                        mCharacters.Add(element);
+                        characters.Add(element);
                     }
                     break;
             }
 
-            mElements.Add(element);
+            elements.Add(element);
         }
 
         void DeleteElement(PhysicsElement element, bool now = false)
@@ -237,14 +236,14 @@ namespace SiliconStudio.Paradox.Physics
 
             var toDispose = new List<IDisposable>();
 
-            mElements.Remove(element);   
+            elements.Remove(element);   
 
             switch (element.Type)
             {
                 case PhysicsElement.Types.PhantomCollider:
                 case PhysicsElement.Types.StaticCollider:
                 {
-                    mPhysicsSystem.PhysicsEngine.RemoveCollider(element.Collider);
+                    physicsSystem.PhysicsEngine.RemoveCollider(element.Collider);
                 }
                     break;
                 case PhysicsElement.Types.StaticRigidBody:
@@ -255,17 +254,17 @@ namespace SiliconStudio.Paradox.Physics
                     var constraints = rb.LinkedConstraints.ToArray();
                     foreach (var c in constraints)
                     {
-                        mPhysicsSystem.PhysicsEngine.RemoveConstraint(c);
+                        physicsSystem.PhysicsEngine.RemoveConstraint(c);
                         toDispose.Add(c);
                     }
 
-                    mPhysicsSystem.PhysicsEngine.RemoveRigidBody(rb);
+                    physicsSystem.PhysicsEngine.RemoveRigidBody(rb);
                 }
                     break;
                 case PhysicsElement.Types.CharacterController:
                 {
-                    mCharacters.Remove(element);
-                    mPhysicsSystem.PhysicsEngine.RemoveCharacter((Character) element.Collider);
+                    characters.Remove(element);
+                    physicsSystem.PhysicsEngine.RemoveCharacter((Character) element.Collider);
                 }
                     break;
             }
@@ -289,7 +288,7 @@ namespace SiliconStudio.Paradox.Physics
 
         protected override void OnEntityAdding(Entity entity, AssociatedData data)
         {
-            if (!mPhysicsSystem.PhysicsEngine.Initialized) return;
+            if (!physicsSystem.PhysicsEngine.Initialized) return;
 
             foreach (var element in data.PhysicsComponent.Elements)
             {
@@ -299,7 +298,7 @@ namespace SiliconStudio.Paradox.Physics
 
         protected override void OnEntityRemoved(Entity entity, AssociatedData data)
         {
-            if (!mPhysicsSystem.PhysicsEngine.Initialized) return;
+            if (!physicsSystem.PhysicsEngine.Initialized) return;
 
             foreach (var element in data.PhysicsComponent.Elements)
             {
@@ -309,7 +308,7 @@ namespace SiliconStudio.Paradox.Physics
 
         protected override void OnEnabledChanged(Entity entity, bool enabled)
         {
-            if (!mPhysicsSystem.PhysicsEngine.Initialized) return;
+            if (!physicsSystem.PhysicsEngine.Initialized) return;
 
             var elements = entity.Get(PhysicsComponent.Key).Elements;
 
@@ -319,23 +318,23 @@ namespace SiliconStudio.Paradox.Physics
             }
         }
 
-        public override void OnSystemAdd()
+        protected override void OnSystemAdd()
         {
-            mPhysicsSystem = (Bullet2PhysicsSystem)Services.GetSafeServiceAs<IPhysicsSystem>();
-            mRenderSystem = Services.GetSafeServiceAs<RenderSystem>();
+            physicsSystem = (Bullet2PhysicsSystem)Services.GetSafeServiceAs<IPhysicsSystem>();
+            renderSystem = Services.GetSafeServiceAs<RenderSystem>();
 
             //setup debug device and debug shader
             var gfxDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>();
-            mPhysicsSystem.PhysicsEngine.DebugGraphicsDevice = gfxDevice.GraphicsDevice;
+            physicsSystem.PhysicsEngine.DebugGraphicsDevice = gfxDevice.GraphicsDevice;
 
             //Debug primitives render, should happen about the last steps of the pipeline
-            mRenderSystem.Pipeline.EndPass += DebugShapesDraw;
+            renderSystem.Pipeline.EndPass += DebugShapesDraw;
         }
 
-        public override void OnSystemRemove()
+        protected override void OnSystemRemove()
         {
             //remove all elements from the engine
-            foreach (var element in mElements)
+            foreach (var element in elements)
             {
                 DeleteElement(element);
             }
@@ -362,11 +361,11 @@ namespace SiliconStudio.Paradox.Physics
                         Matrix worldTrans;
                         Matrix.Multiply(ref subShape.DebugPrimitiveScaling, ref physTrans, out worldTrans);
 
-                        mPhysicsSystem.PhysicsEngine.DebugEffect.WorldViewProj = worldTrans * viewProj;
-                        mPhysicsSystem.PhysicsEngine.DebugEffect.Color = element.Collider.IsActive ? Color.Green : Color.Red;
-                        mPhysicsSystem.PhysicsEngine.DebugEffect.UseUv = subShape.Type != ColliderShapeTypes.ConvexHull;
+                        physicsSystem.PhysicsEngine.DebugEffect.WorldViewProj = worldTrans * viewProj;
+                        physicsSystem.PhysicsEngine.DebugEffect.Color = element.Collider.IsActive ? Color.Green : Color.Red;
+                        physicsSystem.PhysicsEngine.DebugEffect.UseUv = subShape.Type != ColliderShapeTypes.ConvexHull;
 
-                        mPhysicsSystem.PhysicsEngine.DebugEffect.Apply();
+                        physicsSystem.PhysicsEngine.DebugEffect.Apply();
 
                         subShape.DebugPrimitive.Draw();
                     }
@@ -377,27 +376,27 @@ namespace SiliconStudio.Paradox.Physics
 
         private void DebugShapesDraw(RenderContext context)
         {
-            if (!mPhysicsSystem.PhysicsEngine.CreateDebugPrimitives ||
-                    !mPhysicsSystem.PhysicsEngine.RenderDebugPrimitives || 
-                    !mPhysicsSystem.PhysicsEngine.Initialized ||
-                    mPhysicsSystem.PhysicsEngine.DebugGraphicsDevice == null ||
-                    mPhysicsSystem.PhysicsEngine.DebugEffect == null) 
+            if (!physicsSystem.PhysicsEngine.CreateDebugPrimitives ||
+                    !physicsSystem.PhysicsEngine.RenderDebugPrimitives || 
+                    !physicsSystem.PhysicsEngine.Initialized ||
+                    physicsSystem.PhysicsEngine.DebugGraphicsDevice == null ||
+                    physicsSystem.PhysicsEngine.DebugEffect == null) 
                 return;
 
             Matrix viewProj;
-            if (mRenderSystem.Pipeline.Parameters.ContainsKey(TransformationKeys.View) && mRenderSystem.Pipeline.Parameters.ContainsKey(TransformationKeys.Projection))
+            if (renderSystem.Pipeline.Parameters.ContainsKey(TransformationKeys.View) && renderSystem.Pipeline.Parameters.ContainsKey(TransformationKeys.Projection))
             {
-                viewProj = mRenderSystem.Pipeline.Parameters.Get(TransformationKeys.View) * mRenderSystem.Pipeline.Parameters.Get(TransformationKeys.Projection);
+                viewProj = renderSystem.Pipeline.Parameters.Get(TransformationKeys.View) * renderSystem.Pipeline.Parameters.Get(TransformationKeys.Projection);
             }
             else
             {
                 return;
             }
 
-            var rasterizers = mPhysicsSystem.PhysicsEngine.DebugGraphicsDevice.RasterizerStates;
-            mPhysicsSystem.PhysicsEngine.DebugGraphicsDevice.SetRasterizerState(rasterizers.CullNone);
+            var rasterizers = physicsSystem.PhysicsEngine.DebugGraphicsDevice.RasterizerStates;
+            physicsSystem.PhysicsEngine.DebugGraphicsDevice.SetRasterizerState(rasterizers.CullNone);
 
-            foreach (var element in mElements)
+            foreach (var element in elements)
             {
                 var shape = element.Shape.Shape;
 
@@ -413,28 +412,28 @@ namespace SiliconStudio.Paradox.Physics
                     Matrix worldTrans;
                     Matrix.Multiply(ref element.Shape.Shape.DebugPrimitiveScaling, ref physTrans, out worldTrans);
 
-                    mPhysicsSystem.PhysicsEngine.DebugEffect.WorldViewProj = worldTrans * viewProj;
-                    mPhysicsSystem.PhysicsEngine.DebugEffect.Color = element.Collider.IsActive ? Color.Green : Color.Red;
-                    mPhysicsSystem.PhysicsEngine.DebugEffect.UseUv = shape.Type != ColliderShapeTypes.ConvexHull;
+                    physicsSystem.PhysicsEngine.DebugEffect.WorldViewProj = worldTrans * viewProj;
+                    physicsSystem.PhysicsEngine.DebugEffect.Color = element.Collider.IsActive ? Color.Green : Color.Red;
+                    physicsSystem.PhysicsEngine.DebugEffect.UseUv = shape.Type != ColliderShapeTypes.ConvexHull;
 
-                    mPhysicsSystem.PhysicsEngine.DebugEffect.Apply();
+                    physicsSystem.PhysicsEngine.DebugEffect.Apply();
 
                     shape.DebugPrimitive.Draw();
                 }
             }
 
-            mPhysicsSystem.PhysicsEngine.DebugGraphicsDevice.SetRasterizerState(rasterizers.CullBack);
+            physicsSystem.PhysicsEngine.DebugGraphicsDevice.SetRasterizerState(rasterizers.CullBack);
         }
 
         public override void Update(GameTime time)
         {
-            if (!mPhysicsSystem.PhysicsEngine.Initialized) return;
+            if (!physicsSystem.PhysicsEngine.Initialized) return;
 
             //Simulation processing is from here
-            mPhysicsSystem.PhysicsEngine.Update((float)time.Elapsed.TotalSeconds);
+            physicsSystem.PhysicsEngine.Update((float)time.Elapsed.TotalSeconds);
 
             //characters need manual updating
-            foreach (var element in mCharacters.Where(element => element.Collider.Enabled))
+            foreach (var element in characters.Where(element => element.Collider.Enabled))
             {
                 element.UpdateTransformationComponent(element.Collider.PhysicsWorldTransform);
             }

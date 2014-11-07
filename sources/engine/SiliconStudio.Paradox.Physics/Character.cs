@@ -31,9 +31,9 @@ namespace SiliconStudio.Paradox.Physics
             base.Dispose();
         }
 
-        private float mFallSpeed = 55.0f; // Terminal velocity of a sky diver in m/s. (from bullet source defaults)
-        private float mJumpSpeed = 10.0f; // (from bullet source defaults)
-        private Vector3 mUpAxis = Vector3.UnitY;
+        private float fallSpeed = 55.0f; // Terminal velocity of a sky diver in m/s. (from bullet source defaults)
+        private float jumpSpeed = 10.0f; // (from bullet source defaults)
+        private Vector3 upAxis = Vector3.UnitY;
 
         internal BulletSharp.KinematicCharacterController KinematicCharacter;
 
@@ -45,11 +45,11 @@ namespace SiliconStudio.Paradox.Physics
         /// </value>
         public float FallSpeed
         {
-            get { return mFallSpeed; }
+            get { return fallSpeed; }
             set
             {
-                mFallSpeed = value;
-                KinematicCharacter.SetFallSpeed(mFallSpeed);
+                fallSpeed = value;
+                KinematicCharacter.SetFallSpeed(fallSpeed);
             }
         }
 
@@ -73,11 +73,11 @@ namespace SiliconStudio.Paradox.Physics
         /// </value>
         public float JumpSpeed
         {
-            get { return mJumpSpeed; }
+            get { return jumpSpeed; }
             set
             {
-                mJumpSpeed = value;
-                KinematicCharacter.SetJumpSpeed(mJumpSpeed);
+                jumpSpeed = value;
+                KinematicCharacter.SetJumpSpeed(jumpSpeed);
             }
         }
 
@@ -98,7 +98,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <exception cref="System.Exception">Invalid Up Axis.</exception>
         public Vector3 UpAxis
         {
-            get { return mUpAxis; }
+            get { return upAxis; }
             set
             {
                 if (value == Vector3.UnitX)
@@ -118,7 +118,7 @@ namespace SiliconStudio.Paradox.Physics
                     throw new Exception("Invalid Up Axis.");
                 }
 
-                mUpAxis = value;
+                upAxis = value;
             }
         }
 
