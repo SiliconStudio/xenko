@@ -42,5 +42,10 @@ namespace SiliconStudio.Core.Yaml
             result = ConvertToDynamic(node.Children[key]);
             return true;
         }
+
+        public void Add(object value)
+        {
+            node.Children.Add(ConvertFromDynamic(value));
+        }
     }
 }

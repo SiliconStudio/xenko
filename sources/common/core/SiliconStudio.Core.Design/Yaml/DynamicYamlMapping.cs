@@ -16,6 +16,33 @@ namespace SiliconStudio.Core.Yaml
             this.node = node;
         }
 
+        public void MoveChild(object key, int movePosition)
+        {
+            var yamlKey = ConvertFromDynamic(key);
+            var keyPosition = node.Children.IndexOf(yamlKey);
+
+            if (keyPosition == movePosition)
+                return;
+
+            // Remove child
+            var item = node.Children[keyPosition];
+            node.Children.RemoveAt(keyPosition);
+
+            // Adjust insertion position (if we insert in a position after the removal position)
+            if (movePosition > keyPosition)
+                movePosition--;
+
+            // Insert item at new position
+            node.Children.Insert(movePosition, item.Key, item.Value);
+        }
+
+        public int IndexOf(object key)
+        {
+            var yamlKey = ConvertFromDynamic(key);
+
+            return node.Children.IndexOf(yamlKey);
+        }
+
         public override bool TryConvert(ConvertBinder binder, out object result)
         {
             if (binder.Type.IsAssignableFrom(node.GetType()))
