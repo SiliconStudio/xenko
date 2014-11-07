@@ -12,7 +12,7 @@ namespace SiliconStudio.Presentation.View
     public enum OverrideRule
     {
         /// <summary>
-        /// The <see cref="ITemplateProvider"/> will override providers whose type is in its <see cref="ITemplateProvider.OverriddenProviderTypes"/> collection.
+        /// The <see cref="ITemplateProvider"/> will override providers whose name is in its <see cref="ITemplateProvider.OverriddenProviderNames"/> collection.
         /// </summary>
         Some,
         /// <summary>
@@ -43,7 +43,7 @@ namespace SiliconStudio.Presentation.View
         /// Gets or sets the template associated with this <see cref="ITemplateProvider"/>
         /// </summary>
         DataTemplate Template { get; set; }
-
+        
         /// <summary>
         /// Gets or sets the rule to use when this provider can potentially override other providers that matches the same object.
         /// </summary>
@@ -51,10 +51,10 @@ namespace SiliconStudio.Presentation.View
         OverrideRule OverrideRule { get; set; }
 
         /// <summary>
-        /// Gets the collection of types of <see cref="ITemplateProvider"/> to override when they matches the same object
+        /// Gets the collection of names of <see cref="ITemplateProvider"/> to override when they matches the same object
         /// than this provider, when <see cref="OverrideRule"/> is <see cref="SiliconStudio.Presentation.View.OverrideRule.Some"/>.
         /// </summary>
-        List<Type> OverriddenProviderTypes { get; }
+        List<string> OverriddenProviderNames { get; }
 
         /// <summary>
         /// Indicates whether this instance of <see cref="ITemplateProvider"/> can provide a template for the given object.

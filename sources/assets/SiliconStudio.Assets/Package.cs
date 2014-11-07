@@ -668,16 +668,7 @@ namespace SiliconStudio.Assets
                     // An exception can occur here, so we make sure that loading a single asset is not going to break 
                     // the loop
                     var assetFullPath = fileUPath.FullPath;
-                    var asset = AssetSerializer.Load<Asset>(assetFullPath);
-
-                    // Set location on source code asset
-                    var sourceCodeAsset = asset as SourceCodeAsset;
-                    if (sourceCodeAsset != null)
-                    {
-                        // Use an id generated from the location instead of the default id
-                        sourceCodeAsset.Id = SourceCodeAsset.GenerateGuidFromLocation(assetPath);
-                        sourceCodeAsset.AbsoluteSourceLocation = fileUPath;
-                    }
+                    var asset = LoadAsset(log, assetFullPath, assetPath, fileUPath);
 
                     // Create asset item
                     var assetItem = new AssetItem(assetPath, asset)
@@ -723,6 +714,24 @@ namespace SiliconStudio.Assets
                     }
                 }
             }
+        }
+
+        private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, UFile fileUPath)
+        {
+            AssetMigration.MigrateAssetIfNeeded(log, assetFullPath);
+
+            var asset = AssetSerializer.Load<Asset>(assetFullPath);
+
+            // Set location on source code asset
+            var sourceCodeAsset = asset as SourceCodeAsset;
+            if (sourceCodeAsset != null)
+            {
+                // Use an id generated from the location instead of the default id
+                sourceCodeAsset.Id = SourceCodeAsset.GenerateGuidFromLocation(assetPath);
+                sourceCodeAsset.AbsoluteSourceLocation = fileUPath;
+            }
+
+            return asset;
         }
 
         private void LoadAssemblyReferencesForPackage(ILogger log, PackageLoadParameters loadParameters)

@@ -44,12 +44,20 @@ namespace SiliconStudio.Core
     /// </summary>
     public static class Utilities
     {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if SILICONSTUDIO_PLATFORM_WINDOWS_PHONE
+        public unsafe static void CopyMemory(IntPtr dest, IntPtr src, int sizeInBytesToCopy)
+        {
+            Interop.memcpy((void*)dest, (void*)src, sizeInBytesToCopy);
+        }
+#else
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_WINDOWS_STORE
         private const string MemcpyDll = "msvcrt.dll";
 #elif SILICONSTUDIO_PLATFORM_ANDROID
         private const string MemcpyDll = "libc.so";
 #elif SILICONSTUDIO_PLATFORM_IOS
         private const string MemcpyDll = Constants.SystemLibrary;
+#else
+#   error Unsupported platform
 #endif
         /// <summary>
         /// Native memcpy.
@@ -66,6 +74,7 @@ namespace SiliconStudio.Core
         {
             CopyMemory(dest, src, (ulong)sizeInBytesToCopy);
         }
+#endif
 
         /// <summary>
         /// Compares two block of memory.

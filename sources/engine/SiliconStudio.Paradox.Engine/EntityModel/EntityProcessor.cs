@@ -67,7 +67,7 @@ namespace SiliconStudio.Paradox.EntityModel
         /// <param name="entity">The entity.</param>
         protected internal abstract void SetEnabled(Entity entity, bool enabled);
 
-        protected internal virtual void OnEnabledChanged(Entity entity, bool enabled)
+        protected virtual void OnEnabledChanged(Entity entity, bool enabled)
         {
             
         }

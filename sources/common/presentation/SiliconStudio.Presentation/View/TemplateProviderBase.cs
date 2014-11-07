@@ -3,20 +3,22 @@
 using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Markup;
 
 namespace SiliconStudio.Presentation.View
 {
     /// <summary>
     /// An abstract implementation of the <see cref="ITemplateProvider"/> interface.
     /// </summary>
-    public abstract class TemplateProviderBase : ITemplateProvider
+    [ContentProperty("Template")]
+    public abstract class TemplateProviderBase : DependencyObject, ITemplateProvider
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateProviderBase"/> class.
         /// </summary>
         protected TemplateProviderBase()
         {
-            OverriddenProviderTypes = new List<Type>();
+            OverriddenProviderNames = new List<string>();
             OverrideRule = OverrideRule.Some;
         }
 
@@ -30,7 +32,7 @@ namespace SiliconStudio.Presentation.View
         public OverrideRule OverrideRule { get; set; }
 
         /// <inheritdoc/>
-        public List<Type> OverriddenProviderTypes { get; private set; }
+        public List<string> OverriddenProviderNames { get; private set; }
 
         /// <inheritdoc/>
         public abstract bool Match(object obj);
@@ -68,8 +70,8 @@ namespace SiliconStudio.Presentation.View
                 return 0;
             
             // From this point, at least one have the "Some" rule and at most one have the "Most" rule.
-            bool thisOverrides = OverriddenProviderTypes.Contains(other.GetType());
-            bool otherOverrides = other.OverriddenProviderTypes.Contains(GetType());
+            bool thisOverrides = OverriddenProviderNames.Contains(other.Name);
+            bool otherOverrides = other.OverriddenProviderNames.Contains(Name);
 
             // Both overrides each other: undeterminated
             if (thisOverrides && otherOverrides)

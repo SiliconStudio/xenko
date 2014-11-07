@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="device">The device.</param>
         /// <param name="name">The name.</param>
         /// <param name="rasterizerStateDescription">The rasterizer state description.</param>
-        public RasterizerState(GraphicsDevice device, RasterizerStateDescription rasterizerStateDescription) : base(device)
+        private RasterizerState(GraphicsDevice device, RasterizerStateDescription rasterizerStateDescription) : base(device)
         {
             Description = rasterizerStateDescription;
 

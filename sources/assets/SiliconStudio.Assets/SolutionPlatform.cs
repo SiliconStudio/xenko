@@ -143,7 +143,7 @@ namespace SiliconStudio.Assets
         public string DisplayName { get; set; }
 
         /// <summary>
-        /// Gets the name of the safe solution.
+        /// Gets the name of the solution from <see cref="SolutionName"/>, using <see cref="Name"/> as a fallback.
         /// </summary>
         /// <value>The name of the safe solution.</value>
         public string SafeSolutionName
@@ -184,7 +184,8 @@ namespace SiliconStudio.Assets
         public bool UseWithLibraries { get; set; }
         public bool IncludeInSolution { get; set; }
 
-        public string LibraryAlias { get; set; }
+        public string LibraryProjectName { get; set; }
+        public string ExecutableProjectName { get; set; }
 
         /// <summary>
         /// Determines whether the project is handled by this platform.
@@ -194,6 +195,23 @@ namespace SiliconStudio.Assets
         public bool IsProjectHandled(ProjectType projectType)
         {
             return (projectType != ProjectType.Executable || UseWithExecutables) && (projectType != ProjectType.Library || UseWithLibraries);
+        }
+
+        /// <summary>
+        /// Gets the name of the project configuration from <see cref="Alias"/>, with <see cref="SafeSolutionName"/> as a fallback.
+        /// </summary>
+        /// <value>The name of the safe solution.</value>
+        public string GetProjectName(ProjectType projectType)
+        {
+            switch (projectType)
+            {
+                case ProjectType.Executable:
+                    return ExecutableProjectName ?? Alias ?? SafeSolutionName;
+                case ProjectType.Library:
+                    return LibraryProjectName ?? Alias ?? SafeSolutionName;
+                default:
+                    throw new ArgumentOutOfRangeException("projectType");
+            }
         }
     }
 

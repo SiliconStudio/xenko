@@ -45,6 +45,11 @@ namespace SiliconStudio.Core.Yaml
             serializer.Serialize(stream, instance);
         }
 
+        public static SerializerSettings GetSerializerSettings()
+        {
+            return GetYamlSerializer(false).Settings;
+        }
+
         private static Serializer GetYamlSerializer(bool keepOnlySealedOverrides)
         {
             Serializer localSerializer;

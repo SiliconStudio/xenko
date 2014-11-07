@@ -174,13 +174,13 @@ namespace SiliconStudio.Paradox.UI
                         StencilFunction = CompareFunction.Equal
                     },
                 };
-            KeepStencilValueState = new DepthStencilState(GraphicsDevice, depthStencilDescription);
+            KeepStencilValueState = DepthStencilState.New(GraphicsDevice, depthStencilDescription);
 
             depthStencilDescription.FrontFace.StencilPass = StencilOperation.Increment;
-            IncreaseStencilValueState = new DepthStencilState(GraphicsDevice, depthStencilDescription);
+            IncreaseStencilValueState = DepthStencilState.New(GraphicsDevice, depthStencilDescription);
 
             depthStencilDescription.FrontFace.StencilPass = StencilOperation.Decrement;
-            DecreaseStencilValueState = new DepthStencilState(GraphicsDevice, depthStencilDescription);
+            DecreaseStencilValueState = DepthStencilState.New(GraphicsDevice, depthStencilDescription);
 
             // set the default design of the UI elements.
             var designsTexture = TextureExtensions.CreateTextureFromFileData(GraphicsDevice, DefaultDesigns.Designs);
