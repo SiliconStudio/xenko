@@ -185,9 +185,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 // set world matrix matrices
                 // TODO: rotation of cubemap & cube mesh
                 parameters.Set(TransformationKeys.World, ComputeTransformationMatrix(cubemap.Value.InfluenceRadius, cubemap.Key.Transformation.Translation));
-                parameters.Set(CubemapIBLDiffuseKeys.CubemapRadius, cubemap.Value.InfluenceRadius);
-                parameters.Set(CubemapIBLDiffuseKeys.Cubemap, cubemap.Value.Texture);
-                parameters.Set(CubemapIBLDiffuseKeys.CubemapPosition, cubemap.Key.Transformation.Translation);
+                parameters.Set(CubemapIBLBaseKeys.CubemapRadius, cubemap.Value.InfluenceRadius);
+                parameters.Set(CubemapIBLBaseKeys.Cubemap, cubemap.Value.Texture);
+                parameters.Set(CubemapIBLBaseKeys.CubemapPosition, cubemap.Key.Transformation.Translation);
 
                 // apply effect
                 IBLEffect.Apply(parameters, context.CurrentPass.Parameters);

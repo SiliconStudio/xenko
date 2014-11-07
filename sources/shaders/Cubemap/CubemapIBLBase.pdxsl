@@ -1,0 +1,12 @@
+﻿// Copyright (c) 2014 Silicon Studio Corporation (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Defines parameters to compute the environment lighting.
+/// </summary>
+class CubemapIBLBase
+{
+    // TODO: transformation
+    float CubemapRadius;
+    float3 CubemapPosition;
+    TextureCube Cubemap;
+};

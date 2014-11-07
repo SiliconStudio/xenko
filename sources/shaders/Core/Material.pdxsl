@@ -33,8 +33,9 @@ class Material
     // Specular intensity - used in other classes
     stage float SpecularIntensity;
 
-    // Roughness of the material
+    // PBR material parameters
     stage float Roughness;
-    float OrenNayarDistributionVariance;
-    float CookTorranceReflection;
+    stage float Reflectance;
+    stage float OrenNayarDistributionVariance;
+    stage float CookTorranceReflection;
 };

@@ -3,13 +3,8 @@
 /// <summary>
 /// Computes the lighting from the cubemap in a deferred pass.
 /// </summary>
-class CubemapIBLSpecular : ShadingBase, TransformationWAndVP, Transformation, PositionVSGBuffer, NormalVSGBuffer, Texturing
+class CubemapIBLSpecular : CubemapIBLBase, ShadingBase, TransformationWAndVP, Transformation, PositionVSGBuffer, NormalVSGBuffer, Texturing
 {
-    // TODO: transformation
-    float CubemapRadius;
-    float3 CubemapPosition;
-    TextureCube Cubemap;
-    
     override stage float4 Shading()
     {
         float3 positionVS = PositionVS();

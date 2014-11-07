@@ -394,6 +394,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>CubemapFaceDisplayNoFlip.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Cubemap\CubemapIBLBase.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapIBLBase.pdxsl</DependentUpon>
+    </Compile>
     <Compile Include="Cubemap\CubemapIBLSpecular.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -423,6 +429,18 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>CubemapUtils.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Deferred\MaterialReflectanceGBuffer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialReflectanceGBuffer.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Shading\MaterialReflectanceBase.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialReflectanceBase.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Shading\MaterialRoughnessBase.cs">
       <AutoGen>True</AutoGen>
@@ -1815,6 +1833,10 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CubemapFaceDisplayNoFlip.cs</LastGenOutput>
     </None>
+    <None Include="Cubemap\CubemapIBLBase.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapIBLBase.cs</LastGenOutput>
+    </None>
     <None Include="Cubemap\CubemapIBLSpecular.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CubemapIBLSpecular.cs</LastGenOutput>
@@ -1834,6 +1856,14 @@
     <None Include="Cubemap\CubemapUtils.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CubemapUtils.cs</LastGenOutput>
+    </None>
+    <None Include="Deferred\MaterialReflectanceGBuffer.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialReflectanceGBuffer.cs</LastGenOutput>
+    </None>
+    <None Include="Shading\MaterialReflectanceBase.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialReflectanceBase.cs</LastGenOutput>
     </None>
     <None Include="Shading\MaterialRoughnessBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
