@@ -54,6 +54,8 @@ namespace SiliconStudio.Paradox.Games
 
         private bool preferMultiSampling;
 
+        private MSAALevel preferredMSAALevel;
+
         private PixelFormat preferredBackBufferFormat;
 
         private int preferredBackBufferHeight;
@@ -241,6 +243,23 @@ namespace SiliconStudio.Paradox.Games
                 if (preferMultiSampling != value)
                 {
                     preferMultiSampling = value;
+                    deviceSettingsChanged = true;
+                }
+            }
+        }
+
+        public MSAALevel PreferredMSAALevel
+        {
+            get
+            {
+                return preferredMSAALevel;
+            }
+
+            set
+            {
+                if (preferredMSAALevel != value)
+                {
+                    preferredMSAALevel = value;
                     deviceSettingsChanged = true;
                 }
             }
@@ -918,9 +937,11 @@ namespace SiliconStudio.Paradox.Games
                                 var newHeight = graphicsDeviceInformation.PresentationParameters.BackBufferHeight;
                                 var newFormat = graphicsDeviceInformation.PresentationParameters.BackBufferFormat;
                                 var newOutputIndex = graphicsDeviceInformation.PresentationParameters.PreferredFullScreenOutputIndex;
+                                var newMSAALevel = graphicsDeviceInformation.PresentationParameters.MultiSampleCount;
 
                                 GraphicsDevice.Presenter.Description.PreferredFullScreenOutputIndex = newOutputIndex;
                                 GraphicsDevice.Presenter.Description.RefreshRate = graphicsDeviceInformation.PresentationParameters.RefreshRate;
+                                GraphicsDevice.Presenter.Description.MultiSampleCount = newMSAALevel;
                                 GraphicsDevice.Presenter.Resize(newWidth, newHeight, newFormat);
 
                                 // Change full screen if needed
