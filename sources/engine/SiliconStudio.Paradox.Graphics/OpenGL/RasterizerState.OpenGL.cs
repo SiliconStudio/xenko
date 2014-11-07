@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.Graphics
         private PolygonMode polygonMode;
 #endif
 
-        public RasterizerState(GraphicsDevice device, RasterizerStateDescription rasterizerStateDescription) : base(device)
+        private RasterizerState(GraphicsDevice device, RasterizerStateDescription rasterizerStateDescription) : base(device)
         {
             Description = rasterizerStateDescription;
 
