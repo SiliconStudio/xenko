@@ -11,12 +11,16 @@ namespace SiliconStudio.Paradox.Physics
     [DataContract("ConvexHullColliderShapeDesc")]
     public class ConvexHullColliderShapeDesc : IColliderShapeDesc
     {
-        [DataMember(10)]
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
         [Browsable(false)]
+#endif
+        [DataMember(10)]
         public List<List<List<Vector3>>> ConvexHulls; // Multiple meshes -> Multiple Hulls -> Hull points
 
-        [DataMember(20)]
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
         [Browsable(false)]
+#endif
+        [DataMember(20)]
         public List<List<List<uint>>> ConvexHullsIndices; // Multiple meshes -> Multiple Hulls -> Hull tris
 
         [DataMember(30)]

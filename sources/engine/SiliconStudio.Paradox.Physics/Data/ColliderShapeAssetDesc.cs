@@ -9,8 +9,10 @@ namespace SiliconStudio.Paradox.Physics
     [DataContract("ColliderShapeAssetDesc")]
     public class ColliderShapeAssetDesc : IColliderShapeDesc
     {
-        [DataMember(10)]
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
         [Browsable(false)]
+#endif
+        [DataMember(10)]
         public string AssetName;
 
         [DataMember(20)]
