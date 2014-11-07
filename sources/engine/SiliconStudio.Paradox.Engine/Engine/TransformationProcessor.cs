@@ -43,7 +43,7 @@ namespace SiliconStudio.Paradox.Engine
         }
 
         /// <inheritdoc/>
-        protected internal override void OnSystemAdd()
+        public override void OnSystemAdd()
         {
             var rootEntities = EntitySystem.GetProcessor<HierarchicalProcessor>().RootEntities;
             ((ITrackingCollectionChanged)rootEntities).CollectionChanged += rootEntities_CollectionChanged;
@@ -56,7 +56,7 @@ namespace SiliconStudio.Paradox.Engine
         }
 
         /// <inheritdoc/>
-        protected internal override void OnSystemRemove()
+        public override void OnSystemRemove()
         {
             transformationRoots.Clear();
         }

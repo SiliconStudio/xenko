@@ -9,13 +9,14 @@ using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Physics;
 using SiliconStudio.Paradox.Threading;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Paradox.Physics
 {
     public class PhysicsProcessor : EntityProcessor<PhysicsProcessor.AssociatedData>
     {
@@ -80,7 +81,16 @@ namespace SiliconStudio.Paradox.Engine
                     break;
                 }
 
-                if (element.BoneIndex == -1) return;
+                if (element.BoneIndex == -1)
+                {
+                    throw new Exception("The specified LinkedBoneName doesn't exist in the model hierarchy.");
+                }
+            }
+
+            //complex hierarchy models not implemented yet
+            if (element.BoneIndex != -1)
+            {
+                throw new NotImplementedException("Physics on complex hierarchy model's bones is not implemented yet.");
             }
 
             var defaultGroups = element.CanCollideWith == 0 || element.CollisionGroup == 0;
@@ -297,7 +307,7 @@ namespace SiliconStudio.Paradox.Engine
             }
         }
 
-        protected internal override void OnEnabledChanged(Entity entity, bool enabled)
+        protected override void OnEnabledChanged(Entity entity, bool enabled)
         {
             if (!mPhysicsSystem.PhysicsEngine.Initialized) return;
 
@@ -309,7 +319,7 @@ namespace SiliconStudio.Paradox.Engine
             }
         }
 
-        protected internal override void OnSystemAdd()
+        public override void OnSystemAdd()
         {
             mPhysicsSystem = (Bullet2PhysicsSystem)Services.GetSafeServiceAs<IPhysicsSystem>();
             mRenderSystem = Services.GetSafeServiceAs<RenderSystem>();
@@ -322,12 +332,46 @@ namespace SiliconStudio.Paradox.Engine
             mRenderSystem.Pipeline.EndPass += DebugShapesDraw;
         }
 
-        protected internal override void OnSystemRemove()
+        public override void OnSystemRemove()
         {
             //remove all elements from the engine
             foreach (var element in mElements)
             {
                 DeleteElement(element);
+            }
+        }
+
+        private void DrawDebugCompound(ref Matrix viewProj, CompoundColliderShape compound, PhysicsElement element)
+        {
+            for (var i = 0; i < compound.Count; i++)
+            {
+                var subShape = compound[i];
+                switch (subShape.Type)
+                {
+                    case ColliderShapeTypes.StaticPlane:
+                        continue;
+                    case ColliderShapeTypes.Compound:
+                        DrawDebugCompound(ref viewProj, (CompoundColliderShape)compound[i], element);
+                        break;
+                    default:
+                    {
+                        var physTrans = element.BoneIndex == -1 ? element.Collider.PhysicsWorldTransform : element.BoneWorldMatrix;
+                        physTrans = Matrix.Multiply(subShape.PositiveCenterMatrix, physTrans);
+
+                        //must account collider shape scaling
+                        Matrix worldTrans;
+                        Matrix.Multiply(ref subShape.DebugPrimitiveScaling, ref physTrans, out worldTrans);
+
+                        mPhysicsSystem.PhysicsEngine.DebugEffect.WorldViewProj = worldTrans * viewProj;
+                        mPhysicsSystem.PhysicsEngine.DebugEffect.Color = element.Collider.IsActive ? Color.Green : Color.Red;
+                        mPhysicsSystem.PhysicsEngine.DebugEffect.UseUv = subShape.Type != ColliderShapeTypes.ConvexHull;
+
+                        mPhysicsSystem.PhysicsEngine.DebugEffect.Apply();
+
+                        subShape.DebugPrimitive.Draw();
+                    }
+                        break;
+                }
             }
         }
 
@@ -350,32 +394,16 @@ namespace SiliconStudio.Paradox.Engine
                 return;
             }
 
+            var rasterizers = mPhysicsSystem.PhysicsEngine.DebugGraphicsDevice.RasterizerStates;
+            mPhysicsSystem.PhysicsEngine.DebugGraphicsDevice.SetRasterizerState(rasterizers.CullNone);
+
             foreach (var element in mElements)
             {
                 var shape = element.Shape.Shape;
 
                 if (shape.Type == ColliderShapeTypes.Compound) //multiple shapes
                 {
-                    var compound = (CompoundColliderShape)shape;
-                    for (var i = 0; i < compound.Count; i++)
-                    {
-                        var subShape = compound[i];
-                        if (subShape.Type == ColliderShapeTypes.Compound || subShape.Type == ColliderShapeTypes.StaticPlane) continue;
-
-                        var physTrans = element.BoneIndex == -1 ? element.Collider.PhysicsWorldTransform : element.BoneWorldMatrix;
-                        physTrans = Matrix.Multiply(subShape.PositiveCenterMatrix, physTrans);
-
-                        //must account collider shape scaling
-                        Matrix worldTrans;
-                        Matrix.Multiply(ref subShape.DebugPrimitiveScaling, ref physTrans, out worldTrans);
-
-                        mPhysicsSystem.PhysicsEngine.DebugEffect.WorldViewProj = worldTrans * viewProj;
-                        mPhysicsSystem.PhysicsEngine.DebugEffect.Color = element.Collider.IsActive ? Color.Green : Color.Red;
-
-                        mPhysicsSystem.PhysicsEngine.DebugEffect.Apply();
-
-                        subShape.DebugPrimitive.Draw();
-                    }
+                    DrawDebugCompound(ref viewProj, (CompoundColliderShape)shape, element);
                 }
                 else if (shape.Type != ColliderShapeTypes.StaticPlane) //a single shape
                 {
@@ -387,12 +415,15 @@ namespace SiliconStudio.Paradox.Engine
 
                     mPhysicsSystem.PhysicsEngine.DebugEffect.WorldViewProj = worldTrans * viewProj;
                     mPhysicsSystem.PhysicsEngine.DebugEffect.Color = element.Collider.IsActive ? Color.Green : Color.Red;
+                    mPhysicsSystem.PhysicsEngine.DebugEffect.UseUv = shape.Type != ColliderShapeTypes.ConvexHull;
 
                     mPhysicsSystem.PhysicsEngine.DebugEffect.Apply();
 
                     shape.DebugPrimitive.Draw();
                 }
             }
+
+            mPhysicsSystem.PhysicsEngine.DebugGraphicsDevice.SetRasterizerState(rasterizers.CullBack);
         }
 
         public override void Update(GameTime time)

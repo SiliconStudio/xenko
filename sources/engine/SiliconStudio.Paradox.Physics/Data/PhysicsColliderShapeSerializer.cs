@@ -3,9 +3,8 @@
 using System;
 
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.Engine.Data;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Paradox.Physics
 {
     public class PhysicsColliderShapeSerializer : DataSerializer<PhysicsColliderShape>, IDataSerializerInitializer
     {
@@ -16,7 +15,6 @@ namespace SiliconStudio.Paradox.Engine
 
         public void Initialize(SerializerSelector serializerSelector)
         {
-            throw new NotImplementedException();
         }
     }
 }

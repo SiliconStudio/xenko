@@ -152,7 +152,7 @@ namespace SiliconStudio.Paradox.Effects.Modules
         }
 
         /// <inheritdoc/>
-        protected override void OnSystemRemove()
+        public override void OnSystemRemove()
         {
             texturesDefault.Clear();
             texturesVsm.Clear();
