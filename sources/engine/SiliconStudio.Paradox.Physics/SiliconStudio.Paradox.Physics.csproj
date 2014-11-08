@@ -22,8 +22,8 @@
   <Choose>
     <When Condition="'$(SiliconStudioPlatform)' == 'Windows'">
       <ItemGroup>
-        <Content Include="..\..\..\deps\VHACD\VHACD.dll">
-          <Link>VHACD.dll</Link>
+        <Content Include="..\..\..\deps\VHACD\x86\VHACD.dll">
+          <Link>%(Filename)%(Extension)</Link>
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
       </ItemGroup>
