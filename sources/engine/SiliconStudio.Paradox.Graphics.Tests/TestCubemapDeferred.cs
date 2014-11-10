@@ -118,7 +118,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             RenderSystem.Pipeline.Renderers.Add(gbufferProcessor);
 
             var readOnlyDepthBuffer = GraphicsDevice.DepthStencilBuffer.Texture.ToDepthStencilBuffer(true);
-            IBLRenderer = new LightingIBLRenderer(Services, readOnlyDepthBuffer);
+            IBLRenderer = new LightingIBLRenderer(Services, "CubemapIBLSpecular", readOnlyDepthBuffer);
             RenderSystem.Pipeline.Renderers.Add(IBLRenderer);
             RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services)
             {

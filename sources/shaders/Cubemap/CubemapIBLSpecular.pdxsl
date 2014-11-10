@@ -3,7 +3,7 @@
 /// <summary>
 /// Computes the lighting from the cubemap in a deferred pass.
 /// </summary>
-class CubemapIBLSpecular : CubemapIBLBase, ShadingBase, TransformationWAndVP, Transformation, PositionVSGBuffer, NormalVSGBuffer, Texturing
+class CubemapIBLSpecular : CubemapIBLBase, ShadingBase, TransformationWAndVP, Transformation, PositionVSGBuffer, NormalVSGBuffer, Texturing, MaterialRoughnessBase
 {
     override stage float4 Shading()
     {
@@ -35,6 +35,8 @@ class CubemapIBLSpecular : CubemapIBLBase, ShadingBase, TransformationWAndVP, Tr
 
     float4 SampleCubemap(float3 samplingDir)
     {
-        return Cubemap.SampleLevel(Texturing.LinearSampler, samplingDir, 0);
+        uint width, height, numberOfLevels;
+        Cubemap.GetDimensions(0, width, height, numberOfLevels);
+        return Cubemap.SampleLevel(Texturing.LinearSampler, samplingDir, numberOfLevels * GetRoughness());
     }
 };

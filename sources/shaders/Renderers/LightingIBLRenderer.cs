@@ -24,6 +24,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         #region Private members
 
+        private string specularEffectName;
+
         private bool clearTarget;
 
         private bool externRenderTarget;
@@ -65,13 +67,16 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// This renderer will compute the cubemap influence on the scene. It supposes a deferred shading/rendering pipeline. Will set a RenderTarget and a DepthStencilBuffer.
         /// </summary>
         /// <param name="services">The services.</param>
+        /// <param name="effectName">The name of the effect to create the specular ambient buffer.</param>
         /// <param name="depthBuffer">The depth buffer. Should be read only.</param>
         /// <param name="renderTarget">The render target. If null, a new render target will be created.</param>
         /// <param name="clearRenderTarget">A flag to enable the clear of the render target.</param>
-        public LightingIBLRenderer(IServiceRegistry services, DepthStencilBuffer depthBuffer, RenderTarget renderTarget = null, bool clearRenderTarget = true) : base(services)
+        public LightingIBLRenderer(IServiceRegistry services, string effectName, DepthStencilBuffer depthBuffer, RenderTarget renderTarget = null, bool clearRenderTarget = true) : base(services)
         {
             if (depthBuffer == null)
                 throw new ArgumentNullException("depthBuffer");
+
+            specularEffectName = effectName ?? "CubemapIBLSpecular";
 
             readOnlyDepthBuffer = depthBuffer;
 
@@ -127,7 +132,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 });
 
             // effect
-            IBLEffect = EffectSystem.LoadEffect("CubemapIBLSpecular");
+            IBLEffect = EffectSystem.LoadEffect(specularEffectName);
 
             parameters = new ParameterCollection();
             parameters.Set(RenderTargetKeys.DepthStencilSource, readOnlyDepthBuffer.Texture);
