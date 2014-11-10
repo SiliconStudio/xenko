@@ -136,11 +136,6 @@ namespace SiliconStudio.Paradox.Physics
 
                 return compound;
             }
-            else if (type == typeof(ColliderShapeAssetDesc))
-            {
-                var assetDesc = (ColliderShapeAssetDesc)desc;
-                shape = new AssetManager().Load<PhysicsColliderShape>(assetDesc.AssetName).Shape;
-            }
 
             if (shape != null) shape.UpdateLocalTransformations();
 

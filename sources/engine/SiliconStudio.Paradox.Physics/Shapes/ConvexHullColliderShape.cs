@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 using SiliconStudio.Core.Mathematics;
@@ -26,7 +25,7 @@ namespace SiliconStudio.Paradox.Physics
                 verts[i].Normal = Vector3.Zero;
             }
 
-            var intIndices = Array.ConvertAll(indices.ToArray(), input => (int)input);
+            var intIndices = indices.Select(x => (int)x).ToArray();
             var meshData = new GeometricMeshData<VertexPositionNormalTexture>(verts, intIndices, false, VertexPositionNormalTexture.Layout);
 
             DebugPrimitive = new GeometricPrimitive(PhysicsEngine.Singleton.DebugGraphicsDevice, meshData);
