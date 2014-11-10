@@ -119,17 +119,20 @@ namespace SiliconStudio.Paradox.Assets
 
         public override IEnumerable<ObjectUrl> GetInputFiles()
         {
-            for (int i = 0; i < ImageToTextureIndex.Values.Distinct().Count(); i++)
+            if (!asset.GroupAsset.GenerateTextureAtlas)
             {
-                if (UseSeparateAlphaTexture)
+                for (int i = 0; i < ImageToTextureIndex.Values.Distinct().Count(); i++)
                 {
-                    var textureUrl = ImageGroupAsset.BuildTextureUrl(Url, i);
-                    yield return new ObjectUrl(UrlType.Internal, TextureAlphaComponentSplitter.GenerateColorTextureURL(textureUrl));
-                    yield return new ObjectUrl(UrlType.Internal, TextureAlphaComponentSplitter.GenerateAlphaTextureURL(textureUrl));
-                }
-                else
-                {
-                    yield return new ObjectUrl(UrlType.Internal, ImageGroupAsset.BuildTextureUrl(Url, i));
+                    if (UseSeparateAlphaTexture)
+                    {
+                        var textureUrl = ImageGroupAsset.BuildTextureUrl(Url, i);
+                        yield return new ObjectUrl(UrlType.Internal, TextureAlphaComponentSplitter.GenerateColorTextureURL(textureUrl));
+                        yield return new ObjectUrl(UrlType.Internal, TextureAlphaComponentSplitter.GenerateAlphaTextureURL(textureUrl));
+                    }
+                    else
+                    {
+                        yield return new ObjectUrl(UrlType.Internal, ImageGroupAsset.BuildTextureUrl(Url, i));
+                    }
                 }
             }
         }
