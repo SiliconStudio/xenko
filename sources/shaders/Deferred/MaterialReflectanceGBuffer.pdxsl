@@ -5,7 +5,7 @@
 /// </summary>
 class MaterialReflectanceGBuffer
 {
-    override stage float GetReflectamce()
+    override stage float GetReflectance()
     {
         // TODO: depends on the GBuffer we use.
         return GBufferTexture.Load(int3(streams.ShadingPosition.xy, 0), 0).w;

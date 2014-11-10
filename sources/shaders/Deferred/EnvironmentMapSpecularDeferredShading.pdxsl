@@ -3,7 +3,7 @@
 /// <summary>
 /// Computes ambient specular contribution from the prepass.
 /// </summary>
-class EnvironmentMapSpecularDeferredShading : ShadingBase, Texturing, AlbedoSpecularBase, PositionVSBase, NormalVSBase
+class EnvironmentMapSpecularDeferredShading : ShadingBase, Texturing, AlbedoSpecularBase, PositionVSBase, NormalVSBase, MaterialReflectanceBase
 {
     stage Texture2D SpecularIBLMap;
     
@@ -19,7 +19,7 @@ class EnvironmentMapSpecularDeferredShading : ShadingBase, Texturing, AlbedoSpec
         if (IBLValue.w > 0)
         {
             // compute fresnel term
-            float3 specularColor = 0.14;
+            float3 specularColor = GetReflectance();
             float3 eye = -normalize(PositionVS());
             float3 fresnelTerm = Utilities.FresnelSchlick(specularColor, eye, NormalVS(), 1);
 

@@ -5,7 +5,7 @@
 /// </summary>
 class MaterialReflectanceBase
 {
-    stage float GetReflectamce()
+    stage float GetReflectance()
     {
         return Material.Reflectance;
     }
