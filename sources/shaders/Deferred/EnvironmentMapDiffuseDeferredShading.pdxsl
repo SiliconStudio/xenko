@@ -16,7 +16,8 @@ class EnvironmentMapDiffuseDeferredShading : ShadingBase, Texturing, AlbedoDiffu
         DiffuseIBLMap.GetDimensions(IBLTextureDimensions.x, IBLTextureDimensions.y);
         float4 IBLValue = DiffuseIBLMap.Sample(Sampler, streams.ShadingPosition.xy / IBLTextureDimensions);
         
-        resultColor.rgb += this.DiffuseAlbedo() * IBLValue.xyz / IBLValue.w;
+        if (IBLValue.w > 0)
+            resultColor.rgb += this.DiffuseAlbedo() * IBLValue.xyz / IBLValue.w;
         
         return resultColor;
     }

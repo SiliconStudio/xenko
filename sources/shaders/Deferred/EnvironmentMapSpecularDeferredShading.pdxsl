@@ -16,13 +16,15 @@ class EnvironmentMapSpecularDeferredShading : ShadingBase, Texturing, AlbedoSpec
         SpecularIBLMap.GetDimensions(IBLTextureDimensions.x, IBLTextureDimensions.y);
         float4 IBLValue = SpecularIBLMap.Sample(Sampler, streams.ShadingPosition.xy / IBLTextureDimensions);
         
-        // compute fresnel term
-        float3 specularColor = 0.14;
-        float3 eye = -normalize(PositionVS());
-        float3 fresnelTerm = Utilities.FresnelSchlick(specularColor, eye, NormalVS(), 1);
+        if (IBLValue.w > 0)
+        {
+            // compute fresnel term
+            float3 specularColor = 0.14;
+            float3 eye = -normalize(PositionVS());
+            float3 fresnelTerm = Utilities.FresnelSchlick(specularColor, eye, NormalVS(), 1);
 
-        resultColor.rgb += this.SpecularAlbedo() * fresnelTerm * IBLValue.xyz / IBLValue.w;
-        
+            resultColor.rgb += this.SpecularAlbedo() * fresnelTerm * IBLValue.xyz / IBLValue.w;
+        }
         return resultColor;
     }
 };
