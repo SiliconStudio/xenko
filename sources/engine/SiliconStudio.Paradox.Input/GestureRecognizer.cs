@@ -122,18 +122,16 @@ namespace SiliconStudio.Paradox.Input
 
         protected Vector2 NormalizeVector(Vector2 inputVector)
         {
-            if(ScreenRatio > 1)
-                return new Vector2(inputVector.X, inputVector.Y * ScreenRatio);
-            else
-                return new Vector2(inputVector.X / ScreenRatio, inputVector.Y);
+            return ScreenRatio > 1 ? 
+                new Vector2(inputVector.X, inputVector.Y * ScreenRatio) : 
+                new Vector2(inputVector.X / ScreenRatio, inputVector.Y);
         }
 
         protected Vector2 UnnormalizeVector(Vector2 inputVector)
         {
-            if(ScreenRatio > 1)
-                return new Vector2(inputVector.X, inputVector.Y / ScreenRatio);
-            else
-                return new Vector2(inputVector.X * ScreenRatio, inputVector.Y);
+            return ScreenRatio > 1 ? 
+                new Vector2(inputVector.X, inputVector.Y / ScreenRatio) : 
+                new Vector2(inputVector.X * ScreenRatio, inputVector.Y);
         }
 
         private void ProcessAndClearMovePointerEvents()
