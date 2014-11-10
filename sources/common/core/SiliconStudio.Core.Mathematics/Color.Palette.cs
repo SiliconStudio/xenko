@@ -15,7 +15,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <summary>
         /// Transparent color.
         /// </summary>
-        public static readonly Color Transparent = Color.FromBgra(0x00FFFFFF);
+        public static readonly Color Transparent = Color.FromBgra(0x00000000);
 
         /// <summary>
         /// AliceBlue color.
