@@ -791,7 +791,7 @@ public:
 			}
 		}
 		{	// The specular power map
-			auto specularPowerTree = GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sSpecularFactor, NULL, finalMaterial);
+			auto specularPowerTree = GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sShininess, NULL, finalMaterial);
 			if(phongSurface || specularPowerTree != nullptr)
 			{
 				if(specularPowerTree == nullptr)	
