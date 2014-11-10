@@ -430,11 +430,17 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>CubemapUtils.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Deferred\EnvironmentMapDeferredShading.cs">
+    <Compile Include="Deferred\EnvironmentMapDiffuseDeferredShading.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>EnvironmentMapDeferredShading.pdxsl</DependentUpon>
+      <DependentUpon>EnvironmentMapDiffuseDeferredShading.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Deferred\EnvironmentMapSpecularDeferredShading.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>EnvironmentMapSpecularDeferredShading.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Deferred\MaterialReflectanceGBuffer.cs">
       <AutoGen>True</AutoGen>
@@ -1863,9 +1869,13 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CubemapUtils.cs</LastGenOutput>
     </None>
-    <None Include="Deferred\EnvironmentMapDeferredShading.pdxsl">
+    <None Include="Deferred\EnvironmentMapDiffuseDeferredShading.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>EnvironmentMapDeferredShading.cs</LastGenOutput>
+      <LastGenOutput>EnvironmentMapDiffuseDeferredShading.cs</LastGenOutput>
+    </None>
+    <None Include="Deferred\EnvironmentMapSpecularDeferredShading.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>EnvironmentMapSpecularDeferredShading.cs</LastGenOutput>
     </None>
     <None Include="Deferred\MaterialReflectanceGBuffer.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

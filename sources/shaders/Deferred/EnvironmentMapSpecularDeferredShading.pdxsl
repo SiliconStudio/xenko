@@ -1,9 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 /// <summary>
-/// Computes shading from a light map.
+/// Computes ambient specular contribution from the prepass.
 /// </summary>
-class EnvironmentMapDeferredShading : ShadingBase, Texturing, AlbedoSpecularBase, PositionVSBase, NormalVSBase
+class EnvironmentMapSpecularDeferredShading : ShadingBase, Texturing, AlbedoSpecularBase, PositionVSBase, NormalVSBase
 {
     stage Texture2D SpecularIBLMap;
     
@@ -11,7 +11,7 @@ class EnvironmentMapDeferredShading : ShadingBase, Texturing, AlbedoSpecularBase
     {
         float4 resultColor = base.Shading();
 
-        // Get diffuseLight and specularLuminance from prepass
+        // Get specular ambient from prepass
         float2 IBLTextureDimensions;
         SpecularIBLMap.GetDimensions(IBLTextureDimensions.x, IBLTextureDimensions.y);
         float4 IBLValue = SpecularIBLMap.Sample(Sampler, streams.ShadingPosition.xy / IBLTextureDimensions);

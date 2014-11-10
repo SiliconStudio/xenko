@@ -7,8 +7,8 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 namespace SiliconStudio.Paradox.Effects.Modules
 {
-    public static partial class EnvironmentMapDeferredShadingKeys
+    public static partial class EnvironmentMapDiffuseDeferredShadingKeys
     {
-        public static readonly ParameterKey<Texture> SpecularIBLMap = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<Texture> DiffuseIBLMap = ParameterKeys.New<Texture>();
     }
 }
