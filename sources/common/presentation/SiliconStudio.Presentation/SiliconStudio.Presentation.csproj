@@ -132,7 +132,6 @@
     <Compile Include="Commands\AnonymousCommand.cs" />
     <Compile Include="Controls\TextBox.cs" />
     <Compile Include="Controls\NumericTextBox.cs" />
-    <Compile Include="Controls\SliderTextBox.cs" />
     <Compile Include="Controls\ScaleBar.cs" />
     <Compile Include="Extensions\DependencyObjectExtensions.cs" />
     <Compile Include="Controls\KeyValueGrid.cs" />
@@ -260,7 +259,9 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\Cursors\CursorDrag.cur" />
+  </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

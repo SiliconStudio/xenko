@@ -66,7 +66,7 @@ namespace SiliconStudio.Paradox.Physics
             set { InternalConstraint.BreakingImpulseThreshold = value; }
         }
 
-        bool mFeedbackEnabled;
+        bool feedbackEnabled;
 
         /// <summary>
         /// Gets the applied impulse.
@@ -78,9 +78,9 @@ namespace SiliconStudio.Paradox.Physics
         {
             get
             {
-                if (mFeedbackEnabled) return InternalConstraint.AppliedImpulse;
+                if (feedbackEnabled) return InternalConstraint.AppliedImpulse;
                 InternalConstraint.EnableFeedback(true);
-                mFeedbackEnabled = true;
+                feedbackEnabled = true;
                 return InternalConstraint.AppliedImpulse;
             }
         }

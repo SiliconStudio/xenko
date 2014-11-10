@@ -6,7 +6,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Paradox.EntityModel;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Paradox.Physics
 {
     [DataConverter(AutoGenerate = true)]
     [DataContract("PhysicsComponent")]

@@ -6,18 +6,18 @@ namespace SiliconStudio.Paradox.Physics
 {
     class ParadoxMotionState : BulletSharp.SharpMotionState
     {
-        private readonly RigidBody mRigidBody;
+        private readonly RigidBody rigidBody;
 
-        public ParadoxMotionState(RigidBody rigidBody)
+        public ParadoxMotionState(RigidBody rb)
         {
-            mRigidBody = rigidBody;
+            rigidBody = rb;
         }
 
         public override void GetWorldTransform(out Matrix transform)
         {
-            if (mRigidBody.GetWorldTransformCallback != null)
+            if (rigidBody.GetWorldTransformCallback != null)
             {
-                mRigidBody.GetWorldTransformCallback(out transform);
+                rigidBody.GetWorldTransformCallback(out transform);
             }
             else
             {
@@ -27,9 +27,9 @@ namespace SiliconStudio.Paradox.Physics
 
         public override void SetWorldTransform(Matrix transform)
         {
-            if (mRigidBody.SetWorldTransformCallback != null)
+            if (rigidBody.SetWorldTransformCallback != null)
             {
-                mRigidBody.SetWorldTransformCallback(transform);
+                rigidBody.SetWorldTransformCallback(transform);
             }
         }
     }

@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.Graphics
     {
         private DepthFunction depthFunction;
 
-        public DepthStencilState(GraphicsDevice device, DepthStencilStateDescription depthStencilStateDescription)
+        private DepthStencilState(GraphicsDevice device, DepthStencilStateDescription depthStencilStateDescription)
             : base(device)
         {
             Description = depthStencilStateDescription;

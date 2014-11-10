@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -23,28 +22,28 @@ namespace SiliconStudio.Paradox.Physics
         /// </summary>
         public override void Dispose()
         {
-            foreach (var shape in mColliderShapes)
+            foreach (var shape in colliderShapes)
             {
                 InternalCompoundShape.RemoveChildShape(shape.InternalShape);
                 shape.Dispose();
             }
-            mColliderShapes.Clear();
+            colliderShapes.Clear();
 
             base.Dispose();
         }
 
-        readonly FastList<ColliderShape> mColliderShapes = new FastList<ColliderShape>();
+        readonly FastList<ColliderShape> colliderShapes = new FastList<ColliderShape>();
 
-        BulletSharp.CompoundShape mInternalCompoundShape;
+        BulletSharp.CompoundShape internalCompoundShape;
         internal BulletSharp.CompoundShape InternalCompoundShape
         {
             get
             {
-                return mInternalCompoundShape;
+                return internalCompoundShape;
             }
             set
             {
-                InternalShape = mInternalCompoundShape = value;
+                InternalShape = internalCompoundShape = value;
             }
         }
 
@@ -54,7 +53,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <param name="shape">The shape.</param>
         public void AddChildShape(ColliderShape shape)
         {
-            mColliderShapes.Add(shape);
+            colliderShapes.Add(shape);
 
             InternalCompoundShape.AddChildShape(shape.PositiveCenterMatrix, shape.InternalShape);
             
@@ -67,7 +66,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <param name="shape">The shape.</param>
         public void RemoveChildShape(ColliderShape shape)
         {
-            mColliderShapes.Remove(shape);
+            colliderShapes.Remove(shape);
             
             InternalCompoundShape.RemoveChildShape(shape.InternalShape);
             
@@ -84,7 +83,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <returns></returns>
         public ColliderShape this[int i]
         {
-            get { return mColliderShapes[i]; }
+            get { return colliderShapes[i]; }
         }
 
         /// <summary>
@@ -97,7 +96,7 @@ namespace SiliconStudio.Paradox.Physics
         {
             get
             {
-                return mColliderShapes.Count;
+                return colliderShapes.Count;
             }
         }
     }

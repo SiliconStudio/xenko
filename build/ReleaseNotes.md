@@ -7,10 +7,13 @@ Release date: 2014/11/??
 
 #### Enhancements
 - Studio: Property grids have been reworked to be more efficient and easily extendable.
+- Studio: Numeric input controls have been improved.
+- Physics: Physics assembly now depends on Engine (instead of the opposite). Soon Physics (and some other modules) will become optional.
 
 #### Issues fixed
 - Core: EnumerableExtensions.LastIndexOf() wasn't working properly ([#62](https://github.com/SiliconStudio/paradox/issues/62)).
 - Game: Properly support windows with height 0 when AllowUserResizing is true ([#65](https://github.com/SiliconStudio/paradox/issues/65)).
+- Game: GameForm is created with a black background, to avoid initial flickering while Windows is being initialized ([#54](https://github.com/SiliconStudio/paradox/issues/54)).
 - Input: Alt+F4 is now properly working on Windows Store/Phone platforms ([#74](https://github.com/SiliconStudio/paradox/issues/74)).
 - Input: Properly maps all extended keyboard keys on Windows Store/Phone platforms ([#84](https://github.com/SiliconStudio/paradox/issues/84)).
 - Misc: PCL can now be used in Windows Store/Phone platforms ([#72](https://github.com/SiliconStudio/paradox/issues/72)).
@@ -19,12 +22,20 @@ Release date: 2014/11/??
 - Shaders: Compositions (especially arrays) couldn't be used in child classes of the one containing their declaration. Function and member calls weren't correctly resolved.
 - Studio: Fix preview and thumbnail of materials with normal map.
 - Studio: Fix binding errors in the property grid ([#29](https://github.com/SiliconStudio/paradox/issues/29)).
+- Studio: Fix undesired hue changes and loss of precision in extremal values in the color picker.
 - UI: UIImage borders were not properly rendered when image had Orientation.Rotated90.
 
 #### Breaking changes
 - Graphics: Remove Rotated180 and Rotated90C from ImageOrientation enumeration for code simplicity and efficiency purpose.
 - Graphics: Change ImageFragment.Region type from Rectangle to RectangleF and corresponding batch draw function API (SpriteBatch/UIBatch).
 - Graphics: CopyRegion now contains additional parameters for subresource indices and destination offset.
+- Graphics: RasterizerState and DepthStencilState constructors are now private to match other Graphics classes. static New() should be used instead ([#83](https://github.com/SiliconStudio/paradox/issues/83)).
+- Physics: Physics engine initialization has changed since now Physics is a optional module. (please check updated samples)
+- Physics: Added Convex Hull simple wrap shape and complex decomposition as well.
+
+#### Known Issues
+- Physics: Complex convex hull decomposition can be a very long process and there is visual feedback for it.
+- Physics: Convex hull shape debug shapes in game studio are not rendering very well, although the asset will be OK.
 
 ### Version 1.0.0-beta02
 

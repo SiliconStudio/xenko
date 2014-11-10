@@ -1,14 +1,14 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization.Converters;
+using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.EntityModel;
+
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 
-using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization.Converters;
-using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Physics;
-
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Paradox.Physics
 {
     [DataContract]
     [DataConverter(AutoGenerate = true)]
@@ -115,8 +115,22 @@ namespace SiliconStudio.Paradox.Engine
 
         #region Ignore or Private/Internal
 
+        private Collider mCollider;
+
         [DataMemberIgnore]
-        public Collider Collider { get; internal set; }
+        public Collider Collider
+        {
+            get
+            {
+                if (mCollider == null)
+                {
+                    throw new Exception("Collider is null, please make sure that you are trying to access this object after it is added to the game entities ( Entities.Add(entity) ).");
+                }
+
+                return mCollider;
+            }
+            internal set { mCollider = value; }
+        }
 
         [DataMemberIgnore]
         public RigidBody RigidBody
@@ -136,7 +150,7 @@ namespace SiliconStudio.Paradox.Engine
 
         internal PhysicsProcessor.AssociatedData Data;
 
-        #endregion end
+        #endregion Ignore or Private/Internal
 
         #region Utility
 
@@ -217,7 +231,7 @@ namespace SiliconStudio.Paradox.Engine
                 scale.Z = (float)Math.Sqrt((worldMatrix.M31 * worldMatrix.M31) + (worldMatrix.M32 * worldMatrix.M32) + (worldMatrix.M33 * worldMatrix.M33));
 
                 TransformationComponent.CreateMatrixTRS(ref translation, ref rotation, ref scale, out entity.Transformation.WorldMatrix);
-                if (entity.Transformation.Parent == null || entity.Transformation.isSpecialRoot)
+                if (entity.Transformation.Parent == null)
                 {
                     entity.Transformation.LocalMatrix = entity.Transformation.WorldMatrix;
                 }
@@ -239,8 +253,8 @@ namespace SiliconStudio.Paradox.Engine
         public void UpdatePhysicsTransformation()
         {
             Collider.PhysicsWorldTransform = DerivePhysicsTransformation();
-        }    
+        }
 
-        #endregion
+        #endregion Utility
     }
 }

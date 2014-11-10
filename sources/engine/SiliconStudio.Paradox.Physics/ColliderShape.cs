@@ -81,7 +81,6 @@ namespace SiliconStudio.Paradox.Physics
         /// Gets or sets the scaling.
         /// Make sure that you manually created and assigned an exclusive ColliderShape to the Collider otherwise since the engine shares shapes among many Colliders, all the colliders will be scaled.
         /// Please note that this scaling has no relation to the TransformationComponent scaling.
-        /// Not all the shapes support this feature properly and at the moment the debug primitives don't update scaling. //todo
         /// </summary>
         /// <value>
         /// The scaling.
@@ -94,6 +93,7 @@ namespace SiliconStudio.Paradox.Physics
             }
             set
             {
+                DebugPrimitiveScaling *= Matrix.Scaling(value);
                 InternalShape.LocalScaling = value;
             }
         }
@@ -113,5 +113,7 @@ namespace SiliconStudio.Paradox.Physics
         internal GeometricPrimitive DebugPrimitive;
 
         internal Matrix DebugPrimitiveScaling;
+
+        internal bool NeedsCustomCollisionCallback;
     }
 }
