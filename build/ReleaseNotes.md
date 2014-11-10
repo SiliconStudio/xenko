@@ -24,6 +24,7 @@ Release date: 2014/11/??
 - Studio: Fix preview and thumbnail of materials with normal map.
 - Studio: Fix binding errors in the property grid ([#29](https://github.com/SiliconStudio/paradox/issues/29)).
 - Studio: Fix undesired hue changes and loss of precision in extremal values in the color picker.
+- Studio: Fix "Show in explorer" on assets.
 - UI: UIImage borders were not properly rendered when image had Orientation.Rotated90.
 
 #### Breaking changes
