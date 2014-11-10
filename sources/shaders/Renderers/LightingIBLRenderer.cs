@@ -149,12 +149,12 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
             parameters.Clear();
 
-            IBLEffect.Dispose();
-            IBLDepthStencilState.Dispose();
-            IBLBlendState.Dispose();
-            cubemapMesh.Dispose();
+            Utilities.Dispose(ref IBLEffect);
+            Utilities.Dispose(ref IBLDepthStencilState);
+            Utilities.Dispose(ref IBLBlendState);
+            Utilities.Dispose(ref cubemapMesh);
             if (!externRenderTarget)
-                IBLRenderTarget.Dispose();
+                Utilities.Dispose(ref IBLRenderTarget);
         }
 
         #endregion

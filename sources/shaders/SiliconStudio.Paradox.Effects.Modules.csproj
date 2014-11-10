@@ -563,12 +563,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>DefaultForwardEffect.pdxfx</DependentUpon>
     </Compile>
-    <Compile Include="Deferred\GBufferMRT.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>GBufferMRT.pdxsl</DependentUpon>
-    </Compile>
     <Compile Include="Deferred\GBufferPack.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1976,10 +1970,6 @@
     <None Include="Deferred\GBufferBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>GBufferBase.cs</LastGenOutput>
-    </None>
-    <None Include="Deferred\GBufferMRT.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>GBufferMRT.cs</LastGenOutput>
     </None>
     <None Include="Deferred\GBufferPack.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
