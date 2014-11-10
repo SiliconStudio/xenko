@@ -6,8 +6,6 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core.Mathematics;
 
-using System.Linq;
-
 namespace SiliconStudio.Paradox.Input
 {
     internal abstract class GestureRecognizer
@@ -22,6 +20,8 @@ namespace SiliconStudio.Paradox.Input
 
         protected TimeSpan ElapsedSinceBeginning;
         protected TimeSpan ElapsedSinceLast;
+
+        private readonly static List<int> FingerIdsCache = new List<int>();
 
         protected bool HasGestureStarted
         {
@@ -140,8 +140,11 @@ namespace SiliconStudio.Paradox.Input
         {
             if (fingerIdsToLastMovePos.Count > 0)
             {
+                FingerIdsCache.Clear();
+                FingerIdsCache.AddRange(fingerIdsToLastMovePos.Keys);
+
                 // Unnormalizes vectors here before utilization
-                foreach (var id in fingerIdsToLastMovePos.Keys.ToArray())
+                foreach (var id in FingerIdsCache)
                     fingerIdsToLastMovePos[id] = UnnormalizeVector(fingerIdsToLastMovePos[id]);
 
                 ProcessMoveEventPointers(fingerIdsToLastMovePos);
