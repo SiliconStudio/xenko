@@ -91,20 +91,19 @@ namespace SiliconStudio.ActionStack
         }
 
         /// <inheritdoc/>
-        public IAggregateActionItem EndTransaction(string name)
+        public void EndTransaction(string name)
         {
-            return EndTransaction(name, x => new AggregateActionItem(name, x));
+            EndTransaction(name, x => AggregateActionItems(x, name));
         }
 
         /// <inheritdoc/>
-        public virtual IAggregateActionItem EndTransaction(string name, Func<IEnumerable<IActionItem>, IAggregateActionItem> aggregateActionItemConstructor)
+        public virtual void EndTransaction(string name, Func<IReadOnlyCollection<IActionItem>, IActionItem> aggregateActionItems)
         {
             if (TransactionStack.Count == 0) throw new InvalidOperationException(Properties.ExceptionMessages.CannotEndNoTransactionInProgress);
 
             var currentTransaction = TransactionStack.Pop();
-            var aggregateActionItem = aggregateActionItemConstructor(currentTransaction);
+            var aggregateActionItem = aggregateActionItems(currentTransaction);
             Add(aggregateActionItem);
-            return aggregateActionItem;
         }
 
         /// <inheritdoc/>
@@ -147,6 +146,18 @@ namespace SiliconStudio.ActionStack
             {
                 base.Add(item);
             }
+        }
+
+        private static IActionItem AggregateActionItems(IReadOnlyCollection<IActionItem> actionItems, string name = null)
+        {
+            if (actionItems.Count == 1)
+            {
+                var actionItem = actionItems.First();
+                if (!string.IsNullOrEmpty(name))
+                    actionItem.Name = name;
+                return actionItem;
+            }
+            return new AggregateActionItem(name, actionItems);
         }
     }
 }
