@@ -115,6 +115,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
         {
             var worldDir = Vector4.Transform(new Vector4(light.Light.LightDirection, 0), light.Entity.Transformation.WorldMatrix);
             light.ShadowMap.LightDirection = new Vector3(worldDir.X, worldDir.Y, worldDir.Z);
+            light.ShadowMap.LightPosition = light.Entity.Transformation.Translation;
+            light.ShadowMap.Fov = light.Light.SpotFieldAngle;
             light.ShadowMap.ReceiverInfo.ShadowLightDirection = light.ShadowMap.LightDirectionNormalized;
             light.ShadowMap.ShadowFarDistance = light.Light.ShadowFarDistance;
             light.ShadowMap.ReceiverInfo.ShadowMapDistance = light.ShadowMap.ShadowFarDistance;

@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.Effects.Modules.Renderers;
 using SiliconStudio.Paradox.Effects.Modules.Shadowmap;
 using SiliconStudio.Paradox.Engine;
@@ -33,6 +34,16 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
         /// </summary>
         public Vector3 LightDirection;
 
+        /// <summary>
+        /// The light position.
+        /// </summary>
+        public Vector3 LightPosition;
+
+        /// <summary>
+        /// The fov of the light.
+        /// </summary>
+        public float Fov;
+
         /// <value>
         /// The size of the shadow map.
         /// </value>
@@ -52,6 +63,11 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
         /// The number of shadow map cascades.
         /// </summary>
         public int CascadeCount;
+
+        /// <summary>
+        /// The light type.
+        /// </summary>
+        public LightType LightType;
 
         /// <summary>
         /// The shadow map filter.

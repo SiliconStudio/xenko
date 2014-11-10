@@ -59,6 +59,7 @@ namespace SiliconStudio.Paradox.Effects.Data
                         if (configs.Groups[i].ShadowCount > 0)
                         {
                             var configData = new ShadowConfigurationData();
+                            configData.LightType = configs.Groups[i].LightType;
                             configData.ShadowCount = configs.Groups[i].ShadowCount;
                             configData.CascadeCount = configs.Groups[i].CascadeCount;
                             configData.FilterType = configs.Groups[i].FilterType;
@@ -89,6 +90,7 @@ namespace SiliconStudio.Paradox.Effects.Data
                 foreach (var shadowConfig in ShadowConfigurations.Groups)
                 {
                     var shadowParams = new ShadowMapParameters();
+                    shadowParams.Set(ShadowMapParameters.LightType, shadowConfig.LightType);
                     shadowParams.Set(ShadowMapParameters.ShadowMapCount, shadowConfig.ShadowCount);
                     shadowParams.Set(ShadowMapParameters.ShadowMapCascadeCount, shadowConfig.CascadeCount);
                     shadowParams.Set(ShadowMapParameters.FilterType, shadowConfig.FilterType);

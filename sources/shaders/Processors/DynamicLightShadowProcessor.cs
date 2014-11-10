@@ -75,7 +75,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
         protected override void OnEntityAdding(Entity entity, EntityLightShadow data)
         {
             base.OnEntityAdding(entity, data);
-            if (ManageShadows && data.Light.Type == LightType.Directional && data.Light.ShadowMap)
+            if (ManageShadows && (data.Light.Type == LightType.Directional || data.Light.Type == LightType.Spot) && data.Light.ShadowMap)
                 CreateShadowMap(data);
         }
 
@@ -123,10 +123,13 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
             var shadowMap = new ShadowMap
             {
                 LightDirection = light.Light.LightDirection,
+                LightPosition = light.Entity.Transformation.Translation,
                 ShadowMapSize = light.Light.ShadowMapMaxSize,
                 ShadowNearDistance = light.Light.ShadowNearDistance,
                 ShadowFarDistance = light.Light.ShadowFarDistance,
-                CascadeCount = light.Light.ShadowMapCascadeCount,
+                CascadeCount = light.Light.Type == LightType.Directional ? light.Light.ShadowMapCascadeCount : 1, // cascades are only supported for directional shadow maps
+                LightType = light.Light.Type,
+                Fov = light.Light.SpotFieldAngle,
                 Filter = light.Light.ShadowMapFilterType,
                 Layers = light.Light.Layers
             };

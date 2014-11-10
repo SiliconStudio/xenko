@@ -30,7 +30,7 @@ class ShadingPerPixelShadow : ShadingPerPixel, ShadowBase
 
             //lighting += shadowFactor * ComputeDiffuseInfluence(diffuseAlbedo, i);
             //lighting += step(1, shadowFactor) * ComputeSpecularInfluence(specularAlbedo, i);
-            lighting += shadowFactor * (ComputeDiffuseInfluence(diffuseAlbedo, i) + ComputeSpecularInfluence(specularAlbedo, i));
+            lighting += shadowFactor * GetAttenuation(i) * (ComputeDiffuseInfluence(diffuseAlbedo, i) + ComputeSpecularInfluence(specularAlbedo, i));
         }
         return float4(lighting, 0.0f);
     }

@@ -68,6 +68,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         private List<EntityLightShadow> spotLights;
 
+        private List<EntityLightShadow> spotLightsWithShadows;
+
         private List<EntityLightShadow> directionalLightsForMesh;
         
         private List<EntityLightShadow> directionalLightsWithShadowForMesh;
@@ -76,9 +78,13 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         private List<EntityLightShadow> spotLightsForMesh;
 
+        private List<EntityLightShadow> spotLightsWithShadowForMesh;
+
         private Dictionary<ParameterKey, LightParamSemantic> lightingParameterSemantics;
 
         private List<List<EntityLightShadow>> directionalLightsWithShadowForMeshGroups;
+
+        private List<List<EntityLightShadow>> spotLightsWithShadowForMeshGroups;
 
         private List<List<ShadowMap>> shadowMapGroups;
 
@@ -105,18 +111,22 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             receiverVsmInfos = new ShadowMapReceiverVsmInfo[16];
             cascadeInfos = new ShadowMapCascadeReceiverInfo[128];
 
-            directionalLightsForMesh = new List<EntityLightShadow>();
-            directionalLightsWithShadowForMesh = new List<EntityLightShadow>();
-            directionalLightsWithShadowForMeshGroups = new List<List<EntityLightShadow>>();
-            shadowMapGroups = new List<List<ShadowMap>>();
-            pointLightsForMesh = new List<EntityLightShadow>();
-            spotLights = new List<EntityLightShadow>();
-
             validLights = new List<EntityLightShadow>();
             directionalLights = new List<EntityLightShadow>();
             directionalLightsWithShadows = new List<EntityLightShadow>();
             pointLights = new List<EntityLightShadow>();
+            spotLights = new List<EntityLightShadow>();
+            spotLightsWithShadows = new List<EntityLightShadow>();
+
+            directionalLightsForMesh = new List<EntityLightShadow>();
+            directionalLightsWithShadowForMesh = new List<EntityLightShadow>();
+            directionalLightsWithShadowForMeshGroups = new List<List<EntityLightShadow>>();
+            spotLightsWithShadowForMeshGroups = new List<List<EntityLightShadow>>();
+            pointLightsForMesh = new List<EntityLightShadow>();
             spotLightsForMesh = new List<EntityLightShadow>();
+            spotLightsWithShadowForMesh = new List<EntityLightShadow>();
+            
+            shadowMapGroups = new List<List<ShadowMap>>();
 
             lightingParameterSemantics = new Dictionary<ParameterKey, LightParamSemantic>();
         }
@@ -157,7 +167,10 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                                 directionalLights.Add(light.Value);
                             break;
                         case LightType.Spot:
-                            spotLights.Add(light.Value);
+                            if (light.Value.HasShadowMap && lightProcessor.ActiveShadowMaps.Contains(light.Value.ShadowMap))
+                                spotLightsWithShadows.Add(light.Value);
+                            else
+                                spotLights.Add(light.Value);
                             break;
                     }
                 }
@@ -178,14 +191,18 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             directionalLightsWithShadows.Clear();
             pointLights.Clear();
             spotLights.Clear();
+            spotLightsWithShadows.Clear();
             directionalLightsForMesh.Clear();
             directionalLightsWithShadowForMesh.Clear();
             foreach (var group in directionalLightsWithShadowForMeshGroups)
+                group.Clear();
+            foreach (var group in spotLightsWithShadowForMeshGroups)
                 group.Clear();
             foreach (var group in shadowMapGroups)
                 group.Clear();
             pointLightsForMesh.Clear();
             spotLightsForMesh.Clear();
+            spotLightsWithShadowForMesh.Clear();
         }
 
         /// <summary>
@@ -206,10 +223,13 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             directionalLightsWithShadowForMesh.Clear();
             foreach (var group in directionalLightsWithShadowForMeshGroups)
                 group.Clear();
+            foreach (var group in spotLightsWithShadowForMeshGroups)
+                group.Clear();
             foreach (var group in shadowMapGroups)
                 group.Clear();
             pointLightsForMesh.Clear();
             spotLightsForMesh.Clear();
+            spotLightsWithShadowForMesh.Clear();
             
             var receiveShadows = effectMesh.MeshData.ReceiveShadows;
 
@@ -237,6 +257,16 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             {
                 if ((light.Light.Layers & effectMesh.MeshData.Layer) != 0)
                     spotLightsForMesh.Add(light);
+            }
+            foreach (var light in spotLightsWithShadows)
+            {
+                if ((light.Light.Layers & effectMesh.MeshData.Layer) != 0)
+                {
+                    if (receiveShadows)
+                        spotLightsWithShadowForMesh.Add(light);
+                    else
+                        spotLightsForMesh.Add(light);
+                }
             }
 
             var numDirectionalLights = directionalLightsForMesh.Count;
@@ -363,7 +393,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                         break;
                     //TODO: implement later when shadow map are supported
                     case LightingUpdateType.PointShadow:
+                        break;
                     case LightingUpdateType.SpotShadow:
+                        UpdateLightingParameters(info, ref effectMesh, ref viewMatrix, spotLightsWithShadowForMeshGroups[info.Index]);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -405,6 +437,26 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 if (notFound)
                     return false;
             }
+            foreach (var light in spotLightsWithShadowForMesh)
+            {
+                var notFound = true;
+                if (config.ShadowConfigurations != null)
+                {
+                    for (var i = 0; i < config.ShadowConfigurations.Groups.Count; ++i)
+                    {
+                        if (BelongToGroup(light.Light, light.ShadowMap, config.ShadowConfigurations.Groups[i], groupCounts[i], groupTextures[i]))
+                        {
+                            groupCounts[i] += 1;
+                            if (groupTextures[i] == null)
+                                groupTextures[i] = light.ShadowMap.Texture.ShadowMapDepthTexture;
+                            notFound = false;
+                            break;
+                        }
+                    }
+                }
+                if (notFound)
+                    return false;
+            }
             return true;
         }
 
@@ -415,9 +467,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             // TODO: add shadow group and directional light shadow group (list) if necessary
             for (var i = shadowMapGroups.Count; i < config.ShadowConfigurations.Groups.Count; ++i)
                 shadowMapGroups.Add(new List<ShadowMap>());
+            
             for (var i = directionalLightsWithShadowForMeshGroups.Count; i < config.ShadowConfigurations.Groups.Count; ++i)
                 directionalLightsWithShadowForMeshGroups.Add(new List<EntityLightShadow>());
-
             foreach (var light in directionalLightsWithShadowForMesh)
             {
                 for (var i = 0; i < config.ShadowConfigurations.Groups.Count; ++i)
@@ -426,6 +478,21 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                     {
                         shadowMapGroups[i].Add(light.ShadowMap);
                         directionalLightsWithShadowForMeshGroups[i].Add(light);
+                        break;
+                    }
+                }
+            }
+
+            for (var i = spotLightsWithShadowForMeshGroups.Count; i < config.ShadowConfigurations.Groups.Count; ++i)
+                spotLightsWithShadowForMeshGroups.Add(new List<EntityLightShadow>());
+            foreach (var light in spotLightsWithShadowForMesh)
+            {
+                for (var i = 0; i < config.ShadowConfigurations.Groups.Count; ++i)
+                {
+                    if (BelongToGroup(light.Light, light.ShadowMap, config.ShadowConfigurations.Groups[i], shadowMapGroups[i].Count, shadowMapGroups[i].Count > 0 ? shadowMapGroups[i][0].Texture.ShadowMapDepthTexture : null))
+                    {
+                        shadowMapGroups[i].Add(light.ShadowMap);
+                        spotLightsWithShadowForMeshGroups[i].Add(light);
                         break;
                     }
                 }
@@ -767,6 +834,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                     if (config.ShadowConfigurations.Groups[i].ShadowCount > 0)
                     {
                         var shadowParams = new ShadowMapParameters();
+                        shadowParams.Set(ShadowMapParameters.LightType, config.ShadowConfigurations.Groups[i].LightType);
                         shadowParams.Set(ShadowMapParameters.ShadowMapCount, config.ShadowConfigurations.Groups[i].ShadowCount);
                         shadowParams.Set(ShadowMapParameters.ShadowMapCascadeCount, config.ShadowConfigurations.Groups[i].CascadeCount);
                         shadowParams.Set(ShadowMapParameters.FilterType, config.ShadowConfigurations.Groups[i].FilterType);

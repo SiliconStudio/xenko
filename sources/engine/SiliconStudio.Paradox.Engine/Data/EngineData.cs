@@ -317,6 +317,11 @@ namespace SiliconStudio.Paradox.Effects.Data
     public partial class ShadowConfigurationData
     {
         /// <summary>
+        /// Data field for <see cref="SiliconStudio.Paradox.Effects.ShadowConfiguration.LightType"/>.
+        /// </summary>
+        public SiliconStudio.Paradox.DataModel.LightType LightType;
+
+        /// <summary>
         /// Data field for <see cref="SiliconStudio.Paradox.Effects.ShadowConfiguration.ShadowCount"/>.
         /// </summary>
         public System.Int32 ShadowCount;
@@ -1048,6 +1053,7 @@ namespace SiliconStudio.Paradox.Effects.Data
 			if(target == null)
                 target = new SiliconStudio.Paradox.Effects.Data.ShadowConfigurationData();
 				
+            target.LightType = source.LightType;
             target.ShadowCount = source.ShadowCount;
             target.CascadeCount = source.CascadeCount;
             target.FilterType = source.FilterType;
@@ -1056,6 +1062,7 @@ namespace SiliconStudio.Paradox.Effects.Data
         /// <inheritdoc/>
         public override void ConvertFromData(SiliconStudio.Core.Serialization.Converters.ConverterContext context, SiliconStudio.Paradox.Effects.Data.ShadowConfigurationData target, ref SiliconStudio.Paradox.Effects.ShadowConfiguration source)
         {
+            source.LightType = target.LightType;
             source.ShadowCount = target.ShadowCount;
             source.CascadeCount = target.CascadeCount;
             source.FilterType = target.FilterType;

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.Effects.Modules.Processors;
 using SiliconStudio.Paradox.Effects.Modules.Shadowmap;
 using SiliconStudio.Paradox.Engine;
@@ -238,36 +239,47 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
             for (int cascadeLevel = 0; cascadeLevel < shadowMap.CascadeCount; ++cascadeLevel)
             {
-                // Compute cascade split (between znear and zfar)
-                float k0 = (float)(cascadeLevel + 0) / shadowMap.CascadeCount;
-                float k1 = (float)(cascadeLevel + 1) / shadowMap.CascadeCount;
-                float min = (float)(znear * Math.Pow(zfar / znear, k0)) * (1.0f - shadowDistribute) + (znear + (zfar - znear) * k0) * shadowDistribute;
-                float max = (float)(znear * Math.Pow(zfar / znear, k1)) * (1.0f - shadowDistribute) + (znear + (zfar - znear) * k1) * shadowDistribute;
-
-                // Compute frustum corners
-                for (int j = 0; j < 4; j++)
-                {
-                    boudingBoxVectors[j * 2 + 0] = points[j] + directions[j] * min;
-                    boudingBoxVectors[j * 2 + 1] = points[j] + directions[j] * max;
-                }
-                var boundingBox = BoundingBox.FromPoints(boudingBoxVectors);
-
-                // Compute bounding box center & radius
-                // Note: boundingBox is computed in view space so the computation of the radius is only correct when the view matrix does not do any kind of scale/shear transformation
-                var radius = (boundingBox.Maximum - boundingBox.Minimum).Length() * 0.5f;
-                var target = Vector3.TransformCoordinate(boundingBox.Center, inverseView);
-
-                // Snap camera to texel units (so that shadow doesn't jitter when light doesn't change direction but camera is moving)
-                var shadowMapHalfSize = shadowMap.ShadowMapSize * 0.5f;
-                float x = (float)Math.Ceiling(Vector3.Dot(target, up) * shadowMapHalfSize / radius) * radius / shadowMapHalfSize;
-                float y = (float)Math.Ceiling(Vector3.Dot(target, side) * shadowMapHalfSize / radius) * radius / shadowMapHalfSize;
-                float z = Vector3.Dot(target, direction);
-                //target = up * x + side * y + direction * R32G32B32_Float.Dot(target, direction);
-                target = up * x + side * y + direction * z;
-
                 // Compute caster view and projection matrices
-                var shadowMapView = Matrix.LookAtRH(target - direction * zfar * 0.5f, target + direction * zfar * 0.5f, up); // View;
-                var shadowMapProjection = Matrix.OrthoOffCenterRH(-radius, radius, -radius, radius, znear / zfar, zfar); // Projection
+                var shadowMapView = Matrix.Zero;
+                var shadowMapProjection = Matrix.Zero;
+                if (shadowMap.LightType == LightType.Directional)
+                {
+                    // Compute cascade split (between znear and zfar)
+                    float k0 = (float)(cascadeLevel + 0) / shadowMap.CascadeCount;
+                    float k1 = (float)(cascadeLevel + 1) / shadowMap.CascadeCount;
+                    float min = (float)(znear * Math.Pow(zfar / znear, k0)) * (1.0f - shadowDistribute) + (znear + (zfar - znear) * k0) * shadowDistribute;
+                    float max = (float)(znear * Math.Pow(zfar / znear, k1)) * (1.0f - shadowDistribute) + (znear + (zfar - znear) * k1) * shadowDistribute;
+
+                    // Compute frustum corners
+                    for (int j = 0; j < 4; j++)
+                    {
+                        boudingBoxVectors[j * 2 + 0] = points[j] + directions[j] * min;
+                        boudingBoxVectors[j * 2 + 1] = points[j] + directions[j] * max;
+                    }
+                    var boundingBox = BoundingBox.FromPoints(boudingBoxVectors);
+
+                    // Compute bounding box center & radius
+                    // Note: boundingBox is computed in view space so the computation of the radius is only correct when the view matrix does not do any kind of scale/shear transformation
+                    var radius = (boundingBox.Maximum - boundingBox.Minimum).Length() * 0.5f;
+                    var target = Vector3.TransformCoordinate(boundingBox.Center, inverseView);
+
+                    // Snap camera to texel units (so that shadow doesn't jitter when light doesn't change direction but camera is moving)
+                    var shadowMapHalfSize = shadowMap.ShadowMapSize * 0.5f;
+                    float x = (float)Math.Ceiling(Vector3.Dot(target, up) * shadowMapHalfSize / radius) * radius / shadowMapHalfSize;
+                    float y = (float)Math.Ceiling(Vector3.Dot(target, side) * shadowMapHalfSize / radius) * radius / shadowMapHalfSize;
+                    float z = Vector3.Dot(target, direction);
+                    //target = up * x + side * y + direction * R32G32B32_Float.Dot(target, direction);
+                    target = up * x + side * y + direction * z;
+
+                    // Compute caster view and projection matrices
+                    shadowMapView = Matrix.LookAtRH(target - direction * zfar * 0.5f, target + direction * zfar * 0.5f, up); // View;
+                    shadowMapProjection = Matrix.OrthoOffCenterRH(-radius, radius, -radius, radius, znear / zfar, zfar); // Projection
+                }
+                else if (shadowMap.LightType == LightType.Spot)
+                {
+                    shadowMapView = Matrix.LookAtRH(shadowMap.LightPosition, shadowMap.LightPosition + shadowMap.LightDirection, Vector3.UnitY);
+                    shadowMapProjection = Matrix.PerspectiveFovRH(shadowMap.Fov, 1, shadowMap.ShadowNearDistance, shadowMap.ShadowFarDistance);
+                }
 
                 // Allocate shadow map area
                 var shadowMapRectangle = new Rectangle();
@@ -279,7 +291,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                     (float)shadowMapRectangle.Top / (float)shadowMap.Texture.ShadowMapDepthTexture.Height,
                     (float)shadowMapRectangle.Right / (float)shadowMap.Texture.ShadowMapDepthTexture.Width,
                     (float)shadowMapRectangle.Bottom / (float)shadowMap.Texture.ShadowMapDepthTexture.Height);
-                
+
                 // Copy texture coords without border
                 cascades[cascadeLevel].CascadeTextureCoords = cascadeTextureCoords;
 
