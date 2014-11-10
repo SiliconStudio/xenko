@@ -13,7 +13,7 @@ class CubemapIBLDiffuse : CubemapIBLBase, ShadingBase, TransformationWAndVP, Tra
 
         // Should we really do parallax correction
         // parallax correction done in view space
-        float3 samplingDirVS = CubemapUtils.ParallaxCorrectionSphere(normalVS, positionVS, cubemapPositionVS4.xyz / cubemapPositionVS4.w, CubemapRadius);
+        float3 samplingDirVS = CubemapUtils.ParallaxCorrectionCube(normalVS, positionVS, cubemapPositionVS4.xyz / cubemapPositionVS4.w, CubemapRadius);
         float3 samplingDir = mul(float4(samplingDirVS, 0), ViewInverse).xyz;
 
         // always flip z

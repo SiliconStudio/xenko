@@ -11,6 +11,9 @@ using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 {
+    /// <summary>
+    /// Computes cubemaps contribution of the ambient specular.
+    /// </summary>
     public class LightingIBLRenderer : Renderer
     {
         #region Public static members
@@ -95,7 +98,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             if (IBLRenderTarget == null)
                 IBLRenderTarget = Texture2D.New(GraphicsDevice, readOnlyDepthBuffer.Description.Width, readOnlyDepthBuffer.Description.Height, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget).ToRenderTarget();
 
-            cubemapMesh = GeometricPrimitive.Sphere.New(GraphicsDevice);
+            cubemapMesh = GeometricPrimitive.Cube.New(GraphicsDevice);
 
             var blendStateDescr = new BlendStateDescription()
             {
