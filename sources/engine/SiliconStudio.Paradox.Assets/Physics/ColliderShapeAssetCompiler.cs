@@ -233,16 +233,6 @@ namespace SiliconStudio.Paradox.Assets.Physics
                         //clear up the reference as we don't need this data anymore
                         convexHullDesc.Model = null;
                     }
-                    else if (type == typeof(ColliderShapeAssetDesc))
-                    {
-                        var colliderShapeAssetDesc = (ColliderShapeAssetDesc)shape;
-
-                        //just store asset name (location) , this will be enough to load it during runtime
-                        colliderShapeAssetDesc.AssetName = colliderShapeAssetDesc.Asset.Location;
-
-                        //clear up the reference as we don't need this data anymore
-                        colliderShapeAssetDesc.Asset = null;
-                    }
                 }
 
                 assetManager.Save(Url, asset.Data);

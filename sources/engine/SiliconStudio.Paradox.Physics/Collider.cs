@@ -31,7 +31,7 @@ namespace SiliconStudio.Paradox.Physics
 
         internal PhysicsEngine Engine;
 
-        bool mEnabled = true;
+        bool enabled = true;
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="Collider"/> is enabled.
         /// </summary>
@@ -42,15 +42,15 @@ namespace SiliconStudio.Paradox.Physics
         {
             get
             {
-                return mEnabled;
+                return enabled;
             }
             set
             {
-                mEnabled = value;
+                enabled = value;
 
                 if (value)
                 {
-                    InternalCollider.ActivationState = mCanSleep ? BulletSharp.ActivationState.ActiveTag : BulletSharp.ActivationState.DisableDeactivation;
+                    InternalCollider.ActivationState = canSleep ? BulletSharp.ActivationState.ActiveTag : BulletSharp.ActivationState.DisableDeactivation;
                 }
                 else
                 {
@@ -59,7 +59,7 @@ namespace SiliconStudio.Paradox.Physics
             }
         }
 
-        bool mCanSleep = true; //default true
+        bool canSleep = true; //default true
         /// <summary>
         /// Gets or sets a value indicating whether this instance can sleep.
         /// </summary>
@@ -70,13 +70,13 @@ namespace SiliconStudio.Paradox.Physics
         {
             get
             {
-                return mCanSleep;
+                return canSleep;
             }
             set
             {
-                mCanSleep = value;
+                canSleep = value;
 
-                if (mEnabled)
+                if (enabled)
                 {
                     InternalCollider.ActivationState = value ? BulletSharp.ActivationState.ActiveTag : BulletSharp.ActivationState.DisableDeactivation;
                 }
@@ -252,18 +252,18 @@ namespace SiliconStudio.Paradox.Physics
         /// </value>
         public bool ContactsAlwaysValid { get; set; }
 
-        int mEventUsers; //this helps optimize performance
+        int eventUsers; //this helps optimize performance
         internal bool NeedsCollisionCheck
         {
             get
             {
-                return ContactsAlwaysValid || mEventUsers > 0;
+                return ContactsAlwaysValid || eventUsers > 0;
             }
         }
 
-        readonly object mEventsLock = new Object();
+        readonly object eventsLock = new Object();
 
-        event EventHandler<CollisionArgs> mOnFirstContactBegin;
+        event EventHandler<CollisionArgs> PrivateOnFirstContactBegin;
         /// <summary>
         /// Occurs when the first contant with a collider begins.
         /// </summary>
@@ -271,30 +271,30 @@ namespace SiliconStudio.Paradox.Physics
         {
             add
             {
-                lock (mEventsLock)
+                lock (eventsLock)
                 {
-                    mEventUsers++;
-                    mOnFirstContactBegin += value;
+                    eventUsers++;
+                    PrivateOnFirstContactBegin += value;
                 }
             }
             remove
             {
-                lock (mEventsLock)
+                lock (eventsLock)
                 {
-                    mEventUsers--;
-                    mOnFirstContactBegin -= value;
+                    eventUsers--;
+                    PrivateOnFirstContactBegin -= value;
                 }
             }
         }
 
         internal void PropagateOnFirstContactBegin(CollisionArgs args)
         {
-            var e = mOnFirstContactBegin;
+            var e = PrivateOnFirstContactBegin;
             if (e == null) return;
             e(this, args);
         }
 
-        event EventHandler<CollisionArgs> mOnContactBegin;
+        event EventHandler<CollisionArgs> PrivateOnContactBegin;
         /// <summary>
         /// Occurs when a contact begins (there could be multiple contacts and contact points).
         /// </summary>
@@ -302,30 +302,30 @@ namespace SiliconStudio.Paradox.Physics
         {
             add
             {
-                lock (mEventsLock)
+                lock (eventsLock)
                 {
-                    mEventUsers++;
-                    mOnContactBegin += value;
+                    eventUsers++;
+                    PrivateOnContactBegin += value;
                 }
             }
             remove
             {
-                lock (mEventsLock)
+                lock (eventsLock)
                 {
-                    mEventUsers--;
-                    mOnContactBegin -= value;
+                    eventUsers--;
+                    PrivateOnContactBegin -= value;
                 }
             }
         }
 
         internal void PropagateOnContactBegin(CollisionArgs args)
         {
-            var e = mOnContactBegin;
+            var e = PrivateOnContactBegin;
             if (e == null) return;
             e(this, args);
         }
 
-        event EventHandler<CollisionArgs> mOnContactChange;
+        event EventHandler<CollisionArgs> PrivateOnContactChange;
         /// <summary>
         /// Occurs when a contact changed.
         /// </summary>
@@ -333,30 +333,30 @@ namespace SiliconStudio.Paradox.Physics
         {
             add
             {
-                lock (mEventsLock)
+                lock (eventsLock)
                 {
-                    mEventUsers++;
-                    mOnContactChange += value;
+                    eventUsers++;
+                    PrivateOnContactChange += value;
                 }
             }
             remove
             {
-                lock (mEventsLock)
+                lock (eventsLock)
                 {
-                    mEventUsers--;
-                    mOnContactChange -= value;
+                    eventUsers--;
+                    PrivateOnContactChange -= value;
                 }
             }
         }
 
         internal void PropagateOnContactChange(CollisionArgs args)
         {
-            var e = mOnContactChange;
+            var e = PrivateOnContactChange;
             if (e == null) return;
             e(this, args);
         }
 
-        event EventHandler<CollisionArgs> mOnLastContactEnd;
+        event EventHandler<CollisionArgs> PrivateOnLastContactEnd;
         /// <summary>
         /// Occurs when the last contact with a collider happened.
         /// </summary>
@@ -364,30 +364,30 @@ namespace SiliconStudio.Paradox.Physics
         {
             add
             {
-                lock (mEventsLock)
+                lock (eventsLock)
                 {
-                    mEventUsers++;
-                    mOnLastContactEnd += value;
+                    eventUsers++;
+                    PrivateOnLastContactEnd += value;
                 }
             }
             remove
             {
-                lock (mEventsLock)
+                lock (eventsLock)
                 {
-                    mEventUsers--;
-                    mOnLastContactEnd -= value;
+                    eventUsers--;
+                    PrivateOnLastContactEnd -= value;
                 }
             }
         }
 
         internal void PropagateOnLastContactEnd(CollisionArgs args)
         {
-            var e = mOnLastContactEnd;
+            var e = PrivateOnLastContactEnd;
             if (e == null) return;
             e(this, args);
         }
 
-        event EventHandler<CollisionArgs> mOnContactEnd;
+        event EventHandler<CollisionArgs> PrivateOnContactEnd;
         /// <summary>
         /// Occurs when a contact ended.
         /// </summary>
@@ -395,30 +395,30 @@ namespace SiliconStudio.Paradox.Physics
         {
             add
             {
-                lock (mEventsLock)
+                lock (eventsLock)
                 {
-                    mEventUsers++;
-                    mOnContactEnd += value;
+                    eventUsers++;
+                    PrivateOnContactEnd += value;
                 }
             }
             remove
             {
-                lock (mEventsLock)
+                lock (eventsLock)
                 {
-                    mEventUsers--;
-                    mOnContactEnd -= value;
+                    eventUsers--;
+                    PrivateOnContactEnd -= value;
                 }
             }
         }
 
         internal void PropagateOnContactEnd(CollisionArgs args)
         {
-            var e = mOnContactEnd;
+            var e = PrivateOnContactEnd;
             if (e == null) return;
             e(this, args);
         }
 
-        readonly FastList<Contact> mContacts = new FastList<Contact>();
+        readonly FastList<Contact> contacts = new FastList<Contact>();
         /// <summary>
         /// Gets the contacts.
         /// </summary>
@@ -429,7 +429,7 @@ namespace SiliconStudio.Paradox.Physics
         {
             get
             {
-                return mContacts;
+                return contacts;
             }
         }
 

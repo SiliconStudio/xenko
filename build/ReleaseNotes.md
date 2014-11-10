@@ -11,6 +11,7 @@ Release date: 2014/11/??
 - Physics: Physics assembly now depends on Engine (instead of the opposite). Soon Physics (and some other modules) will become optional.
 
 #### Issues fixed
+- Assets: Fix shininess import from FBX files.
 - Core: EnumerableExtensions.LastIndexOf() wasn't working properly ([#62](https://github.com/SiliconStudio/paradox/issues/62)).
 - Game: Properly support windows with height 0 when AllowUserResizing is true ([#65](https://github.com/SiliconStudio/paradox/issues/65)).
 - Game: GameForm is created with a black background, to avoid initial flickering while Windows is being initialized ([#54](https://github.com/SiliconStudio/paradox/issues/54)).
@@ -30,6 +31,12 @@ Release date: 2014/11/??
 - Graphics: Change ImageFragment.Region type from Rectangle to RectangleF and corresponding batch draw function API (SpriteBatch/UIBatch).
 - Graphics: CopyRegion now contains additional parameters for subresource indices and destination offset.
 - Graphics: RasterizerState and DepthStencilState constructors are now private to match other Graphics classes. static New() should be used instead ([#83](https://github.com/SiliconStudio/paradox/issues/83)).
+- Physics: Physics engine initialization has changed since now Physics is a optional module. (please check updated samples)
+- Physics: Added Convex Hull simple wrap shape and complex decomposition as well.
+
+#### Known Issues
+- Physics: Complex convex hull decomposition can be a very long process and there is visual feedback for it.
+- Physics: Convex hull shape debug shapes in game studio are not rendering very well, although the asset will be OK.
 
 ### Version 1.0.0-beta02
 
