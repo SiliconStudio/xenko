@@ -56,7 +56,16 @@ namespace SiliconStudio.Presentation.Commands
         /// <returns>An <see cref="UndoToken"/> that can be used to undo the command.</returns>
         public UndoToken ExecuteCommand(object parameter, bool createActionItem)
         {
+            // TODO: Improve this - we're discarding any change made directly by the command invoke and create a CommandActionItem after.
+            var transactionalActionStack = actionStack as ITransactionalActionStack;
+            if (transactionalActionStack != null)
+                transactionalActionStack.BeginTransaction();
+
             UndoToken token = Redo(parameter, createActionItem);
+            
+            if (transactionalActionStack != null)
+                transactionalActionStack.DiscardTransaction();
+            
             if (token.CanUndo && createActionItem)
             {
                 var actionItem = new CommandActionItem(this, parameter, token, dirtiables);
