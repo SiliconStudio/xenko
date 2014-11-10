@@ -7,7 +7,7 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 namespace SiliconStudio.Paradox.Effects.Modules
 {
-    public static partial class ComputeBRDFDiffuseOrenNayarKeys
+    public static partial class MaterialRoughnessKeys
     {
     }
 }

@@ -448,11 +448,23 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>MaterialReflectanceGBuffer.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Shading\MaterialReflectance.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialReflectance.pdxsl</DependentUpon>
+    </Compile>
     <Compile Include="Shading\MaterialReflectanceBase.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>MaterialReflectanceBase.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Shading\MaterialRoughness.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialRoughness.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Shading\MaterialRoughnessBase.cs">
       <AutoGen>True</AutoGen>
@@ -1881,9 +1893,17 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialReflectanceGBuffer.cs</LastGenOutput>
     </None>
+    <None Include="Shading\MaterialReflectance.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialReflectance.cs</LastGenOutput>
+    </None>
     <None Include="Shading\MaterialReflectanceBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialReflectanceBase.cs</LastGenOutput>
+    </None>
+    <None Include="Shading\MaterialRoughness.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialRoughness.cs</LastGenOutput>
     </None>
     <None Include="Shading\MaterialRoughnessBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

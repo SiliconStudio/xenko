@@ -36,6 +36,5 @@ class Material
     // PBR material parameters
     stage float Roughness;
     stage float Reflectance;
-    stage float OrenNayarDistributionVariance;
     stage float CookTorranceReflection;
 };
