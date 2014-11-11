@@ -737,8 +737,7 @@
                 <Setter Property="Opacity" TargetName="HoverBorder" Value="0.5"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="false">
-                <Setter Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" TargetName="Background" />
-                <Setter Property="Opacity" TargetName="Grid" Value="0.5" />
+                <Setter Property="Opacity" TargetName="Grid" Value="0.25" />
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
@@ -778,8 +777,7 @@
             </Trigger>
             <Trigger Property="IsEnabled" Value="true" />
             <Trigger Property="IsEnabled" Value="false">
-                <Setter Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" TargetName="Background" />
-                <Setter Property="Opacity" TargetName="Grid" Value="0.5" />
+                <Setter Property="Opacity" TargetName="Grid" Value="0.25" />
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
@@ -2144,7 +2142,7 @@
     </Style>
 
     <Style TargetType="{x:Type Menu}">
-        <Setter Property="Background" Value="{DynamicResource ToolBarTrayBackground}"/>
+        <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource NormalBorderBrush}" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="Template">
@@ -3314,7 +3312,7 @@
 
     <Style x:Key="{x:Static ToolBar.ButtonStyleKey}" TargetType="{x:Type Button}" BasedOn="{x:Null}">
         <Setter Property="FocusVisualStyle" Value="{DynamicResource NuclearButtonFocusVisual}" />
-        <Setter Property="Background" Value="{DynamicResource NormalBrush}" />
+        <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="{DynamicResource NormalBorderBrush}" />
         <Setter Property="Template" Value="{DynamicResource ButtonTemplate}" />
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
@@ -3334,7 +3332,7 @@
         <Setter Property="FontSize" Value="10"/>
         <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="FocusVisualStyle" Value="{DynamicResource CheckBoxFocusVisual}" />
-        <Setter Property="Background" Value="{DynamicResource NormalBrush}" />
+        <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="{DynamicResource NormalBorderBrush}" />
         <Setter Property="Template" Value="{DynamicResource CheckBoxTemplate}" />
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
@@ -3345,7 +3343,7 @@
         <Setter Property="FontSize" Value="10"/>
         <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="FocusVisualStyle" Value="{DynamicResource RadioButtonFocusVisual}" />
-        <Setter Property="Background" Value="{DynamicResource NormalBrush}" />
+        <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="{DynamicResource NormalBorderBrush}" />
         <Setter Property="Template" Value="{DynamicResource RadioButtonTemplate}" />
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
@@ -3401,7 +3399,7 @@
     </Style>
 
     <Style x:Key="{x:Static ToolBar.SeparatorStyleKey}" TargetType="{x:Type Separator}">
-        <Setter Property="Background" Value="{DynamicResource NormalBorderBrush}"/>
+        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Width" Value="1"/>
         <Setter Property="Margin" Value="6,2,6,2"/>
         <Setter Property="Template">
@@ -3526,7 +3524,7 @@
     <SolidColorBrush x:Key="InnerExpanderBackgroundBrush" Color="#FF525252"/>
     <SolidColorBrush x:Key="ToolBarBackgroundBrush" Color="#FF595959"/>
     <Style TargetType="{x:Type ToolBar}">
-        <Setter Property="Background" Value="{StaticResource ToolBarHorizontalBackground}"/>
+        <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ToolBar}">
@@ -3541,11 +3539,11 @@
                                 </Border>
                             </Popup>
                         </Grid>
-                        <Border Margin="0,0,11,0" x:Name="MainPanelBorder" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" Background="{DynamicResource ToolBarBackgroundBrush}">
+                        <Border Margin="0,0,11,0" x:Name="MainPanelBorder" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
                             <DockPanel KeyboardNavigation.TabIndex="1" KeyboardNavigation.TabNavigation="Local">
                                 <Thumb Padding="6,5,1,6" Margin="-3,-1,0,0" x:Name="ToolBarThumb" Style="{StaticResource ToolBarThumbStyle}" Width="10"/>
                                 <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" HorizontalAlignment="Center" Margin="4,0,4,0" x:Name="ToolBarHeader" VerticalAlignment="Center" ContentSource="Header"/>
-                                <ToolBarPanel SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Margin="0,1,2,2" x:Name="PART_ToolBarPanel" IsItemsHost="true" Background="{DynamicResource NormalBrush}"/>
+                                <ToolBarPanel SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Margin="0,1,2,2" x:Name="PART_ToolBarPanel" IsItemsHost="true" Background="Transparent"/>
                             </DockPanel>
                         </Border>
                     </Grid>
@@ -3641,8 +3639,7 @@
                     DockPanel.Dock="Top"
                     Background="{x:Null}"
                     BorderBrush="{x:Null}"
-                    BorderThickness="0"
-                    Focusable="False"/>
+                    BorderThickness="0" />
                 <Border Visibility="Collapsed" BorderThickness="1,0,1,1" CornerRadius="3,3,3,3" x:Name="border" Margin="1,1,1,1" Focusable="False">
                     <ContentPresenter Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="1,1,1,1" x:Name="ExpandSite" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" DockPanel.Dock="Bottom" />
                 </Border>
@@ -3672,10 +3669,9 @@
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
-    <SolidColorBrush x:Key="ToolBarTrayBackground" Color="#FF595959"/>
     <Style TargetType="{x:Type ToolBarTray}">
-    	<Setter Property="Background" Value="{DynamicResource ToolBarTrayBackground}"/>
-    	<Style.Triggers>
+        <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
+        <Style.Triggers>
     		<DataTrigger Binding="{Binding Source={x:Static SystemParameters.HighContrast}}" Value="true">
     			<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
     		</DataTrigger>
@@ -3683,7 +3679,7 @@
     </Style>
 
     <Style TargetType="{x:Type StatusBar}">
-        <Setter Property="Background" Value="{DynamicResource ToolBarTrayBackground}"/>
+        <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
         <Style.Triggers>
             <DataTrigger Binding="{Binding Source={x:Static SystemParameters.HighContrast}}" Value="true">
                 <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
