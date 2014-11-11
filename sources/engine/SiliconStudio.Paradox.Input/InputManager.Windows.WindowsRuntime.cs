@@ -25,8 +25,6 @@ namespace SiliconStudio.Paradox.Input
         // mapping between WinRT keys and toolkit keys
         private static readonly Dictionary<VirtualKey, Keys> mapKeys;
 
-        private bool isLeftButtonPressed;
-
         // TODO: Support for MultiTouchEnabled on Windows Runtime
         public override bool MultiTouchEnabled { get { return true; } set { } }
 
@@ -395,26 +393,117 @@ namespace SiliconStudio.Paradox.Input
 
         void HandlePointerEvent(WinRTPointerPoint p, PointerState ptrState)
         {
-            var pointerType = p.PointerDevice.PointerDeviceType;
-            var isMouse = pointerType == WinRTPointerDeviceType.Mouse;
+            var pointerType = ConvertPointerDeviceType(p.PointerDevice.PointerDeviceType);
+            var isMouse = pointerType == PointerType.Mouse;
             var position = NormalizeScreenPosition(PointToVector2(p.Position));
-
-            if (isMouse && p.Properties.IsLeftButtonPressed)
-                isLeftButtonPressed = true;
 
             if (isMouse)
             {
+                if (ptrState == PointerState.Cancel || ptrState == PointerState.Out)
+                {
+                    // invalidate mouse and current pointers
+                    LostFocus = true;
+
+                    for (int i = 0; i < MouseButtonCurrentlyDown.Length; i++)
+                    {
+                        if (MouseButtonCurrentlyDown[i])
+                        {
+                            HandlePointerEvents(i, position, PointerState.Out, pointerType);
+                            MouseButtonCurrentlyDown[i] = false;
+                        }
+                    }
+                }
+                else // down/up/move
+                {
+                    // Note: The problem here is that the PointerPressed event is not triggered twice when two button are pressed together.
+                    // That is why we are forced to continuously keep the state of all buttons of the mouse.
+
+                    MouseInputEvent mouseEvent;
+
+                    // Trigger mouse button and pointer Down events for newly pressed buttons.
+                    foreach (MouseButton button in Enum.GetValues(typeof(MouseButton)))
+                    {
+                        var buttonId = (int)button;
+                        if (!MouseButtonCurrentlyDown[buttonId] && MouseButtonIsPressed(p.Properties, button))
+                        {
+                            lock (MouseInputEvents)
+                            {
+                                mouseEvent = new MouseInputEvent { Type = InputEventType.Down, MouseButton = button };
+                                MouseInputEvents.Add(mouseEvent);
+                            }
+
+                            HandlePointerEvents(buttonId, position, PointerState.Down, pointerType);
+
+                            MouseButtonCurrentlyDown[buttonId] = true;
+                        }
+                    }
+
+                    // Trigger Move events to pointer that have changed position
+                    if (CurrentMousePosition != position)
+                    {
+                        foreach (MouseButton button in Enum.GetValues(typeof(MouseButton)))
+                        {
+                            var buttonId = (int)button;
+                            if (MouseButtonCurrentlyDown[buttonId])
+                                HandlePointerEvents(buttonId, position, PointerState.Move, pointerType);
+                        } 
+                    }
+
+                    // Trigger mouse button and pointer Up events for newly released buttons.
+                    foreach (MouseButton button in Enum.GetValues(typeof(MouseButton)))
+                    {
+                        var buttonId = (int)button;
+                        if (MouseButtonCurrentlyDown[buttonId] && !MouseButtonIsPressed(p.Properties, button))
+                        {
+                            lock (MouseInputEvents)
+                            {
+                                mouseEvent = new MouseInputEvent { Type = InputEventType.Up, MouseButton = button };
+                                MouseInputEvents.Add(mouseEvent);
+                            }
+
+                            HandlePointerEvents(buttonId, position, PointerState.Up, pointerType);
+
+                            MouseButtonCurrentlyDown[buttonId] = false;
+                        }
+                    }
+
+                    // Trigger mouse wheel events
+                    if (Math.Abs(p.Properties.MouseWheelDelta) > MathUtil.ZeroTolerance)
+                    {
+                        lock (MouseInputEvents)
+                        {
+                            mouseEvent = new MouseInputEvent { Type = InputEventType.Wheel, MouseButton = MouseButton.Middle, Value = p.Properties.MouseWheelDelta };
+                            MouseInputEvents.Add(mouseEvent);
+                        }
+                    }
+                }
+
+                // Update mouse cursor position
                 CurrentMousePosition = position;
-
-                if (ptrState != PointerState.Move)
-                    UpdateButtons(p.Properties);
             }
+            else
+            {
+                HandlePointerEvents((int)p.PointerId, position, ptrState, pointerType);
+            }
+        }
 
-            if (!isMouse || isLeftButtonPressed)
-                HandlePointerEvents((int)p.PointerId, position, ptrState, ConvertPointerDeviceType(pointerType));
-
-            if (isMouse && !p.Properties.IsLeftButtonPressed)
-                isLeftButtonPressed = false;
+        private bool MouseButtonIsPressed(PointerPointProperties mouseProperties, MouseButton button)
+        {
+            switch (button)
+            {
+                case MouseButton.Left:
+                    return mouseProperties.IsLeftButtonPressed;
+                case MouseButton.Middle:
+                    return mouseProperties.IsMiddleButtonPressed;
+                case MouseButton.Right:
+                    return mouseProperties.IsRightButtonPressed;
+                case MouseButton.Extended1:
+                    return mouseProperties.IsXButton1Pressed;
+                case MouseButton.Extended2:
+                    return mouseProperties.IsXButton2Pressed;
+                default:
+                    throw new ArgumentOutOfRangeException("button");
+            }
         }
 
         private PointerType ConvertPointerDeviceType(WinRTPointerDeviceType deviceType)
@@ -429,27 +518,6 @@ namespace SiliconStudio.Paradox.Input
                     return PointerType.Touch;
             }
             return PointerType.Unknown;
-        }
-
-        private void UpdateButtons(PointerPointProperties mouseProperties)
-        {
-            lock (MouseInputEvents)
-            {
-                var mouseInputEvent = new MouseInputEvent { Type = mouseProperties.IsLeftButtonPressed ? InputEventType.Down : InputEventType.Up, MouseButton = MouseButton.Left };
-                MouseInputEvents.Add(mouseInputEvent);
-
-                mouseInputEvent = new MouseInputEvent { Type = mouseProperties.IsRightButtonPressed ? InputEventType.Down : InputEventType.Up, MouseButton = MouseButton.Right };
-                MouseInputEvents.Add(mouseInputEvent);
-
-                mouseInputEvent = new MouseInputEvent { Type = mouseProperties.IsMiddleButtonPressed ? InputEventType.Down : InputEventType.Up, MouseButton = MouseButton.Middle };
-                MouseInputEvents.Add(mouseInputEvent);
-
-                mouseInputEvent = new MouseInputEvent { Type = mouseProperties.IsXButton1Pressed ? InputEventType.Down : InputEventType.Up, MouseButton = MouseButton.Extended1 };
-                MouseInputEvents.Add(mouseInputEvent);
-
-                mouseInputEvent = new MouseInputEvent { Type = mouseProperties.IsXButton2Pressed ? InputEventType.Down : InputEventType.Up, MouseButton = MouseButton.Extended2 };
-                MouseInputEvents.Add(mouseInputEvent);
-            }
         }
 
         private Vector2 PointToVector2(Point point)

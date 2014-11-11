@@ -1,6 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+
 using System;
 using System.Diagnostics;
 using System.Windows;
@@ -107,8 +109,12 @@ namespace SiliconStudio.Paradox.Input
         
         private void OnMouseInputEvent(Vector2 pixelPosition, MouseButton button, InputEventType type, float value = 0)
         {
-            // The mouse wheel event are still received even when the mouse cursor is out of the control boudaries. Discard the event in this case.
+            // The mouse wheel event are still received even when the mouse cursor is out of the control boundaries. Discard the event in this case.
             if (!uiControl.ClientRectangle.Contains(uiControl.PointToClient(Control.MousePosition)))
+                return;
+
+            // the mouse events series has been interrupted because out of the window.
+            if (type == InputEventType.Up && !MouseButtonCurrentlyDown[(int)button])
                 return;
 
             CurrentMousePosition = NormalizeScreenPosition(pixelPosition);
@@ -117,27 +123,25 @@ namespace SiliconStudio.Paradox.Input
             lock (MouseInputEvents)
                 MouseInputEvents.Add(mouseInputEvent);
 
-            if (button == MouseButton.Left)
-                HandlePointerEvents(0, CurrentMousePosition, InputEventTypeToPointerState(type), PointerType.Mouse);
+            if (type != InputEventType.Wheel)
+            {
+                var buttonId = (int)button;
+                MouseButtonCurrentlyDown[buttonId] = type == InputEventType.Down;
+                HandlePointerEvents(buttonId, CurrentMousePosition, InputEventTypeToPointerState(type), PointerType.Mouse);
+            }
         }
 
         private void OnMouseMoveEvent(Vector2 pixelPosition)
         {
             CurrentMousePosition = NormalizeScreenPosition(pixelPosition);
 
-            if (MouseLeftButtonCurrentlyDown())
-                HandlePointerEvents(0, CurrentMousePosition, PointerState.Move, PointerType.Mouse);
-        }
-
-        /// <summary>
-        /// Indicate if the mouse left button is currently down according to the windows <see cref="Control"/>.
-        /// </summary>
-        /// <remarks>Since paradox is update only every frames, 
-        /// <see cref="MouseLeftButtonCurrentlyDown"/> can return <value>true</value> while <see cref="InputManagerBase.IsMouseButtonDown"/> can return <value>false</value></remarks>
-        /// <returns></returns>
-        private bool MouseLeftButtonCurrentlyDown()
-        {
-            return (Control.MouseButtons & MouseButtons.Left) != 0;
+            // trigger touch move events
+            foreach (MouseButton button in Enum.GetValues(typeof(MouseButton)))
+            {
+                var buttonId = (int)button;
+                if (MouseButtonCurrentlyDown[buttonId])
+                    HandlePointerEvents(buttonId, CurrentMousePosition, PointerState.Move, PointerType.Mouse);
+            }
         }
 
         private void OnMouseLeaveEvent()
@@ -145,8 +149,17 @@ namespace SiliconStudio.Paradox.Input
             if (HasDownMouseButtons())
                 LostFocus = true;
 
-            if (IsMouseButtonDown(MouseButton.Left) && PointerInfos.ContainsKey(0))
-                HandlePointerEvents(0, PointerInfos[0].LastPosition, PointerState.Out, PointerType.Mouse);
+            // trigger touch leave events
+            foreach (MouseButton button in Enum.GetValues(typeof(MouseButton)))
+            {
+                var buttonId = (int)button;
+                if (MouseButtonCurrentlyDown[buttonId])
+                {
+                    HandlePointerEvents(buttonId, PointerInfos[buttonId].LastPosition, PointerState.Out, PointerType.Mouse);
+
+                    MouseButtonCurrentlyDown[buttonId] = false;
+                }
+            }
         }
         
         private void OnUiControlLostFocus(object sender, EventArgs e)
