@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.Assets
     {
         protected bool SeparateAlphaTexture;
 
-        protected Dictionary<TImageInfo, string> SpriteToTextureIndex;
+        protected Dictionary<TImageInfo, string> SpriteToTextureKey;
 
         private bool TextureFileIsValid(UFile file)
         {
@@ -45,7 +45,7 @@ namespace SiliconStudio.Paradox.Assets
             SeparateAlphaTexture = context.Platform == PlatformType.Android && asset.Alpha != AlphaFormat.None && asset.Format == TextureFormat.Compressed;
 
             // create the registry containing the sprite assets texture index association
-            SpriteToTextureIndex = new Dictionary<TImageInfo, string>();
+            SpriteToTextureKey = new Dictionary<TImageInfo, string>();
 
             // create and add import texture commands
             if (asset.Images != null)
@@ -65,7 +65,7 @@ namespace SiliconStudio.Paradox.Assets
                     var spriteAssetArray = spriteByTextures[i].ToArray();
 
                     foreach (var spriteAsset in spriteAssetArray)
-                        SpriteToTextureIndex[spriteAsset] = ImageGroupAsset.BuildTextureUrl(urlInStorage, i);
+                        SpriteToTextureKey[spriteAsset] = ImageGroupAsset.BuildTextureUrl(urlInStorage, i);
                     
                     // texture asset does not need to be generated if using texture atlas
                     if(asset.GenerateTextureAtlas) 
