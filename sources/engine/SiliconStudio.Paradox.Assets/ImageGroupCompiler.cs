@@ -171,10 +171,16 @@ namespace SiliconStudio.Paradox.Assets
                     var regionData = regionDictionary[image];
                     var region = regionData.Item2;
 
-                    newImage.Region = new Rectangle(asset.GroupAsset.BorderSize + region.Value.X, asset.GroupAsset.BorderSize + region.Value.Y,
+                    var imageRegion = new Rectangle(asset.GroupAsset.BorderSize + region.Value.X, asset.GroupAsset.BorderSize + region.Value.Y,
                         region.Value.Width - 2 * asset.GroupAsset.BorderSize, region.Value.Height - 2 * asset.GroupAsset.BorderSize);
 
+                    newImage.Region = imageRegion;
+
                     newImage.Orientation = (region.IsRotated) ? ImageOrientation.Rotated90 : ImageOrientation.AsIs;
+
+                    // Auto assign Width, and height to image
+                    image.TextureRegion.Width = imageRegion.Width;
+                    image.TextureRegion.Height = imageRegion.Height;
                 }
                 else
                 {
