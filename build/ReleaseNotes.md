@@ -3,6 +3,11 @@
 Release date: 2014/11/??
 
 #### New Features
+- Engine: Add cubemap components to place cubemaps in the scene or render them at runtime.
+- Graphics: Add skybox renderer from a TextureCube (similar to background renderer).
+- Graphics: Add cubemap reflections for deferred rendering.
+- Samples: Add CubemapReflection sample.
+- Shaders: Add several cubemap shaders for sampling, reflection, parallax correction etc.
 - UI: Add new UI element: Slider
 
 #### Enhancements
