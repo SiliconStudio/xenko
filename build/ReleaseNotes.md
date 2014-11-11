@@ -9,6 +9,7 @@ Release date: 2014/11/??
 - Studio: Property grids have been reworked to be more efficient and easily extendable.
 - Studio: Numeric input controls have been improved.
 - Physics: Physics assembly now depends on Engine (instead of the opposite). Soon Physics (and some other modules) will become optional.
+- Input: Allow emulation of several touch pointers at a same time with mouse different buttons.
 
 #### Issues fixed
 - Assets: Fix shininess import from FBX files.
@@ -17,6 +18,7 @@ Release date: 2014/11/??
 - Game: GameForm is created with a black background, to avoid initial flickering while Windows is being initialized ([#54](https://github.com/SiliconStudio/paradox/issues/54)).
 - Input: Alt+F4 is now properly working on Windows Store/Phone platforms ([#74](https://github.com/SiliconStudio/paradox/issues/74)).
 - Input: Properly maps all extended keyboard keys on Windows Store/Phone platforms ([#84](https://github.com/SiliconStudio/paradox/issues/84)).
+- Input: Fix several crashes and bugs in GestureRecognizers and mouse button states.
 - Misc: PCL can now be used in Windows Store/Phone platforms ([#72](https://github.com/SiliconStudio/paradox/issues/72)).
 - Samples: SimpleDynamicTexture was using expected screen size instead of actual screen size, resulting in incorrect picking in fullscreen mode ([#75](https://github.com/SiliconStudio/paradox/issues/75)).
 - Shaders: Geometry shaders are forced to transmit SV_Position stream to pixel shaders.
