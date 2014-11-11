@@ -4,6 +4,7 @@ Release date: 2014/11/??
 
 #### New Features
 - UI: Add new UI element: Slider
+- Website: [Paradox Forums](http://forums.paradox3d.net) has just been opened. Feel free to use it to discuss about Paradox, help each other, collaborate and show off what you did with Paradox!
 
 #### Enhancements
 - Studio: Property grids have been reworked to be more efficient and easily extendable.
