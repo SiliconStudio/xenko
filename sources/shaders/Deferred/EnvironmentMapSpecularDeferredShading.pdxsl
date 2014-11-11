@@ -21,7 +21,9 @@ class EnvironmentMapSpecularDeferredShading : ShadingBase, Texturing, AlbedoSpec
             // compute fresnel term
             float3 specularColor = GetReflectance();
             float3 eye = -normalize(PositionVS());
-            float3 fresnelTerm = Utilities.FresnelSchlick(specularColor, eye, NormalVS(), 1);
+            float3 ref = normalize(reflect(-eye, NormalVS()));
+            float3 h = normalize(eye + ref);
+            float3 fresnelTerm = Utilities.FresnelSchlick(specularColor, eye, h, 1);
 
             resultColor.rgb += this.SpecularAlbedo() * fresnelTerm * IBLValue.xyz / IBLValue.w;
         }
