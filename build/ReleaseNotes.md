@@ -10,13 +10,16 @@ Release date: 2014/11/??
 - Studio: Numeric input controls have been improved.
 - Studio: Sprites belonging to same Sprite Group can now be packed together in a texture atlas (using MaxRects algorithm).
 - Physics: Physics assembly now depends on Engine (instead of the opposite). Soon Physics (and some other modules) will become optional.
+- Input: Allow emulation of several touch pointers at a same time with mouse different buttons.
 
 #### Issues fixed
+- Assets: Fix shininess import from FBX files.
 - Core: EnumerableExtensions.LastIndexOf() wasn't working properly ([#62](https://github.com/SiliconStudio/paradox/issues/62)).
 - Game: Properly support windows with height 0 when AllowUserResizing is true ([#65](https://github.com/SiliconStudio/paradox/issues/65)).
 - Game: GameForm is created with a black background, to avoid initial flickering while Windows is being initialized ([#54](https://github.com/SiliconStudio/paradox/issues/54)).
 - Input: Alt+F4 is now properly working on Windows Store/Phone platforms ([#74](https://github.com/SiliconStudio/paradox/issues/74)).
 - Input: Properly maps all extended keyboard keys on Windows Store/Phone platforms ([#84](https://github.com/SiliconStudio/paradox/issues/84)).
+- Input: Fix several crashes and bugs in GestureRecognizers and mouse button states.
 - Misc: PCL can now be used in Windows Store/Phone platforms ([#72](https://github.com/SiliconStudio/paradox/issues/72)).
 - Samples: SimpleDynamicTexture was using expected screen size instead of actual screen size, resulting in incorrect picking in fullscreen mode ([#75](https://github.com/SiliconStudio/paradox/issues/75)).
 - Shaders: Geometry shaders are forced to transmit SV_Position stream to pixel shaders.
@@ -24,6 +27,7 @@ Release date: 2014/11/??
 - Studio: Fix preview and thumbnail of materials with normal map.
 - Studio: Fix binding errors in the property grid ([#29](https://github.com/SiliconStudio/paradox/issues/29)).
 - Studio: Fix undesired hue changes and loss of precision in extremal values in the color picker.
+- Studio: Fix "Show in explorer" on assets.
 - UI: UIImage borders were not properly rendered when image had Orientation.Rotated90.
 
 #### Breaking changes

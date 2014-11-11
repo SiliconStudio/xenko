@@ -169,27 +169,6 @@ namespace SiliconStudio.Presentation.Controls
             PerformEllipsis(availableWidth);
         }
 
-        /// <inheritdoc/>
-        protected override void OnPreviewKeyDown(KeyEventArgs e)
-        {
-            base.OnPreviewKeyDown(e);
-
-            if (IsReadOnly)
-            {
-                e.Handled = true;
-                return;
-            }
-
-            if (e.Key == Key.Enter && ValidateWithEnter)
-            {
-                Validate();
-            }
-            if (e.Key == Key.Escape && CancelWithEscape)
-            {
-                Cancel();
-            }
-        }
-
         protected override Size ArrangeOverride(Size arrangeBounds)
         {
             var arrangedSize = base.ArrangeOverride(arrangeBounds);

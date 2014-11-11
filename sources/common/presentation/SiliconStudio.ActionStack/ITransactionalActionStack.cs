@@ -64,15 +64,15 @@ namespace SiliconStudio.ActionStack
         /// </summary>
         /// <param name="displayName"></param>
         /// <remarks>Once the transaction is ended, an aggregate action is created with all action items that were added during the transaction. This aggregate is added to the action stack.</remarks>
-        IAggregateActionItem EndTransaction(string displayName);
+        void EndTransaction(string displayName);
 
         /// <summary>
         /// Ends a transaction started with <see cref="BeginTransaction"/>.
         /// </summary>
         /// <param name="displayName"></param>
-        /// <param name="aggregateActionItemConstructor">A function that will construct an instance of <see cref="IAggregateActionItem"/> from an enumeration of action items.</param>
+        /// <param name="aggregateActionItems">A function that will aggregate an enumeration of action items into a single action item.</param>
         /// <remarks>Once the transaction is ended, an aggregate action is created with all action items that were added during the transaction. This aggregate is added to the action stack.</remarks>
-        IAggregateActionItem EndTransaction(string displayName, Func<IEnumerable<IActionItem>, IAggregateActionItem> aggregateActionItemConstructor);
+        void EndTransaction(string displayName, Func<IReadOnlyCollection<IActionItem>, IActionItem> aggregateActionItems);
 
         /// <summary>
         /// Cancels a transaction started with <see cref="BeginTransaction"/>. Every action from the cancelled transaction will be undone.
