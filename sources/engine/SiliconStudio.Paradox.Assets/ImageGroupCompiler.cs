@@ -222,10 +222,37 @@ namespace SiliconStudio.Paradox.Assets
             {
                 var textureElements = new Dictionary<string, IntermediateTexture>();
 
-                foreach (var image in asset.GroupAsset.Images)
-                    textureElements.Add(ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[image]), 
-                        new IntermediateTexture { Texture = LoadImage(texTool, new UFile(image.Source)), 
-                            AddressModeU = image.AddressModeU, AddressModeV = image.AddressModeV, BorderColor = image.BorderColor});
+                // Input textures
+                var imageDictionary = new Dictionary<int, Image>();
+
+                for(var i = 0 ; i < asset.GroupAsset.Images.Count ; ++i)
+                {
+                    var image = asset.GroupAsset.Images[i];
+
+                    // Lazy load input texture and cache in the dictionary for the later use
+                    Image texture;
+
+                    if (!imageDictionary.ContainsKey(ImageToTextureIndex[image]))
+                    {
+                        texture = LoadImage(texTool, new UFile(image.Source));
+                        imageDictionary[ImageToTextureIndex[image]] = texture;
+                    }
+                    else
+                    {
+                        texture = imageDictionary[ImageToTextureIndex[image]];
+                    }
+
+                    textureElements.Add(
+                        ImageGroupAsset.BuildTextureUrl(Url, i),
+                        new IntermediateTexture
+                        {
+                            Texture = texture,
+                            AddressModeU = image.AddressModeU,
+                            AddressModeV = image.AddressModeV,
+                            BorderColor = image.BorderColor
+                        }
+                    );
+                }
 
                 // Initialize packing configuration from GroupAsset
                 var texturePacker = new TexturePacker
@@ -243,7 +270,7 @@ namespace SiliconStudio.Paradox.Assets
 
                 if (!canPackAllTextures)
                 {
-                    logger.Error("Failed to pack all texture");
+                    logger.Error("Failed to pack all textures");
                     return ResultStatus.Failed;
                 }
 
@@ -260,9 +287,11 @@ namespace SiliconStudio.Paradox.Assets
                         var textureKey = texture.Region.Key;
 
                         regionDictionary.Add(textureKey, new Tuple<int, RotatableRectangle>(textureAtlasIndex, texture.Region));
-
-                        texture.Texture.Dispose();
                     }
+
+                    // Dispose used textures
+                    foreach (var image in imageDictionary.Values)
+                        image.Dispose();
 
                     if (resultStatus != ResultStatus.Successful) return resultStatus;
                 }
