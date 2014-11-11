@@ -42,13 +42,14 @@ namespace SiliconStudio.Paradox.Graphics.Regression
 
         #region Constructors
 
-        public GraphicsTestBase()
+        protected GraphicsTestBase()
         {
             CurrentVersion = 0;
 
             FrameGameSystem = new FrameGameSystem(Services);
             GameSystems.Add(FrameGameSystem);
 
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             // get build number
             int buildNumber;
             if (ImageTester.ImageTestResultConnection.BuildNumber <= 0 && Int32.TryParse(Environment.GetEnvironmentVariable("PARADOX_BUILD_NUMBER"), out buildNumber))
@@ -57,6 +58,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
             // get branch name
             if (String.IsNullOrEmpty(ImageTester.ImageTestResultConnection.BranchName))
                 ImageTester.ImageTestResultConnection.BranchName = Environment.GetEnvironmentVariable("PARADOX_BRANCH_NAME") ?? "";
+#endif
         }
 
         #endregion
@@ -72,9 +74,9 @@ namespace SiliconStudio.Paradox.Graphics.Regression
             if (textureToSave == null)
                 return;
 
-            Console.WriteLine(@"Saving non null image");
+            TestGameLogger.Info(@"Saving non null image");
             var testName = CurrentTestContext != null ? CurrentTestContext.Test.FullName : null;
-            Console.WriteLine(@"saving remotely.");
+            TestGameLogger.Info(@"saving remotely.");
             using (var image = textureToSave.GetDataAsImage())
             {
                 try
@@ -83,7 +85,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine(@"An error occured when trying to send the data to the server.");
+                    TestGameLogger.Error(@"An error occurred when trying to send the data to the server.");
                     throw;
                 }
             }
@@ -94,7 +96,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
         /// </summary>
         public void SaveBackBuffer()
         {
-            Console.WriteLine(@"Saving the backbuffer");
+            TestGameLogger.Info(@"Saving the backbuffer");
             SaveImage(GraphicsDevice.BackBuffer.Texture);
         }
 

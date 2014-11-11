@@ -101,7 +101,15 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Templates\Common.PropertyGroups.targets.t4" />
+    <None Include="Templates\Paradox.UnitTests\%24ProjectName%24.WindowsPhone.csproj.t4" />
+    <None Include="Templates\Paradox.UnitTests\%24ProjectName%24.WindowsStore.csproj.t4" />
+    <None Include="Templates\Paradox.UnitTests\MainPage.xaml.cs.t4" />
+    <None Include="Templates\Paradox.UnitTests\MainPage.xaml.t4" />
+    <None Include="Templates\Paradox.UnitTests\App.xaml.cs.t4" />
+    <None Include="Templates\Paradox.UnitTests\App.xaml.t4" />
     <None Include="Templates\Paradox.UnitTests\Info.plist.t4" />
+    <None Include="Templates\Paradox.UnitTests\PackageWindowsPhone.appxmanifest.t4" />
+    <None Include="Templates\Paradox.UnitTests\PackageWindowsStore.appxmanifest.t4" />
     <None Include="Templates\Paradox.UnitTests\Paradox.UnitTests.ttproj" />
     <None Include="Templates\Paradox.UnitTests\Properties\AndroidManifest.xml.t4">
       <SubType>Designer</SubType>
@@ -114,6 +122,13 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Templates\Paradox.GraphicsRegressionTests\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Templates\Paradox.UnitTests\Assets\ParadoxSplashScreen620x300.png" />
+    <Resource Include="Templates\Paradox.UnitTests\Assets\ParadoxSplashScreen480x800.png" />
+    <Resource Include="Templates\Paradox.UnitTests\Assets\ParadoxIcon106x106.png" />
+    <Content Include="Templates\Paradox.UnitTests\Assets\ParadoxIcon150x150.png" />
+    <Resource Include="Templates\Paradox.UnitTests\Assets\ParadoxIcon54x54.png" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

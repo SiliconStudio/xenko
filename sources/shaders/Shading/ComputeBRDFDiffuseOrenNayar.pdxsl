@@ -3,15 +3,13 @@
 /// <summary>
 /// Computes a diffuse color based on Oren-Nayar model.
 /// </summary>
-class ComputeBRDFDiffuseOrenNayar : ComputeBRDFColor
+class ComputeBRDFDiffuseOrenNayar : ComputeBRDFColor, MaterialRoughnessBase
 {
-    stage float Roughness;
-    stage float DistributionVariance;
-    
     // suppose normalized vectors
     override float3 Compute(float3 lightColor, float3 lightDir, float3 normal, float3 eye)
     {
-        float squaredRough = Roughness * Roughness;
+        float roughness = GetRoughness();
+        float squaredRough = roughness * roughness;
         float A = 1 - (0.5 * squaredRough / (squaredRough + 0.33));
         float B = 0.45 * squaredRough / (squaredRough + 0.09);
         

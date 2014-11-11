@@ -285,7 +285,11 @@ namespace SiliconStudio.Paradox.TestRunner2
                 var packageName = Path.GetFileName(packageFile);
                 packageName = packageName.Replace("-Signed.apk", string.Empty);
 
-                foreach (var device in AndroidDeviceEnumerator.ListAndroidDevices())
+                var androidDevices = AndroidDeviceEnumerator.ListAndroidDevices();
+                if (androidDevices.Length == 0)
+                    throw new InvalidOperationException("Could not find any Android device connected.");
+
+                foreach (var device in androidDevices)
                 {
                     var testServerHost = new TestServerHost(buildNumber, branchName);
                     Directory.CreateDirectory(resultPath);

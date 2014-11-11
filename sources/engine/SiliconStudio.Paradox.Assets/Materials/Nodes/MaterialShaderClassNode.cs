@@ -314,6 +314,12 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
             return collection;
         }
 
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return "Shader";
+        }
+
         #endregion
 
         #region Private methods

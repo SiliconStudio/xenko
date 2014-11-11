@@ -70,7 +70,7 @@
       <SiliconStudioAssemblyProcessorPath>@(_SiliconStudioAssemblyProcessorPath)</SiliconStudioAssemblyProcessorPath>
       <SiliconStudioCoreAssemblyPath>@(_SiliconStudioCoreAssemblyPath)</SiliconStudioCoreAssemblyPath>
       <!-- Add SiliconStudio.Core path to assembly search directory -->
-      <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioCoreAssemblyPath)' != ''">$(SiliconStudioAssemblyProcessorOptions) --assembly=$(SiliconStudioCoreAssemblyPath)</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioCoreAssemblyPath)' != ''">$(SiliconStudioAssemblyProcessorOptions) --assembly="$(SiliconStudioCoreAssemblyPath)"</SiliconStudioAssemblyProcessorOptions>
     </PropertyGroup>
 
     <!--Add platform and target framework to assembly processor options-->

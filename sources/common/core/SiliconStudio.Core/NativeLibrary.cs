@@ -52,14 +52,8 @@ namespace SiliconStudio.Core
                 cpu = "ARM";
             else
                 cpu = IntPtr.Size == 8 ? "x64" : "x86";
-
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             var libraryFilename = Path.Combine(Path.GetDirectoryName(typeof(NativeLibrary).Assembly.Location), cpu, libraryName);
             var result = LoadLibrary(libraryFilename);
-#elif SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
-            var libraryFilename = Path.Combine(cpu, libraryName);
-            var result = LoadPackagedLibrary(libraryFilename, 0);
-#endif
 
             if (result == IntPtr.Zero)
                 throw new InvalidOperationException(string.Format("Could not load native library {0} using CPU architecture {1}.", libraryName, cpu));

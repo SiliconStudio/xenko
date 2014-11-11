@@ -57,6 +57,9 @@ namespace SiliconStudio.Assets.CompilerApp
 
             //args = new string[] { "test.pdxpkg", "-o:app_data", "-b:tmp", "-t:1" };
 
+            //hardcoded physics
+            Paradox.Physics.PhysicsEngine.InitializeConverters();
+
             var exeName = Path.GetFileName(Assembly.GetExecutingAssembly().Location);
             var showHelp = false;
             var options = new PackageBuilderOptions(GlobalLogger.GetLogger("BuildEngine"));

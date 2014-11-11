@@ -1,6 +1,8 @@
 ﻿!ProjectTemplate
 Files:
   - {Source: $ProjectName$.Windows.csproj.t4, Target: $ProjectName$.Windows.csproj, IsTemplate: true}
+  - {Source: $ProjectName$.WindowsPhone.csproj.t4, Target: $ProjectName$.WindowsPhone.csproj, IsTemplate: true}
+  - {Source: $ProjectName$.WindowsStore.csproj.t4, Target: $ProjectName$.WindowsStore.csproj, IsTemplate: true}
   - {Source: $ProjectName$.iOS.csproj.t4, Target: $ProjectName$.iOS.csproj, IsTemplate: true}
   - {Source: $ProjectName$.Android.csproj.t4, Target: $ProjectName$.Android.csproj, IsTemplate: true}
   - {Source: TestClass1.cs.t4, Target: TestClass1.cs, IsTemplate: true}
@@ -8,3 +10,15 @@ Files:
   - {Source: Properties\AndroidManifest.xml.t4, Target: Properties\AndroidManifest.xml, IsTemplate: true}
   - {Source: Resources\drawable\Icon.png, Target: Resources\drawable\Icon.png }
   - {Source: Info.plist.t4, Target: Info.plist, IsTemplate: true}
+  - {Source: MainPage.xaml.cs.t4, Target: MainPage.xaml.cs, IsTemplate: true}
+  - {Source: MainPage.xaml.t4, Target: MainPage.xaml, IsTemplate: true}
+  - {Source: App.xaml.cs.t4, Target: App.xaml.cs, IsTemplate: true}
+  - {Source: App.xaml.t4, Target: App.xaml, IsTemplate: true}
+  - {Source: PackageWindowsPhone.appxmanifest.t4, Target: PackageWindowsPhone.appxmanifest, IsTemplate: true}
+  - {Source: PackageWindowsStore.appxmanifest.t4, Target: PackageWindowsStore.appxmanifest, IsTemplate: true}
+  - {Source: Assets\ParadoxIcon150x150.png, Target: AssetsWindowsPhone\Logo.scale-100.png}
+  - {Source: Assets\ParadoxIcon150x150.png, Target: AssetsWindowsStore\Logo.scale-100.png}
+  - {Source: Assets\ParadoxIcon54x54.png, Target: AssetsWindowsStore\SmallLogo.scale-180.png}
+  - {Source: Assets\ParadoxIcon106x106.png, Target: AssetsWindowsPhone\SmallLogo.scale-240.png}
+  - {Source: Assets\ParadoxSplashScreen480x800.png, Target: AssetsWindowsPhone\SplashScreen.scale-100.png}
+  - {Source: Assets\ParadoxSplashScreen620x300.png, Target: AssetsWindowsStore\SplashScreen.scale-100.png}

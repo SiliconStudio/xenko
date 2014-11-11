@@ -17,6 +17,7 @@ namespace SiliconStudio.Paradox.Physics
         {
             Color = new Color4(1.0f);
             WorldViewProj = Matrix.Identity;
+            UseUv = true;
         }
 
         public Color4 Color
@@ -41,6 +42,18 @@ namespace SiliconStudio.Paradox.Physics
             set
             {
                 Parameters.Set(PhysicsDebugEffectKeys.WorldViewProj, value);
+            }
+        }
+
+        public bool UseUv
+        {
+            get
+            {
+                return Parameters.Get(PhysicsDebugEffectKeys.UseUv) > 0.5;
+            }
+            set
+            {
+                Parameters.Set(PhysicsDebugEffectKeys.UseUv, value ? 1.0f : 0.0f);
             }
         }
     }

@@ -45,7 +45,7 @@ namespace SiliconStudio.Paradox.Engine
             
         }
 
-        protected internal override void OnEnabledChanged(Entity entity, bool enabled)
+        protected override void OnEnabledChanged(Entity entity, bool enabled)
         {
             foreach (var child in entity.Transformation.Children)
             {

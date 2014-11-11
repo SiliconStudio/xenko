@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 using SiliconStudio.Core.Extensions;
 
@@ -14,68 +15,54 @@ namespace SiliconStudio.Presentation.View
     /// <summary>
     /// An implementation of <see cref="DataTemplateSelector"/> that can select a template from a set of statically registered <see cref="ITemplateProvider"/> objects.
     /// </summary>
-    /// <remarks>This class is a singleton and cannot be instanced. To reference this selector, use the static member <see cref="Instance"/>.</remarks>
     public class TemplateProviderSelector : DataTemplateSelector
     {
-        /// <summary>
-        /// The singleton instance of the <see cref="TemplateProviderSelector"/> class.
-        /// </summary>
-        public static readonly TemplateProviderSelector Instance = new TemplateProviderSelector();
-        
+       
         /// <summary>
         /// The list of all template providers registered for the <see cref="TemplateProviderSelector"/>, indexed by their name.
         /// </summary>
-        private static readonly List<ITemplateProvider> TemplateProviders = new List<ITemplateProvider>();
+        private readonly List<ITemplateProvider> templateProviders = new List<ITemplateProvider>();
 
         /// <summary>
         /// A hashset of template provider names, used only to ensure unicity.
         /// </summary>
-        private static readonly HashSet<string> TemplateProviderNames = new HashSet<string>();
+        private readonly HashSet<string> templateProviderNames = new HashSet<string>();
 
         /// <summary>
         /// A map of all providers that have already been used for each object, indexed by <see cref="Guid"/>.
         /// </summary>
-        private static ConditionalWeakTable<object, List<string>> usedProviders = new ConditionalWeakTable<object, List<string>>();
+        private readonly ConditionalWeakTable<object, List<string>> usedProviders = new ConditionalWeakTable<object, List<string>>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TemplateProviderSelector"/> class.
+        /// A map containing the last container for a given object.
         /// </summary>
-        /// <remarks>This constructor is private because this class is a singleton.</remarks>
-        private TemplateProviderSelector()
-        {
-        }
+        private readonly ConditionalWeakTable<object, WeakReference> lastContainers = new ConditionalWeakTable<object, WeakReference>();
 
         /// <summary>
         /// Registers the given template into the static <see cref="TemplateProviderSelector"/>.
         /// </summary>
         /// <param name="templateProvider"></param>
-        public static void RegisterTemplateProvider(ITemplateProvider templateProvider)
+        public void RegisterTemplateProvider(ITemplateProvider templateProvider)
         {
             if (templateProvider == null) throw new ArgumentNullException("templateProvider");
 
-            if (TemplateProviderNames.Contains(templateProvider.Name))
+            if (templateProviderNames.Contains(templateProvider.Name))
                 throw new InvalidOperationException("A template provider with the same name has already been registered in this template selector.");
 
-            InsertTemplateProvider(TemplateProviders, templateProvider, new List<ITemplateProvider>());
-            TemplateProviderNames.Add(templateProvider.Name);
+            InsertTemplateProvider(templateProviders, templateProvider, new List<ITemplateProvider>());
+            templateProviderNames.Add(templateProvider.Name);
         }
 
         /// <summary>
         /// Unregisters the given template into the static <see cref="TemplateProviderSelector"/>.
         /// </summary>
         /// <param name="templateProvider"></param>
-        public static void UnregisterTemplateProvider(ITemplateProvider templateProvider)
+        public void UnregisterTemplateProvider(ITemplateProvider templateProvider)
         {
-            TemplateProviderNames.Remove(templateProvider.Name);
-            TemplateProviders.Remove(templateProvider);
-        }
-
-        /// <summary>
-        /// Resets the list of used template providers, allowing to fully re-template observable nodes.
-        /// </summary>
-        public static void ResetProviders()
-        {
-            usedProviders = new ConditionalWeakTable<object, List<string>>();
+            if (templateProviderNames.Remove(templateProvider.Name))
+            {
+                templateProviders.Remove(templateProvider);
+            }
         }
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
@@ -87,14 +74,17 @@ namespace SiliconStudio.Presentation.View
             if (element == null)
                 throw new ArgumentException(@"Container must be of type FrameworkElement", "container");
 
-            var provider = FindTemplateProvider(item);
+            var provider = FindTemplateProvider(item, container);
+            if (provider == null)
+                return null;
+
             var template = provider.Template;
             // We set the template we found into the content presenter itself to avoid re-entering the template selector if the property is refreshed.
-            var contentPresenter = container as ContentPresenter;
-            if (contentPresenter == null)
-                throw new ArgumentException("The container of an TemplateProviderSelector must be a ContentPresenter.");
-
-            contentPresenter.ContentTemplate = template;
+            //var contentPresenter = container as ContentPresenter;
+            //if (contentPresenter != null)
+            //{
+            //    contentPresenter.ContentTemplate = template;
+            //}
             return template;
         }
         
@@ -107,38 +97,57 @@ namespace SiliconStudio.Presentation.View
             // Every following providers may have an override rule against the new template provider, we must potentially resort them.
             for (int i = insertIndex + 1; i < list.Count; ++i)
             {
-                if (list[i].CompareTo(list[insertIndex]) < 0)
+                var followingProvider = list[i];
+                if (followingProvider.CompareTo(templateProvider) < 0)
                 {
-                    if (!movedItems.Contains(list[i]))
+                    if (!movedItems.Contains(followingProvider))
                     {
                         list.RemoveAt(i);
-                        InsertTemplateProvider(list, list[i], movedItems);
+                        InsertTemplateProvider(list, followingProvider, movedItems);
                     }
                 }
             }
         }
 
-        /// <summary>
-        /// Obtains a template provider for the given object, that has not been used yet since the last call to <see cref="ResetProviders"/>, or
-        /// null if no (more) template provider matches the given object.
-        /// </summary>
-        /// <param name="item">The object for which to find a template provider.</param>
-        /// <returns> a template provider for the given object, that has not been used yet since the last call to <see cref="ResetProviders"/>, or null if no (more) template provider matches the given object.</returns>
-        private static ITemplateProvider FindTemplateProvider(object item)
+        private ITemplateProvider FindTemplateProvider(object item, DependencyObject container)
         {
-            List<string> userProvidersForItem = usedProviders.GetOrCreateValue(item);
+            List<string> usedProvidersForItem = usedProviders.GetOrCreateValue(item);
 
-            var availableSelectors = TemplateProviders.Where(x => x.Match(item)).ToList();
-            ITemplateProvider result = availableSelectors.FirstOrDefault(selector => !userProvidersForItem.Contains(selector.Name));
-            if (result == null)
+            bool shouldClear = true;
+            WeakReference lastContainer;
+            // We check if this item has been templated recently.
+            if (lastContainers.TryGetValue(item, out lastContainer) && lastContainer.IsAlive)
             {
-                // No unused template found, lets use the first available template and reset the used provider list.
-                result = availableSelectors.FirstOrDefault();
-                userProvidersForItem.Clear();
+                // If so, check if the last container used is a parent of the container to use now.
+                DependencyObject parent = VisualTreeHelper.GetParent(container);
+                while (parent != null)
+                {
+                    // If so, we are applying template recursively. We want don't want to use the same template
+                    // provider that the previous time, so we don't clear the list of providers already used.
+                    if (Equals(lastContainer.Target, parent))
+                    {
+                        shouldClear = false;
+                        break;
+                    }
+                    parent = VisualTreeHelper.GetParent(parent);
+                }
             }
+            // In any other case, we clear the list of used providers.
+            if (shouldClear)
+            {
+                usedProvidersForItem.Clear();
+            }
+
+            lastContainers.Remove(item);
+
+            var availableSelectors = templateProviders.Where(x => x.Match(item)).ToList();
+
+            ITemplateProvider result = availableSelectors.FirstOrDefault(x => !usedProvidersForItem.Contains(x.Name));
+
             if (result != null)
             {
-                userProvidersForItem.Add(result.Name);
+                usedProvidersForItem.Add(result.Name);
+                lastContainers.Add(item, new WeakReference(container));
             }
             return result;
         }

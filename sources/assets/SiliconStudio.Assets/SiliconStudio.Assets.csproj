@@ -68,6 +68,7 @@
     <Compile Include="AssetItemCollection.cs" />
     <Compile Include="AssetMemberValue.cs" />
     <Compile Include="AssetSelector.cs" />
+    <Compile Include="AssetFormatVersionAttribute.cs" />
     <Compile Include="AssetToImportMergeGroup.cs" />
     <Compile Include="AssetToImportMerge.cs" />
     <Compile Include="AssetToImportByImporter.cs" />
@@ -91,12 +92,14 @@
     <Compile Include="Compiler\FailedCommand.cs" />
     <Compile Include="Compiler\ThumbnailCommandParameters.cs" />
     <Compile Include="Diff\MergeResult.cs" />
+    <Compile Include="IAssetUpgrader.cs" />
     <Compile Include="IDirtyable.cs" />
     <Compile Include="IFileSynchronizable.cs" />
     <Compile Include="ImportResult.cs" />
     <Compile Include="Analysis\AssetResolver.cs" />
     <Compile Include="NugetLogEventArgs.cs" />
     <Compile Include="NugetStore.cs" />
+    <Compile Include="AssetMigration.cs" />
     <Compile Include="PackageArchive.cs" />
     <Compile Include="PackageArchiveTask.cs" />
     <Compile Include="PackageDependency.cs" />

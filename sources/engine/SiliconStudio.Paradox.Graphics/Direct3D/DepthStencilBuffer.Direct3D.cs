@@ -85,9 +85,20 @@ namespace SiliconStudio.Paradox.Graphics
             {
                 Format = ComputeDepthViewFormatFromTextureFormat(nativeDescription.Format),
                 Flags = SharpDX.Direct3D11.DepthStencilViewFlags.None,
-                Dimension = SharpDX.Direct3D11.DepthStencilViewDimension.Texture2D,
-                Texture2D = { MipSlice = 0 }
             };
+
+            if (nativeDescription.ArraySize > 1)
+            {
+                depthStencilViewDescription.Dimension = SharpDX.Direct3D11.DepthStencilViewDimension.Texture2DArray;
+                depthStencilViewDescription.Texture2DArray.ArraySize = nativeDescription.ArraySize;
+                depthStencilViewDescription.Texture2DArray.FirstArraySlice = 0;
+                depthStencilViewDescription.Texture2DArray.MipSlice = 0;
+            }
+            else
+            {
+                depthStencilViewDescription.Dimension = SharpDX.Direct3D11.DepthStencilViewDimension.Texture2D;
+                depthStencilViewDescription.Texture2D.MipSlice = 0;
+            }
 
             if (nativeDescription.SampleDescription.Count > 1)
                 depthStencilViewDescription.Dimension = DepthStencilViewDimension.Texture2DMultisampled;

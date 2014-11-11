@@ -1,0 +1,12 @@
+﻿// Copyright (c) 2014 Silicon Studio Corporation (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// A base class to compute the color by sampling a cubemap texture as a 2D texture.
+/// </summary>
+class CubemapFaceBase
+{
+    float4 ComputeFaceColor(int i)
+    {
+        return 0;
+    }
+};

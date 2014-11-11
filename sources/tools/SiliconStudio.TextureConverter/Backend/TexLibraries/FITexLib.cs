@@ -148,6 +148,8 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                 case RequestType.SwitchingChannels:
                 case RequestType.GammaCorrection:
                 case RequestType.Flipping:
+                case RequestType.FlippingSub:
+                case RequestType.Swapping:
                     return true;
                 default:
                     return false;
@@ -174,6 +176,14 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
                 case RequestType.Flipping:
                     Flip(image, libraryData, (FlippingRequest)request);
+                    break;
+
+                case RequestType.FlippingSub:
+                    FlipSub(image, libraryData, (FlippingSubRequest)request);
+                    break;
+
+                case RequestType.Swapping:
+                    Swap(image, libraryData, (SwappingRequest)request);
                     break;
 
                 case RequestType.Export:
@@ -391,6 +401,67 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             }
 
             image.Flip(flip.Flip);
+        }
+
+
+        /// <summary>
+        /// Flips the specified sub-image horizontally or vertically.
+        /// </summary>
+        /// <param name="image">The image.</param>
+        /// <param name="libraryData">The library data.</param>
+        /// <param name="flipSub">The flip request.</param>
+        private void FlipSub(TexImage image, FreeImageTextureLibraryData libraryData, FlippingSubRequest flipSub)
+        {
+            Log.Info("Flipping image : sub-image " + flipSub.SubImageIndex + " " + flipSub.Flip + " ...");
+
+            if (flipSub.SubImageIndex >= 0 && flipSub.SubImageIndex < libraryData.Bitmaps.Length)
+            {
+                switch (flipSub.Flip)
+                {
+                    case Orientation.Vertical:
+                        FreeImage.FlipVertical(libraryData.Bitmaps[flipSub.SubImageIndex]);
+                        break;
+
+                    case Orientation.Horizontal:
+                        FreeImage.FlipHorizontal(libraryData.Bitmaps[flipSub.SubImageIndex]);
+                        break;
+                }
+            }
+            else
+            {
+                Log.Warning("Cannot flip the sub-image " + flipSub.SubImageIndex + " because there is only " + libraryData.Bitmaps.Length + " sub-images.");
+            }
+
+            // TODO: texture atlas update?
+        }
+
+
+        /// <summary>
+        /// Swaps two sub-images.
+        /// </summary>
+        /// <param name="image">The image.</param>
+        /// <param name="libraryData">The library data.</param>
+        /// <param name="swap">The swap request.</param>
+        private void Swap(TexImage image, FreeImageTextureLibraryData libraryData, SwappingRequest swap)
+        {
+            Log.Info("Swapping image : sub-image " + swap.FirstSubImageIndex + " and " + swap.SecondSubImageIndex + " ...");
+
+            if (swap.FirstSubImageIndex >= 0 && swap.FirstSubImageIndex < libraryData.Bitmaps.Length
+                && swap.SecondSubImageIndex >= 0 && swap.SecondSubImageIndex < libraryData.Bitmaps.Length)
+            {
+                // copy first image
+                var firstImage = FreeImage.Copy(libraryData.Bitmaps[swap.FirstSubImageIndex], 0, 0, image.Width, image.Height);
+                FreeImage.Paste(libraryData.Bitmaps[swap.FirstSubImageIndex], libraryData.Bitmaps[swap.SecondSubImageIndex], 0, 0, 256);
+                FreeImage.Paste(libraryData.Bitmaps[swap.SecondSubImageIndex], firstImage, 0, 0, 256);
+
+                // TODO: free firstImage?
+            }
+            else
+            {
+                Log.Warning("Cannot swap the sub-images " + swap.FirstSubImageIndex + " and " + swap.SecondSubImageIndex + " because there is only " + libraryData.Bitmaps.Length + " sub-images.");
+            }
+
+            // TODO: texture atlas update?
         }
 
 

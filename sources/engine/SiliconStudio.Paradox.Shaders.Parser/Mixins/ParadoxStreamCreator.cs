@@ -16,6 +16,12 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 {
     internal class ParadoxStreamCreator
     {
+        #region private static members
+
+        private readonly static string[] GeometryShaderUnOptimizedSemantics = { "SV_RenderTargetArrayIndex" };
+
+        #endregion
+
         #region Private members
 
         /// <summary>
@@ -126,6 +132,38 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             StreamStageUsage streamStageUsagePS = pixelShaderMethod == null ? null : StreamAnalysisPerShader(pixelShaderMethod.GetTag(ParadoxTags.ShaderScope) as ModuleMixin, pixelShaderMethod, PdxShaderStage.Pixel);
             StreamStageUsage streamStageUsageCS = computeShaderMethod == null ? null : StreamAnalysisPerShader(computeShaderMethod.GetTag(ParadoxTags.ShaderScope) as ModuleMixin, computeShaderMethod, PdxShaderStage.Compute);
             
+            // pathc some usage so that variables are correctly passed even if they are not explicitely used.
+            if (streamStageUsageGS != null && streamStageUsageVS != null)
+            {
+                var needToAdd = true;
+                foreach (var variable in streamStageUsageGS.OutStreamList.OfType<Variable>())
+                {
+                    var sem = variable.Qualifiers.OfType<Semantic>().FirstOrDefault();
+                    if (sem != null && sem.Name.Text == "SV_Position")
+                    {
+                        needToAdd = false;
+                        break;
+                    }
+                }
+
+                if (needToAdd)
+                {
+                    // get the ShadingPosition variable
+                    foreach (var variable in streamStageUsageVS.OutStreamList.OfType<Variable>())
+                    {
+                        var sem = variable.Qualifiers.OfType<Semantic>().FirstOrDefault();
+                        if (sem != null && sem.Name.Text == "SV_Position")
+                        {
+                            streamStageUsageGS.OutStreamList.Add(variable);
+                            break;
+                        }
+
+                    }
+                }
+                // TODO: it may have more variables like this one.
+            }
+
+
             var shaderStreamsUsage = new List<StreamStageUsage>();
             
             // store these methods to prevent their renaming
@@ -398,7 +436,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 {
                     var sem = (variable as Variable).Qualifiers.OfType<Semantic>().FirstOrDefault();
                     if (nextStreamUsage.InStreamList.Contains(variable)
-                        || (nextStreamUsage.ShaderStage == PdxShaderStage.Pixel && sem != null && sem.Name.Text == "SV_Position"))
+                        || ((nextStreamUsage.ShaderStage == PdxShaderStage.Pixel || nextStreamUsage.ShaderStage == PdxShaderStage.Geometry) && sem != null && sem.Name.Text == "SV_Position"))
                         toKeep.Add(variable);
                     else if (nextStreamUsage.ShaderStage == PdxShaderStage.Pixel && prevStreamUsage.ShaderStage == PdxShaderStage.Geometry && sem != null && sem.Name.Text == "SV_RenderTargetArrayIndex")
                     {
@@ -722,32 +760,66 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             // replace stream assignement with field values assignements
             foreach (var assignment in streamAnalyzer.AssignationsToStream)
             {
-                //TODO: look into called methods?
-                var assignIndex = methodDefinition.Body.IndexOf(methodDefinition.Body.OfType<ExpressionStatement>().FirstOrDefault(x => x.Expression == assignment));
-                
-                if (assignIndex < 0)
+                StatementList parent;
+                var index = SearchExpressionStatement(methodDefinition.Body, assignment, out parent);
+                if (index < 0 || parent == null)
                     continue;
 
                 // TODO: check that it is "output = streams"
                 var statementList = CreateOutputFromStream(outputStreamStruct, (assignment.Target as VariableReferenceExpression).Name.Text, intermediateStreamStruct, "streams").ToList();
                 statementList.RemoveAt(0); // do not keep the variable declaration
-                methodDefinition.Body.RemoveAt(assignIndex);
-                methodDefinition.Body.InsertRange(assignIndex, statementList);
+                methodDefinition.Body.RemoveAt(index);
+                methodDefinition.Body.InsertRange(index, statementList);
             }
 
             // replace stream assignement with field values assignements
             foreach (var assignment in streamAnalyzer.StreamAssignations)
             {
-                var index = methodDefinition.Body.IndexOf(methodDefinition.Body.OfType<ExpressionStatement>().FirstOrDefault(x => x.Expression == assignment));
-                
-                if (index < 0)
+                StatementList parent;
+                var index = SearchExpressionStatement(methodDefinition.Body, assignment, out parent);
+                if (index < 0 || parent == null)
                     continue;
 
                 var statementList = CreateStreamFromInput(intermediateStreamStruct, "streams", inputStreamStruct, assignment.Value, false).ToList();
                 statementList.RemoveAt(0); // do not keep the variable declaration
-                methodDefinition.Body.RemoveAt(index);
-                methodDefinition.Body.InsertRange(index, statementList);
+                parent.RemoveAt(index);
+                parent.InsertRange(index, statementList);
             }
+        }
+
+        /// <summary>
+        /// Search a statement in method.
+        /// </summary>
+        /// <param name="topStatement">The statement to look into</param>
+        /// <param name="expression">The expression to look for.</param>
+        /// <param name="parentStatement">The statement list where the expression was found.</param>
+        /// <returns>The index of the statement in the statement list.</returns>
+        private int SearchExpressionStatement(Statement topStatement, Expression expression, out StatementList parentStatement)
+        {
+            // handle special case because BlockStatement.Children returns children of child (Statements members)
+            if (topStatement is BlockStatement)
+                topStatement = ((BlockStatement)topStatement).Statements;
+            if (topStatement is StatementList)
+            {
+                var statementList = (StatementList)topStatement;
+                var index = statementList.IndexOf(statementList.OfType<ExpressionStatement>().FirstOrDefault(x => x.Expression == expression));
+                if (index >= 0)
+                {
+                    parentStatement = (StatementList)topStatement;
+                    return index;
+                }
+
+            }
+
+            foreach (var statement in topStatement.Childrens().OfType<Statement>())
+            {
+                var index = SearchExpressionStatement(statement, expression, out parentStatement);
+                if (index >= 0)
+                    return index;
+            }
+            
+            parentStatement = null;
+            return -1;
         }
 
         /// <summary>

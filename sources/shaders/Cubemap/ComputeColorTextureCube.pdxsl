@@ -1,0 +1,29 @@
+﻿// Copyright (c) 2014 Silicon Studio Corporation (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Computes the color by sampling a cubemap texture.
+/// </summary>
+/// <remarks>
+/// TTexture: generic TextureCube - The cubemap to sample.
+/// </remarks>
+class ComputeColorTextureCube<TextureCube TTexture> : ComputeColor
+{
+    override float4 Compute()
+    {
+        // sampling direction in the cubemap.
+        float3 samplingDir = GetSamplingDir();
+
+        return SampleCubemap(samplingDir);
+    }
+
+    float3 GetSamplingDir()
+    {
+        return 0;
+    }
+
+    float4 SampleCubemap(float3 samplingDir)
+    {
+        // note: sampling dir is flipped because Paradox use a direct coordinate system and Direct3D samples as a indirect coordinate system.
+        return TTexture.Sample(Texturing.LinearSampler, float3(samplingDir.xy, -samplingDir.z));
+    }
+};

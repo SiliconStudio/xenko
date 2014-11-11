@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     {
         public ImageRotatedTest()
         {
-            CurrentVersion = 1;
+            CurrentVersion = 4;
         }
 
         protected override void RegisterTests()
@@ -30,22 +30,15 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            var uiImages = Asset.Load<UIImageGroup>("UIImages");
-            var img1 = new ImageElement { Source = uiImages["uvNotRotated"], StretchType = StretchType.Fill};
-            var img2 = new ImageElement { Source = uiImages["uvRotated90C"], StretchType = StretchType.Fill };
-            var img3 = new ImageElement { Source = uiImages["uvRotated90"], StretchType = StretchType.Fill };
-            var img4 = new ImageElement { Source = uiImages["uvRotated180"], StretchType = StretchType.Fill };
+            var uiImages = Asset.Load<UIImageGroup>("RotatedImages");
+            var img1 = new ImageElement { Source = uiImages["NotRotated"], StretchType = StretchType.Fill };
+            var img2 = new ImageElement { Source = uiImages["Rotated90"], StretchType = StretchType.Fill };
 
-            img2.DependencyProperties.Set(GridBase.ColumnPropertyKey, 1);
-            img3.DependencyProperties.Set(GridBase.RowPropertyKey, 1);
-            img4.DependencyProperties.Set(GridBase.ColumnPropertyKey, 1);
-            img4.DependencyProperties.Set(GridBase.RowPropertyKey, 1);
+            img2.DependencyProperties.Set(GridBase.RowPropertyKey, 1);
 
-            var grid = new UniformGrid { Rows = 2, Columns = 2 };
+            var grid = new UniformGrid { Rows = 2 };
             grid.Children.Add(img1);
             grid.Children.Add(img2);
-            grid.Children.Add(img3);
-            grid.Children.Add(img4);
 
             UI.RootElement = grid;
         }

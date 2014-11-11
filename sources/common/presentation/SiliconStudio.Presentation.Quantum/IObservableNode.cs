@@ -135,6 +135,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// Moves the node by setting it a new parent.
         /// </summary>
         /// <param name="newParent">The new parent of the node once moved.</param>
-        void Move(IObservableNode newParent);
+        /// <param name="newName">The new name to give to the node once moved. This will modify its path. If <c>null</c>, it does not modify the name.</param>
+        void Move(IObservableNode newParent, string newName = null);
     }
 }

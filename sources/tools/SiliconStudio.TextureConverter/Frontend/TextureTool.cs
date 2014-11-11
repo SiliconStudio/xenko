@@ -790,6 +790,39 @@ namespace SiliconStudio.TextureConverter
             ExecuteRequest(image, request);
         }
 
+        /// <summary>
+        /// Flips the specified image horizontally or vertically.
+        /// </summary>
+        /// <param name="image">The image.</param>
+        /// <param name="index">The index of the sub-image.</param>
+        /// <param name="orientation">The orientation <see cref="Orientation.Flip"/>.</param>
+        public void FlipSub(TexImage image, int index, Orientation orientation)
+        {
+            if (Tools.IsCompressed(image.Format))
+            {
+                Log.Warning("You can't flip a compressed texture. It will be decompressed first..");
+                Decompress(image);
+            }
+
+            var request = new FlippingSubRequest(index, orientation);
+
+            ExecuteRequest(image, request);
+        }
+
+
+        /// <summary>
+        /// Swaps two slices of a texture array.
+        /// </summary>
+        /// <param name="image">The image.</param>
+        /// <param name="firstIndex">The index of the first sub-image.</param>
+        /// <param name="secondIndex">The index of the second sub-image</param>
+        public void Swap(TexImage image, int firstIndex, int secondIndex)
+        {
+            var request = new SwappingRequest(firstIndex, secondIndex);
+
+            ExecuteRequest(image, request);
+        }
+
 
         /// <summary>
         /// Finds a suitable library to handle the request.

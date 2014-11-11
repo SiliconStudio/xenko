@@ -57,15 +57,13 @@ namespace SiliconStudio.ActionStack
         }
 
         /// <inheritdocs/>
-        public IAggregateActionItem EndTransaction(string displayName)
+        public void EndTransaction(string displayName)
         {
-            return new AggregateActionItem(Enumerable.Empty<IActionItem>());
         }
 
         /// <inheritdocs/>
-        public IAggregateActionItem EndTransaction(string displayName, Func<IEnumerable<IActionItem>, IAggregateActionItem> aggregateActionItemConstructor)
+        public void EndTransaction(string displayName, Func<IReadOnlyCollection<IActionItem>, IActionItem> aggregateActionItems)
         {
-            return aggregateActionItemConstructor(Enumerable.Empty<IActionItem>());
         }
 
         /// <inheritdocs/>
@@ -106,8 +104,7 @@ namespace SiliconStudio.ActionStack
 
         /// <inheritdocs/>
         public void Add(IActionItem item)
-        {
-            
+        {           
         }
 
         /// <inheritdocs/>

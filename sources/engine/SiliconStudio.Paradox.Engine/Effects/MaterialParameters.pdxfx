@@ -13,14 +13,14 @@ namespace SiliconStudio.Paradox.Effects
 
         ShaderMixinSource AlbedoMaterial;
 
+        // transparency
         bool UseTransparent;
         bool UseTransparentMask;
         float AlphaDiscardThreshold;
 
-        float OrenNayarRoughness;
-        float OrenNayarDistributionVariance;
-        float CookTorranceFresnel;
-        float CookTorranceRoughness;
+        // environment mapping
+        bool UseSpecularEnvironmentMapping;
+        bool UseDiffuseEnvironmentMapping;
 
         ShaderMixinSource DiffuseShader;
         ShaderMixinSource SpecularShader;
@@ -35,5 +35,8 @@ namespace SiliconStudio.Paradox.Effects
         ShaderMixinSource AlbedoSpecular;
         ShaderMixinSource SpecularPowerMap;
         ShaderMixinSource SpecularIntensityMap;
+        ShaderMixinSource RoughnessMap;
+        ShaderMixinSource ReflectanceMap;
+        ShaderMixinSource LightMap;
     };
 }

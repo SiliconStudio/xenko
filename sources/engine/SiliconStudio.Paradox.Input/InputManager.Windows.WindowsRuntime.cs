@@ -23,136 +23,192 @@ namespace SiliconStudio.Paradox.Input
     public partial class InputManager
     {
         // mapping between WinRT keys and toolkit keys
-        private static readonly Dictionary<VirtualKey, Keys> _keysDictionary;
-
-        private bool isLeftButtonPressed;
+        private static readonly Dictionary<VirtualKey, Keys> mapKeys;
 
         // TODO: Support for MultiTouchEnabled on Windows Runtime
         public override bool MultiTouchEnabled { get { return true; } set { } }
 
         static InputManager()
         {
-            _keysDictionary = new Dictionary<VirtualKey, Keys>();
-            // this dictionary was built from Desktop version.
-            // some keys were removed (like OEM and Media buttons) as they don't have mapping in WinRT
-            _keysDictionary[VirtualKey.None] = Keys.None;
-            _keysDictionary[VirtualKey.Back] = Keys.Back;
-            _keysDictionary[VirtualKey.Tab] = Keys.Tab;
-            _keysDictionary[VirtualKey.Enter] = Keys.Enter;
-            _keysDictionary[VirtualKey.Pause] = Keys.Pause;
-            _keysDictionary[VirtualKey.CapitalLock] = Keys.CapsLock;
-            _keysDictionary[VirtualKey.Kana] = Keys.KanaMode;
-            _keysDictionary[VirtualKey.Kanji] = Keys.KanjiMode;
-            _keysDictionary[VirtualKey.Escape] = Keys.Escape;
-            _keysDictionary[VirtualKey.Convert] = Keys.ImeConvert;
-            _keysDictionary[VirtualKey.NonConvert] = Keys.ImeNonConvert;
-            _keysDictionary[VirtualKey.Space] = Keys.Space;
-            _keysDictionary[VirtualKey.PageUp] = Keys.PageUp;
-            _keysDictionary[VirtualKey.PageDown] = Keys.PageDown;
-            _keysDictionary[VirtualKey.End] = Keys.End;
-            _keysDictionary[VirtualKey.Home] = Keys.Home;
-            _keysDictionary[VirtualKey.Left] = Keys.Left;
-            _keysDictionary[VirtualKey.Up] = Keys.Up;
-            _keysDictionary[VirtualKey.Right] = Keys.Right;
-            _keysDictionary[VirtualKey.Down] = Keys.Down;
-            _keysDictionary[VirtualKey.Select] = Keys.Select;
-            _keysDictionary[VirtualKey.Print] = Keys.Print;
-            _keysDictionary[VirtualKey.Execute] = Keys.Execute;
-            _keysDictionary[VirtualKey.Print] = Keys.PrintScreen;
-            _keysDictionary[VirtualKey.Insert] = Keys.Insert;
-            _keysDictionary[VirtualKey.Delete] = Keys.Delete;
-            _keysDictionary[VirtualKey.Help] = Keys.Help;
-            _keysDictionary[VirtualKey.Number0] = Keys.D0;
-            _keysDictionary[VirtualKey.Number1] = Keys.D1;
-            _keysDictionary[VirtualKey.Number2] = Keys.D2;
-            _keysDictionary[VirtualKey.Number3] = Keys.D3;
-            _keysDictionary[VirtualKey.Number4] = Keys.D4;
-            _keysDictionary[VirtualKey.Number5] = Keys.D5;
-            _keysDictionary[VirtualKey.Number6] = Keys.D6;
-            _keysDictionary[VirtualKey.Number7] = Keys.D7;
-            _keysDictionary[VirtualKey.Number8] = Keys.D8;
-            _keysDictionary[VirtualKey.Number9] = Keys.D9;
-            _keysDictionary[VirtualKey.A] = Keys.A;
-            _keysDictionary[VirtualKey.B] = Keys.B;
-            _keysDictionary[VirtualKey.C] = Keys.C;
-            _keysDictionary[VirtualKey.D] = Keys.D;
-            _keysDictionary[VirtualKey.E] = Keys.E;
-            _keysDictionary[VirtualKey.F] = Keys.F;
-            _keysDictionary[VirtualKey.G] = Keys.G;
-            _keysDictionary[VirtualKey.H] = Keys.H;
-            _keysDictionary[VirtualKey.I] = Keys.I;
-            _keysDictionary[VirtualKey.J] = Keys.J;
-            _keysDictionary[VirtualKey.K] = Keys.K;
-            _keysDictionary[VirtualKey.L] = Keys.L;
-            _keysDictionary[VirtualKey.M] = Keys.M;
-            _keysDictionary[VirtualKey.N] = Keys.N;
-            _keysDictionary[VirtualKey.O] = Keys.O;
-            _keysDictionary[VirtualKey.P] = Keys.P;
-            _keysDictionary[VirtualKey.Q] = Keys.Q;
-            _keysDictionary[VirtualKey.R] = Keys.R;
-            _keysDictionary[VirtualKey.S] = Keys.S;
-            _keysDictionary[VirtualKey.T] = Keys.T;
-            _keysDictionary[VirtualKey.U] = Keys.U;
-            _keysDictionary[VirtualKey.V] = Keys.V;
-            _keysDictionary[VirtualKey.W] = Keys.W;
-            _keysDictionary[VirtualKey.X] = Keys.X;
-            _keysDictionary[VirtualKey.Y] = Keys.Y;
-            _keysDictionary[VirtualKey.Z] = Keys.Z;
-            _keysDictionary[VirtualKey.LeftWindows] = Keys.LeftWin;
-            _keysDictionary[VirtualKey.RightWindows] = Keys.RightWin;
-            _keysDictionary[VirtualKey.Application] = Keys.Apps;
-            _keysDictionary[VirtualKey.Sleep] = Keys.Sleep;
-            _keysDictionary[VirtualKey.NumberPad0] = Keys.NumPad0;
-            _keysDictionary[VirtualKey.NumberPad1] = Keys.NumPad1;
-            _keysDictionary[VirtualKey.NumberPad2] = Keys.NumPad2;
-            _keysDictionary[VirtualKey.NumberPad3] = Keys.NumPad3;
-            _keysDictionary[VirtualKey.NumberPad4] = Keys.NumPad4;
-            _keysDictionary[VirtualKey.NumberPad5] = Keys.NumPad5;
-            _keysDictionary[VirtualKey.NumberPad6] = Keys.NumPad6;
-            _keysDictionary[VirtualKey.NumberPad7] = Keys.NumPad7;
-            _keysDictionary[VirtualKey.NumberPad8] = Keys.NumPad8;
-            _keysDictionary[VirtualKey.NumberPad9] = Keys.NumPad9;
-            _keysDictionary[VirtualKey.Multiply] = Keys.Multiply;
-            _keysDictionary[VirtualKey.Add] = Keys.Add;
-            _keysDictionary[VirtualKey.Separator] = Keys.Separator;
-            _keysDictionary[VirtualKey.Subtract] = Keys.Subtract;
-            _keysDictionary[VirtualKey.Decimal] = Keys.Decimal;
-            _keysDictionary[VirtualKey.Divide] = Keys.Divide;
-            _keysDictionary[VirtualKey.F1] = Keys.F1;
-            _keysDictionary[VirtualKey.F2] = Keys.F2;
-            _keysDictionary[VirtualKey.F3] = Keys.F3;
-            _keysDictionary[VirtualKey.F4] = Keys.F4;
-            _keysDictionary[VirtualKey.F5] = Keys.F5;
-            _keysDictionary[VirtualKey.F6] = Keys.F6;
-            _keysDictionary[VirtualKey.F7] = Keys.F7;
-            _keysDictionary[VirtualKey.F8] = Keys.F8;
-            _keysDictionary[VirtualKey.F9] = Keys.F9;
-            _keysDictionary[VirtualKey.F10] = Keys.F10;
-            _keysDictionary[VirtualKey.F11] = Keys.F11;
-            _keysDictionary[VirtualKey.F12] = Keys.F12;
-            _keysDictionary[VirtualKey.F13] = Keys.F13;
-            _keysDictionary[VirtualKey.F14] = Keys.F14;
-            _keysDictionary[VirtualKey.F15] = Keys.F15;
-            _keysDictionary[VirtualKey.F16] = Keys.F16;
-            _keysDictionary[VirtualKey.F17] = Keys.F17;
-            _keysDictionary[VirtualKey.F18] = Keys.F18;
-            _keysDictionary[VirtualKey.F19] = Keys.F19;
-            _keysDictionary[VirtualKey.F20] = Keys.F20;
-            _keysDictionary[VirtualKey.F21] = Keys.F21;
-            _keysDictionary[VirtualKey.F22] = Keys.F22;
-            _keysDictionary[VirtualKey.F23] = Keys.F23;
-            _keysDictionary[VirtualKey.F24] = Keys.F24;
-            _keysDictionary[VirtualKey.NumberKeyLock] = Keys.NumLock;
-            _keysDictionary[VirtualKey.Scroll] = Keys.Scroll;
-            _keysDictionary[VirtualKey.Shift] = Keys.LeftShift;
-            _keysDictionary[VirtualKey.LeftShift] = Keys.LeftShift;
-            _keysDictionary[VirtualKey.RightShift] = Keys.RightShift;
-            _keysDictionary[VirtualKey.Control] = Keys.LeftCtrl;
-            _keysDictionary[VirtualKey.LeftControl] = Keys.LeftCtrl;
-            _keysDictionary[VirtualKey.RightControl] = Keys.RightCtrl;
-            _keysDictionary[VirtualKey.Menu] = Keys.LeftAlt;
-            _keysDictionary[VirtualKey.LeftMenu] = Keys.LeftAlt;
-            _keysDictionary[VirtualKey.RightMenu] = Keys.RightAlt;
+            mapKeys = new Dictionary<VirtualKey, Keys>();
+            // this dictionary was built from Desktop version (VirtualKey are compatible with WinForms keys)
+            AddKeys(WinFormsKeys.None, Keys.None);
+            AddKeys(WinFormsKeys.Cancel, Keys.Cancel);
+            AddKeys(WinFormsKeys.Back, Keys.Back);
+            AddKeys(WinFormsKeys.Tab, Keys.Tab);
+            AddKeys(WinFormsKeys.LineFeed, Keys.LineFeed);
+            AddKeys(WinFormsKeys.Clear, Keys.Clear);
+            AddKeys(WinFormsKeys.Enter, Keys.Enter);
+            AddKeys(WinFormsKeys.Return, Keys.Return);
+            AddKeys(WinFormsKeys.Pause, Keys.Pause);
+            AddKeys(WinFormsKeys.Capital, Keys.Capital);
+            AddKeys(WinFormsKeys.CapsLock, Keys.CapsLock);
+            AddKeys(WinFormsKeys.HangulMode, Keys.HangulMode);
+            AddKeys(WinFormsKeys.KanaMode, Keys.KanaMode);
+            AddKeys(WinFormsKeys.JunjaMode, Keys.JunjaMode);
+            AddKeys(WinFormsKeys.FinalMode, Keys.FinalMode);
+            AddKeys(WinFormsKeys.HanjaMode, Keys.HanjaMode);
+            AddKeys(WinFormsKeys.KanjiMode, Keys.KanjiMode);
+            AddKeys(WinFormsKeys.Escape, Keys.Escape);
+            AddKeys(WinFormsKeys.IMEConvert, Keys.ImeConvert);
+            AddKeys(WinFormsKeys.IMENonconvert, Keys.ImeNonConvert);
+            AddKeys(WinFormsKeys.IMEAccept, Keys.ImeAccept);
+            AddKeys(WinFormsKeys.IMEModeChange, Keys.ImeModeChange);
+            AddKeys(WinFormsKeys.Space, Keys.Space);
+            AddKeys(WinFormsKeys.PageUp, Keys.PageUp);
+            AddKeys(WinFormsKeys.Prior, Keys.Prior);
+            AddKeys(WinFormsKeys.Next, Keys.Next);
+            AddKeys(WinFormsKeys.PageDown, Keys.PageDown);
+            AddKeys(WinFormsKeys.End, Keys.End);
+            AddKeys(WinFormsKeys.Home, Keys.Home);
+            AddKeys(WinFormsKeys.Left, Keys.Left);
+            AddKeys(WinFormsKeys.Up, Keys.Up);
+            AddKeys(WinFormsKeys.Right, Keys.Right);
+            AddKeys(WinFormsKeys.Down, Keys.Down);
+            AddKeys(WinFormsKeys.Select, Keys.Select);
+            AddKeys(WinFormsKeys.Print, Keys.Print);
+            AddKeys(WinFormsKeys.Execute, Keys.Execute);
+            AddKeys(WinFormsKeys.PrintScreen, Keys.PrintScreen);
+            AddKeys(WinFormsKeys.Snapshot, Keys.Snapshot);
+            AddKeys(WinFormsKeys.Insert, Keys.Insert);
+            AddKeys(WinFormsKeys.Delete, Keys.Delete);
+            AddKeys(WinFormsKeys.Help, Keys.Help);
+            AddKeys(WinFormsKeys.D0, Keys.D0);
+            AddKeys(WinFormsKeys.D1, Keys.D1);
+            AddKeys(WinFormsKeys.D2, Keys.D2);
+            AddKeys(WinFormsKeys.D3, Keys.D3);
+            AddKeys(WinFormsKeys.D4, Keys.D4);
+            AddKeys(WinFormsKeys.D5, Keys.D5);
+            AddKeys(WinFormsKeys.D6, Keys.D6);
+            AddKeys(WinFormsKeys.D7, Keys.D7);
+            AddKeys(WinFormsKeys.D8, Keys.D8);
+            AddKeys(WinFormsKeys.D9, Keys.D9);
+            AddKeys(WinFormsKeys.A, Keys.A);
+            AddKeys(WinFormsKeys.B, Keys.B);
+            AddKeys(WinFormsKeys.C, Keys.C);
+            AddKeys(WinFormsKeys.D, Keys.D);
+            AddKeys(WinFormsKeys.E, Keys.E);
+            AddKeys(WinFormsKeys.F, Keys.F);
+            AddKeys(WinFormsKeys.G, Keys.G);
+            AddKeys(WinFormsKeys.H, Keys.H);
+            AddKeys(WinFormsKeys.I, Keys.I);
+            AddKeys(WinFormsKeys.J, Keys.J);
+            AddKeys(WinFormsKeys.K, Keys.K);
+            AddKeys(WinFormsKeys.L, Keys.L);
+            AddKeys(WinFormsKeys.M, Keys.M);
+            AddKeys(WinFormsKeys.N, Keys.N);
+            AddKeys(WinFormsKeys.O, Keys.O);
+            AddKeys(WinFormsKeys.P, Keys.P);
+            AddKeys(WinFormsKeys.Q, Keys.Q);
+            AddKeys(WinFormsKeys.R, Keys.R);
+            AddKeys(WinFormsKeys.S, Keys.S);
+            AddKeys(WinFormsKeys.T, Keys.T);
+            AddKeys(WinFormsKeys.U, Keys.U);
+            AddKeys(WinFormsKeys.V, Keys.V);
+            AddKeys(WinFormsKeys.W, Keys.W);
+            AddKeys(WinFormsKeys.X, Keys.X);
+            AddKeys(WinFormsKeys.Y, Keys.Y);
+            AddKeys(WinFormsKeys.Z, Keys.Z);
+            AddKeys(WinFormsKeys.LWin, Keys.LeftWin);
+            AddKeys(WinFormsKeys.RWin, Keys.RightWin);
+            AddKeys(WinFormsKeys.Apps, Keys.Apps);
+            AddKeys(WinFormsKeys.Sleep, Keys.Sleep);
+            AddKeys(WinFormsKeys.NumPad0, Keys.NumPad0);
+            AddKeys(WinFormsKeys.NumPad1, Keys.NumPad1);
+            AddKeys(WinFormsKeys.NumPad2, Keys.NumPad2);
+            AddKeys(WinFormsKeys.NumPad3, Keys.NumPad3);
+            AddKeys(WinFormsKeys.NumPad4, Keys.NumPad4);
+            AddKeys(WinFormsKeys.NumPad5, Keys.NumPad5);
+            AddKeys(WinFormsKeys.NumPad6, Keys.NumPad6);
+            AddKeys(WinFormsKeys.NumPad7, Keys.NumPad7);
+            AddKeys(WinFormsKeys.NumPad8, Keys.NumPad8);
+            AddKeys(WinFormsKeys.NumPad9, Keys.NumPad9);
+            AddKeys(WinFormsKeys.Multiply, Keys.Multiply);
+            AddKeys(WinFormsKeys.Add, Keys.Add);
+            AddKeys(WinFormsKeys.Separator, Keys.Separator);
+            AddKeys(WinFormsKeys.Subtract, Keys.Subtract);
+            AddKeys(WinFormsKeys.Decimal, Keys.Decimal);
+            AddKeys(WinFormsKeys.Divide, Keys.Divide);
+            AddKeys(WinFormsKeys.F1, Keys.F1);
+            AddKeys(WinFormsKeys.F2, Keys.F2);
+            AddKeys(WinFormsKeys.F3, Keys.F3);
+            AddKeys(WinFormsKeys.F4, Keys.F4);
+            AddKeys(WinFormsKeys.F5, Keys.F5);
+            AddKeys(WinFormsKeys.F6, Keys.F6);
+            AddKeys(WinFormsKeys.F7, Keys.F7);
+            AddKeys(WinFormsKeys.F8, Keys.F8);
+            AddKeys(WinFormsKeys.F9, Keys.F9);
+            AddKeys(WinFormsKeys.F10, Keys.F10);
+            AddKeys(WinFormsKeys.F11, Keys.F11);
+            AddKeys(WinFormsKeys.F12, Keys.F12);
+            AddKeys(WinFormsKeys.F13, Keys.F13);
+            AddKeys(WinFormsKeys.F14, Keys.F14);
+            AddKeys(WinFormsKeys.F15, Keys.F15);
+            AddKeys(WinFormsKeys.F16, Keys.F16);
+            AddKeys(WinFormsKeys.F17, Keys.F17);
+            AddKeys(WinFormsKeys.F18, Keys.F18);
+            AddKeys(WinFormsKeys.F19, Keys.F19);
+            AddKeys(WinFormsKeys.F20, Keys.F20);
+            AddKeys(WinFormsKeys.F21, Keys.F21);
+            AddKeys(WinFormsKeys.F22, Keys.F22);
+            AddKeys(WinFormsKeys.F23, Keys.F23);
+            AddKeys(WinFormsKeys.F24, Keys.F24);
+            AddKeys(WinFormsKeys.NumLock, Keys.NumLock);
+            AddKeys(WinFormsKeys.Scroll, Keys.Scroll);
+            AddKeys(WinFormsKeys.LShiftKey, Keys.LeftShift);
+            AddKeys(WinFormsKeys.RShiftKey, Keys.RightShift);
+            AddKeys(WinFormsKeys.LControlKey, Keys.LeftCtrl);
+            AddKeys(WinFormsKeys.RControlKey, Keys.RightCtrl);
+            AddKeys(WinFormsKeys.LMenu, Keys.LeftAlt);
+            AddKeys(WinFormsKeys.RMenu, Keys.RightAlt);
+            AddKeys(WinFormsKeys.BrowserBack, Keys.BrowserBack);
+            AddKeys(WinFormsKeys.BrowserForward, Keys.BrowserForward);
+            AddKeys(WinFormsKeys.BrowserRefresh, Keys.BrowserRefresh);
+            AddKeys(WinFormsKeys.BrowserStop, Keys.BrowserStop);
+            AddKeys(WinFormsKeys.BrowserSearch, Keys.BrowserSearch);
+            AddKeys(WinFormsKeys.BrowserFavorites, Keys.BrowserFavorites);
+            AddKeys(WinFormsKeys.BrowserHome, Keys.BrowserHome);
+            AddKeys(WinFormsKeys.VolumeMute, Keys.VolumeMute);
+            AddKeys(WinFormsKeys.VolumeDown, Keys.VolumeDown);
+            AddKeys(WinFormsKeys.VolumeUp, Keys.VolumeUp);
+            AddKeys(WinFormsKeys.MediaNextTrack, Keys.MediaNextTrack);
+            AddKeys(WinFormsKeys.MediaPreviousTrack, Keys.MediaPreviousTrack);
+            AddKeys(WinFormsKeys.MediaStop, Keys.MediaStop);
+            AddKeys(WinFormsKeys.MediaPlayPause, Keys.MediaPlayPause);
+            AddKeys(WinFormsKeys.LaunchMail, Keys.LaunchMail);
+            AddKeys(WinFormsKeys.SelectMedia, Keys.SelectMedia);
+            AddKeys(WinFormsKeys.LaunchApplication1, Keys.LaunchApplication1);
+            AddKeys(WinFormsKeys.LaunchApplication2, Keys.LaunchApplication2);
+            AddKeys(WinFormsKeys.Oem1, Keys.Oem1);
+            AddKeys(WinFormsKeys.OemSemicolon, Keys.OemSemicolon);
+            AddKeys(WinFormsKeys.Oemplus, Keys.OemPlus);
+            AddKeys(WinFormsKeys.Oemcomma, Keys.OemComma);
+            AddKeys(WinFormsKeys.OemMinus, Keys.OemMinus);
+            AddKeys(WinFormsKeys.OemPeriod, Keys.OemPeriod);
+            AddKeys(WinFormsKeys.Oem2, Keys.Oem2);
+            AddKeys(WinFormsKeys.OemQuestion, Keys.OemQuestion);
+            AddKeys(WinFormsKeys.Oem3, Keys.Oem3);
+            AddKeys(WinFormsKeys.Oemtilde, Keys.OemTilde);
+            AddKeys(WinFormsKeys.Oem4, Keys.Oem4);
+            AddKeys(WinFormsKeys.OemOpenBrackets, Keys.OemOpenBrackets);
+            AddKeys(WinFormsKeys.Oem5, Keys.Oem5);
+            AddKeys(WinFormsKeys.OemPipe, Keys.OemPipe);
+            AddKeys(WinFormsKeys.Oem6, Keys.Oem6);
+            AddKeys(WinFormsKeys.OemCloseBrackets, Keys.OemCloseBrackets);
+            AddKeys(WinFormsKeys.Oem7, Keys.Oem7);
+            AddKeys(WinFormsKeys.OemQuotes, Keys.OemQuotes);
+            AddKeys(WinFormsKeys.Oem8, Keys.Oem8);
+            AddKeys(WinFormsKeys.Oem102, Keys.Oem102);
+            AddKeys(WinFormsKeys.OemBackslash, Keys.OemBackslash);
+            AddKeys(WinFormsKeys.Attn, Keys.Attn);
+            AddKeys(WinFormsKeys.Crsel, Keys.CrSel);
+            AddKeys(WinFormsKeys.Exsel, Keys.ExSel);
+            AddKeys(WinFormsKeys.EraseEof, Keys.EraseEof);
+            AddKeys(WinFormsKeys.Play, Keys.Play);
+            AddKeys(WinFormsKeys.Zoom, Keys.Zoom);
+            AddKeys(WinFormsKeys.NoName, Keys.NoName);
+            AddKeys(WinFormsKeys.Pa1, Keys.Pa1);
+            AddKeys(WinFormsKeys.OemClear, Keys.OemClear);
         }
 
         public InputManager(IServiceRegistry registry) : base(registry)
@@ -251,30 +307,74 @@ namespace SiliconStudio.Paradox.Input
             ControlWidth = (float)size.Width;
         }
 
-        private void HandleKeyFrameworkElement(KeyRoutedEventArgs keyRoutedEventArgs, InputEventType inputEventType)
+        private void HandleKeyFrameworkElement(KeyRoutedEventArgs args, InputEventType inputEventType)
         {
-            HandleKey(keyRoutedEventArgs.Key, inputEventType);
-
-            keyRoutedEventArgs.Handled = true;
+            if (HandleKey(args.Key, args.KeyStatus, inputEventType))
+                args.Handled = true;
         }
 
         private void HandleKeyCoreWindow(KeyEventArgs args, InputEventType inputEventType)
         {
-            HandleKey(args.VirtualKey, inputEventType);
-
-            args.Handled = true;
+            if (HandleKey(args.VirtualKey, args.KeyStatus, inputEventType))
+                args.Handled = true;
         }
 
-        private void HandleKey(VirtualKey virtualKey, InputEventType type)
+        private bool HandleKey(VirtualKey virtualKey, CorePhysicalKeyStatus keyStatus, InputEventType type)
         {
+            // Remap certain keys
+            switch (virtualKey)
+            {
+                case VirtualKey.Shift:
+                    // Only way to differentiate left and right shift is through the scan code
+                    virtualKey = keyStatus.ScanCode == 54 ? VirtualKey.RightShift : VirtualKey.LeftShift;
+                    break;
+                case VirtualKey.Control:
+                    virtualKey = keyStatus.IsExtendedKey ? VirtualKey.RightControl : VirtualKey.LeftControl;
+                    break;
+                case VirtualKey.Menu:
+                    virtualKey = keyStatus.IsExtendedKey ? VirtualKey.RightMenu : VirtualKey.LeftMenu;
+                    break;
+            }
+
+            // Let Alt + F4 go through
+            if (virtualKey == VirtualKey.F4 && IsKeyDownNow(Keys.LeftAlt))
+                return false;
+
             Keys key;
-            if (!_keysDictionary.TryGetValue(virtualKey, out key))
+            if (!mapKeys.TryGetValue(virtualKey, out key))
                 key = Keys.None;
 
             lock (KeyboardInputEvents)
             {
                 KeyboardInputEvents.Add(new KeyboardInputEvent { Key = key, Type = type });
             }
+
+            return true;
+        }
+
+        private bool IsKeyDownNow(Keys key)
+        {
+            // Check unprocessed up/down events that happened during this frame (in case key has just been pressed)
+            lock (KeyboardInputEvents)
+            {
+                for (int index = KeyboardInputEvents.Count - 1; index >= 0; --index)
+                {
+                    var keyboardInputEvent = KeyboardInputEvents[index];
+                    if (keyboardInputEvent.Key == key)
+                    {
+                        if (keyboardInputEvent.Type == InputEventType.Down)
+                            return true;
+                        if (keyboardInputEvent.Type == InputEventType.Up)
+                            return false;
+                    }
+                }
+            }
+
+            // If nothing was done this frame, check if Alt was already considered down in previous frames
+            if (IsKeyDown(key))
+                return true;
+
+            return false;
         }
 
         private void HandlePointerEventFrameworkElement(FrameworkElement uiElement, PointerRoutedEventArgs pointerRoutedEventArgs, PointerState pointerState)
@@ -293,26 +393,117 @@ namespace SiliconStudio.Paradox.Input
 
         void HandlePointerEvent(WinRTPointerPoint p, PointerState ptrState)
         {
-            var pointerType = p.PointerDevice.PointerDeviceType;
-            var isMouse = pointerType == WinRTPointerDeviceType.Mouse;
+            var pointerType = ConvertPointerDeviceType(p.PointerDevice.PointerDeviceType);
+            var isMouse = pointerType == PointerType.Mouse;
             var position = NormalizeScreenPosition(PointToVector2(p.Position));
-
-            if (isMouse && p.Properties.IsLeftButtonPressed)
-                isLeftButtonPressed = true;
 
             if (isMouse)
             {
+                if (ptrState == PointerState.Cancel || ptrState == PointerState.Out)
+                {
+                    // invalidate mouse and current pointers
+                    LostFocus = true;
+
+                    for (int i = 0; i < MouseButtonCurrentlyDown.Length; i++)
+                    {
+                        if (MouseButtonCurrentlyDown[i])
+                        {
+                            HandlePointerEvents(i, position, PointerState.Out, pointerType);
+                            MouseButtonCurrentlyDown[i] = false;
+                        }
+                    }
+                }
+                else // down/up/move
+                {
+                    // Note: The problem here is that the PointerPressed event is not triggered twice when two button are pressed together.
+                    // That is why we are forced to continuously keep the state of all buttons of the mouse.
+
+                    MouseInputEvent mouseEvent;
+
+                    // Trigger mouse button and pointer Down events for newly pressed buttons.
+                    foreach (MouseButton button in Enum.GetValues(typeof(MouseButton)))
+                    {
+                        var buttonId = (int)button;
+                        if (!MouseButtonCurrentlyDown[buttonId] && MouseButtonIsPressed(p.Properties, button))
+                        {
+                            lock (MouseInputEvents)
+                            {
+                                mouseEvent = new MouseInputEvent { Type = InputEventType.Down, MouseButton = button };
+                                MouseInputEvents.Add(mouseEvent);
+                            }
+
+                            HandlePointerEvents(buttonId, position, PointerState.Down, pointerType);
+
+                            MouseButtonCurrentlyDown[buttonId] = true;
+                        }
+                    }
+
+                    // Trigger Move events to pointer that have changed position
+                    if (CurrentMousePosition != position)
+                    {
+                        foreach (MouseButton button in Enum.GetValues(typeof(MouseButton)))
+                        {
+                            var buttonId = (int)button;
+                            if (MouseButtonCurrentlyDown[buttonId])
+                                HandlePointerEvents(buttonId, position, PointerState.Move, pointerType);
+                        } 
+                    }
+
+                    // Trigger mouse button and pointer Up events for newly released buttons.
+                    foreach (MouseButton button in Enum.GetValues(typeof(MouseButton)))
+                    {
+                        var buttonId = (int)button;
+                        if (MouseButtonCurrentlyDown[buttonId] && !MouseButtonIsPressed(p.Properties, button))
+                        {
+                            lock (MouseInputEvents)
+                            {
+                                mouseEvent = new MouseInputEvent { Type = InputEventType.Up, MouseButton = button };
+                                MouseInputEvents.Add(mouseEvent);
+                            }
+
+                            HandlePointerEvents(buttonId, position, PointerState.Up, pointerType);
+
+                            MouseButtonCurrentlyDown[buttonId] = false;
+                        }
+                    }
+
+                    // Trigger mouse wheel events
+                    if (Math.Abs(p.Properties.MouseWheelDelta) > MathUtil.ZeroTolerance)
+                    {
+                        lock (MouseInputEvents)
+                        {
+                            mouseEvent = new MouseInputEvent { Type = InputEventType.Wheel, MouseButton = MouseButton.Middle, Value = p.Properties.MouseWheelDelta };
+                            MouseInputEvents.Add(mouseEvent);
+                        }
+                    }
+                }
+
+                // Update mouse cursor position
                 CurrentMousePosition = position;
-
-                if (ptrState != PointerState.Move)
-                    UpdateButtons(p.Properties);
             }
+            else
+            {
+                HandlePointerEvents((int)p.PointerId, position, ptrState, pointerType);
+            }
+        }
 
-            if (!isMouse || isLeftButtonPressed)
-                HandlePointerEvents((int)p.PointerId, position, ptrState, ConvertPointerDeviceType(pointerType));
-
-            if (isMouse && !p.Properties.IsLeftButtonPressed)
-                isLeftButtonPressed = false;
+        private bool MouseButtonIsPressed(PointerPointProperties mouseProperties, MouseButton button)
+        {
+            switch (button)
+            {
+                case MouseButton.Left:
+                    return mouseProperties.IsLeftButtonPressed;
+                case MouseButton.Middle:
+                    return mouseProperties.IsMiddleButtonPressed;
+                case MouseButton.Right:
+                    return mouseProperties.IsRightButtonPressed;
+                case MouseButton.Extended1:
+                    return mouseProperties.IsXButton1Pressed;
+                case MouseButton.Extended2:
+                    return mouseProperties.IsXButton2Pressed;
+                default:
+                    throw new ArgumentOutOfRangeException("button");
+            }
         }
 
         private PointerType ConvertPointerDeviceType(WinRTPointerDeviceType deviceType)
@@ -329,30 +520,17 @@ namespace SiliconStudio.Paradox.Input
             return PointerType.Unknown;
         }
 
-        private void UpdateButtons(PointerPointProperties mouseProperties)
-        {
-            lock (MouseInputEvents)
-            {
-                var mouseInputEvent = new MouseInputEvent { Type = mouseProperties.IsLeftButtonPressed ? InputEventType.Down : InputEventType.Up, MouseButton = MouseButton.Left };
-                MouseInputEvents.Add(mouseInputEvent);
-
-                mouseInputEvent = new MouseInputEvent { Type = mouseProperties.IsRightButtonPressed ? InputEventType.Down : InputEventType.Up, MouseButton = MouseButton.Right };
-                MouseInputEvents.Add(mouseInputEvent);
-
-                mouseInputEvent = new MouseInputEvent { Type = mouseProperties.IsMiddleButtonPressed ? InputEventType.Down : InputEventType.Up, MouseButton = MouseButton.Middle };
-                MouseInputEvents.Add(mouseInputEvent);
-
-                mouseInputEvent = new MouseInputEvent { Type = mouseProperties.IsXButton1Pressed ? InputEventType.Down : InputEventType.Up, MouseButton = MouseButton.Extended1 };
-                MouseInputEvents.Add(mouseInputEvent);
-
-                mouseInputEvent = new MouseInputEvent { Type = mouseProperties.IsXButton2Pressed ? InputEventType.Down : InputEventType.Up, MouseButton = MouseButton.Extended2 };
-                MouseInputEvents.Add(mouseInputEvent);
-            }
-        }
-
         private Vector2 PointToVector2(Point point)
         {
             return new Vector2((float)point.X, (float)point.Y);
+        }
+
+        private static void AddKeys(WinFormsKeys fromKey, Keys toKey)
+        {
+            if (!mapKeys.ContainsKey((VirtualKey)fromKey))
+            {
+                mapKeys.Add((VirtualKey)fromKey, toKey);
+            }
         }
     }
 }

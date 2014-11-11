@@ -25,7 +25,7 @@ namespace SiliconStudio.Paradox.UI.Renderers
         {
             base.Load();
             
-            noStencilNoDepth = new DepthStencilState(GraphicsDevice, new DepthStencilStateDescription(false, false));
+            noStencilNoDepth = DepthStencilState.New(GraphicsDevice, new DepthStencilStateDescription(false, false));
         }
 
         public override void Unload()

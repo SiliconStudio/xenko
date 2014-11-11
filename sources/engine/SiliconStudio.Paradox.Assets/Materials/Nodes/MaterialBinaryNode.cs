@@ -59,5 +59,11 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
             if (RightChild != null)
            	yield return new MaterialNodeEntry(RightChild, node => RightChild = node);
         }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return "Binary operation";
+        }
     }
 }

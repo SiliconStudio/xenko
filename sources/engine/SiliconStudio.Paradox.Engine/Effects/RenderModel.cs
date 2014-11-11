@@ -29,8 +29,11 @@ namespace SiliconStudio.Paradox.Effects
             Model = model;
 
             var meshState = pipeline.GetMeshRenderState();
-            InternalMeshes = new List<EffectMesh>[meshState.MeshPassSlotCount];
-            meshState.PrepareRenderModel(this, modelComponentParameters);
+            if (meshState != null)
+            {
+                InternalMeshes = new List<EffectMesh>[meshState.MeshPassSlotCount];
+                meshState.PrepareRenderModel(this, modelComponentParameters);
+            }
         }
 
         /// <summary>

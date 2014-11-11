@@ -23,6 +23,133 @@
     <!-- ### EditableListBox ################################################################################################################################################# -->
     <SolidColorBrush x:Key="GlyphBrush" Color="Black"/>
     
+    <Style x:Key="PropertyExpanderStyle" TargetType="{x:Type Expander}">
+        <Setter Property="Padding" Value="10,0,0,0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Expander}">
+                    <Grid>
+                        <Border Visibility="Collapsed" x:Name="ExpandSite" Padding="0">
+                            <Border BorderThickness="0" Margin="0" Padding="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+												      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+												      Focusable="false" />
+                            </Border>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsExpanded" Value="True">
+                            <Setter Property="Visibility" Value="Visible" TargetName="ExpandSite" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="ctrl:PropertyView">
+        <!-- TODO: Replace DynamicResource by StaticResource once it is stylized in the correct theme -->
+        <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource NormalBrush}"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <StackPanel IsItemsHost="True"/>
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ctrl:PropertyView">
+                    <Border BorderThickness="{TemplateBinding Border.BorderThickness}" BorderBrush="{TemplateBinding Border.BorderBrush}" Name="Bd" SnapsToDevicePixels="True">
+                        <ScrollViewer x:Name="_pv_scrollviewer_" CanContentScroll="False" HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}" VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}" Background="{TemplateBinding Panel.Background}" Padding="{TemplateBinding Control.Padding}" SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" Focusable="False">
+                            <ItemsPresenter/>
+                        </ScrollViewer>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="UIElement.IsEnabled" Value="False">
+                            <Setter TargetName="Bd" Property="Panel.Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="ctrl:PropertyViewItem">
+        <Setter Property="Increment" Value="15"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <!--<Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ctrl:PropertyViewItem">
+                    <Border BorderThickness="{TemplateBinding Border.BorderThickness}" BorderBrush="{TemplateBinding Border.BorderBrush}" Name="Bd" SnapsToDevicePixels="True">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <ToggleButton IsChecked="False" ClickMode="Press" Name="Expander">
+                                <ToggleButton.Style>
+                                    <Style TargetType="ToggleButton">
+                                        <Style.Resources>
+                                            <ResourceDictionary />
+                                        </Style.Resources>
+                                        <Setter Property="Focusable" Value="False"/>
+                                        <Setter Property="Width" Value="16"/>
+                                        <Setter Property="Height" Value="16"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ToggleButton">
+                                                    <Border Padding="5,5,5,5" Background="#FFFFFFFF" Width="16" Height="16">
+                                                        <Path Fill="#00FFFFFF" Stroke="#FF989898" Name="ExpandPath">
+                                                            <Path.Data>
+                                                                <PathGeometry Figures="M0,0L0,6L6,0z" />
+                                                            </Path.Data>
+                                                            <Path.RenderTransform>
+                                                                <RotateTransform Angle="135" CenterX="3" CenterY="3" />
+                                                            </Path.RenderTransform>
+                                                        </Path>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="UIElement.IsMouseOver" Value="True">
+                                                            <Setter TargetName="ExpandPath" Property="Shape.Stroke" Value="#FF1BBBFA"/>
+                                                            <Setter TargetName="ExpandPath" Property="Shape.Fill" Value="#00FFFFFF"/>
+                                                        </Trigger>
+                                                        <Trigger Property="ToggleButton.IsChecked" Value="True">
+                                                            <Setter TargetName="ExpandPath" Property="UIElement.RenderTransform">
+                                                                <Setter.Value>
+                                                                    <RotateTransform Angle="180" CenterX="3" CenterY="3" />
+                                                                </Setter.Value>
+                                                            </Setter>
+                                                            <Setter TargetName="ExpandPath" Property="Shape.Fill" Value="#FF595959"/>
+                                                            <Setter TargetName="ExpandPath" Property="Shape.Stroke" Value="#FF262626"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ToggleButton.Style>
+                            </ToggleButton>
+                            <Grid Grid.Column="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <ContentPresenter Content="{TemplateBinding HeaderedContentControl.Header}" ContentTemplate="{TemplateBinding HeaderedContentControl.HeaderTemplate}" ContentStringFormat="{TemplateBinding HeaderedItemsControl.HeaderStringFormat}" ContentSource="Header" Name="PART_Header" HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
+                                <Expander x:Name="propertyExpander" Grid.Row="1" IsExpanded="{TemplateBinding IsExpanded}" Style="{StaticResource PropertyExpanderStyle}" IsEnabled="True">
+                                    <ItemsPresenter Name="ItemsHost" Grid.Row="1"/>
+                                </Expander>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>-->
+    </Style>
+
     <Style x:Key="DefaultTextBoxStyle" TargetType="ctrl:TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
         <Setter Property="Template">
             <Setter.Value>
@@ -31,7 +158,7 @@
                         <Grid Focusable="False">
                             <ScrollViewer x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Padding="{TemplateBinding Padding}" Visibility="{TemplateBinding IsFocused, Converter={cvt:VisibleOrCollapsed}}"/>
                             <ContentControl x:Name="Watermark" Content="{TemplateBinding WatermarkContent}" ContentTemplate="{TemplateBinding WatermarkContentTemplate}" VerticalAlignment="Center" Margin="6,2,2,2" Focusable="False"/>
-                            <TextBlock x:Name="PART_TrimmedText" Text="{TemplateBinding TrimmedText}" Cursor="IBeam" Margin="3,2" Focusable="False" Visibility="{TemplateBinding IsFocused, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                            <TextBlock x:Name="PART_TrimmedText" Text="{TemplateBinding TrimmedText}" Cursor="IBeam" Margin="3,1" Focusable="False" Visibility="{TemplateBinding IsFocused, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                         </Grid>
                     </mwt:ListBoxChrome>
                     <ControlTemplate.Triggers>
@@ -58,97 +185,34 @@
 
     <Style TargetType="ctrl:TextBox" BasedOn="{StaticResource DefaultTextBoxStyle}"/>
 
-    <Style TargetType="ctrl:TimerTextBox" BasedOn="{StaticResource {x:Type ctrl:TextBox}}"/>
-    
-    <Style TargetType="ctrl:NumericTextBox" BasedOn="{StaticResource {x:Type ctrl:TextBox}}">
+    <Style TargetType="ctrl:NumericTextBox" BasedOn="{StaticResource {x:Type TextBox}}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ctrl:NumericTextBox">
-                    <DockPanel LastChildFill="True" Focusable="False">
-                        <UniformGrid x:Name="upDownButtons" Rows="2" DockPanel.Dock="Right" Width="11" Height="22" Margin="0,1,1,1" Focusable="False" Visibility="Collapsed">
-                            <RepeatButton x:Name="PART_IncreaseButton" Command="{x:Static ctrl:NumericTextBox.SmallIncreaseCommand}">
-                                <Grid Margin="0" Background="Transparent">
-                                    <Path HorizontalAlignment="Stretch" Width="Auto" Fill="{StaticResource GlyphBrush}" Stretch="Fill" Stroke="{StaticResource GlyphBrush}" StrokeThickness="1" Data="M5.2422477,11.132184 L11.5544,11.132184 8.6412958,4.4969033 z" RenderTransformOrigin="0.5,0.5"/>
-                                </Grid>
-                            </RepeatButton>
-                            <RepeatButton x:Name="PART_DecreaseButton" Command="{x:Static ctrl:NumericTextBox.SmallDecreaseCommand}">
-                                <Grid Margin="0" Background="Transparent">
-                                    <Path HorizontalAlignment="Stretch" Width="Auto" Fill="{StaticResource GlyphBrush}" Stretch="Fill" Stroke="{StaticResource GlyphBrush}" StrokeThickness="1" Data="M5.2422477,11.132184 L11.5544,11.132184 8.6412958,4.4969033 z" RenderTransformOrigin="0.5,0.5">
-                                        <Path.RenderTransform>
-                                            <RotateTransform Angle="180"/>
-                                        </Path.RenderTransform>
-                                    </Path>
-                                </Grid>
-                            </RepeatButton>
-                        </UniformGrid>
-                        <mwt:ListBoxChrome Background="{TemplateBinding Panel.Background}" BorderBrush="{TemplateBinding Border.BorderBrush}" BorderThickness="{TemplateBinding Border.BorderThickness}" RenderMouseOver="{TemplateBinding UIElement.IsMouseOver}" RenderFocused="{TemplateBinding UIElement.IsKeyboardFocusWithin}" Name="Bd" SnapsToDevicePixels="True">
-                            <Grid>
-                                <ScrollViewer x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Padding="{TemplateBinding Padding}" Visibility="{TemplateBinding IsFocused, Converter={cvt:VisibleOrCollapsed}}"/>
-                                <TextBlock x:Name="PART_TrimmedText" Text="{TemplateBinding TrimmedText}" Margin="3,2" Focusable="False" Visibility="{TemplateBinding IsFocused, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                            </Grid>
-                        </mwt:ListBoxChrome>
-                    </DockPanel>
+                    <mwt:ListBoxChrome Background="{TemplateBinding Panel.Background}" BorderBrush="{TemplateBinding Border.BorderBrush}" BorderThickness="{TemplateBinding Border.BorderThickness}" RenderMouseOver="{TemplateBinding UIElement.IsMouseOver}" RenderFocused="{TemplateBinding UIElement.IsKeyboardFocusWithin}" Name="Bd" SnapsToDevicePixels="True">
+                        <DockPanel LastChildFill="True" Focusable="False">
+                            <UniformGrid x:Name="upDownButtons" Rows="2" DockPanel.Dock="Right" Focusable="False" Visibility="Collapsed" MaxWidth="20">
+                                <RepeatButton x:Name="PART_IncreaseButton" Command="{x:Static ctrl:NumericTextBox.SmallIncreaseCommand}">
+                                    <Grid Margin="0" Background="Transparent">
+                                        <Path HorizontalAlignment="Stretch" Width="Auto" Height="Auto" Fill="{StaticResource GlyphBrush}" Stretch="Uniform" Stroke="{StaticResource GlyphBrush}" StrokeThickness="1" Data="M-2,1 L2,1 0,-1 z"/>
+                                    </Grid>
+                                </RepeatButton>
+                                <RepeatButton x:Name="PART_DecreaseButton" Command="{x:Static ctrl:NumericTextBox.SmallDecreaseCommand}">
+                                    <Grid Margin="0" Background="Transparent">
+                                        <Path HorizontalAlignment="Stretch" Width="Auto" Height="Auto" Fill="{StaticResource GlyphBrush}" Stretch="Uniform" Stroke="{StaticResource GlyphBrush}" StrokeThickness="1" Data="M2,-1 L-2,-1 0,1 z"/>
+                                    </Grid>
+                                </RepeatButton>
+                            </UniformGrid>
+                            <ScrollViewer x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Padding="{TemplateBinding Padding}"/>
+                        </DockPanel>
+                    </mwt:ListBoxChrome>
                     <ControlTemplate.Triggers>
                         <Trigger Property="DisplayUpDownButtons" Value="True">
                             <Setter TargetName="upDownButtons" Property="Visibility" Value="Visible"/>
                         </Trigger>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="PART_TrimmedText" Property="Foreground" Value="Gray"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style TargetType="ctrl:SliderTextBox" BasedOn="{StaticResource {x:Type ctrl:NumericTextBox}}">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="ctrl:SliderTextBox">
-                    <DockPanel LastChildFill="True" Focusable="False">
-                        <UniformGrid x:Name="upDownButtons" Rows="2" DockPanel.Dock="Right" Width="11" Height="22" Margin="0,1,1,1" Focusable="False" Visibility="Collapsed">
-                            <RepeatButton x:Name="PART_IncreaseButton" Command="{x:Static ctrl:SliderTextBox.SmallIncreaseCommand}">
-                                <Grid Margin="0" Background="Transparent">
-                                    <Path HorizontalAlignment="Stretch" Width="Auto" Fill="{StaticResource GlyphBrush}" Stretch="Fill" Stroke="{StaticResource GlyphBrush}" StrokeThickness="1" Data="M5.2422477,11.132184 L11.5544,11.132184 8.6412958,4.4969033 z" RenderTransformOrigin="0.5,0.5"/>
-                                </Grid>
-                            </RepeatButton>
-                            <RepeatButton x:Name="PART_DecreaseButton" Command="{x:Static ctrl:SliderTextBox.SmallDecreaseCommand}">
-                                <Grid Margin="0" Background="Transparent">
-                                    <Path HorizontalAlignment="Stretch" Width="Auto" Fill="{StaticResource GlyphBrush}" Stretch="Fill" Stroke="{StaticResource GlyphBrush}" StrokeThickness="1" Data="M5.2422477,11.132184 L11.5544,11.132184 8.6412958,4.4969033 z" RenderTransformOrigin="0.5,0.5">
-                                        <Path.RenderTransform>
-                                            <RotateTransform Angle="180"/>
-                                        </Path.RenderTransform>
-                                    </Path>
-                                </Grid>
-                            </RepeatButton>
-                        </UniformGrid>
-                        <Grid Focusable="False">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <mwt:ListBoxChrome Background="{TemplateBinding Panel.Background}" BorderBrush="{TemplateBinding Border.BorderBrush}" BorderThickness="{TemplateBinding Border.BorderThickness}" RenderMouseOver="{TemplateBinding UIElement.IsMouseOver}" RenderFocused="{TemplateBinding UIElement.IsKeyboardFocusWithin}" Name="Bd" SnapsToDevicePixels="True">
-                                <Grid>
-                                    <ScrollViewer x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Padding="{TemplateBinding Padding}" Visibility="{TemplateBinding IsFocused, Converter={cvt:VisibleOrCollapsed}}"/>
-                                    <TextBlock x:Name="PART_TrimmedText" Text="{TemplateBinding TrimmedText}" Margin="3,2" Focusable="False" Visibility="{TemplateBinding IsFocused, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                                </Grid>
-                            </mwt:ListBoxChrome>
-                            <Rectangle x:Name="range" Grid.Row="1" Height="3" Fill="{TemplateBinding RangeIndicatorBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
-                                <Rectangle.RenderTransform>
-                                    <ScaleTransform ScaleX="{Binding ValueRatio, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
-                                </Rectangle.RenderTransform>
-                            </Rectangle>
-                        </Grid>
-                    </DockPanel>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="DisplayRangeIndicator" Value="False">
-                            <Setter TargetName="range" Property="Visibility" Value="Hidden"/>
-                        </Trigger>
-                        <Trigger Property="DisplayUpDownButtons" Value="True">
-                            <Setter TargetName="upDownButtons" Property="Visibility" Value="Visible"/>
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="PART_TrimmedText" Property="Foreground" Value="Gray"/>
+                        <Trigger Property="UIElement.IsEnabled" Value="False">
+                            <Setter TargetName="Bd" Property="Panel.Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
+                            <Setter Property="TextElement.Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -190,7 +254,7 @@
                                 <Separator/>
                             </ToolBar>
                             <ToolBar Header="Search" Visibility="{Binding CanSearchLog, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:VisibleOrCollapsed}}">
-                                <ctrl:TimerTextBox x:Name="PART_SearchTextBox" Width="150" Text="{Binding SearchToken, RelativeSource={RelativeSource Mode=TemplatedParent}}" WatermarkContent="Search"/>
+                                <ctrl:TextBox UseTimedValidation="True" x:Name="PART_SearchTextBox" Width="150" Text="{Binding SearchToken, RelativeSource={RelativeSource Mode=TemplatedParent}}" WatermarkContent="Search"/>
                                 <Button Padding="4,0" x:Name="PART_PreviousResult" Content="&lt;"/>
                                 <Button Padding="4,0" x:Name="PART_NextResult" Content="&gt;"/>
                                 <ToggleButton Padding="4,0" IsChecked="{Binding SearchMatchCase, RelativeSource={RelativeSource Mode=TemplatedParent}}" Content="Match case"/>

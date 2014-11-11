@@ -116,7 +116,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         internal Guid ModelGuid { get { return targetNode.Guid; } }
 
-        private ObservableModelNode ModelNodeParent { get { AssertInit(); return Parent is ObservableModelNode ? (ObservableModelNode)Parent : null; } }
+        private ObservableModelNode ModelNodeParent { get { AssertInit(); for (var p = Parent; p != null; p = p.Parent) { var mp = p as ObservableModelNode; if (mp != null) return mp; } return null; } }
                 
         /// <summary>
         /// Retrieves a <see cref="ModelNodePath"/> object corresponding to the path of the model node contained in this <see cref="ObservableModelNode"/>.
@@ -188,7 +188,12 @@ namespace SiliconStudio.Presentation.Quantum
             }
 #endif
         }
-        
+
+        public new void ClearCommands()
+        {
+            base.ClearCommands();
+        }
+
         protected void AssertInit()
         {
             if (!isInitialized)
@@ -320,8 +325,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         internal void Refresh()
         {
-            if (Parent == null) throw new InvalidOperationException("The node to refresh can be a root node.");
-            ((ObservableNode)Parent).RemoveChild(this);
+            if (Parent == null) throw new InvalidOperationException("The node to refresh can't be a root node.");
             
             OnPropertyChanging("IsPrimitive", "HasList", "HasDictionary");
 
@@ -335,7 +339,6 @@ namespace SiliconStudio.Presentation.Quantum
             Initialize();
 
             OnPropertyChanged("IsPrimitive", "HasList", "HasDictionary");
-            ((ObservableNode)Parent).AddChild(this);
         }
 
         private static IModelNode GetTargetNode(IModelNode sourceNode, object index)

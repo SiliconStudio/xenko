@@ -5,10 +5,16 @@ using SiliconStudio.Paradox.Shaders.Compiler;
 
 namespace ParadoxEffects
 {
+    params BasicEffectParameters
+    {
+        bool UsedNormalMap = false;
+    };
+
     partial shader WithSkinning
     {
         using params MaterialParameters;
         using params CompilerParameters;
+        using params BasicEffectParameters;
 
         mixin clone;
         if (MaterialParameters.HasSkinningPosition)
@@ -22,7 +28,14 @@ namespace ParadoxEffects
             mixin TransformationSkinning;
          
             if (MaterialParameters.HasSkinningNormal)
+            {
+                if (BasicEffectParameters.UsedNormalMap)
+                    mixin TangentToViewSkinning;
+                else
+                    mixin NormalVSSkinning;
+
                 mixin NormalSkinning;
+            }
 
             if (MaterialParameters.HasSkinningTangent)
                 mixin TangentSkinning;
@@ -35,11 +48,24 @@ namespace ParadoxEffects
         using params MaterialParameters;
         using params EffectSystem;
         using params CompilerParameters;
+        using params BasicEffectParameters;
               
         mixin ShaderBase;
         mixin TransformationWAndVP;
-        mixin NormalVSStream;
+
         mixin PositionVSStream;
+
+        if (MaterialParameters.NormalMap != null)
+        {
+            mixin NormalMapTexture;
+            mixin compose normalMap = MaterialParameters.NormalMap;
+            BasicEffectParameters.UsedNormalMap = true;
+        }
+        else
+        {
+            mixin NormalVSStream;
+        }
+
         mixin BRDFDiffuseBase;
         mixin BRDFSpecularBase;
         mixin LightMultiDirectionalShadingPerPixel<2>;
