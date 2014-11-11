@@ -409,34 +409,44 @@ namespace DefaultForward
                 context.Mixin(mixin, "ComputeBRDFColorSpecularBlinnPhong");
             }
 
-            #line 173
+            #line 167
+            else 
+#line 167
+            if (context.GetParam(MaterialParameters.SpecularModel) == MaterialSpecularModel.CookTorrance)
+            {
+
+                #line 169
+                context.Mixin(mixin, "ComputeBRDFColorSpecularCookTorrance");
+            }
+
+            #line 174
             if (context.GetParam(MaterialParameters.SpecularPowerMap) != null)
             {
 
-                #line 175
+                #line 176
                 context.Mixin(mixin, "SpecularPower");
 
                 {
 
-                    #line 176
+                    #line 177
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                    #line 176
+                    #line 177
                     context.Mixin(__subMixin, context.GetParam(MaterialParameters.SpecularPowerMap));
                     mixin.Mixin.AddComposition("SpecularPowerMap", __subMixin.Mixin);
                 }
             }
 
-            #line 179
+            #line 180
             if (context.GetParam(MaterialParameters.SpecularIntensityMap) != null)
             {
 
                 {
 
-                    #line 181
+                    #line 182
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                    #line 181
+                    #line 182
                     context.Mixin(__subMixin, context.GetParam(MaterialParameters.SpecularIntensityMap));
                     mixin.Mixin.AddComposition("SpecularIntensityMap", __subMixin.Mixin);
                 }
@@ -451,41 +461,41 @@ namespace DefaultForward
         }
     }
 
-    #line 185
+    #line 186
     public partial class ParadoxSpecularForward  : IShaderMixinBuilder
     {
         public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
         {
 
-            #line 190
+            #line 191
             context.Mixin(mixin, "BRDFDiffuseBase");
 
-            #line 191
+            #line 192
             context.Mixin(mixin, "BRDFSpecularBase");
 
-            #line 193
+            #line 194
             if (context.GetParam(MaterialParameters.AlbedoSpecular) != null)
             {
 
-                #line 195
+                #line 196
                 context.Mixin(mixin, "AlbedoSpecularBase");
 
                 {
 
-                    #line 196
+                    #line 197
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                    #line 196
+                    #line 197
                     context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoSpecular));
                     mixin.Mixin.AddComposition("albedoSpecular", __subMixin.Mixin);
                 }
 
                 {
 
-                    #line 197
+                    #line 198
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                    #line 197
+                    #line 198
                     context.Mixin(__subMixin, "ParadoxSpecularLighting");
                     mixin.Mixin.AddComposition("SpecularLighting", __subMixin.Mixin);
                 }
@@ -500,66 +510,66 @@ namespace DefaultForward
         }
     }
 
-    #line 201
+    #line 202
     public partial class ParadoxDefaultForwardShader  : IShaderMixinBuilder
     {
         public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
         {
 
-            #line 205
+            #line 206
             context.Mixin(mixin, "ParadoxBaseShader");
 
-            #line 207
+            #line 208
             context.Mixin(mixin, "ParadoxSkinning");
 
-            #line 209
+            #line 210
             context.Mixin(mixin, "ParadoxShadowCast");
 
-            #line 211
+            #line 212
             context.Mixin(mixin, "ParadoxDiffuseForward");
 
-            #line 212
+            #line 213
             context.Mixin(mixin, "ParadoxSpecularForward");
 
-            #line 214
+            #line 215
             if (context.GetParam(MaterialParameters.AmbientMap) != null)
             {
 
-                #line 216
+                #line 217
                 context.Mixin(mixin, "AmbientMapShading");
 
                 {
 
-                    #line 217
+                    #line 218
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                    #line 217
+                    #line 218
                     context.Mixin(__subMixin, context.GetParam(MaterialParameters.AmbientMap));
                     mixin.Mixin.AddComposition("AmbientMap", __subMixin.Mixin);
                 }
             }
 
-            #line 220
+            #line 221
             if (context.GetParam(MaterialParameters.UseTransparentMask))
             {
 
-                #line 222
+                #line 223
                 context.Mixin(mixin, "TransparentShading");
 
-                #line 223
+                #line 224
                 context.Mixin(mixin, "DiscardTransparentThreshold", context.GetParam(MaterialParameters.AlphaDiscardThreshold));
             }
 
-            #line 225
+            #line 226
             else 
-#line 225
+#line 226
             if (context.GetParam(MaterialParameters.UseTransparent))
             {
 
-                #line 227
+                #line 228
                 context.Mixin(mixin, "TransparentShading");
 
-                #line 228
+                #line 229
                 context.Mixin(mixin, "DiscardTransparent");
             }
         }

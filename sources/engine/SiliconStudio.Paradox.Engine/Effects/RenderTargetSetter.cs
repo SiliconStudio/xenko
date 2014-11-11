@@ -122,7 +122,7 @@ namespace SiliconStudio.Paradox.Effects
             Pass.StartPass -= OnRender;
         }
 
-        protected void OnRender(RenderContext context)
+        protected virtual void OnRender(RenderContext context)
         {
             var graphicsDevice = context.GraphicsDevice;
 

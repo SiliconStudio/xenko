@@ -29,5 +29,8 @@ namespace SiliconStudio.Paradox.Effects.Modules
         public static readonly ParameterKey<float> SpecularPower = ParameterKeys.New<float>();
         public static readonly ParameterKey<float> SpecularPowerScaled = ParameterKeys.New<float>();
         public static readonly ParameterKey<float> SpecularIntensity = ParameterKeys.New<float>();
+        public static readonly ParameterKey<float> Roughness = ParameterKeys.New<float>();
+        public static readonly ParameterKey<float> Reflectance = ParameterKeys.New<float>();
+        public static readonly ParameterKey<float> CookTorranceReflection = ParameterKeys.New<float>();
     }
 }

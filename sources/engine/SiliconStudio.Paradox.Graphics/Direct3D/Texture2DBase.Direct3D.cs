@@ -416,9 +416,7 @@ namespace SiliconStudio.Paradox.Graphics
             };
 
             if (description.Dimension == TextureDimension.TextureCube)
-            {
                 desc.OptionFlags = ResourceOptionFlags.TextureCube;
-            }
 
             return desc;
         }

@@ -1,0 +1,24 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Computes ambient diffuse contribution from the prepass.
+/// </summary>
+class EnvironmentMapDiffuseDeferredShading : ShadingBase, Texturing, AlbedoDiffuseBase
+{
+    stage Texture2D DiffuseIBLMap;
+    
+    override stage float4 Shading()
+    {
+        float4 resultColor = base.Shading();
+
+        // Get diffuse ambient from prepass
+        float2 IBLTextureDimensions;
+        DiffuseIBLMap.GetDimensions(IBLTextureDimensions.x, IBLTextureDimensions.y);
+        float4 IBLValue = DiffuseIBLMap.Sample(Sampler, streams.ShadingPosition.xy / IBLTextureDimensions);
+        
+        if (IBLValue.w > 0)
+            resultColor.rgb += this.DiffuseAlbedo() * IBLValue.xyz / IBLValue.w;
+        
+        return resultColor;
+    }
+};
