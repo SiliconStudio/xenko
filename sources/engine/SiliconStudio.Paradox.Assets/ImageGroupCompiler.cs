@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.Assets
     {
         protected bool SeparateAlphaTexture;
 
-        protected Dictionary<TImageInfo, int> SpriteToTextureIndex;
+        protected Dictionary<TImageInfo, string> SpriteToTextureIndex;
 
         private bool TextureFileIsValid(UFile file)
         {
@@ -45,7 +45,7 @@ namespace SiliconStudio.Paradox.Assets
             SeparateAlphaTexture = context.Platform == PlatformType.Android && asset.Alpha != AlphaFormat.None && asset.Format == TextureFormat.Compressed;
 
             // create the registry containing the sprite assets texture index association
-            SpriteToTextureIndex = new Dictionary<TImageInfo, int>();
+            SpriteToTextureIndex = new Dictionary<TImageInfo, string>();
 
             // create and add import texture commands
             if (asset.Images != null)
@@ -63,11 +63,13 @@ namespace SiliconStudio.Paradox.Assets
                 for (int i = 0; i < spriteByTextures.Length; i++)
                 {
                     var spriteAssetArray = spriteByTextures[i].ToArray();
+
                     foreach (var spriteAsset in spriteAssetArray)
-                        SpriteToTextureIndex[spriteAsset] = i;
+                        SpriteToTextureIndex[spriteAsset] = ImageGroupAsset.BuildTextureUrl(urlInStorage, i);
                     
                     // texture asset does not need to be generated if using texture atlas
-                    if(asset.GenerateTextureAtlas) continue;
+                    if(asset.GenerateTextureAtlas) 
+                        continue;
 
                     // create an texture asset.
                     var textureAsset = new TextureAsset
@@ -108,9 +110,9 @@ namespace SiliconStudio.Paradox.Assets
     {
         protected readonly bool UseSeparateAlphaTexture;
 
-        protected readonly Dictionary<TImageInfo, int> ImageToTextureIndex;
+        protected readonly Dictionary<TImageInfo, string> ImageToTextureIndex;
 
-        protected ImageGroupCommand(string url, ImageGroupParameters<TGroupAsset> asset, Dictionary<TImageInfo, int> imageToTextureIndex, bool useSeparateAlphaTexture)
+        protected ImageGroupCommand(string url, ImageGroupParameters<TGroupAsset> asset, Dictionary<TImageInfo, string> imageToTextureIndex, bool useSeparateAlphaTexture)
             : base(url, asset)
         {
             ImageToTextureIndex = imageToTextureIndex;
@@ -119,20 +121,19 @@ namespace SiliconStudio.Paradox.Assets
 
         public override IEnumerable<ObjectUrl> GetInputFiles()
         {
-            if (!asset.GroupAsset.GenerateTextureAtlas)
+            if (asset.GroupAsset.GenerateTextureAtlas) 
+                yield break;
+
+            foreach (var textureSource in ImageToTextureIndex.Values.Distinct())
             {
-                for (int i = 0; i < ImageToTextureIndex.Values.Distinct().Count(); i++)
+                if (UseSeparateAlphaTexture)
                 {
-                    if (UseSeparateAlphaTexture)
-                    {
-                        var textureUrl = ImageGroupAsset.BuildTextureUrl(Url, i);
-                        yield return new ObjectUrl(UrlType.Internal, TextureAlphaComponentSplitter.GenerateColorTextureURL(textureUrl));
-                        yield return new ObjectUrl(UrlType.Internal, TextureAlphaComponentSplitter.GenerateAlphaTextureURL(textureUrl));
-                    }
-                    else
-                    {
-                        yield return new ObjectUrl(UrlType.Internal, ImageGroupAsset.BuildTextureUrl(Url, i));
-                    }
+                    yield return new ObjectUrl(UrlType.Internal, TextureAlphaComponentSplitter.GenerateColorTextureURL(textureSource));
+                    yield return new ObjectUrl(UrlType.Internal, TextureAlphaComponentSplitter.GenerateAlphaTextureURL(textureSource));
+                }
+                else
+                {
+                    yield return new ObjectUrl(UrlType.Internal, textureSource);
                 }
             }
         }
@@ -144,14 +145,15 @@ namespace SiliconStudio.Paradox.Assets
             var imageGroupData = new TImageGroupData { Images = new List<TImageData>() };
 
             // Create atlas texture
-            Dictionary<string, Tuple<int, RotatableRectangle>> regionDictionary = null;
+            var regionDictionary = new Dictionary<TImageInfo, Tuple<int, RotatableRectangle>>();
 
             // Generate texture atlas
             if (asset.GroupAsset.GenerateTextureAtlas)
             {
-                var resultStatus = CreateAndSaveTextureAtlasImage(commandContext.Logger, out regionDictionary);
+                var resultStatus = CreateAndSaveTextureAtlasImage(commandContext.Logger, ref regionDictionary);
 
-                if (resultStatus != ResultStatus.Successful) return Task.FromResult(resultStatus);
+                if (resultStatus != ResultStatus.Successful) 
+                    return Task.FromResult(resultStatus);
             }
 
             // Add the sprite data to the sprite list.
@@ -166,11 +168,12 @@ namespace SiliconStudio.Paradox.Assets
                 // Set region for each image
                 if (asset.GroupAsset.GenerateTextureAtlas)
                 {
-                    var regionData = regionDictionary[ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[image])];
+                    var regionData = regionDictionary[image];
                     var region = regionData.Item2;
 
                     newImage.Region = new Rectangle(asset.GroupAsset.BorderSize + region.Value.X, asset.GroupAsset.BorderSize + region.Value.Y,
                         region.Value.Width - 2 * asset.GroupAsset.BorderSize, region.Value.Height - 2 * asset.GroupAsset.BorderSize);
+
                     newImage.Orientation = (region.IsRotated) ? ImageOrientation.Rotated90 : ImageOrientation.AsIs;
                 }
                 else
@@ -181,18 +184,18 @@ namespace SiliconStudio.Paradox.Assets
 
                 if (UseSeparateAlphaTexture)
                 {
-                    var baseLocation = (asset.GroupAsset.GenerateTextureAtlas) 
-                        ? ImageGroupAsset.BuildTextureAtlasUrl(Url, regionDictionary[ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[image])].Item1) 
-                        : ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[image]);
+                    var baseLocation = (asset.GroupAsset.GenerateTextureAtlas)
+                        ? ImageGroupAsset.BuildTextureAtlasUrl(Url, regionDictionary[image].Item1) 
+                        : ImageToTextureIndex[image];
 
                     newImage.Texture = new ContentReference<Texture2D> { Location = TextureAlphaComponentSplitter.GenerateColorTextureURL(baseLocation) };
                     newImage.TextureAlpha = new ContentReference<Texture2D> { Location = TextureAlphaComponentSplitter.GenerateAlphaTextureURL(baseLocation) };
                 }
                 else
                 {
-                    newImage.Texture = new ContentReference<Texture2D> { Location = (asset.GroupAsset.GenerateTextureAtlas) 
-                        ? ImageGroupAsset.BuildTextureAtlasUrl(Url, regionDictionary[ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[image])].Item1) 
-                        : ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[image]) };
+                    newImage.Texture = new ContentReference<Texture2D> { Location = (asset.GroupAsset.GenerateTextureAtlas)
+                        ? ImageGroupAsset.BuildTextureAtlasUrl(Url, regionDictionary[image].Item1) 
+                        : ImageToTextureIndex[image] };
                 }
 
                 SetImageSpecificFields(image, newImage);
@@ -213,17 +216,16 @@ namespace SiliconStudio.Paradox.Assets
         /// <param name="regionDictionary">Output that contains Key for each image and a tuple linking the image with a texture atlas index and its region</param>
         /// <returns>Status of building</returns>
         private ResultStatus CreateAndSaveTextureAtlasImage(Logger logger, 
-            out Dictionary<string, Tuple<int, RotatableRectangle>> regionDictionary)
+            ref Dictionary<TImageInfo, Tuple<int, RotatableRectangle>> regionDictionary)
         {
-            regionDictionary = new Dictionary<string, Tuple<int, RotatableRectangle>>();
-
             // Pack textures
             using (var texTool = new TextureTool())
             {
                 var textureElements = new Dictionary<string, IntermediateTexture>();
 
                 // Input textures
-                var imageDictionary = new Dictionary<int, Image>();
+                var imageDictionary = new Dictionary<string, Image>();
+                var imageInfoDictionary = new Dictionary<string, TImageInfo>();
 
                 for(var i = 0 ; i < asset.GroupAsset.Images.Count ; ++i)
                 {
@@ -242,8 +244,10 @@ namespace SiliconStudio.Paradox.Assets
                         texture = imageDictionary[ImageToTextureIndex[image]];
                     }
 
+                    var key = Url + "_" + i;
+
                     textureElements.Add(
-                        ImageGroupAsset.BuildTextureUrl(Url, i),
+                        key,
                         new IntermediateTexture
                         {
                             Texture = texture,
@@ -252,6 +256,8 @@ namespace SiliconStudio.Paradox.Assets
                             BorderColor = image.BorderColor
                         }
                     );
+
+                    imageInfoDictionary[key] = image;
                 }
 
                 // Initialize packing configuration from GroupAsset
@@ -286,7 +292,7 @@ namespace SiliconStudio.Paradox.Assets
                     {
                         var textureKey = texture.Region.Key;
 
-                        regionDictionary.Add(textureKey, new Tuple<int, RotatableRectangle>(textureAtlasIndex, texture.Region));
+                        regionDictionary.Add(imageInfoDictionary[textureKey], new Tuple<int, RotatableRectangle>(textureAtlasIndex, texture.Region));
                     }
 
                     // Dispose used textures
