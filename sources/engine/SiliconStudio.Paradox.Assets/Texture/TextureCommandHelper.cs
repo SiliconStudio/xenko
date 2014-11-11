@@ -246,6 +246,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 if (!TextureSizeSupported(textureAsset.Format, parameters.GraphicsPlatform, parameters.GraphicsProfile, textureSize, textureAsset.GenerateMipmaps, logger))
                     return ResultStatus.Failed;
 
+
                 // Apply the color key
                 if (textureAsset.ColorKeyEnabled)
                     texTool.ColorKey(texImage, textureAsset.ColorKeyColor);

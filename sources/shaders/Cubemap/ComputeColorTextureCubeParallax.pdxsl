@@ -1,0 +1,26 @@
+﻿// Copyright (c) 2014 Silicon Studio Corporation (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Performs parallax correction on the cubemap.
+/// </summary>
+/// <remarks>
+/// TTexturePara: generic TextureCube - The cubemap to sample.
+/// </remarks>
+class ComputeColorTextureCubeParallax<TextureCube TTexturePara> : ComputeColorTextureCubeReflect<TTexturePara>
+{
+    stage float CubemapRange = 1;
+    stage float3 CubemapCenterWS = float3(0,0,0);
+    
+    override float3 GetSamplingDir()
+    {
+        float3 samplingDir = base.GetSamplingDir();
+        
+        float3 samplePos = streams.vPositionVS;
+
+        // parallax correction.
+        float4 reflectionPoint = mul(float4(samplePos, 1), ViewInverse);
+        float3 correctedSamplingDir = CubemapUtils.ParallaxCorrectionCube(samplingDir, reflectionPoint.xyz / reflectionPoint.w, CubemapCenterWS, CubemapRange);
+        
+        return correctedSamplingDir;
+    }
+};

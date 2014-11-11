@@ -19,6 +19,10 @@ namespace SiliconStudio.Paradox.Effects.Modules
         public static readonly ParameterKey<Texture> Texture7 = ParameterKeys.New<Texture>();
         public static readonly ParameterKey<Texture> Texture8 = ParameterKeys.New<Texture>();
         public static readonly ParameterKey<Texture> Texture9 = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<Texture> TextureCube0 = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<Texture> TextureCube1 = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<Texture> TextureCube2 = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<Texture> TextureCube3 = ParameterKeys.New<Texture>();
         public static readonly ParameterKey<SamplerState> Sampler = ParameterKeys.New<SamplerState>();
         public static readonly ParameterKey<SamplerState> PointSampler = ParameterKeys.New<SamplerState>();
         public static readonly ParameterKey<SamplerState> LinearSampler = ParameterKeys.New<SamplerState>();

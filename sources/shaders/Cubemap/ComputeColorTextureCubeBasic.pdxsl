@@ -1,0 +1,15 @@
+﻿// Copyright (c) 2014 Silicon Studio Corporation (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Computes the color by sampling a cubemap texture with the normal of the object.
+/// </summary>
+/// <remarks>
+/// TTextureBasic: generic TextureCube - The cubemap to sample.
+/// </remarks>
+class ComputeColorTextureCubeBasic<TextureCube TTextureBasic> : ComputeColorTextureCube<TTextureBasic>, NormalWSStream, PositionVSStream, Transformation
+{
+    override float3 GetSamplingDir()
+    {
+        return streams.vNormalWS;
+    }
+};

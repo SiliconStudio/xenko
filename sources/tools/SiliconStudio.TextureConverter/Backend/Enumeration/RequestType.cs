@@ -14,6 +14,8 @@ namespace SiliconStudio.TextureConverter
         Compressing,
         SwitchingChannels,
         Flipping,
+        FlippingSub,
+        Swapping,
         Export,
         Decompressing,
         MipMapsGeneration,

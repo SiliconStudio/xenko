@@ -1,0 +1,15 @@
+﻿// Copyright (c) 2014 Silicon Studio Corporation (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Computes the color by sampling a cubemap texture as a 2D texture with flipping the coordinates (useful when writing in another cubemap).
+/// </summary>
+/// <remarks>
+/// TTextureDisplayNF: generic TextureCube - The cubemap to sample.
+/// </remarks>
+class CubemapFaceDisplayNoFlip<TextureCube TTextureDisplayNF> : CubemapFaceDisplay<TTextureDisplayNF>
+{
+    override float3 GetSamplingDir()
+    {
+        return CubemapUtils.ConvertTexcoordsNoFlip(streams.TexCoord, ViewIndex);
+    }
+};
