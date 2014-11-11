@@ -115,63 +115,6 @@
 
     <Geometry x:Key="GeometryDelete">F1 M 25.3333,23.75L 50.6667,23.75C 51.5411,23.75 51.8541,27.3125 51.8541,27.3125L 24.1458,27.3125C 24.1458,27.3125 24.4589,23.75 25.3333,23.75 Z M 35.625,19.7917L 40.375,19.7917C 40.8122,19.7917 41.9583,20.9378 41.9583,21.375C 41.9583,21.8122 40.8122,22.9584 40.375,22.9584L 35.625,22.9584C 35.1878,22.9584 34.0416,21.8122 34.0416,21.375C 34.0416,20.9378 35.1878,19.7917 35.625,19.7917 Z M 27.7083,28.5L 48.2916,28.5C 49.1661,28.5 49.875,29.2089 49.875,30.0834L 48.2916,53.8334C 48.2916,54.7078 47.5828,55.4167 46.7083,55.4167L 29.2917,55.4167C 28.4172,55.4167 27.7083,54.7078 27.7083,53.8334L 26.125,30.0834C 26.125,29.2089 26.8339,28.5 27.7083,28.5 Z M 30.0833,31.6667L 30.4792,52.25L 33.25,52.25L 32.8542,31.6667L 30.0833,31.6667 Z M 36.4167,31.6667L 36.4167,52.25L 39.5833,52.25L 39.5833,31.6667L 36.4167,31.6667 Z M 43.1458,31.6667L 42.75,52.25L 45.5208,52.25L 45.9167,31.6667L 43.1458,31.6667 Z</Geometry>
 
-    <Color x:Key="ShadowColor">#80000000</Color>
-
-    <Color x:Key="NearTransparent">#05000000</Color>
-    
-    <Color x:Key="BlackTransparent">#00000000</Color>
-
-    <LinearGradientBrush x:Key="ShadowBrushTopLeft" StartPoint="1,1" EndPoint="0.5,0.5">
-        <GradientStop Color="{StaticResource ShadowColor}" Offset="0.0"/>
-        <GradientStop Color="{StaticResource NearTransparent}" Offset="0.4"/>
-        <GradientStop Color="{StaticResource BlackTransparent}" Offset="1.0"/>
-    </LinearGradientBrush>
-
-    <LinearGradientBrush x:Key="ShadowBrushTop" StartPoint="0,1" EndPoint="0,0">
-        <GradientStop Color="{StaticResource ShadowColor}" Offset="0.0"/>
-        <GradientStop Color="{StaticResource NearTransparent}" Offset="0.4"/>
-        <GradientStop Color="{StaticResource BlackTransparent}" Offset="1.0"/>
-    </LinearGradientBrush>
-
-    <LinearGradientBrush x:Key="ShadowBrushTopRight" StartPoint="0,1" EndPoint="0.5,0.5">
-        <GradientStop Color="{StaticResource ShadowColor}" Offset="0.0"/>
-        <GradientStop Color="{StaticResource NearTransparent}" Offset="0.4"/>
-        <GradientStop Color="{StaticResource BlackTransparent}" Offset="1.0"/>
-    </LinearGradientBrush>
-
-    <LinearGradientBrush x:Key="ShadowBrushLeft" StartPoint="1,0" EndPoint="0,0">
-        <GradientStop Color="{StaticResource ShadowColor}" Offset="0.0"/>
-        <GradientStop Color="{StaticResource NearTransparent}" Offset="0.4"/>
-        <GradientStop Color="{StaticResource BlackTransparent}" Offset="1.0"/>
-    </LinearGradientBrush>
-
-    <LinearGradientBrush x:Key="ShadowBrushRight" StartPoint="0,0" EndPoint="1,0">
-        <GradientStop Color="{StaticResource ShadowColor}" Offset="0.0"/>
-        <GradientStop Color="{StaticResource NearTransparent}" Offset="0.4"/>
-        <GradientStop Color="{StaticResource BlackTransparent}" Offset="1.0"/>
-    </LinearGradientBrush>
-
-    <LinearGradientBrush x:Key="ShadowBrushBottomLeft" StartPoint="1,0" EndPoint="0.5,0.5">
-        <GradientStop Color="{StaticResource ShadowColor}" Offset="0.0"/>
-        <GradientStop Color="{StaticResource NearTransparent}" Offset="0.4"/>
-        <GradientStop Color="{StaticResource BlackTransparent}" Offset="1.0"/>
-    </LinearGradientBrush>
-
-    <LinearGradientBrush x:Key="ShadowBrushBottom" StartPoint="0,0" EndPoint="0,1">
-        <GradientStop Color="{StaticResource ShadowColor}" Offset="0.0"/>
-        <GradientStop Color="{StaticResource NearTransparent}" Offset="0.4"/>
-        <GradientStop Color="{StaticResource BlackTransparent}" Offset="1.0"/>
-    </LinearGradientBrush>
-
-    <LinearGradientBrush x:Key="ShadowBrushBottomRight" StartPoint="0,0" EndPoint="0.5,0.5">
-        <GradientStop Color="{StaticResource ShadowColor}" Offset="0.0"/>
-        <GradientStop Color="{StaticResource NearTransparent}" Offset="0.4"/>
-        <GradientStop Color="{StaticResource BlackTransparent}" Offset="1.0"/>
-    </LinearGradientBrush>
-
-    <Thickness x:Key="ResizeBorderThicknessValue">10</Thickness>
-    <GridLength x:Key="ResizeBorderThicknessLength">10</GridLength>
-
     <BitmapImage x:Key="ImageCloseWindow" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/close_window.png" />
     <BitmapImage x:Key="ImageMaximizeWindow" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/maximize_window.png" />
     <BitmapImage x:Key="ImageMinimizeWindow" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/minimize_window.png" />
@@ -181,37 +124,21 @@
         <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
         <Setter Property="WindowChrome.WindowChrome">
             <Setter.Value>
-                <WindowChrome CornerRadius="0" ResizeBorderThickness="{StaticResource ResizeBorderThicknessValue}" CaptionHeight="30"/>
+                <WindowChrome CornerRadius="0" CaptionHeight="30"/>
             </Setter.Value>
         </Setter>
-        <Setter Property="AllowsTransparency" Value="True"/>
         <Setter Property="WindowStyle" Value="None"/>
         <Setter Property="behaviors:BehaviorProperties.KeepTaskbarWhenMaximized" Value="True"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Window">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition x:Name="LeftColumn" Width="{StaticResource ResizeBorderThicknessLength}"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition x:Name="RightColumn" Width="{StaticResource ResizeBorderThicknessLength}"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition x:Name="TopRow" Height="{StaticResource ResizeBorderThicknessLength}"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition x:Name="BottomRow" Height="{StaticResource ResizeBorderThicknessLength}"/>
-                        </Grid.RowDefinitions>
-                        <Rectangle x:Name="RectTL" Grid.Row="0" Grid.Column="0" Fill="{StaticResource ShadowBrushTopLeft}"/>
-                        <Rectangle x:Name="RectT" Grid.Row="0" Grid.Column="1" Fill="{StaticResource ShadowBrushTop}"/>
-                        <Rectangle x:Name="RectTR" Grid.Row="0" Grid.Column="2" Fill="{StaticResource ShadowBrushTopRight}"/>
-                        <Rectangle x:Name="RectL" Grid.Row="1" Grid.Column="0" Fill="{StaticResource ShadowBrushLeft}"/>
-                        <Rectangle x:Name="RectR" Grid.Row="1" Grid.Column="2" Fill="{StaticResource ShadowBrushRight}"/>
-                        <Rectangle x:Name="RectBL" Grid.Row="2" Grid.Column="0" Fill="{StaticResource ShadowBrushBottomLeft}"/>
-                        <Rectangle x:Name="RectB"  Grid.Row="2" Grid.Column="1" Fill="{StaticResource ShadowBrushBottom}"/>
-                        <Rectangle x:Name="RectBR" Grid.Row="2" Grid.Column="2" Fill="{StaticResource ShadowBrushBottomRight}"/>
-                        <Border x:Name="ContentBorder" Grid.Row="1" Grid.Column="1" Background="{StaticResource BackgroundBrush}" BorderBrush="Black" BorderThickness="1">
+                    <Grid Background="#05000000" Margin="6">
+                        <Grid.Effect>
+                            <DropShadowEffect BlurRadius="4" RenderingBias="Quality" ShadowDepth="2"/>
+                        </Grid.Effect>
+                        <Border x:Name="ContentBorder" Background="{StaticResource BackgroundBrush}" BorderBrush="Black" BorderThickness="1" IsHitTestVisible="True">
                             <DockPanel>
-                                <DockPanel DockPanel.Dock="Top" VerticalAlignment="Top" Height="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(WindowChrome.WindowChrome).ResizeBorderThickness}">
+                                <DockPanel DockPanel.Dock="Top" VerticalAlignment="Top" Height="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(WindowChrome.WindowChrome).ResizeBorderThickness}" WindowChrome.IsHitTestVisibleInChrome="False">
                                     <Button Content="{me:Image {StaticResource ImageCloseWindow}, 16, 16, NearestNeighbor}" Width="28" Height="28" Background="Transparent" DockPanel.Dock="Right" HorizontalAlignment="Center" VerticalAlignment="Center" Command="{x:Static cmd:SystemCommands.CloseWindowCommand}" CommandParameter="{Binding RelativeSource={RelativeSource TemplatedParent}}" WindowChrome.IsHitTestVisibleInChrome="True"/>
                                     <Button Content="{me:Image {StaticResource ImageMaximizeWindow}, 16, 16, NearestNeighbor}" Width="28" Height="28" Background="Transparent" x:Name="MaximizeButton" DockPanel.Dock="Right" HorizontalAlignment="Center" VerticalAlignment="Center" Command="{x:Static cmd:SystemCommands.MaximizeWindowCommand}" CommandParameter="{Binding RelativeSource={RelativeSource TemplatedParent}}" WindowChrome.IsHitTestVisibleInChrome="True"/>
                                     <Button Content="{me:Image {StaticResource ImageRestoreWindow}, 16, 16, NearestNeighbor}" Width="28" Height="28" Background="Transparent" x:Name="RestoreButton" DockPanel.Dock="Right" HorizontalAlignment="Center" VerticalAlignment="Center" Command="{x:Static cmd:SystemCommands.RestoreWindowCommand}" CommandParameter="{Binding RelativeSource={RelativeSource TemplatedParent}}" WindowChrome.IsHitTestVisibleInChrome="True"/>
@@ -230,24 +157,17 @@
                                     <ContentPresenter Content="{TemplateBinding Content}" />
                                 </Border>
                             </DockPanel>
-                    </Border>
+                        </Border>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="WindowState" Value="Maximized">
                             <Setter Property="Visibility" Value="Collapsed" TargetName="MaximizeButton"/>
-                            <Setter Property="Width" Value="0" TargetName="LeftColumn"/>
-                            <Setter Property="Width" Value="0" TargetName="RightColumn"/>
-                            <Setter Property="Height" Value="0" TargetName="TopRow"/>
-                            <Setter Property="Height" Value="0" TargetName="BottomRow"/>
                             <Setter Property="BorderThickness" Value="0" TargetName="ContentBorder"/>
-                            <Setter Property="Fill" Value="Transparent" TargetName="RectTL"/>
-                            <Setter Property="Fill" Value="Transparent" TargetName="RectT"/>
-                            <Setter Property="Fill" Value="Transparent" TargetName="RectTR"/>
-                            <Setter Property="Fill" Value="Transparent" TargetName="RectL"/>
-                            <Setter Property="Fill" Value="Transparent" TargetName="RectR"/>
-                            <Setter Property="Fill" Value="Transparent" TargetName="RectBL"/>
-                            <Setter Property="Fill" Value="Transparent" TargetName="RectB"/>
-                            <Setter Property="Fill" Value="Transparent" TargetName="RectBR"/>
+                            <Setter Property="WindowChrome.WindowChrome">
+                                <Setter.Value>
+                                    <WindowChrome ResizeBorderThickness="0" CornerRadius="0" CaptionHeight="30"/>
+                                </Setter.Value>
+                            </Setter>
                         </Trigger>
                         <Trigger Property="WindowState" Value="Normal">
                             <Setter Property="Visibility" Value="Collapsed" TargetName="RestoreButton"/>
