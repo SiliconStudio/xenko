@@ -6,7 +6,9 @@ Release date: 2014/11/??
 - Engine: Add cubemap components to place cubemaps in the scene or render them at runtime.
 - Graphics: Add skybox renderer from a TextureCube (similar to background renderer).
 - Graphics: Add cubemap reflections for deferred rendering.
+- Graphics: Support of shadow mapping in forward rendering for spot lights. Only 1 cascade is supported at the moment.
 - Samples: Add CubemapReflection sample.
+- Samples: Add spot light shadow in ForwardRendering sample.
 - Shaders: Add several cubemap shaders for sampling, reflection, parallax correction etc.
 - UI: Add new UI element: Slider
 
