@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Paradox.Effects.Data;
 using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.DataModel;
 
 namespace DefaultEffects
 {
@@ -80,25 +81,54 @@ namespace DefaultEffects
         mixin macro HAS_DYNAMIC_SHADOWMAP_COUNT = 0;
     };
 
+    partial shader DeferredLightingSpotShadowGroup
+    {
+        using params LightingKeys;
+        using params ShadowMapParameters;
+
+        mixin macro DEFERRED_MAX_SPOT_SHADOW_LIGHT_COUNT = 1;
+        mixin macro DEFERRED_SPOT_LIGHTING_UNROLL_LOOP = 1;
+        mixin DeferredDirectionalShadowLighting;
+
+        mixin DeferredShadowMapCascadeBase;
+
+        mixin macro SHADOWMAP_COUNT = 1;
+        mixin macro SHADOWMAP_CASCADE_COUNT = ShadowMapParameters.ShadowMapCascadeCount;
+        mixin macro SHADOWMAP_TOTAL_COUNT = ShadowMapParameters.ShadowMapCascadeCount;
+        mixin macro HAS_DYNAMIC_SHADOWMAP_COUNT = 0;
+    };
+
+    partial shader DeferredLightTypeGroup
+    {
+        using params ShadowMapParameters;
+
+        if (ShadowMapParameters.LightType == LightType.Directional)
+            mixin DeferredLightingDirectShadowGroup;
+        else if (ShadowMapParameters.LightType == LightType.Spot)
+            mixin DeferredLightingSpotShadowGroup;
+        else
+            mixin DeferredLightingDirectShadowGroup;
+    };
+
     partial shader NearestFilterGroup
     {
-        mixin DeferredLightingDirectShadowGroup;
+        mixin DeferredLightTypeGroup;
         mixin ShadowMapFilterDefault;
     };
 
     partial shader PcfGroup
     {
-        mixin DeferredLightingDirectShadowGroup;
+        mixin DeferredLightTypeGroup;
         mixin ShadowMapFilterPcf;
     };
     
     partial shader VsmGroup
     {
-        mixin DeferredLightingDirectShadowGroup;
+        mixin DeferredLightTypeGroup;
         mixin ShadowMapFilterVsm;
     };
 
-    partial shader ParadoxDirectShadowPrepassLighting
+    partial shader ParadoxShadowPrepassLighting
     {
         using params ShadowMapParameters;
 
@@ -113,7 +143,7 @@ namespace DefaultEffects
             mixin compose shadows += VsmGroup;
     };
 
-    partial shader ParadoxDeferredLightingDirectGroup
+        partial shader ParadoxDeferredLightingDirectGroup
     {
         using params LightingKeys;
 
@@ -172,7 +202,7 @@ namespace DefaultEffects
         mixin compose SpecularColor = ComputeBRDFColor;
         mixin compose SpecularLighting = ParadoxDeferredSpecular;
 
-        mixin child ParadoxDirectShadowPrepassLighting;
+        mixin child ParadoxShadowPrepassLighting;
 
         mixin DeferredLightingShader;
 
