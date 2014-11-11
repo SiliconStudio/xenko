@@ -10,10 +10,10 @@
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                     xmlns:ctrl="clr-namespace:SiliconStudio.Presentation.Controls"
-                    xmlns:shell="http://schemas.microsoft.com/winfx/2006/xaml/presentation/shell"
                     xmlns:cmd="clr-namespace:SiliconStudio.Presentation.Commands"
                     xmlns:cvt="clr-namespace:SiliconStudio.Presentation.ValueConverters"
                     xmlns:me="clr-namespace:SiliconStudio.Presentation.MarkupExtensions"
+                    xmlns:behaviors="clr-namespace:SiliconStudio.Presentation.Behaviors"
                     mc:Ignorable="d"
                     >
 
@@ -186,6 +186,7 @@
         </Setter>
         <Setter Property="AllowsTransparency" Value="True"/>
         <Setter Property="WindowStyle" Value="None"/>
+        <Setter Property="behaviors:BehaviorProperties.KeepTaskbarWhenMaximized" Value="True"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Window">
@@ -211,11 +212,11 @@
                         <Border x:Name="ContentBorder" Grid.Row="1" Grid.Column="1" Background="{StaticResource BackgroundBrush}" BorderBrush="Black" BorderThickness="1">
                             <DockPanel>
                                 <DockPanel DockPanel.Dock="Top" VerticalAlignment="Top" Height="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(WindowChrome.WindowChrome).ResizeBorderThickness}">
-                                    <Button Content="{me:Image {StaticResource ImageCloseWindow}, 16, 16, NearestNeighbor}" Background="Transparent" DockPanel.Dock="Right" Padding="4" Command="{x:Static cmd:SystemCommands.CloseWindowCommand}" CommandParameter="{Binding RelativeSource={RelativeSource TemplatedParent}}" WindowChrome.IsHitTestVisibleInChrome="True"/>
-                                    <Button Content="{me:Image {StaticResource ImageMaximizeWindow}, 16, 16, NearestNeighbor}" Background="Transparent" x:Name="MaximizeButton" Padding="4" DockPanel.Dock="Right" Command="{x:Static cmd:SystemCommands.MaximizeWindowCommand}" CommandParameter="{Binding RelativeSource={RelativeSource TemplatedParent}}" WindowChrome.IsHitTestVisibleInChrome="True"/>
-                                    <Button Content="{me:Image {StaticResource ImageRestoreWindow}, 16, 16, NearestNeighbor}" Background="Transparent" x:Name="RestoreButton" Padding="4" DockPanel.Dock="Right" Command="{x:Static cmd:SystemCommands.RestoreWindowCommand}" CommandParameter="{Binding RelativeSource={RelativeSource TemplatedParent}}" WindowChrome.IsHitTestVisibleInChrome="True"/>
-                                    <Button Content="{me:Image {StaticResource ImageMinimizeWindow}, 16, 16, NearestNeighbor}" Background="Transparent" DockPanel.Dock="Right" Padding="4" Command="{x:Static cmd:SystemCommands.MinimizeWindowCommand}" CommandParameter="{Binding RelativeSource={RelativeSource TemplatedParent}}" WindowChrome.IsHitTestVisibleInChrome="True"/>
-                                    <Button DockPanel.Dock="Left" Margin="4,0" Padding="4" Background="Transparent" VerticalAlignment="Center" VerticalContentAlignment="Center" Command="{x:Static cmd:SystemCommands.ShowSystemMenuCommand}" CommandParameter="{Binding RelativeSource={RelativeSource TemplatedParent}}" WindowChrome.IsHitTestVisibleInChrome="True">
+                                    <Button Content="{me:Image {StaticResource ImageCloseWindow}, 16, 16, NearestNeighbor}" Width="28" Height="28" Background="Transparent" DockPanel.Dock="Right" HorizontalAlignment="Center" VerticalAlignment="Center" Command="{x:Static cmd:SystemCommands.CloseWindowCommand}" CommandParameter="{Binding RelativeSource={RelativeSource TemplatedParent}}" WindowChrome.IsHitTestVisibleInChrome="True"/>
+                                    <Button Content="{me:Image {StaticResource ImageMaximizeWindow}, 16, 16, NearestNeighbor}" Width="28" Height="28" Background="Transparent" x:Name="MaximizeButton" DockPanel.Dock="Right" HorizontalAlignment="Center" VerticalAlignment="Center" Command="{x:Static cmd:SystemCommands.MaximizeWindowCommand}" CommandParameter="{Binding RelativeSource={RelativeSource TemplatedParent}}" WindowChrome.IsHitTestVisibleInChrome="True"/>
+                                    <Button Content="{me:Image {StaticResource ImageRestoreWindow}, 16, 16, NearestNeighbor}" Width="28" Height="28" Background="Transparent" x:Name="RestoreButton" DockPanel.Dock="Right" HorizontalAlignment="Center" VerticalAlignment="Center" Command="{x:Static cmd:SystemCommands.RestoreWindowCommand}" CommandParameter="{Binding RelativeSource={RelativeSource TemplatedParent}}" WindowChrome.IsHitTestVisibleInChrome="True"/>
+                                    <Button Content="{me:Image {StaticResource ImageMinimizeWindow}, 16, 16, NearestNeighbor}" Width="28" Height="28" Background="Transparent" DockPanel.Dock="Right" HorizontalAlignment="Center" VerticalAlignment="Center" Command="{x:Static cmd:SystemCommands.MinimizeWindowCommand}" CommandParameter="{Binding RelativeSource={RelativeSource TemplatedParent}}" WindowChrome.IsHitTestVisibleInChrome="True"/>
+                                    <Button DockPanel.Dock="Left" Margin="4,0" Padding="4" Background="Transparent" Width="28" Height="28" VerticalAlignment="Center" VerticalContentAlignment="Center" Command="{x:Static cmd:SystemCommands.ShowSystemMenuCommand}" CommandParameter="{Binding RelativeSource={RelativeSource TemplatedParent}}" WindowChrome.IsHitTestVisibleInChrome="True">
                                         <Button.Template>
                                             <ControlTemplate TargetType="Button">
                                                 <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True"/>
@@ -234,10 +235,10 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="WindowState" Value="Maximized">
                             <Setter Property="Visibility" Value="Collapsed" TargetName="MaximizeButton"/>
-                            <Setter Property="Width" Value="6" TargetName="LeftColumn"/>
-                            <Setter Property="Width" Value="6" TargetName="RightColumn"/>                            
-                            <Setter Property="Height" Value="6" TargetName="TopRow"/>
-                            <Setter Property="Height" Value="6" TargetName="BottomRow"/>
+                            <Setter Property="Width" Value="0" TargetName="LeftColumn"/>
+                            <Setter Property="Width" Value="0" TargetName="RightColumn"/>
+                            <Setter Property="Height" Value="0" TargetName="TopRow"/>
+                            <Setter Property="Height" Value="0" TargetName="BottomRow"/>
                             <Setter Property="BorderThickness" Value="0" TargetName="ContentBorder"/>
                             <Setter Property="Fill" Value="Transparent" TargetName="RectTL"/>
                             <Setter Property="Fill" Value="Transparent" TargetName="RectT"/>
