@@ -1,9 +1,17 @@
 ### Version 1.0.0-beta03
 
-Release date: 2014/11/??
+Release date: 2014/11/11
 
 #### New Features
+- Engine: Add cubemap components to place cubemaps in the scene or render them at runtime.
+- Graphics: Add skybox renderer from a TextureCube (similar to background renderer).
+- Graphics: Add cubemap reflections for deferred rendering.
+- Graphics: Support of shadow mapping in forward rendering for spot lights. Only 1 cascade is supported at the moment.
+- Samples: Add CubemapReflection sample.
+- Samples: Add spot light shadow in ForwardRendering sample.
+- Shaders: Add several cubemap shaders for sampling, reflection, parallax correction etc.
 - UI: Add new UI element: Slider
+- Website: [Paradox Forums](http://forums.paradox3d.net) has just been opened. Feel free to use it to discuss about Paradox, help each other, collaborate and show off what you did with Paradox!
 
 #### Enhancements
 - Studio: Property grids have been reworked to be more efficient and easily extendable.

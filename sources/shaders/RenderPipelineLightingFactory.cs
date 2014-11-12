@@ -3,8 +3,8 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects.Modules.LightPrepass;
-using SiliconStudio.Paradox.Effects.Modules.Shading;
+using SiliconStudio.Paradox.Effects.Modules.Processors;
+using SiliconStudio.Paradox.Effects.Modules.Renderers;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
 
@@ -150,7 +150,7 @@ namespace SiliconStudio.Paradox.Effects.Modules
 
             // Performs the light prepass on opaque geometry.
             // Adds this pass to the pipeline.
-            var lightDeferredProcessor = new LightingPrepassRenderer(serviceRegistry, prepassEffectName, graphicsService.GraphicsDevice.DepthStencilBuffer, gbufferProcessor.GBufferTexture);
+            var lightDeferredProcessor = new LightingPrepassRenderer(serviceRegistry, prepassEffectName, graphicsService.GraphicsDevice.DepthStencilBuffer.Texture, gbufferProcessor.GBufferTexture);
             mainPipeline.Renderers.Add(lightDeferredProcessor);
 
             // Sets the render targets and clear them. Also sets the viewport.

@@ -1,0 +1,32 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Computes ambient specular contribution from the prepass.
+/// </summary>
+class EnvironmentMapSpecularDeferredShading : ShadingBase, Texturing, AlbedoSpecularBase, PositionVSBase, NormalVSBase, MaterialReflectanceBase
+{
+    stage Texture2D SpecularIBLMap;
+    
+    override stage float4 Shading()
+    {
+        float4 resultColor = base.Shading();
+
+        // Get specular ambient from prepass
+        float2 IBLTextureDimensions;
+        SpecularIBLMap.GetDimensions(IBLTextureDimensions.x, IBLTextureDimensions.y);
+        float4 IBLValue = SpecularIBLMap.Sample(Sampler, streams.ShadingPosition.xy / IBLTextureDimensions);
+        
+        if (IBLValue.w > 0)
+        {
+            // compute fresnel term
+            float3 specularColor = GetReflectance();
+            float3 eye = -normalize(PositionVS());
+            float3 ref = normalize(reflect(-eye, NormalVS()));
+            float3 h = normalize(eye + ref);
+            float3 fresnelTerm = Utilities.FresnelSchlick(specularColor, eye, h, 1);
+
+            resultColor.rgb += this.SpecularAlbedo() * fresnelTerm * IBLValue.xyz / IBLValue.w;
+        }
+        return resultColor;
+    }
+};

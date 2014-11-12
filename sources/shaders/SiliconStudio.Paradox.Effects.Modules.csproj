@@ -316,6 +316,211 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeColorSoftLight.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="CubemapBlendEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapBlendEffect.pdxfx</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\ComputeColorTextureCube.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ComputeColorTextureCube.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\ComputeColorTextureCubeBasic.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ComputeColorTextureCubeBasic.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\ComputeColorTextureCubeReflect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ComputeColorTextureCubeReflect.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\ComputeColorTextureCubeLod.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ComputeColorTextureCubeLod.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\ComputeColorTextureCubeParallax.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ComputeColorTextureCubeParallax.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapBlender.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapBlender.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapBlenderBase.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapBlenderBase.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapBlenderMRT.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapBlenderMRT.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapFace.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapFace.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapFaceBase.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapFaceBase.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapFaceDisplay.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapFaceDisplay.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapFaceDisplayNoFlip.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapFaceDisplayNoFlip.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapIBLBase.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapIBLBase.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapIBLSpecular.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapIBLSpecular.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapIBLDiffuse.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapIBLDiffuse.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapIBLWithRoughness.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapIBLWithRoughness.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapSkybox.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapSkybox.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapUtils.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapUtils.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Deferred\EnvironmentMapDiffuseDeferredShading.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>EnvironmentMapDiffuseDeferredShading.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Deferred\EnvironmentMapSpecularDeferredShading.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>EnvironmentMapSpecularDeferredShading.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Deferred\MaterialReflectanceGBuffer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialReflectanceGBuffer.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Shading\MaterialReflectance.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialReflectance.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Shading\MaterialReflectanceBase.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialReflectanceBase.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Shading\MaterialRoughness.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialRoughness.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Shading\MaterialRoughnessBase.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialRoughnessBase.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Deferred\MaterialRoughnessGBuffer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialRoughnessGBuffer.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Geometry\CameraCube.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CameraCube.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="MRT\LinearDepth.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>LinearDepth.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="MRT\NormalColor.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>NormalColor.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="PostEffect\PostEffectBack.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>PostEffectBack.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Processors\CubemapBlendProcessor.cs" />
+    <Compile Include="Processors\CubemapSourceProcessor.cs" />
+    <Compile Include="Renderers\CubemapBlendRenderer.cs" />
+    <Compile Include="Processors\DynamicLightShadowProcessor.cs" />
+    <Compile Include="Processors\EntityLightShadow.cs" />
+    <Compile Include="Processors\GuillotinePacker.cs" />
+    <Compile Include="Processors\LightingProcessorHelpers.cs" />
+    <Compile Include="Processors\LightShadowProcessor.cs" />
+    <Compile Include="Processors\LightShadowProcessorDefaultBudget.cs" />
+    <Compile Include="Processors\LightShadowProcessorWithBudget.cs" />
+    <Compile Include="Processors\ShadowMap.cs" />
+    <Compile Include="Processors\ShadowMapTexture.cs" />
+    <Compile Include="Renderers\CubeMapRenderer.cs" />
+    <Compile Include="Renderers\LightForwardModelRenderer.cs" />
+    <Compile Include="Renderers\LightingIBLRenderer.cs" />
+    <Compile Include="Renderers\LightingPrepassRenderer.cs" />
+    <Compile Include="Renderers\PostProcessRenderer.cs" />
+    <Compile Include="Renderers\ShadowMapRenderer.cs" />
+    <Compile Include="Renderers\SkyboxRenderer.cs" />
     <Compile Include="Shading\AmbientMapShading.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -327,6 +532,12 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeBRDFColorSpecularBase.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Shading\ComputeBRDFColorSpecularCookTorrance.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ComputeBRDFColorSpecularCookTorrance.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Shading\SpecularPower.cs">
       <AutoGen>True</AutoGen>
@@ -352,12 +563,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>DefaultForwardEffect.pdxfx</DependentUpon>
     </Compile>
-    <Compile Include="Deferred\GBufferMRT.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>GBufferMRT.pdxsl</DependentUpon>
-    </Compile>
     <Compile Include="Deferred\GBufferPack.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -370,8 +575,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>NormalVSGBufferPack.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="EntityLightShadow.cs" />
-    <Compile Include="LightingProcessorHelpers.cs" />
     <Compile Include="LightPrepass\DeferredDirectionalLighting.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -396,9 +599,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>DeferredShadowLightingShader.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="LightShadowProcessor.cs" />
-    <Compile Include="LightShadowProcessorDefaultBudget.cs" />
-    <Compile Include="LightShadowProcessorWithBudget.cs" />
     <Compile Include="Particle\ParticleBase.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -454,7 +654,6 @@
       <DependentUpon>ComputeColorStream.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Deferred\GBufferRenderProcessor.cs" />
-    <Compile Include="GuillotinePacker.cs" />
     <Compile Include="ComputeColor\ComputeColorSubstituteAlpha.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -683,7 +882,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>SpecularPowerGBuffer.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="LightPrepass\LightingPrepassRenderer.cs" />
     <Compile Include="LightPrepass\DeferredLightingShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -696,7 +894,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>DeferredPointLighting.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="DynamicLightShadowProcessor.cs" />
     <Compile Include="Shading\DirectionalShading.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -811,9 +1008,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>SpotShading.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Shading\LightForwardModelRenderer.cs" />
     <Compile Include="RenderPipelineLightingFactory.cs" />
-    <Compile Include="Shadowmap\ShadowMap.cs" />
     <Compile Include="Shadowmap\ShadowMapCascadeInfo.cs" />
     <Compile Include="Shadowmap\ShadowMapCascadeReceiverInfo.cs" />
     <Compile Include="Shadowmap\ShadowMapCasterVsm.cs">
@@ -823,14 +1018,12 @@
       <DependentUpon>ShadowMapCasterVsm.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Shadowmap\ShadowMapReceiverInfo.cs" />
-    <Compile Include="Shadowmap\ShadowMapRenderer.cs" />
     <Compile Include="Shadowmap\ShadowMaps.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ShadowMaps.pdxfx</DependentUpon>
     </Compile>
-    <Compile Include="Shadowmap\ShadowMapTexture.cs" />
     <Compile Include="LightPrepass\LightPrepass.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1101,6 +1294,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>TransformationSkinning.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="SkyboxEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SkyboxEffect.pdxfx</DependentUpon>
+    </Compile>
     <Compile Include="SSAOKeys.cs" />
     <Compile Include="PostEffectKeys.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -1218,6 +1417,18 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Utilities.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="World\NormalWSBase.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>NormalWSBase.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="World\NormalWSStream.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>NormalWSStream.pdxsl</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -1488,6 +1699,22 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTexture.cs</LastGenOutput>
     </None>
+    <None Include="CubemapBlendEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapBlendEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\ComputeColorTextureCube.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorTextureCube.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\ComputeColorTextureCubeBasic.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorTextureCubeBasic.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\ComputeColorTextureCubeReflect.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorTextureCubeReflect.cs</LastGenOutput>
+    </None>
     <None Include="ComputeColor\ComputeColorTextureDisplacement.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTextureDisplacement.cs</LastGenOutput>
@@ -1588,6 +1815,110 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadingBase.cs</LastGenOutput>
     </None>
+    <None Include="Cubemap\ComputeColorTextureCubeLod.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorTextureCubeLod.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\ComputeColorTextureCubeParallax.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorTextureCubeParallax.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapBlender.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapBlender.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapBlenderBase.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapBlenderBase.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapBlenderMRT.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapBlenderMRT.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapFace.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapFace.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapFaceBase.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapFaceBase.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapFaceDisplay.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapFaceDisplay.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapFaceDisplayNoFlip.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapFaceDisplayNoFlip.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapIBLBase.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapIBLBase.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapIBLSpecular.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapIBLSpecular.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapIBLDiffuse.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapIBLDiffuse.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapIBLWithRoughness.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapIBLWithRoughness.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapSkybox.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapSkybox.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapUtils.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapUtils.cs</LastGenOutput>
+    </None>
+    <None Include="Deferred\EnvironmentMapDiffuseDeferredShading.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>EnvironmentMapDiffuseDeferredShading.cs</LastGenOutput>
+    </None>
+    <None Include="Deferred\EnvironmentMapSpecularDeferredShading.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>EnvironmentMapSpecularDeferredShading.cs</LastGenOutput>
+    </None>
+    <None Include="Deferred\MaterialReflectanceGBuffer.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialReflectanceGBuffer.cs</LastGenOutput>
+    </None>
+    <None Include="Shading\MaterialReflectance.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialReflectance.cs</LastGenOutput>
+    </None>
+    <None Include="Shading\MaterialReflectanceBase.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialReflectanceBase.cs</LastGenOutput>
+    </None>
+    <None Include="Shading\MaterialRoughness.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialRoughness.cs</LastGenOutput>
+    </None>
+    <None Include="Shading\MaterialRoughnessBase.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialRoughnessBase.cs</LastGenOutput>
+    </None>
+    <None Include="Deferred\MaterialRoughnessGBuffer.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialRoughnessGBuffer.cs</LastGenOutput>
+    </None>
+    <None Include="Geometry\CameraCube.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CameraCube.cs</LastGenOutput>
+    </None>
+    <None Include="MRT\LinearDepth.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>LinearDepth.cs</LastGenOutput>
+    </None>
+    <None Include="MRT\NormalColor.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>NormalColor.cs</LastGenOutput>
+    </None>
     <None Include="Core\ShadingColor.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadingColor.cs</LastGenOutput>
@@ -1600,6 +1931,10 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>TextureStream.cs</LastGenOutput>
     </None>
+    <None Include="PostEffect\PostEffectBack.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>PostEffectBack.cs</LastGenOutput>
+    </None>
     <None Include="Shading\AmbientMapShading.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>AmbientMapShading.cs</LastGenOutput>
@@ -1607,6 +1942,10 @@
     <None Include="Shading\ComputeBRDFColorSpecularBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeBRDFColorSpecularBase.cs</LastGenOutput>
+    </None>
+    <None Include="Shading\ComputeBRDFColorSpecularCookTorrance.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeBRDFColorSpecularCookTorrance.cs</LastGenOutput>
     </None>
     <None Include="Shading\SpecularPower.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -1631,10 +1970,6 @@
     <None Include="Deferred\GBufferBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>GBufferBase.cs</LastGenOutput>
-    </None>
-    <None Include="Deferred\GBufferMRT.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>GBufferMRT.cs</LastGenOutput>
     </None>
     <None Include="Deferred\GBufferPack.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -1976,6 +2311,10 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>TransformationSkinning.cs</LastGenOutput>
     </None>
+    <None Include="SkyboxEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>SkyboxEffect.cs</LastGenOutput>
+    </None>
     <None Include="Tessellation\ShaderBaseTessellation.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShaderBaseTessellation.cs</LastGenOutput>
@@ -2051,6 +2390,14 @@
     <None Include="Utils\Utilities.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>Utilities.cs</LastGenOutput>
+    </None>
+    <None Include="World\NormalWSBase.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>NormalWSBase.cs</LastGenOutput>
+    </None>
+    <None Include="World\NormalWSStream.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>NormalWSStream.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />

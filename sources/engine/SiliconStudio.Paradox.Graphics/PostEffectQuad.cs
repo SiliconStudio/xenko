@@ -49,11 +49,67 @@ namespace SiliconStudio.Paradox.Graphics
         /// <exception cref="System.ArgumentException">Expecting a Texture2D;texture</exception>
         public void Draw(Texture texture)
         {
-            var texture2D = texture as Texture2D;
-            if (texture2D == null) throw new ArgumentException("Expecting a Texture2D", "texture");
+            if (texture != null)
+            {
+                var texture2D = texture as Texture2D;
+                if (texture2D == null) throw new ArgumentException("Expecting a Texture2D", "texture");
 
-            // Make sure that we are using our vertex shader
-            effect.Parameters.Set(TexturingKeys.Texture0, texture as Texture2D);
+                // Make sure that we are using our vertex shader
+                effect.Parameters.Set(TexturingKeys.Texture0, texture2D);
+            }
+            effect.Apply();
+            Draw();
+
+            // TODO ADD QUICK UNBIND FOR SRV
+            //GraphicsDevice.Context.PixelShader.SetShaderResource(0, null);
+        }
+
+        /// <summary>
+        /// Draws a quad with several textures. This Draw method is using a simple pixel shader that is sampling the texture.
+        /// </summary>
+        /// <param name="textures">The texturess to draw.</param>
+        /// <exception cref="System.ArgumentException">Expecting a Texture2D;texture</exception>
+        public void Draw(params Texture[] textures)
+        {
+            if (textures != null)
+            {
+                for (var i = 0; i < textures.Length && i < 8; ++i)
+                {
+                    var texture2D = textures[i] as Texture2D;
+                    if (texture2D == null) throw new ArgumentException("Expecting a Texture2D", "texture");
+
+                    var pk = TexturingKeys.Texture0;
+                    switch (i)
+                    {
+                        case 0:
+                            pk = TexturingKeys.Texture0;
+                            break;
+                        case 1:
+                            pk = TexturingKeys.Texture1;
+                            break;
+                        case 2:
+                            pk = TexturingKeys.Texture2;
+                            break;
+                        case 3:
+                            pk = TexturingKeys.Texture3;
+                            break;
+                        case 4:
+                            pk = TexturingKeys.Texture4;
+                            break;
+                        case 5:
+                            pk = TexturingKeys.Texture5;
+                            break;
+                        case 6:
+                            pk = TexturingKeys.Texture6;
+                            break;
+                        case 7:
+                            pk = TexturingKeys.Texture7;
+                            break;
+                    }
+                    effect.Parameters.Set(pk, texture2D);
+                }
+            }
+
             effect.Apply();
             Draw();
 

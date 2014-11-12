@@ -1,0 +1,33 @@
+﻿// Copyright (c) 2014 Silicon Studio Corporation (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Computes the specular part of the BRDF using the Cook-Torrance model.
+/// </summary>
+class ComputeBRDFColorSpecularCookTorrance : ComputeBRDFColorSpecularBase, MaterialRoughnessBase
+{
+    stage float Reflection;
+
+    override float3 Compute(float3 lightColor, float3 lightDir, float3 normal, float3 eye) 
+    {
+        float roughness = GetRoughness();
+        float intensity = SpecularIntensityMap.Compute().x;
+
+        float3 HalfWay = normalize(eye + lightDir);
+        float EH = saturate(dot(eye, HalfWay));
+        float F = Reflection + ((1 - Reflection) * pow(EH, 5));
+
+        float HN = saturate(dot(HalfWay, normal));
+        float LN = saturate(dot(lightDir, normal));
+        float EN = saturate(dot(eye, normal));
+        float G = min (1, 2 * HN * EN / EH);
+        G = min(G, 2 * HN * LN / EH);
+
+        float HN2 = HN * HN;
+        float HN2_R2 = HN2 * roughness * roughness;
+
+        float D = exp((HN2 - 1) / HN2_R2) / (HN2_R2 * HN2);
+        
+        float k = D * F * G / (4 * dot(eye, normal) * LN);
+        return lightColor * intensity * k * saturate(dot(normal, lightDir));
+    }
+};
