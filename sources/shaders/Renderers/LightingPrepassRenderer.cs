@@ -55,12 +55,24 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
     {
         #region Static members
 
+        /// <summary>
+        /// The key linking the parameters of each point light.
+        /// </summary>
         public static readonly ParameterKey<PointLightData[]> PointLightInfos = ParameterKeys.New(new PointLightData[64]);
 
+        /// <summary>
+        /// The key linking the parameters of each directional light.
+        /// </summary>
         public static readonly ParameterKey<DirectLightData[]> DirectLightInfos = ParameterKeys.New(new DirectLightData[64]);
 
+        /// <summary>
+        /// The key linking the parameters of each spot light.
+        /// </summary>
         public static readonly ParameterKey<SpotLightData[]> SpotLightInfos = ParameterKeys.New(new SpotLightData[64]);
 
+        /// <summary>
+        /// The key setting the number of lights.
+        /// </summary>
         public static readonly ParameterKey<int> LightCount = ParameterKeys.New(64);
 
         #endregion

@@ -62,7 +62,8 @@ class DeferredShadowMapCascadeBase : ShadowMapBase, ShadowMapUtils, ShadowMapFil
 #else
         for(int i = 0; i < SHADOWMAP_COUNT; ++i) {
 #endif
-            for(int j = 0; j < SHADOWMAP_CASCADE_COUNT; j++) {
+            for(int j = 0; j < SHADOWMAP_CASCADE_COUNT; j++)
+            {
                 streams.vShadowMapPos[i * SHADOWMAP_CASCADE_COUNT + j] = mul(vPositionWS, shadowMapLevels[i][j].ShadowMapWVP);
                 streams.vShadowMapDepth[i][j] = dot(shadowMaps[i].ShadowLightDirection, vPositionWS.xyz - shadowMapLevels[i][j].ShadowLightOffset) / shadowMaps[i].ShadowMapDistance;
             }
