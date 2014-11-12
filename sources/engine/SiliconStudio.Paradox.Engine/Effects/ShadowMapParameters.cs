@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Core;
+using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Shaders;
 
@@ -13,6 +14,11 @@ namespace SiliconStudio.Paradox.Effects
         /// List of all the shadow map configurations.
         /// </summary>
         public static readonly ParameterKey<ShadowMapParameters[]> ShadowMaps = ParameterKeys.New<ShadowMapParameters[]>();
+
+        /// <summary>
+        /// Filter type of the shadow map.
+        /// </summary>
+        public static readonly ParameterKey<LightType> LightType = ParameterKeys.New<LightType>();
 
         /// <summary>
         /// Filter type of the shadow map.

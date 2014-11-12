@@ -377,7 +377,8 @@ namespace SiliconStudio.Paradox.Games
         {
             get
             {
-                return new SiliconStudio.Core.Mathematics.Rectangle(0, 0, Control.ClientSize.Width, Control.ClientSize.Height);
+                // Ensure width and height are at least 1 to avoid divisions by 0
+                return new SiliconStudio.Core.Mathematics.Rectangle(0, 0, Math.Max(Control.ClientSize.Width, 1), Math.Max(Control.ClientSize.Height, 1));
             }
         }
 

@@ -109,7 +109,7 @@ namespace SiliconStudio.ImageComparerService
         }
 
         /// <summary>
-        /// Process a request for image comparison (client uses it to know if test succeded or failed).
+        /// Process a request for image comparison (client uses it to know if test succeeded or failed).
         /// </summary>
         /// <param name="binaryReader">The binary reader.</param>
         /// <param name="binaryWriter">The binary writer.</param>

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Converters;
+using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Effects
@@ -13,24 +14,31 @@ namespace SiliconStudio.Paradox.Effects
     public struct ShadowConfiguration
     {
         /// <summary>
-        /// The number of shadows in this group.
+        /// The type of light.
         /// </summary>
         [DataMemberConvert]
         [DataMember(10)]
+        public LightType LightType;
+
+        /// <summary>
+        /// The number of shadows in this group.
+        /// </summary>
+        [DataMemberConvert]
+        [DataMember(20)]
         public int ShadowCount;
 
         /// <summary>
         /// The number of cascade in this group.
         /// </summary>
         [DataMemberConvert]
-        [DataMember(20)]
+        [DataMember(30)]
         public int CascadeCount;
 
         /// <summary>
         ///  The type of filtering in this group.
         /// </summary>
         [DataMemberConvert]
-        [DataMember(30)]
+        [DataMember(40)]
         public ShadowMapFilterType FilterType;
     }
 

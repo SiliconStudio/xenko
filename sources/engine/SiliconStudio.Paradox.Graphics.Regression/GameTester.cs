@@ -24,6 +24,11 @@ namespace SiliconStudio.Paradox.Graphics.Regression
                 game.Run();
             }
         }
+#elif SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+        public static void RunGameTest(GameBase game)
+        {
+            throw new NotImplementedException();
+        }
 #elif SILICONSTUDIO_PLATFORM_IOS || SILICONSTUDIO_PLATFORM_ANDROID
         public static void RunGameTest(GameBase game)
         {

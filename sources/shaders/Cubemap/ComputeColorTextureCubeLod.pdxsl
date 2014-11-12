@@ -1,0 +1,17 @@
+﻿// Copyright (c) 2014 Silicon Studio Corporation (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// computes lod on the cubemap
+/// </summary>
+/// <remarks>
+/// TTextureLod: generic TextureCube - The cubemap to sample.
+/// </remarks>
+class ComputeColorTextureCubeLod<TextureCube TTextureLod> : ComputeColorTextureCube<TTextureLod>, MaterialRoughnessBase
+{
+    override float4 SampleCubemap(float3 samplingDir)
+    {
+        uint width, height, numberOfLevels;
+        Cubemap.GetDimensions(0, width, height, numberOfLevels);
+        return TTextureLod.SampleLevel(Texturing.LinearSampler, float3(samplingDir.xy, -samplingDir.z), numberOfLevels * GetRoughness());
+    }
+};

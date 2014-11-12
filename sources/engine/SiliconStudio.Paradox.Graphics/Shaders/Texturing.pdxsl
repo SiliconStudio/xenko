@@ -14,6 +14,12 @@ class Texturing
     stage Texture2D Texture8;
     stage Texture2D Texture9;
 
+    // Default texture cube slots
+    stage TextureCube TextureCube0;
+    stage TextureCube TextureCube1;
+    stage TextureCube TextureCube2;
+    stage TextureCube TextureCube3;
+
     // Default sampler
     stage SamplerState Sampler;
 

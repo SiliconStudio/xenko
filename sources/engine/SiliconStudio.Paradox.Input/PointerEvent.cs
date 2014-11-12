@@ -111,7 +111,7 @@ namespace SiliconStudio.Paradox.Input
 
         public override string ToString()
         {
-            return string.Format("PointerId: {0}, Position: {1}, DeltaPosition: {2}, DeltaTime: {3}, State: {4}, PointerType: {5}, IsPrimary: {6}", PointerId, Position, DeltaPosition, DeltaTime, State, PointerType, IsPrimary);
+            return string.Format("PointerId: {0}, Position: {1:0.00}, DeltaPosition: {2:0.00}, DeltaTime: {3:0.000}, State: {4}, PointerType: {5}, IsPrimary: {6}", PointerId, Position, DeltaPosition, DeltaTime.TotalSeconds, State, PointerType, IsPrimary);
         }
     }
 }

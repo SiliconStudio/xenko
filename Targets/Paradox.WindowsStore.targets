@@ -5,15 +5,6 @@
     <CreateProperty Condition=" '$(Platform)' == 'WindowsStore'" Value="AnyCPU">
       <Output TaskParameter="Value" PropertyName="Platform" />
     </CreateProperty>
-    <CreateProperty Condition=" '$(Platform)' == 'WindowsStore-x86'" Value="x86">
-      <Output TaskParameter="Value" PropertyName="Platform" />
-    </CreateProperty>
-    <CreateProperty Condition=" '$(Platform)' == 'WindowsStore-x64'" Value="x64">
-      <Output TaskParameter="Value" PropertyName="Platform" />
-    </CreateProperty>
-    <CreateProperty Condition=" '$(Platform)' == 'WindowsStore-ARM'" Value="ARM">
-      <Output TaskParameter="Value" PropertyName="Platform" />
-    </CreateProperty>
   </Target>
 
   <PropertyGroup>
@@ -23,15 +14,17 @@
     <SiliconStudioIsExecutable Condition=" '$(OutputType)' == 'AppContainerExe'">true</SiliconStudioIsExecutable>
     <SiliconStudioNETFrameworkVersion>v4.5.1</SiliconStudioNETFrameworkVersion>
 
-    <SiliconStudioCPU Condition="'$(Platform)' == 'WindowsStore-x86'">x86</SiliconStudioCPU>
-    <SiliconStudioCPU Condition="'$(Platform)' == 'WindowsStore-x64'">x64</SiliconStudioCPU>
-    <SiliconStudioCPU Condition="'$(Platform)' == 'WindowsStore-ARM'">ARM</SiliconStudioCPU>
+    <SiliconStudioCPU Condition="'$(Platform)' == 'x86'">x86</SiliconStudioCPU>
+    <SiliconStudioCPU Condition="'$(Platform)' == 'x64'">x64</SiliconStudioCPU>
+    <SiliconStudioCPU Condition="'$(Platform)' == 'ARM'">ARM</SiliconStudioCPU>
     
     <!-- Assembly processor is currently unsupported on Windows Store executables -->
     <SiliconStudioAssemblyProcessor Condition="'$(SiliconStudioIsExecutable)' == 'true'">false</SiliconStudioAssemblyProcessor>
 
     <!-- Use OutputPath to define AppxPackage directory -->
     <AppxPackageDir>$(OutputPath)\$(AppxPackageDirName)\</AppxPackageDir>
+    <AppxPackageTestDir>$(AppxPackageDir)Test\</AppxPackageTestDir>
+    <AppxPackageName>$(AssemblyName)</AppxPackageName>
   </PropertyGroup>
   
   <!-- Embed native libraries -->
@@ -61,9 +54,8 @@
     </PrepareResourcesDependsOn>
   </PropertyGroup>
 
-  <!-- iOS: Ensure assets have been deployed before calling _CollectBundleResources -->
+  <!-- WindowsStore: Transform Assets into Content -->
   <Target Name="DeployAssetsWinRT" DependsOnTargets="SiliconStudioCompileAsset" Condition="'$(SiliconStudioIsExecutable)' == 'true'">
-    <!-- Add all game data as content on iphone. Note that "Link" doesn't work but Xamarin seems to use a similar "LogicalName" property. -->
     <ItemGroup>
       <!-- Define the Assets to deploy -->
       <AssetsToDeploy Include="$(SiliconStudioCompileAssetOutputPath)\**\*.*"/>
@@ -72,15 +64,6 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         <Link>data\%(RecursiveDir)%(Filename)%(Extension)</Link>
       </Content>
-    </ItemGroup>
-  </Target>
-
-  <!-- Enforce platform of referenced projects to be "WindowsStore" (doesn't include CPU) -->
-  <Target Name="CompileReferencesAsWindowsStorePlatform" AfterTargets="AssignProjectConfiguration">
-    <ItemGroup>
-      <ProjectReferenceWithConfiguration>
-        <SetPlatform>Platform=WindowsStore</SetPlatform>
-      </ProjectReferenceWithConfiguration>
     </ItemGroup>
   </Target>
 </Project>

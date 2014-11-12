@@ -9,7 +9,6 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Paradox.Assets.Texture;
 using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Modules;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Assets.Materials.Nodes
@@ -165,6 +164,12 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
             {
                 return TextureReference != null && TextureReference.Location != null ? TextureReference.Location : null;
             }
+        }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return "Texture";
         }
     }
 }

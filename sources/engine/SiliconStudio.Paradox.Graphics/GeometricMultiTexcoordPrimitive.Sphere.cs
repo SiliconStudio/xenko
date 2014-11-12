@@ -36,14 +36,14 @@ namespace SiliconStudio.Paradox.Graphics
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
             /// <returns>A sphere primitive.</returns>
             /// <exception cref="System.ArgumentOutOfRangeException">tessellation;Must be >= 3</exception>
-            public static GeometricMeshData<VertexPositionNormalMultiTexture> New(float diameter = 1.0f, int tessellation = 16, bool toLeftHanded = false)
+            public static GeometricMeshData<VertexPositionNormalTangentMultiTexture> New(float diameter = 1.0f, int tessellation = 16, bool toLeftHanded = false)
             {
                 if (tessellation < 3) throw new ArgumentOutOfRangeException("tessellation", "Must be >= 3");
 
                 int verticalSegments = tessellation;
                 int horizontalSegments = tessellation * 2;
 
-                var vertices = new VertexPositionNormalMultiTexture[(verticalSegments + 1) * (horizontalSegments + 1)];
+                var vertices = new VertexPositionNormalTangentMultiTexture[(verticalSegments + 1) * (horizontalSegments + 1)];
                 var indices = new int[(verticalSegments) * (horizontalSegments + 1) * 6];
 
                 float radius = diameter / 2;
@@ -73,7 +73,8 @@ namespace SiliconStudio.Paradox.Graphics
                         var normal = new Vector3(dx, dy, dz);
                         var textureCoordinate = new Vector2(u, v);
 
-                        vertices[vertexCount++] = new VertexPositionNormalMultiTexture(normal * radius, normal, textureCoordinate);
+                        var tangent = new Vector4(normal.Z, 0, -normal.X, 0); // Y ^ normal
+                        vertices[vertexCount++] = new VertexPositionNormalTangentMultiTexture(normal * radius, normal, tangent, textureCoordinate);
                     }
                 }
 
@@ -100,7 +101,7 @@ namespace SiliconStudio.Paradox.Graphics
 
                 // Create the primitive object.
                 // Create the primitive object.
-                return new GeometricMeshData<VertexPositionNormalMultiTexture>(vertices, indices, toLeftHanded, VertexPositionNormalMultiTexture.Layout) { Name = "Sphere" };
+                return new GeometricMeshData<VertexPositionNormalTangentMultiTexture>(vertices, indices, toLeftHanded, VertexPositionNormalTangentMultiTexture.Layout) { Name = "Sphere" };
             }
         }
     }

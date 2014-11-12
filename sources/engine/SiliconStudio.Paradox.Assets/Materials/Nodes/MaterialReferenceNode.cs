@@ -47,5 +47,11 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
                 }
             }
         }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return "Reference";
+        }
     }
 }

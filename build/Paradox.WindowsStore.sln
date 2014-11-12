@@ -49,6 +49,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-UserTargets", "00-UserTa
 		..\Targets\Paradox.iOS.targets = ..\Targets\Paradox.iOS.targets
 		..\Targets\Paradox.targets = ..\Targets\Paradox.targets
 		..\Targets\Paradox.Windows.targets = ..\Targets\Paradox.Windows.targets
+		..\Targets\Paradox.WindowsPhone.targets = ..\Targets\Paradox.WindowsPhone.targets
+		..\Targets\Paradox.WindowsStore.targets = ..\Targets\Paradox.WindowsStore.targets
 		..\Targets\SiliconStudio.Common.targets = ..\Targets\SiliconStudio.Common.targets
 	EndProjectSection
 EndProject
@@ -99,7 +101,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Input
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.UI", "..\sources\engine\SiliconStudio.Paradox.UI\SiliconStudio.Paradox.UI.csproj", "{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Graphics.Regression", "..\sources\engine\SiliconStudio.Paradox.Graphics.Regression\SiliconStudio.Paradox.Graphics.Regression.csproj", "{D002FEB1-00A6-4AB1-A83F-1F253465E64D}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Physics", "..\sources\engine\SiliconStudio.Paradox.Physics\SiliconStudio.Paradox.Physics.csproj", "{DD592516-B341-40FE-9100-1B0FA784A060}"
+	ProjectSection(ProjectDependencies) = postProject
+		{42780CBD-3FE7-48E3-BD5B-59945EA20137} = {42780CBD-3FE7-48E3-BD5B-59945EA20137}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -199,6 +206,12 @@ Global
 		{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}.Release|WindowsStore.ActiveCfg = Release|WindowsStore
 		{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}.Release|WindowsStore.Build.0 = Release|WindowsStore
 		{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}.Release|WindowsStore.Deploy.0 = Release|WindowsStore
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.Debug|WindowsStore.ActiveCfg = Debug|WindowsStore
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.Debug|WindowsStore.Build.0 = Debug|WindowsStore
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.Debug|WindowsStore.Deploy.0 = Debug|WindowsStore
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.Release|WindowsStore.ActiveCfg = Release|WindowsStore
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.Release|WindowsStore.Build.0 = Release|WindowsStore
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.Release|WindowsStore.Deploy.0 = Release|WindowsStore
 		{DD592516-B341-40FE-9100-1B0FA784A060}.Debug|WindowsStore.ActiveCfg = Debug|WindowsStore
 		{DD592516-B341-40FE-9100-1B0FA784A060}.Debug|WindowsStore.Build.0 = Debug|WindowsStore
 		{DD592516-B341-40FE-9100-1B0FA784A060}.Debug|WindowsStore.Deploy.0 = Debug|WindowsStore
@@ -227,6 +240,7 @@ Global
 		{72390339-B2A1-4F61-A800-31ED0975B515} = {4C142567-C42B-40F5-B092-798882190209}
 		{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E} = {4C142567-C42B-40F5-B092-798882190209}
 		{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3} = {4C142567-C42B-40F5-B092-798882190209}
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D} = {4C142567-C42B-40F5-B092-798882190209}
 		{DD592516-B341-40FE-9100-1B0FA784A060} = {4C142567-C42B-40F5-B092-798882190209}
 	EndGlobalSection
 EndGlobal

@@ -289,14 +289,13 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="worldMatrix">The world matrix of the element</param>
         /// <param name="sourceRectangle">The rectangle indicating the source region of the texture to use</param>
         /// <param name="elementSize">The size of the ui element</param>
-        /// <param name="imageSize">The ideal size of the texture region to display on the screen</param>
         /// <param name="borderSize">The size of the borders in the texture in pixels (left/right/top/bottom)</param>
         /// <param name="color">The color to apply to the texture image.</param>
         /// <param name="depthBias">The depth bias of the ui element</param>
         /// <param name="imageOrientation">The rotation to apply on the image uv</param>
         /// <param name="swizzle">Swizzle mode indicating the swizzle use when sampling the texture in the shader</param>
         /// <param name="snapImage">Indicate if the image needs to be snapped or not</param>
-        public void DrawImage(Texture2D texture, Texture2D texture1, ref Matrix worldMatrix, ref Rectangle sourceRectangle, ref Vector3 elementSize, ref Vector2 imageSize, ref Vector4 borderSize, 
+        public void DrawImage(Texture2D texture, Texture2D texture1, ref Matrix worldMatrix, ref RectangleF sourceRectangle, ref Vector3 elementSize, ref Vector4 borderSize, 
             ref Color color, int depthBias, ImageOrientation imageOrientation = ImageOrientation.AsIs, SwizzleMode swizzle = SwizzleMode.None, bool snapImage = false)
         {
             // Check that texture is not null
@@ -320,18 +319,21 @@ namespace SiliconStudio.Paradox.Graphics
             {
                 Source =
                 {
-                    X = sourceRectangle.X / (float)texture.Width, 
-                    Y = sourceRectangle.Y / (float)texture.Height, 
-                    Width = sourceRectangle.Width / (float)texture.Width, 
-                    Height = sourceRectangle.Height / (float)texture.Height
+                    X = sourceRectangle.X / texture.Width, 
+                    Y = sourceRectangle.Y / texture.Height, 
+                    Width = sourceRectangle.Width / texture.Width, 
+                    Height = sourceRectangle.Height / texture.Height
                 },
                 DepthBias = depthBias,
                 Color = color,
                 Swizzle = swizzle,
                 SnapImage = snapImage,
                 Primitive = borderSize == Vector4.Zero? PrimitiveType.Rectangle : PrimitiveType.BorderRectangle,
-                BorderSize = new Vector4(borderSize.X / imageSize.X, borderSize.Y / imageSize.X, borderSize.Z / imageSize.Y, borderSize.W / imageSize.Y),
+                BorderSize = new Vector4(borderSize.X / sourceRectangle.Width, borderSize.Y / sourceRectangle.Width, borderSize.Z / sourceRectangle.Height, borderSize.W / sourceRectangle.Height),
             };
+
+            var rotatedSize = imageOrientation == ImageOrientation.AsIs? elementSize: new Vector3(elementSize.Y, elementSize.X, 0);
+            drawInfo.VertexShift = new Vector4(borderSize.X / rotatedSize.X, 1f - borderSize.Y / rotatedSize.X, borderSize.Z / rotatedSize.Y, 1f - borderSize.W / rotatedSize.Y);
 
             var matrix = worldMatrix;
             matrix.M11 *= elementSize.X;
@@ -348,38 +350,17 @@ namespace SiliconStudio.Paradox.Graphics
             Matrix.Multiply(ref matrix, ref viewProjectionMatrix, out worldViewProjection);
             Vector4.Transform(ref vector4UnitX, ref worldViewProjection, out drawInfo.UnitXWorld);
             Vector4.Transform(ref vector4UnitY, ref worldViewProjection, out drawInfo.UnitYWorld);
-            
+
             // rotate origin and unit axis if need.
             var leftTopCorner = vector4LeftTop;
-            if (imageOrientation != ImageOrientation.AsIs)
+            if (imageOrientation == ImageOrientation.Rotated90)
             {
-                if (imageOrientation == ImageOrientation.Rotated180)
-                {
-                    drawInfo.UnitXWorld = -drawInfo.UnitXWorld;
-                    drawInfo.UnitYWorld = -drawInfo.UnitYWorld;
-                    leftTopCorner = new Vector4(0.5f, 0.5f, 0, 1);
-                }
-                else if (imageOrientation == ImageOrientation.Rotated90)
-                {
-                    var unitX = drawInfo.UnitXWorld;
-                    drawInfo.UnitXWorld = -drawInfo.UnitYWorld;
-                    drawInfo.UnitYWorld = unitX;
-                    leftTopCorner = new Vector4(-0.5f, 0.5f, 0, 1);
-                }
-                else if (imageOrientation == ImageOrientation.Rotated90C)
-                {
-                    var unitX = drawInfo.UnitXWorld;
-                    drawInfo.UnitXWorld = drawInfo.UnitYWorld;
-                    drawInfo.UnitYWorld = -unitX;
-                    leftTopCorner = new Vector4(0.5f, -0.5f, 0, 1);
-                }
+                var unitX = drawInfo.UnitXWorld;
+                drawInfo.UnitXWorld = -drawInfo.UnitYWorld;
+                drawInfo.UnitYWorld = unitX;
+                leftTopCorner = new Vector4(-0.5f, 0.5f, 0, 1);
             }
             Vector4.Transform(ref leftTopCorner, ref worldViewProjection, out drawInfo.LeftTopCornerWorld);
-
-            drawInfo.VertexShift = new Vector4(borderSize.X/ elementSize.X,
-                                                1f - borderSize.Y / elementSize.X,
-                                                borderSize.Z / elementSize.Y,
-                                                1f - borderSize.W / elementSize.Y);
 
             var verticesPerElement = 4;
             var indicesPerElement = 6;

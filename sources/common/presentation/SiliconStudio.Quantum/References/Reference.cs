@@ -22,13 +22,6 @@ namespace SiliconStudio.Quantum.References
 
             ++creatingReference;
 
-            // TODO: Ensure removing this is safe! It looks to be, but...
-            //var propertyKey = index as PropertyKey;
-            //if (propertyKey != null && objectValue == null && objectType == typeof(object))
-            //{
-            //    objectType = propertyKey.PropertyType;
-            //}
-
             IReference reference;
             var enumerableValue = objectValue as IEnumerable;
 

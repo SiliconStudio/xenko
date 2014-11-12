@@ -216,6 +216,7 @@
     <Compile Include="Layering\ButtonBaseTests.cs" />
     <Compile Include="Layering\ButtonTests.cs" />
     <Compile Include="Layering\CanvasTests.cs" />
+    <Compile Include="Layering\SliderTests.cs" />
     <Compile Include="Layering\ContentControlTest.cs" />
     <Compile Include="Layering\ContentPresenterTests.cs" />
     <Compile Include="Layering\ControlTests.cs" />
@@ -267,6 +268,7 @@
     <Compile Include="Regression\ScrollingTextTest.cs" />
     <Compile Include="Regression\ScrollViewerAnchorTest.cs" />
     <Compile Include="Regression\ScrollViewerTest.cs" />
+    <Compile Include="Regression\SliderTest.cs" />
     <Compile Include="Regression\StackPanelTest.cs" />
     <Compile Include="Regression\TextBlockTest.cs" />
     <Compile Include="Regression\TextBlockWrappingTest.cs" />
@@ -286,6 +288,9 @@
     <None Include="Resources\EditTextOverred.dds" />
     <None Include="SiliconStudio.Paradox.UI.Tests.pdxpkg" />
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+    <None Include="Resources\ToggleChecked.dds" />
+    <None Include="Resources\ToggleIndetermate.dds" />
+    <None Include="Resources\ToggleUnchecked.dds" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\Icon.png" Label="Paradox.DoNotSync" />

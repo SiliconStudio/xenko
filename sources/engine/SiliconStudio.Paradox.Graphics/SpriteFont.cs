@@ -25,7 +25,6 @@ namespace SiliconStudio.Paradox.Graphics
     [ContentSerializer(typeof(DataContentConverterSerializer<StaticSpriteFontData, SpriteFont>))]
     public class SpriteFont : ComponentBase
     {
-        private Vector2 nullVector2 = Vector2.Zero;
         private Vector4 nullVector4 = Vector4.Zero; 
 
         /// <summary>
@@ -218,7 +217,7 @@ namespace SiliconStudio.Paradox.Graphics
                 Vector2.Modulate(ref glyphRect, ref axisIsMirroredTable[(int)spriteEffects & 3], out offset);
             }
             var destination = new RectangleF(parameters.Position.X, parameters.Position.Y, parameters.Scale.X, parameters.Scale.Y);
-            Rectangle? sourceRectangle = glyph.Subrect;
+            RectangleF? sourceRectangle = glyph.Subrect;
             parameters.SpriteBatch.DrawSprite(Textures[glyph.BitmapIndex], ref destination, true, ref sourceRectangle, parameters.Color, parameters.Rotation, ref offset, spriteEffects, ImageOrientation.AsIs, parameters.Depth, Swizzle, true);            
         }
 
@@ -252,7 +251,8 @@ namespace SiliconStudio.Paradox.Graphics
 
             var elementSize = new Vector3(glyph.Subrect.Width / parameters.FontScale.X, glyph.Subrect.Height / parameters.FontScale.Y, 0);
 
-            parameters.Batch.DrawImage(Textures[glyph.BitmapIndex], null, ref worldMatrix, ref glyph.Subrect, ref elementSize, ref nullVector2, ref nullVector4, 
+            RectangleF sourceRectangle = glyph.Subrect;
+            parameters.Batch.DrawImage(Textures[glyph.BitmapIndex], null, ref worldMatrix, ref sourceRectangle, ref elementSize, ref nullVector4, 
                 ref parameters.Color, parameters.DepthBias, ImageOrientation.AsIs, Swizzle, parameters.SnapText);
         }
 

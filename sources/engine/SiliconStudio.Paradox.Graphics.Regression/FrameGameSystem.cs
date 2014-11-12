@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-
+using System.Reflection;
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Games;
 
@@ -216,7 +216,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
                 {
                     if (method.Action != null)
                     {
-                        Console.WriteLine(@"Executing method in Draw/Update for frame " + frameCount + @": " + method.Action.Method.Name);
+                        TestGameBase.TestGameLogger.Debug(@"Executing method in Draw/Update for frame " + frameCount + @": " + method.Action.GetMethodInfo().Name);
                         method.Action.Invoke();
                     }
                     methodsToRemove.Push(i);

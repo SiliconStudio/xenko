@@ -1,0 +1,42 @@
+﻿// Copyright (c) 2014 Silicon Studio Corporation (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Computes the lighting from the cubemap in a deferred pass.
+/// </summary>
+class CubemapIBLSpecular : CubemapIBLBase, ShadingBase, TransformationWAndVP, Transformation, PositionVSGBuffer, NormalVSGBuffer, Texturing, MaterialRoughnessBase
+{
+    override stage float4 Shading()
+    {
+        float3 positionVS = PositionVS();
+        float3 normalVS = NormalVS();
+        float3 samplingDirVS = reflect(positionVS, normalVS);
+        
+        float4 cubemapPositionVS4 = mul(float4(CubemapPosition, 1), View);
+
+        // TODO: support distance for a cube or a box?
+        // distance for a sphere.
+        float alpha = max(1 - (distance(cubemapPositionVS4.xyz / cubemapPositionVS4.w, positionVS) / CubemapRadius), 0);
+
+        if (alpha == 0)
+            discard;
+
+        // parallax correction done in view space
+        samplingDirVS = CubemapUtils.ParallaxCorrectionCube(samplingDirVS, positionVS, cubemapPositionVS4.xyz / cubemapPositionVS4.w, CubemapRadius);
+        float3 samplingDir = mul(float4(samplingDirVS, 0), ViewInverse).xyz;
+
+        // always flip z
+        samplingDir.z = -samplingDir.z;
+
+        float4 color = SampleCubemap(samplingDir);
+        color.a = alpha;
+
+        return color;
+    }
+
+    float4 SampleCubemap(float3 samplingDir)
+    {
+        uint width, height, numberOfLevels;
+        Cubemap.GetDimensions(0, width, height, numberOfLevels);
+        return Cubemap.SampleLevel(Texturing.LinearSampler, samplingDir, numberOfLevels * GetRoughness());
+    }
+};

@@ -121,6 +121,16 @@ namespace SiliconStudio.Core.Collections
             return new FastListStruct<T>(array);
         }
 
+        public bool Contains(T item)
+        {
+            return IndexOf(item) >= 0;
+        }
+
+        public int IndexOf(T item)
+        {
+            return Array.IndexOf(Items, item, 0, Count);
+        }
+
         #region Nested type: Enumerator
 
         [StructLayout(LayoutKind.Sequential)]

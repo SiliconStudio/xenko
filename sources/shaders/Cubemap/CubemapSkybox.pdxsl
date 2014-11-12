@@ -1,0 +1,19 @@
+﻿// Copyright (c) 2014 Silicon Studio Corporation (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Skybox from a cubemap.
+/// </summary>
+/// <remarks>
+/// TTextureSkybox: generic TextureCube - The cubemap to sample.
+/// </remarks>
+class CubemapSkybox<Texture TTextureSkybox> : ComputeColorTextureCube<TTextureSkybox>, ScreenPositionBase, Transformation, Camera
+{
+    override float3 GetSamplingDir()
+    {
+        float height = NearClipPlane * tan(0.5 * FieldOfView);
+        float width = height * Aspect;
+        float4 screenVS = float4(float2(width, height) * streams.ScreenPosition.xy, -NearClipPlane, 0);
+        float4 ray = mul(screenVS, ViewInverse);
+        return ray.xyz;
+    }
+};

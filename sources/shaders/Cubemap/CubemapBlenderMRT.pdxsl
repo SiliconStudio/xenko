@@ -1,0 +1,38 @@
+﻿// Copyright (c) 2014 Silicon Studio Corporation (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Blends cubemaps and outputs in multiple render targets.
+/// </summary>
+class CubemapBlenderMRT : CubemapBlenderBase, ShaderBase, MultipleRenderTargetsBase
+{
+    override stage void PSMain()
+    {
+        base.PSMain();
+
+        float4 finalColor0 = 0;
+        float4 finalColor1 = 0;
+        float4 finalColor2 = 0;
+        float4 finalColor3 = 0;
+        float4 finalColor4 = 0;
+        float4 finalColor5 = 0;
+
+        int index = 0;
+        foreach (var cubemap in Cubemaps)
+        {
+            finalColor0 += BlendIndices[index] * cubemap.ComputeFaceColor(0);
+            finalColor1 += BlendIndices[index] * cubemap.ComputeFaceColor(1);
+            finalColor2 += BlendIndices[index] * cubemap.ComputeFaceColor(2);
+            finalColor3 += BlendIndices[index] * cubemap.ComputeFaceColor(3);
+            finalColor4 += BlendIndices[index] * cubemap.ComputeFaceColor(4);
+            finalColor5 += BlendIndices[index] * cubemap.ComputeFaceColor(5);
+            ++index;
+        }
+
+        streams.ColorTarget  = finalColor0;
+        streams.ColorTarget1 = finalColor1;
+        streams.ColorTarget2 = finalColor2;
+        streams.ColorTarget3 = finalColor3;
+        streams.ColorTarget4 = finalColor4;
+        streams.ColorTarget5 = finalColor5;
+    }
+};

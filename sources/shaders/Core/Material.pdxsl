@@ -32,4 +32,9 @@ class Material
     
     // Specular intensity - used in other classes
     stage float SpecularIntensity;
+
+    // PBR material parameters
+    stage float Roughness;
+    stage float Reflectance;
+    stage float CookTorranceReflection;
 };

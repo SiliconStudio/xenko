@@ -1,0 +1,14 @@
+﻿// Copyright (c) 2014 Silicon Studio Corporation (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Computes the lighting from the cubemap in a deferred pass. Use roughtness to select mip level
+/// </summary>
+class CubemapIBLWithRoughness : CubemapIBL, MaterialRoughnessBase
+{
+    override float4 SampleCubemap(float3 samplingDir)
+    {
+        uint width, height, numberOfLevels;
+        Cubemap.GetDimensions(0, width, height, numberOfLevels);
+        return Cubemap.SampleLevel(Texturing.LinearSampler, samplingDir, numberOfLevels * GetRoughness());
+    }
+};

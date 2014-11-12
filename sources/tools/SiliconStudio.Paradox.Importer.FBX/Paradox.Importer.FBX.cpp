@@ -791,7 +791,7 @@ public:
 			}
 		}
 		{	// The specular power map
-			auto specularPowerTree = GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sSpecularFactor, NULL, finalMaterial);
+			auto specularPowerTree = GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sShininess, NULL, finalMaterial);
 			if(phongSurface || specularPowerTree != nullptr)
 			{
 				if(specularPowerTree == nullptr)	
@@ -825,7 +825,7 @@ public:
 					// Do not create the node if the value has not been explicitly specified by the user.
 					if(reflectionValue != FbxDouble3(0))
 					{
-						reflectionMapTree = gcnew MaterialFloat4Node(FbxDouble3ToVector4(reflectionValue));
+						reflectionMapTree = gcnew MaterialColorNode(FbxDouble3ToColor4(reflectionValue));
 						((MaterialColorNode^)reflectionMapTree)->Key = MaterialKeys::ReflectionColorValue;
 						((MaterialColorNode^)reflectionMapTree)->AutoAssignKey = false;
 						((MaterialColorNode^)reflectionMapTree)->IsReducible = false;

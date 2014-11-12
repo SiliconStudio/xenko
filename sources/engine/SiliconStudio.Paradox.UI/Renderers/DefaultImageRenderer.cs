@@ -21,15 +21,13 @@ namespace SiliconStudio.Paradox.UI.Renderers
             base.RenderColor(element, context);
 
             var image = (ImageElement)element;
+            var imageColor = element.RenderOpacity * Color.White;
 
             if(image.Source == null)
                 return;
-
-            var imageSize = image.Source.ImageIdealSize;
-            var imageColor = element.RenderOpacity * Color.White;
-
+            
             Batch.DrawImage(image.Source.Texture, image.Source.TextureAlpha, ref image.WorldMatrixInternal, ref image.Source.RegionInternal,
-                ref element.RenderSizeInternal, ref imageSize, ref image.Source.BordersInternal, ref imageColor, context.DepthBias, image.Source.Orientation);
+                ref element.RenderSizeInternal, ref image.Source.BordersInternal, ref imageColor, context.DepthBias, image.Source.Orientation);
         }
     }
 }

@@ -105,12 +105,16 @@ namespace SiliconStudio.Paradox.Graphics.Regression
             innerStream.WriteByte(value);
         }
 
+#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+
         /// <inheritdoc/>
         public override void Close()
         {
             innerStream.Close();
             base.Close();
         }
+
+#endif
 
         /// <inheritdoc/>
         protected override void Dispose(bool disposing)

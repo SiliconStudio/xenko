@@ -1,13 +1,15 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
-using System.Runtime.Remoting.Messaging;
+
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Paradox.Games;
 
 namespace SiliconStudio.Paradox.Graphics.Regression
 {
     public class TestGameBase : Game
     {
+        public static readonly Logger TestGameLogger = GlobalLogger.GetLogger("TestGameLogger");
+
         public int StopOnFrameCount { get; set; }
 
         public TestGameBase()

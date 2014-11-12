@@ -27,6 +27,8 @@ namespace SiliconStudio.Assets
         private static readonly Dictionary<Type, IAssetFactory> RegisteredFactories = new Dictionary<Type, IAssetFactory>();
         private static readonly Dictionary<Type, AssetDescription> RegisteredDescriptions = new Dictionary<Type, AssetDescription>();
         private static readonly Dictionary<Guid, IAssetImporter> RegisteredImportersInternal = new Dictionary<Guid, IAssetImporter>();
+        private static readonly Dictionary<Type, int> RegisteredFormatVersions = new Dictionary<Type, int>();
+        private static readonly Dictionary<Type, Type[]> RegisteredFormatVersionUpdaterTypes = new Dictionary<Type, Type[]>();
         private static readonly Dictionary<string, List<IAssetImporter>> RegisterImportExtensions = new Dictionary<string, List<IAssetImporter>>(StringComparer.InvariantCultureIgnoreCase);
         private static readonly HashSet<string> RegisteredAssetFileExtensions = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
         internal static readonly HashSet<Assembly> RegisteredAssemblies = new HashSet<Assembly>();
@@ -129,6 +131,32 @@ namespace SiliconStudio.Assets
             string extension;
             RegisteredDefaultAssetExtension.TryGetValue(assetType, out extension);
             return extension;
+        }
+
+        /// <summary>
+        /// Gets the current format version of an asset.
+        /// </summary>
+        /// <param name="assetType">The asset type.</param>
+        /// <returns>The current format version of this asset.</returns>
+        public static int GetFormatVersion(Type assetType)
+        {
+            AssertAssetType(assetType);
+            int version;
+            RegisteredFormatVersions.TryGetValue(assetType, out version);
+            return version;
+        }
+
+        /// <summary>
+        /// Gets the current format version of an asset.
+        /// </summary>
+        /// <param name="assetType">The asset type.</param>
+        /// <returns>The current format version of this asset.</returns>
+        public static Type[] GetFormatVersionUpdaterTypes(Type assetType)
+        {
+            AssertAssetType(assetType);
+            Type[] updaters;
+            RegisteredFormatVersionUpdaterTypes.TryGetValue(assetType, out updaters);
+            return updaters;
         }
 
         /// <summary>
@@ -404,6 +432,13 @@ namespace SiliconStudio.Assets
                             SourceCodeAssetSerializer.RegisterExtension(assetType, extension);
                         }
                     }
+                }
+
+                var assetFormatVersion = assetType.GetCustomAttribute<AssetFormatVersionAttribute>();
+                if (assetFormatVersion != null)
+                {
+                    RegisteredFormatVersions.Add(assetType, assetFormatVersion.Version);
+                    RegisteredFormatVersionUpdaterTypes.Add(assetType, assetFormatVersion.AssetUpdaterTypes);
                 }
 
                 // Asset factory
