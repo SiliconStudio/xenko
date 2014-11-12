@@ -85,7 +85,7 @@ namespace SiliconStudio.Paradox.Assets
         /// Gets or sets the use of Multipack atlas mode which allows more than one texture atlas to fit all given textures
         /// </summary>
         [DataMember(100)]
-        [DefaultValue(false)]
+        [DefaultValue(true)]
         public bool UseMultipackAtlas { get; set; }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace SiliconStudio.Paradox.Assets
 
             GenerateTextureAtlas = true;
             AtlasPackingAlgorithm = TexturePackingMethod.Best;
-            UseMultipackAtlas = false;
+            UseMultipackAtlas = true;
 
             UseRotationInAtlas = true;
 
