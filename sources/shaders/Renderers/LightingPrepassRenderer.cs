@@ -654,9 +654,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         private bool RenderTileForDirectLights(RenderContext context)
         {
             // only one tile since the directional lights affects the whole screen
-            context.Parameters.Set(DeferredLightingShaderKeys.TileCountX, 1);
-            context.Parameters.Set(DeferredLightingShaderKeys.TileCountY, 1);
-            context.Parameters.Set(DeferredLightingShaderKeys.TileIndex, 0);
+            context.Parameters.Set(DeferredTiledShaderKeys.TileCountX, 1);
+            context.Parameters.Set(DeferredTiledShaderKeys.TileCountY, 1);
+            context.Parameters.Set(DeferredTiledShaderKeys.TileIndex, 0);
 
             int directLightCount = directionalLightDatas.Count;
 
@@ -719,9 +719,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         private bool RenderTileForDirectShadowLights(RenderContext context, bool hasPreviousDraw, Effect effect, List<EntityLightShadow> lights, List<DirectLightData> lightDatas, bool varianceShadowMap)
         {
             // only one tile since the directional lights affects the whole screen
-            context.Parameters.Set(DeferredShadowLightingShaderKeys.TileCountX, 1);
-            context.Parameters.Set(DeferredShadowLightingShaderKeys.TileCountY, 1);
-            context.Parameters.Set(DeferredShadowLightingShaderKeys.TileIndex, 0);
+            context.Parameters.Set(DeferredTiledShaderKeys.TileCountX, 1);
+            context.Parameters.Set(DeferredTiledShaderKeys.TileCountY, 1);
+            context.Parameters.Set(DeferredTiledShaderKeys.TileIndex, 0);
 
             int directShadowLightCount = lightDatas.Count;
 
@@ -804,9 +804,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         {
             // TODO: look for tiles covered by spot lights
             // only one tile for spot lights for now
-            context.Parameters.Set(DeferredLightingShaderKeys.TileCountX, 1);
-            context.Parameters.Set(DeferredLightingShaderKeys.TileCountY, 1);
-            context.Parameters.Set(DeferredLightingShaderKeys.TileIndex, 0);
+            context.Parameters.Set(DeferredTiledShaderKeys.TileCountX, 1);
+            context.Parameters.Set(DeferredTiledShaderKeys.TileCountY, 1);
+            context.Parameters.Set(DeferredTiledShaderKeys.TileIndex, 0);
 
             int spotShadowLightCount = lightDatas.Count;
 
@@ -895,9 +895,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         {
             // TODO: look for tiles covered by spot lights
             // only one tile for spot lights for now
-            context.Parameters.Set(DeferredLightingShaderKeys.TileCountX, 1);
-            context.Parameters.Set(DeferredLightingShaderKeys.TileCountY, 1);
-            context.Parameters.Set(DeferredLightingShaderKeys.TileIndex, 0);
+            context.Parameters.Set(DeferredTiledShaderKeys.TileCountX, 1);
+            context.Parameters.Set(DeferredTiledShaderKeys.TileCountY, 1);
+            context.Parameters.Set(DeferredTiledShaderKeys.TileIndex, 0);
 
             int spotLightCount = spotLightDatas.Count;
 
@@ -962,8 +962,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         private void RenderTilesForPointLights(RenderContext context, bool hasPreviousDraw)
         {
-            context.Parameters.Set(DeferredLightingShaderKeys.TileCountX, TileCountX);
-            context.Parameters.Set(DeferredLightingShaderKeys.TileCountY, TileCountY);
+            context.Parameters.Set(DeferredTiledShaderKeys.TileCountX, TileCountX);
+            context.Parameters.Set(DeferredTiledShaderKeys.TileCountY, TileCountY);
 
             var hasDrawn = false;
 
@@ -984,7 +984,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 }*/
 
                 // Set tile index
-                context.Parameters.Set(DeferredLightingShaderKeys.TileIndex, tileIndex);
+                context.Parameters.Set(DeferredTiledShaderKeys.TileIndex, tileIndex);
 
                 int drawCount = (tilesGroup.Count + MaxPointLightsPerTileDrawCall - 1) / MaxPointLightsPerTileDrawCall;
 

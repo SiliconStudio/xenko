@@ -454,6 +454,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>DeferredSpotShadowLighting.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="LightPrepass\DeferredTiledShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>DeferredTiledShader.pdxsl</DependentUpon>
+    </Compile>
     <Compile Include="Shading\MaterialReflectance.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1896,6 +1902,10 @@
     <None Include="LightPrepass\DeferredSpotShadowLighting.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>DeferredSpotShadowLighting.cs</LastGenOutput>
+    </None>
+    <None Include="LightPrepass\DeferredTiledShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>DeferredTiledShader.cs</LastGenOutput>
     </None>
     <None Include="Shading\MaterialReflectance.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
