@@ -225,7 +225,7 @@ namespace DefaultEffects
             mixin.Mixin.AddMacro("DEFERRED_SPOT_LIGHTING_UNROLL_LOOP", 1);
 
             #line 91
-            context.Mixin(mixin, "DeferredDirectionalShadowLighting");
+            context.Mixin(mixin, "DeferredSpotShadowLighting");
 
             #line 93
             context.Mixin(mixin, "DeferredShadowMapCascadeBase");

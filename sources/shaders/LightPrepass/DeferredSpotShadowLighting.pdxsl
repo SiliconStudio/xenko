@@ -37,6 +37,8 @@ class DeferredSpotShadowLighting : DeferredLightingBase, ShadowBase
     {
         float4 lighting = float4(0,0,0,0);
 
+        ComputeShadowMapPositions(float4(positionVS,1));
+
 #ifdef DEFERRED_SPOT_LIGHTING_UNROLL_LOOP
         [unroll(DEFERRED_MAX_SPOT_SHADOW_LIGHT_COUNT)]
 #endif

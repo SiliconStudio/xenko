@@ -594,54 +594,56 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             UpdateLightDatas(context);
 
             // if there is no light, use albedo
-            if (pointLights.Count == 0 && spotLights.Count == 0 && directionalLights.Count == 0 && directionalShadowLights.Count == 0)
+            if (pointLights.Count == 0 && spotLights.Count == 0 && directionalLights.Count == 0 && directionalShadowLights.Count == 0 && spotShadowLights.Count == 0)
             {
                 GraphicsDevice.Clear(lightRenderTarget, new Color4(1.0f, 1.0f, 1.0f, 0.0f));
-                return;
             }
-
-            // Clear and set light accumulation target
-            GraphicsDevice.Clear(lightRenderTarget, new Color4(0.0f, 0.0f, 0.0f, 0.0f));
-            GraphicsDevice.SetRenderTarget(lightRenderTarget); // no depth buffer
-            // TODO: make sure that the lightRenderTarget.Texture is not bound to any shader to prevent some warnings
-
-            // Set default blend state
-            GraphicsDevice.SetBlendState(null);
-
-            // set default depth stencil test
-            GraphicsDevice.SetDepthStencilState(GraphicsDevice.DepthStencilStates.None);
-
-            // TODO: remove this?
-            // override specular intensity
-            context.Parameters.Set(MaterialKeys.SpecularIntensity, 1.0f);
-
-            UpdateTiles(Pass.Parameters);
-
-            // direct lighting
-            var hasPreviousLighting = RenderTileForDirectLights(context);
-            
-            // spot lights
-            hasPreviousLighting |= RenderTileForSpotLights(context, hasPreviousLighting);
-
-            // lighting with shadows
-            foreach (var lightList in shadowLights)
+            else
             {
-                if (lightList.Value.Count > 0)
+                // Clear and set light accumulation target
+                GraphicsDevice.Clear(lightRenderTarget, new Color4(0.0f, 0.0f, 0.0f, 0.0f));
+                GraphicsDevice.SetRenderTarget(lightRenderTarget); // no depth buffer
+                // TODO: make sure that the lightRenderTarget.Texture is not bound to any shader to prevent some warnings
+
+                // Set default blend state
+                GraphicsDevice.SetBlendState(null);
+
+                // set default depth stencil test
+                GraphicsDevice.SetDepthStencilState(GraphicsDevice.DepthStencilStates.None);
+
+                // TODO: remove this?
+                // override specular intensity
+                context.Parameters.Set(MaterialKeys.SpecularIntensity, 1.0f);
+
+                UpdateTiles(Pass.Parameters);
+
+                // direct lighting
+                var hasPreviousLighting = RenderTileForDirectLights(context);
+
+                // spot lights
+                hasPreviousLighting |= RenderTileForSpotLights(context, hasPreviousLighting);
+
+                // lighting with shadows
+                foreach (var lightList in shadowLights)
                 {
-                    var effect = shadowEffects[lightList.Key];
-                    // direct light or spot light
-                    if ((lightList.Key.LightType == LightType.Directional && RenderTileForDirectShadowLights(context, hasPreviousLighting, effect, lightList.Value, directShadowLightDatas[lightList.Key], lightList.Key.Filter == ShadowMapFilterType.Variance))
-                        || lightList.Key.LightType == LightType.Spot && RenderTileForSpotShadowLights(context, hasPreviousLighting, effect, lightList.Value, spotShadowLightDatas[lightList.Key], lightList.Key.Filter == ShadowMapFilterType.Variance))
+                    if (lightList.Value.Count > 0)
                     {
-                        effect.UnbindResources();
-                        hasPreviousLighting = true;
+                        var effect = shadowEffects[lightList.Key];
+                        // direct light or spot light
+                        if ((lightList.Key.LightType == LightType.Directional && RenderTileForDirectShadowLights(context, hasPreviousLighting, effect, lightList.Value, directShadowLightDatas[lightList.Key], lightList.Key.Filter == ShadowMapFilterType.Variance))
+                            || lightList.Key.LightType == LightType.Spot && RenderTileForSpotShadowLights(context, hasPreviousLighting, effect, lightList.Value, spotShadowLightDatas[lightList.Key], lightList.Key.Filter == ShadowMapFilterType.Variance))
+                        {
+                            effect.UnbindResources();
+                            hasPreviousLighting = true;
+                        }
                     }
                 }
+
+                // point lights
+                RenderTilesForPointLights(context, hasPreviousLighting);
             }
 
-            // point lights
-            RenderTilesForPointLights(context, hasPreviousLighting);
-            
+            // reset the light infos
             EndRender(context);
 
             // TDO: remove this
