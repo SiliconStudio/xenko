@@ -1,6 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL && SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+
 using System;
 using OpenTK.Input;
 using SiliconStudio.Paradox.Games;
@@ -37,30 +39,45 @@ namespace SiliconStudio.Paradox.Input
         {
             CurrentMousePosition = new Vector2(e.X / ControlWidth, e.Y / ControlHeight);
             
-            if (MouseLeftButtonCurrentlyDown())
-                HandlePointerEvents(0, CurrentMousePosition, PointerState.Move, PointerType.Mouse);
+            // trigger touch move events
+            foreach (MouseButton button in Enum.GetValues(typeof(MouseButton)))
+            {
+                var buttonId = (int)button;
+                if (MouseButtonCurrentlyDown[buttonId])
+                    HandlePointerEvents(buttonId, CurrentMousePosition, PointerState.Move, PointerType.Mouse);
+            }
         }
 
         void Mouse_ButtonUp(object sender, MouseButtonEventArgs e)
         {
+            var button = ConvertMouseButtonFromOpenTK(e.Button);
+            var buttonId = (int)button;
+
+            // the mouse events series has been interrupted because out of the window.
+            if (!MouseButtonCurrentlyDown[buttonId])
+                return;
+            
             CurrentMousePosition = new Vector2(e.X / ControlWidth, e.Y / ControlHeight);
-            var mouseInputEvent = new MouseInputEvent { Type = InputEventType.Up, MouseButton = ConvertMouseButtonFromOpenTK(e.Button) };
+            var mouseInputEvent = new MouseInputEvent { Type = InputEventType.Up, MouseButton = button };
             lock (MouseInputEvents)
                 MouseInputEvents.Add(mouseInputEvent);
 
-            if (e.Button == OpenTK.Input.MouseButton.Left)
-                HandlePointerEvents(0, CurrentMousePosition, PointerState.Up, PointerType.Mouse);
+            MouseButtonCurrentlyDown[buttonId] = false;
+            HandlePointerEvents(buttonId, CurrentMousePosition, PointerState.Up, PointerType.Mouse);
         }
 
         void Mouse_ButtonDown(object sender, MouseButtonEventArgs e)
         {
+            var button = ConvertMouseButtonFromOpenTK(e.Button);
+            var buttonId = (int)button;
+
             CurrentMousePosition = new Vector2(e.X / ControlWidth, e.Y / ControlHeight);
-            var mouseInputEvent = new MouseInputEvent { Type = InputEventType.Down, MouseButton = ConvertMouseButtonFromOpenTK(e.Button) };
+            var mouseInputEvent = new MouseInputEvent { Type = InputEventType.Down, MouseButton = button };
             lock (MouseInputEvents)
                 MouseInputEvents.Add(mouseInputEvent);
 
-            if (IsMouseButtonDown(MouseButton.Left))
-                HandlePointerEvents(0, CurrentMousePosition, PointerState.Down, PointerType.Mouse);
+            MouseButtonCurrentlyDown[buttonId] = true;
+            HandlePointerEvents(buttonId, CurrentMousePosition, PointerState.Down, PointerType.Mouse);
         }
 
         void Keyboard_KeyUp(object sender, KeyboardKeyEventArgs arg)

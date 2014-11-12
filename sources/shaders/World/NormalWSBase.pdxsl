@@ -1,0 +1,28 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Defines the methods to get the normal in world space and inserts them in the pipeline.
+/// </summary>
+class NormalWSBase : ShaderBase
+{
+    stage stream float3 vNormalWS;
+
+    override stage void VSMain()
+    {
+        base.VSMain();
+
+        // Perform normal generation at the end in case vNormal is modified.
+        // TODO: Another mechanism (compute on first access?)
+        GenerateNormalWS_VS();
+    }
+
+    stage void GenerateNormalWS_VS()
+    {
+        streams.vNormalWS = 0.0f;
+    }
+
+    float3 NormalWS()
+    {
+        return normalize(streams.vNormalWS);
+    }
+};

@@ -36,31 +36,28 @@ namespace SiliconStudio.Paradox.Input
             var gestureWasStarted = HasGestureStarted;
             HasGestureStarted = (NbOfFingerOnScreen + (isKeyDown?1:-1)  == Config.RequiredNumberOfFingers);
 
-            if (HasGestureStarted) // beginning of a new drag gesture
-            {
-                UpdateFingerDictionaties(isKeyDown, id, pos);
+            UpdateFingerDictionaries(isKeyDown, id, pos);
 
+            if (HasGestureStarted) // beginning of a new gesture
+            {
                 InitializeGestureVariables();
             }
-            else // end of the current drag gesture
+            else if (gestureWasStarted && GestureBeganEventSent) // end of the current gesture
             {
-                if (gestureWasStarted && GestureBeganEventSent)
-                    AddGestureEventToCurrentList(GestureState.Ended);
-
-                UpdateFingerDictionaties(isKeyDown, id, pos);
+                AddGestureEventToCurrentList(GestureState.Ended);
             }
         }
 
         protected abstract void InitializeGestureVariables();
-
-
+        
         protected override void ProcessMoveEventPointers(Dictionary<int, Vector2> fingerIdsToMovePos)
         {
-            if (!HasGestureStarted) // nothing to do is the gesture has not started yet
-                return;
-
+            // update current finger positions.
             foreach (var id in fingerIdsToMovePos.Keys)
                 FingerIdsToLastPos[id] = fingerIdsToMovePos[id];
+
+            if (!HasGestureStarted) // nothing more to do is the gesture has not started yet
+                return;
 
             UpdateGestureVarsAndPerfomChecks();
 
@@ -78,7 +75,7 @@ namespace SiliconStudio.Paradox.Input
 
         protected abstract bool GestureBeginningConditionFulfilled();
 
-        private void UpdateFingerDictionaties(bool isKeyDown, int id, Vector2 pos)
+        private void UpdateFingerDictionaries(bool isKeyDown, int id, Vector2 pos)
         {
             if (isKeyDown)
             {

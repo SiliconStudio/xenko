@@ -1,0 +1,13 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Retrieves the reflectance from a Gbuffer.
+/// </summary>
+class MaterialReflectanceGBuffer
+{
+    override stage float GetReflectance()
+    {
+        // TODO: depends on the GBuffer we use.
+        return GBufferTexture.Load(int3(streams.ShadingPosition.xy, 0), 0).w;
+    }
+};

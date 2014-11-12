@@ -110,6 +110,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Effects\LayerModelRenderer.cs" />
     <Compile Include="Effects\LightingConfiguration.cs" />
     <Compile Include="Effects\LightingConfigurationsSet.cs" />
     <Compile Include="Effects\LightingKeys.cs" />
@@ -136,6 +137,7 @@
     <Compile Include="Effects\MeshAnimationUpdater.cs" />
     <Compile Include="Effects\MeshRenderExtensions.cs" />
     <Compile Include="Effects\MeshRenderState.cs" />
+    <Compile Include="Effects\MultipleRenderTargetsSetter.cs" />
     <Compile Include="Effects\OpaqueModelRenderer.cs" />
     <Compile Include="Effects\ProfilingKeys.cs" />
     <Compile Include="Effects\RecursiveRenderer.cs" />
@@ -176,6 +178,8 @@
     <Compile Include="Data\BoundingBoxExtensions.cs" />
     <Compile Include="Data\HalfBufferExtensions.cs" />
     <Compile Include="Data\PolySortExtensions.cs" />
+    <Compile Include="Engine\CubemapBlendComponent.cs" />
+    <Compile Include="Engine\CubemapSourceComponent.cs" />
     <Compile Include="Engine\LightProcessor.cs" />
     <Compile Include="Engine\PlayingAnimation.cs" />
     <Compile Include="Engine\ModelNodeLinkComponent.cs" />

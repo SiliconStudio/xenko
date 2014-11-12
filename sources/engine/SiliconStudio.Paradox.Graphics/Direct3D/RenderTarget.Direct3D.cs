@@ -17,24 +17,27 @@ namespace SiliconStudio.Paradox.Graphics
         private SharpDX.Direct3D11.RenderTargetView _renderTargetView;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Texture2D"/> class.
+        /// Create a RenderTarget from a texture.
         /// </summary>
         /// <param name="device">The device.</param>
-        /// <param name="name">The name.</param>
-        /// <param name="texture2D">The texture2D.</param>
-        internal RenderTarget(GraphicsDevice device, Texture texture, ViewType viewType, int arraySlize, int mipSlice, PixelFormat viewFormat = PixelFormat.None)
+        /// <param name="texture">The texture.</param>
+        /// <param name="viewType">The view type.</param>
+        /// <param name="arraySlice">The index of the array slice.</param>
+        /// <param name="mipSlice">The index of the mip slice.</param>
+        /// <param name="viewFormat">The pixel format.</param>
+        internal RenderTarget(GraphicsDevice device, Texture texture, ViewType viewType, int arraySlice, int mipSlice, PixelFormat viewFormat = PixelFormat.None)
             : base(device)
         {
             _nativeDeviceChild = texture.NativeDeviceChild;
             Description = texture.Description;
 
-            NativeRenderTargetView = texture.GetRenderTargetView(viewType, arraySlize, mipSlice);
+            NativeRenderTargetView = texture.GetRenderTargetView(viewType, arraySlice, mipSlice);
 
             Width = Math.Max(1, Description.Width >> mipSlice);
             Height = Math.Max(1, Description.Height >> mipSlice);
 
             ViewType = viewType;
-            ArraySlice = arraySlize;
+            ArraySlice = arraySlice;
             MipLevel = mipSlice;
             ViewFormat = viewFormat == PixelFormat.None ? Description.Format : viewFormat;
 
@@ -43,12 +46,15 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Texture2D"/> class.
+        /// Create a RenderTarget from a texture.
         /// </summary>
         /// <param name="device">The device.</param>
-        /// <param name="name">The name.</param>
-        /// <param name="texture2D">The texture2D.</param>
-        internal RenderTarget(GraphicsDevice device, Texture texture, ViewType viewType, int arraySlize, int mipSlice, RenderTargetView view)
+        /// <param name="texture">The texture.</param>
+        /// <param name="viewType">The view type.</param>
+        /// <param name="arraySlice">The index of the array slice.</param>
+        /// <param name="mipSlice">The index of the mip slice.</param>
+        /// <param name="view">The render target view.</param>
+        internal RenderTarget(GraphicsDevice device, Texture texture, ViewType viewType, int arraySlice, int mipSlice, RenderTargetView view)
             : base(device)
         {
             _nativeDeviceChild = texture.NativeDeviceChild; //._nativeDeviceChild;
@@ -62,7 +68,7 @@ namespace SiliconStudio.Paradox.Graphics
             var viewFormat = view.Description.Format;
 
             ViewType = viewType;
-            ArraySlice = arraySlize;
+            ArraySlice = arraySlice;
             MipLevel = mipSlice;
             ViewFormat = (PixelFormat)viewFormat;
 
