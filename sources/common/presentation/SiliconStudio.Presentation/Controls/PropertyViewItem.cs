@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,7 +15,8 @@ namespace SiliconStudio.Presentation.Controls
     public class PropertyViewItem : HeaderedItemsControl
     {
         private readonly ObservableList<PropertyViewItem> properties = new ObservableList<PropertyViewItem>();
-        
+        private readonly PropertyView  propertyView;
+    
         public static readonly DependencyProperty IsExpandedProperty = DependencyProperty.Register("IsExpanded", typeof(bool), typeof(PropertyViewItem), new FrameworkPropertyMetadata(false, OnIsExpandedChanged));
 
         public static readonly DependencyPropertyKey OffsetPropertyKey = DependencyProperty.RegisterReadOnly("Offset", typeof(double), typeof(PropertyViewItem), new FrameworkPropertyMetadata(0.0));
@@ -29,6 +32,16 @@ namespace SiliconStudio.Presentation.Controls
             DefaultStyleKeyProperty.OverrideMetadata(typeof(PropertyViewItem), new FrameworkPropertyMetadata(typeof(PropertyViewItem)));
         }
 
+        public PropertyViewItem(PropertyView propertyView)
+        {
+            if (propertyView == null) throw new ArgumentNullException("propertyView");
+            this.propertyView = propertyView;
+            PreviewMouseMove += propertyView.ItemMouseMove;
+            
+        }
+
+        public PropertyView PropertyView { get { return propertyView; } }
+
         public IReadOnlyCollection<PropertyViewItem> Properties { get { return properties; } }
 
         public bool IsExpanded { get { return (bool)GetValue(IsExpandedProperty); } set { SetValue(IsExpandedProperty, value); } }
@@ -43,7 +56,7 @@ namespace SiliconStudio.Presentation.Controls
 
         protected override DependencyObject GetContainerForItemOverride()
         {
-            var item = new PropertyViewItem { Offset = Offset + Increment };
+            var item = new PropertyViewItem(propertyView) { Offset = Offset + Increment };
             return item;
         }
 
