@@ -34,7 +34,6 @@ namespace SiliconStudio.Presentation.Quantum
             Guid = Guid.NewGuid();
             IsVisible = true;
             IsReadOnly = false;
-            InitializeTypeDescriptor(ownerViewModel.ObservableViewModelService);
         }
 
         /// <summary>
