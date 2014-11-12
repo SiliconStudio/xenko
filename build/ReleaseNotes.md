@@ -1,6 +1,6 @@
 ### Version 1.0.0-beta03
 
-Release date: 2014/11/??
+Release date: 2014/11/11
 
 #### New Features
 - Engine: Add cubemap components to place cubemaps in the scene or render them at runtime.
