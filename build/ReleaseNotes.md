@@ -1,3 +1,20 @@
+### Version 1.0.0-beta04
+
+Release date: 2014/xx/xx
+
+#### New Features
+- Graphics: Spot light shadow maps in deferred rendering.
+
+#### Enhancements
+- Graphics: Better computation of shadow maps (for both directional and spot lights).
+- Samples: Spot light shadows in DeferredLighting sample.
+
+#### Issues fixed
+- Graphics: Fix spot light shadow computation.
+- Shaders: Simplify some deferred lighting shaders.
+
+___
+
 ### Version 1.0.0-beta03
 
 Release date: 2014/11/11
@@ -49,6 +66,8 @@ Release date: 2014/11/11
 - Physics: Complex convex hull decomposition can be a very long process and there is visual feedback for it.
 - Physics: Convex hull shape debug shapes in game studio are not rendering very well, although the asset will be OK.
 
+___
+
 ### Version 1.0.0-beta02
 
 Release date: 2014/10/22
@@ -72,6 +91,8 @@ Release date: 2014/10/22
 - UI: Opacity is new correctly taken into account when drawing background color of UI elements ([#43](https://github.com/SiliconStudio/paradox/issues/43)).
 - UI: Fix rendering problems on the Button/ToggleButton's content when setting their background color.
 - Visual Studio Package: Syntax highlighting was not working properly on VS2012 ([#45](https://github.com/SiliconStudio/paradox/issues/45)).
+
+___
 
 ### Version 1.0.0-beta01
 
@@ -143,6 +164,7 @@ More details at [http://paradox3d.net/blog/new-version-open-sourcing](http://par
 - Samples: Since there is no accelerometer Input API yet, Accelerometer sample is currently removed.
 - Windows Store/Phone: UI EditText and Game Resume/Destroy cycles are not implemented.
 - Windows Store/Phone: SharpFont.dll is still compiled against .NET 4.5 (might not pass certifications).
+
 ___
 
 ### Version 1.0.0-alpha11
