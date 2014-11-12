@@ -22,7 +22,7 @@ class DeferredDirectionalShadowLighting : DeferredLightingBase, ShadowBase
     };
 
     [Link("LightingPrepassRenderer.LightCount")]
-    int LightCount = 64;
+    int LightCount = 1;
 
     cbuffer LightData
     {

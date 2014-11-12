@@ -98,7 +98,7 @@ class ShadowMapCascadeBase : ForwardShadowMapBase, ShadowMapUtils, ShadowMapFilt
 
         // Outside of shadow maps
         if (foundCascadeIndex == SHADOWMAP_CASCADE_COUNT)
-            return 0.0f;//shadow = 0.0f;
+            return 1.0f;
         
         // Calculate shadows with lerp between cascades
         float shadowMapDistance = streams.vShadowMapDepth[i][foundCascadeIndex];

@@ -42,7 +42,7 @@ class DeferredSpotLighting : DeferredLightingBase
 #endif
         for (int lightIndex = 0; lightIndex < DEFERRED_MAX_SPOT_LIGHT_COUNT; ++lightIndex)
         {
-#ifdef DEFERRED_SPOT_LIGHTING_UNROLL_LOOP
+#ifndef DEFERRED_SPOT_LIGHTING_UNROLL_LOOP
             if (lightIndex >= LightCount)
                 break;
 #endif

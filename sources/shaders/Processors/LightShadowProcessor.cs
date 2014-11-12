@@ -119,7 +119,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
             light.ShadowMap.Fov = light.Light.SpotFieldAngle;
             light.ShadowMap.ReceiverInfo.ShadowLightDirection = light.ShadowMap.LightDirectionNormalized;
             light.ShadowMap.ShadowFarDistance = light.Light.ShadowFarDistance;
-            light.ShadowMap.ReceiverInfo.ShadowMapDistance = light.ShadowMap.ShadowFarDistance;
+            light.ShadowMap.ReceiverInfo.ShadowMapDistance = light.ShadowMap.ShadowFarDistance - light.ShadowMap.ShadowNearDistance;
             light.ShadowMap.ReceiverVsmInfo.BleedingFactor = light.Light.BleedingFactor;
             light.ShadowMap.ReceiverVsmInfo.MinVariance = light.Light.MinVariance;
         }

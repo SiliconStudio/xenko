@@ -25,7 +25,7 @@ class DeferredSpotShadowLighting : DeferredLightingBase, ShadowBase
     };
 
     [Link("LightingPrepassRenderer.LightCount")]
-    int LightCount = 64;
+    int LightCount = 1;
 
     cbuffer LightData
     {
@@ -44,7 +44,7 @@ class DeferredSpotShadowLighting : DeferredLightingBase, ShadowBase
 #endif
         for (int lightIndex = 0; lightIndex < DEFERRED_MAX_SPOT_SHADOW_LIGHT_COUNT; ++lightIndex)
         {
-#ifdef DEFERRED_SPOT_LIGHTING_UNROLL_LOOP
+#ifndef DEFERRED_SPOT_LIGHTING_UNROLL_LOOP
             if (lightIndex >= LightCount)
                 break;
 #endif
