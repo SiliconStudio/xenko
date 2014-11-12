@@ -59,8 +59,6 @@ namespace DefaultEffects
         using params LightingKeys;
 
         mixin macro DEFERRED_MAX_POINT_LIGHT_COUNT = LightingKeys.MaxDeferredLights;
-        //if (LightingKeys.UnrollDeferredLightLoop)
-        mixin macro DEFERRED_POINT_LIGHTING_UNROLL_LOOP = 1;
         mixin DeferredPointLighting;
     };
     
@@ -69,8 +67,6 @@ namespace DefaultEffects
         using params LightingKeys;
         using params ShadowMapParameters;
 
-        mixin macro DEFERRED_MAX_DIRECT_SHADOW_LIGHT_COUNT = 1;
-        mixin macro DEFERRED_DIRECT_LIGHTING_UNROLL_LOOP = 1;
         mixin DeferredDirectionalShadowLighting;
 
         mixin DeferredShadowMapCascadeBase;
@@ -86,8 +82,6 @@ namespace DefaultEffects
         using params LightingKeys;
         using params ShadowMapParameters;
 
-        mixin macro DEFERRED_MAX_SPOT_SHADOW_LIGHT_COUNT = 1;
-        mixin macro DEFERRED_SPOT_LIGHTING_UNROLL_LOOP = 1;
         mixin DeferredSpotShadowLighting;
 
         mixin DeferredShadowMapCascadeBase;
@@ -147,7 +141,6 @@ namespace DefaultEffects
     {
         using params LightingKeys;
 
-        mixin macro DEFERRED_MAX_DIRECT_LIGHT_COUNT = 1;
         mixin DeferredDirectionalLighting;
     };
 
@@ -155,7 +148,6 @@ namespace DefaultEffects
     {
         using params LightingKeys;
 
-        mixin macro DEFERRED_MAX_SPOT_LIGHT_COUNT = 1;
         mixin DeferredSpotLighting;
     };
 

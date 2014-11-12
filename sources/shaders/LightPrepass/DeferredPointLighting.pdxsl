@@ -7,7 +7,7 @@
 /// DEFERRED_MAX_POINT_LIGHT_COUNT: Macro - Maximum number of supported point lights.
 /// </remarks>
 #ifndef DEFERRED_MAX_POINT_LIGHT_COUNT
-# define DEFERRED_MAX_POINT_LIGHT_COUNT 1
+# define DEFERRED_MAX_POINT_LIGHT_COUNT 64
 #endif
 class DeferredPointLighting : DeferredLightingBase
 {
@@ -50,15 +50,12 @@ class DeferredPointLighting : DeferredLightingBase
     {
         float4 lighting = float4(0,0,0,0);
 
-#ifdef DEFERRED_POINT_LIGHTING_UNROLL_LOOP
         [unroll(DEFERRED_MAX_POINT_LIGHT_COUNT)]
-#endif
         for (int lightIndex = 0; lightIndex < DEFERRED_MAX_POINT_LIGHT_COUNT; ++lightIndex)
         {
-#ifndef DEFERRED_POINT_LIGHTING_UNROLL_LOOP
             if (lightIndex >= LightCount)
                 break;
-#endif
+      
             PointLightInfo lightInfo = PointLightInfos[lightIndex];
             float3 lightDir = lightInfo.vPositionVS - positionVS;
 
