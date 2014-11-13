@@ -1,3 +1,20 @@
+### Version 1.0.0-beta04
+
+Release date: 2014/??/??
+
+#### New Features
+
+#### Enhancements
+
+#### Issues fixed
+- Studio: Fix renamed button for string-indexed dictionary that was misplaced and not working
+
+#### Breaking changes
+
+#### Known Issues
+- Physics: Complex convex hull decomposition can be a very long process and there is visual feedback for it.
+- Physics: Convex hull shape debug shapes in game studio are not rendering very well, although the asset will be OK.
+
 ### Version 1.0.0-beta03
 
 Release date: 2014/11/11
