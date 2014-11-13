@@ -9,6 +9,5 @@ namespace SiliconStudio.Paradox.Effects.Modules
 {
     public static partial class DeferredSpotLightingKeys
     {
-        public static readonly ParameterKey<int> LightCount = ParameterKeys.New<int>(64);
     }
 }
