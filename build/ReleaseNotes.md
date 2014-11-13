@@ -1,6 +1,6 @@
 ### Version 1.0.0-beta04
 
-Release date: 2014/xx/xx
+Release date: 2014/??/??
 
 #### New Features
 - Graphics: Spot light shadow maps in deferred rendering.
@@ -12,6 +12,13 @@ Release date: 2014/xx/xx
 #### Issues fixed
 - Graphics: Fix spot light shadow computation.
 - Shaders: Simplify some deferred lighting shaders.
+- Studio: Fix renamed button for string-indexed dictionary that was misplaced and not working
+
+#### Breaking changes
+
+#### Known Issues
+- Physics: Complex convex hull decomposition can be a very long process and there is visual feedback for it.
+- Physics: Convex hull shape debug shapes in game studio are not rendering very well, although the asset will be OK.
 
 ___
 
