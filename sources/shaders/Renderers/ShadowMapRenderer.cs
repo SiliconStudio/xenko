@@ -282,7 +282,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 }
                 else if (shadowMap.LightType == LightType.Spot)
                 {
-                    shadowMapView = Matrix.LookAtRH(shadowMap.LightPosition, shadowMap.LightPosition + shadowMap.LightDirection, Vector3.UnitY);
+                    shadowMapView = Matrix.LookAtRH(shadowMap.LightPosition, shadowMap.LightPosition + shadowMap.LightDirection, up);
                     shadowMapProjection = Matrix.PerspectiveFovRH(shadowMap.Fov, 1, znear, zfar);
 
                     // Set offset
