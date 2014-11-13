@@ -16,8 +16,10 @@ namespace SiliconStudio.Presentation.Controls
     {
         private readonly ObservableList<PropertyViewItem> properties = new ObservableList<PropertyViewItem>();
         private readonly PropertyView  propertyView;
-    
+
         public static readonly DependencyProperty IsExpandedProperty = DependencyProperty.Register("IsExpanded", typeof(bool), typeof(PropertyViewItem), new FrameworkPropertyMetadata(false, OnIsExpandedChanged));
+
+        public static readonly DependencyProperty CanBeHoveredProperty = DependencyProperty.Register("CanBeHovered", typeof(bool), typeof(PropertyViewItem), new FrameworkPropertyMetadata(true));
 
         public static readonly DependencyPropertyKey OffsetPropertyKey = DependencyProperty.RegisterReadOnly("Offset", typeof(double), typeof(PropertyViewItem), new FrameworkPropertyMetadata(0.0));
 
@@ -46,6 +48,8 @@ namespace SiliconStudio.Presentation.Controls
 
         public bool IsExpanded { get { return (bool)GetValue(IsExpandedProperty); } set { SetValue(IsExpandedProperty, value); } }
 
+        public bool CanBeHovered { get { return (bool)GetValue(CanBeHoveredProperty); } set { SetValue(CanBeHoveredProperty, value); } }
+        
         public double Offset { get { return (double)GetValue(OffsetPropertyKey.DependencyProperty); } private set { SetValue(OffsetPropertyKey, value); } }
 
         public double Increment { get { return (double)GetValue(IncrementProperty); } set { SetValue(IncrementProperty, value); } }

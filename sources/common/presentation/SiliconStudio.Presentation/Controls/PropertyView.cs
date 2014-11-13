@@ -60,10 +60,16 @@ namespace SiliconStudio.Presentation.Controls
         internal void ItemMouseMove(object sender, MouseEventArgs e)
         {
             var item = sender as PropertyViewItem;
-            if (item != null)
+            if (item != null && item.CanBeHovered)
             {
                 HoveredItem = item;
             }
+        }
+
+        protected override void OnMouseLeave(MouseEventArgs e)
+        {
+            base.OnMouseLeave(e);
+            HoveredItem = null;
         }
 
         protected override DependencyObject GetContainerForItemOverride()
