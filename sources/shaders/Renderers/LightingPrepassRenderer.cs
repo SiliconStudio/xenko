@@ -792,6 +792,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 SetSpotLightParameters(context, effect, currentSpotShadowLights, lightCount);
 
                 RenderShadowLight(context, lights, startLightIndex, lightCount, cascadeCount, varianceShadowMap, hasPreviousDraw, i, shadowUpdateInfo, effect);
+
                 startLightIndex += MaxSpotShadowLightsPerTileDrawCall;
             }
 

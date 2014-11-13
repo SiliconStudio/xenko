@@ -391,11 +391,11 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                     case LightingUpdateType.DirectionalShadow:
                         UpdateLightingParameters(info, ref effectMesh, ref viewMatrix, directionalLightsWithShadowForMeshGroups[info.Index]);
                         break;
-                    //TODO: implement later when shadow map are supported
-                    case LightingUpdateType.PointShadow:
-                        break;
                     case LightingUpdateType.SpotShadow:
                         UpdateLightingParameters(info, ref effectMesh, ref viewMatrix, spotLightsWithShadowForMeshGroups[info.Index]);
+                        break;
+                    //TODO: implement later when shadow map are supported
+                    case LightingUpdateType.PointShadow:
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
