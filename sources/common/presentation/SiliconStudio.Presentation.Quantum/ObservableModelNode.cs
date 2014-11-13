@@ -112,7 +112,7 @@ namespace SiliconStudio.Presentation.Quantum
         public sealed override bool HasDictionary { get { AssertInit(); return (targetNode.Content.Descriptor is DictionaryDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.Reference is ReferenceEnumerable && ((ReferenceEnumerable)targetNode.Content.Reference).IsDictionary); } }
 
         /// <inheritdoc/>
-        public sealed override IReadOnlyDictionary<string, object> AssociatedData { get { return associatedData; } }
+        public sealed override IDictionary<string, object> AssociatedData { get { return associatedData; } }
 
         internal Guid ModelGuid { get { return targetNode.Guid; } }
 
@@ -135,6 +135,12 @@ namespace SiliconStudio.Presentation.Quantum
         public bool MatchNode(IModelNode node)
         {
             return sourceNode == node;
+        }
+
+        public IMemberDescriptor GetMemberDescriptor()
+        {
+            var memberContent = sourceNode.Content as MemberContent;
+            return memberContent != null ? memberContent.Member : null;
         }
 
         internal void CheckConsistency()

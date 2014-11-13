@@ -140,7 +140,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         // TODO: we shall find a better way to handle combined associated data...
         /// <inheritdoc/>
-        public override IReadOnlyDictionary<string, object> AssociatedData { get { return CombinedNodes.First().AssociatedData; } }
+        public override IDictionary<string, object> AssociatedData { get { return CombinedNodes.First().AssociatedData; } }
 
         public void Refresh()
         {
