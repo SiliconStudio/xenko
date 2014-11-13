@@ -274,6 +274,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                     // Compute caster view and projection matrices
                     shadowMapView = Matrix.LookAtRH(target - direction * zfar * 0.5f, target + direction * zfar * 0.5f, up); // View;
                     shadowMapProjection = Matrix.OrthoOffCenterRH(-radius, radius, -radius, radius, znear, zfar); // Projection
+                    // near and far are not correctly set but the shader will rewrite the z value
+                    // on the hand, the offset is correct
 
                     // Compute offset
                     Matrix shadowVInverse;
