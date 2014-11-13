@@ -792,9 +792,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         private enum LightTypeGuess
         {
             None = 0x0,
-            Directional = 0x1,
-            Point = 0x2,
-            Spot = Directional | Point
+            Directional = 0x1, // direction is needed
+            Point = 0x2, // position is needed
+            Spot = Directional | Point // angle falloff is needed
         }
 
         private static bool BelongToGroup(LightComponent light, ShadowMap shadow, ShadowConfiguration config, int groupCount, Texture2D groupTexture)

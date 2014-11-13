@@ -67,10 +67,10 @@ class DeferredPointLighting : DeferredLightingBase
             lightColor *= CalculateLightAttenuation(dist, lightInfo.intensity, lightInfo.radius, LightAttenuationCutoff);
 
             // Compute Diffuse Lighting
-            float3 diffuseLighting = lightInfo.intensity * brdfDiffuse.ComputeDiffuseLighting(lightColor, lightDir, normalVS, eyeVS);
+            float3 diffuseLighting = brdfDiffuse.ComputeDiffuseLighting(lightColor, lightDir, normalVS, eyeVS);
 
             // Compute Specular Lighting
-            float3 specularLighting = lightInfo.intensity * brdfSpecular.ComputeSpecularLighting(lightColor, lightDir, normalVS, eyeVS);
+            float3 specularLighting = brdfSpecular.ComputeSpecularLighting(lightColor, lightDir, normalVS, eyeVS);
 
             // To reduce bandwidth we don't store 2 x (RGBDiffuse + RGBSpecular), we store only the RGBDiffuse + Utilities.Luminance(RGBSpecular)
             // Luminance(lighting.Specular)

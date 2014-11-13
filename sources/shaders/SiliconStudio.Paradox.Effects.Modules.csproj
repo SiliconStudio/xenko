@@ -912,12 +912,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>PointShading.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Shading\PointShadingBase.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>PointShadingBase.pdxsl</DependentUpon>
-    </Compile>
     <Compile Include="Shading\ShadingDiffuse.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -2112,10 +2106,6 @@
     <None Include="Shading\PointShading.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>PointShading.cs</LastGenOutput>
-    </None>
-    <None Include="Shading\PointShadingBase.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>PointShadingBase.cs</LastGenOutput>
     </None>
     <None Include="Shading\ShadingDiffuse.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

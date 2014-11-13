@@ -16,10 +16,8 @@ class DeferredSpotLighting : DeferredLightingBase
         float spotFieldAngle;
         float3 color;
         float spotBeamAngle;
+        float range;
     };
-
-    [Link("LightingPrepassRenderer.LightCount")]
-    int LightCount = 64;
 
     cbuffer LightData
     {
@@ -32,13 +30,20 @@ class DeferredSpotLighting : DeferredLightingBase
         float4 lighting = float4(0,0,0,0);
 
         SpotLightInfo lightInfo = SpotLightInfos[0];
-        float3 dirToLight = normalize(lightInfo.vPositionVS - positionVS);
+        float3 dirToLight = lightInfo.vPositionVS - positionVS;
+        float lightDistance = length(dirToLight);
+        dirToLight /= lightDistance;
         float3 lightDir = normalize(lightInfo.vDirectionVS);
         float fieldAngle = lightInfo.spotFieldAngle;
         float beamAngle = lightInfo.spotBeamAngle;
 
+        // angle attenuation
         float factor = smoothstep(fieldAngle, beamAngle, -dot(dirToLight, lightDir));
-            
+
+        // distance attenuation
+        float dr = max(lightDistance - lightInfo.range, 0)/lightInfo.range + 1;
+        factor /= dr*dr;
+
         float3 lightColor = factor * lightInfo.color; // pow(lightInfo.color,2.2);
 
         // Compute Diffuse Lighting

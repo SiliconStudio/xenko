@@ -40,6 +40,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         public Color3 DiffuseColor;
         public float SpotBeamAngle;
+
+        public float Range;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
@@ -1217,6 +1219,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
             data.SpotBeamAngle = (float)Math.Cos(Math.PI * light.Light.SpotBeamAngle / 180);
             data.SpotFieldAngle = (float)Math.Cos(Math.PI * light.Light.SpotFieldAngle / 180);
+
+            data.Range = light.Light.DecayStart;
 
             // TODO: Linearize color
             //data.DiffuseColor.Pow(2.2f);
