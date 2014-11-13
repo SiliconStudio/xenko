@@ -188,6 +188,7 @@
     <Compile Include="Shaders.Bytecodes\UIEffectSeparateAlpha.bytecode.Direct3D11.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\UIEffectSeparateAlpha.bytecode.OpenGL.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\UIEffectSeparateAlpha.bytecode.OpenGLES.Level_9_1.cs" />
+    <Compile Include="Shaders\TexturingKeys.cs" />
     <Compile Include="Shaders\UIEffectSeparateAlpha.cs">
       <DependentUpon>UIEffectSeparateAlpha.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>

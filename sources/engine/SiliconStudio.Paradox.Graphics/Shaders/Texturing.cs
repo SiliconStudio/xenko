@@ -10,15 +10,25 @@ namespace SiliconStudio.Paradox.Effects.Modules
     public static partial class TexturingKeys
     {
         public static readonly ParameterKey<Texture> Texture0 = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<Vector2> Texture0TexelSize = ParameterKeys.New<Vector2>();
         public static readonly ParameterKey<Texture> Texture1 = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<Vector2> Texture1TexelSize = ParameterKeys.New<Vector2>();
         public static readonly ParameterKey<Texture> Texture2 = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<Vector2> Texture2TexelSize = ParameterKeys.New<Vector2>();
         public static readonly ParameterKey<Texture> Texture3 = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<Vector2> Texture3TexelSize = ParameterKeys.New<Vector2>();
         public static readonly ParameterKey<Texture> Texture4 = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<Vector2> Texture4TexelSize = ParameterKeys.New<Vector2>();
         public static readonly ParameterKey<Texture> Texture5 = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<Vector2> Texture5TexelSize = ParameterKeys.New<Vector2>();
         public static readonly ParameterKey<Texture> Texture6 = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<Vector2> Texture6TexelSize = ParameterKeys.New<Vector2>();
         public static readonly ParameterKey<Texture> Texture7 = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<Vector2> Texture7TexelSize = ParameterKeys.New<Vector2>();
         public static readonly ParameterKey<Texture> Texture8 = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<Vector2> Texture8TexelSize = ParameterKeys.New<Vector2>();
         public static readonly ParameterKey<Texture> Texture9 = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<Vector2> Texture9TexelSize = ParameterKeys.New<Vector2>();
         public static readonly ParameterKey<Texture> TextureCube0 = ParameterKeys.New<Texture>();
         public static readonly ParameterKey<Texture> TextureCube1 = ParameterKeys.New<Texture>();
         public static readonly ParameterKey<Texture> TextureCube2 = ParameterKeys.New<Texture>();
