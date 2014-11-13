@@ -11,7 +11,8 @@
     <OutputType>Library</OutputType>
     <RootNamespace>SiliconStudio.Paradox.Games</RootNamespace>
     <AssemblyName>SiliconStudio.Paradox.Games</AssemblyName>
-    <SiliconStudioAssemblyProcessor>false</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer</SiliconStudioAssemblyProcessorOptions>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
     <ParadoxProjectPlatformDependentWindows>true</ParadoxProjectPlatformDependentWindows>
     <ParadoxBuildTags>*</ParadoxBuildTags>

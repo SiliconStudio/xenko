@@ -76,6 +76,7 @@
     <!--Add platform and target framework to assembly processor options-->
     <PropertyGroup>
       <SiliconStudioAssemblyProcessorOptions>--platform=$(SiliconStudioPlatform) --targetFramework=$(TargetFrameworkVersion) $(SiliconStudioAssemblyProcessorOptions)</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorOptions Condition="'$(AssemblyOriginatorKeyFile)' != ''">$(SiliconStudioAssemblyProcessorOptions) --signkeyfile="$(AssemblyOriginatorKeyFile)"</SiliconStudioAssemblyProcessorOptions>
     </PropertyGroup>
 
     <!-- Run assembly processor -->

@@ -28,6 +28,7 @@
     <Compile Include="Compiler\CompilerParameters.cs" />
     <Compile Include="Compiler\NullEffectCompiler.cs" />
     <Compile Include="EffectSamplerStateBinding.cs" />
+    <Compile Include="EffectSourceCodeKeys.cs" />
     <Compile Include="HashSourceCollection.cs" />
     <Compile Include="Compiler\EffectCompilerChain.cs" />
     <Compile Include="Compiler\EffectCompilerCache.cs" />

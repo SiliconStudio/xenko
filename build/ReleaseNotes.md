@@ -3,6 +3,7 @@
 Release date: 2014/??/??
 
 #### New Features
+- Build: We now use OSS (OpenSource Signing) so that you can fake-sign assemblies with the same keys as ours, and use your own compiled Paradox with the official editor.
 - Graphics: Spot light shadow maps in deferred rendering.
 
 #### Enhancements
