@@ -132,8 +132,8 @@ namespace SiliconStudio.Paradox.Assets
 
             UseRotationInAtlas = true;
 
-            AtlasMaxWidth = 1024;
-            AtlasMaxHeight = 1024;
+            AtlasMaxWidth = 2048;
+            AtlasMaxHeight = 2048;
 
             BorderSize = 0;
         }

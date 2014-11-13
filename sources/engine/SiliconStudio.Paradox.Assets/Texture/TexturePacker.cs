@@ -86,23 +86,74 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// <returns></returns>
         public bool PackTextures(Dictionary<string, IntermediateTexture> textureElements)
         {
+            var subSizeArray = CreateSubSizeArray(MaxWidth, MaxHeight, 512, 512);
+
+            foreach (var subSize in subSizeArray)
+            {
+                if (TryPackTextures(textureElements, subSize.Width, subSize.Height))
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static IEnumerable<Size2> CreateSubSizeArray(int maxWidth, int maxHeight, int startWidth, int startHeight)
+        {
+            var result = new List<Size2>();
+
+            var currentWidth = (maxWidth > startWidth) ? startWidth : maxWidth;
+            var currentHeight = (maxHeight > startHeight) ? startHeight : maxHeight;
+
+            result.Add(new Size2(currentWidth, currentHeight));
+
+            var selector = 0;
+
+            while (currentWidth < maxWidth || currentHeight < maxHeight)
+            {
+                if (currentWidth < maxWidth && currentHeight < maxHeight)
+                {
+                    if (selector % 2 == 0)
+                        currentWidth = 2 * currentWidth;
+                    else
+                        currentHeight = 2 * currentHeight;
+
+                    ++selector;
+                }
+                else if (currentWidth < maxWidth)
+                {
+                    currentWidth = 2 * currentWidth;
+                }
+                else
+                {
+                    currentHeight = 2 * currentHeight;
+                }
+
+                result.Add(new Size2(currentWidth, currentHeight));
+            }
+
+            return result;
+        }
+
+        private bool TryPackTextures(Dictionary<string, IntermediateTexture> textureElements, int width, int height)
+        {
             if (Algorithm == TexturePackingMethod.Best)
             {
                 var results = new Dictionary<TexturePackingMethod, List<TextureAtlas>>();
 
                 var bestAlgorithm = TexturePackingMethod.BestShortSideFit;
-                var canPackAll = PackTextures(CloneIntermediateTextureDictionary(textureElements), bestAlgorithm);
+                var canPackAll = PackTextures(CloneIntermediateTextureDictionary(textureElements), bestAlgorithm, width, height);
+
                 results[bestAlgorithm] = new List<TextureAtlas>(textureAtlases);
 
                 foreach (var heuristicMethod in (TexturePackingMethod[])Enum.GetValues(typeof(TexturePackingMethod)))
                 {
-                    if (heuristicMethod == TexturePackingMethod.Best || heuristicMethod == TexturePackingMethod.BestShortSideFit) 
+                    if (heuristicMethod == TexturePackingMethod.Best || heuristicMethod == TexturePackingMethod.BestShortSideFit)
                         continue;
 
                     ResetPacker();
 
                     // This algorithm can't pack all textures, so discard it 
-                    if (!PackTextures(CloneIntermediateTextureDictionary(textureElements), heuristicMethod)) continue;
+                    if (!PackTextures(CloneIntermediateTextureDictionary(textureElements), heuristicMethod, width, height)) continue;
 
                     results[heuristicMethod] = new List<TextureAtlas>(textureAtlases);
 
@@ -120,7 +171,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 return canPackAll;
             }
 
-            return PackTextures(textureElements, Algorithm);
+            return PackTextures(textureElements, Algorithm, width, height);
         }
 
         /// <summary>
@@ -166,10 +217,10 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// <param name="textureElements">Input texture elements</param>
         /// <param name="algorithm">Packing algorithm</param>
         /// <returns>True indicates all textures could be packed; False otherwise</returns>
-        public bool PackTextures(Dictionary<string, IntermediateTexture> textureElements, TexturePackingMethod algorithm)
+        public bool PackTextures(Dictionary<string, IntermediateTexture> textureElements, TexturePackingMethod algorithm, int width, int height)
         {
-            var binWidth = (AtlasSizeContraint == AtlasSizeConstraints.PowerOfTwo) ? TextureCommandHelper.FloorToNearestPowerOfTwo(MaxWidth) : MaxWidth;
-            var binHeight = (AtlasSizeContraint == AtlasSizeConstraints.PowerOfTwo) ? TextureCommandHelper.FloorToNearestPowerOfTwo(MaxHeight) : MaxHeight;
+            var binWidth = (AtlasSizeContraint == AtlasSizeConstraints.PowerOfTwo) ? TextureCommandHelper.FloorToNearestPowerOfTwo(width) : width;
+            var binHeight = (AtlasSizeContraint == AtlasSizeConstraints.PowerOfTwo) ? TextureCommandHelper.FloorToNearestPowerOfTwo(height) : height;
 
             // Create data for the packer
             var textureRegions = new List<RotatableRectangle>();
@@ -199,7 +250,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
                     packedSize.Width = TextureCommandHelper.CeilingToNearestPowerOfTwo(packedSize.Width);
                     packedSize.Height = TextureCommandHelper.CeilingToNearestPowerOfTwo(packedSize.Height);
 
-                    if (packedSize.Width > MaxWidth || packedSize.Height > MaxHeight)
+                    if (packedSize.Width > width || packedSize.Height > height)
                         return false;
                 }
 
@@ -225,7 +276,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 {
                     foreach (var remainingTexture in textureRegions)
                     {
-                        if(remainingTexture.Value.Width > MaxWidth || remainingTexture.Value.Height > MaxHeight)
+                        if(remainingTexture.Value.Width > width || remainingTexture.Value.Height > height)
                             return false;
                     }
                 }
@@ -240,8 +291,10 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// </summary>
         /// <param name="usedRectangles"></param>
         /// <returns></returns>
-        private Size2 CalculatePackedRectanglesBound(IEnumerable<RotatableRectangle> usedRectangles)
+        private Size2 CalculatePackedRectanglesBound(IReadOnlyCollection<RotatableRectangle> usedRectangles)
         {
+            if (usedRectangles.Count == 0) return Size2.Zero;
+
             var minX = int.MaxValue;
             var minY = int.MaxValue;
 
