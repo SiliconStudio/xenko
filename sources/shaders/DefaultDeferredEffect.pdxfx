@@ -69,7 +69,7 @@ namespace DefaultEffects
 
         mixin DeferredDirectionalShadowLighting;
 
-        mixin DeferredShadowMapCascadeBase;
+        mixin ShadowMapCascadeBase;
 
         mixin macro SHADOWMAP_COUNT = 1;
         mixin macro SHADOWMAP_CASCADE_COUNT = ShadowMapParameters.ShadowMapCascadeCount;
@@ -84,7 +84,7 @@ namespace DefaultEffects
 
         mixin DeferredSpotShadowLighting;
 
-        mixin DeferredShadowMapCascadeBase;
+        mixin ShadowMapCascadeBase;
 
         mixin macro SHADOWMAP_COUNT = 1;
         mixin macro SHADOWMAP_CASCADE_COUNT = ShadowMapParameters.ShadowMapCascadeCount;

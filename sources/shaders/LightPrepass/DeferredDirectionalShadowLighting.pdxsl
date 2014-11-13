@@ -3,7 +3,7 @@
 /// <summary>
 /// Computes lighting prepass from directional lights with shadows.
 /// </summary>
-class DeferredDirectionalShadowLighting : DeferredLightingBase, ShadowBase
+class DeferredDirectionalShadowLighting : DeferredLightingBase, ShadowBase, Transformation
 {
     BRDFDiffuseBase brdfDiffuse = stage;
     BRDFSpecularBase brdfSpecular = stage;
@@ -28,7 +28,8 @@ class DeferredDirectionalShadowLighting : DeferredLightingBase, ShadowBase
     {
         float4 lighting = float4(0,0,0,0);
 
-        ComputeShadowMapPositions(float4(positionVS,1));
+        float4 vPositionWS = mul(float4(positionVS,1), ViewInverse);
+        ComputeShadowMapPositions(vPositionWS / vPositionWS.w);
 
         DirectLightInfo lightInfo = DirectLightInfos[0];
         float3 lightDir = -lightInfo.vDirectionVS;

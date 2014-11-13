@@ -180,7 +180,7 @@ namespace DefaultEffects
             context.Mixin(mixin, "DeferredDirectionalShadowLighting");
 
             #line 72
-            context.Mixin(mixin, "DeferredShadowMapCascadeBase");
+            context.Mixin(mixin, "ShadowMapCascadeBase");
 
             #line 74
             mixin.Mixin.AddMacro("SHADOWMAP_COUNT", 1);
@@ -213,7 +213,7 @@ namespace DefaultEffects
             context.Mixin(mixin, "DeferredSpotShadowLighting");
 
             #line 87
-            context.Mixin(mixin, "DeferredShadowMapCascadeBase");
+            context.Mixin(mixin, "ShadowMapCascadeBase");
 
             #line 89
             mixin.Mixin.AddMacro("SHADOWMAP_COUNT", 1);

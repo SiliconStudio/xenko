@@ -3,7 +3,7 @@
 /// <summary>
 /// Computes lighting prepass from spot lights with shadows.
 /// </summary>
-class DeferredSpotShadowLighting : DeferredLightingBase, ShadowBase
+class DeferredSpotShadowLighting : DeferredLightingBase, ShadowBase, Transformation
 {
     BRDFDiffuseBase brdfDiffuse = stage;
     BRDFSpecularBase brdfSpecular = stage;
@@ -28,7 +28,8 @@ class DeferredSpotShadowLighting : DeferredLightingBase, ShadowBase
     {
         float4 lighting = float4(0,0,0,0);
 
-        ComputeShadowMapPositions(float4(positionVS,1));
+        float4 vPositionWS = mul(float4(positionVS,1), ViewInverse);
+        ComputeShadowMapPositions(vPositionWS / vPositionWS.w);
 
         SpotLightInfo lightInfo = SpotLightInfos[0];
         float3 dirToLight = normalize(lightInfo.vPositionVS - positionVS);

@@ -647,12 +647,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ShadowMapBase.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="LightPrepass\DeferredShadowMapCascadeBase.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>DeferredShadowMapCascadeBase.pdxsl</DependentUpon>
-    </Compile>
     <Compile Include="LightPrepass\DeferredSpotLighting.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -2054,10 +2048,6 @@
     <None Include="Shadowmap\ShadowMapBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadowMapBase.cs</LastGenOutput>
-    </None>
-    <None Include="LightPrepass\DeferredShadowMapCascadeBase.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>DeferredShadowMapCascadeBase.cs</LastGenOutput>
     </None>
     <None Include="LightPrepass\DeferredSpotLighting.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

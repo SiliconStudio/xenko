@@ -88,6 +88,7 @@ namespace DefaultForward
         mixin ShadingEyeNormalVS;
 
         //shadows
+        mixin ForwardShadowMapBase;
         mixin ShadowMapCascadeBase;
 
         mixin macro SHADOWMAP_COUNT = ShadowMapParameters.ShadowMapCount;
@@ -119,6 +120,7 @@ namespace DefaultForward
         mixin ShadingEyeNormalVS;
 
         //shadows
+        mixin ForwardShadowMapBase;
         mixin ShadowMapCascadeBase;
 
         mixin macro SHADOWMAP_COUNT = ShadowMapParameters.ShadowMapCount;
