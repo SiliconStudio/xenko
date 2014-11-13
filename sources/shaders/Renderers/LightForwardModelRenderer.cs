@@ -391,11 +391,11 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                     case LightingUpdateType.DirectionalShadow:
                         UpdateLightingParameters(info, ref effectMesh, ref viewMatrix, directionalLightsWithShadowForMeshGroups[info.Index]);
                         break;
-                    //TODO: implement later when shadow map are supported
-                    case LightingUpdateType.PointShadow:
-                        break;
                     case LightingUpdateType.SpotShadow:
                         UpdateLightingParameters(info, ref effectMesh, ref viewMatrix, spotLightsWithShadowForMeshGroups[info.Index]);
+                        break;
+                    //TODO: implement later when shadow map are supported
+                    case LightingUpdateType.PointShadow:
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -792,9 +792,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         private enum LightTypeGuess
         {
             None = 0x0,
-            Directional = 0x1,
-            Point = 0x2,
-            Spot = Directional | Point
+            Directional = 0x1, // direction is needed
+            Point = 0x2, // position is needed
+            Spot = Directional | Point // angle falloff is needed
         }
 
         private static bool BelongToGroup(LightComponent light, ShadowMap shadow, ShadowConfiguration config, int groupCount, Texture2D groupTexture)
