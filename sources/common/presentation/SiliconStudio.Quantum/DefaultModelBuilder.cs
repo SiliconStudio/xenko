@@ -186,10 +186,6 @@ namespace SiliconStudio.Quantum
             {
                 var args = new NodeConstructedArgs(content);
                 handler(this, args);
-                foreach (var associatedData in args.AssociatedData)
-                {
-                    content.AddAssociatedData(associatedData.Key, associatedData.Value);
-                }
             }
         }
 
