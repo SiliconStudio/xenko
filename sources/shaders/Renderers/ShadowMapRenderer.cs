@@ -150,7 +150,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                         var cascade = shadowMap.Cascades[i];
 
                         // Override with current shadow map parameters
-                        graphicsDevice.Parameters.Set(ShadowMapKeys.DistanceMax, shadowMap.ShadowFarDistance - shadowMap.ShadowNearDistance);
+                        graphicsDevice.Parameters.Set(ShadowMapKeys.DistanceMax, shadowMap.LightType == LightType.Directional ? shadowMap.ShadowFarDistance : shadowMap.ShadowFarDistance - shadowMap.ShadowNearDistance);
                         graphicsDevice.Parameters.Set(LightKeys.LightDirection, shadowMap.LightDirectionNormalized);
                         graphicsDevice.Parameters.Set(ShadowMapCasterBaseKeys.shadowLightOffset, cascade.ReceiverInfo.Offset);
 
