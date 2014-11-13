@@ -4,6 +4,7 @@
     <SiliconStudioGlobalSettingsTargets>$(MSBuildThisFileDirectory)Paradox.GlobalSettings.targets</SiliconStudioGlobalSettingsTargets>
     <SiliconStudioPostSettingsTargets>$(MSBuildThisFileDirectory)Paradox.PostSettings.targets</SiliconStudioPostSettingsTargets>
     <SiliconStudioAssemblyProcessorGlobal>true</SiliconStudioAssemblyProcessorGlobal>
+    <SiliconStudioAssemblyProcessorDefaultOptions>--auto-notify-property --parameter-key --auto-module-initializer --serialization</SiliconStudioAssemblyProcessorDefaultOptions>
   </PropertyGroup>
 
   <!--Import Paradox settings-->
