@@ -526,6 +526,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <remarks>This method support the following format: <c>dds, bmp, jpg, png, gif, tiff, wmp, tga</c>.</remarks>
         public static Image Load(Stream imageStream)
         {
+            if (imageStream == null) throw new ArgumentNullException("imageStream");
             // Read the whole stream into memory.
             return Load(Utilities.ReadStream(imageStream));
         }
@@ -538,6 +539,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <remarks>This method support the following format: <c>dds, bmp, jpg, png, gif, tiff, wmp, tga</c>.</remarks>
         public void Save(Stream imageStream, ImageFileType fileType)
         {
+            if (imageStream == null) throw new ArgumentNullException("imageStream");
             Save(pixelBuffers, this.pixelBuffers.Length, Description, imageStream, fileType);
         }
 
