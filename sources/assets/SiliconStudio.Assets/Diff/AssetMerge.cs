@@ -122,15 +122,26 @@ namespace SiliconStudio.Assets.Diff
                         continue;
                     }
 
-                    var dataInstance = diff3Node.Asset2Node != null ? diff3Node.Asset2Node.Instance : null;
+                    var dataInstance2 = diff3Node.Asset2Node != null ? diff3Node.Asset2Node.Instance : null;
 
                     // Sets the value on the node
-                    diff3Node.ReplaceValue(dataInstance, node => node.Asset1Node, diff3Node.Asset2Node == null);
+                    diff3Node.ReplaceValue(dataInstance2, node => node.Asset1Node, diff3Node.Asset2Node == null);
                 }
                 catch (Exception ex)
                 {
                     result.Error("Unexpected error while merging [{0}] on node [{1}]", ex, diff3Node.ChangeType, diff3Node.InstanceType);
                     break;
+                }
+            }
+
+            if (!previewOnly)
+            {
+                foreach (var node in allDiffs.Asset1Node.Children(node => true))
+                {
+                    if (node.Instance is IDataDiffProxy)
+                    {
+                        ((IDataDiffProxy)node.Instance).ApplyChanges();
+                    }
                 }
             }
 

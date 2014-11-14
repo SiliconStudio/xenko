@@ -10,6 +10,15 @@ namespace SiliconStudio.Core.Reflection
     /// </summary>
     public abstract class MemberDescriptorBase : IMemberDescriptor
     {
+        protected MemberDescriptorBase(ITypeDescriptorFactory factory, string name)
+        {
+            if (factory == null) throw new ArgumentNullException("factory");
+            if (name == null) throw new ArgumentNullException("name");
+
+            Factory = factory;
+            Name = name;
+        }
+
         protected MemberDescriptorBase(ITypeDescriptorFactory factory, MemberInfo memberInfo)
         {
             if (factory == null) throw new ArgumentNullException("factory");
@@ -31,7 +40,7 @@ namespace SiliconStudio.Core.Reflection
         /// <value>The type of the declaring.</value>
         public Type DeclaringType { get; private set; }
 
-        public ITypeDescriptor TypeDescriptor { get; internal set; }
+        public ITypeDescriptor TypeDescriptor { get; protected set; }
 
         public ITypeDescriptorFactory Factory { get; private set; }
         public DataMemberMode Mode { get; internal set; }

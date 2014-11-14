@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
@@ -15,6 +16,8 @@ using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Paradox.Assets.Model;
 using SiliconStudio.Paradox.Assets.Model.Analysis;
+using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.Engine.Data;
 using SiliconStudio.Paradox.EntityModel;
 
 namespace SiliconStudio.Paradox.Assets.Tests
@@ -84,6 +87,14 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 var entity = assetManager.Load<Entity>("Entity1");
 
                 var entity2 = entity.Clone();
+
+                var entityAsset = (EntityAsset)assetItem.Asset;
+                entityAsset.Hierarchy.Entities[0].Components.Add(TransformationComponent.Key, new TransformationComponentData());
+
+                var entityAsset2 = (EntityAsset)AssetCloner.Clone(entityAsset);
+                ((TransformationComponentData)entityAsset2.Hierarchy.Entities[0].Components[TransformationComponent.Key]).Translation = new Vector3(10.0f, 0.0f, 0.0f);
+
+                AssetMerge.Merge(entityAsset, entityAsset2, null, AssetMergePolicies.MergePolicyAsset2AsNewBaseOfAsset1);
             }
         }
     }

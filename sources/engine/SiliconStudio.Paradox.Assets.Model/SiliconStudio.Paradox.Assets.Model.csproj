@@ -17,8 +17,12 @@
     <Compile Include="AnimationAsset.cs" />
     <Compile Include="AnimationAssetCompiler.cs" />
     <Compile Include="AssimpAssetImporter.cs" />
+    <Compile Include="ConvertedDescriptor.cs" />
     <Compile Include="EntityAsset.cs" />
     <Compile Include="EntityAssetCompiler.cs" />
+    <Compile Include="EntityAssetOperations.cs" />
+    <Compile Include="EntityHierarchyDiffNodeBuilder.cs" />
+    <Compile Include="EntityDiffNode.cs" />
     <Compile Include="FbxAssetImporter.cs" />
     <Compile Include="EntityCompilerParametersGenerator.cs" />
     <Compile Include="MeshMaterialParameters.cs" />

@@ -89,6 +89,52 @@ namespace SiliconStudio.Paradox.Assets.Model.Analysis
             }
         }
 
+        /// <summary>
+        /// Fixups the entity references, by clearing invalid <see cref="EntityReference.Id"/>, and updating <see cref="EntityReference.Value"/> (same for components).
+        /// </summary>
+        /// <param name="entityHierarchy">The entity asset.</param>
+        public static void FixupEntityReferences(EntityHierarchyData entityHierarchy)
+        {
+            var entityAnalysisResult = Visit(entityHierarchy);
+
+            // Check if a given EntityReference points to an existing entity Id.
+            // If yes, updates value and name, otherwise clears it.
+            foreach (var entityReference in entityAnalysisResult.EntityReferences)
+            {
+                EntityData entityData;
+                if (!entityHierarchy.Entities.TryGetValue(entityReference.Id, out entityData))
+                {
+                    // Invalid Id, let's clear it
+                    entityReference.Id = Guid.Empty;
+                    entityReference.Name = null;
+                }
+                else
+                {
+                    entityReference.Name = entityData.Name;
+                }
+
+                // Update EntityReference.Value.
+                entityReference.Value = entityData;
+            }
+
+            // Check if a given EntityComponentReference uses a valid EntityReference and referenced components exist.
+            // If no, clears it.
+            foreach (var entityComponentReference in entityAnalysisResult.EntityComponentReferences)
+            {
+                var entityData = entityComponentReference.Entity.Value;
+                if (entityData != null)
+                {
+                    EntityComponentData entityComponent;
+                    entityData.Components.TryGetValue(entityComponentReference.Component, out entityComponent);
+                    entityComponentReference.Value = entityComponent;
+                }
+                else
+                {
+                    entityComponentReference.Value = null;
+                }
+            }
+        }
+
         private class EntityReferenceAnalysis : AssetVisitorBase
         {
             public EntityReferenceAnalysis()

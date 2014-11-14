@@ -25,12 +25,28 @@ namespace SiliconStudio.Assets.Visitors
         private DataVisitNodeBuilder(ITypeDescriptorFactory typeDescriptorFactory, object rootInstance)
             : base(typeDescriptorFactory)
         {
+            CustomVisitors.AddRange(AssetRegistry.RegisteredDataVisitNodeBuilders);
+
             if (rootInstance == null) throw new ArgumentNullException("rootInstance");
             this.rootInstance = rootInstance;
             var objectDescriptor = typeDescriptorFactory.Find(rootInstance.GetType()) as ObjectDescriptor;
             if (objectDescriptor == null)
                 throw new ArgumentException("Expecting an object", "rootInstance");
             stackItems.Push(new DataVisitObject(rootInstance, objectDescriptor));
+        }
+
+        /// <summary>
+        /// Gets the current <see cref="DataVisitNode"/>.
+        /// </summary>
+        /// <value>
+        /// The current <see cref="DataVisitNode"/>.
+        /// </value>
+        public DataVisitNode CurrentNode
+        {
+            get
+            {
+                return stackItems.Peek();
+            }
         }
 
         /// <summary>

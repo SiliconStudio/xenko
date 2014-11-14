@@ -81,6 +81,8 @@
     <Compile Include="AssetToImport.cs" />
     <Compile Include="AssetImportSession.cs" />
     <Compile Include="Diff\AssetMergePolicies.cs" />
+    <Compile Include="Diff\DiffNodeBuilderAttribute.cs" />
+    <Compile Include="Diff\IDataDiffProxy.cs" />
     <Compile Include="FileVersionManager.cs" />
     <Compile Include="Compiler\AssetCommand.cs" />
     <Compile Include="Compiler\AssetCompiledArgs.cs" />
