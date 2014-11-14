@@ -14,7 +14,6 @@ namespace SiliconStudio.Paradox.Assets.Texture
     [DataContract("Texture")]
     [AssetFileExtension(FileExtension)]
     [AssetCompiler(typeof(TextureAssetCompiler))]
-    [AssetFactory(typeof(TextureFactory))]
     [ThumbnailCompiler(PreviewerCompilerNames.TextureThumbnailCompilerQualifiedName)]
     [AssetDescription("Texture", "A texture", true)]
     public sealed class TextureAsset : AssetImport
@@ -36,6 +35,9 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// Gets or sets the width.
         /// </summary>
         /// <value>The width.</value>
+        /// <userdoc>
+        /// The width of the texture in-game. Depending on the value of the IsSizeInPercentage property, the value might represent either percent (%) or actual pixel.
+        /// </userdoc>
         [DataMember(20)]
         [DefaultValue(100.0f)]
         [StepRangeAttribute(0, 10000, 1, 10)]
@@ -45,6 +47,9 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// Gets or sets the height.
         /// </summary>
         /// <value>The height.</value>
+        /// <userdoc>
+        /// The height of the texture in-game. Depending on the value of the IsSizeInPercentage property, the value might represent either percent (%) or actual pixel.
+        /// </userdoc>
         [DataMember(30)]
         [DefaultValue(100.0f)]
         [StepRangeAttribute(0, 10000, 1, 10)]
@@ -59,29 +64,41 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// in percentage, with 100.0f being 100% of the current size, and 50.0f half of the current size, otherwise
         /// the size is in absolute pixels.
         /// </remarks>
+        /// <userdoc>
+        /// If checked, the values of the Width and Height properties will represent percent (%). Otherwise they would represent actual pixel.
+        /// </userdoc>
         [DataMember(40)]
         [DefaultValue(true)]
         public bool IsSizeInPercentage { get; set; }
 
         /// <summary>
-        /// Gets or sets the color key used when color keying for a texture is enabled. When color keying, all pixels of a specified color are replaced with transparent black.
-        /// </summary>
-        /// <value>The color key.</value>
-        [DataMember(43)]
-        public Color ColorKeyColor { get; set; }
-
-        /// <summary>
         /// Gets or sets a value indicating whether to enable color key. Default is false.
         /// </summary>
         /// <value><c>true</c> to enable color key; otherwise, <c>false</c>.</value>
-        [DataMember(45)]
+        /// <userdoc>
+        /// If checked, all pixels of the color set in the ColorKeyColor property will be replaced by transparent black.
+        /// </userdoc>
+        [DataMember(43)]
         [DefaultValue(false)]
         public bool ColorKeyEnabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets the color key used when color keying for a texture is enabled. When color keying, all pixels of a specified color are replaced with transparent black.
+        /// </summary>
+        /// <value>The color key.</value>
+        /// <userdoc>
+        /// If ColorKeyEnabled is true, All pixels of the color set to this property are replaced with transparent black.
+        /// </userdoc>
+        [DataMember(45)]
+        public Color ColorKeyColor { get; set; }
 
         /// <summary>
         /// Gets or sets the texture format.
         /// </summary>
         /// <value>The texture format.</value>
+        /// <userdoc>
+        /// The format to use for the texture. If Compressed, the final texture size must be a multiple of 4.
+        /// </userdoc>
         [DataMember(50)]
         [DefaultValue(TextureFormat.Compressed)]
         public TextureFormat Format { get; set; }
@@ -90,14 +107,20 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// Gets or sets the alpha format.
         /// </summary>
         /// <value>The alpha format.</value>
+        /// <userdoc>
+        /// The format to use for alpha in the texture.
+        /// </userdoc>
         [DataMember(55)]
         [DefaultValue(AlphaFormat.None)]
         public AlphaFormat Alpha { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [generate mipmaps].
+        /// Gets or sets a value indicating whether to generate mipmaps.
         /// </summary>
-        /// <value><c>true</c> if [generate mipmaps]; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if mipmaps are generated; otherwise, <c>false</c>.</value>
+        /// <userdoc>
+        /// If checked, Mipmaps will be pre-generated for this texture.
+        /// </userdoc>
         [DataMember(60)]
         [DefaultValue(true)]
         public bool GenerateMipmaps { get; set; }
@@ -106,6 +129,9 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// Gets or sets a value indicating whether to convert the texture in premultiply alpha.
         /// </summary>
         /// <value><c>true</c> to convert the texture in premultiply alpha.; otherwise, <c>false</c>.</value>
+        /// <userdoc>
+        /// If checked, The color values will be pre-multiplied by the alpha value.
+        /// </userdoc>
         [DataMember(70)]
         [DefaultValue(true)]
         public bool PremultiplyAlpha { get; set; }
@@ -121,14 +147,6 @@ namespace SiliconStudio.Paradox.Assets.Texture
             IsSizeInPercentage = true;
             GenerateMipmaps = true;
             PremultiplyAlpha = true;
-        }
-
-        private class TextureFactory : IAssetFactory
-        {
-            public Asset New()
-            {
-                return new TextureAsset();
-            }
         }
     }
 }
