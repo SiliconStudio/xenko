@@ -16,6 +16,7 @@ Release date: 2014/??/??
 - Graphics: Fix spot light shadow computation.
 - Shaders: Simplify some deferred lighting shaders.
 - Studio: Fix renamed button for string-indexed dictionary that was misplaced and not working
+- Studio: Fix add parameter key control filtering and mouse selection
 
 #### Breaking changes
 
