@@ -13,6 +13,7 @@
     <AssemblyName>SiliconStudio.Paradox.Engine</AssemblyName>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
+    <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions) --generate-user-doc</SiliconStudioAssemblyProcessorOptions>
     <ParadoxProjectPlatformDependentWindows>true</ParadoxProjectPlatformDependentWindows>
     <ParadoxBuildTags>*</ParadoxBuildTags>
   </PropertyGroup>
