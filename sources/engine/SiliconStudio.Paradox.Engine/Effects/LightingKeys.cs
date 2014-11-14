@@ -14,61 +14,61 @@ namespace SiliconStudio.Paradox.Effects
         /// <summary>
         /// Maximum number of directional lights.
         /// </summary>
-        public static readonly ParameterKey<int> MaxDirectionalLights = ParameterKeys.New(0, "Lighting.MaxDirectionalLights");
+        public static readonly ParameterKey<int> MaxDirectionalLights = ParameterKeys.New(0);
         
         /// <summary>
         /// Maximum number of point lights.
         /// </summary>
-        public static readonly ParameterKey<int> MaxPointLights = ParameterKeys.New(0, "Lighting.MaxPointLights");
+        public static readonly ParameterKey<int> MaxPointLights = ParameterKeys.New(0);
 
         /// <summary>
         /// Maximum number of spot lights.
         /// </summary>
-        public static readonly ParameterKey<int> MaxSpotLights = ParameterKeys.New(0, "Lighting.MaxSpotLights");
+        public static readonly ParameterKey<int> MaxSpotLights = ParameterKeys.New(0);
 
         /// <summary>
         /// A flag stating if directional light loop should be unrolled.
         /// </summary>
-        public static readonly ParameterKey<bool> UnrollDirectionalLightLoop = ParameterKeys.New(false, "Lighting.UnrollDirectionalLightLoop");
+        public static readonly ParameterKey<bool> UnrollDirectionalLightLoop = ParameterKeys.New(false);
 
         /// <summary>
         /// A flag stating if point light loop should be unrolled.
         /// </summary>
-        public static readonly ParameterKey<bool> UnrollPointLightLoop = ParameterKeys.New(false, "Lighting.UnrollPointLightLoop");
+        public static readonly ParameterKey<bool> UnrollPointLightLoop = ParameterKeys.New(false);
 
         /// <summary>
         /// A flag stating if spot light loop should be unrolled.
         /// </summary>
-        public static readonly ParameterKey<bool> UnrollSpotLightLoop = ParameterKeys.New(false, "Lighting.UnrollSpotLightLoop");
+        public static readonly ParameterKey<bool> UnrollSpotLightLoop = ParameterKeys.New(false);
 
         /// <summary>
         /// Flag stating if the mesh casts shadows.
         /// </summary>
-        public static readonly ParameterKey<bool> CastShadows = ParameterKeys.New(false, "Lighting.CastShadows");
+        public static readonly ParameterKey<bool> CastShadows = ParameterKeys.New(false);
 
         /// <summary>
         /// Flag stating if the mesh receives shadows.
         /// </summary>
-        public static readonly ParameterKey<bool> ReceiveShadows = ParameterKeys.New(false, "Lighting.ReceiveShadows");
+        public static readonly ParameterKey<bool> ReceiveShadows = ParameterKeys.New(false);
 
         /// <summary>
         /// Maximum number of supported nearest filtered shadows.
         /// </summary>
-        public static readonly ParameterKey<int> MaxDirectionalNearestFilterShadowMap = ParameterKeys.New(0, "Lighting.MaxDirectionalNearestFilterShadowMap");
+        public static readonly ParameterKey<int> MaxDirectionalNearestFilterShadowMap = ParameterKeys.New(0);
 
         /// <summary>
         /// Maximum number of supported Pcf shadows.
         /// </summary>
-        public static readonly ParameterKey<int> MaxDirectionalPcfFilterShadowMap = ParameterKeys.New(0, "Lighting.MaxDirectionalPcfFilterShadowMap");
+        public static readonly ParameterKey<int> MaxDirectionalPcfFilterShadowMap = ParameterKeys.New(0);
         
         /// <summary>
         /// Maximum number of deferred lights.
         /// </summary>
-        public static readonly ParameterKey<int> MaxDeferredLights = ParameterKeys.New(64, "Lighting.MaxDeferredLights");
+        public static readonly ParameterKey<int> MaxDeferredLights = ParameterKeys.New(64);
 
         /// <summary>
         /// A flag stating if deferred light loop should be unrolled.
         /// </summary>
-        public static readonly ParameterKey<bool> UnrollDeferredLightLoop = ParameterKeys.New(false, "Lighting.UnrollDeferredLightLoop");
+        public static readonly ParameterKey<bool> UnrollDeferredLightLoop = ParameterKeys.New(false);
     }
 }

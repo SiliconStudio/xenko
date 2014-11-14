@@ -11,22 +11,22 @@ namespace SiliconStudio.Paradox.Effects
         /// <summary>
         /// Parameter key for the shading model.
         /// </summary>
-        public static ParameterKey<MaterialShadingModel> ShadingModel = ParameterKeys.New<MaterialShadingModel>(MaterialShadingModel.Flat, "MaterialParameters.ShadingModel");
+        public static ParameterKey<MaterialShadingModel> ShadingModel = ParameterKeys.New<MaterialShadingModel>(MaterialShadingModel.Flat);
 
         /// <summary>
         /// Parameter key for the diffuse model.
         /// </summary>
-        public static ParameterKey<MaterialDiffuseModel> DiffuseModel = ParameterKeys.New<MaterialDiffuseModel>(MaterialDiffuseModel.None, "MaterialParameters.DiffuseModel");
+        public static ParameterKey<MaterialDiffuseModel> DiffuseModel = ParameterKeys.New<MaterialDiffuseModel>(MaterialDiffuseModel.None);
 
         /// <summary>
         /// Parameter key for the specular model.
         /// </summary>
-        public static ParameterKey<MaterialSpecularModel> SpecularModel = ParameterKeys.New<MaterialSpecularModel>(MaterialSpecularModel.None, "MaterialParameters.SpecularModel");
+        public static ParameterKey<MaterialSpecularModel> SpecularModel = ParameterKeys.New<MaterialSpecularModel>(MaterialSpecularModel.None);
 
         /// <summary>
         /// Parameter key for the lighting type.
         /// </summary>
-        public static ParameterKey<MaterialLightingType> LightingType = ParameterKeys.New<MaterialLightingType>(MaterialLightingType.DiffuseSpecularPixel, "MaterialParameters.LightingType");
+        public static ParameterKey<MaterialLightingType> LightingType = ParameterKeys.New<MaterialLightingType>(MaterialLightingType.DiffuseSpecularPixel);
     }
 
     /// <summary>
