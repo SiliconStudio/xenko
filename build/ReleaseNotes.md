@@ -10,6 +10,7 @@ Release date: 2014/??/??
 - Samples: Spot light shadows in DeferredLighting sample.
 
 #### Issues fixed
+- Assets: Textures with arbitrary size (non square and non power-of-two) are now correctly loaded.
 - Graphics: Fix spot light shadow computation.
 - Shaders: Simplify some deferred lighting shaders.
 - Studio: Fix renamed button for string-indexed dictionary that was misplaced and not working
