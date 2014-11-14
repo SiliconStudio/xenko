@@ -14,9 +14,9 @@ namespace SiliconStudio.Core.Collections
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="T"></typeparam>
-    public abstract class KeyedSortedList<TKey, T> : IList<T>
+    public abstract class KeyedSortedList<TKey, T> : IList<T>, IList
     {
-        private IComparer<TKey> comparer;
+        private readonly IComparer<TKey> comparer;
         protected FastListStruct<T> items = new FastListStruct<T>(1);
 
         protected KeyedSortedList() : this(null)
@@ -124,6 +124,38 @@ namespace SiliconStudio.Core.Collections
         }
 
         /// <inheritdoc/>
+        int IList.Add(object value)
+        {
+            int index = items.Count;
+            Add((T)value);
+            return index;
+        }
+
+        /// <inheritdoc/>
+        bool IList.Contains(object value)
+        {
+            return Contains((T)value);
+        }
+
+        /// <inheritdoc/>
+        int IList.IndexOf(object value)
+        {
+            return IndexOf((T)value);
+        }
+
+        /// <inheritdoc/>
+        void IList.Insert(int index, object value)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        void IList.Remove(object value)
+        {
+            throw new NotImplementedException();
+        }
+        
+        /// <inheritdoc/>
         void ICollection<T>.CopyTo(T[] array, int arrayIndex)
         {
             throw new NotImplementedException();
@@ -135,17 +167,28 @@ namespace SiliconStudio.Core.Collections
             throw new NotImplementedException();
         }
 
+        void ICollection.CopyTo(Array array, int index)
+        {
+            throw new NotImplementedException();
+        }
+        
         /// <inheritdoc/>
         public int Count
         {
             get { return items.Count; }
         }
 
+        public object SyncRoot { get; private set; }
+
+        public bool IsSynchronized { get; private set; }
+
         /// <inheritdoc/>
         public bool IsReadOnly
         {
             get { return false; }
         }
+
+        public bool IsFixedSize { get; private set; }
 
         /// <inheritdoc/>
         public int IndexOf(T item)
@@ -163,6 +206,12 @@ namespace SiliconStudio.Core.Collections
         public void RemoveAt(int index)
         {
             items.RemoveAt(index);
+        }
+
+        object IList.this[int index]
+        {
+            get { return items[index]; }
+            set { items[index] = (T)value; }
         }
 
         /// <inheritdoc/>
