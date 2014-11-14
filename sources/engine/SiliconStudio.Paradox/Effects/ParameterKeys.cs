@@ -13,9 +13,20 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="defaultValue">The default value.</param>
+        /// <returns></returns>
+        public static ParameterKey<T> New<T>(T defaultValue)
+        {
+            return New<T>(defaultValue, null);
+        }
+
+        /// <summary>
+        /// Creates a value key.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="defaultValue">The default value.</param>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static ParameterKey<T> New<T>(T defaultValue, string name = null)
+        public static ParameterKey<T> New<T>(T defaultValue, string name)
         {
             if (name == null)
                 name = string.Empty;
@@ -82,7 +93,7 @@ namespace SiliconStudio.Paradox.Effects
 
         private static Dictionary<string, ParameterKey> keyByNames = new Dictionary<string,ParameterKey>();
 
-        public static ParameterKey Merge(ParameterKey key, string name)
+        public static ParameterKey Merge(ParameterKey key, Type ownerType, string name)
         {
             lock (keyByNames)
             {
@@ -100,6 +111,9 @@ namespace SiliconStudio.Paradox.Effects
                 if (string.IsNullOrEmpty(key.Name))
                     key.SetName(name);
                 keyByNames[name] = key;
+                
+                if (key.OwnerType == null && ownerType != null)
+                    key.SetOwnerType(ownerType);
             }
             return key;
         }

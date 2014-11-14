@@ -51,6 +51,11 @@ namespace SiliconStudio.Paradox.Effects
             UpdateName();
         }
 
+        internal void SetOwnerType(Type ownerType)
+        {
+            OwnerType = ownerType;
+        }
+
         /// <summary>
         /// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
         /// </summary>
