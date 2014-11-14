@@ -37,7 +37,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="device">The <see cref="GraphicsDevice"/>.</param>
         /// <param name="description2D">The description.</param>
         /// <param name="dataBoxes">A variable-length parameters list containing data rectangles.</param>
-        protected Texture2D(GraphicsDevice device, TextureDescription description2D, DataBox[] dataBoxes = null) : base(device, description2D, dataBoxes)
+        protected internal Texture2D(GraphicsDevice device, TextureDescription description2D, DataBox[] dataBoxes = null) : base(device, description2D, dataBoxes)
         {
         }
 

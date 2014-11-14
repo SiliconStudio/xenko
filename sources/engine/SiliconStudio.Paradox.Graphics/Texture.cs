@@ -663,6 +663,31 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         /// <summary>
+        /// Creates a new texture with the specified generic texture description.
+        /// </summary>
+        /// <param name="graphicsDevice">The graphics device.</param>
+        /// <param name="description">The description.</param>
+        /// <returns>A Texture instance, either a RenderTarget or DepthStencilBuffer or Texture, depending on Binding flags.</returns>
+        public static Texture New(GraphicsDevice graphicsDevice, TextureDescription description)
+        {
+            if (graphicsDevice == null)
+            {
+                throw new ArgumentNullException("graphicsDevice");
+            }
+            switch (description.Dimension)
+            {
+                case TextureDimension.Texture1D:
+                    return new Texture1D(graphicsDevice, description);
+                case TextureDimension.Texture2D:
+                    return new Texture2D(graphicsDevice, description);
+                case TextureDimension.Texture3D:
+                    return new Texture3D(graphicsDevice, description);
+                case TextureDimension.TextureCube:
+                    return new TextureCube(graphicsDevice, description);
+            }
+            return null;
+        }
+
         /// <summary>
         /// Saves this texture to a stream with a specified format.
         /// </summary>
