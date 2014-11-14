@@ -13,20 +13,9 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="defaultValue">The default value.</param>
-        /// <returns></returns>
-        public static ParameterKey<T> New<T>(T defaultValue)
-        {
-            return New<T>(defaultValue, null);
-        }
-
-        /// <summary>
-        /// Creates a value key.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="defaultValue">The default value.</param>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static ParameterKey<T> New<T>(T defaultValue, string name)
+        public static ParameterKey<T> New<T>(T defaultValue, string name = null)
         {
             if (name == null)
                 name = string.Empty;
