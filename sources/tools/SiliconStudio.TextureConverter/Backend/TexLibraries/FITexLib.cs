@@ -105,7 +105,6 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                     image.SubImageArray[i].SlicePitch = slicePitch;
 
                     Utilities.CopyMemory(image.SubImageArray[i].Data, FreeImage.GetBits(libraryData.Bitmaps[i]), size);
-                    Utilities.CopyMemory(image.SubImageArray[i].Data, FreeImage.GetBits(libraryData.Bitmaps[i]), size);
                     offset += size;
                 }
             }
@@ -258,10 +257,6 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             image.DataSize = (int) (FreeImage.GetDIBSize(libraryData.Bitmaps[0]) - GetHeaderSize()); // header size of a bitmap is included in their size calculus
             libraryData.Data = IntPtr.Zero;
             image.DisposingLibrary = this;
-
-            var lastPixel = image.Data + image.DataSize - 4;
-            var dest = new char[4];
-            Marshal.Copy(lastPixel, dest, 0, 4);
         }
 
         /// <summary>
