@@ -21,10 +21,6 @@ using SiliconStudio.DataSerializers;
 
 [assembly: SiliconStudio.Core.Serialization.Serializers.AssemblySerializerFactory(Type = typeof(SiliconStudio.DataSerializers.<#=assemblySerializerFactoryClassName#>))]
 
-<# if (assembly.Name.HasPublicKey) { #>
-[assembly: AssemblyKeyFile(@"<#=Path.Combine(Path.GetDirectoryName(assembly.MainModule.FullyQualifiedName), @"..\..\build\paradox.snk")#>")]
-<# } #>
-
 namespace SiliconStudio.Core.Serialization.Serializers
 {
 	class AssemblySerializerFactoryAttribute : Attribute

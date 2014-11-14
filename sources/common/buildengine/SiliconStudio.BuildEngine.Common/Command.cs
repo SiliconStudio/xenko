@@ -18,6 +18,11 @@ namespace SiliconStudio.BuildEngine
     public abstract class Command
     {
         /// <summary>
+        /// The command cache version, should be bumped when binary serialization format changes (so that cache gets invalidated)
+        /// </summary>
+        protected const int CommandCacheVersion = 1;
+
+        /// <summary>
         /// Title (short description) of the command
         /// </summary>
         public abstract string Title { get; }
@@ -155,6 +160,8 @@ namespace SiliconStudio.BuildEngine
         public void ComputeCommandHash(Stream stream, IPrepareContext prepareContext)
         {
             var writer = new BinarySerializationWriter(stream);
+
+            writer.Write(CommandCacheVersion);
 
             // Compute assembly hash
             ComputeAssemblyHash(writer);

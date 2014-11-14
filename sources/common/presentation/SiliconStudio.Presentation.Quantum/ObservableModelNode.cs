@@ -16,7 +16,7 @@ namespace SiliconStudio.Presentation.Quantum
         private readonly bool isPrimitive;
         private readonly IModelNode sourceNode;
         private IModelNode targetNode;
-        private Dictionary<string, object> associatedData;
+        private IDictionary<string, object> associatedData;
         private bool isInitialized;
 
         /// <summary>
@@ -58,8 +58,13 @@ namespace SiliconStudio.Presentation.Quantum
             var node = (ObservableModelNode)Activator.CreateInstance(typeof(ObservableModelNode<>).MakeGenericType(contentType), ownerViewModel, baseName, isPrimitive, parentNode, modelNode, index);
             return node;
         }
-        
+
         internal void Initialize()
+        {
+            Initialize(false);
+        }
+
+        private void Initialize(bool isUpdating)
         {
             var path = ModelNodePath.GetPath(((ObservableModelNode)Root).sourceNode, targetNode);
             if (!path.IsValid)
@@ -72,27 +77,17 @@ namespace SiliconStudio.Presentation.Quantum
             }
 
             if (!isPrimitive)
-                GenerateChildren(targetNode);
-
-            associatedData = new Dictionary<string, object>();
-
-            foreach (var keyValuePair in targetNode.Content.AssociatedData)
-            {
-                associatedData.Add(keyValuePair.Key, keyValuePair.Value);
-            }
-
-            if (sourceNode != targetNode)
-            {
-                foreach (var keyValuePair in sourceNode.Content.AssociatedData)
-                {
-                    // We are potentially overriding properties from the target node here.
-                    associatedData[keyValuePair.Key] = keyValuePair.Value;
-                }
-            }
-
-            CheckDynamicMemberConsistency();
+                GenerateChildren(targetNode, isUpdating);
 
             isInitialized = true;
+
+            if (Owner.ObservableViewModelService != null)
+            {
+                var data = Owner.ObservableViewModelService.RequestAssociatedData(this, isUpdating);
+                SetValue(ref associatedData, data, "AssociatedData");
+            }
+            
+            CheckDynamicMemberConsistency();
         }
 
         /// <inheritdoc/>
@@ -112,7 +107,7 @@ namespace SiliconStudio.Presentation.Quantum
         public sealed override bool HasDictionary { get { AssertInit(); return (targetNode.Content.Descriptor is DictionaryDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.Reference is ReferenceEnumerable && ((ReferenceEnumerable)targetNode.Content.Reference).IsDictionary); } }
 
         /// <inheritdoc/>
-        public sealed override IReadOnlyDictionary<string, object> AssociatedData { get { return associatedData; } }
+        public sealed override IDictionary<string, object> AssociatedData { get { return associatedData; } }
 
         internal Guid ModelGuid { get { return targetNode.Guid; } }
 
@@ -135,6 +130,12 @@ namespace SiliconStudio.Presentation.Quantum
         public bool MatchNode(IModelNode node)
         {
             return sourceNode == node;
+        }
+
+        public IMemberDescriptor GetMemberDescriptor()
+        {
+            var memberContent = sourceNode.Content as MemberContent;
+            return memberContent != null ? memberContent.Member : null;
         }
 
         internal void CheckConsistency()
@@ -262,7 +263,7 @@ namespace SiliconStudio.Presentation.Quantum
             return result;
         }
 
-        private void GenerateChildren(IModelNode modelNode)
+        private void GenerateChildren(IModelNode modelNode, bool isUpdating)
         {
             if (modelNode.Content.IsReference)
             {
@@ -276,14 +277,14 @@ namespace SiliconStudio.Presentation.Quantum
                         // a boxed float to double for example. Otherwise, we want to have to have a node type that is value-dependent.
                         var type = reference.TargetNode != null && reference.TargetNode.Content.IsPrimitive ? reference.TargetNode.Content.Type : reference.Type;
                         var observableNode = Create(Owner, null, false, this, modelNode, type, reference.Index);
-                        observableNode.Initialize();
+                        observableNode.Initialize(isUpdating);
                         AddChild(observableNode);
                     }
                 }
                 else
                 {
                     var targetViewModelNode = ((ObjectReference)modelNode.Content.Reference).TargetNode;
-                    GenerateChildren(targetViewModelNode);
+                    GenerateChildren(targetViewModelNode, isUpdating);
                 }
             }
             else
@@ -296,7 +297,7 @@ namespace SiliconStudio.Presentation.Quantum
                     foreach (var key in dictionary.GetKeys(modelNode.Content.Value))
                     {
                         var observableChild = Create(Owner, null, true, this, modelNode, dictionary.ValueType, key);
-                        observableChild.Initialize();
+                        observableChild.Initialize(isUpdating);
                         AddChild(observableChild);
                     }
                 }
@@ -306,7 +307,7 @@ namespace SiliconStudio.Presentation.Quantum
                     for (int i = 0; i < list.GetCollectionCount(modelNode.Content.Value); ++i)
                     {
                         var observableChild = Create(Owner, null, true, this, modelNode, list.ElementType, i);
-                        observableChild.Initialize();
+                        observableChild.Initialize(isUpdating);
                         AddChild(observableChild);
                     }
                 }
@@ -316,7 +317,7 @@ namespace SiliconStudio.Presentation.Quantum
                     foreach (var child in modelNode.Children)
                     {
                         var observableChild = Create(Owner, child.Name, child.Content.IsPrimitive, this, child, child.Content.Type, null);
-                        observableChild.Initialize();
+                        observableChild.Initialize(isUpdating);
                         AddChild(observableChild);
                     }
                 }
@@ -336,7 +337,7 @@ namespace SiliconStudio.Presentation.Quantum
             foreach (var child in Children.ToList())
                 RemoveChild(child);
 
-            Initialize();
+            Initialize(true);
 
             OnPropertyChanged("IsPrimitive", "HasList", "HasDictionary");
         }

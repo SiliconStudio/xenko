@@ -40,6 +40,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         public Color3 DiffuseColor;
         public float SpotBeamAngle;
+
+        public float Range;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
@@ -55,12 +57,24 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
     {
         #region Static members
 
+        /// <summary>
+        /// The key linking the parameters of each point light.
+        /// </summary>
         public static readonly ParameterKey<PointLightData[]> PointLightInfos = ParameterKeys.New(new PointLightData[64]);
 
+        /// <summary>
+        /// The key linking the parameters of each directional light.
+        /// </summary>
         public static readonly ParameterKey<DirectLightData[]> DirectLightInfos = ParameterKeys.New(new DirectLightData[64]);
 
+        /// <summary>
+        /// The key linking the parameters of each spot light.
+        /// </summary>
         public static readonly ParameterKey<SpotLightData[]> SpotLightInfos = ParameterKeys.New(new SpotLightData[64]);
 
+        /// <summary>
+        /// The key setting the number of lights.
+        /// </summary>
         public static readonly ParameterKey<int> LightCount = ParameterKeys.New(64);
 
         #endregion
@@ -93,7 +107,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         public const int MaxSpotLightsPerTileDrawCall = 1;
 
-        public const int MaxShadowLightsPerTileDrawCall = 1;
+        public const int MaxSpotShadowLightsPerTileDrawCall = 1;
+
+        public const int MaxDirectShadowLightsPerTileDrawCall = 1;
 
         #endregion
 
@@ -107,11 +123,15 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         private ShadowMapCascadeReceiverInfo[] cascadeInfos;
 
+        private ParameterCollection[] effectParameterCollections;
+
         private List<EntityLightShadow> validLights;
 
         private List<EntityLightShadow> pointLights;
 
         private List<EntityLightShadow> spotLights;
+
+        private List<EntityLightShadow> spotShadowLights;
 
         private List<EntityLightShadow> directionalLights;
 
@@ -131,9 +151,11 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         private SpotLightData[] currentSpotLights = new SpotLightData[MaxSpotLightsPerTileDrawCall];
 
+        private SpotLightData[] currentSpotShadowLights = new SpotLightData[MaxSpotShadowLightsPerTileDrawCall];
+
         private DirectLightData[] currentDirectLights = new DirectLightData[MaxDirectLightsPerTileDrawCall];
 
-        private DirectLightData[] currentShadowLights = new DirectLightData[MaxShadowLightsPerTileDrawCall];
+        private DirectLightData[] currentDirectShadowLights = new DirectLightData[MaxDirectShadowLightsPerTileDrawCall];
 
         private RenderTarget lightRenderTarget;
 
@@ -149,7 +171,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         
         private Dictionary<ShadowEffectInfo, List<EntityLightShadow>> shadowLights;
 
-        private Dictionary<ShadowEffectInfo, List<DirectLightData>> shadowLightDatas;
+        private Dictionary<ShadowEffectInfo, List<DirectLightData>> directShadowLightDatas;
+
+        private Dictionary<ShadowEffectInfo, List<SpotLightData>> spotShadowLightDatas;
 
         private Dictionary<Effect, LightingDeferredParameters[]> lightingConfigurationsPerEffect;
 
@@ -182,6 +206,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             validLights = new List<EntityLightShadow>();
             pointLights = new List<EntityLightShadow>();
             spotLights = new List<EntityLightShadow>();
+            spotShadowLights = new List<EntityLightShadow>();
             directionalLights = new List<EntityLightShadow>();
             directionalShadowLights = new List<EntityLightShadow>();
             pointLightDatas = new List<PointLightData>();
@@ -192,11 +217,13 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             lightingParameterSemantics = new Dictionary<ParameterKey, LightingDeferredSemantic>();
             shadowEffects = new Dictionary<ShadowEffectInfo, Effect>();
             shadowLights = new Dictionary<ShadowEffectInfo, List<EntityLightShadow>>();
-            shadowLightDatas = new Dictionary<ShadowEffectInfo, List<DirectLightData>>();
+            directShadowLightDatas = new Dictionary<ShadowEffectInfo, List<DirectLightData>>();
+            spotShadowLightDatas = new Dictionary<ShadowEffectInfo, List<SpotLightData>>();
 
             receiverInfos = new ShadowMapReceiverInfo[4];
             receiverVsmInfos = new ShadowMapReceiverVsmInfo[4];
             cascadeInfos = new ShadowMapCascadeReceiverInfo[16];
+            effectParameterCollections = new ParameterCollection[2];
 
             this.effectName = effectName;
             this.depthStencilTexture = depthStencilTexture;
@@ -315,21 +342,41 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         private void AddShadowEffect(int cascadeCount, ShadowMapFilterType filterType, CompilerParameters  parameters)
         {
-            ShadowEffectInfo sei;
-            sei.CascadeCount = cascadeCount;
-            sei.Filter = filterType;
-
             parameters.Set(ShadowMapParameters.ShadowMapCascadeCount, cascadeCount);
             parameters.Set(ShadowMapParameters.FilterType, filterType);
 
-            var effect = EffectSystem.LoadEffect(effectName + ".ParadoxDirectShadowPrepassLighting", parameters);
+            //////////////////////////////////////////////
+            // DIRECTIONAL LIGHT
+            parameters.Set(ShadowMapParameters.LightType, LightType.Directional);
+
+            ShadowEffectInfo seiDirect;
+            seiDirect.LightType = LightType.Directional;
+            seiDirect.CascadeCount = cascadeCount;
+            seiDirect.Filter = filterType;
+            AddEffect(seiDirect, cascadeCount, parameters, directShadowLightDatas);
+
+            //////////////////////////////////////////////
+            // SPOT LIGHT
+            parameters.Set(ShadowMapParameters.LightType, LightType.Spot);
+
+            ShadowEffectInfo seiSpot;
+            seiSpot.LightType = LightType.Spot;
+            seiSpot.CascadeCount = cascadeCount;
+            seiSpot.Filter = filterType;
+
+            AddEffect(seiSpot, cascadeCount, parameters, spotShadowLightDatas);
+        }
+
+        private void AddEffect<T>(ShadowEffectInfo sei, int cascadeCount, CompilerParameters parameters, Dictionary<ShadowEffectInfo, List<T>> lightDatas)
+        {
+            var effect = EffectSystem.LoadEffect(effectName + ".ParadoxShadowPrepassLighting", parameters);
             CreateLightingUpdateInfo(effect);
             effect.ShadowParameters = new List<ShadowUpdateInfo>();
             effect.ShadowParameters.Add(LightingProcessorHelpers.CreateShadowUpdateInfo(0, cascadeCount));
 
             shadowEffects.Add(sei, effect);
             shadowLights.Add(sei, new List<EntityLightShadow>());
-            shadowLightDatas.Add(sei, new List<DirectLightData>());
+            lightDatas.Add(sei, new List<T>());
         }
 
         /// <summary>
@@ -370,22 +417,23 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                                 directionalLights.Add(light.Value);
                             break;
                         case LightType.Spot:
-                            spotLights.Add(light.Value);
+                            if (hasShadowRenderer && light.Value.HasShadowMap && lightProcessor.ActiveShadowMaps.Contains(light.Value.ShadowMap))
+                                spotShadowLights.Add(light.Value);
+                            else
+                                spotLights.Add(light.Value);
                             break;
                     }
                 }
             }
 
-            var zero = Vector3.Zero;
-            Vector3 lightPosition;
             foreach (var light in pointLights)
             {
                 PointLightData data;
                 data.DiffuseColor = light.Light.Color;
                 // TODO: Linearize intensity
                 data.LightIntensity = light.Light.Intensity;//(float)Math.Pow(light.Light.Intensity, 2.2f);
-                Vector3.TransformCoordinate(ref zero, ref light.Entity.Transformation.WorldMatrix, out lightPosition);
-                data.LightPosition = lightPosition;
+                data.LightPosition = new Vector3(light.Entity.Transformation.WorldMatrix.M41, light.Entity.Transformation.WorldMatrix.M42, light.Entity.Transformation.WorldMatrix.M43);
+                data.LightPosition /= light.Entity.Transformation.WorldMatrix.M44;
                 data.LightRadius = light.Light.DecayStart;
 
                 // TODO: Linearize color
@@ -394,70 +442,44 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 pointLightDatas.Add(data);
             }
 
-            Vector3 lightDir;
-            Vector3 lightDirection;
             foreach (var light in directionalLights)
-            {
-                DirectLightData data;
-                data.DiffuseColor = light.Light.Color;
-                // TODO: Linearize intensity
-                data.LightIntensity = light.Light.Intensity;//(float)Math.Pow(light.Light.Intensity, 2.2f);
-                lightDir = light.Light.LightDirection;
-                Vector3.TransformNormal(ref lightDir, ref light.Entity.Transformation.WorldMatrix, out lightDirection);
-                data.LightDirection = lightDirection;
-
-                // TODO: Linearize color
-                //data.DiffuseColor.Pow(2.2f);
-
-                directionalLightDatas.Add(data);
-            }
+                directionalLightDatas.Add(GetDirectLightData(light));
 
             foreach (var light in directionalShadowLights)
             {
                 ShadowEffectInfo sei;
+                sei.LightType = LightType.Directional;
                 sei.CascadeCount = light.Light.ShadowMapCascadeCount;
                 sei.Filter = light.Light.ShadowMapFilterType;
                 
                 List<DirectLightData> dataList;
-                if (shadowLightDatas.TryGetValue(sei, out dataList))
+                if (directShadowLightDatas.TryGetValue(sei, out dataList))
                 {
-                    DirectLightData data;
-                    data.DiffuseColor = light.Light.Color;
-                    // TODO: Linearize intensity
-                    data.LightIntensity = light.Light.Intensity;//(float)Math.Pow(light.Light.Intensity, 2.2f);
-                    lightDir = light.Light.LightDirection;
-                    Vector3.TransformNormal(ref lightDir, ref light.Entity.Transformation.WorldMatrix, out lightDirection);
-                    data.LightDirection = lightDirection;
-
-                    // TODO: Linearize color
-                    //data.DiffuseColor.Pow(2.2f);
-
-                    dataList.Add(data);
+                    dataList.Add(GetDirectLightData(light));
                     shadowLights[sei].Add(light);
                 }
             }
 
             foreach (var light in spotLights)
+                spotLightDatas.Add(GetSpotLightData(light));
+
+            foreach (var light in spotShadowLights)
             {
-                SpotLightData data;
-                lightDir = light.Light.LightDirection;
-                Vector3.TransformNormal(ref lightDir, ref light.Entity.Transformation.WorldMatrix, out lightDirection);
-                data.LightDirection = lightDirection;
-                data.DiffuseColor = light.Light.Color;
-                // TODO: Linearize intensity
-                data.LightIntensity = light.Light.Intensity;//(float)Math.Pow(light.Light.Intensity, 2.2f);
-                Vector3.TransformCoordinate(ref zero, ref light.Entity.Transformation.WorldMatrix, out lightPosition);
-                data.LightPosition = lightPosition;
+                ShadowEffectInfo sei;
+                sei.LightType = LightType.Spot;
+                sei.CascadeCount = light.Light.ShadowMapCascadeCount;
+                sei.Filter = light.Light.ShadowMapFilterType;
 
-                data.SpotBeamAngle = (float)Math.Cos(Math.PI * light.Light.SpotBeamAngle / 180);
-                data.SpotFieldAngle = (float)Math.Cos(Math.PI * light.Light.SpotFieldAngle / 180);
-
-                // TODO: Linearize color
-                //data.DiffuseColor.Pow(2.2f);
-
-                spotLightDatas.Add(data);
+                List<SpotLightData> dataList;
+                if (spotShadowLightDatas.TryGetValue(sei, out dataList))
+                {
+                    dataList.Add(GetSpotLightData(light));
+                    shadowLights[sei].Add(light);
+                }
             }
         }
+
+        
 
         /// <summary>
         /// Clear the lists.
@@ -468,6 +490,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             validLights.Clear();
             pointLights.Clear();
             spotLights.Clear();
+            spotShadowLights.Clear();
             directionalLights.Clear();
             directionalShadowLights.Clear();
             pointLightDatas.Clear();
@@ -476,7 +499,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
             foreach(var lightList in shadowLights)
                 lightList.Value.Clear();
-            foreach (var dataList in shadowLightDatas)
+            foreach (var dataList in directShadowLightDatas)
+                dataList.Value.Clear();
+            foreach (var dataList in spotShadowLightDatas)
                 dataList.Value.Clear();
 
             regroupedTiles.Clear();
@@ -523,52 +548,59 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             UpdateLightDatas(context);
 
             // if there is no light, use albedo
-            if (pointLights.Count == 0 && spotLights.Count == 0 && directionalLights.Count == 0 && directionalShadowLights.Count == 0)
+            if (pointLights.Count == 0 && spotLights.Count == 0 && directionalLights.Count == 0 && directionalShadowLights.Count == 0 && spotShadowLights.Count == 0)
             {
                 GraphicsDevice.Clear(lightRenderTarget, new Color4(1.0f, 1.0f, 1.0f, 0.0f));
-                return;
             }
-
-            // Clear and set light accumulation target
-            GraphicsDevice.Clear(lightRenderTarget, new Color4(0.0f, 0.0f, 0.0f, 0.0f));
-            GraphicsDevice.SetRenderTarget(lightRenderTarget); // no depth buffer
-            // TODO: make sure that the lightRenderTarget.Texture is not bound to any shader to prevent some warnings
-
-            // Set default blend state
-            GraphicsDevice.SetBlendState(null);
-
-            // set default depth stencil test
-            GraphicsDevice.SetDepthStencilState(GraphicsDevice.DepthStencilStates.None);
-
-            // TODO: remove this?
-            // override specular intensity
-            context.Parameters.Set(MaterialKeys.SpecularIntensity, 1.0f);
-
-            UpdateTiles(Pass.Parameters);
-
-            // direct lighting
-            var hasPreviousLighting = RenderTileForDirectLights(context);
-
-            // direct lighting with shadows
-            foreach (var lightList in shadowLights)
+            else
             {
-                if (lightList.Value.Count > 0)
+                // Clear and set light accumulation target
+                GraphicsDevice.Clear(lightRenderTarget, new Color4(0.0f, 0.0f, 0.0f, 0.0f));
+                GraphicsDevice.SetRenderTarget(lightRenderTarget); // no depth buffer
+                // TODO: make sure that the lightRenderTarget.Texture is not bound to any shader to prevent some warnings
+
+                // Set default blend state
+                GraphicsDevice.SetBlendState(null);
+
+                // set default depth stencil test
+                GraphicsDevice.SetDepthStencilState(GraphicsDevice.DepthStencilStates.None);
+
+                // TODO: remove this?
+                // override specular intensity
+                context.Parameters.Set(MaterialKeys.SpecularIntensity, 1.0f);
+
+                UpdateTiles(Pass.Parameters);
+
+                // direct lighting
+                var hasPreviousLighting = RenderTileForDirectLights(context);
+
+                // spot lights
+                hasPreviousLighting |= RenderTileForSpotLights(context, hasPreviousLighting);
+
+                // lighting with shadows
+                foreach (var lightList in shadowLights)
                 {
-                    var effect = shadowEffects[lightList.Key];
-                    if (RenderTileForDirectShadowLights(context, hasPreviousLighting, effect, lightList.Value, shadowLightDatas[lightList.Key], lightList.Key.Filter == ShadowMapFilterType.Variance))
+                    if (lightList.Value.Count > 0)
                     {
-                        effect.UnbindResources();
-                        hasPreviousLighting = true;
+                        var effect = shadowEffects[lightList.Key];
+                        // direct light or spot light
+                        if ((lightList.Key.LightType == LightType.Directional && RenderTileForDirectShadowLights(context, hasPreviousLighting, effect, lightList.Value, directShadowLightDatas[lightList.Key], lightList.Key.Filter == ShadowMapFilterType.Variance))
+                            || lightList.Key.LightType == LightType.Spot && RenderTileForSpotShadowLights(context, hasPreviousLighting, effect, lightList.Value, spotShadowLightDatas[lightList.Key], lightList.Key.Filter == ShadowMapFilterType.Variance))
+                        {
+                            effect.UnbindResources();
+                            hasPreviousLighting = true;
+                        }
                     }
                 }
+
+                // point lights
+                RenderTilesForPointLights(context, hasPreviousLighting);
+
+                // Reset default blend state
+                GraphicsDevice.SetBlendState(null);
             }
-
-            // spot lights
-            hasPreviousLighting |= RenderTileForSpotLights(context, hasPreviousLighting);
-
-            // point lights
-            RenderTilesForPointLights(context, hasPreviousLighting);
             
+            // reset the light infos
             EndRender(context);
 
             // TDO: remove this
@@ -576,19 +608,94 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             context.Parameters.Reset(MaterialKeys.SpecularIntensity);
         }
 
+        private void SetDirectLightParameters(RenderContext context, Effect effect, DirectLightData[] data, int lightCount)
+        {
+            LightingDeferredParameters[] deferredParameters = null;
+            if (lightingConfigurationsPerEffect.TryGetValue(effect, out deferredParameters))
+            {
+                foreach (var deferredParam in deferredParameters)
+                {
+                    if ((deferredParam.Semantic & LightingDeferredSemantic.DirectLightInfos) != 0)
+                        context.Parameters.Set(deferredParam.DirectLightInfosKey, data);
+                    if ((deferredParam.Semantic & LightingDeferredSemantic.LightCount) != 0)
+                        context.Parameters.Set(deferredParam.LightCountKey, lightCount);
+                }
+            }
+        }
+
+        private void SetSpotLightParameters(RenderContext context, Effect effect, SpotLightData[] data, int lightCount)
+        {
+            LightingDeferredParameters[] deferredParameters = null;
+            if (lightingConfigurationsPerEffect.TryGetValue(effect, out deferredParameters))
+            {
+                foreach (var deferredParam in deferredParameters)
+                {
+                    if ((deferredParam.Semantic & LightingDeferredSemantic.SpotLightInfos) != 0)
+                        context.Parameters.Set(deferredParam.SpotLightInfosKey, data);
+                    if ((deferredParam.Semantic & LightingDeferredSemantic.LightCount) != 0)
+                        context.Parameters.Set(deferredParam.LightCountKey, lightCount);
+                }
+            }
+        }
+
+        private int SetCascadeInfo(List<EntityLightShadow> lights, int startLightIndex, int lightIndex, int cascadeCount, ShadowUpdateInfo shadowUpdateInfo)
+        {
+            var shadowLight = lights[startLightIndex + lightIndex];
+            receiverInfos[lightIndex] = shadowLight.ShadowMap.ReceiverInfo;
+            receiverVsmInfos[lightIndex] = shadowLight.ShadowMap.ReceiverVsmInfo;
+            for (var cascade = 0; cascade < shadowUpdateInfo.CascadeCount; ++cascade)
+                cascadeInfos[cascadeCount + cascade] = shadowLight.ShadowMap.Cascades[cascade].ReceiverInfo;
+
+            return cascadeCount + shadowUpdateInfo.CascadeCount;
+        }
+
+        private void RenderTile(RenderContext context, Effect effect, bool hasPreviousDraw, int currentDrawIndex)
+        {
+            // Render this tile (we only need current pass and context parameters)
+            effectParameterCollections[0] = context.CurrentPass.Parameters;
+            effectParameterCollections[1] = context.Parameters;
+
+            // Apply effect & parameters
+            effect.Apply(effectParameterCollections);
+
+            // the blend state is null at the beginning of the renderer. We should switch to accumulation blend state at the second render.
+            // Any further render do not need to switch the blend state since it is already corerctly set.
+            if (!hasPreviousDraw && currentDrawIndex == 1)
+                GraphicsDevice.SetBlendState(accumulationBlendState);
+
+            // Set VAO and draw tile
+            GraphicsDevice.SetVertexArrayObject(vertexArrayObject);
+            GraphicsDevice.Draw(meshDraw.PrimitiveType, meshDraw.DrawCount, meshDraw.StartLocation);
+        }
+
+        private void RenderShadowLight(RenderContext context, List<EntityLightShadow> lights, int startLightIndex, int lightCount, int cascadeCount, bool varianceShadowMap, bool hasPreviousDraw, int currentDrawIndex, ShadowUpdateInfo shadowUpdateInfo, Effect effect)
+        {
+            // update shadow parameters
+            context.Parameters.Set((ParameterKey<ShadowMapReceiverInfo[]>)shadowUpdateInfo.ShadowMapReceiverInfoKey, receiverInfos, 0, lightCount);
+            context.Parameters.Set((ParameterKey<ShadowMapCascadeReceiverInfo[]>)shadowUpdateInfo.ShadowMapLevelReceiverInfoKey, cascadeInfos, 0, cascadeCount);
+            context.Parameters.Set(shadowUpdateInfo.ShadowMapLightCountKey, lightCount);
+            // TODO: change texture set when multiple shadow maps will be handled.
+            if (varianceShadowMap)
+                context.Parameters.Set(shadowUpdateInfo.ShadowMapTextureKey, lights[startLightIndex].ShadowMap.Texture.ShadowMapTargetTexture);
+            else
+                context.Parameters.Set(shadowUpdateInfo.ShadowMapTextureKey, lights[startLightIndex].ShadowMap.Texture.ShadowMapDepthTexture);
+
+            RenderTile(context, effect, hasPreviousDraw, currentDrawIndex);
+        }
+
         private bool RenderTileForDirectLights(RenderContext context)
         {
             // only one tile since the directional lights affects the whole screen
-            context.Parameters.Set(DeferredLightingShaderKeys.TileCountX, 1);
-            context.Parameters.Set(DeferredLightingShaderKeys.TileCountY, 1);
-            context.Parameters.Set(DeferredLightingShaderKeys.TileIndex, 0);
+            context.Parameters.Set(DeferredTiledShaderKeys.TileCountX, 1);
+            context.Parameters.Set(DeferredTiledShaderKeys.TileCountY, 1);
+            context.Parameters.Set(DeferredTiledShaderKeys.TileIndex, 0);
 
             int directLightCount = directionalLightDatas.Count;
 
             int drawCount = (directLightCount + MaxDirectLightsPerTileDrawCall - 1) / MaxDirectLightsPerTileDrawCall;
             var startLightIndex = 0;
 
-            for (int i = 0; i < drawCount; ++i)
+            for (int currentDrawIndex = 0; currentDrawIndex < drawCount; ++currentDrawIndex)
             {
                 int lightCount = Math.Min(directLightCount - startLightIndex, MaxDirectLightsPerTileDrawCall);
             
@@ -597,37 +704,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                     currentDirectLights[lightIndex] = directionalLightDatas[startLightIndex + lightIndex];
 
                 // Set data for shader
-                LightingDeferredParameters[] deferredParameters = null;
-                if (lightingConfigurationsPerEffect.TryGetValue(directLightingPrepassEffect, out deferredParameters))
-                {
-                    foreach (var deferredParam in deferredParameters)
-                    {
-                        if ((deferredParam.Semantic & LightingDeferredSemantic.DirectLightInfos) != 0)
-                        {
-                            context.Parameters.Set(deferredParam.DirectLightInfosKey, currentDirectLights);
-                        }
-                        if ((deferredParam.Semantic & LightingDeferredSemantic.LightCount) != 0)
-                        {
-                            context.Parameters.Set(deferredParam.LightCountKey, lightCount);
-                        }
-                    }
-                }
+                SetDirectLightParameters(context, directLightingPrepassEffect, currentDirectLights, lightCount);
 
-                // Render this tile (we only need current pass and context parameters)
-                var parameterCollections = new ParameterCollection[2];
-                parameterCollections[0] = context.CurrentPass.Parameters;
-                parameterCollections[1] = context.Parameters;
-
-                // Apply effect & parameters
-                directLightingPrepassEffect.Apply(parameterCollections);
-
-                // direct lighting is first lighting
-                if (i == 1)
-                    GraphicsDevice.SetBlendState(accumulationBlendState);
-
-                // Set VAO and draw tile
-                GraphicsDevice.SetVertexArrayObject(vertexArrayObject);
-                GraphicsDevice.Draw(meshDraw.PrimitiveType, meshDraw.DrawCount, meshDraw.StartLocation);
+                RenderTile(context, directLightingPrepassEffect, false, currentDrawIndex);
 
                 startLightIndex += MaxDirectLightsPerTileDrawCall;
             }
@@ -644,16 +723,16 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         private bool RenderTileForDirectShadowLights(RenderContext context, bool hasPreviousDraw, Effect effect, List<EntityLightShadow> lights, List<DirectLightData> lightDatas, bool varianceShadowMap)
         {
             // only one tile since the directional lights affects the whole screen
-            context.Parameters.Set(DeferredShadowLightingShaderKeys.TileCountX, 1);
-            context.Parameters.Set(DeferredShadowLightingShaderKeys.TileCountY, 1);
-            context.Parameters.Set(DeferredShadowLightingShaderKeys.TileIndex, 0);
+            context.Parameters.Set(DeferredTiledShaderKeys.TileCountX, 1);
+            context.Parameters.Set(DeferredTiledShaderKeys.TileCountY, 1);
+            context.Parameters.Set(DeferredTiledShaderKeys.TileIndex, 0);
 
             int directShadowLightCount = lightDatas.Count;
 
             if (hasPreviousDraw)
                 GraphicsDevice.SetBlendState(accumulationBlendState);
 
-            int drawCount = (directShadowLightCount + MaxShadowLightsPerTileDrawCall - 1) / MaxShadowLightsPerTileDrawCall;
+            int drawCount = (directShadowLightCount + MaxDirectShadowLightsPerTileDrawCall - 1) / MaxDirectShadowLightsPerTileDrawCall;
             var startLightIndex = 0;
 
             // TODO: change that to handle mutiple shadow maps in the same shader - works now since the shader only render with 1 shadow map at a time.
@@ -661,77 +740,80 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
             for (int i = 0; i < drawCount; ++i)
             {
-                int lightCount = Math.Min(directShadowLightCount - startLightIndex, MaxShadowLightsPerTileDrawCall);
+                int lightCount = Math.Min(directShadowLightCount - startLightIndex, MaxDirectShadowLightsPerTileDrawCall);
                 var cascadeCount = 0;
                 // prepare directional shadow light datas
                 for (int lightIndex = 0; lightIndex < lightCount; ++lightIndex)
                 {
-                    currentShadowLights[lightIndex] = lightDatas[startLightIndex + lightIndex];
-
-                    var shadowLight = lights[startLightIndex + lightIndex];
-                    receiverInfos[lightIndex] = shadowLight.ShadowMap.ReceiverInfo;
-                    receiverVsmInfos[lightIndex] = shadowLight.ShadowMap.ReceiverVsmInfo;
-                    for (var cascade = 0; cascade < shadowUpdateInfo.CascadeCount; ++cascade)
-                        cascadeInfos[cascadeCount + cascade] = shadowLight.ShadowMap.Cascades[cascade].ReceiverInfo;
-                    cascadeCount += shadowUpdateInfo.CascadeCount;
+                    currentDirectShadowLights[lightIndex] = lightDatas[startLightIndex + lightIndex];
+                    cascadeCount = SetCascadeInfo(lights, startLightIndex, lightIndex, cascadeCount, shadowUpdateInfo);
                 }
 
                 // Set data for shader
-                LightingDeferredParameters[] deferredParameters = null;
-                if (lightingConfigurationsPerEffect.TryGetValue(effect, out deferredParameters))
-                {
-                    foreach (var deferredParam in deferredParameters)
-                    {
-                        if ((deferredParam.Semantic & LightingDeferredSemantic.DirectLightInfos) != 0)
-                        {
-                            context.Parameters.Set(deferredParam.DirectLightInfosKey, currentShadowLights);
-                        }
-                        if ((deferredParam.Semantic & LightingDeferredSemantic.LightCount) != 0)
-                        {
-                            context.Parameters.Set(deferredParam.LightCountKey, lightCount);
-                        }
-                    }
-                }
-
-                // update shadow parameters
-                context.Parameters.Set((ParameterKey<ShadowMapReceiverInfo[]>)shadowUpdateInfo.ShadowMapReceiverInfoKey, receiverInfos, 0, lightCount);
-                context.Parameters.Set((ParameterKey<ShadowMapCascadeReceiverInfo[]>)shadowUpdateInfo.ShadowMapLevelReceiverInfoKey, cascadeInfos, 0, cascadeCount);
-                context.Parameters.Set(shadowUpdateInfo.ShadowMapLightCountKey, lightCount);
-                // TODO: change texture set when multiple shadow maps will be handled.
-                if (varianceShadowMap)
-                    context.Parameters.Set(shadowUpdateInfo.ShadowMapTextureKey, lights[startLightIndex].ShadowMap.Texture.ShadowMapTargetTexture);
-                else
-                    context.Parameters.Set(shadowUpdateInfo.ShadowMapTextureKey, lights[startLightIndex].ShadowMap.Texture.ShadowMapDepthTexture);
-
-                // Render this tile (we only need current pass and context parameters)
-                var parameterCollections = new ParameterCollection[2];
-                parameterCollections[0] = context.CurrentPass.Parameters;
-                parameterCollections[1] = context.Parameters;
-
-                // Apply effect & parameters
-                effect.Apply(parameterCollections);
+                SetDirectLightParameters(context, effect, currentDirectShadowLights, lightCount);
                 
-                // first lighting?
-                if (!hasPreviousDraw && i == 1)
-                    GraphicsDevice.SetBlendState(accumulationBlendState);
+                RenderShadowLight(context, lights, startLightIndex, lightCount, cascadeCount, varianceShadowMap, hasPreviousDraw, i, shadowUpdateInfo, effect);
 
-                // Set VAO and draw tile
-                GraphicsDevice.SetVertexArrayObject(vertexArrayObject);
-                GraphicsDevice.Draw(meshDraw.PrimitiveType, meshDraw.DrawCount, meshDraw.StartLocation);
-
-                startLightIndex += MaxShadowLightsPerTileDrawCall;
+                startLightIndex += MaxDirectShadowLightsPerTileDrawCall;
             }
 
             return (drawCount > 0);
+        }
+
+        private bool RenderTileForSpotShadowLights(RenderContext context, bool hasPreviousDraw, Effect effect, List<EntityLightShadow> lights, List<SpotLightData> lightDatas, bool varianceShadowMap)
+        {
+            // TODO: look for tiles covered by spot lights
+            // only one tile for spot lights for now
+            context.Parameters.Set(DeferredTiledShaderKeys.TileCountX, 1);
+            context.Parameters.Set(DeferredTiledShaderKeys.TileCountY, 1);
+            context.Parameters.Set(DeferredTiledShaderKeys.TileIndex, 0);
+
+            int spotShadowLightCount = lightDatas.Count;
+
+            if (hasPreviousDraw)
+                GraphicsDevice.SetBlendState(accumulationBlendState);
+
+            int drawCount = (spotShadowLightCount + MaxSpotShadowLightsPerTileDrawCall - 1) / MaxSpotShadowLightsPerTileDrawCall;
+            var startLightIndex = 0;
+
+            // TODO: change that to handle mutiple shadow maps in the same shader - works now since the shader only render with 1 shadow map at a time.
+            var shadowUpdateInfo = effect.ShadowParameters[0];
+
+            for (int i = 0; i < drawCount; ++i)
+            {
+                int lightCount = Math.Min(spotShadowLightCount - startLightIndex, MaxSpotShadowLightsPerTileDrawCall);
+                int cascadeCount = 0;
+                // prepare spot shadow light datas
+                for (int lightIndex = 0; lightIndex < lightCount; ++lightIndex)
+                {
+                    currentSpotShadowLights[lightIndex] = lightDatas[startLightIndex + lightIndex];
+                    cascadeCount = SetCascadeInfo(lights, startLightIndex, lightIndex, cascadeCount, shadowUpdateInfo);
+                }
+
+                // Set data for shader
+                SetSpotLightParameters(context, effect, currentSpotShadowLights, lightCount);
+
+                RenderShadowLight(context, lights, startLightIndex, lightCount, cascadeCount, varianceShadowMap, hasPreviousDraw, i, shadowUpdateInfo, effect);
+
+                startLightIndex += MaxSpotShadowLightsPerTileDrawCall;
+            }
+
+            if (drawCount > 0)
+            {
+                effect.UnbindResources();
+                return true;
+            }
+
+            return false;
         }
 
         private bool RenderTileForSpotLights(RenderContext context, bool hasPreviousDraw)
         {
             // TODO: look for tiles covered by spot lights
             // only one tile for spot lights for now
-            context.Parameters.Set(DeferredLightingShaderKeys.TileCountX, 1);
-            context.Parameters.Set(DeferredLightingShaderKeys.TileCountY, 1);
-            context.Parameters.Set(DeferredLightingShaderKeys.TileIndex, 0);
+            context.Parameters.Set(DeferredTiledShaderKeys.TileCountX, 1);
+            context.Parameters.Set(DeferredTiledShaderKeys.TileCountY, 1);
+            context.Parameters.Set(DeferredTiledShaderKeys.TileIndex, 0);
 
             int spotLightCount = spotLightDatas.Count;
 
@@ -741,7 +823,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             int drawCount = (spotLightCount + MaxSpotLightsPerTileDrawCall - 1) / MaxSpotLightsPerTileDrawCall;
             var startLightIndex = 0;
 
-            for (int i = 0; i < drawCount; ++i)
+            for (int currentDrawIndex = 0; currentDrawIndex < drawCount; ++currentDrawIndex)
             {
                 int lightCount = Math.Min(spotLightCount - startLightIndex, MaxSpotLightsPerTileDrawCall);
                 
@@ -750,37 +832,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                     currentSpotLights[lightIndex] = spotLightDatas[startLightIndex + lightIndex];
 
                 // Set data for shader
-                LightingDeferredParameters[] deferredParameters = null;
-                if (lightingConfigurationsPerEffect.TryGetValue(spotLightingPrepassEffect, out deferredParameters))
-                {
-                    foreach (var deferredParam in deferredParameters)
-                    {
-                        if ((deferredParam.Semantic & LightingDeferredSemantic.SpotLightInfos) != 0)
-                        {
-                            context.Parameters.Set(deferredParam.SpotLightInfosKey, currentSpotLights);
-                        }
-                        if ((deferredParam.Semantic & LightingDeferredSemantic.LightCount) != 0)
-                        {
-                            context.Parameters.Set(deferredParam.LightCountKey, lightCount);
-                        }
-                    }
-                }
+                SetSpotLightParameters(context, spotLightingPrepassEffect, currentSpotLights, lightCount);
 
-                // Render this tile (we only need current pass and context parameters)
-                var parameterCollections = new ParameterCollection[2];
-                parameterCollections[0] = context.CurrentPass.Parameters;
-                parameterCollections[1] = context.Parameters;
-
-                // Apply effect & parameters
-                spotLightingPrepassEffect.Apply(parameterCollections);
-
-                // spot lighting is first lighting
-                if (!hasPreviousDraw && i == 1)
-                    GraphicsDevice.SetBlendState(accumulationBlendState);
-
-                // Set VAO and draw tile
-                GraphicsDevice.SetVertexArrayObject(vertexArrayObject);
-                GraphicsDevice.Draw(meshDraw.PrimitiveType, meshDraw.DrawCount, meshDraw.StartLocation);
+                RenderTile(context, spotLightingPrepassEffect, hasPreviousDraw, currentDrawIndex);
 
                 startLightIndex += MaxSpotLightsPerTileDrawCall;
             }
@@ -796,11 +850,11 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         private void RenderTilesForPointLights(RenderContext context, bool hasPreviousDraw)
         {
-            context.Parameters.Set(DeferredLightingShaderKeys.TileCountX, TileCountX);
-            context.Parameters.Set(DeferredLightingShaderKeys.TileCountY, TileCountY);
+            context.Parameters.Set(DeferredTiledShaderKeys.TileCountX, TileCountX);
+            context.Parameters.Set(DeferredTiledShaderKeys.TileCountY, TileCountY);
 
             var hasDrawn = false;
-
+            
             for (var tileIndex = 0; tileIndex < TileCountX * TileCountY; ++tileIndex)
             {
                 var tilesGroup = this.tilesGroups[tileIndex];
@@ -818,17 +872,19 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 }*/
 
                 // Set tile index
-                context.Parameters.Set(DeferredLightingShaderKeys.TileIndex, tileIndex);
+                context.Parameters.Set(DeferredTiledShaderKeys.TileIndex, tileIndex);
 
                 int drawCount = (tilesGroup.Count + MaxPointLightsPerTileDrawCall - 1) / MaxPointLightsPerTileDrawCall;
 
                 if (hasPreviousDraw)
                     GraphicsDevice.SetBlendState(accumulationBlendState);
+                else
+                    GraphicsDevice.SetBlendState(null);
 
                 var startLightIndex = 0;
 
                 // One draw for every MaxPointLightsPerTileDrawCall lights
-                for (int i = 0; i < drawCount; ++i)
+                for (int currentDrawIndex = 0; currentDrawIndex < drawCount; ++currentDrawIndex)
                 {
                     // prepare PointLightData[]
                     int lightCount = Math.Min(tilesGroup.Count - startLightIndex, MaxPointLightsPerTileDrawCall);
@@ -856,29 +912,10 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                         }
                     }
 
-                    // Render this tile (we only need current pass and context parameters)
-                    var parameterCollections = new ParameterCollection[2];
-                    parameterCollections[0] = context.CurrentPass.Parameters;
-                    parameterCollections[1] = context.Parameters;
-
-                    // Apply effect & parameters
-                    pointLightingPrepassEffect.Apply(parameterCollections);
-
-                    // From second draw, switch to accumulation
-                    if (!hasPreviousDraw && i > 0)
-                        GraphicsDevice.SetBlendState(accumulationBlendState);
-
-                    // Set VAO and draw tile
-                    GraphicsDevice.SetVertexArrayObject(vertexArrayObject);
-                    GraphicsDevice.Draw(meshDraw.PrimitiveType, meshDraw.DrawCount, meshDraw.StartLocation);
-
+                    RenderTile(context, pointLightingPrepassEffect, hasPreviousDraw, currentDrawIndex);
+                    
                     startLightIndex += MaxPointLightsPerTileDrawCall;
                 }
-
-                // Set default blend state for next draw (if accumulation blend state has been used)
-                // drawCount > 1 means that there was more than one call on this tile, so accumulation blend state has been set. It needs to be reset.
-                if (!hasPreviousDraw && drawCount > 1)
-                    GraphicsDevice.SetBlendState(null);
 
                 hasDrawn |= (drawCount > 0);
             }
@@ -950,6 +987,20 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 spotLightDatas[index] = lightData;
             }
 
+            foreach (var lightDatas in spotShadowLightDatas)
+            {
+                for (int index = 0; index < lightDatas.Value.Count; index++)
+                {
+                    var lightData = lightDatas.Value[index];
+
+                    // Transform light direction from WS to VS
+                    Vector3.TransformNormal(ref lightData.LightDirection, ref viewMatrix, out lightData.LightDirection);
+                    // Transform light position from WS to VS
+                    Vector3.TransformCoordinate(ref lightData.LightPosition, ref viewMatrix, out lightData.LightPosition);
+                    lightDatas.Value[index] = lightData;
+                }
+            }
+
             for (int index = 0; index < directionalLightDatas.Count; index++)
             {
                 var lightData = directionalLightDatas[index];
@@ -959,7 +1010,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 directionalLightDatas[index] = lightData;
             }
 
-            foreach (var lightDatas in shadowLightDatas)
+            foreach (var lightDatas in directShadowLightDatas)
             {
                 for (int index = 0; index < lightDatas.Value.Count; index++)
                 {
@@ -1132,8 +1183,54 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         #endregion
 
-        #region Helper structures
+        #region Private static methods
 
+        private static DirectLightData GetDirectLightData(EntityLightShadow light)
+        {
+            DirectLightData data;
+            Vector3 lightDirection;
+            data.DiffuseColor = light.Light.Color;
+            // TODO: Linearize intensity
+            data.LightIntensity = light.Light.Intensity;//(float)Math.Pow(light.Light.Intensity, 2.2f);
+            var lightDir = light.Light.LightDirection;
+            Vector3.TransformNormal(ref lightDir, ref light.Entity.Transformation.WorldMatrix, out lightDirection);
+            data.LightDirection = lightDirection;
+
+            // TODO: Linearize color
+            //data.DiffuseColor.Pow(2.2f);
+
+            return data;
+        }
+
+        private static SpotLightData GetSpotLightData(EntityLightShadow light)
+        {
+            SpotLightData data;
+            Vector3 lightDirection;
+            Vector3 lightPosition;
+            var zero = Vector3.Zero;
+            var lightDir = light.Light.LightDirection;
+            Vector3.TransformNormal(ref lightDir, ref light.Entity.Transformation.WorldMatrix, out lightDirection);
+            data.LightDirection = lightDirection;
+            data.DiffuseColor = light.Light.Color;
+            // TODO: Linearize intensity
+            data.LightIntensity = light.Light.Intensity;//(float)Math.Pow(light.Light.Intensity, 2.2f);
+            data.LightPosition = new Vector3(light.Entity.Transformation.WorldMatrix.M41, light.Entity.Transformation.WorldMatrix.M42, light.Entity.Transformation.WorldMatrix.M43);
+            data.LightPosition /= light.Entity.Transformation.WorldMatrix.M44;
+
+            data.SpotBeamAngle = (float)Math.Cos(Math.PI * light.Light.SpotBeamAngle / 180);
+            data.SpotFieldAngle = (float)Math.Cos(Math.PI * light.Light.SpotFieldAngle / 180);
+
+            data.Range = light.Light.DecayStart;
+
+            // TODO: Linearize color
+            //data.DiffuseColor.Pow(2.2f);
+
+            return data;
+        }
+
+        #endregion
+
+        #region Helper structures
 
         private class LightingDeferredParameters
         {
@@ -1170,6 +1267,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         private struct ShadowEffectInfo
         {
+            public LightType LightType;
             public int CascadeCount;
             public ShadowMapFilterType Filter;
         }
