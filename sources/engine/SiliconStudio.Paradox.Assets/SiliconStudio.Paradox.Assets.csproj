@@ -152,7 +152,6 @@
     <Compile Include="Effect\EffectShaderAsset.cs" />
     <Compile Include="Effect\EffectByteCodeToSourceCodeWriter.cs" />
     <Compile Include="Effect\EffectKeys.cs" />
-    <Compile Include="Effect\EffectSourceCodeKeys.cs" />
     <Compile Include="Effect\Generators\DefaultCompilerParametersGenerator.cs" />
     <Compile Include="Effect\EffectCompileCommand.cs" />
     <Compile Include="Effect\EffectCompileGeneratorBuildStep.cs" />

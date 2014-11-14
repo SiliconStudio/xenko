@@ -3,6 +3,7 @@
 Release date: 2014/??/??
 
 #### New Features
+- Build: We now use OSS (OpenSource Signing) so that you can fake-sign assemblies with the same keys as ours, and use your own compiled Paradox with the official editor.
 - Graphics: Spot light shadow maps in deferred rendering.
 
 #### Enhancements
@@ -10,6 +11,7 @@ Release date: 2014/??/??
 - Samples: Spot light shadows in DeferredLighting sample.
 
 #### Issues fixed
+- Assets: Textures with arbitrary size (non square and non power-of-two) are now correctly loaded.
 - Graphics: Fix spot light shadow computation.
 - Shaders: Simplify some deferred lighting shaders.
 - Studio: Fix renamed button for string-indexed dictionary that was misplaced and not working

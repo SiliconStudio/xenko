@@ -38,7 +38,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
         RequestImageComparisonStatus = 2,
     }
     
-    internal class PlatformPermutator
+    public class PlatformPermutator
     {
         public static ImageTestResultConnection GetDefaultImageTestResultConnection()
         {
@@ -221,7 +221,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
                 Format = format,
                 MipLevels = 1,
             };
-            Image = new Image(description, pinnedImageData.AddrOfPinnedObject(), 0, pinnedImageData, false);
+            Image = Image.New(description, pinnedImageData.AddrOfPinnedObject(), 0, pinnedImageData, false);
         }
 
         public void Write(BinaryWriter writer)

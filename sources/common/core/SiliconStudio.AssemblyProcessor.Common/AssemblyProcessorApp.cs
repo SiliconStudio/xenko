@@ -44,6 +44,8 @@ namespace SiliconStudio.AssemblyProcessor
 
         public List<string> SearchDirectories { get; set; }
 
+        public string SignKeyFile { get; set; }
+
         public bool UseSymbols { get; set; }
 
         public Action<string, Exception> OnErrorEvent;
@@ -87,7 +89,7 @@ namespace SiliconStudio.AssemblyProcessor
 
                 if (SerializationAssembly)
                 {
-                    processors.Add(new SerializationProcessor());
+                    processors.Add(new SerializationProcessor(SignKeyFile));
                 }
 
                 if (GenerateUserDocumentation)
@@ -99,6 +101,8 @@ namespace SiliconStudio.AssemblyProcessor
                 {
                     processors.Add(new ModuleInitializerProcessor());
                 }
+
+                processors.Add(new OpenSourceSignProcessor());
 
                 var assemblyResolver = new CustomAssemblyResolver();
                 assemblyResolver.RemoveSearchDirectory(".");

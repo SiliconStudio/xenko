@@ -45,6 +45,7 @@ namespace SiliconStudio.AssemblyProcessor
                     { "generate-user-doc", "Generate user documentation from XML file", v => app.GenerateUserDocumentation = true },
                     { "d|directory=", "Additional search directory for assemblies" , app.SearchDirectories.Add },
                     { "a|assembly=", "Additional assembly (for now, it will add the assembly directory to search path)" , v => app.SearchDirectories.Add(Path.GetDirectoryName(v)) },
+                    { "signkeyfile=", "Signing Key File" , v => app.SignKeyFile = v },
                 };
 
             List<string> inputFiles = null;

@@ -11,8 +11,5 @@ using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.Audio.Serializers" + SiliconStudio.PublicKeys.Default)]
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.Engine" + SiliconStudio.PublicKeys.Default)]
-
-#if !SILICONSTUDIO_SIGNED
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Audio.Tests")]
-[assembly: InternalsVisibleTo("SiliconStudioParadoxAudioTests")]
-#endif
+[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Audio.Tests" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudioParadoxAudioTests" + SiliconStudio.PublicKeys.Default)]
