@@ -38,6 +38,9 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <summary>
         /// List that stores if a node should be preserved
         /// </summary>
+        /// <userdoc>
+        /// The nodes of the model.
+        /// </userdoc>
         [DataMember(20)]
         public List<NodeInformation> Nodes { get; private set; }
         
@@ -45,6 +48,9 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// Gets or sets the view direction to use when the importer is finding transparent polygons. Default is float3(0, 0, -1)
         /// </summary>
         /// <value>The view direction for transparent z sort.</value>
+        /// <userdoc>
+        /// The direction used to sort the polygons of the mesh.
+        /// </userdoc>
         [DataMember(30)]
         [DefaultValue(null)]
         public Vector3? ViewDirectionForTransparentZSort { get; set; }
@@ -52,18 +58,27 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <summary>
         /// Gets or sets the axis representing the up axis of the object
         /// </summary>
+        /// <userdoc>
+        /// The up axis of the model (for editor preview only).
+        /// </userdoc>
         [DataMember(35)]
         public Vector3 UpAxis { get; set; }
 
         /// <summary>
         /// Gets or sets the axis representing the up axis of the object
         /// </summary>
+        /// <userdoc>
+        /// The front axis of the model (for editor preview only).
+        /// </userdoc>
         [DataMember(38)]
         public Vector3 FrontAxis { get; set; }
 
         /// <summary>
         /// The mesh parameters.
         /// </summary>
+        /// <userdoc>
+        /// The list of all the meshes in the model.
+        /// </userdoc>
         [DataMember(40)]
         public Dictionary<string, MeshMaterialParameters> MeshParameters { get; private set; }
 
@@ -82,6 +97,9 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <summary>
         /// Returns to list of nodes that are preserved (they cannot be merged with other ones).
         /// </summary>
+        /// <userdoc>
+        /// Checking nodes will garantee them to be available at runtime. Otherwise, it may be merged with their parents (for optimization purposes).
+        /// </userdoc>
         [DataMemberIgnore]
         public List<string> PreservedNodes
         {
