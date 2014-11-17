@@ -9,20 +9,20 @@ namespace SiliconStudio.Paradox.Effects
     /// <summary>
     /// State stored in a <see cref="RenderPipeline"/> by a <see cref="ModelRenderer"/>
     /// </summary>
-    public class MeshRenderState
+    internal class ModelRendererState
     {
         #region Constants and Fields
 
-        public static PropertyKey<MeshRenderState> Key = new PropertyKey<MeshRenderState>("MeshRenderState", typeof(MeshRenderState));
+        public static PropertyKey<ModelRendererState> Key = new PropertyKey<ModelRendererState>("ModelRendererState", typeof(ModelRendererState));
 
-        private readonly Dictionary<RenderPass, int> meshPassSlotMapping = new Dictionary<RenderPass, int>();
+        private readonly Dictionary<RenderPass, int> modelSlotMapping = new Dictionary<RenderPass, int>();
 
         #endregion
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MeshRenderState"/> class.
+        /// Initializes a new instance of the <see cref="ModelRendererState"/> class.
         /// </summary>
-        public MeshRenderState()
+        public ModelRendererState()
         {
             RenderModels = new List<RenderModel>();
         }
@@ -31,19 +31,30 @@ namespace SiliconStudio.Paradox.Effects
         /// Gets the mesh pass slot count.
         /// </summary>
         /// <value>The mesh pass slot count.</value>
-        public int MeshPassSlotCount
+        public int ModelSlotCount
         {
             get
             {
-                return meshPassSlotMapping.Count;
+                return modelSlotMapping.Count;
             }
         }
 
         /// <summary>
-        /// The action that will be applied on every mesh instantiated in this render pipeline.
+        /// The action that will be applied on every model to test whether to add it to the render pipeline.
+        /// </summary>
+        public Func<IModelInstance, bool> AcceptModel { get; set; }
+
+        /// <summary>
+        /// Gets or sets the prepare render model.
+        /// </summary>
+        /// <value>The prepare render model.</value>
+        public Action<RenderModel> PrepareRenderModel { get; set; }
+
+        /// <summary>
+        /// The action that will be applied on every render model to check 
         /// </summary>
         /// <value>The process mesh.</value>
-        public Action<RenderModel, ParameterCollection> PrepareRenderModel { get; set; }
+        public Func<RenderModel, bool> AcceptRenderModel { get; set; }
 
         /// <summary>
         /// Gets the current list of models to render.
@@ -56,12 +67,12 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         /// <param name="renderPass">The render pass.</param>
         /// <returns>A mesh pass slot.</returns>
-        public int GetMeshPassSlot(RenderPass renderPass)
+        public int GetModelSlot(RenderPass renderPass)
         {
             int meshPassSlot;
-            if (!meshPassSlotMapping.TryGetValue(renderPass, out meshPassSlot))
+            if (!modelSlotMapping.TryGetValue(renderPass, out meshPassSlot))
             {
-                meshPassSlotMapping[renderPass] = meshPassSlot = meshPassSlotMapping.Count;
+                modelSlotMapping[renderPass] = meshPassSlot = modelSlotMapping.Count;
             }
             return meshPassSlot;
         }

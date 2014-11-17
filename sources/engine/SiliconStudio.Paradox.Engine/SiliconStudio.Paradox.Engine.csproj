@@ -136,7 +136,7 @@
     </Compile>
     <Compile Include="Effects\MeshAnimationUpdater.cs" />
     <Compile Include="Effects\MeshRenderExtensions.cs" />
-    <Compile Include="Effects\MeshRenderState.cs" />
+    <Compile Include="Effects\ModelRendererState.cs" />
     <Compile Include="Effects\MultipleRenderTargetsSetter.cs" />
     <Compile Include="Effects\OpaqueModelRenderer.cs" />
     <Compile Include="Effects\ProfilingKeys.cs" />

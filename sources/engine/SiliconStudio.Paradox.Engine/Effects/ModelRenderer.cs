@@ -20,8 +20,8 @@ namespace SiliconStudio.Paradox.Effects
     public class ModelRenderer : Renderer
     {
         #region Constants and Fields
+        private int meshPassSlot;
 
-        protected int MeshPassSlot;
 
         private FastList<EffectMesh> meshesToRender = new FastList<EffectMesh>();
 
@@ -146,13 +146,13 @@ namespace SiliconStudio.Paradox.Effects
 
         protected virtual void RenderMeshes(RenderContext context)
         {
-            var state = Pass.GetMeshRenderState();
+            var state = Pass.GetModelRendererState();
 
             // Get all meshes from render models
             meshesToRender.Clear();
             foreach (var renderModel in state.RenderModels)
             {
-                var meshes = renderModel.InternalMeshes[MeshPassSlot];
+                var meshes = renderModel.InternalMeshes[meshPassSlot];
                 if (meshes != null)
                     meshesToRender.AddRange(meshes);
             }

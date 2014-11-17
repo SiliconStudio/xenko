@@ -45,21 +45,25 @@ namespace SiliconStudio.Paradox.Engine
 
         protected override void OnEntityAdding(Entity entity, AssociatedData associatedData)
         {
-            associatedData.RenderModels = new List<KeyValuePair<MeshRenderState, RenderModel>>();
+            associatedData.RenderModels = new List<KeyValuePair<ModelRendererState, RenderModel>>();
 
             // Initialize a RenderModel for every pipeline
             // TODO: Track added/removed pipelines?
             foreach (var pipeline in renderSystem.Pipelines)
             {
-                var renderModel = new RenderModel(pipeline, associatedData.ModelComponent.Model, associatedData.ModelComponent.Parameters);
+                var modelRenderState = pipeline.GetOrCreateModelRendererState();
 
                 if (renderModel.InternalMeshes == null)
                     continue;
 
-                var meshRenderState = pipeline.GetOrCreateMeshRenderState();
-
+                var renderModel = new RenderModel(pipeline, modelInstance);
+                if (renderModel.InternalMeshes == null)
+                {
+                    continue;
+                }
+                
                 // Register RenderModel
-                associatedData.RenderModels.Add(new KeyValuePair<MeshRenderState, RenderModel>(meshRenderState, renderModel));
+                associatedData.RenderModels.Add(new KeyValuePair<ModelRendererState, RenderModel>(modelRenderState, renderModel));
 
                 // Assign component to EffectMesh so it can be used during sorting
                 foreach (var meshes in renderModel.InternalMeshes)
@@ -117,7 +121,7 @@ namespace SiliconStudio.Paradox.Engine
             // Clear all pipelines from previously collected models
             foreach (var pipeline in renderSystem.Pipelines)
             {
-                var renderMeshState = pipeline.GetOrCreateMeshRenderState();
+                var renderMeshState = pipeline.GetOrCreateModelRendererState();
                 renderMeshState.RenderModels.Clear();
             }
 
@@ -153,11 +157,11 @@ namespace SiliconStudio.Paradox.Engine
                 // Collect models associated to each pipeline
                 foreach (var renderModelEntry in matchingEntity.Value.RenderModels)
                 {
-                    var meshRenderState = renderModelEntry.Key;
+                    var renderModelState = renderModelEntry.Key;
                     var renderModel = renderModelEntry.Value;
 
                     // Add model to rendering
-                    meshRenderState.RenderModels.Add(renderModel);
+                    renderModelState.RenderModels.Add(renderModel);
 
                     // Upload matrices to TransformationKeys.World
                     modelViewHierarchy.UpdateToRenderModel(renderModel);
@@ -174,7 +178,7 @@ namespace SiliconStudio.Paradox.Engine
 
             public TransformationComponent TransformationComponent;
 
-            public List<KeyValuePair<MeshRenderState, RenderModel>> RenderModels;
+            internal List<KeyValuePair<ModelRendererState, RenderModel>> RenderModels;
 
             public List<EntityLink> Links;
         }
