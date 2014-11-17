@@ -34,7 +34,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
         /// </summary>
         /// <value>The the root definition for permutations.</value>
         /// <userdoc>
-        /// The permutations of parameters used to generate the effects.
+        /// The permutations of parameters used to generate the effects. Behind each ParameterKey, you can assign a value, a list of values or a range of values (if numeric).
         /// </userdoc>
         [DataMember(10)]
         public EffectPermutation Permutations { get; set; }
