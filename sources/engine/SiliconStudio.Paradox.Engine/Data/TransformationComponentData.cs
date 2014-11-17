@@ -3,6 +3,7 @@
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Data;
+using SiliconStudio.Paradox.EntityModel;
 
 namespace SiliconStudio.Paradox.Engine.Data
 {

@@ -13,6 +13,7 @@ using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Serialization.Serializers;
+using SiliconStudio.Paradox.EntityModel.Data;
 
 namespace SiliconStudio.Paradox.EntityModel
 {
@@ -24,7 +25,7 @@ namespace SiliconStudio.Paradox.EntityModel
     [DebuggerTypeProxy(typeof(EntityDebugView))]
     [DataConverter(AutoGenerate = false, ContentReference = true)]
     [DataSerializer(typeof(EntitySerializer))]
-    [ContentSerializer(typeof(DataContentConverterSerializer<Entity>))]
+    [ContentSerializer(typeof(DataContentConverterSerializer<EntityHierarchyData, Entity>))]
     public class Entity : ComponentBase, IContentUrl, IEnumerable
     {
         protected TransformationComponent transformation;

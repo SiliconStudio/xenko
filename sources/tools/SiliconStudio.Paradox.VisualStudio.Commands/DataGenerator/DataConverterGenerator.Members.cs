@@ -9,6 +9,7 @@ using Mono.Cecil;
 using SiliconStudio.AssemblyProcessor;
 using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Paradox.Data;
+using SiliconStudio.Paradox.EntityModel;
 
 namespace SiliconStudio.Paradox.VisualStudio.Commands.DataGenerator
 {

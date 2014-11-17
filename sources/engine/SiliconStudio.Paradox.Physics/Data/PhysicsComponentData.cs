@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SiliconStudio.Paradox.EntityModel.Data;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -6,7 +7,7 @@ namespace SiliconStudio.Paradox.Physics
     /// Data type for <see cref="PhysicsComponent"/>.
     /// </summary>
     [Core.DataContract("PhysicsComponentData")]
-    public class PhysicsComponentData : EntityModel.Data.EntityComponentData
+    public class PhysicsComponentData : EntityComponentData
     {
         /// <summary>
         /// Data field for <see cref="PhysicsComponent.Elements"/>.

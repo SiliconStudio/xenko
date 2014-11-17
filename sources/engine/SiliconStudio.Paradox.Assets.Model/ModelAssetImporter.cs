@@ -20,6 +20,7 @@ using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Data;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Data;
+using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.EntityModel.Data;
 using SiliconStudio.Paradox.Importer.Common;
 

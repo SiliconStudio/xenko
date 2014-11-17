@@ -10,7 +10,7 @@ using SiliconStudio.Core.Serialization.Serializers;
 namespace SiliconStudio.Paradox.EntityModel
 {
     [DataConverter(AutoGenerate = false, ContentReference = true)]
-    [DataSerializer(typeof(EntityComponentSerializer<>), Mode = DataSerializerGenericMode.Type)]
+    [DataSerializer(typeof(CloneEntityComponentSerializer<>), Mode = DataSerializerGenericMode.Type)]
     public class EntityComponent : IContentUrl
     {
         /// <summary>

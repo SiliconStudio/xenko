@@ -159,7 +159,7 @@ namespace SiliconStudio.Paradox.EntityModel
             public readonly List<object> SharedObjects = new List<object>();
 
             /// <summary>
-            /// Special serializer that goes through <see cref="EntitySerializerSelector"/> and <see cref="EntityComponentSerializer{T}"/>.
+            /// Special serializer that goes through <see cref="EntitySerializerSelector"/> and <see cref="CloneEntityComponentSerializer{T}"/>.
             /// </summary>
             public SerializerSelector EntitySerializerSelector;
         }
