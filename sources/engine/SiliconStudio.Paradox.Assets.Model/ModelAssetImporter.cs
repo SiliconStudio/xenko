@@ -105,7 +105,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                 {
                     var entityAssetItem = ImportEntity(assetReferences, localPath, modelItem);
                     var entityAsset = (EntityAsset)entityAssetItem.Asset;
-                    var rootEntityData = entityAsset.Data.Entities[entityAsset.Data.RootEntity];
+                    var rootEntityData = entityAsset.Hierarchy.Entities[entityAsset.Hierarchy.RootEntity];
 
                     // 5. Camera
                     if (isImportingCamera)
@@ -195,10 +195,10 @@ namespace SiliconStudio.Paradox.Assets.Model
         {
             var entityUrl = new UFile(localPath.GetFileName(), null);
 
-            var asset = new EntityAsset();
+            var asset = new EntityAsset { Source = localPath };
             var rootEntityData = new EntityData();
-            asset.Data.Entities.Add(rootEntityData);
-            asset.Data.RootEntity = rootEntityData.Id;
+            asset.Hierarchy.Entities.Add(rootEntityData);
+            asset.Hierarchy.RootEntity = rootEntityData.Id;
 
             rootEntityData.Name = entityUrl;
             // Use modelUrl.Path to get the url without the extension

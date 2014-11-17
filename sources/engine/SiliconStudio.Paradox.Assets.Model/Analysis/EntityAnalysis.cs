@@ -69,7 +69,7 @@ namespace SiliconStudio.Paradox.Assets.Model.Analysis
                     }
 
                     // Make sure this component belongs to this container
-                    if (entityComponentReference.Value.Entity.Container != entityAsset.Data)
+                    if (entityComponentReference.Value.Entity.Container != entityAsset.Hierarchy)
                     {
                         throw new InvalidOperationException("It seems this component and/or entity doesn't belong to this asset");
                     }

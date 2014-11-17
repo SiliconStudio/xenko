@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.Assets.Model
     [AssetFactory(typeof(EntityFactory))]
     [AssetDescription("Entity", "An entity", true)]
     [AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
-    public class EntityAsset : Asset
+    public class EntityAsset : AssetImport
     {
         public const int AssetFormatVersion = 1;
 
@@ -33,13 +33,8 @@ namespace SiliconStudio.Paradox.Assets.Model
         public EntityAsset()
         {
             SerializedVersion = AssetFormatVersion;
-            Data = new EntityHierarchyData();
+            Hierarchy = new EntityHierarchyData();
         }
-
-        // Not used in current version but later it should allow extracting lights, cameras, etc... as children entities.
-        // Or maybe it would be better as separate LightsAsset and CamerasAsset?
-        //[DataMember(10)]
-        //public UPath Source { get; set; }
 
         /// <summary>
         /// Gets or sets the data.
@@ -48,7 +43,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// The data.
         /// </value>
         [DataMember(20)]
-        public EntityHierarchyData Data { get; set; }
+        public EntityHierarchyData Hierarchy { get; set; }
 
         private class EntityFactory : IAssetFactory
         {
@@ -69,9 +64,9 @@ namespace SiliconStudio.Paradox.Assets.Model
                 oldEntityData.Id = Guid.NewGuid().ToString().ToLowerInvariant();
 
                 // Create a new EntityDataHierarchy object
-                asset.Data = new YamlMappingNode();
-                asset.Data.Entities = new YamlSequenceNode();
-                asset.Data.Entities.Add(oldEntityData);
+                asset.Hierarchy = new YamlMappingNode();
+                asset.Hierarchy.Entities = new YamlSequenceNode();
+                asset.Hierarchy.Entities.Add(oldEntityData);
 
                 asset["~Base"] = DynamicYamlEmpty.Default;
 

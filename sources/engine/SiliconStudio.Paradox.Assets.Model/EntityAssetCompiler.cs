@@ -25,7 +25,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 var assetManager = new AssetManager();
-                assetManager.Save(Url, asset.Data);
+                assetManager.Save(Url, asset.Hierarchy);
 
                 return Task.FromResult(ResultStatus.Successful);
             }

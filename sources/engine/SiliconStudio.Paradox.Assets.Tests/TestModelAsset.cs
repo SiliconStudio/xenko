@@ -74,11 +74,11 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 var databaseFileProvider = new DatabaseFileProvider(objDatabase);
                 AssetManager.GetFileProvider = () => databaseFileProvider;
 
-                ((EntityAsset)assetItem.Asset).Data.Entities[0].Components.RemoveWhere(x => x.Key != SiliconStudio.Paradox.Engine.TransformationComponent.Key);
+                ((EntityAsset)assetItem.Asset).Hierarchy.Entities[0].Components.RemoveWhere(x => x.Key != SiliconStudio.Paradox.Engine.TransformationComponent.Key);
                 //((EntityAsset)assetItem.Asset).Data.Entities[1].Components.RemoveWhere(x => x.Key != SiliconStudio.Paradox.Engine.TransformationComponent.Key);
 
                 var assetManager = new AssetManager();
-                assetManager.Save("Entity1", ((EntityAsset)assetItem.Asset).Data);
+                assetManager.Save("Entity1", ((EntityAsset)assetItem.Asset).Hierarchy);
 
                 assetManager = new AssetManager();
                 var entity = assetManager.Load<Entity>("Entity1");
