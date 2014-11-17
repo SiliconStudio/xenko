@@ -105,7 +105,7 @@ namespace SiliconStudio.Core
         /// <value>
         /// The type of the owner.
         /// </value>
-        public Type OwnerType { get; private set; }
+        public Type OwnerType { get; protected set; }
 
         /// <summary>
         /// Gets the type of the property.

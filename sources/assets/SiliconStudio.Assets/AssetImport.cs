@@ -17,6 +17,9 @@ namespace SiliconStudio.Assets
         /// Gets or sets the source file of this 
         /// </summary>
         /// <value>The source.</value>
+        /// <userdoc>
+        /// The source file of this asset.
+        /// </userdoc>
         [DataMember(-50)]
         [DefaultValue(null)]
         public UFile Source { get; set; }

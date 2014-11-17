@@ -12,7 +12,8 @@
     <RootNamespace>SiliconStudio.Core.IO</RootNamespace>
     <AssemblyName>SiliconStudio.Core.IO</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <SiliconStudioAssemblyProcessor>false</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer</SiliconStudioAssemblyProcessorOptions>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
     <ParadoxBuildTags>*</ParadoxBuildTags>
   </PropertyGroup>

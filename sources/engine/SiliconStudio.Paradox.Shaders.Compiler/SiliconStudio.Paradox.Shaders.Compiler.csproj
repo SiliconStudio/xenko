@@ -12,6 +12,8 @@
     <RootNamespace>SiliconStudio.Paradox.Shaders.Compiler</RootNamespace>
     <AssemblyName>SiliconStudio.Paradox.Shaders.Compiler</AssemblyName>
     <ParadoxBuildTags>Windows</ParadoxBuildTags>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer</SiliconStudioAssemblyProcessorOptions>
     <SiliconStudioCompilerTargetsEnable Condition=" '$(ParadoxEffectCompiler)' != 'true' ">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
   <PropertyGroup Condition="'$(DisableRegistryUse)' != 'true' And '$(SiliconStudioPlatform)' == 'Windows'">

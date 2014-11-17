@@ -130,12 +130,16 @@
     <Optimize>true</Optimize>
   </PropertyGroup>
   
-  <!--
-    Signing
-  -->
+  <!-- Signing -->
+  <PropertyGroup Condition=" '$(SiliconStudioOpenSourceSign)' == 'true'">
+    <SiliconStudioSign>true</SiliconStudioSign>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(SiliconStudioAssemblySign)' == 'true' And '$(SiliconStudioSign)' == 'true'">
     <DefineConstants>$(DefineConstants);SILICONSTUDIO_SIGNED</DefineConstants>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>$(SolutionDir)paradox.snk</AssemblyOriginatorKeyFile>
+    <DelaySign Condition="'$(SiliconStudioOpenSourceSign)' == 'true'">true</DelaySign>
+    <AssemblyOriginatorKeyFile Condition="'$(SiliconStudioOpenSourceSign)' != 'true'">$(SolutionDir)paradox.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile Condition="'$(SiliconStudioOpenSourceSign)' == 'true'">$(SolutionDir)paradox.public.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
+
 </Project>

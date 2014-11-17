@@ -20,6 +20,12 @@ namespace SiliconStudio.Paradox.Assets.Materials
             IsReducible = true;
         }
 
+        /// <summary>
+        /// The flag to allow the node to be reducible.
+        /// </summary>
+        /// <userdoc>
+        /// If checked, the material will try to merge this node with its children and parents. As a consequence, parameters made runtime-editable (through the use of custom ParameterKey) might no longer be.
+        /// </userdoc>
         [DataMember(1000)]  
         [DefaultValue(true)]
         public bool IsReducible { get; set; }

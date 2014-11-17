@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections.Generic;
 
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Contents;
@@ -21,7 +20,6 @@ namespace SiliconStudio.Quantum
         {
             TypeDescriptor = content.Descriptor;
             MemberDescriptor = content is MemberContent ? ((MemberContent)content).Member : null;
-            AssociatedData = new Dictionary<string, object>();
         }
 
         /// <summary>
@@ -33,11 +31,5 @@ namespace SiliconStudio.Quantum
         /// Gets the member of the node that has been constructed, if the node corresponds to a member of another object.
         /// </summary>
         public IMemberDescriptor MemberDescriptor { get; private set; }
-
-        /// <summary>
-        /// Gets the dictionary of data associated to this node. This dictionary can be enriched with more data
-        /// in the handler of the <see cref="INodeBuilder.NodeConstructed"/> event.
-        /// </summary>
-        public IDictionary<string, object> AssociatedData { get; private set; }
     }
 }

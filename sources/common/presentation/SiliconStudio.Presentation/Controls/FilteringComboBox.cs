@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -83,6 +84,8 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         public static readonly DependencyProperty WatermarkContentProperty = DependencyProperty.Register("WatermarkContent", typeof(object), typeof(FilteringComboBox), new PropertyMetadata(null));
 
+        public static readonly DependencyProperty ItemsToExcludeProperty = DependencyProperty.Register("ItemsToExclude", typeof(IEnumerable), typeof(FilteringComboBox));
+
         /// <summary>
         /// Raised just before the TextBox changes are validated. This event is cancellable
         /// </summary>
@@ -107,6 +110,8 @@ namespace SiliconStudio.Presentation.Controls
         /// Gets or sets the content to display when the TextBox is empty.
         /// </summary>
         public object WatermarkContent { get { return GetValue(WatermarkContentProperty); } set { SetValue(WatermarkContentProperty, value); } }
+
+        public IEnumerable ItemsToExclude { get { return (IEnumerable)GetValue(ItemsToExcludeProperty); } set { SetValue(ItemsToExcludeProperty, value); } }
 
         /// <summary>
         /// Raised just before the TextBox changes are validated. This event is cancellable
@@ -341,6 +346,9 @@ namespace SiliconStudio.Presentation.Controls
                 return true;
 
             if (obj == null)
+                return false;
+
+            if (ItemsToExclude != null && ItemsToExclude.Cast<object>().Contains(obj))
                 return false;
 
             var text = obj.ToString();

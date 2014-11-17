@@ -11,22 +11,34 @@ namespace SiliconStudio.Paradox.Effects
         /// <summary>
         /// Parameter key for the shading model.
         /// </summary>
-        public static ParameterKey<MaterialShadingModel> ShadingModel = ParameterKeys.New<MaterialShadingModel>(MaterialShadingModel.Flat, "MaterialParameters.ShadingModel");
+        /// <userdoc>
+        /// The desired shading model (flat, Gouraud or Phong shading).
+        /// </userdoc>
+        public static ParameterKey<MaterialShadingModel> ShadingModel = ParameterKeys.New<MaterialShadingModel>(MaterialShadingModel.Flat);
 
         /// <summary>
         /// Parameter key for the diffuse model.
         /// </summary>
-        public static ParameterKey<MaterialDiffuseModel> DiffuseModel = ParameterKeys.New<MaterialDiffuseModel>(MaterialDiffuseModel.None, "MaterialParameters.DiffuseModel");
+        /// <userdoc>
+        /// The desired diffuse model (Lambert or Oren-Nayar).
+        /// </userdoc>
+        public static ParameterKey<MaterialDiffuseModel> DiffuseModel = ParameterKeys.New<MaterialDiffuseModel>(MaterialDiffuseModel.None);
 
         /// <summary>
         /// Parameter key for the specular model.
         /// </summary>
-        public static ParameterKey<MaterialSpecularModel> SpecularModel = ParameterKeys.New<MaterialSpecularModel>(MaterialSpecularModel.None, "MaterialParameters.SpecularModel");
+        /// <userdoc>
+        /// The desired specular model (Phong, Blinn-Phong or Cook-Torrance).
+        /// </userdoc>
+        public static ParameterKey<MaterialSpecularModel> SpecularModel = ParameterKeys.New<MaterialSpecularModel>(MaterialSpecularModel.None);
 
         /// <summary>
         /// Parameter key for the lighting type.
         /// </summary>
-        public static ParameterKey<MaterialLightingType> LightingType = ParameterKeys.New<MaterialLightingType>(MaterialLightingType.DiffuseSpecularPixel, "MaterialParameters.LightingType");
+        /// <userdoc>
+        /// This parameter specifies if lighting computation should be done per vertex or per pixel. Specular is always done per pixel.
+        /// </userdoc>
+        public static ParameterKey<MaterialLightingType> LightingType = ParameterKeys.New<MaterialLightingType>(MaterialLightingType.DiffuseSpecularPixel);
     }
 
     /// <summary>

@@ -12,6 +12,9 @@ namespace SiliconStudio.Paradox.Effects
         /// parameters of all meshes.
         /// </summary>
         /// TODO: allow permutation for a specific mesh
+        /// <userdoc>
+        /// If checked, the mesh parameters will be used to generate effects.
+        /// </userdoc>
         public static readonly ParameterKey<bool> UseParameters = ParameterKeys.New<bool>();
     }
 }

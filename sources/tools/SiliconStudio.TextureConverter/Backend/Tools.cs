@@ -1,10 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using SiliconStudio.Paradox.Graphics;
 
@@ -15,25 +11,6 @@ namespace SiliconStudio.TextureConverter
     /// </summary>
     internal class Tools
     {
-
-        /// <summary>
-        /// Copies the memory from a buffer to another.
-        /// </summary>
-        /// <param name="destPtr">The destination pointer.</param>
-        /// <param name="srcPtr">The source pointer.</param>
-        /// <param name="sizeInBytesToCopy">The size in bytes to copy.</param>
-        public static unsafe void CopyMemory(IntPtr destPtr, IntPtr srcPtr, int sizeInBytesToCopy)
-        {
-            long* src = (long*)srcPtr;
-            long* dest = (long*)destPtr;
-            long size = (long)sizeInBytesToCopy;
-            for (int i = 0; i < size / sizeof(long); ++i)
-            {
-                dest[i] = src[i];
-            }
-        }
-
-
         /// <summary>
         /// Computes the pitch.
         /// </summary>

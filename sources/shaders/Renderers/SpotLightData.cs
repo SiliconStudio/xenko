@@ -18,5 +18,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         public Color3 DiffuseColor;
         public float SpotBeamAngle;
+
+        public float Range;
     }
 }
