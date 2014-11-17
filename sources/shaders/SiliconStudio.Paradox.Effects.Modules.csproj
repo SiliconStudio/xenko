@@ -448,6 +448,15 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>MaterialReflectanceGBuffer.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Renderers\DirectLightData.cs" />
+    <Compile Include="Renderers\LightForwardModelRendererExtensions.cs" />
+    <Compile Include="Renderers\LightingGroupInfo.cs" />
+    <Compile Include="Renderers\LightingUpdateInfo.cs" />
+    <Compile Include="Renderers\LightingUpdateType.cs" />
+    <Compile Include="Renderers\LightParamSemantic.cs" />
+    <Compile Include="Renderers\PointLightData.cs" />
+    <Compile Include="Renderers\ShadowUpdateInfo.cs" />
+    <Compile Include="Renderers\SpotLightData.cs" />
     <Compile Include="Shading\MaterialReflectance.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

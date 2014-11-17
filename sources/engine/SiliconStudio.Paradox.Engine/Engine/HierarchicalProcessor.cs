@@ -3,8 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
-using System.Threading.Tasks;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Paradox.EntityModel;
 

@@ -15,8 +15,11 @@ using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 {
-    //TODO: what happens when the pipeline changes during the execution of the game? Renderers are changed
-    public class LightForwardModelRenderer : ModelRenderer
+    /// <summary>
+    /// TODO: Evaluate if it would be possible to split this class with support for different lights instead of a big fat class
+    /// TODO: Refactor this class
+    /// </summary>
+    internal class LightForwardModelRenderer
     {
         #region Internal static members
 
@@ -40,11 +43,11 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         private int maximumSupportedLights;
 
-        private Dictionary<Entity, Vector3> lightDirectionViewSpace;
+        private readonly Dictionary<Entity, Vector3> lightDirectionViewSpace;
 
-        private Dictionary<Entity, Vector3> lightDirectionWorldSpace;
+        private readonly Dictionary<Entity, Vector3> lightDirectionWorldSpace;
 
-        private Dictionary<Entity, Color3> lightGammaColor;
+        private readonly Dictionary<Entity, Color3> lightGammaColor;
 
         private float[] arrayFloat;
 
@@ -52,41 +55,41 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         private Color3[] arrayColor3;
 
-        private ShadowMapReceiverInfo[] receiverInfos;
+        private readonly ShadowMapReceiverInfo[] receiverInfos;
 
-        private ShadowMapReceiverVsmInfo[] receiverVsmInfos;
+        private readonly ShadowMapReceiverVsmInfo[] receiverVsmInfos;
 
-        private ShadowMapCascadeReceiverInfo[] cascadeInfos;
+        private readonly ShadowMapCascadeReceiverInfo[] cascadeInfos;
 
-        private List<EntityLightShadow> validLights;
+        private readonly List<EntityLightShadow> validLights;
 
-        private List<EntityLightShadow> directionalLights;
+        private readonly List<EntityLightShadow> directionalLights;
 
-        private List<EntityLightShadow> directionalLightsWithShadows;
+        private readonly List<EntityLightShadow> directionalLightsWithShadows;
 
-        private List<EntityLightShadow> pointLights;
+        private readonly List<EntityLightShadow> pointLights;
 
-        private List<EntityLightShadow> spotLights;
+        private readonly List<EntityLightShadow> spotLights;
 
-        private List<EntityLightShadow> spotLightsWithShadows;
+        private readonly List<EntityLightShadow> spotLightsWithShadows;
 
-        private List<EntityLightShadow> directionalLightsForMesh;
+        private readonly List<EntityLightShadow> directionalLightsForMesh;
         
-        private List<EntityLightShadow> directionalLightsWithShadowForMesh;
+        private readonly List<EntityLightShadow> directionalLightsWithShadowForMesh;
 
-        private List<EntityLightShadow> pointLightsForMesh;
+        private readonly List<EntityLightShadow> pointLightsForMesh;
 
-        private List<EntityLightShadow> spotLightsForMesh;
+        private readonly List<EntityLightShadow> spotLightsForMesh;
 
-        private List<EntityLightShadow> spotLightsWithShadowForMesh;
+        private readonly List<EntityLightShadow> spotLightsWithShadowForMesh;
 
-        private Dictionary<ParameterKey, LightParamSemantic> lightingParameterSemantics;
+        private readonly Dictionary<ParameterKey, LightParamSemantic> lightingParameterSemantics;
 
-        private List<List<EntityLightShadow>> directionalLightsWithShadowForMeshGroups;
+        private readonly List<List<EntityLightShadow>> directionalLightsWithShadowForMeshGroups;
 
-        private List<List<EntityLightShadow>> spotLightsWithShadowForMeshGroups;
+        private readonly List<List<EntityLightShadow>> spotLightsWithShadowForMeshGroups;
 
-        private List<List<ShadowMap>> shadowMapGroups;
+        private readonly List<List<ShadowMap>> shadowMapGroups;
 
         private LightingConfiguration lastConfiguration;
 
@@ -94,9 +97,10 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         #region Constructor
 
-        public LightForwardModelRenderer(IServiceRegistry services, string effectName)
-            : base(services, effectName)
+        public LightForwardModelRenderer(IServiceRegistry services)
         {
+            if (services == null) throw new ArgumentNullException("services");
+            Services = services;
             maximumSupportedLights = 128;
 
             lightDirectionViewSpace = new Dictionary<Entity, Vector3>();
@@ -133,13 +137,16 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         #endregion
 
+        public IServiceRegistry Services { get; private set; }
+
         #region Protected methods
+
 
         /// <summary>
         /// Filter out the inactive lights.
         /// </summary>
         /// <param name="context">The render context.</param>
-        protected override void PreRender(RenderContext context)
+        public void PreRender(RenderContext context)
         {
             // get the lightprocessor
             var entitySystem = Services.GetServiceAs<EntitySystem>();
@@ -181,7 +188,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// Clear the light lists.
         /// </summary>
         /// <param name="context">The render context.</param>
-        protected override void PostRender(RenderContext context)
+        public void PostRender(RenderContext context)
         {
             lightDirectionViewSpace.Clear();
             lightDirectionWorldSpace.Clear();
@@ -210,7 +217,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// </summary>
         /// <param name="context">The render context.</param>
         /// <param name="effectMesh">The current EffectMesh (the same as <seealso cref="PostEffectUpdate"/>)</param>
-        protected override void PreEffectUpdate(RenderContext context, EffectMesh effectMesh)
+        public void PreEffectUpdate(RenderContext context, EffectMesh effectMesh)
         {
             // TODO:
             // light selection based on:
@@ -231,16 +238,16 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             spotLightsForMesh.Clear();
             spotLightsWithShadowForMesh.Clear();
             
-            var receiveShadows = effectMesh.MeshData.ReceiveShadows;
+            var receiveShadows = effectMesh.Mesh.ReceiveShadows;
 
             foreach (var light in directionalLights)
             {
-                if ((light.Light.Layers & effectMesh.MeshData.Layer) != 0)
+                if ((light.Light.Layers & effectMesh.Mesh.Layer) != 0)
                     directionalLightsForMesh.Add(light);
             }
             foreach (var light in directionalLightsWithShadows)
             {
-                if ((light.Light.Layers & effectMesh.MeshData.Layer) != 0)
+                if ((light.Light.Layers & effectMesh.Mesh.Layer) != 0)
                 {
                     if (receiveShadows)
                         directionalLightsWithShadowForMesh.Add(light);
@@ -250,17 +257,17 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             }
             foreach (var light in pointLights)
             {
-                if ((light.Light.Layers & effectMesh.MeshData.Layer) != 0)
+                if ((light.Light.Layers & effectMesh.Mesh.Layer) != 0)
                     pointLightsForMesh.Add(light);
             }
             foreach (var light in spotLights)
             {
-                if ((light.Light.Layers & effectMesh.MeshData.Layer) != 0)
+                if ((light.Light.Layers & effectMesh.Mesh.Layer) != 0)
                     spotLightsForMesh.Add(light);
             }
             foreach (var light in spotLightsWithShadows)
             {
-                if ((light.Light.Layers & effectMesh.MeshData.Layer) != 0)
+                if ((light.Light.Layers & effectMesh.Mesh.Layer) != 0)
                 {
                     if (receiveShadows)
                         spotLightsWithShadowForMesh.Add(light);
@@ -275,7 +282,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
             // TODO: improve detection - better heuristics
             // choose configuration
-            var configurations = effectMesh.MeshData.Lighting;
+            var configurations = effectMesh.Mesh.Lighting;
             var lastConfigWithoutShadow = -1;
             if (configurations != null)
             {
@@ -352,30 +359,34 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// </summary>
         /// <param name="context">The render context.</param>
         /// <param name="effectMesh">The current EffectMesh (the same as <seealso cref="PreEffectUpdate"/>)</param>
-        protected override void PostEffectUpdate(RenderContext context, EffectMesh effectMesh)
+        public void PostEffectUpdate(RenderContext context, EffectMesh effectMesh)
         {
+            var lightingGroupInfo = LightingGroupInfo.GetOrCreate(effectMesh.Effect);
+
             // update the info if necessary
-            if (effectMesh.Effect.UpdateLightingParameters)
+            if (!lightingGroupInfo.IsLightingSetup)
             {
-                CreateLightingUpdateInfo(effectMesh);
+                lightingGroupInfo.LightingParameters = CreateLightingUpdateInfo(effectMesh);
                 if (lastConfiguration.ShadowConfigurations != null)
-                    CreateEffectShadowParams(effectMesh.Effect, lastConfiguration);
+                    lightingGroupInfo.ShadowParameters = CreateEffectShadowParams(lastConfiguration);
+
+                lightingGroupInfo.IsLightingSetup = true;
             }
 
-            if (effectMesh.Effect.LightingParameters == null)
+            if (lightingGroupInfo.LightingParameters.Count == 0)
                 return;
 
             // TODO: is it always available?
             var viewMatrix = context.CurrentPass.Parameters.Get(TransformationKeys.View);
 
-            if (effectMesh.Effect.ShadowParameters != null)
+            if (lightingGroupInfo.ShadowParameters != null)
             {
-                for (var i = 0; i < effectMesh.Effect.ShadowParameters.Count; ++i)
-                    UpdateShadowParameters(effectMesh.Parameters, effectMesh.Effect.ShadowParameters[i], shadowMapGroups[i]);
+                for (var i = 0; i < lightingGroupInfo.ShadowParameters.Count; ++i)
+                    UpdateShadowParameters(effectMesh.Parameters, lightingGroupInfo.ShadowParameters[i], shadowMapGroups[i]);
             }
 
             // Apply parameters
-            foreach (var info in effectMesh.Effect.LightingParameters)
+            foreach (var info in lightingGroupInfo.LightingParameters)
             {
                 switch (info.Type)
                 {
@@ -631,14 +642,14 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 parameters.Set(shadowUpdateInfo.ShadowMapLightCountKey, 0);
         }
 
-        private void CreateLightingUpdateInfo(EffectMesh effectMesh)
+        private List<LightingUpdateInfo> CreateLightingUpdateInfo(EffectMesh effectMesh)
         {
             var finalList = new List<LightingUpdateInfo>();
             var continueSearch = true;
             var index = 0;
             while (continueSearch)
             {
-                continueSearch = SearchShadingGroup(effectMesh, index, "ShadingGroups", 0, ref finalList);
+                continueSearch = SearchShadingGroup(effectMesh, index, "ShadingGroups", 0, finalList);
                 ++index;
             }
 
@@ -646,16 +657,14 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             index = 0;
             while (continueSearch)
             {
-                continueSearch = SearchShadingGroup(effectMesh, index, "shadows", 3, ref finalList);
+                continueSearch = SearchShadingGroup(effectMesh, index, "shadows", 3, finalList);
                 ++index;
             }
 
-            if (finalList.Count > 0)
-                effectMesh.Effect.LightingParameters = finalList;
-            effectMesh.Effect.UpdateLightingParameters = false;
+            return finalList;
         }
 
-        private bool SearchShadingGroup(EffectMesh effectMesh, int index, string groupName, int typeOffset, ref List<LightingUpdateInfo> finalList)
+        private bool SearchShadingGroup(EffectMesh effectMesh, int index, string groupName, int typeOffset, List<LightingUpdateInfo> finalList)
         {
             var constantBuffers = effectMesh.Effect.ConstantBuffers;
             var info = new LightingUpdateInfo();
@@ -760,7 +769,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             return foundParam;
         }
 
-        private void CreateEffectShadowParams(Effect effect, LightingConfiguration config)
+        private static List<ShadowUpdateInfo> CreateEffectShadowParams(LightingConfiguration config)
         {
             var configs = new List<ShadowUpdateInfo>();
 
@@ -770,15 +779,14 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 configs.Add(group);
             }
 
-            if (configs.Count > 0)
-                effect.ShadowParameters = configs;
+            return configs;
         }
 
         private void UpdateLightingParameterSemantics(int index, string compositionName)
         {
             lightingParameterSemantics.Clear();
             var lightGroupSubKey = string.Format("." + compositionName + "[{0}]", index);
-            foreach (var param in LightForwardModelRenderer.LightParametersDict)
+            foreach (var param in LightParametersDict)
             {
                 lightingParameterSemantics.Add(ParameterKeys.AppendKey(param.Key, lightGroupSubKey), param.Value);
             }

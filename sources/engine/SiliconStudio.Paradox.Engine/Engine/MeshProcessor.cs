@@ -49,12 +49,17 @@ namespace SiliconStudio.Paradox.Engine
 
             // Initialize a RenderModel for every pipeline
             // TODO: Track added/removed pipelines?
+            var modelInstance = associatedData.ModelComponent;
+
             foreach (var pipeline in renderSystem.Pipelines)
             {
                 var modelRenderState = pipeline.GetOrCreateModelRendererState();
 
-                if (renderModel.InternalMeshes == null)
+                // If the model is not accepted
+                if (!modelRenderState.AcceptModel(modelInstance))
+                {
                     continue;
+                }
 
                 var renderModel = new RenderModel(pipeline, modelInstance);
                 if (renderModel.InternalMeshes == null)
@@ -128,6 +133,12 @@ namespace SiliconStudio.Paradox.Engine
             // Collect models for this frame
             foreach (var matchingEntity in enabledEntities)
             {
+                // Skip model not enabled
+                if (!matchingEntity.Value.ModelComponent.Enabled)
+                {
+                    continue;
+                }
+
                 var modelViewHierarchy = matchingEntity.Value.ModelComponent.ModelViewHierarchy;
 
                 var transformationComponent = matchingEntity.Value.TransformationComponent;
@@ -154,11 +165,15 @@ namespace SiliconStudio.Paradox.Engine
                     }
                 }
 
-                // Collect models associated to each pipeline
                 foreach (var renderModelEntry in matchingEntity.Value.RenderModels)
                 {
                     var renderModelState = renderModelEntry.Key;
                     var renderModel = renderModelEntry.Value;
+
+                    if (!renderModelState.AcceptRenderModel(renderModel))
+                    {
+                        continue;
+                    }
 
                     // Add model to rendering
                     renderModelState.RenderModels.Add(renderModel);
