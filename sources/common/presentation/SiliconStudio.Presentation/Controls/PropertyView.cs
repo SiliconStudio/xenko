@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 using SiliconStudio.Presentation.Collections;
 
@@ -13,7 +14,12 @@ namespace SiliconStudio.Presentation.Controls
     public class PropertyView : ItemsControl
     {
         private readonly ObservableList<PropertyViewItem> properties = new ObservableList<PropertyViewItem>();
-        
+
+        /// <summary>
+        /// Identifies the <see cref="HoveredItem"/> dependency property.
+        /// </summary>
+        public static readonly DependencyPropertyKey HoveredItemPropertyKey = DependencyProperty.RegisterReadOnly("HoveredItem", typeof(PropertyViewItem), typeof(PropertyView), new PropertyMetadata(null));
+
         /// <summary>
         /// Identifies the PreparePropertyItem event.
         /// This attached routed event may be raised by the PropertyGrid itself or by a PropertyItemBase containing sub-items.
@@ -35,6 +41,11 @@ namespace SiliconStudio.Presentation.Controls
         public IReadOnlyCollection<PropertyViewItem> Properties { get { return properties; } }
 
         /// <summary>
+        /// Gets the trimmed text to display when the control does not have the focus, depending of the value of the <see cref="TextTrimming"/> property.
+        /// </summary>
+        public PropertyViewItem HoveredItem { get { return (PropertyViewItem)GetValue(HoveredItemPropertyKey.DependencyProperty); } private set { SetValue(HoveredItemPropertyKey, value); } }
+        
+        /// <summary>
         /// This event is raised when a property item is about to be displayed in the PropertyGrid.
         /// This allow the user to customize the property item just before it is displayed.
         /// </summary>
@@ -45,10 +56,25 @@ namespace SiliconStudio.Presentation.Controls
         /// This allow the user to remove any attached handler in the PreparePropertyItem event.
         /// </summary>
         public event EventHandler<PropertyViewItemEventArgs> ClearItem { add { AddHandler(ClearItemEvent, value); } remove { RemoveHandler(ClearItemEvent, value); } }
-        
+
+        internal void ItemMouseMove(object sender, MouseEventArgs e)
+        {
+            var item = sender as PropertyViewItem;
+            if (item != null && item.CanBeHovered)
+            {
+                HoveredItem = item;
+            }
+        }
+
+        protected override void OnMouseLeave(MouseEventArgs e)
+        {
+            base.OnMouseLeave(e);
+            HoveredItem = null;
+        }
+
         protected override DependencyObject GetContainerForItemOverride()
         {
-            return new PropertyViewItem();
+            return new PropertyViewItem(this);
         }
 
         protected override bool IsItemItsOwnContainerOverride(object item)

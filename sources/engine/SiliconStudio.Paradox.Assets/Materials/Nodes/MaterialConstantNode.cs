@@ -34,6 +34,9 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
         /// <summary>
         /// The property to access the internal value
         /// </summary>
+        /// <userdoc>
+        /// The default value.
+        /// </userdoc>
         [DataMember(20)]
         public T Value
         {
@@ -53,6 +56,9 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
         /// <summary>
         /// A flag stating if the paramater key is automatically assigned.
         /// </summary>
+        /// <userdoc>
+        /// If not checked, you can define the key to access the value at runtime for dynamic changes.
+        /// </userdoc>
         [DataMember(30)]
         [DefaultValue(true)]
         public bool AutoAssignKey { get; set; }
@@ -60,6 +66,9 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
         /// <summary>
         /// The name of the parameter.
         /// </summary>
+        /// <userdoc>
+        /// The key to access the value at runtime. AutoAssignKey should be checked.
+        /// </userdoc>
         [DataMember(40)]
         [DefaultValue(null)]
         public ParameterKey<T> Key;

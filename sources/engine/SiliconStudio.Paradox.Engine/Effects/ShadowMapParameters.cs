@@ -43,6 +43,9 @@ namespace SiliconStudio.Paradox.Effects
         /// <summary>
         /// The key to use to create shadow groups.
         /// </summary>
+        /// <userdoc>
+        /// The supported shadow configurations.
+        /// </userdoc>
         public static readonly ParameterKey<ShadowConfigurationArray> ShadowConfigurations = ParameterKeys.New<ShadowConfigurationArray>(null);
     }
 }

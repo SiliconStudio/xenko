@@ -55,6 +55,9 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
         /// <summary>
         /// The texture Reference.
         /// </summary>
+        /// <userdoc>
+        /// The texture.
+        /// </userdoc>
         [DataMember(10)] 
         [DefaultValue(null)]
         public AssetReference<TextureAsset> TextureReference { get; set; }
@@ -62,6 +65,9 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
         /// <summary>
         /// The texture coordinate used to sample the texture.
         /// </summary>
+        /// <userdoc>
+        /// The set of uv used to sample the texture.
+        /// </userdoc>
         [DataMember(30)]
         [DefaultValue(TextureCoordinate.Texcoord0)]
         public TextureCoordinate TexcoordIndex { get; set; }
@@ -69,12 +75,18 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
         /// <summary>
         /// The sampler of the texture.
         /// </summary>
+        /// <userdoc>
+        /// The sampler of the texture.
+        /// </userdoc>
         [DataMemberIgnore]
         public NodeParameterSampler Sampler { get; set; }
 
         /// <summary>
         /// The texture filtering mode.
         /// </summary>
+        /// <userdoc>
+        /// The filtering of the texture.
+        /// </userdoc>
         [DataMember(41)]
         [DefaultValue(TextureFilter.Linear)]
         public TextureFilter Filtering
@@ -92,6 +104,9 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
         /// <summary>
         /// The texture address mode.
         /// </summary>
+        /// <userdoc>
+        /// The wrapping of the texture along U.
+        /// </userdoc>
         [DataMember(42)]
         [DefaultValue(TextureAddressMode.Wrap)]
         public TextureAddressMode AddressModeU
@@ -109,6 +124,9 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
         /// <summary>
         /// The texture address mode.
         /// </summary>
+        /// <userdoc>
+        /// The wrapping of the texture along V.
+        /// </userdoc>
         [DataMember(43)]
         [DefaultValue(TextureAddressMode.Wrap)]
         public TextureAddressMode AddressModeV
@@ -124,20 +142,29 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
         }
 
         /// <summary>
-        /// The scale of the texture (or the texture coordinates-  not defined yet).
+        /// The scale of the texture coordinates.
         /// </summary>
+        /// <userdoc>
+        /// The scale on texture coordinates. Lower than 1 means that the texture will be zoomed in.
+        /// </userdoc>
         [DataMember(50)]
         public Vector2 Scale { get; set; }
 
         /// <summary>
         /// The offset in the texture coordinates.
         /// </summary>
+        /// <userdoc>
+        /// The offset on texture coordinates.
+        /// </userdoc>
         [DataMember(60)]
         public Vector2 Offset { get; set; }
 
         /// <summary>
         /// A flag stating if the paramater key is automatically assigned.
         /// </summary>
+        /// <userdoc>
+        /// If not checked, you can define the key to access the texture at runtime for dynamic changes.
+        /// </userdoc>
         [DataMember(70)]
         [DefaultValue(true)]
         public bool AutoAssignKey { get; set; }
@@ -145,6 +172,9 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
         /// <summary>
         /// The desired parameter key.
         /// </summary>
+        /// <userdoc>
+        /// The key to access the texture at runtime. AutoAssignKey should be checked.
+        /// </userdoc>
         [DataMember(80)]
         [DefaultValue(null)]
         public ParameterKey<Graphics.Texture> Key { get; set; }

@@ -9,12 +9,14 @@ Release date: 2014/??/??
 #### Enhancements
 - Graphics: Better computation of shadow maps (for both directional and spot lights).
 - Samples: Spot light shadows in DeferredLighting sample.
+- Studio: Added documentation on properties of the property grid.
 
 #### Issues fixed
 - Assets: Textures with arbitrary size (non square and non power-of-two) are now correctly loaded.
 - Graphics: Fix spot light shadow computation.
 - Shaders: Simplify some deferred lighting shaders.
 - Studio: Fix renamed button for string-indexed dictionary that was misplaced and not working
+- Studio: Fix add parameter key control filtering and mouse selection
 
 #### Breaking changes
 

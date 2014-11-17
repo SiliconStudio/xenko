@@ -34,6 +34,8 @@ namespace SiliconStudio.AssemblyProcessor
 
         public bool SerializationAssembly { get; set; }
 
+        public bool GenerateUserDocumentation { get; set; }
+
         public string NewAssemblyName { get; set; }
 
         public PlatformType Platform { get; set; }
@@ -88,6 +90,11 @@ namespace SiliconStudio.AssemblyProcessor
                 if (SerializationAssembly)
                 {
                     processors.Add(new SerializationProcessor(SignKeyFile));
+                }
+
+                if (GenerateUserDocumentation)
+                {
+                    processors.Add(new GenerateUserDocumentationProcessor(inputFile));
                 }
 
                 if (ModuleInitializer)
