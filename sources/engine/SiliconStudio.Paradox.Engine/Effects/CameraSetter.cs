@@ -26,18 +26,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <value>The camera.</value>
         public CameraComponent Camera { get; set; }
 
-        public override void Load()
-        {
-            // Clear scene
-            Pass.StartPass += OnRender;
-        }
-
-        public override void Unload()
-        {
-            Pass.StartPass -= OnRender;
-        }
-        
-        protected void OnRender(RenderContext context)
+        protected override void OnRendering(RenderContext context)
         {
             var pass = context.CurrentPass;
 

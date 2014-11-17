@@ -51,17 +51,7 @@ namespace SiliconStudio.Paradox.Effects
             spriteBatch = new SpriteBatch(GraphicsDevice);
         }
 
-        public override void Load()
-        {
-            Pass.StartPass += OnRender;
-        }
-
-        public override void Unload()
-        {
-            Pass.StartPass -= OnRender;
-        }
-
-        protected void OnRender(RenderContext context)
+        protected override void OnRendering(RenderContext context)
         {
             if(BackgroundTexture == null)
                 return;

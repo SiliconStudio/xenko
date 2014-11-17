@@ -80,7 +80,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         #region Methods
 
-        protected override void Render(RenderContext context)
+        protected override void OnRendering(RenderContext context)
         {
             // get the lightprocessor
             var entitySystem = Services.GetServiceAs<EntitySystem>();
@@ -174,7 +174,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                             shadowMapTexturesToBlur.Add(shadowMap.Texture);
                         
                         graphicsDevice.Parameters.Set(ShadowMapParameters.FilterType, shadowMap.Filter);
-                        base.Render(context);
+                        base.OnRendering(context);
                     }
 
                     // reset layers

@@ -201,6 +201,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             this.effectName = effectName;
             this.depthStencilTexture = depthStencilTexture;
             this.gbufferTexture = gbufferTexture;
+            DebugName = string.Format("LightingPrepass [{0}]", effectName);
         }
 
         #endregion
@@ -210,6 +211,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// <inheritdoc/>
         public override void Load()
         {
+            base.Load();
+
             // Initialize tile groups
             for (int i = 0; i < tilesGroups.Length; ++i)
                 tilesGroups[i] = new List<PointLightData>();
@@ -296,14 +299,13 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             blendStateDesc.RenderTargets[0].ColorWriteChannels = ColorWriteChannels.All;
 
             accumulationBlendState = BlendState.New(GraphicsDevice, blendStateDesc);
-
-            Pass.StartPass += RenderTiles;
         }
 
         /// <inheritdoc/>
         public override void Unload()
         {
-            Pass.StartPass -= RenderTiles;
+            base.Unload();
+
             lightRenderTarget.Dispose();
             lightRenderTarget.Texture.Dispose();
             lightRenderTarget = null;
@@ -510,7 +512,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             }
         }*/
 
-        private void RenderTiles(RenderContext context)
+        protected override void OnRendering(RenderContext context)
         {
             // update the effects
             CreateLightingUpdateInfo(pointLightingPrepassEffect);
