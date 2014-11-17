@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.Effects
         // Kept as internal, as it's a dependency we probably don't want to show.
         // It should be stored in Tags, but cached here for better performance.
         // Could be an "object" if we want to reduce dependencies.
-        internal ModelComponent ModelComponent;
+        internal IModelInstance ModelInstance;
 
         /// <summary>
         /// Gets the attached properties to this component.

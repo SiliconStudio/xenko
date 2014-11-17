@@ -108,7 +108,7 @@ namespace SiliconStudio.Paradox.Effects
                 // The order is based on the granularity level of each element and how shared it can be. Material is heavily shared, a model contains many meshes. An effectMesh is unique.
                 // TODO: really copy mesh parameters into effectMesh instead of just referencing the meshDraw parameters.
 
-                var modelComponent = effectMesh.ModelComponent;
+                var modelComponent = effectMesh.ModelInstance;
                 var hasMaterialParams = effectMesh.Mesh.Material != null && effectMesh.Mesh.Material.Parameters != null;
                 var hasModelComponentParams = modelComponent != null && modelComponent.Parameters != null;
                 if (hasMaterialParams)
@@ -443,12 +443,12 @@ namespace SiliconStudio.Paradox.Effects
 
         private void UpdateEffectMesh(EffectMesh effectMesh)
         {
-            if (effectMesh.ModelComponent == null)
+            if (effectMesh.ModelInstance == null)
                 return;
 
             if (HasCollectionChanged(effectMesh))
             {
-                CreateEffect(effectMesh, effectMesh.ModelComponent.Parameters);
+                CreateEffect(effectMesh, effectMesh.ModelInstance.Parameters);
             }
         }
 
@@ -539,8 +539,8 @@ namespace SiliconStudio.Paradox.Effects
 
             public int Compare(EffectMesh x, EffectMesh y)
             {
-                var xModelComponent = x.ModelComponent;
-                var yModelComponent = y.ModelComponent;
+                var xModelComponent = x.ModelInstance;
+                var yModelComponent = y.ModelInstance;
 
                 // Ignore if no associated mesh component
                 if (xModelComponent == null || yModelComponent == null)

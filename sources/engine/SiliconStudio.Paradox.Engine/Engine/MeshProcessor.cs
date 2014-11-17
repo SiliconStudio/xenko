@@ -69,7 +69,7 @@ namespace SiliconStudio.Paradox.Engine
 
                     foreach (var mesh in meshes)
                     {
-                        mesh.ModelComponent = associatedData.ModelComponent;
+                        mesh.ModelInstance = associatedData.ModelComponent;
                     }
                 }
             }
