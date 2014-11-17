@@ -111,6 +111,19 @@ namespace SiliconStudio.Core.Collections
             }
         }
 
+        public bool TryGetValue(TKey key, out T value)
+        {
+            int index = BinarySearch(key);
+            if (index < 0)
+            {
+                value = default(T);
+                return false;
+            }
+
+            value = items[index];
+            return true;
+        }
+
         /// <inheritdoc/>
         public void Clear()
         {
