@@ -109,14 +109,14 @@ namespace SiliconStudio.Paradox.Effects
                 // TODO: really copy mesh parameters into effectMesh instead of just referencing the meshDraw parameters.
 
                 var modelComponent = effectMesh.ModelComponent;
-                var hasMaterialParams = effectMesh.MeshData.Material != null && effectMesh.MeshData.Material.Parameters != null;
+                var hasMaterialParams = effectMesh.Mesh.Material != null && effectMesh.Mesh.Material.Parameters != null;
                 var hasModelComponentParams = modelComponent != null && modelComponent.Parameters != null;
                 if (hasMaterialParams)
                 {
                     if (hasModelComponentParams)
-                        effectMesh.Effect.Apply(currentPass.Parameters, effectMesh.MeshData.Material.Parameters, modelComponent.Parameters, effectMesh.Parameters, true);
+                        effectMesh.Effect.Apply(currentPass.Parameters, effectMesh.Mesh.Material.Parameters, modelComponent.Parameters, effectMesh.Parameters, true);
                     else
-                        effectMesh.Effect.Apply(currentPass.Parameters, effectMesh.MeshData.Material.Parameters, effectMesh.Parameters, true);
+                        effectMesh.Effect.Apply(currentPass.Parameters, effectMesh.Mesh.Material.Parameters, effectMesh.Parameters, true);
                 }
                 else if (hasModelComponentParams)
                     effectMesh.Effect.Apply(currentPass.Parameters, modelComponent.Parameters, effectMesh.Parameters, true);
@@ -313,7 +313,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <param name="modelComponentParameters">The ModelComponent parameters.</param>
         protected void CreateEffect(EffectMesh effectMesh, ParameterCollection modelComponentParameters)
         {
-            var mesh = effectMesh.MeshData;
+            var mesh = effectMesh.Mesh;
             var compilerParameters = new CompilerParameters();
 
             // The same order as the one during compilation is used here
@@ -374,7 +374,7 @@ namespace SiliconStudio.Paradox.Effects
                     }
                 }
                 
-                var mesh = effectMesh.MeshData;
+                var mesh = effectMesh.Mesh;
 
                 // Create EffectMesh and setup its draw data and rendering
                 // TODO:FX should later be done inside EffectMesh or in a separate class
@@ -423,7 +423,7 @@ namespace SiliconStudio.Paradox.Effects
                 }
             }
 
-            var mesh = effectMesh.MeshData;
+            var mesh = effectMesh.Mesh;
 
             // Create EffectMesh and setup its draw data and rendering
             // TODO:FX should later be done inside EffectMesh or in a separate class
@@ -486,7 +486,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <param name="modelComponentParameters">The ModelComponent parameters.</param>
         private void PrepareUpdater(EffectMesh effectMesh, ParameterCollection modelComponentParameters)
         {
-            var mesh = effectMesh.MeshData;
+            var mesh = effectMesh.Mesh;
             var collectionCount = 1;
             parameterCollections[0] = effectMesh.Effect.DefaultCompilationParameters;
 

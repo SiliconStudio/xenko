@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.EntityModel
             if (mode == ArchiveMode.Serialize)
             {
                 stream.Write(obj.Effect);
-                stream.Write(obj.MeshData);
+                stream.Write(obj.Mesh);
             }
             else
             {
