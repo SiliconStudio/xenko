@@ -116,7 +116,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                         ImportLights(entityInfo, rootEntityData, (ModelAsset)modelItem.Asset);
 
                     // Apply EntityAnalysis 
-                    EntityAnalysis.UpdateEntityReferences((EntityAsset)entityAssetItem.Asset);
+                    EntityAnalysis.UpdateEntityReferences(((EntityAsset)entityAssetItem.Asset).Hierarchy);
                 }
             }
 

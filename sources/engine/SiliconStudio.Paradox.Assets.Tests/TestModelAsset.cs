@@ -59,7 +59,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 var assetItem = project.Assets.FirstOrDefault(item => item.Asset is EntityAsset);
                 Assert.NotNull(assetItem);
 
-                EntityAnalysis.UpdateEntityReferences((EntityAsset)assetItem.Asset);
+                EntityAnalysis.UpdateEntityReferences(((EntityAsset)assetItem.Asset).Hierarchy);
 
                 var assetCollection = new AssetItemCollection();
                 // Remove directory from the location

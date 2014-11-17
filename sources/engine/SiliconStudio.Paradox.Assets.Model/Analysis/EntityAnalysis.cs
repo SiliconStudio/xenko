@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using SiliconStudio.Assets.Visitors;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Data;
+using SiliconStudio.Paradox.EntityModel;
+using SiliconStudio.Paradox.EntityModel.Data;
 
 namespace SiliconStudio.Paradox.Assets.Model.Analysis
 {
@@ -17,12 +19,12 @@ namespace SiliconStudio.Paradox.Assets.Model.Analysis
             public List<EntityReference> EntityReferences;
         }
 
-        public static Result Visit(EntityAsset entityAsset)
+        public static Result Visit(EntityHierarchyData entityHierarchy)
         {
-            if (entityAsset == null) throw new ArgumentNullException("obj");
+            if (entityHierarchy == null) throw new ArgumentNullException("obj");
 
             var entityReferenceVistor = new EntityReferenceAnalysis();
-            entityReferenceVistor.Visit(entityAsset);
+            entityReferenceVistor.Visit(entityHierarchy);
 
             return entityReferenceVistor.Result;
         }
@@ -31,10 +33,10 @@ namespace SiliconStudio.Paradox.Assets.Model.Analysis
         /// Updates <see cref="EntityReference.Id"/>, <see cref="EntityReference.Name"/>, <see cref="EntityComponentReference{T}.Entity"/>
         /// and <see cref="EntityComponentReference{T}.Component"/>, while also checking integrity of given <see cref="EntityAsset"/>.
         /// </summary>
-        /// <param name="entityAsset">The entity asset.</param>
-        public static void UpdateEntityReferences(EntityAsset entityAsset)
+        /// <param name="entityHierarchy">The entity asset.</param>
+        public static void UpdateEntityReferences(EntityHierarchyData entityHierarchy)
         {
-            var entityAnalysisResult = Visit(entityAsset);
+            var entityAnalysisResult = Visit(entityHierarchy);
 
             // Updates EntityComponent references
             foreach (var entityComponentReference in entityAnalysisResult.EntityComponentReferences)
@@ -69,7 +71,7 @@ namespace SiliconStudio.Paradox.Assets.Model.Analysis
                     }
 
                     // Make sure this component belongs to this container
-                    if (entityComponentReference.Value.Entity.Container != entityAsset.Hierarchy)
+                    if (entityComponentReference.Value.Entity.Container != entityHierarchy)
                     {
                         throw new InvalidOperationException("It seems this component and/or entity doesn't belong to this asset");
                     }
