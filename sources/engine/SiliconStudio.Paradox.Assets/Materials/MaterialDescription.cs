@@ -33,7 +33,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// The tree used in this model.
         /// </summary>
         /// <userdoc>
-        /// The color nodes are maps (textures or values) and operations on maps.
+        /// The color nodes are maps (textures or values) and operations on them.
         /// </userdoc>
         [DataMember(30)]
         public Dictionary<ParameterKey<ShaderMixinSource>, string> ColorNodes { get; set; }
