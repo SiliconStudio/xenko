@@ -13,37 +13,29 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 
 
-#line 1 "C:\DEV\paradox\sources\engine\SiliconStudio.Paradox.Engine.Tests\Default.pdxfx"
+#line 3 "C:\Projects\Paradox\sources\engine\SiliconStudio.Paradox.Engine.Tests\Default.pdxfx"
 using SiliconStudio.Paradox.Effects.Data;
 
-#line 3
+#line 5
 namespace Test
 {
-    [DataContract]
-#line 5
-    public partial class RenderingParameters : ShaderMixinParameters
-    {
 
-        #line 7
-        public static readonly ParameterKey<bool> UseDeferred = ParameterKeys.New<bool>();
-
-        #line 8
-        public static readonly ParameterKey<bool> UseTransparent = ParameterKeys.New<bool>();
-    };
-
-    #line 12
+    #line 8
     public partial class GBufferShaderPass  : IShaderMixinBuilder
     {
         public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
         {
 
-            #line 15
+            #line 11
+            context.CloneProperties();
+
+            #line 11
             mixin.Mixin.CloneFrom(mixin.Parent.Mixin);
 
-            #line 16
+            #line 12
             context.Mixin(mixin, "GBuffer");
 
-            #line 17
+            #line 13
             context.Mixin(mixin, "NormalVSStream");
         }
 
@@ -55,7 +47,7 @@ namespace Test
         }
     }
 
-    #line 21
+    #line 17
     public partial class GBufferPlugin  : IShaderMixinBuilder
     {
         public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
@@ -63,30 +55,36 @@ namespace Test
 
             {
 
-                #line 23
+                #line 19
                 var __subMixin = new ShaderMixinSourceTree() { Name = "GBufferShaderPass", Parent = mixin };
                 mixin.Children.Add(__subMixin);
 
-                #line 23
+                #line 19
+                context.BeginChild(__subMixin);
+
+                #line 19
                 context.Mixin(__subMixin, "GBufferShaderPass");
+
+                #line 19
+                context.EndChild();
             }
 
-            #line 26
+            #line 22
             context.RemoveMixin(mixin, "PositionVSStream");
 
-            #line 27
+            #line 23
             context.RemoveMixin(mixin, "NormalVSStream");
 
-            #line 28
+            #line 24
             context.RemoveMixin(mixin, "SpecularPowerPerMesh");
 
-            #line 31
+            #line 27
             context.Mixin(mixin, "NormalVSGBuffer");
 
-            #line 32
+            #line 28
             context.Mixin(mixin, "PositionVSGBuffer");
 
-            #line 33
+            #line 29
             context.Mixin(mixin, "SpecularPowerGBuffer");
         }
 
@@ -98,60 +96,60 @@ namespace Test
         }
     }
 
-    #line 36
+    #line 32
     public partial class LightPrepassEffect  : IShaderMixinBuilder
     {
         public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
         {
 
-            #line 38
+            #line 34
             context.Mixin(mixin, "LightPrepass");
 
-            #line 39
+            #line 35
             context.Mixin(mixin, "PositionVSGBuffer");
 
-            #line 40
+            #line 36
             context.Mixin(mixin, "NormalVSGBuffer");
 
-            #line 41
+            #line 37
             context.Mixin(mixin, "SpecularPowerGBuffer");
 
             {
 
-                #line 42
+                #line 38
                 var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                #line 42
+                #line 38
                 context.Mixin(__subMixin, "ComputeBRDFColorFresnel");
                 mixin.Mixin.AddComposition("DiffuseColor", __subMixin.Mixin);
             }
 
             {
 
-                #line 43
+                #line 39
                 var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                #line 43
+                #line 39
                 context.Mixin(__subMixin, "ComputeBRDFDiffuseLambert");
                 mixin.Mixin.AddComposition("DiffuseLighting", __subMixin.Mixin);
             }
 
             {
 
-                #line 44
+                #line 40
                 var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                #line 44
+                #line 40
                 context.Mixin(__subMixin, "ComputeBRDFColor");
                 mixin.Mixin.AddComposition("SpecularColor", __subMixin.Mixin);
             }
 
             {
 
-                #line 45
+                #line 41
                 var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                #line 45
+                #line 41
                 context.Mixin(__subMixin, "ComputeBRDFColorSpecularBlinnPhong");
                 mixin.Mixin.AddComposition("SpecularLighting", __subMixin.Mixin);
             }
@@ -165,104 +163,104 @@ namespace Test
         }
     }
 
-    #line 48
+    #line 44
     public partial class Default  : IShaderMixinBuilder
     {
         public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
         {
 
-            #line 54
+            #line 50
             context.Mixin(mixin, "ShaderBase");
 
-            #line 55
+            #line 51
             context.Mixin(mixin, "TransformationWAndVP");
 
-            #line 56
+            #line 52
             context.Mixin(mixin, "BRDFDiffuseBase");
 
-            #line 57
+            #line 53
             context.Mixin(mixin, "BRDFSpecularBase");
 
-            #line 58
+            #line 54
             context.Mixin(mixin, "AlbedoFlatShading");
 
-            #line 60
+            #line 56
             if (context.GetParam(MaterialParameters.AlbedoDiffuse) != null)
             {
 
                 {
 
-                    #line 62
+                    #line 58
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                    #line 62
+                    #line 58
                     context.Mixin(__subMixin, "ComputeBRDFDiffuseLambert");
                     mixin.Mixin.AddComposition("DiffuseColor", __subMixin.Mixin);
                 }
 
                 {
 
-                    #line 63
+                    #line 59
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                    #line 63
+                    #line 59
                     context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoDiffuse));
                     mixin.Mixin.AddComposition("albedoDiffuse", __subMixin.Mixin);
                 }
             }
 
-            #line 66
+            #line 62
             if (context.GetParam(MaterialParameters.AlbedoSpecular) != null)
             {
 
                 {
 
-                    #line 68
+                    #line 64
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                    #line 68
+                    #line 64
                     context.Mixin(__subMixin, "ComputeBRDFColorSpecularBlinnPhong");
                     mixin.Mixin.AddComposition("SpecularColor", __subMixin.Mixin);
                 }
 
                 {
 
-                    #line 69
+                    #line 65
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                    #line 69
+                    #line 65
                     context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoSpecular));
                     mixin.Mixin.AddComposition("albedoSpecular", __subMixin.Mixin);
                 }
             }
 
-            #line 72
+            #line 68
             if (context.GetParam(MaterialParameters.HasSkinningPosition))
             {
 
-                #line 74
+                #line 70
                 if (context.GetParam(MaterialParameters.SkinningBones) > context.GetParam(MaterialParameters.SkinningMaxBones))
                 {
 
-                    #line 77
+                    #line 73
                     context.SetParam(MaterialParameters.SkinningMaxBones, context.GetParam(MaterialParameters.SkinningBones));
                 }
 
-                #line 79
+                #line 75
                 mixin.Mixin.AddMacro("SkinningMaxBones", context.GetParam(MaterialParameters.SkinningMaxBones));
 
-                #line 80
+                #line 76
                 context.Mixin(mixin, "TransformationSkinning");
             }
 
-            #line 85
+            #line 81
             if (context.GetParam(RenderingParameters.UseDeferred) && !context.GetParam(RenderingParameters.UseTransparent))
             {
 
-                #line 87
+                #line 83
                 context.Mixin(mixin, "GBufferPlugin");
 
-                #line 88
+                #line 84
                 context.Mixin(mixin, "LightDeferredShading");
             }
         }
