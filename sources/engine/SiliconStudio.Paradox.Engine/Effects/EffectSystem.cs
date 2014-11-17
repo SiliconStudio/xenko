@@ -121,9 +121,13 @@ namespace SiliconStudio.Paradox.Effects
         /// <exception cref="System.InvalidOperationException">Could not compile shader. Need fallback.</exception>
         public Effect LoadEffect(string effectName, CompilerParameters compilerParameters)
         {
+            if (effectName == null) throw new ArgumentNullException("effectName");
+            if (compilerParameters == null) throw new ArgumentNullException("compilerParameters");
+
             string subEffect;
             // Get the compiled result
             var compilerResult = GetCompilerResults(effectName, compilerParameters, out subEffect);
+            CheckResult(compilerResult);
 
             if (!compilerResult.Bytecodes.ContainsKey(subEffect))
             {
@@ -149,8 +153,12 @@ namespace SiliconStudio.Paradox.Effects
         /// <exception cref="System.InvalidOperationException">Could not compile shader. Need fallback.</exception>
         public Dictionary<string, Effect> LoadEffects(string effectName, CompilerParameters compilerParameters)
         {
+            if (effectName == null) throw new ArgumentNullException("effectName");
+            if (compilerParameters == null) throw new ArgumentNullException("compilerParameters");
+
             string subEffect;
             var compilerResult = GetCompilerResults(effectName, compilerParameters, out subEffect);
+            CheckResult(compilerResult);
 
             var result = new Dictionary<string, Effect>();
 
@@ -177,6 +185,15 @@ namespace SiliconStudio.Paradox.Effects
         #endregion
 
         #region Private methods
+
+        private static void CheckResult(CompilerResults compilerResult)
+        {
+            // Check errors
+            if (compilerResult.HasErrors)
+            {
+                throw new InvalidOperationException("Could not compile shader. See error messages." + compilerResult.ToText());
+            }
+        }
 
         private Effect CreateEffect(EffectBytecode bytecode, ShaderMixinParameters usedParameters)
         {
@@ -232,12 +249,6 @@ namespace SiliconStudio.Paradox.Effects
                 Log.Log(message);
             }
 
-            // Create effect
-            if (compilerResult.HasErrors)
-            {
-                throw new InvalidOperationException("Could not compile shader. See error messages.");
-            }
-
             return compilerResult;
         }
 
@@ -289,6 +300,13 @@ namespace SiliconStudio.Paradox.Effects
 
             string subEffect;
             var compilerResult = GetCompilerResults(effectName, compilerParameters, out subEffect);
+
+            // If there are any errors when recompiling return immediately
+            if (compilerResult.HasErrors)
+            {
+                Log.Error("Effect {0} failed to reompile: {0}", compilerResult.ToText());
+                return;
+            }
 
             // update information
             updateInfos.CompilerResults = compilerResult;
