@@ -1,16 +1,14 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.EntityModel.Data;
-using EntityComponentData = SiliconStudio.Paradox.EntityModel.Data.EntityComponentData;
 
-namespace SiliconStudio.Paradox.Data
+namespace SiliconStudio.Paradox.EntityModel
 {
     public static class EntityComponentReference
     {
@@ -22,76 +20,6 @@ namespace SiliconStudio.Paradox.Data
         public static EntityComponentReference<T> New<T>(EntityComponentData entityComponent) where T : EntityComponent
         {
             return new EntityComponentReference<T>(entityComponent);
-        }
-    }
-
-    [DataContract]
-    [DataStyle(DataStyle.Compact)]
-    [DataSerializer(typeof(EntityReference.Serializer))]
-    public sealed class EntityReference
-    {
-        private Guid id;
-        private string name;
-
-        public Guid Id
-        {
-            get { return id; }
-            set { id = value; }
-        }
-
-        public string Name
-        {
-            get { return name; }
-            set { name = value; }
-        }
-
-        [DataMemberIgnore]
-        public EntityData Value { get; set; }
-
-        public static explicit operator EntityData(EntityReference contentReference)
-        {
-            if (contentReference == null)
-                return null;
-            return contentReference.Value;
-        }
-
-        public static implicit operator EntityReference(EntityData value)
-        {
-            return new EntityReference() { Value = value };
-        }
-
-        public override string ToString()
-        {
-            return string.Format("{0}:{1}", Id, Name);
-        }
-
-        public static readonly PropertyKey<EntityAnalysisResult> EntityAnalysisResultKey = new PropertyKey<EntityAnalysisResult>("EntityAnalysisResult", typeof(EntityReference));
-
-        internal class Serializer : DataSerializer<EntityReference>
-        {
-            public override void Serialize(ref EntityReference obj, ArchiveMode mode, SerializationStream stream)
-            {
-                if (obj == null)
-                    obj = new EntityReference();
-
-                if (mode == ArchiveMode.Deserialize)
-                {
-                    var entityReferenceContext = stream.Context.Get(EntityAnalysisResultKey);
-                    if (entityReferenceContext != null)
-                    {
-                        entityReferenceContext.EntityReferences.Add(obj);
-                    }
-                }
-
-                stream.Serialize(ref obj.name);
-                stream.Serialize(ref obj.id, mode);
-            }
-        }
-
-        public class EntityAnalysisResult
-        {
-            public List<IEntityComponentReference> EntityComponentReferences = new List<IEntityComponentReference>();
-            public List<EntityReference> EntityReferences = new List<EntityReference>();
         }
     }
 

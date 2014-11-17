@@ -6,10 +6,6 @@
 // and re-save the associated .pdxdata.
 // </auto-generated>
 
-using SiliconStudio.Core.Serialization.Converters;
-using SiliconStudio.Paradox.EntityModel;
-using EntityComponentData = SiliconStudio.Paradox.EntityModel.Data.EntityComponentData;
-
 namespace SiliconStudio.Paradox.Engine.Data
 {
     /// <summary>
@@ -41,49 +37,49 @@ namespace SiliconStudio.Paradox.Engine.Data
             // Register type EntityComponentData
             SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.EntityModel.Data.EntityComponentDataConverter());
             // Register entity component reference for type EntityComponentData
-            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Data.EntityComponentReferenceDataConverter<SiliconStudio.Paradox.EntityModel.EntityComponent>());
+            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.EntityModel.EntityComponentReferenceDataConverter<SiliconStudio.Paradox.EntityModel.EntityComponent>());
             // Register type CubemapBlendComponentData
             SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Engine.Data.CubemapBlendComponentDataConverter());
             // Register entity component reference for type CubemapBlendComponentData
-            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Data.EntityComponentReferenceDataConverter<SiliconStudio.Paradox.Engine.CubemapBlendComponent>());
+            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.EntityModel.EntityComponentReferenceDataConverter<SiliconStudio.Paradox.Engine.CubemapBlendComponent>());
             // Register type CubemapSourceComponentData
             SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Engine.Data.CubemapSourceComponentDataConverter());
             // Register entity component reference for type CubemapSourceComponentData
-            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Data.EntityComponentReferenceDataConverter<SiliconStudio.Paradox.Engine.CubemapSourceComponent>());
+            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.EntityModel.EntityComponentReferenceDataConverter<SiliconStudio.Paradox.Engine.CubemapSourceComponent>());
             // Register type ModelNodeLinkComponentData
             SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Engine.Data.ModelNodeLinkComponentDataConverter());
             // Register entity component reference for type ModelNodeLinkComponentData
-            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Data.EntityComponentReferenceDataConverter<SiliconStudio.Paradox.Engine.ModelNodeLinkComponent>());
+            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.EntityModel.EntityComponentReferenceDataConverter<SiliconStudio.Paradox.Engine.ModelNodeLinkComponent>());
             // Register type SpriteComponentData
             SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Engine.Data.SpriteComponentDataConverter());
             // Register entity component reference for type SpriteComponentData
-            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Data.EntityComponentReferenceDataConverter<SiliconStudio.Paradox.Engine.SpriteComponent>());
+            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.EntityModel.EntityComponentReferenceDataConverter<SiliconStudio.Paradox.Engine.SpriteComponent>());
             // Register type CameraComponentData
             SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Engine.Data.CameraComponentDataConverter());
             // Register entity component reference for type CameraComponentData
-            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Data.EntityComponentReferenceDataConverter<SiliconStudio.Paradox.Engine.CameraComponent>());
+            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.EntityModel.EntityComponentReferenceDataConverter<SiliconStudio.Paradox.Engine.CameraComponent>());
             // Register type LightComponentData
             SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Engine.Data.LightComponentDataConverter());
             // Register entity component reference for type LightComponentData
-            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Data.EntityComponentReferenceDataConverter<SiliconStudio.Paradox.Engine.LightComponent>());
+            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.EntityModel.EntityComponentReferenceDataConverter<SiliconStudio.Paradox.Engine.LightComponent>());
             // Register type LightShaftsComponentData
             SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Engine.Data.LightShaftsComponentDataConverter());
             // Register entity component reference for type LightShaftsComponentData
-            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Data.EntityComponentReferenceDataConverter<SiliconStudio.Paradox.Engine.LightShaftsComponent>());
+            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.EntityModel.EntityComponentReferenceDataConverter<SiliconStudio.Paradox.Engine.LightShaftsComponent>());
             // Register type EntityGroupData
             SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.EntityModel.Data.EntityGroupDataConverter());
             // Register type AnimationComponentData
             SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Engine.Data.AnimationComponentDataConverter());
             // Register entity component reference for type AnimationComponentData
-            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Data.EntityComponentReferenceDataConverter<SiliconStudio.Paradox.Engine.AnimationComponent>());
+            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.EntityModel.EntityComponentReferenceDataConverter<SiliconStudio.Paradox.Engine.AnimationComponent>());
             // Register type ModelComponentData
             SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Engine.Data.ModelComponentDataConverter());
             // Register entity component reference for type ModelComponentData
-            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Data.EntityComponentReferenceDataConverter<SiliconStudio.Paradox.Engine.ModelComponent>());
+            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.EntityModel.EntityComponentReferenceDataConverter<SiliconStudio.Paradox.Engine.ModelComponent>());
             // Register type TransformationComponentData
             SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Engine.Data.TransformationComponentDataConverter());
             // Register entity component reference for type TransformationComponentData
-            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Data.EntityComponentReferenceDataConverter<SiliconStudio.Paradox.Engine.TransformationComponent>());
+            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.EntityModel.EntityComponentReferenceDataConverter<SiliconStudio.Paradox.Engine.TransformationComponent>());
             // Register type EntityData
             SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.EntityModel.Data.EntityDataConverter());
         }
@@ -139,7 +135,7 @@ namespace SiliconStudio.Paradox.Effects.Data
     /// </summary>
     [SiliconStudio.Core.DataContract("LightingConfigurationsSetData")]
     [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Contents.DataContentSerializer<LightingConfigurationsSetData>))]
-    [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Converters.DataContentConverterSerializer<SiliconStudio.Paradox.Effects.LightingConfigurationsSet>))]
+    [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Converters.DataContentConverterSerializer<LightingConfigurationsSetData, SiliconStudio.Paradox.Effects.LightingConfigurationsSet>))]
     public partial class LightingConfigurationsSetData
     {
         /// <summary>
@@ -153,7 +149,7 @@ namespace SiliconStudio.Paradox.Effects.Data
     /// </summary>
     [SiliconStudio.Core.DataContract("MaterialData")]
     [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Contents.DataContentSerializer<MaterialData>))]
-    [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Converters.DataContentConverterSerializer<SiliconStudio.Paradox.Effects.Material>))]
+    [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Converters.DataContentConverterSerializer<MaterialData, SiliconStudio.Paradox.Effects.Material>))]
     public partial class MaterialData
     {
         /// <summary>
@@ -261,7 +257,7 @@ namespace SiliconStudio.Paradox.Effects.Data
     /// </summary>
     [SiliconStudio.Core.DataContract("ModelData")]
     [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Contents.DataContentSerializer<ModelData>))]
-    [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Converters.DataContentConverterSerializer<SiliconStudio.Paradox.Effects.Model>))]
+    [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Converters.DataContentConverterSerializer<ModelData, SiliconStudio.Paradox.Effects.Model>))]
     public partial class ModelData
     {
         /// <summary>
@@ -290,7 +286,7 @@ namespace SiliconStudio.Paradox.Effects.Data
     /// </summary>
     [SiliconStudio.Core.DataContract("SceneData")]
     [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Contents.DataContentSerializer<SceneData>))]
-    [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Converters.DataContentConverterSerializer<SiliconStudio.Paradox.Effects.Scene>))]
+    [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Converters.DataContentConverterSerializer<SceneData, SiliconStudio.Paradox.Effects.Scene>))]
     public partial class SceneData
     {
         /// <summary>
@@ -306,12 +302,12 @@ namespace SiliconStudio.Paradox.Effects.Data
         /// <summary>
         /// Data field for <see cref="SiliconStudio.Paradox.Effects.Scene.Lights"/>.
         /// </summary>
-        public System.Collections.Generic.List<SiliconStudio.Paradox.Data.EntityComponentReference<SiliconStudio.Paradox.Engine.LightComponent>> Lights;
+        public System.Collections.Generic.List<SiliconStudio.Paradox.EntityModel.EntityComponentReference<SiliconStudio.Paradox.Engine.LightComponent>> Lights;
 
         /// <summary>
         /// Data field for <see cref="SiliconStudio.Paradox.Effects.Scene.Cameras"/>.
         /// </summary>
-        public System.Collections.Generic.List<SiliconStudio.Paradox.Data.EntityComponentReference<SiliconStudio.Paradox.Engine.CameraComponent>> Cameras;
+        public System.Collections.Generic.List<SiliconStudio.Paradox.EntityModel.EntityComponentReference<SiliconStudio.Paradox.Engine.CameraComponent>> Cameras;
     }
 
     /// <summary>
@@ -362,7 +358,7 @@ namespace SiliconStudio.Paradox.EntityModel.Data
     /// </summary>
     [SiliconStudio.Core.DataContract("EntityComponentData")]
     [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Contents.DataContentSerializer<EntityComponentData>))]
-    [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Converters.DataContentConverterSerializer<SiliconStudio.Paradox.EntityModel.EntityComponent>))]
+    [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Converters.DataContentConverterSerializer<EntityComponentData, SiliconStudio.Paradox.EntityModel.EntityComponent>))]
     public partial class EntityComponentData
     {
     }
@@ -454,7 +450,7 @@ namespace SiliconStudio.Paradox.Engine.Data
         /// <summary>
         /// Data field for <see cref="SiliconStudio.Paradox.Engine.ModelNodeLinkComponent.Target"/>.
         /// </summary>
-        public SiliconStudio.Paradox.Data.EntityComponentReference<SiliconStudio.Paradox.Engine.ModelComponent> Target;
+        public SiliconStudio.Paradox.EntityModel.EntityComponentReference<SiliconStudio.Paradox.Engine.ModelComponent> Target;
 
         /// <summary>
         /// Data field for <see cref="SiliconStudio.Paradox.Engine.ModelNodeLinkComponent.NodeName"/>.
@@ -513,7 +509,7 @@ namespace SiliconStudio.Paradox.Engine.Data
         /// <summary>
         /// Data field for <see cref="SiliconStudio.Paradox.Engine.CameraComponent.Target"/>.
         /// </summary>
-        public SiliconStudio.Paradox.Data.EntityReference Target;
+        public SiliconStudio.Paradox.EntityModel.EntityReference Target;
 
         /// <summary>
         /// Data field for <see cref="SiliconStudio.Paradox.Engine.CameraComponent.TargetUp"/>.
@@ -664,7 +660,7 @@ namespace SiliconStudio.Paradox.EntityModel.Data
     /// </summary>
     [SiliconStudio.Core.DataContract("EntityGroupData")]
     [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Contents.DataContentSerializer<EntityGroupData>))]
-    [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Converters.DataContentConverterSerializer<SiliconStudio.Paradox.EntityModel.EntityGroup>))]
+    [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Converters.DataContentConverterSerializer<EntityGroupData, SiliconStudio.Paradox.EntityModel.EntityGroup>))]
     public partial class EntityGroupData
     {
         /// <summary>
@@ -682,7 +678,7 @@ namespace SiliconStudio.Paradox.Engine.Data
     /// </summary>
     [SiliconStudio.Core.DataContract("AnimationComponentData")]
     [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Contents.DataContentSerializer<AnimationComponentData>))]
-    [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Converters.DataContentConverterSerializer<SiliconStudio.Paradox.Engine.AnimationComponent>))]
+    [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Converters.DataContentConverterSerializer<AnimationComponentData, SiliconStudio.Paradox.Engine.AnimationComponent>))]
     public partial class AnimationComponentData : SiliconStudio.Paradox.EntityModel.Data.EntityComponentData
     {
         /// <summary>
@@ -732,7 +728,7 @@ namespace SiliconStudio.Paradox.Engine.Data
         /// <summary>
         /// Data field for <see cref="SiliconStudio.Paradox.Engine.TransformationComponent.Children"/>.
         /// </summary>
-        public SiliconStudio.Core.Collections.FastCollection<SiliconStudio.Paradox.Data.EntityComponentReference<SiliconStudio.Paradox.Engine.TransformationComponent>> Children;
+        public SiliconStudio.Core.Collections.FastCollection<SiliconStudio.Paradox.EntityModel.EntityComponentReference<SiliconStudio.Paradox.Engine.TransformationComponent>> Children;
 
         /// <summary>
         /// Data field for <see cref="SiliconStudio.Paradox.Engine.TransformationComponent.Translation"/>.
@@ -759,7 +755,7 @@ namespace SiliconStudio.Paradox.EntityModel.Data
     /// </summary>
     [SiliconStudio.Core.DataContract("EntityData")]
     [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Contents.DataContentSerializer<EntityData>))]
-    [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Converters.DataContentConverterSerializer<SiliconStudio.Paradox.EntityModel.Entity>))]
+    [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Converters.DataContentConverterSerializer<EntityData, SiliconStudio.Paradox.EntityModel.Entity>))]
     public partial class EntityData
     {
     }

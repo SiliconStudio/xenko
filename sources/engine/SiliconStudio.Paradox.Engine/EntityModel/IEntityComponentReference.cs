@@ -6,7 +6,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.EntityModel.Data;
 
-namespace SiliconStudio.Paradox.Data
+namespace SiliconStudio.Paradox.EntityModel
 {
     public interface IEntityComponentReference
     {

@@ -13,7 +13,7 @@ using SiliconStudio.Core.Serialization.Converters;
 
 namespace SiliconStudio.Paradox.EntityModel
 {
-    public class EntityComponentSerializer<T> : DataSerializer<T> where T : EntityComponent, new()
+    public class CloneEntityComponentSerializer<T> : DataSerializer<T> where T : EntityComponent, new()
     {
         public override void PreSerialize(ref T entityComponent, ArchiveMode mode, SerializationStream stream)
         {
@@ -26,30 +26,30 @@ namespace SiliconStudio.Paradox.EntityModel
             if (mode == ArchiveMode.Serialize)
             {
                 stream.Write(entityComponent.Entity);
-                stream.Write(EntityComponentData.GenerateEntityComponentData(entityComponent));
+                stream.Write(CloneEntityComponentData.GenerateEntityComponentData(entityComponent));
             }
             else if (mode == ArchiveMode.Deserialize)
             {
                 var entity = stream.Read<Entity>();
 
-                var data = stream.Read<EntityComponentData>();
-                EntityComponentData.RestoreEntityComponentData(entityComponent, data);
+                var data = stream.Read<CloneEntityComponentData>();
+                CloneEntityComponentData.RestoreEntityComponentData(entityComponent, data);
             }
         }
     }
 
     [DataContract]
-    internal class EntityComponentData
+    internal class CloneEntityComponentData
     {
         // Used to store entity data while in merge/text mode
-        public static PropertyKey<EntityComponentData> Key = new PropertyKey<EntityComponentData>("Key", typeof(EntityComponentData));
+        public static PropertyKey<CloneEntityComponentData> Key = new PropertyKey<CloneEntityComponentData>("Key", typeof(CloneEntityComponentData));
 
         [DataMemberCustomSerializer]
         public Entity Entity;
         public List<EntityComponentProperty> Properties;
         //public List<EntityComponentProperty> Properties;
 
-        public static void RestoreEntityComponentData(EntityComponent entityComponent, EntityComponentData data)
+        public static void RestoreEntityComponentData(EntityComponent entityComponent, CloneEntityComponentData data)
         {
             foreach (var componentProperty in data.Properties)
             {
@@ -80,9 +80,9 @@ namespace SiliconStudio.Paradox.EntityModel
             }
         }
 
-        public static EntityComponentData GenerateEntityComponentData(EntityComponent entityComponent)
+        public static CloneEntityComponentData GenerateEntityComponentData(EntityComponent entityComponent)
         {
-            var data = new EntityComponentData { Properties = new List<EntityComponentProperty>() };
+            var data = new CloneEntityComponentData { Properties = new List<EntityComponentProperty>() };
             foreach (var field in entityComponent.GetType().GetTypeInfo().DeclaredFields)
             {
                 if (!field.GetCustomAttributes(typeof(DataMemberConvertAttribute), true).Any())

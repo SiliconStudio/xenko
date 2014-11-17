@@ -30,7 +30,7 @@ namespace <#=assembly.Name.Name#>.Data
             SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new <#=dataConverterInfo.Type.ConvertCSharp()#>());
 <# if ((dataConverterInfo.DataInfo.Flags & DataTypeFlags.EntityComponent) != 0) { #>
             // Register entity component reference for type <#=dataConverterInfo.DataInfo.Type.Name#>
-            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Data.EntityComponentReferenceDataConverter<<#=type.Key.ConvertCSharp()#>>());
+            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.EntityModel.EntityComponentReferenceDataConverter<<#=type.Key.ConvertCSharp()#>>());
 <# } } // foreach (var type in processedConverterTypes)#>
         }
     }
@@ -48,7 +48,7 @@ namespace <#=assembly.Name.Name#>.Data
     [SiliconStudio.Core.DataContract("<#=dataTypeInfo.Type.Name + dataTypeInfo.Type.GenerateGenerics()#>")]
 <#if ((type.Value.Flags & DataTypeFlags.ContentReference) != 0) {#>
     [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Contents.DataContentSerializer<<#=dataTypeInfo.Type.Name + dataTypeInfo.Type.GenerateGenerics()#>>))]
-    [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Converters.DataContentConverterSerializer<<#=type.Key.ConvertCSharp()#>>))]
+    [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Converters.DataContentConverterSerializer<<#=dataTypeInfo.Type.Name + dataTypeInfo.Type.GenerateGenerics()#>, <#=type.Key.ConvertCSharp()#>>))]
 <#}#>
     public partial class <#=dataTypeInfo.Type.Name + dataTypeInfo.Type.GenerateGenerics()#><# if (type.Value.BaseType != null) { #> : <#=type.Value.BaseType.ConvertCSharp()#><#}#>
 

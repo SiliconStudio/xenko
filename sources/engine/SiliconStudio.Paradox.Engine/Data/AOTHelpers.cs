@@ -6,6 +6,7 @@ using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Data;
 using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Graphics.Data;
 
