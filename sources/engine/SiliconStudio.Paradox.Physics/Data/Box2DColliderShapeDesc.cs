@@ -8,9 +8,15 @@ namespace SiliconStudio.Paradox.Physics
     [DataContract("Box2DColliderShapeDesc")]
     public class Box2DColliderShapeDesc : IColliderShapeDesc
     {
+        /// <userdoc>
+        /// The offset with the real graphic mesh.
+        /// </userdoc>
         [DataMember(10)]
         public Vector3 LocalOffset;
 
+        /// <userdoc>
+        /// Half Extent size of the box.
+        /// </userdoc>
         [DataMember(20)]
         public Vector2 HalfExtent;
     }
