@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.ProjectGenerator
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "C:\DEV\paradox\sources\tools\SiliconStudio.Paradox.ProjectGenerator\ResharperDotSettings.tt"
+    #line 1 "C:\Dev\Paradox\sources\tools\SiliconStudio.Paradox.ProjectGenerator\ResharperDotSettings.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "12.0.0.0")]
     public partial class ResharperDotSettings : ResharperDotSettingsBase
     {
@@ -31,29 +31,22 @@ namespace SiliconStudio.Paradox.ProjectGenerator
             this.Write(@"<wpf:ResourceDictionary xml:space=""preserve"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns:s=""clr-namespace:System;assembly=mscorlib"" xmlns:ss=""urn:shemas-jetbrains-com:settings-storage-xaml"" xmlns:wpf=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
 	<s:String x:Key=""/Default/Environment/InjectedLayers/FileInjectedLayer/=");
             
-            #line 7 "C:\DEV\paradox\sources\tools\SiliconStudio.Paradox.ProjectGenerator\ResharperDotSettings.tt"
+            #line 7 "C:\Dev\Paradox\sources\tools\SiliconStudio.Paradox.ProjectGenerator\ResharperDotSettings.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(FileInjectedGuid.ToString("N").ToUpperInvariant()));
             
             #line default
             #line hidden
-            this.Write("/AbsolutePath/@EntryValue\">");
+            this.Write("/AbsolutePath/@EntryValue\">Z:\\InvalidPath\\Paradox.sln.DotSettings</s:String>\r\n\t<s" +
+                    ":String x:Key=\"/Default/Environment/InjectedLayers/FileInjectedLayer/=");
             
-            #line 7 "C:\DEV\paradox\sources\tools\SiliconStudio.Paradox.ProjectGenerator\ResharperDotSettings.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(SharedSolutionDotSettings.FullName));
-            
-            #line default
-            #line hidden
-            this.Write("</s:String>\r\n\t<s:String x:Key=\"/Default/Environment/InjectedLayers/FileInjectedLa" +
-                    "yer/=");
-            
-            #line 8 "C:\DEV\paradox\sources\tools\SiliconStudio.Paradox.ProjectGenerator\ResharperDotSettings.tt"
+            #line 8 "C:\Dev\Paradox\sources\tools\SiliconStudio.Paradox.ProjectGenerator\ResharperDotSettings.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(FileInjectedGuid.ToString("N").ToUpperInvariant()));
             
             #line default
             #line hidden
             this.Write("/RelativePath/@EntryValue\">..\\");
             
-            #line 8 "C:\DEV\paradox\sources\tools\SiliconStudio.Paradox.ProjectGenerator\ResharperDotSettings.tt"
+            #line 8 "C:\Dev\Paradox\sources\tools\SiliconStudio.Paradox.ProjectGenerator\ResharperDotSettings.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(SharedSolutionDotSettings.Name));
             
             #line default
@@ -61,7 +54,7 @@ namespace SiliconStudio.Paradox.ProjectGenerator
             this.Write("</s:String>\r\n\t<s:Boolean x:Key=\"/Default/Environment/InjectedLayers/FileInjectedL" +
                     "ayer/=");
             
-            #line 9 "C:\DEV\paradox\sources\tools\SiliconStudio.Paradox.ProjectGenerator\ResharperDotSettings.tt"
+            #line 9 "C:\Dev\Paradox\sources\tools\SiliconStudio.Paradox.ProjectGenerator\ResharperDotSettings.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(FileInjectedGuid.ToString("N").ToUpperInvariant()));
             
             #line default
@@ -69,7 +62,7 @@ namespace SiliconStudio.Paradox.ProjectGenerator
             this.Write("/@KeyIndexDefined\">True</s:Boolean>\r\n\t<s:Boolean x:Key=\"/Default/Environment/Inje" +
                     "ctedLayers/InjectedLayerCustomization/=File");
             
-            #line 10 "C:\DEV\paradox\sources\tools\SiliconStudio.Paradox.ProjectGenerator\ResharperDotSettings.tt"
+            #line 10 "C:\Dev\Paradox\sources\tools\SiliconStudio.Paradox.ProjectGenerator\ResharperDotSettings.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(FileInjectedGuid.ToString("N").ToUpperInvariant()));
             
             #line default
@@ -77,7 +70,7 @@ namespace SiliconStudio.Paradox.ProjectGenerator
             this.Write("/@KeyIndexDefined\">True</s:Boolean>\r\n\t<s:Double x:Key=\"/Default/Environment/Injec" +
                     "tedLayers/InjectedLayerCustomization/=File");
             
-            #line 11 "C:\DEV\paradox\sources\tools\SiliconStudio.Paradox.ProjectGenerator\ResharperDotSettings.tt"
+            #line 11 "C:\Dev\Paradox\sources\tools\SiliconStudio.Paradox.ProjectGenerator\ResharperDotSettings.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(FileInjectedGuid.ToString("N").ToUpperInvariant()));
             
             #line default
