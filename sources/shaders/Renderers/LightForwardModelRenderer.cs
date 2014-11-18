@@ -235,9 +235,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             pointLightsForMesh.Clear();
             spotLightsForMesh.Clear();
             spotLightsWithShadowForMesh.Clear();
-            
-            var receiveShadows = effectMesh.Mesh.Parameters.Get(LightingKeys.ReceiveShadows);
-            var renderLayers = effectMesh.Mesh.Parameters.Get(RenderingParameters.RenderLayer);
+
+            var receiveShadows = renderMesh.Mesh.Parameters.Get(LightingKeys.ReceiveShadows);
+            var renderLayers = renderMesh.Mesh.Parameters.Get(RenderingParameters.RenderLayer);
 
             foreach (var light in directionalLights)
             {
