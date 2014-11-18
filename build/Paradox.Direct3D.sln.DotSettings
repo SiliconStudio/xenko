@@ -1,5 +1,5 @@
 <wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=FBF72975343FA75EB23C914102E3D7DC/AbsolutePath/@EntryValue">C:\DEV\paradox\build\Paradox.sln.DotSettings</s:String>
+	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=FBF72975343FA75EB23C914102E3D7DC/AbsolutePath/@EntryValue">Z:\InvalidPath\Paradox.sln.DotSettings</s:String>
 	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=FBF72975343FA75EB23C914102E3D7DC/RelativePath/@EntryValue">..\Paradox.sln.DotSettings</s:String>
 	<s:Boolean x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=FBF72975343FA75EB23C914102E3D7DC/@KeyIndexDefined">True</s:Boolean>
 	<s:Boolean x:Key="/Default/Environment/InjectedLayers/InjectedLayerCustomization/=FileFBF72975343FA75EB23C914102E3D7DC/@KeyIndexDefined">True</s:Boolean>
