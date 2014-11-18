@@ -90,6 +90,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// <inheritdoc/>
         public override void Load()
         {
+            base.Load();
+
             useMultipleRenderTargets = GraphicsDevice.Features.Profile >= GraphicsProfile.Level_10_0;
 
             for (var maxBlendCount = 2; maxBlendCount < 5; ++maxBlendCount)
@@ -108,25 +110,13 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 cubemapBlendEffects.Add(maxBlendCount, EffectSystem.LoadEffect("CubemapBlendEffect", compilerParameter));
             }
             drawQuad = new PostEffectQuad(GraphicsDevice, cubemapBlendEffects[2]);
-
-            Pass.StartPass += OnRender;
-        }
-
-        /// <inheritdoc/>
-        public override void Unload()
-        {
-            Pass.StartPass -= OnRender;
         }
 
         #endregion
 
         #region Protected methods
 
-        /// <summary>
-        /// Blends the cubemaps at designed points.
-        /// </summary>
-        /// <param name="context">The RenderContext.</param>
-        protected void OnRender(RenderContext context)
+        protected override void OnRendering(RenderContext context)
         {
             var entitySystem = Services.GetServiceAs<EntitySystem>();
             var cubemapBlendProcessor = entitySystem.GetProcessor<CubemapBlendProcessor>();

@@ -7,8 +7,6 @@ using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Modules;
-using SiliconStudio.Paradox.Effects.Modules.Renderers;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Input;

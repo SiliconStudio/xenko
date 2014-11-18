@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -19,40 +18,6 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 {
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct PointLightData
-    {
-        public Vector3 LightPosition;
-        public float LightRadius;
-
-        public Color3 DiffuseColor;
-        public float LightIntensity;
-    }
-
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct SpotLightData
-    {
-        public Vector3 LightDirection;
-        public float LightIntensity;
-
-        public Vector3 LightPosition;
-        public float SpotFieldAngle;
-
-        public Color3 DiffuseColor;
-        public float SpotBeamAngle;
-
-        public float Range;
-    }
-
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct DirectLightData
-    {
-        public Vector3 LightDirection;
-        public float LightIntensity;
-
-        public Color3 DiffuseColor;
-    };
-
     public class LightingPrepassRenderer : Renderer
     {
         #region Static members
@@ -228,6 +193,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             this.effectName = effectName;
             this.depthStencilTexture = depthStencilTexture;
             this.gbufferTexture = gbufferTexture;
+            DebugName = string.Format("LightingPrepass [{0}]", effectName);
         }
 
         #endregion
@@ -237,6 +203,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// <inheritdoc/>
         public override void Load()
         {
+            base.Load();
+
             // Initialize tile groups
             for (int i = 0; i < tilesGroups.Length; ++i)
                 tilesGroups[i] = new List<PointLightData>();
@@ -323,14 +291,13 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             blendStateDesc.RenderTargets[0].ColorWriteChannels = ColorWriteChannels.All;
 
             accumulationBlendState = BlendState.New(GraphicsDevice, blendStateDesc);
-
-            Pass.StartPass += RenderTiles;
         }
 
         /// <inheritdoc/>
         public override void Unload()
         {
-            Pass.StartPass -= RenderTiles;
+            base.Unload();
+
             lightRenderTarget.Dispose();
             lightRenderTarget.Texture.Dispose();
             lightRenderTarget = null;
@@ -370,9 +337,11 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         private void AddEffect<T>(ShadowEffectInfo sei, int cascadeCount, CompilerParameters parameters, Dictionary<ShadowEffectInfo, List<T>> lightDatas)
         {
             var effect = EffectSystem.LoadEffect(effectName + ".ParadoxShadowPrepassLighting", parameters);
-            CreateLightingUpdateInfo(effect);
-            effect.ShadowParameters = new List<ShadowUpdateInfo>();
-            effect.ShadowParameters.Add(LightingProcessorHelpers.CreateShadowUpdateInfo(0, cascadeCount));
+            var lightingGroupInfo = CreateLightingUpdateInfo(effect);
+            lightingGroupInfo.ShadowParameters = new List<ShadowUpdateInfo>
+            {
+                LightingProcessorHelpers.CreateShadowUpdateInfo(0, cascadeCount)
+            };
 
             shadowEffects.Add(sei, effect);
             shadowLights.Add(sei, new List<EntityLightShadow>());
@@ -535,7 +504,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             }
         }*/
 
-        private void RenderTiles(RenderContext context)
+        protected override void OnRendering(RenderContext context)
         {
             // update the effects
             CreateLightingUpdateInfo(pointLightingPrepassEffect);
@@ -736,7 +705,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             var startLightIndex = 0;
 
             // TODO: change that to handle mutiple shadow maps in the same shader - works now since the shader only render with 1 shadow map at a time.
-            var shadowUpdateInfo = effect.ShadowParameters[0];
+            var lightingGroupInfo = LightingGroupInfo.GetOrCreate(effect);
+            var shadowUpdateInfo = lightingGroupInfo.ShadowParameters[0];
 
             for (int i = 0; i < drawCount; ++i)
             {
@@ -777,7 +747,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             var startLightIndex = 0;
 
             // TODO: change that to handle mutiple shadow maps in the same shader - works now since the shader only render with 1 shadow map at a time.
-            var shadowUpdateInfo = effect.ShadowParameters[0];
+            var lightGroupInfo = LightingGroupInfo.GetOrCreate(effect);
+            var shadowUpdateInfo = lightGroupInfo.ShadowParameters[0];
 
             for (int i = 0; i < drawCount; ++i)
             {
@@ -1092,16 +1063,18 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             return clipRegion;
         }
 
-        private void CreateLightingUpdateInfo(Effect effect)
+        private LightingGroupInfo CreateLightingUpdateInfo(Effect effect)
         {
-            if (effect != null && (effect.UpdateLightingParameters || !lightingConfigurationsPerEffect.ContainsKey(effect)))
+            var lightingGroupInfo = LightingGroupInfo.GetOrCreate(effect);
+
+            if (!lightingGroupInfo.IsLightingSetup || !lightingConfigurationsPerEffect.ContainsKey(effect))
             {
                 var finalList = new List<LightingDeferredParameters>();
                 var continueSearch = true;
                 var index = 0;
                 while (continueSearch)
                 {
-                    continueSearch = SearchLightingGroup(effect, index, "lightingGroups", ref finalList);
+                    continueSearch = SearchLightingGroup(effect, index, "lightingGroups", finalList);
                     ++index;
                 }
 
@@ -1109,7 +1082,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 index = 0;
                 while (continueSearch)
                 {
-                    continueSearch = SearchLightingGroup(effect, index, "shadows", ref finalList);
+                    continueSearch = SearchLightingGroup(effect, index, "shadows", finalList);
                     ++index;
                 }
 
@@ -1118,11 +1091,13 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 if (finalList.Count > 0)
                     lightingConfigurationsPerEffect.Add(effect, finalList.ToArray());
 
-                effect.UpdateLightingParameters = false;
+                lightingGroupInfo.IsLightingSetup = true;
             }
+
+            return lightingGroupInfo;
         }
 
-        private bool SearchLightingGroup(Effect effect, int index, string groupName, ref List<LightingDeferredParameters> finalList)
+        private bool SearchLightingGroup(Effect effect, int index, string groupName, List<LightingDeferredParameters> finalList)
         {
             var constantBuffers = effect.ConstantBuffers;
             var info = new LightingDeferredParameters();

@@ -25,7 +25,7 @@ namespace SiliconStudio.Paradox.Effects
 
                 foreach (var effectMesh in meshes)
                 {
-                    var mesh = effectMesh.MeshData;
+                    var mesh = effectMesh.Mesh;
                     var skinning = mesh.Skinning;
                     if (skinning == null)
                         continue;

@@ -75,7 +75,7 @@
     <Compile Include="NativeLibrary.cs" />
     <Compile Include="NullDisposable.cs" />
     <Compile Include="PlatformType.cs" />
-    <Compile Include="Collections\ConstrainedCollection.cs" />
+    <Compile Include="Collections\ConstrainedList.cs" />
     <Compile Include="Collections\FastList.cs" />
     <Compile Include="Collections\FastListStruct.cs" />
     <Compile Include="Collections\IReadOnlySet.cs" />

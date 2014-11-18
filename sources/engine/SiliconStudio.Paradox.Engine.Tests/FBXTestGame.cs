@@ -65,7 +65,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
         {
             // Collect pipeline
             var renderPipeline = RenderSystem.Pipeline;
-            var modelStates = renderPipeline.GetOrCreateMeshRenderState();
+            var modelStates = renderPipeline.GetOrCreateModelRendererState();
             modelStates.RenderModels.Clear();
             modelStates.RenderModels.Add(renderModel);
 

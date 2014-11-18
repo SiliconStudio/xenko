@@ -57,7 +57,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
             var renderPipeline = RenderSystem.Pipeline;
 
             // Add model to rendering
-            var modelStates = renderPipeline.GetOrCreateMeshRenderState();
+            var modelStates = renderPipeline.GetOrCreateModelRendererState();
             modelStates.RenderModels.Clear();
             modelStates.RenderModels.Add(renderModel);
 

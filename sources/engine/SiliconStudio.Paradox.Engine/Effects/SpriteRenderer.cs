@@ -42,29 +42,28 @@ namespace SiliconStudio.Paradox.Effects
 
         public override void Load()
         {
+            base.Load();
+
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             gameVirtualResolution.VirtualResolutionChanged += GameVirtualResolutionChanged;
             GameVirtualResolutionChanged(null, EventArgs.Empty);
-
-            // Register callback for rendering meshes extracted from RenderModels
-            Pass.StartPass += RenderSprites;
 
             renderSystem.SpriteRenderProcessors.Add(this);
         }
 
         public override void Unload()
         {
+            base.Unload();
+
             renderSystem.SpriteRenderProcessors.Remove(this);
 
             gameVirtualResolution.VirtualResolutionChanged -= GameVirtualResolutionChanged;
 
             spriteBatch.Dispose();
-
-            Pass.StartPass -= RenderSprites;
         }
 
-        private void RenderSprites(RenderContext param)
+        protected override void OnRendering(RenderContext context)
         {
             // draw opaque sprites 
             SelectAndSortEntitiesByEffects(SpriteIsOpaque);
