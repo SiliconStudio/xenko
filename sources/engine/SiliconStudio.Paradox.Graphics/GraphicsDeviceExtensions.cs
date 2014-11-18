@@ -26,11 +26,11 @@ namespace SiliconStudio.Paradox.Graphics
             // Apply the effect
             if (parameters != null)
             {
-                effect.Apply(device, parameters, true);
+                effect.Apply(device, parameters, false);
             }
             else
             {
-                effect.Apply(device, true);
+                effect.Apply(device, false);
             }
 
             // Draw a full screen quad
