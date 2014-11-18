@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Extensions;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Graphics.Regression;
@@ -37,7 +37,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
             mainPipeline.Renderers.Add(new RenderTargetSetter(Services) { ClearColor = Color.Blue, RenderTarget = GraphicsDevice.BackBuffer, DepthStencil = GraphicsDevice.DepthStencilBuffer });
 
             // Create Mesh with Color stream
-            var mesh = new Mesh { Draw = MeshDataHelper.CreateBox(GraphicsDevice, 500.0f, 500.0f, 500.0f, Color.GreenYellow), Material = new Material()};
+            var mesh = new Mesh { Draw = GeometricPrimitive.Cone.New(GraphicsDevice, Color.GreenYellow, 500.0f, 500.0f).ToMeshDraw(), Material = new Material()};
             mesh.Material.Parameters.Set(MaterialParameters.AlbedoMaterial, new ShaderMixinSource { Compositions = { { "albedoDiffuse", new ShaderClassSource("ComputeColorStream") } } });
 
             // Setup view

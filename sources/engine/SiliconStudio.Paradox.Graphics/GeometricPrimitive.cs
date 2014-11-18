@@ -57,6 +57,12 @@ namespace SiliconStudio.Paradox.Graphics
         public readonly bool IsIndex32Bits;
 
         /// <summary>
+        /// The vertex layout of the primitive.
+        /// </summary>
+        /// <value>The vertex layout.</value>
+        public readonly VertexDeclaration VertexLayout;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="GeometricPrimitive{T}"/> class.
         /// </summary>
         /// <param name="graphicsDevice">The graphics device.</param>
@@ -65,6 +71,7 @@ namespace SiliconStudio.Paradox.Graphics
         public GeometricPrimitive(GraphicsDevice graphicsDevice, GeometricMeshData<T> geometryMesh)
         {
             GraphicsDevice = graphicsDevice;
+            VertexLayout = geometryMesh.Layout;
 
             var vertices = geometryMesh.Vertices;
             var indices = geometryMesh.Indices;

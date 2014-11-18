@@ -84,6 +84,7 @@
     </Compile>
     <Compile Include="Data\EntityComponentReference.cs" />
     <Compile Include="Data\EntityComponentReferenceDataConverter.cs" />
+    <Compile Include="Data\GeometricPrimitiveExtension.cs" />
     <Compile Include="Data\IEntityComponentReference.cs" />
     <Compile Include="Data\LightingConfigurationData.cs" />
     <Compile Include="Data\ModelComponentData.cs" />
@@ -96,7 +97,6 @@
     <Compile Include="Data\MeshData.cs" />
     <Compile Include="DataModel\KeyFrameData.cs" />
     <Compile Include="DataModel\LightType.cs" />
-    <Compile Include="Data\MeshDataHelper.cs" />
     <Compile Include="DataModel\NodePropertyData.cs" />
     <Compile Include="Data\EntityComponentDataConverter.cs" />
     <Compile Include="Data\SceneConverter.cs" />

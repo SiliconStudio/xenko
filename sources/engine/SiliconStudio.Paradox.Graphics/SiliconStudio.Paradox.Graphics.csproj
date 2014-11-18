@@ -120,6 +120,7 @@
     <Compile Include="GeometricMultiTexcoordPrimitive.Cube.cs" />
     <Compile Include="GeometricMultiTexcoordPrimitive.Cylinder.cs" />
     <Compile Include="GeometricMultiTexcoordPrimitive.Torus.cs" />
+    <Compile Include="GeometricPrimitive.Cone.cs" />
     <Compile Include="GraphicsOutput.cs" />
     <Compile Include="ImageFragment.cs" />
     <Compile Include="ImageGroup.cs" />
@@ -304,6 +305,7 @@
     <Compile Include="VertexPosition2.cs" />
     <Compile Include="VertexPositionColorTexture.cs" />
     <Compile Include="VertexPositionColorTextureSwizzle.cs" />
+    <Compile Include="VertexPositionNormalColor.cs" />
     <Compile Include="VertexPositionNormalTangentMultiTexture.cs" />
     <Compile Include="VertexPositionNormalTexture.cs" />
     <Compile Include="VertexPositionTexture.cs" />
