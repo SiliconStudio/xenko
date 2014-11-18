@@ -62,15 +62,18 @@ namespace SiliconStudio.Core.MicroThreading
 
             // After result has been taken, we can reuse this item, so put it in the pool
             // We mitigate pool size, but another approach than hard limit might be interesting
-            if (pool.Count < 4096)
+            lock (pool)
             {
-                isCompleted = false;
-                MicroThread = null;
-                Continuation = null;
-                Result = default(T);
-            }
+                if (pool.Count < 4096)
+                {
+                    isCompleted = false;
+                    MicroThread = null;
+                    Continuation = null;
+                    Result = default(T);
+                }
 
-            pool.Add(this);
+                pool.Add(this);
+            }
 
             return result;
         }
