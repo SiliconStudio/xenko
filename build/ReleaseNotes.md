@@ -8,6 +8,7 @@ Release date: 2014/??/??
 
 #### Enhancements
 - Graphics: Better computation of shadow maps (for both directional and spot lights).
+- Graphics: Add geometric primitive for Cone.
 - Samples: Spot light shadows in DeferredLighting sample.
 - Studio: Added documentation on properties of the property grid.
 
@@ -19,6 +20,7 @@ Release date: 2014/??/??
 - Studio: Fix add parameter key control filtering and mouse selection
 
 #### Breaking changes
+- Engine: Remove obsolete MeshDrawHelper file (use GeometricPrimitive instead), move ToMeshDraw method to GeometricPrimitiveExtensions.
 
 #### Known Issues
 - Physics: Complex convex hull decomposition can be a very long process and there is visual feedback for it.
