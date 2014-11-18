@@ -25,23 +25,15 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         public override void Load()
         {
+            base.Load();
             // TODO: share mesh across post process renderers
             // TODO: post processes might need more than one texture
 
             effect = EffectSystem.LoadEffect(effectName);
             quad = new PostEffectQuad(GraphicsDevice, effect);
-
-            if (effect != null)
-                Pass.StartPass += ProcessEffect;
         }
 
-        public override void Unload()
-        {
-            Pass.StartPass -= ProcessEffect;
-            inputTextures = null;
-        }
-
-        private void ProcessEffect(RenderContext context)
+        protected override void OnRendering(RenderContext context)
         {
             quad.Draw(inputTextures);
         }

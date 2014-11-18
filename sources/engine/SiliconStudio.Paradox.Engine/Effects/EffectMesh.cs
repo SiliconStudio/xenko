@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.Effects
         // Kept as internal, as it's a dependency we probably don't want to show.
         // It should be stored in Tags, but cached here for better performance.
         // Could be an "object" if we want to reduce dependencies.
-        internal ModelComponent ModelComponent;
+        internal IModelInstance ModelInstance;
 
         /// <summary>
         /// Gets the attached properties to this component.
@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox.Effects
 
         public Effect Effect { get; set; }
 
-        public Mesh MeshData { get; set; }
+        public Mesh Mesh { get; set; }
 
         public ParameterCollection Parameters { get; private set; }
 
@@ -45,22 +45,21 @@ namespace SiliconStudio.Paradox.Effects
         /// Initializes a new instance of the <see cref="EffectMesh" /> class.
         /// </summary>
         /// <param name="effect">The effect.</param>
-        /// <param name="meshData">The mesh data.</param>
-        /// <param name="name">The name.</param>
-        public EffectMesh(Effect effect, Mesh meshData = null)
+        /// <param name="mesh">The mesh data.</param>
+        public EffectMesh(Effect effect, Mesh mesh = null)
         {
             Enabled = true;
 
-            if (meshData == null)
-                meshData = new Mesh();
+            if (mesh == null)
+                mesh = new Mesh();
 
-            Parameters = meshData.Parameters ?? new ParameterCollection("Mesh Parameters");
+            Parameters = mesh.Parameters ?? new ParameterCollection("Mesh Parameters");
 
-            MeshData = meshData;
+            Mesh = mesh;
             Effect = effect;
             Tags = new PropertyContainer(this);
 
-            IsTransparent = MeshData.Material != null && MeshData.Material.Parameters.Get(MaterialParameters.UseTransparent);
+            IsTransparent = Mesh.Material != null && Mesh.Material.Parameters.Get(MaterialParameters.UseTransparent);
 
             ConfigurationIndex = -1;
         }

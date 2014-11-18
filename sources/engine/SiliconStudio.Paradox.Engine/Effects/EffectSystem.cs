@@ -122,19 +122,20 @@ namespace SiliconStudio.Paradox.Effects
         public Effect LoadEffect(string effectName, CompilerParameters compilerParameters)
         {
             string subEffect;
+            // Get the compiled result
             var compilerResult = GetCompilerResults(effectName, compilerParameters, out subEffect);
 
-            EffectBytecode bytecode;
-            try
+            if (!compilerResult.Bytecodes.ContainsKey(subEffect))
             {
-                bytecode = compilerResult.Bytecodes[subEffect];
-                bytecode.Name = effectName;
+                throw new InvalidOperationException(string.Format("Unable to find sub effect [{0}] from effect [{1}]", subEffect, effectName));
             }
-            catch (KeyNotFoundException)
-            {
-                Log.Error("The sub-effect {0} wasn't be found in the compiler results.", subEffect);
-                return null;
-            }
+
+            // Only take the sub-effect
+            var bytecode = compilerResult.Bytecodes[subEffect];
+
+            // return it as a fullname instead 
+            // TODO: move this to the underlying result, we should not have to do this here
+            bytecode.Name = effectName;
 
             return CreateEffect(bytecode, compilerResult.UsedParameters[subEffect]);
         }

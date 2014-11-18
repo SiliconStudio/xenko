@@ -10,17 +10,20 @@ namespace SiliconStudio.Core.Collections
     /// Represent a collection associated with a constraint. When an item is added to this collection, it is tested against the constraint.
     /// If the test fails, the item can either be discarded, or an exception can be thrown. The desired behavior can be defined with <see cref="ThrowException"/>.
     /// </summary>
-    public class ConstrainedCollection<T> : IList<T>
+    public class ConstrainedList<T> : IList<T>
     {
         private readonly List<T> innerList = new List<T>();
 
-        public ConstrainedCollection(Func<ConstrainedCollection<T>, T, bool> constraint = null, bool throwException = true)
+        private readonly string errorMessage;
+
+        public ConstrainedList(Func<ConstrainedList<T>, T, bool> constraint = null, bool throwException = true, string errorMessage = null)
         {
             Constraint = constraint;
             ThrowException = throwException;
+            this.errorMessage = errorMessage;
         }
 
-        public ConstrainedCollection()
+        public ConstrainedList()
         {
             ThrowException = true;
         }
@@ -33,7 +36,7 @@ namespace SiliconStudio.Core.Collections
         /// <summary>
         /// Gets or sets the constraint for items added to the collection. If <c>null</c>, this collection behaves like a <see cref="List{T}"/>.
         /// </summary>
-        public Func<ConstrainedCollection<T>, T, bool> Constraint { get; set; }
+        public Func<ConstrainedList<T>, T, bool> Constraint { get; set; }
 
         /// <inheritdoc/>
         public IEnumerator<T> GetEnumerator()
@@ -113,7 +116,7 @@ namespace SiliconStudio.Core.Collections
             {
                 result = Constraint(this, item);
                 if (!result && ThrowException)
-                    throw new ArgumentException("The given item does not validate the collection constraint.");
+                    throw new ArgumentException(errorMessage ?? "The given item does not validate the collection constraint.");
             }
 
             return result;
