@@ -19,12 +19,19 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="effect">The effect.</param>
         /// <param name="parameters">The parameters.</param>
         /// <exception cref="System.ArgumentNullException">effect</exception>
-        public static void DrawQuad(this GraphicsDevice device, Effect effect, ParameterCollection parameters)
+        public static void DrawQuad(this GraphicsDevice device, Effect effect, ParameterCollection parameters = null)
         {
             if (effect == null) throw new ArgumentNullException("effect");
 
             // Apply the effect
-            effect.Apply(device, parameters, true);
+            if (parameters != null)
+            {
+                effect.Apply(device, parameters, true);
+            }
+            else
+            {
+                effect.Apply(device, true);
+            }
 
             // Draw a full screen quad
             device.DrawQuad();
