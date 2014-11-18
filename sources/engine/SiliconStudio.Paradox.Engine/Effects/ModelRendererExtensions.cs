@@ -55,7 +55,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <returns>ModelRenderer.</returns>
         public static ModelRenderer AddLayerFilter(this ModelRenderer modelRenderer, RenderLayers activelayers)
         {
-            modelRenderer.AcceptRenderMesh.Add((context, effectMesh) => (effectMesh.Mesh.Parameters.Get(RenderingParameters.RenderLayer) & activelayers) != RenderLayers.RenderLayerNone);
+            modelRenderer.AcceptRenderMesh.Add((context, effectMesh) => (effectMesh.Parameters.Get(RenderingParameters.RenderLayer) & activelayers) != RenderLayers.RenderLayerNone);
             modelRenderer.AppendDebugName("Layer " + activelayers);
             return modelRenderer;
         }
@@ -68,7 +68,7 @@ namespace SiliconStudio.Paradox.Effects
         public static ModelRenderer AddShadowCasterFilter(this ModelRenderer modelRenderer)
         {
             modelRenderer.AcceptPrepareMeshForRendering.Add((model, mesh) => mesh.Parameters.Get(LightingKeys.CastShadows));
-            modelRenderer.AcceptRenderMesh.Add((context, effectMesh) => effectMesh.Mesh.Parameters.Get(LightingKeys.CastShadows));
+            modelRenderer.AcceptRenderMesh.Add((context, effectMesh) => effectMesh.Parameters.Get(LightingKeys.CastShadows));
             modelRenderer.AppendDebugName("ShadowMapCaster");
             return modelRenderer;
         }
