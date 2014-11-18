@@ -155,7 +155,6 @@
     <Compile Include="FBXEntityAnimTestGame.cs" />
     <Compile Include="FBXTestGame.cs" />
     <Compile Include="FBXEntityTestGame.cs" />
-    <Compile Include="CubeTestGame.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="TestAnimationChannel.cs" />
     <Compile Include="TestEntitySerializer.cs" />

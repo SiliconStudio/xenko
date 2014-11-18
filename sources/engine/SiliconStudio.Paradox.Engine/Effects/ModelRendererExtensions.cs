@@ -94,14 +94,14 @@ namespace SiliconStudio.Paradox.Effects
 
                     for (var i = 0; i < meshes.Count; ++i)
                     {
-                        var mesh = meshes[i];
+                        var renderMesh = meshes[i];
 
                         // Fast AABB transform: http://zeuxcg.org/2010/10/17/aabb-from-obb-with-component-wise-abs/
                         // Get world matrix
-                        mesh.Parameters.Get(TransformationKeys.World, out mat1);
+                        renderMesh.Mesh.Parameters.Get(TransformationKeys.World, out mat1);
 
                         // Compute transformed AABB (by world)
-                        var boundingBox = mesh.Mesh.BoundingBox;
+                        var boundingBox = renderMesh.Mesh.BoundingBox;
                         var center = boundingBox.Center;
                         var extent = boundingBox.Extent;
 

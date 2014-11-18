@@ -112,11 +112,7 @@ namespace SiliconStudio.Core.Collections
 
         public void Clear()
         {
-            if (_size > 0)
-            {
-                Array.Clear(Items, 0, _size);
-                _size = 0;
-            }
+            Clear(false);
         }
 
         public bool Contains(T item)
@@ -218,6 +214,19 @@ namespace SiliconStudio.Core.Collections
         }
 
         #endregion
+
+        /// <summary>
+        /// Clears this list with a fast-clear option.
+        /// </summary>
+        /// <param name="fastClear">if set to <c>true</c> this method only resets the count elements but doesn't clear items referenced already stored in the list.</param>
+        public void Clear(bool fastClear)
+        {
+            if (!fastClear && _size > 0)
+            {
+                Array.Clear(Items, 0, _size);
+            }
+            _size = 0;
+        }
 
         public void AddRange(IEnumerable<T> collection)
         {

@@ -77,7 +77,6 @@ namespace SiliconStudio.Paradox.EntityModel
                 cloneSerializerSelector
                     .RegisterProfile("Default")
                     .RegisterProfile("Clone")
-                    .RegisterSerializer(new EffectMeshCloner())
                     .RegisterSerializer(new CloneSerializer<string>())
                     .RegisterSerializer(new CloneSerializer<Effect>())
                     .RegisterSerializer(new CloneSerializer<Mesh>())

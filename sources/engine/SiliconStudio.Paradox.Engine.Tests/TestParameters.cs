@@ -1200,7 +1200,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
             var effectPassDefault = new ParameterCollection("EffectPassDefault");
             var effectPass = new ParameterCollection("EffectPass");
             var effectMeshPass = new ParameterCollection("EffectMeshPass");
-            var effectMesh = new ParameterCollection("EffectMesh");
+            var effectMesh = new ParameterCollection("RenderMesh");
             var effect = new ParameterCollection("Effect");
 
             effectPassDefault.Set(paramV, new Vector3(2.0f, 2.0f, 2.0f));

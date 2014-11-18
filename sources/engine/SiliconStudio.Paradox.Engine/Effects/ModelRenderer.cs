@@ -5,9 +5,6 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Shaders.Compiler;
 
 using IServiceRegistry = SiliconStudio.Core.IServiceRegistry;
 
@@ -20,9 +17,9 @@ namespace SiliconStudio.Paradox.Effects
     {
         private int meshPassSlot;
 
-        private readonly FastList<EffectMesh> meshesToRender;
-        private readonly EffectParameterUpdater updater;
-        private readonly ParameterCollection[] parameterCollections;
+        private readonly FastList<RenderMesh> meshesToRender;
+
+        private readonly DynamicEffectCompiler dynamicEffectCompiler;
         private readonly string effectName;
 
         private readonly SafeDelegateList<AcceptModelDelegate> acceptModels;
@@ -52,19 +49,19 @@ namespace SiliconStudio.Paradox.Effects
 
         public delegate bool AcceptMeshForRenderingDelegate(RenderModel renderModel, Mesh mesh);
 
-        public delegate bool AcceptRenderMeshDelegate(RenderContext context, EffectMesh effectMesh);
+        public delegate bool AcceptRenderMeshDelegate(RenderContext context, RenderMesh renderMesh);
 
         public delegate bool AcceptRenderModelDelegate(RenderModel renderModel);
 
-        public delegate void UpdateMeshesDelegate(RenderContext context, FastList<EffectMesh> meshes);
+        public delegate void UpdateMeshesDelegate(RenderContext context, FastList<RenderMesh> meshes);
 
         public delegate void PreRenderDelegate(RenderContext context);
 
         public delegate void PostRenderDelegate(RenderContext context);
 
-        public delegate void PreEffectUpdateDelegate(RenderContext context, EffectMesh effectMesh);
+        public delegate void PreEffectUpdateDelegate(RenderContext context, RenderMesh renderMesh);
 
-        public delegate void PostEffectUpdateDelegate(RenderContext context, EffectMesh effectMesh);
+        public delegate void PostEffectUpdateDelegate(RenderContext context, RenderMesh renderMesh);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ModelRenderer"/> class.
@@ -77,9 +74,9 @@ namespace SiliconStudio.Paradox.Effects
             this.effectName = effectName;
             DebugName = string.Format("ModelRenderer [{0}]", effectName);
 
-            meshesToRender = new FastList<EffectMesh>();
-            updater = new EffectParameterUpdater();
-            parameterCollections = new ParameterCollection[5];
+            dynamicEffectCompiler = new DynamicEffectCompiler(services, effectName);
+
+            meshesToRender = new FastList<RenderMesh>();
 
             acceptModels = new SafeDelegateList<AcceptModelDelegate>(this);
             acceptRenderModels = new SafeDelegateList<AcceptRenderModelDelegate>(this);
@@ -202,62 +199,6 @@ namespace SiliconStudio.Paradox.Effects
             pipelineModelState.AcceptRenderModel -= OnAcceptRenderModel;
         }
 
-        /// <summary>
-        /// Draws the mesh stored in the current <see cref="RenderContext" />
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="effectMesh">The current effect mesh.</param>
-        private void RenderMesh(RenderContext context, EffectMesh effectMesh)
-        {
-            // Retrieve effect parameters
-            var currentPass = context.CurrentPass;
-            var currentRenderData = effectMesh.RenderData;
-
-            //using (Profiler.Begin(ProfilingKeys.PrepareMesh))
-            {
-                // Order of application of parameters:
-                // - RenderPass.Parameters
-                // - ModelComponent.Parameters
-                // - EffectMesh.Parameters (originally copied from mesh parameters)
-                // The order is based on the granularity level of each element and how shared it can be. Material is heavily shared, a model contains many meshes. An effectMesh is unique.
-                // TODO: really copy mesh parameters into effectMesh instead of just referencing the meshDraw parameters.
-
-                var modelComponent = effectMesh.ModelInstance;
-                var hasMaterialParams = effectMesh.Mesh.Material != null && effectMesh.Mesh.Material.Parameters != null;
-                var hasModelComponentParams = modelComponent != null && modelComponent.Parameters != null;
-                if (hasMaterialParams)
-                {
-                    if (hasModelComponentParams)
-                        effectMesh.Effect.Apply(currentPass.Parameters, effectMesh.Mesh.Material.Parameters, modelComponent.Parameters, effectMesh.Parameters, true);
-                    else
-                        effectMesh.Effect.Apply(currentPass.Parameters, effectMesh.Mesh.Material.Parameters, effectMesh.Parameters, true);
-                }
-                else if (hasModelComponentParams)
-                    effectMesh.Effect.Apply(currentPass.Parameters, modelComponent.Parameters, effectMesh.Parameters, true);
-                else
-                    effectMesh.Effect.Apply(currentPass.Parameters, effectMesh.Parameters, true);
-            }
-
-            //using (Profiler.Begin(ProfilingKeys.RenderMesh))
-            {
-                if (currentRenderData != null)
-                {
-                    var graphicsDevice = context.GraphicsDevice;
-
-                    graphicsDevice.SetVertexArrayObject(effectMesh.VertexArrayObject);
-
-                    if (currentRenderData.IndexBuffer == null)
-                    {
-                        graphicsDevice.Draw(currentRenderData.PrimitiveType, currentRenderData.DrawCount, currentRenderData.StartLocation);
-                    }
-                    else
-                    {
-                        graphicsDevice.DrawIndexed(currentRenderData.PrimitiveType, currentRenderData.DrawCount, currentRenderData.StartLocation);
-                    }
-                }
-            }
-        }
-
         protected override void OnRendering(RenderContext context)
         {
             var state = Pass.GetModelRendererState();
@@ -266,15 +207,9 @@ namespace SiliconStudio.Paradox.Effects
             meshesToRender.Clear();
             foreach (var renderModel in state.RenderModels)
             {
-                var meshes = renderModel.InternalMeshes[meshPassSlot];
+                var meshes = renderModel.RenderMeshes[meshPassSlot];
                 if (meshes != null)
                     meshesToRender.AddRange(meshes);
-            }
-
-            foreach (var effectMesh in meshesToRender)
-            {
-                if (EffectSystem.WasEffectRecompiled(effectMesh.Effect))
-                    EffectMeshRefresh(effectMesh);
             }
 
             // Update meshes
@@ -304,7 +239,8 @@ namespace SiliconStudio.Paradox.Effects
                     preEffectUpdate(context, mesh);
                 }
 
-                UpdateEffectMesh(mesh);
+                // Update Effect and mesh
+                UpdateEffect(mesh);
 
                 // PostEffectUpdate callbacks
                 foreach (var postEffectUpdate in postEffectUpdates)
@@ -312,7 +248,7 @@ namespace SiliconStudio.Paradox.Effects
                     postEffectUpdate(context, mesh);
                 }
 
-                mesh.Render(context, mesh);
+                mesh.Draw(context);
             }
 
             // PostRender callbacks
@@ -331,19 +267,19 @@ namespace SiliconStudio.Paradox.Effects
                     continue;
                 }
 
-                var effectMesh = new EffectMesh(null, mesh);
-                CreateEffect(effectMesh, renderModel.Parameters);
+                var effectMesh = new RenderMesh(renderModel, mesh);
+                UpdateEffect(effectMesh);
 
                 // Register mesh for rendering
-                if (renderModel.InternalMeshes[meshPassSlot] == null)
+                if (renderModel.RenderMeshes[meshPassSlot] == null)
                 {
-                    renderModel.InternalMeshes[meshPassSlot] = new List<EffectMesh>();
+                    renderModel.RenderMeshes[meshPassSlot] = new List<RenderMesh>();
                 }
-                renderModel.InternalMeshes[meshPassSlot].Add(effectMesh);
+                renderModel.RenderMeshes[meshPassSlot].Add(effectMesh);
             }
         }
 
-        private void UpdateMeshesDefault(RenderContext context, FastList<EffectMesh> meshes)
+        private void UpdateMeshesDefault(RenderContext context, FastList<RenderMesh> meshes)
         {
             for (var i = 0; i < meshes.Count; ++i)
             {
@@ -357,7 +293,7 @@ namespace SiliconStudio.Paradox.Effects
             }
         }
 
-        private void DefaultSort(RenderContext context, FastList<EffectMesh> meshes)
+        private void DefaultSort(RenderContext context, FastList<RenderMesh> meshes)
         {
             // Sort based on ModelComponent.DrawOrder
             meshes.Sort(ModelComponentSorter.Default);
@@ -402,12 +338,12 @@ namespace SiliconStudio.Paradox.Effects
             return true;
         }
 
-        private bool OnAcceptRenderMesh(RenderContext context, EffectMesh effectMesh)
+        private bool OnAcceptRenderMesh(RenderContext context, RenderMesh renderMesh)
         {
             // NOTICE: Don't use Linq, as It would allocated objects and triggers GC
             foreach (var test in acceptRenderMeshes)
             {
-                if (!test(context, effectMesh))
+                if (!test(context, renderMesh))
                 {
                     return false;
                 }
@@ -418,177 +354,12 @@ namespace SiliconStudio.Paradox.Effects
         /// <summary>
         /// Create or update the Effect of the effect mesh.
         /// </summary>
-        /// <param name="effectMesh">The effect mesh.</param>
-        /// <param name="modelComponentParameters">The ModelComponent parameters.</param>
-        protected void CreateEffect(EffectMesh effectMesh, ParameterCollection modelComponentParameters)
+        protected void UpdateEffect(RenderMesh renderMesh)
         {
-            var mesh = effectMesh.Mesh;
-            var compilerParameters = new CompilerParameters();
-
-            // The same order as the one during compilation is used here
-            // 1. Material
-            // 2. ModelComponent
-            // 3. Mesh
-
-            if (mesh.Material != null)
+            if (dynamicEffectCompiler.Update(renderMesh))
             {
-                foreach (var parameter in mesh.Material.Parameters.InternalValues)
-                {
-                    compilerParameters.SetObject(parameter.Key, parameter.Value.Object);
-                }
+                renderMesh.Initialize(GraphicsDevice);
             }
-
-            if (modelComponentParameters != null)
-            {
-                foreach (var parameter in modelComponentParameters.InternalValues)
-                {
-                    compilerParameters.SetObject(parameter.Key, parameter.Value.Object);
-                }
-            }
-
-            if (mesh.Parameters != null)
-            {
-                foreach (var parameter in mesh.Parameters.InternalValues)
-                {
-                    compilerParameters.SetObject(parameter.Key, parameter.Value.Object);
-                }
-            }
-            
-            foreach (var parameter in GraphicsDevice.Parameters.InternalValues)
-            {
-                compilerParameters.SetObject(parameter.Key, parameter.Value.Object);
-            }
-
-            // Compile shader
-            // possible exception in LoadEffect
-            var effect = EffectSystem.LoadEffect(effectName, compilerParameters);
-
-            // update effect mesh
-            UpdateEffectMeshEffect(effectMesh, effect, modelComponentParameters);
-        }
-
-        private void UpdateEffectMeshEffect(EffectMesh effectMesh, Effect effect, ParameterCollection modelComponentParameters)
-        {
-            if (effect == null)
-            {
-                return;
-            }
-
-            if (!ReferenceEquals(effect, effectMesh.Effect))
-            {
-                // Copy back parameters set on previous effect to new effect
-                if (effectMesh.Effect != null)
-                {
-                    foreach (var parameter in effectMesh.Effect.Parameters.InternalValues)
-                    {
-                        effect.Parameters.SetObject(parameter.Key, parameter.Value.Object);
-                    }
-                }
-                effectMesh.UpdaterDefinition = new EffectParameterUpdaterDefinition(effect);
-                
-                var mesh = effectMesh.Mesh;
-
-                // Create EffectMesh and setup its draw data and rendering
-                // TODO:FX should later be done inside EffectMesh or in a separate class
-                // Note: this was previously done in RenderContext in previous system.
-                effectMesh.Effect = effect;
-                effectMesh.VertexArrayObject = VertexArrayObject.New(GraphicsDevice, effect.InputSignature, mesh.Draw.IndexBuffer, mesh.Draw.VertexBuffers);
-                effectMesh.Render = RenderMesh;
-                effectMesh.RenderData = mesh.Draw;
-            }
-            else
-            {
-                // Same effect than previous one
-
-                effectMesh.UpdaterDefinition.UpdateCounter(effect.CompilationParameters);
-            }
-
-            UpdateLevels(effectMesh);
-            updater.UpdateCounters(effectMesh.UpdaterDefinition);
-        }
-
-        private void EffectMeshRefresh(EffectMesh effectMesh)
-        {
-            var effect = effectMesh.Effect;
-            if (effectMesh.Effect != null)
-            {
-                foreach (var parameter in effectMesh.Effect.Parameters.InternalValues)
-                {
-                    effect.Parameters.SetObject(parameter.Key, parameter.Value.Object);
-                }
-            }
-
-            var mesh = effectMesh.Mesh;
-
-            // Create EffectMesh and setup its draw data and rendering
-            // TODO:FX should later be done inside EffectMesh or in a separate class
-            // Note: this was previously done in RenderContext in previous system.
-            effectMesh.VertexArrayObject = VertexArrayObject.New(GraphicsDevice, effect.InputSignature, mesh.Draw.IndexBuffer, mesh.Draw.VertexBuffers);
-            effectMesh.Render = RenderMesh;
-            effectMesh.RenderData = mesh.Draw;
-
-            effectMesh.UpdaterDefinition = new EffectParameterUpdaterDefinition(effect);
-            UpdateLevels(effectMesh);
-        }
-
-        private void UpdateEffectMesh(EffectMesh effectMesh)
-        {
-            if (effectMesh.ModelInstance == null)
-                return;
-
-            if (HasCollectionChanged(effectMesh))
-            {
-                CreateEffect(effectMesh, effectMesh.ModelInstance.Parameters);
-            }
-        }
-
-        /// <summary>
-        /// Checks if a collection has changed and the effect needs to be changed.
-        /// </summary>
-        /// <param name="effectMesh">The effect mesh.</param>
-        /// <returns>True if the collection changed.</returns>
-        private bool HasCollectionChanged(EffectMesh effectMesh)
-        {
-            PrepareUpdater(effectMesh);
-            return updater.HasChanged(effectMesh.UpdaterDefinition);
-        }
-
-        /// <summary>
-        /// Prepare the EffectParameterUpdater for the effect mesh.
-        /// </summary>
-        /// <param name="effectMesh">The effect mesh.</param>
-        private void PrepareUpdater(EffectMesh effectMesh)
-        {
-            var mesh = effectMesh.Mesh;
-            var collectionCount = 1;
-            parameterCollections[0] = effectMesh.Effect.DefaultCompilationParameters;
-
-            // The same order as the one during compilation is used here
-            // 1. Material
-            // 2. ModelComponent
-            // 3. Mesh
-
-            if (mesh.Material != null)
-                parameterCollections[collectionCount++] = mesh.Material.Parameters;
-            if (effectMesh.ModelInstance != null && effectMesh.ModelInstance.Parameters != null)
-                parameterCollections[collectionCount++] = effectMesh.ModelInstance.Parameters;
-            if (mesh.Parameters != null)
-                parameterCollections[collectionCount++] = mesh.Parameters;
-
-            parameterCollections[collectionCount++] = GraphicsDevice.Parameters;
-
-            updater.Update(effectMesh.UpdaterDefinition, parameterCollections, collectionCount);
-        }
-
-        /// <summary>
-        /// Get the levels of the parameters.
-        /// </summary>
-        /// <param name="effectMesh">The effect mesh.</param>
-        /// <returns>A table of levels.</returns>
-        private void UpdateLevels(EffectMesh effectMesh)
-        {
-            PrepareUpdater(effectMesh);
-            updater.ComputeLevels(effectMesh.UpdaterDefinition);
         }
 
         /// <summary>
@@ -626,7 +397,7 @@ namespace SiliconStudio.Paradox.Effects
 
         #region Helper class
 
-        private class ModelComponentSorter : IComparer<EffectMesh>
+        private class ModelComponentSorter : IComparer<RenderMesh>
         {
             #region Constants and Fields
 
@@ -634,19 +405,26 @@ namespace SiliconStudio.Paradox.Effects
 
             #endregion
 
-            public int Compare(EffectMesh x, EffectMesh y)
+            public int Compare(RenderMesh left, RenderMesh right)
             {
-                var xModelComponent = x.ModelInstance;
-                var yModelComponent = y.ModelInstance;
+                var xModelComponent = left.RenderModel.ModelInstance;
+                var yModelComponent = right.RenderModel.ModelInstance;
 
                 // Ignore if no associated mesh component
                 if (xModelComponent == null || yModelComponent == null)
                     return 0;
 
-                if (x.IsTransparent && !y.IsTransparent)
+                // TODO: Add a kind of associated data to an effect mesh to speed up this test?
+                var leftMaterial = left.Mesh.Material;
+                var isLeftTransparent = (leftMaterial != null && leftMaterial.Parameters.Get(MaterialParameters.UseTransparent));
+
+                var rightMaterial = right.Mesh.Material;
+                var isRightTransparent = (rightMaterial != null && rightMaterial.Parameters.Get(MaterialParameters.UseTransparent));
+
+                if (isLeftTransparent && !isRightTransparent)
                     return 1;
 
-                if (!x.IsTransparent && y.IsTransparent)
+                if (!isLeftTransparent && isRightTransparent)
                     return -1;
 
                 // Use draw order
