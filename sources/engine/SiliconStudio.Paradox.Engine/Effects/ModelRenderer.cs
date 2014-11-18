@@ -267,7 +267,7 @@ namespace SiliconStudio.Paradox.Effects
                     continue;
                 }
 
-                var effectMesh = new EffectMesh(renderModel.ModelInstance, mesh);
+                var effectMesh = new EffectMesh(renderModel, mesh);
                 UpdateEffect(effectMesh);
 
                 // Register mesh for rendering
@@ -407,8 +407,8 @@ namespace SiliconStudio.Paradox.Effects
 
             public int Compare(EffectMesh left, EffectMesh right)
             {
-                var xModelComponent = left.ModelInstance;
-                var yModelComponent = right.ModelInstance;
+                var xModelComponent = left.RenderModel.ModelInstance;
+                var yModelComponent = right.RenderModel.ModelInstance;
 
                 // Ignore if no associated mesh component
                 if (xModelComponent == null || yModelComponent == null)

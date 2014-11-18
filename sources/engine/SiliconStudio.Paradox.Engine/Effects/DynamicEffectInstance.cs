@@ -7,20 +7,27 @@ using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects
 {
-    public abstract class DynamicEffectHolder
+    /// <summary>
+    /// A dynamic effect instance updated by <see cref="DynamicEffectCompiler"/>.
+    /// </summary>
+    public abstract class DynamicEffectInstance
     {
         internal EffectParameterUpdaterDefinition UpdaterDefinition;
 
-        protected DynamicEffectHolder()
+        protected DynamicEffectInstance()
         {
         }
 
         /// <summary>
-        /// Gets the effect.
+        /// Gets the effect currently being compiled.
         /// </summary>
         /// <value>The effect.</value>
         public Effect Effect { get; internal set; }
 
+        /// <summary>
+        /// Fills the parameter collections used by this instance.
+        /// </summary>
+        /// <param name="parameterCollections">The parameter collections.</param>
         protected internal abstract void FillParameterCollections(IList<ParameterCollection> parameterCollections);
     }
 }

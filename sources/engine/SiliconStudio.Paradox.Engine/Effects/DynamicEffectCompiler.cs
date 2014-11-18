@@ -9,11 +9,24 @@ using SiliconStudio.Paradox.Shaders.Compiler;
 
 namespace SiliconStudio.Paradox.Effects
 {
+    /// <summary>
+    /// Provides a dynamic compiler for an effect based on parameters changed.
+    /// </summary>
     public class DynamicEffectCompiler
     {
         private readonly EffectParameterUpdater updater;
         private readonly FastList<ParameterCollection> parameterCollections;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DynamicEffectCompiler"/> class.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        /// <param name="effectName">Name of the effect.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// services
+        /// or
+        /// effectName
+        /// </exception>
         public DynamicEffectCompiler(IServiceRegistry services, string effectName)
         {
             if (services == null) throw new ArgumentNullException("services");
@@ -26,45 +39,66 @@ namespace SiliconStudio.Paradox.Effects
             parameterCollections = new FastList<ParameterCollection>();
         }
 
+        /// <summary>
+        /// Gets the services.
+        /// </summary>
+        /// <value>The services.</value>
         public IServiceRegistry Services { get; private set; }
 
+        /// <summary>
+        /// Gets the name of the effect.
+        /// </summary>
+        /// <value>The name of the effect.</value>
         public string EffectName { get; private set; }
 
+        /// <summary>
+        /// Gets or sets the effect system.
+        /// </summary>
+        /// <value>The effect system.</value>
         private EffectSystem EffectSystem { get; set; }
 
+        /// <summary>
+        /// Gets or sets the graphics device.
+        /// </summary>
+        /// <value>The graphics device.</value>
         private GraphicsDevice GraphicsDevice { get; set; }
 
-        public bool Update(DynamicEffectHolder effectHolder)
+        /// <summary>
+        /// Update a dynamic effect instance based on its parameters.
+        /// </summary>
+        /// <param name="effectInstance">A dynmaic effect instance</param>
+        /// <returns><c>true</c> if the effect was recomiled on the effect instance, <c>false</c> otherwise.</returns>
+        public bool Update(DynamicEffectInstance effectInstance)
         {
             bool effectChanged = false;
 
-            if (effectHolder.Effect != null && effectHolder.Effect.Changed)
+            if (effectInstance.Effect != null && effectInstance.Effect.Changed)
             {
-                effectHolder.UpdaterDefinition.Initialize(effectHolder.Effect);
-                UpdateLevels(effectHolder);
+                effectInstance.UpdaterDefinition.Initialize(effectInstance.Effect);
+                UpdateLevels(effectInstance);
                 effectChanged = true;
             }
 
-            if (effectHolder.Effect == null || HasCollectionChanged(effectHolder))
+            if (effectInstance.Effect == null || HasCollectionChanged(effectInstance))
             {
-                CreateEffect(effectHolder);
+                CreateEffect(effectInstance);
                 effectChanged = true;
             }
 
             return effectChanged;
         }
 
-        private bool HasCollectionChanged(DynamicEffectHolder effectHolder)
+        private bool HasCollectionChanged(DynamicEffectInstance effectInstance)
         {
-            PrepareUpdater(effectHolder);
-            return updater.HasChanged(effectHolder.UpdaterDefinition);
+            PrepareUpdater(effectInstance);
+            return updater.HasChanged(effectInstance.UpdaterDefinition);
         }
 
-        private void CreateEffect(DynamicEffectHolder effectHolder)
+        private void CreateEffect(DynamicEffectInstance effectInstance)
         {
             var compilerParameters = new CompilerParameters();
             parameterCollections.Clear(true);
-            effectHolder.FillParameterCollections(parameterCollections);
+            effectInstance.FillParameterCollections(parameterCollections);
 
             foreach (var parameterCollection in parameterCollections)
             {
@@ -86,49 +120,49 @@ namespace SiliconStudio.Paradox.Effects
             // possible exception in LoadEffect
             var effect = EffectSystem.LoadEffect(EffectName, compilerParameters);
 
-            if (!ReferenceEquals(effect, effectHolder.Effect))
+            if (!ReferenceEquals(effect, effectInstance.Effect))
             {
                 // Copy back parameters set on previous effect to new effect
-                if (effectHolder.Effect != null)
+                if (effectInstance.Effect != null)
                 {
-                    foreach (var parameter in effectHolder.Effect.Parameters.InternalValues)
+                    foreach (var parameter in effectInstance.Effect.Parameters.InternalValues)
                     {
                         effect.Parameters.SetObject(parameter.Key, parameter.Value.Object);
                     }
                 }
 
-                effectHolder.Effect = effect;
-                effectHolder.UpdaterDefinition = new EffectParameterUpdaterDefinition(effect);
+                effectInstance.Effect = effect;
+                effectInstance.UpdaterDefinition = new EffectParameterUpdaterDefinition(effect);
             }
             else
             {
                 // Same effect than previous one
 
-                effectHolder.UpdaterDefinition.UpdateCounter(effect.CompilationParameters);
+                effectInstance.UpdaterDefinition.UpdateCounter(effect.CompilationParameters);
             }
 
-            UpdateLevels(effectHolder);
-            updater.UpdateCounters(effectHolder.UpdaterDefinition);
+            UpdateLevels(effectInstance);
+            updater.UpdateCounters(effectInstance.UpdaterDefinition);
         }
 
-        private void UpdateLevels(DynamicEffectHolder effectHolder)
+        private void UpdateLevels(DynamicEffectInstance effectInstance)
         {
-            PrepareUpdater(effectHolder);
-            updater.ComputeLevels(effectHolder.UpdaterDefinition);
+            PrepareUpdater(effectInstance);
+            updater.ComputeLevels(effectInstance.UpdaterDefinition);
         }
 
         /// <summary>
         /// Prepare the EffectParameterUpdater for the effect instance.
         /// </summary>
-        /// <param name="effectHolder">The effect instance.</param>
-        private void PrepareUpdater(DynamicEffectHolder effectHolder)
+        /// <param name="effectInstance">The effect instance.</param>
+        private void PrepareUpdater(DynamicEffectInstance effectInstance)
         {
             parameterCollections.Clear(true);
-            parameterCollections.Add(effectHolder.Effect.DefaultCompilationParameters);
-            effectHolder.FillParameterCollections(parameterCollections);
+            parameterCollections.Add(effectInstance.Effect.DefaultCompilationParameters);
+            effectInstance.FillParameterCollections(parameterCollections);
             parameterCollections.Add(GraphicsDevice.Parameters);
 
-            updater.Update(effectHolder.UpdaterDefinition, parameterCollections.Items, parameterCollections.Count);
+            updater.Update(effectInstance.UpdaterDefinition, parameterCollections.Items, parameterCollections.Count);
         }
     }
 }

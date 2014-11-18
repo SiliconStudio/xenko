@@ -105,7 +105,7 @@
     <Compile Include="Effects\CameraSetter.cs" />
     <Compile Include="Effects\DelegateRenderer.cs" />
     <Compile Include="Effects\DynamicEffectCompiler.cs" />
-    <Compile Include="Effects\DynamicEffectHolder.cs" />
+    <Compile Include="Effects\DynamicEffectInstance.cs" />
     <Compile Include="Effects\EffectParameterUpdater.cs" />
     <Compile Include="Effects\BasicEffect.cs">
       <DependentUpon>BasicEffect.pdxfx</DependentUpon>

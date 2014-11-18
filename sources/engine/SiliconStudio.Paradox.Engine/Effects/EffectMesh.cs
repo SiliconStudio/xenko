@@ -11,7 +11,7 @@ namespace SiliconStudio.Paradox.Effects
     /// <summary>
     /// An effect mesh.
     /// </summary>
-    public class EffectMesh : DynamicEffectHolder
+    public class EffectMesh : DynamicEffectInstance
     {
         private VertexArrayObject vertexArrayObject;
 
@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.Effects
         /// The model instance associated to this effect mesh.
         /// </summary>
         /// <value>The model instance.</value>
-        public readonly IModelInstance ModelInstance;
+        public readonly RenderModel RenderModel;
 
         /// <summary>
         /// The mesh associated with this instance.
@@ -35,14 +35,14 @@ namespace SiliconStudio.Paradox.Effects
         /// <summary>
         /// Initializes a new instance of the <see cref="EffectMesh" /> class.
         /// </summary>
-        /// <param name="modelInstance">The model instance.</param>
+        /// <param name="renderModel">The render model.</param>
         /// <param name="mesh">The mesh data.</param>
         /// <exception cref="System.ArgumentNullException">mesh</exception>
-        public EffectMesh(IModelInstance modelInstance, Mesh mesh)
+        public EffectMesh(RenderModel renderModel, Mesh mesh)
         {
-            if (modelInstance == null) throw new ArgumentNullException("modelInstance");
+            if (renderModel == null) throw new ArgumentNullException("renderModel");
             if (mesh == null) throw new ArgumentNullException("mesh");
-            ModelInstance = modelInstance;
+            RenderModel = renderModel;
             Mesh = mesh;
             Parameters = mesh.Parameters;
             Enabled = true;
@@ -71,7 +71,7 @@ namespace SiliconStudio.Paradox.Effects
                 // The order is based on the granularity level of each element and how shared it can be. Material is heavily shared, a model contains many meshes. An effectMesh is unique.
                 // TODO: really copy mesh parameters into effectMesh instead of just referencing the meshDraw parameters.
 
-                var modelComponent = this.ModelInstance;
+                var modelComponent = this.RenderModel.ModelInstance;
                 var hasMaterialParams = this.Mesh.Material != null && this.Mesh.Material.Parameters != null;
                 var hasModelComponentParams = modelComponent != null && modelComponent.Parameters != null;
                 if (hasMaterialParams)
@@ -120,9 +120,10 @@ namespace SiliconStudio.Paradox.Effects
                 parameterCollections.Add(Mesh.Material.Parameters);
             }
 
-            if (ModelInstance != null && ModelInstance.Parameters != null)
+            var modelInstance = RenderModel.ModelInstance;
+            if (modelInstance != null && modelInstance.Parameters != null)
             {
-                parameterCollections.Add(ModelInstance.Parameters);
+                parameterCollections.Add(modelInstance.Parameters);
             }
 
             if (Mesh.Parameters != null)
