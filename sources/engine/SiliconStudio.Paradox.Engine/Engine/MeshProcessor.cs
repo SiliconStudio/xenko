@@ -62,7 +62,7 @@ namespace SiliconStudio.Paradox.Engine
                 }
 
                 var renderModel = new RenderModel(pipeline, modelInstance);
-                if (renderModel.InternalMeshes == null)
+                if (renderModel.RenderMeshes == null)
                 {
                     continue;
                 }

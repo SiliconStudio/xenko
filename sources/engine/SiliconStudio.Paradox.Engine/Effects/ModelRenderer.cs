@@ -207,7 +207,7 @@ namespace SiliconStudio.Paradox.Effects
             meshesToRender.Clear();
             foreach (var renderModel in state.RenderModels)
             {
-                var meshes = renderModel.InternalMeshes[meshPassSlot];
+                var meshes = renderModel.RenderMeshes[meshPassSlot];
                 if (meshes != null)
                     meshesToRender.AddRange(meshes);
             }
@@ -271,11 +271,11 @@ namespace SiliconStudio.Paradox.Effects
                 UpdateEffect(effectMesh);
 
                 // Register mesh for rendering
-                if (renderModel.InternalMeshes[meshPassSlot] == null)
+                if (renderModel.RenderMeshes[meshPassSlot] == null)
                 {
-                    renderModel.InternalMeshes[meshPassSlot] = new List<RenderMesh>();
+                    renderModel.RenderMeshes[meshPassSlot] = new List<RenderMesh>();
                 }
-                renderModel.InternalMeshes[meshPassSlot].Add(effectMesh);
+                renderModel.RenderMeshes[meshPassSlot].Add(effectMesh);
             }
         }
 
