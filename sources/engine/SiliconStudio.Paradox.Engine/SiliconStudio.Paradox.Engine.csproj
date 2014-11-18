@@ -206,6 +206,9 @@
     <Compile Include="Particles\ParticleField.cs" />
     <Compile Include="Particles\ParticleFieldAccessor.cs" />
     <Compile Include="Particles\ParticleFieldDescription.cs" />
+    <Compile Include="PostEffects\PostEffectBase.cs" />
+    <Compile Include="PostEffects\PostEffectContext.cs" />
+    <Compile Include="PostEffects\PostEffectShader.cs" />
     <Compile Include="ScriptSystem.cs" />
     <Compile Include="Particles\IParticlePlugin.cs" />
     <Compile Include="Particles\IParticlePluginListener.cs" />
