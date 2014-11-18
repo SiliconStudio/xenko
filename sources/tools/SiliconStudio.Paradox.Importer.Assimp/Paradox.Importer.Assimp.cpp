@@ -1508,7 +1508,6 @@ private:
 					nodeMeshData->Draw = meshInfo->Draw;
 					nodeMeshData->Name = meshInfo->Name;
 					nodeMeshData->NodeIndex = *nodeIndexPtr;
-					nodeMeshData->Layer = RenderLayers::RenderLayer1;
 
 					if (meshInfo->Bones != nullptr)
 					{

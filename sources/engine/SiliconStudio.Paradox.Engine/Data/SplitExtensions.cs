@@ -35,7 +35,6 @@ namespace SiliconStudio.Paradox.Extensions
                                 Draw = draw,
                                 NodeIndex = mesh.NodeIndex,
                                 Skinning = mesh.Skinning,
-                                Layer = mesh.Layer,
                                 Lighting = mesh.Lighting
                             };
                         finalList.Add(newMeshData);

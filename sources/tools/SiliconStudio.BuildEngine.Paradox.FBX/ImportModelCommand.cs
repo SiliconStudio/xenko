@@ -122,7 +122,11 @@ namespace SiliconStudio.BuildEngine
                             mesh.Parameters.Set(LightingKeys.ReceiveShadows, ReceiveShadows[mesh.Name]);
                         }
                         if (Layers.ContainsKey(mesh.Name))
-                            mesh.Layer = Layers[mesh.Name];
+                        {
+                            if (mesh.Parameters == null)
+                                mesh.Parameters = new ParameterCollectionData();
+                            mesh.Parameters.Set(RenderingParameters.RenderLayer, Layers[mesh.Name]);
+                        }
                     }
 
                     model.BoundingBox = BoundingBox.Empty;
@@ -246,7 +250,6 @@ namespace SiliconStudio.BuildEngine
                                             NodeIndex = meshList.Key,
                                             Skinning = null,
                                             Lighting = baseMesh.Lighting,
-                                            Layer = baseMesh.Layer
                                         });
                                 }
                             }

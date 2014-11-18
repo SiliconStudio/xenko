@@ -17,7 +17,6 @@ namespace SiliconStudio.Paradox.Effects
         public Mesh()
         {
             Parameters = new ParameterCollection();
-            Layer = RenderLayers.RenderLayerAll;
         }
 
         /// <summary>
@@ -36,7 +35,6 @@ namespace SiliconStudio.Paradox.Effects
             Name = mesh.Name;
             BoundingBox = mesh.BoundingBox;
             Skinning = mesh.Skinning;
-            Layer = mesh.Layer;
             if (mesh.Lighting != null)
             {
                 Lighting = new LightingConfigurationsSet();
@@ -71,13 +69,6 @@ namespace SiliconStudio.Paradox.Effects
         // TODO: Skinning could be shared between multiple Mesh inside a ModelView (multimaterial, etc...)
         [DataMemberConvert]
         public MeshSkinningDefinition Skinning;
-
-        /// <summary>
-        /// The layer the model belongs to.
-        /// </summary>
-        /// <value>The layer mask.</value>
-        [DataMemberConvert]
-        public RenderLayers Layer { get; set; }
 
         /// <summary>
         /// The list of available lighting configurations. Should be sorted based on the total number of lights.

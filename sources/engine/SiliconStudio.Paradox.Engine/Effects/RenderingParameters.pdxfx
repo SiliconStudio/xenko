@@ -4,7 +4,8 @@ namespace SiliconStudio.Paradox.Effects
 {
     params RenderingParameters
     {
-        bool UseDeferred;            // True to use deferred rendering. False to use standard Forward rendering.
+        bool UseDeferred;           // True to use deferred rendering. False to use standard Forward rendering.
         bool UseTransparent;        // True to use transparent shading.
+        RenderLayers RenderLayer = RenderLayers.RenderLayerAll;  // the render layers
     };
 }

@@ -9,20 +9,25 @@
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Graphics;
 
 
-#line 1 "E:\Code\Paradox\sources\engine\SiliconStudio.Paradox.Engine\Effects\RenderingParameters.pdxfx"
+#line 3 "C:\Projects\Paradox\sources\engine\SiliconStudio.Paradox.Engine\Effects\RenderingParameters.pdxfx"
 namespace SiliconStudio.Paradox.Effects
 {
-
-    #line 3
+    [DataContract]
+#line 5
     public partial class RenderingParameters : ShaderMixinParameters
     {
 
-        #line 5
+        #line 7
         public static readonly ParameterKey<bool> UseDeferred = ParameterKeys.New<bool>();
 
-        #line 6
+        #line 8
         public static readonly ParameterKey<bool> UseTransparent = ParameterKeys.New<bool>();
+
+        #line 9
+        public static readonly ParameterKey<RenderLayers> RenderLayer = ParameterKeys.New<RenderLayers>(RenderLayers.RenderLayerAll);
     };
 }

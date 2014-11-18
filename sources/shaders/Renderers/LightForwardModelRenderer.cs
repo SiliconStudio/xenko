@@ -237,15 +237,16 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             spotLightsWithShadowForMesh.Clear();
             
             var receiveShadows = effectMesh.Mesh.Parameters.Get(LightingKeys.ReceiveShadows);
+            var renderLayers = effectMesh.Mesh.Parameters.Get(RenderingParameters.RenderLayer);
 
             foreach (var light in directionalLights)
             {
-                if ((light.Light.Layers & renderMesh.Mesh.Layer) != 0)
+                if ((light.Light.Layers & renderLayers) != 0)
                     directionalLightsForMesh.Add(light);
             }
             foreach (var light in directionalLightsWithShadows)
             {
-                if ((light.Light.Layers & renderMesh.Mesh.Layer) != 0)
+                if ((light.Light.Layers & renderLayers) != 0)
                 {
                     if (receiveShadows)
                         directionalLightsWithShadowForMesh.Add(light);
@@ -255,17 +256,17 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             }
             foreach (var light in pointLights)
             {
-                if ((light.Light.Layers & renderMesh.Mesh.Layer) != 0)
+                if ((light.Light.Layers & renderLayers) != 0)
                     pointLightsForMesh.Add(light);
             }
             foreach (var light in spotLights)
             {
-                if ((light.Light.Layers & renderMesh.Mesh.Layer) != 0)
+                if ((light.Light.Layers & renderLayers) != 0)
                     spotLightsForMesh.Add(light);
             }
             foreach (var light in spotLightsWithShadows)
             {
-                if ((light.Light.Layers & renderMesh.Mesh.Layer) != 0)
+                if ((light.Light.Layers & renderLayers) != 0)
                 {
                     if (receiveShadows)
                         spotLightsWithShadowForMesh.Add(light);

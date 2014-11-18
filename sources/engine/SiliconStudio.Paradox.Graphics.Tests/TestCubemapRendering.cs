@@ -59,19 +59,18 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             var material = Asset.Load<Material>("BasicMaterial");
             for (var i =0; i < primitives.Count; ++i)
             {
+                var mesh = new Mesh()
+                {
+                    Draw = primitives[i].Item1.ToMeshDraw(),
+                    Material = material
+                };
+                mesh.Parameters.Set(RenderingParameters.RenderLayer, RenderLayers.RenderLayer1);
+
                 var entity = new Entity()
                 {
                     new ModelComponent()
                     {
-                        Model = new Model()
-                        {
-                            new Mesh()
-                            {
-                                Draw = primitives[i].Item1.ToMeshDraw(),
-                                Layer = RenderLayers.RenderLayer1,
-                                Material = material
-                            }
-                        }
+                        Model = new Model() { mesh }
                     },
                     new TransformationComponent() { Translation = primitives[i].Item2 }
                 };
@@ -81,18 +80,17 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             }
 
             var reflectivePrimitive = GeometricPrimitive.Sphere.New(GraphicsDevice);
+            var reflectiveMesh = new Mesh()
+            {
+                Draw = reflectivePrimitive.ToMeshDraw(),
+            };
+            reflectiveMesh.Parameters.Set(RenderingParameters.RenderLayer, RenderLayers.RenderLayer2);
+
             var reflectEntity = new Entity()
             {
                 new ModelComponent()
                 {
-                    Model = new Model()
-                    {
-                        new Mesh()
-                        {
-                            Draw = reflectivePrimitive.ToMeshDraw(),
-                            Layer = RenderLayers.RenderLayer2,
-                        }
-                    }
+                    Model = new Model() { reflectiveMesh }
                 },
                 new TransformationComponent(),
                 new CubemapSourceComponent() { IsDynamic = true, Enabled = true, Size = 128 }
