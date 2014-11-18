@@ -280,12 +280,28 @@ namespace SiliconStudio.Presentation.Quantum
         
         protected void AddCommand(INodeCommandWrapper command)
         {
+            if (command == null) throw new ArgumentNullException("command");
+            OnPropertyChanging(string.Format("{0}{1}", ObservableViewModel.HasCommandPrefix, command.Name));
+            OnPropertyChanging(command.Name);
             commands.Add(command);
+            OnPropertyChanged(command.Name);
+            OnPropertyChanged(string.Format("{0}{1}", ObservableViewModel.HasCommandPrefix, command.Name));
         }
 
         protected void ClearCommands()
         {
+            var commandNames = commands.Select(x => x.Name).ToList();
+            foreach (string commandName in commandNames)
+            {
+                OnPropertyChanging(string.Format("{0}{1}", ObservableViewModel.HasCommandPrefix, commandName));
+                OnPropertyChanging(commandName);
+            }
             commands.Clear();
+            for (int i = commandNames.Count - 1; i >= 0; --i)
+            {
+                OnPropertyChanged(commandNames[i]);
+                OnPropertyChanged(string.Format("{0}{1}", ObservableViewModel.HasCommandPrefix, commandNames[i]));
+            }
         }
         
         protected void CheckDynamicMemberConsistency()
