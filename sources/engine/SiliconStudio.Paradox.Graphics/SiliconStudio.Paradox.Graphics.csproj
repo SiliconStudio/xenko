@@ -120,6 +120,7 @@
     <Compile Include="GeometricMultiTexcoordPrimitive.Cube.cs" />
     <Compile Include="GeometricMultiTexcoordPrimitive.Cylinder.cs" />
     <Compile Include="GeometricMultiTexcoordPrimitive.Torus.cs" />
+    <Compile Include="GraphicsDeviceExtensions.cs" />
     <Compile Include="GraphicsOutput.cs" />
     <Compile Include="ImageFragment.cs" />
     <Compile Include="ImageGroup.cs" />
