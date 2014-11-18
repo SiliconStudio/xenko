@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.Effects
 
             var modelRendererState = Pipeline.GetOrCreateModelRendererState();
             var slotCount = modelRendererState.ModelSlotCount;
-            InternalMeshes = new List<EffectMesh>[slotCount];
+            InternalMeshes = new List<RenderMesh>[slotCount];
             if (Model != null)
             {
                 modelRendererState.PrepareRenderModel(this);
@@ -47,7 +47,7 @@ namespace SiliconStudio.Paradox.Effects
             Pipeline = pipeline;
             Model = model;
             var slotCount = Pipeline.GetOrCreateModelRendererState().ModelSlotCount;
-            InternalMeshes = new List<EffectMesh>[slotCount];
+            InternalMeshes = new List<RenderMesh>[slotCount];
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <value>
         /// The meshes instantiated for this view.
         /// </value>
-        public readonly List<EffectMesh>[] InternalMeshes;
+        public readonly List<RenderMesh>[] InternalMeshes;
 
         /// <summary>
         /// The model instance

@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.Effects
     {
         private int meshPassSlot;
 
-        private readonly FastList<EffectMesh> meshesToRender;
+        private readonly FastList<RenderMesh> meshesToRender;
 
         private readonly DynamicEffectCompiler dynamicEffectCompiler;
         private readonly string effectName;
@@ -49,19 +49,19 @@ namespace SiliconStudio.Paradox.Effects
 
         public delegate bool AcceptMeshForRenderingDelegate(RenderModel renderModel, Mesh mesh);
 
-        public delegate bool AcceptRenderMeshDelegate(RenderContext context, EffectMesh effectMesh);
+        public delegate bool AcceptRenderMeshDelegate(RenderContext context, RenderMesh renderMesh);
 
         public delegate bool AcceptRenderModelDelegate(RenderModel renderModel);
 
-        public delegate void UpdateMeshesDelegate(RenderContext context, FastList<EffectMesh> meshes);
+        public delegate void UpdateMeshesDelegate(RenderContext context, FastList<RenderMesh> meshes);
 
         public delegate void PreRenderDelegate(RenderContext context);
 
         public delegate void PostRenderDelegate(RenderContext context);
 
-        public delegate void PreEffectUpdateDelegate(RenderContext context, EffectMesh effectMesh);
+        public delegate void PreEffectUpdateDelegate(RenderContext context, RenderMesh renderMesh);
 
-        public delegate void PostEffectUpdateDelegate(RenderContext context, EffectMesh effectMesh);
+        public delegate void PostEffectUpdateDelegate(RenderContext context, RenderMesh renderMesh);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ModelRenderer"/> class.
@@ -76,7 +76,7 @@ namespace SiliconStudio.Paradox.Effects
 
             dynamicEffectCompiler = new DynamicEffectCompiler(services, effectName);
 
-            meshesToRender = new FastList<EffectMesh>();
+            meshesToRender = new FastList<RenderMesh>();
 
             acceptModels = new SafeDelegateList<AcceptModelDelegate>(this);
             acceptRenderModels = new SafeDelegateList<AcceptRenderModelDelegate>(this);
@@ -267,19 +267,19 @@ namespace SiliconStudio.Paradox.Effects
                     continue;
                 }
 
-                var effectMesh = new EffectMesh(renderModel, mesh);
+                var effectMesh = new RenderMesh(renderModel, mesh);
                 UpdateEffect(effectMesh);
 
                 // Register mesh for rendering
                 if (renderModel.InternalMeshes[meshPassSlot] == null)
                 {
-                    renderModel.InternalMeshes[meshPassSlot] = new List<EffectMesh>();
+                    renderModel.InternalMeshes[meshPassSlot] = new List<RenderMesh>();
                 }
                 renderModel.InternalMeshes[meshPassSlot].Add(effectMesh);
             }
         }
 
-        private void UpdateMeshesDefault(RenderContext context, FastList<EffectMesh> meshes)
+        private void UpdateMeshesDefault(RenderContext context, FastList<RenderMesh> meshes)
         {
             for (var i = 0; i < meshes.Count; ++i)
             {
@@ -293,7 +293,7 @@ namespace SiliconStudio.Paradox.Effects
             }
         }
 
-        private void DefaultSort(RenderContext context, FastList<EffectMesh> meshes)
+        private void DefaultSort(RenderContext context, FastList<RenderMesh> meshes)
         {
             // Sort based on ModelComponent.DrawOrder
             meshes.Sort(ModelComponentSorter.Default);
@@ -338,12 +338,12 @@ namespace SiliconStudio.Paradox.Effects
             return true;
         }
 
-        private bool OnAcceptRenderMesh(RenderContext context, EffectMesh effectMesh)
+        private bool OnAcceptRenderMesh(RenderContext context, RenderMesh renderMesh)
         {
             // NOTICE: Don't use Linq, as It would allocated objects and triggers GC
             foreach (var test in acceptRenderMeshes)
             {
-                if (!test(context, effectMesh))
+                if (!test(context, renderMesh))
                 {
                     return false;
                 }
@@ -354,11 +354,11 @@ namespace SiliconStudio.Paradox.Effects
         /// <summary>
         /// Create or update the Effect of the effect mesh.
         /// </summary>
-        protected void UpdateEffect(EffectMesh effectMesh)
+        protected void UpdateEffect(RenderMesh renderMesh)
         {
-            if (dynamicEffectCompiler.Update(effectMesh))
+            if (dynamicEffectCompiler.Update(renderMesh))
             {
-                effectMesh.Initialize(GraphicsDevice);
+                renderMesh.Initialize(GraphicsDevice);
             }
         }
 
@@ -397,7 +397,7 @@ namespace SiliconStudio.Paradox.Effects
 
         #region Helper class
 
-        private class ModelComponentSorter : IComparer<EffectMesh>
+        private class ModelComponentSorter : IComparer<RenderMesh>
         {
             #region Constants and Fields
 
@@ -405,7 +405,7 @@ namespace SiliconStudio.Paradox.Effects
 
             #endregion
 
-            public int Compare(EffectMesh left, EffectMesh right)
+            public int Compare(RenderMesh left, RenderMesh right)
             {
                 var xModelComponent = left.RenderModel.ModelInstance;
                 var yModelComponent = right.RenderModel.ModelInstance;

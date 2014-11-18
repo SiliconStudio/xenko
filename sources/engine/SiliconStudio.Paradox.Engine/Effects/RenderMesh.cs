@@ -11,7 +11,7 @@ namespace SiliconStudio.Paradox.Effects
     /// <summary>
     /// An effect mesh.
     /// </summary>
-    public class EffectMesh : DynamicEffectInstance
+    public class RenderMesh : DynamicEffectInstance
     {
         private VertexArrayObject vertexArrayObject;
 
@@ -33,12 +33,12 @@ namespace SiliconStudio.Paradox.Effects
         public readonly ParameterCollection Parameters;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EffectMesh" /> class.
+        /// Initializes a new instance of the <see cref="RenderMesh" /> class.
         /// </summary>
         /// <param name="renderModel">The render model.</param>
         /// <param name="mesh">The mesh data.</param>
         /// <exception cref="System.ArgumentNullException">mesh</exception>
-        public EffectMesh(RenderModel renderModel, Mesh mesh)
+        public RenderMesh(RenderModel renderModel, Mesh mesh)
         {
             if (renderModel == null) throw new ArgumentNullException("renderModel");
             if (mesh == null) throw new ArgumentNullException("mesh");
@@ -67,7 +67,7 @@ namespace SiliconStudio.Paradox.Effects
                 // Order of application of parameters:
                 // - RenderPass.Parameters
                 // - ModelComponent.Parameters
-                // - EffectMesh.Parameters (originally copied from mesh parameters)
+                // - RenderMesh.Parameters (originally copied from mesh parameters)
                 // The order is based on the granularity level of each element and how shared it can be. Material is heavily shared, a model contains many meshes. An effectMesh is unique.
                 // TODO: really copy mesh parameters into effectMesh instead of just referencing the meshDraw parameters.
 

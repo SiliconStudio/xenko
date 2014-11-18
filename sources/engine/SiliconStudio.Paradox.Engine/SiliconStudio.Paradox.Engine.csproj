@@ -250,7 +250,7 @@
     <Compile Include="Effects\RenderPass.cs" />
     <Compile Include="Effects\RenderPass.Extensions.cs" />
     <Compile Include="Data\MeshDrawData.cs" />
-    <Compile Include="Effects\EffectMesh.cs" />
+    <Compile Include="Effects\RenderMesh.cs" />
     <Compile Include="Effects\RenderContext.cs" />
     <Compile Include="Engine\AnimationComponent.cs" />
     <Compile Include="Engine\AnimationProcessor.cs" />
