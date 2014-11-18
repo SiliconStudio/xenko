@@ -40,10 +40,6 @@ namespace SiliconStudio.BuildEngine
         public Dictionary<string, Tuple<Guid, string>> Lightings { get; set; }
         public Dictionary<string, ParameterCollectionData> Parameters;
 
-        public Dictionary<string, bool> CastShadows { get; set; }
-        public Dictionary<string, bool> ReceiveShadows { get; set; }
-        public Dictionary<string, RenderLayers> Layers { get; set; }
-
         public bool Compact { get; set; }
         public List<string> PreservedNodes { get; set; }
 
@@ -105,29 +101,6 @@ namespace SiliconStudio.BuildEngine
                 {
                     // Read from model file
                     var model = LoadModel(commandContext, assetManager);
-
-                    // apply configurations
-                    foreach (var mesh in model.Meshes)
-                    {
-                        if (CastShadows.ContainsKey(mesh.Name))
-                        {
-                            if (mesh.Parameters == null)
-                                mesh.Parameters = new ParameterCollectionData();
-                            mesh.Parameters.Set(LightingKeys.CastShadows, CastShadows[mesh.Name]);
-                        }
-                        if (ReceiveShadows.ContainsKey(mesh.Name))
-                        {
-                            if (mesh.Parameters == null)
-                                mesh.Parameters = new ParameterCollectionData();
-                            mesh.Parameters.Set(LightingKeys.ReceiveShadows, ReceiveShadows[mesh.Name]);
-                        }
-                        if (Layers.ContainsKey(mesh.Name))
-                        {
-                            if (mesh.Parameters == null)
-                                mesh.Parameters = new ParameterCollectionData();
-                            mesh.Parameters.Set(RenderingParameters.RenderLayer, Layers[mesh.Name]);
-                        }
-                    }
 
                     model.BoundingBox = BoundingBox.Empty;
                     var hierarchyUpdater = new ModelViewHierarchyUpdater(model.Hierarchy.Nodes);

@@ -48,6 +48,14 @@ namespace SiliconStudio.Paradox.Assets.Model
                     lightings.Add(meshParam.Key, new Tuple<Guid, string>(meshParam.Value.LightingParameters.Id, meshParam.Value.LightingParameters.Location));
             }
 
+            // TODO: temporary while the assets are modified
+            foreach (var meshParam in asset.MeshParameters)
+            {
+                meshParam.Value.Parameters.Set(LightingKeys.CastShadows, meshParam.Value.CastShadows);
+                meshParam.Value.Parameters.Set(LightingKeys.ReceiveShadows, meshParam.Value.ReceiveShadows);
+                meshParam.Value.Parameters.Set(RenderingParameters.RenderLayer, meshParam.Value.Layer);
+            }
+
             if (ImportFbxCommand.IsSupportingExtensions(extension))
             {
                 result.BuildSteps = new ListBuildStep
@@ -63,9 +71,6 @@ namespace SiliconStudio.Paradox.Assets.Model
                                 // Transform AssetReference to Tuple<Guid,UFile> as AssetReference is not working
                                 Materials = materials,
                                 Lightings = lightings,
-                                CastShadows = asset.MeshParameters.ToDictionary(pair => pair.Key, pair => pair.Value.CastShadows),
-                                ReceiveShadows = asset.MeshParameters.ToDictionary(pair => pair.Key, pair => pair.Value.ReceiveShadows),
-                                Layers = asset.MeshParameters.ToDictionary(pair => pair.Key, pair => pair.Value.Layer),
                                 Parameters = asset.MeshParameters.ToDictionary(pair => pair.Key, pair => pair.Value.Parameters),
                                 ViewDirectionForTransparentZSort = asset.ViewDirectionForTransparentZSort.HasValue ? asset.ViewDirectionForTransparentZSort.Value : -Vector3.UnitZ,
                             },
@@ -87,9 +92,6 @@ namespace SiliconStudio.Paradox.Assets.Model
                                 // Transform AssetReference to Tuple<Guid,UFile> as AssetReference is not working
                                 Materials = materials,
                                 Lightings = lightings,
-                                CastShadows = asset.MeshParameters.ToDictionary(pair => pair.Key, pair => pair.Value.CastShadows),
-                                ReceiveShadows = asset.MeshParameters.ToDictionary(pair => pair.Key, pair => pair.Value.ReceiveShadows),
-                                Layers = asset.MeshParameters.ToDictionary(pair => pair.Key, pair => pair.Value.Layer),
                                 Parameters = asset.MeshParameters.ToDictionary(pair => pair.Key, pair => pair.Value.Parameters),
                             },
                         new WaitBuildStep(),
