@@ -23,9 +23,9 @@ namespace SiliconStudio.Paradox.Effects
                 if (meshes == null)
                     continue;
 
-                foreach (var effectMesh in meshes)
+                foreach (var renderMesh in meshes)
                 {
-                    var mesh = effectMesh.Mesh;
+                    var mesh = renderMesh.Mesh;
                     var skinning = mesh.Skinning;
                     if (skinning == null)
                         continue;
@@ -45,7 +45,7 @@ namespace SiliconStudio.Paradox.Effects
                     }
 
                     // Upload bones
-                    effectMesh.Parameters.Set(TransformationSkinningKeys.BlendMatrixArray, boneMatrices, 0, bones.Length);
+                    renderMesh.Mesh.Parameters.Set(TransformationSkinningKeys.BlendMatrixArray, boneMatrices, 0, bones.Length);
                 }
             }
         }

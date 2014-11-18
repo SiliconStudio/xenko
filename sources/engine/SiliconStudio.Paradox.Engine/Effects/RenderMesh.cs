@@ -27,12 +27,6 @@ namespace SiliconStudio.Paradox.Effects
         public readonly Mesh Mesh;
 
         /// <summary>
-        /// A shortcut to <see cref="Effects.Mesh.Parameters"/>.
-        /// </summary>
-        // TODO: We should not put this Parameters here
-        public readonly ParameterCollection Parameters;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="RenderMesh" /> class.
         /// </summary>
         /// <param name="renderModel">The render model.</param>
@@ -44,7 +38,6 @@ namespace SiliconStudio.Paradox.Effects
             if (mesh == null) throw new ArgumentNullException("mesh");
             RenderModel = renderModel;
             Mesh = mesh;
-            Parameters = mesh.Parameters;
             Enabled = true;
         }
 
@@ -77,14 +70,14 @@ namespace SiliconStudio.Paradox.Effects
                 if (hasMaterialParams)
                 {
                     if (hasModelComponentParams)
-                        this.Effect.Apply(currentPass.Parameters, this.Mesh.Material.Parameters, modelComponent.Parameters, this.Parameters, true);
+                        this.Effect.Apply(currentPass.Parameters, this.Mesh.Material.Parameters, modelComponent.Parameters, this.Mesh.Parameters, true);
                     else
-                        this.Effect.Apply(currentPass.Parameters, this.Mesh.Material.Parameters, this.Parameters, true);
+                        this.Effect.Apply(currentPass.Parameters, this.Mesh.Material.Parameters, this.Mesh.Parameters, true);
                 }
                 else if (hasModelComponentParams)
-                    this.Effect.Apply(currentPass.Parameters, modelComponent.Parameters, this.Parameters, true);
+                    this.Effect.Apply(currentPass.Parameters, modelComponent.Parameters, this.Mesh.Parameters, true);
                 else
-                    this.Effect.Apply(currentPass.Parameters, this.Parameters, true);
+                    this.Effect.Apply(currentPass.Parameters, this.Mesh.Parameters, true);
             }
 
             //using (Profiler.Begin(ProfilingKeys.RenderMesh))
