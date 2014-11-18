@@ -35,8 +35,6 @@ namespace SiliconStudio.Paradox.Extensions
                                 Draw = draw,
                                 NodeIndex = mesh.NodeIndex,
                                 Skinning = mesh.Skinning,
-                                CastShadows = mesh.CastShadows,
-                                ReceiveShadows = mesh.ReceiveShadows,
                                 Layer = mesh.Layer,
                                 Lighting = mesh.Lighting
                             };

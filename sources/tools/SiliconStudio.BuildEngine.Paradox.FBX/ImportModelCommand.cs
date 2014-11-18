@@ -110,11 +110,17 @@ namespace SiliconStudio.BuildEngine
                     foreach (var mesh in model.Meshes)
                     {
                         if (CastShadows.ContainsKey(mesh.Name))
-                            mesh.CastShadows = CastShadows[mesh.Name];
-
+                        {
+                            if (mesh.Parameters == null)
+                                mesh.Parameters = new ParameterCollectionData();
+                            mesh.Parameters.Set(LightingKeys.CastShadows, CastShadows[mesh.Name]);
+                        }
                         if (ReceiveShadows.ContainsKey(mesh.Name))
-                            mesh.ReceiveShadows = ReceiveShadows[mesh.Name];
-
+                        {
+                            if (mesh.Parameters == null)
+                                mesh.Parameters = new ParameterCollectionData();
+                            mesh.Parameters.Set(LightingKeys.ReceiveShadows, ReceiveShadows[mesh.Name]);
+                        }
                         if (Layers.ContainsKey(mesh.Name))
                             mesh.Layer = Layers[mesh.Name];
                     }
@@ -240,8 +246,6 @@ namespace SiliconStudio.BuildEngine
                                             NodeIndex = meshList.Key,
                                             Skinning = null,
                                             Lighting = baseMesh.Lighting,
-                                            CastShadows = baseMesh.CastShadows,
-                                            ReceiveShadows = baseMesh.ReceiveShadows,
                                             Layer = baseMesh.Layer
                                         });
                                 }
@@ -605,7 +609,23 @@ namespace SiliconStudio.BuildEngine
         /// <returns>True if the options are the same, false otherwise.</returns>
         private static bool CompareShadowOptions(MeshData baseMesh, MeshData newMesh, object extra)
         {
-            return baseMesh.CastShadows == newMesh.CastShadows && baseMesh.ReceiveShadows == newMesh.ReceiveShadows;
+            return CompareKeyValue(baseMesh.Parameters, newMesh.Parameters, LightingKeys.CastShadows)
+                   && CompareKeyValue(baseMesh.Parameters, newMesh.Parameters, LightingKeys.ReceiveShadows);
+        }
+
+        /// <summary>
+        /// Compares the value behind a key in two ParameterCollectionData.
+        /// </summary>
+        /// <param name="parameters0">The first ParameterCollectionData.</param>
+        /// <param name="parameters1">The second ParameterCollectionData.</param>
+        /// <param name="key">The ParameterKey.</param>
+        /// <returns>True</returns>
+        private static bool CompareKeyValue(ParameterCollectionData parameters0, ParameterCollectionData parameters1, ParameterKey key)
+        {
+            // TODO: compare default values?
+            var value0 = parameters0.ContainsKey(key) ? parameters0[key] : null;
+            var value1 = parameters1.ContainsKey(key) ? parameters1[key] : null;
+            return value0 == value1;
         }
 
         /// <summary>

@@ -180,19 +180,28 @@ namespace SiliconStudio.Paradox.Assets.Effect.Generators
                         foreach (var config in lightingDesc.Configs)
                         {
                             var parameters = config.GetCollection();
-                            parameters.Set(LightingKeys.CastShadows, meshData.CastShadows);
-                            parameters.Set(LightingKeys.ReceiveShadows, meshData.ReceiveShadows);
+                            SetShadowCasterReceiverConfiguration(meshData.Parameters, parameters);
                             collection.Add(parameters);
                         }
                         return collection;
                     }
                 }
                 var defaultParameters = new ParameterCollectionData();
-                defaultParameters.Set(LightingKeys.CastShadows, meshData.CastShadows);
-                defaultParameters.Set(LightingKeys.ReceiveShadows, meshData.ReceiveShadows);
+                SetShadowCasterReceiverConfiguration(meshData.Parameters, defaultParameters);
                 return new List<ParameterCollectionData> { defaultParameters };
             }
             return null;
+        }
+
+        private static void SetShadowCasterReceiverConfiguration(ParameterCollectionData sourceParameters, ParameterCollectionData targetParameters)
+        {
+            if (sourceParameters != null)
+            {
+                var castShadows = sourceParameters.ContainsKey(LightingKeys.CastShadows) && (bool)sourceParameters[LightingKeys.CastShadows];
+                var receiveShadows = sourceParameters.ContainsKey(LightingKeys.ReceiveShadows) && (bool)sourceParameters[LightingKeys.ReceiveShadows];
+                targetParameters.Set(LightingKeys.CastShadows, castShadows);
+                targetParameters.Set(LightingKeys.ReceiveShadows, receiveShadows);
+            }
         }
 
         [ModuleInitializer]
