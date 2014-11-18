@@ -21,8 +21,6 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
     /// </summary>
     internal class LightForwardModelRenderer
     {
-        #region Internal static members
-
         internal static Dictionary<ParameterKey, LightParamSemantic> LightParametersDict = new Dictionary<ParameterKey, LightParamSemantic>
         {
             { ShadingEyeNormalVSKeys.LightDirectionsVS, LightParamSemantic.DirectionVS },
@@ -36,8 +34,6 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             { LightParametersKeys.LightSpotFieldAngle,  LightParamSemantic.SpotFieldAngle },
             { LightParametersKeys.LightCount,           LightParamSemantic.Count }
         };
-
-        #endregion
 
         #region Private members
 
@@ -322,10 +318,10 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 var maxNumSpotLights = foundConfiguration.MaxNumSpotLight;
 
                 //create the parameters to get the correct shader
-                if (configurationIndex != effectMesh.ConfigurationIndex)
+                if (configurationIndex != effectMesh.Parameters.Get(LightKeys.ConfigurationIndex))
                 {
                     CreateParametersFromLightingConfiguration(foundConfiguration, effectMesh.Parameters);
-                    effectMesh.ConfigurationIndex = configurationIndex;
+                    effectMesh.Parameters.Set(LightKeys.ConfigurationIndex, configurationIndex);
                 }
 
                 // assign the shadow ligths to a specific group

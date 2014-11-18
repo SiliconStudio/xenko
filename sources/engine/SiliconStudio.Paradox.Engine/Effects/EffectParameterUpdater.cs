@@ -21,6 +21,11 @@ namespace SiliconStudio.Paradox.Effects
 
         public EffectParameterUpdaterDefinition(Effect effect)
         {
+            Initialize(effect);
+        }
+
+        public void Initialize(Effect effect)
+        {
             if (effect == null) throw new ArgumentNullException("effect");
 
             var parameters = effect.CompilationParameters;

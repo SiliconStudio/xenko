@@ -96,7 +96,12 @@ namespace SiliconStudio.Paradox.Effects
             // clear at the beginning of the frame
             if (clearNextFrame)
             {
+                foreach (var effect in updatedEffects)
+                {
+                    effect.Changed = false;
+                }
                 updatedEffects.Clear();
+
                 clearNextFrame = false;
             }
 
@@ -170,16 +175,6 @@ namespace SiliconStudio.Paradox.Effects
                 result.Add(byteCodePair.Key, CreateEffect(bytecode, compilerResult.UsedParameters[byteCodePair.Key]));
             }
             return result;
-        }
-
-        /// <summary>
-        /// Tests if the effect was recompiled.
-        /// </summary>
-        /// <param name="effect">The effect.</param>
-        /// <returns>True if it was recompiled, false otherwise.</returns>
-        public bool WasEffectRecompiled(Effect effect)
-        {
-            return updatedEffects.Contains(effect);
         }
 
         #endregion
@@ -343,7 +338,7 @@ namespace SiliconStudio.Paradox.Effects
             }
 
             bytecode.Name = updateInfos.EffectName;
-            updateInfos.Effect.ForceEffectUpdate(GraphicsDevice, bytecode, parameters);
+            updateInfos.Effect.Initialize(GraphicsDevice, bytecode, parameters);
             updatedEffects.Add(updateInfos.Effect);
 
             lock (cachedEffects)
