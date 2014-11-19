@@ -5,7 +5,7 @@
 /// </summary
 class AlbedoSpecularBase
 {
-    ComputeColor albedoSpecular;
+    compose ComputeColor albedoSpecular;
 
     float3 SpecularAlbedo() { return (float3)albedoSpecular.Compute(); }
 };

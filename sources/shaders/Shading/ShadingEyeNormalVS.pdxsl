@@ -11,8 +11,8 @@
 #endif
 class ShadingEyeNormalVS : LightParameters, ShadingEyeNormalBase, ShaderBase
 {
-    NormalVSBase normal = stage;
-    PositionVSBase position = stage;
+    compose NormalVSBase normal = stage;
+    compose PositionVSBase position = stage;
 
     cbuffer PerPass
     {

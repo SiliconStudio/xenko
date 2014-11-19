@@ -2,8 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 class CloneTestRoot : CloneTestBase
 {
-    CloneTestExtern extern0;
-    CloneTestExtern extern1;
+    compose CloneTestExtern extern0;
+    compose CloneTestExtern extern1;
 
     override stage void testFunc()
     {

@@ -5,5 +5,5 @@
 /// </summary>
 class ComputeBRDFColorSpecularBase : ComputeBRDFColor
 {
-    ComputeColor SpecularIntensityMap;
+    compose ComputeColor SpecularIntensityMap;
 };

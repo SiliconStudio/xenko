@@ -6,7 +6,7 @@
 class MaterialRoughness : MaterialRoughnessBase
 {
     // The roughness of the material.
-    ComputeColor RoughnessMap;
+    compose ComputeColor RoughnessMap;
 
     stage override float GetRoughness()
     {
