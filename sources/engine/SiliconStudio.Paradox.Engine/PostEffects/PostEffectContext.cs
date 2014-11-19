@@ -192,18 +192,6 @@ namespace SiliconStudio.Paradox.PostEffects
         }
 
         /// <summary>
-        /// Loads the effect.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <param name="effectParameters">The effect parameters.</param>
-        /// <returns>Effect.</returns>
-        public Effect LoadEffect(string name, CompilerParameters effectParameters = null)
-        {
-            // TODO Add Effect.Clone()
-            effectParameters = effectParameters ?? new CompilerParameters();
-            return Effects.LoadEffect(name, effectParameters);
-        }
-        /// <summary>
         /// Creates a texture for output.
         /// </summary>
         /// <param name="description">The description.</param>

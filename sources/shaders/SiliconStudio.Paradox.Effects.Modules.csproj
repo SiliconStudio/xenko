@@ -637,12 +637,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>DiscardTransparentThreshold.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="PostEffect\PostEffectBase.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>PostEffectBase.pdxsl</DependentUpon>
-    </Compile>
     <Compile Include="PostEffect\PostEffectVsmBlur.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -2038,10 +2032,6 @@
     <None Include="PostEffect\DiscardTransparentThreshold.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>DiscardTransparentThreshold.cs</LastGenOutput>
-    </None>
-    <None Include="PostEffect\PostEffectBase.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>PostEffectBase.cs</LastGenOutput>
     </None>
     <None Include="PostEffect\PostEffectVsmBlur.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
