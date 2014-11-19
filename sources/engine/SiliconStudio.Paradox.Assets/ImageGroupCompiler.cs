@@ -48,7 +48,7 @@ namespace SiliconStudio.Paradox.Assets
             SeparateAlphaTexture = false;
 
             if (context.Platform == PlatformType.Android && asset.Format == TextureFormat.Compressed)
-                asset.Format = TextureFormat.AsIs;
+                asset.Format = TextureFormat.TrueColor;
 
             // create the registry containing the sprite assets texture index association
             SpriteToTextureKey = new Dictionary<TImageInfo, string>();
