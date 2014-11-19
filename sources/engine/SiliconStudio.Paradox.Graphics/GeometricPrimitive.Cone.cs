@@ -82,7 +82,7 @@ namespace SiliconStudio.Paradox.Graphics
                     indices[index++] = tessellation * 2 + 1 + ((i + 1) % tessellation);
                 }
 
-                return new GeometricMeshData<VertexPositionNormalColor>(vertices, indices, toLeftHanded, VertexPositionNormalColor.Layout) { Name = "Cone"};
+                return new GeometricMeshData<VertexPositionNormalColor>(vertices, indices, toLeftHanded) { Name = "Cone"};
             }
         }
     }
