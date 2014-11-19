@@ -113,6 +113,7 @@
     <Compile Include="Direct3D\GraphicsOutput.Direct3D.cs" />
     <Compile Include="Direct3D\InputLayoutManager.cs" />
     <Compile Include="Direct3D\Rational.Direct3D.cs" />
+    <Compile Include="WorkingSpace.cs" />
     <Compile Include="FakeDepthStencilState.cs" />
     <Compile Include="FakeRasterizerState.cs" />
     <Compile Include="Font\FontAntiAliasMode.cs" />
