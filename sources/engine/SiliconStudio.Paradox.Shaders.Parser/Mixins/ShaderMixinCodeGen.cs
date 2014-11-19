@@ -293,7 +293,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             WriteLinkLine(shaderBlock);
             currentBlock = shaderBlock;
 
-            Write("public partial class");
+            Write("internal partial class");
             Write(" ");
             Write(shaderBlock.Name);
             WriteSpace();
