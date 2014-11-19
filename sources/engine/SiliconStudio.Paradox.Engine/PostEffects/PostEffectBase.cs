@@ -145,6 +145,19 @@ namespace SiliconStudio.Paradox.PostEffects
             PostDrawCore();
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        public override string ToString()
+        {
+            return string.Format("Effect {0}", Name);
+        }
+
+        /// <summary>
+        /// Prepare call before <see cref="DrawCore"/>.
+        /// </summary>
+        /// <param name="name">The name.</param>
         protected virtual void PreDrawCore(string name)
         {
             GraphicsDevice.BeginProfile(Color.Green, name ?? Name);
@@ -159,6 +172,9 @@ namespace SiliconStudio.Paradox.PostEffects
             }
         }
 
+        /// <summary>
+        /// Posts call after <see cref="DrawCore"/>
+        /// </summary>
         protected virtual void PostDrawCore()
         {
             GraphicsDevice.EndProfile();
@@ -169,28 +185,26 @@ namespace SiliconStudio.Paradox.PostEffects
         /// </summary>
         protected virtual void DrawCore()
         {
-
         }
 
-        protected virtual void SetOutputInternal(RenderTarget view, DepthStencilBuffer depthStencilBuffer)
+        /// <summary>
+        /// Gets the number of input textures.
+        /// </summary>
+        /// <value>The input count.</value>
+        protected int InputCount
         {
-            outputDepthStencilBuffer = depthStencilBuffer;
-            outputRenderTargetView = view;
-            outputRenderTargetViews = null;
+            get
+            {
+                return maxInputTextureIndex + 1;
+            }
         }
 
-        protected virtual void SetOutputInternal(DepthStencilBuffer depthStencilBuffer, params RenderTarget[] views)
-        {
-            outputDepthStencilBuffer = depthStencilBuffer;
-            outputRenderTargetView = null;
-            outputRenderTargetViews = views;
-        }
-
-        protected int GetInputCount()
-        {
-            return maxInputTextureIndex + 1;
-        }
-
+        /// <summary>
+        /// Gets an input texture by the specified index.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <returns>Texture.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">index</exception>
         protected Texture GetInput(int index)
         {
             if (index < 0 || index > maxInputTextureIndex)
@@ -200,6 +214,12 @@ namespace SiliconStudio.Paradox.PostEffects
             return inputTextures[index];
         }
 
+        /// <summary>
+        /// Gets a non-null input texture by the specified index.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <returns>Texture.</returns>
+        /// <exception cref="System.InvalidOperationException"></exception>
         protected Texture GetSafeInput(int index)
         {
             var input = GetInput(index);
@@ -211,11 +231,24 @@ namespace SiliconStudio.Paradox.PostEffects
             return input;
         }
 
-        protected int GetOutputCount()
+        /// <summary>
+        /// Gets the number of output render target.
+        /// </summary>
+        /// <value>The output count.</value>
+        protected int OutputCount
         {
-            return outputRenderTargetView != null ? 1 : outputRenderTargetViews != null ? outputRenderTargetViews.Length : 0;
+            get
+            {
+                return outputRenderTargetView != null ? 1 : outputRenderTargetViews != null ? outputRenderTargetViews.Length : 0;
+            }
         }
 
+        /// <summary>
+        /// Gets an output render target for the specified index.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <returns>RenderTarget.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">index</exception>
         protected RenderTarget GetOutput(int index)
         {
             if (index < 0)
@@ -226,6 +259,12 @@ namespace SiliconStudio.Paradox.PostEffects
             return outputRenderTargetView ?? (outputRenderTargetViews != null ? outputRenderTargetViews[index] : null);
         }
 
+        /// <summary>
+        /// Gets an non-null output render target for the specified index.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <returns>RenderTarget.</returns>
+        /// <exception cref="System.InvalidOperationException"></exception>
         protected RenderTarget GetSafeOutput(int index)
         {
             var output = GetOutput(index);
@@ -237,10 +276,20 @@ namespace SiliconStudio.Paradox.PostEffects
             return output;
         }
 
-
-        public override string ToString()
+        private void SetOutputInternal(RenderTarget view, DepthStencilBuffer depthStencilBuffer)
         {
-            return string.Format("Effect {0}", Name);
+            // TODO: Do we want to handle the output the same way we handle the input textures?
+            outputDepthStencilBuffer = depthStencilBuffer;
+            outputRenderTargetView = view;
+            outputRenderTargetViews = null;
+        }
+
+        private void SetOutputInternal(DepthStencilBuffer depthStencilBuffer, params RenderTarget[] views)
+        {
+            // TODO: Do we want to handle the output the same way we handle the input textures?
+            outputDepthStencilBuffer = depthStencilBuffer;
+            outputRenderTargetView = null;
+            outputRenderTargetViews = views;
         }
     }
 }

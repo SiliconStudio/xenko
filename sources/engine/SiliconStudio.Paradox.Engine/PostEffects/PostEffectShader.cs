@@ -10,7 +10,7 @@ using SiliconStudio.Paradox.Graphics;
 namespace SiliconStudio.Paradox.PostEffects
 {
     /// <summary>
-    /// Post effect using a an effect or shader file (either pdxfx or pdxsl).
+    /// Post effect using an <see cref="Effect"/> (either pdxfx or pdxsl).
     /// </summary>
     public class PostEffectShader : PostEffectBase
     {
@@ -67,14 +67,21 @@ namespace SiliconStudio.Paradox.PostEffects
         {
             base.PreDrawCore(name);
 
-            // Default handler for input textures
-            UpdateParametersFromInputTextures();
+            // Default handler for parameters
+            UpdateParameters();
         }
 
-        protected virtual void UpdateParametersFromInputTextures()
+        /// <summary>
+        /// Updates the effect <see cref="Parameters"/> from properties defined in this instance. See remarks.
+        /// </summary>
+        /// <exception cref="System.InvalidOperationException">Expecting less than 10 textures in input</exception>
+        /// <remarks>
+        /// By default, all the input textures will be remapped to <see cref="TexturingKeys.Texture0"/>...etc.
+        /// </remarks>
+        protected virtual void UpdateParameters()
         {
             // By default, we are copying all input textures to TexturingKeys.Texture#
-            var count = GetInputCount();
+            var count = InputCount;
             for (int i = 0; i < count; i++)
             {
                 var texture = GetInput(i);
