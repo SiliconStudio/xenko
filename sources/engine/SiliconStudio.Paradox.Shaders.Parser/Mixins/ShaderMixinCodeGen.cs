@@ -664,13 +664,6 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             }
         }
 
-        /// <inheritdoc/>
-        protected override bool IsParameterKeyType(TypeBase type)
-        {
-            return base.IsParameterKeyType(type)
-                   || (type is GenericType<ObjectType> && IsStringInList(type.Name, "StructuredBuffer", "RWStructuredBuffer", "ConsumeStructuredBuffer", "AppendStructuredBuffer"));
-        }
-
         private class ShaderBlockContext
         {
             public readonly HashSet<string> DeclaredParameters = new HashSet<string>();
