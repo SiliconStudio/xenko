@@ -133,7 +133,7 @@ namespace SiliconStudio.Paradox.Graphics
                 CreateCylinderCap(vertices, indices, tessellation, height, radius, false);
 
                 // Create the primitive object.
-                return new GeometricMeshData<VertexPositionNormalTangentMultiTexture>(vertices.ToArray(), indices.ToArray(), toLeftHanded, VertexPositionNormalTexture.Layout) { Name = "Cylinder" };
+                return new GeometricMeshData<VertexPositionNormalTangentMultiTexture>(vertices.ToArray(), indices.ToArray(), toLeftHanded) { Name = "Cylinder" };
             }
         }
     }

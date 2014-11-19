@@ -8,14 +8,13 @@ namespace SiliconStudio.Paradox.Graphics
     /// A geometric data.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class GeometricMeshData<T> : ComponentBase where T : struct, IVertexWindable
+    public class GeometricMeshData<T> : ComponentBase where T : struct, IVertex
     {
-        public GeometricMeshData(T[] vertices, int[] indices, bool isLeftHanded, VertexDeclaration layout)
+        public GeometricMeshData(T[] vertices, int[] indices, bool isLeftHanded)
         {
             Vertices = vertices;
             Indices = indices;
             IsLeftHanded = isLeftHanded;
-            Layout = layout;
         }
 
         /// <summary>
@@ -35,11 +34,5 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         /// <value><c>true</c> if this instance is left handed; otherwise, <c>false</c>.</value>
         public bool IsLeftHanded { get; set; }
-
-        /// <summary>
-        /// Gets or sets the layout.
-        /// </summary>
-        /// <value>The layout.</value>
-        public VertexDeclaration Layout { get; set; }
     }
 }

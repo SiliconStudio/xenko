@@ -93,7 +93,7 @@ namespace SiliconStudio.Paradox.Graphics
                 }
 
                 // Create the primitive object.
-                return new GeometricMeshData<VertexPositionNormalTangentMultiTexture>(vertices.ToArray(), indices.ToArray(), toLeftHanded, VertexPositionNormalTexture.Layout) { Name = "Torus" };
+                return new GeometricMeshData<VertexPositionNormalTangentMultiTexture>(vertices.ToArray(), indices.ToArray(), toLeftHanded) { Name = "Torus" };
             }
         }
     }

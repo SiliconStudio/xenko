@@ -92,8 +92,6 @@ namespace SiliconStudio.Presentation.Settings
 
                 foreach (object item in list)
                 {
-                    var ptet = typeof(T).GetConstructors();
-                    var surement = typeof(T).GetMethods();
                     var converter = TypeDescriptor.GetConverter(typeof(T));
                     T newValue;
                     if (converter.CanConvertFrom(item != null ? item.GetType() : typeof(object)))                        
