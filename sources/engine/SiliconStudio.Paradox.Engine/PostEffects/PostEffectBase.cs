@@ -14,6 +14,8 @@ namespace SiliconStudio.Paradox.PostEffects
     /// </summary>
     public abstract class PostEffectBase : ComponentBase
     {
+        private DepthStencilBuffer outputDepthStencilBuffer;
+
         private RenderTarget outputRenderTargetView;
 
         private RenderTarget[] outputRenderTargetViews;
@@ -30,6 +32,7 @@ namespace SiliconStudio.Paradox.PostEffects
 
             Context = context;
             GraphicsDevice = Context.GraphicsDevice;
+            Assets = context.Services.GetSafeServiceAs<AssetManager>();
             Name = name ?? GetType().Name;
             Enabled = true;
         }
@@ -50,22 +53,22 @@ namespace SiliconStudio.Paradox.PostEffects
         /// Gets the <see cref="AssetManager"/>.
         /// </summary>
         /// <value>The content.</value>
-        public AssetManager Assets { get; private set; }
+        protected AssetManager Assets { get; private set; }
 
         /// <summary>
         /// Gets the graphics device.
         /// </summary>
         /// <value>The graphics device.</value>
-        public GraphicsDevice GraphicsDevice { get; private set; }
+        protected GraphicsDevice GraphicsDevice { get; private set; }
         /// <summary>
         /// Sets the render target output.
         /// </summary>
         /// <param name="view">The render target output view.</param>
-        public PostEffectBase SetOutput(RenderTarget view)
+        public PostEffectBase SetOutput(RenderTarget view, DepthStencilBuffer depthStencilBuffer = null)
         {
             if (view == null) throw new ArgumentNullException("view");
 
-            SetOutputInternal(view);
+            SetOutputInternal(view, depthStencilBuffer);
             return this;
         }
 
@@ -77,7 +80,22 @@ namespace SiliconStudio.Paradox.PostEffects
         {
             if (views == null) throw new ArgumentNullException("views");
 
-            SetOutputInternal(views);
+            SetOutputInternal(null, views);
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the render target outputs.
+        /// </summary>
+        /// <param name="depthStencilBuffer">The depth stencil buffer.</param>
+        /// <param name="views">The render target output views.</param>
+        /// <returns>PostEffectBase.</returns>
+        /// <exception cref="System.ArgumentNullException">views</exception>
+        public virtual PostEffectBase SetOutput(DepthStencilBuffer depthStencilBuffer, params RenderTarget[] views)
+        {
+            if (views == null) throw new ArgumentNullException("views");
+
+            SetOutputInternal(depthStencilBuffer, views);
             return this;
         }
 
@@ -102,11 +120,11 @@ namespace SiliconStudio.Paradox.PostEffects
 
             if (outputRenderTargetView != null)
             {
-                GraphicsDevice.SetRenderTarget(outputRenderTargetView);
+                GraphicsDevice.SetRenderTarget(outputDepthStencilBuffer, outputRenderTargetView);
             }
             else if (outputRenderTargetViews != null)
             {
-                GraphicsDevice.SetRenderTargets(outputRenderTargetViews);
+                GraphicsDevice.SetRenderTargets(outputDepthStencilBuffer, outputRenderTargetViews);
             }
         }
 
@@ -123,32 +141,50 @@ namespace SiliconStudio.Paradox.PostEffects
 
         }
 
-        protected virtual void SetOutputInternal(RenderTarget view)
+        protected virtual void SetOutputInternal(RenderTarget view, DepthStencilBuffer depthStencilBuffer)
         {
+            outputDepthStencilBuffer = depthStencilBuffer;
             outputRenderTargetView = view;
             outputRenderTargetViews = null;
         }
 
-        protected virtual void SetOutputInternal(params RenderTarget[] views)
+        protected virtual void SetOutputInternal(DepthStencilBuffer depthStencilBuffer, params RenderTarget[] views)
         {
+            outputDepthStencilBuffer = depthStencilBuffer;
             outputRenderTargetView = null;
             outputRenderTargetViews = views;
         }
 
-        protected RenderTarget GetSafeOutput(int index)
+        protected int GetOutputCount()
+        {
+            return outputRenderTargetView != null ? 1 : outputRenderTargetViews != null ? outputRenderTargetViews.Length : 0;
+        }
+
+        protected RenderTarget GetOutput(int index)
         {
             if (index < 0)
             {
                 throw new ArgumentOutOfRangeException("index", string.Format("Invald texture outputindex [{0}] cannot be negative for effect [{1}]", index, Name));
             }
 
-            var renderTexture = outputRenderTargetView ?? (outputRenderTargetViews != null ? outputRenderTargetViews[index] : null);
-            if (renderTexture == null)
+            return outputRenderTargetView ?? (outputRenderTargetViews != null ? outputRenderTargetViews[index] : null);
+        }
+
+        protected RenderTarget GetSafeOutput(int index)
+        {
+            var output = GetOutput(index);
+            if (output == null)
             {
                 throw new InvalidOperationException(string.Format("Expecting texture output on slot [{0}]", index));
             }
 
-            return renderTexture;
+            return output;
         }
-   }
+
+
+        public override string ToString()
+        {
+            return string.Format("Effect {0}", Name);
+        }
+    }
 }
