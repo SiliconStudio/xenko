@@ -15,8 +15,9 @@ namespace SiliconStudio.Paradox.Assets
     {
         public ImageInfo()
         {
-            AddressModeU = TextureAddressMode.Border;
-            AddressModeV = TextureAddressMode.Border;
+            AddressModeU = TextureAddressMode.Clamp;
+            AddressModeV = TextureAddressMode.Clamp;
+            BorderColor = Color.White;
         }
 
         /// <summary>
@@ -50,12 +51,14 @@ namespace SiliconStudio.Paradox.Assets
         /// Gets or sets atlas border mode in X axis for images inside atlas texture
         /// </summary>
         [DataMember(40)]
+        [DefaultValue(TextureAddressMode.Border)]
         public TextureAddressMode AddressModeU { get; set; }
 
         /// <summary>
         /// Gets or sets atlas border mode in Y axis for images inside atlas texture
         /// </summary>
         [DataMember(50)]
+        [DefaultValue(TextureAddressMode.Border)]
         public TextureAddressMode AddressModeV { get; set; }
 
         /// <summary>
