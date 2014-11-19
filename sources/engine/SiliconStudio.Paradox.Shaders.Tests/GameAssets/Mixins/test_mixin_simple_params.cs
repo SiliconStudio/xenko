@@ -16,7 +16,7 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 
 #line 3 "D:\Code\Paradox\sources\engine\SiliconStudio.Paradox.Shaders.Tests\GameAssets\Mixins\test_mixin_simple_params.pdxfx"
-namespace Test
+namespace Test7
 {
     [DataContract]
 #line 5

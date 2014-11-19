@@ -72,7 +72,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             mixin.Mixin.CheckMacro("Test", "ok");
 
             // Set a key to modify the mixin
-            properties.Set(Test.TestParameters.param1, true);
+            properties.Set(Test7.TestParameters.param1, true);
 
             mixin = GenerateMixin("DefaultSimpleParams", properties, out usedProperties);
             mixin.Mixin.CheckMixin("A", "B", "C");
@@ -103,7 +103,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         public void TestSimpleChildParams()
         {
             var properties = new ShaderMixinParameters();
-            properties.Set(TestParameters.TestCount, 0);
+            properties.Set(Test4.TestParameters.TestCount, 0);
             ShaderMixinParameters usedProperties;
 
             var mixin = GenerateMixin("DefaultSimpleChildParams", properties, out usedProperties);
@@ -122,15 +122,15 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             ShaderMixinParameters usedProperties;
 
             // Populate the the properties used by the mixin
-            var subParam1 = new Test.SubParameters();
-            var subParameters = new Test.SubParameters[4];
+            var subParam1 = new Test1.SubParameters();
+            var subParameters = new Test1.SubParameters[4];
             for (int i = 0; i < subParameters.Length; i++)
             {
-                subParameters[i] = new Test.SubParameters();
+                subParameters[i] = new Test1.SubParameters();
             }
 
-            properties.Set(Test.TestParameters.subParam1, subParam1);
-            properties.Set(Test.TestParameters.subParameters, subParameters);
+            properties.Set(Test1.TestParameters.subParam1, subParam1);
+            properties.Set(Test1.TestParameters.subParameters, subParameters);
 
             // Generate the mixin with default properties
             var mixin = GenerateMixin("DefaultComplexParams", properties, out usedProperties);
@@ -139,9 +139,9 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             // Modify properties in order to modify mixin
             for (int i = 0; i < subParameters.Length; i++)
             {
-                subParameters[i].Set(Test.SubParameters.param1, (i & 1) == 0);
+                subParameters[i].Set(Test1.SubParameters.param1, (i & 1) == 0);
             }
-            subParam1.Set(Test.SubParameters.param2, 2);
+            subParam1.Set(Test1.SubParameters.param2, 2);
 
             mixin = GenerateMixin("DefaultComplexParams", properties, out usedProperties);
             mixin.Mixin.CheckMixin("A", "B", "C", "C1", "C3");
