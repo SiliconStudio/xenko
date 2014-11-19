@@ -396,6 +396,20 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Image" /> class.
+        /// </summary>
+        /// <param name="description">The image description.</param>
+        /// <param name="dataPointer">The pointer to the data buffer.</param>
+        /// <param name="offset">The offset from the beginning of the data buffer.</param>
+        /// <param name="handle">The handle (optionnal).</param>
+        /// <param name="bufferIsDisposable">if set to <c>true</c> [buffer is disposable].</param>
+        /// <exception cref="System.InvalidOperationException">If the format is invalid, or width/height/depth/arraysize is invalid with respect to the dimension.</exception>
+        public static Image New(ImageDescription description, IntPtr dataPointer, int offset, GCHandle? handle, bool bufferIsDisposable)
+        {
+            return new Image(description, dataPointer, offset, handle, bufferIsDisposable);
+        }
+
+        /// <summary>
         /// Creates a new instance of a 1D <see cref="Image"/>.
         /// </summary>
         /// <param name="width">The width.</param>
@@ -512,6 +526,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <remarks>This method support the following format: <c>dds, bmp, jpg, png, gif, tiff, wmp, tga</c>.</remarks>
         public static Image Load(Stream imageStream)
         {
+            if (imageStream == null) throw new ArgumentNullException("imageStream");
             // Read the whole stream into memory.
             return Load(Utilities.ReadStream(imageStream));
         }
@@ -524,6 +539,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <remarks>This method support the following format: <c>dds, bmp, jpg, png, gif, tiff, wmp, tga</c>.</remarks>
         public void Save(Stream imageStream, ImageFileType fileType)
         {
+            if (imageStream == null) throw new ArgumentNullException("imageStream");
             Save(pixelBuffers, this.pixelBuffers.Length, Description, imageStream, fileType);
         }
 

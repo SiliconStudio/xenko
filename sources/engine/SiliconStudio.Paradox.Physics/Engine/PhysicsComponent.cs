@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.Physics
 
         /// <summary>
         /// Elements describing the physical colliders/rigidbodies/character of this entity
-        /// Any runtime dynamic change should happen while the entity if not added to the Game object
+        /// Any runtime dynamic change should happen while the entity is not added to the Game object
         /// </summary>
         [DataMemberConvert]
         public List<PhysicsElement> Elements { get; private set; }

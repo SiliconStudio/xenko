@@ -86,7 +86,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets additional data associated to this content. This can be used when the content itself does not contain enough information to be used as a view model.
         /// </summary>
-        IReadOnlyDictionary<string, object> AssociatedData { get; }
+        IDictionary<string, object> AssociatedData { get; }
 
         /// <summary>
         /// Gets the order number of this node in its parent.
@@ -116,13 +116,6 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="name">The name of the command to look for.</param>
         /// <returns>The corresponding command, or <c>null</c> if no command with the given name exists.</returns>
         ICommand GetCommand(string name);
-
-        /// <summary>
-        /// Returns the additionnal data with the matching name.
-        /// </summary>
-        /// <param name="name">The name of the additionnal data to look for.</param>
-        /// <returns>The corresponding additionnal data, or <c>null</c> if no data with the given name exists.</returns>
-        object GetAssociatedData(string name);
 
         /// <summary>
         /// Indicates whether this node can be moved.

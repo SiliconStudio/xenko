@@ -33,6 +33,9 @@ namespace SiliconStudio.Paradox.Assets.Effect
         /// Gets the root definition for permutations
         /// </summary>
         /// <value>The the root definition for permutations.</value>
+        /// <userdoc>
+        /// The supported lighting configurations (number of lights and shadow maps) written as permutations. Non-lighting related keys will be ignored.
+        /// </userdoc>
         [DataMember(10)]
         public EffectPermutation Permutations { get; set; }
     }

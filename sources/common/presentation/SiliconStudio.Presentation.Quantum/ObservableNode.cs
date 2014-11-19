@@ -16,7 +16,7 @@ using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Presentation.Quantum
 {
-    public abstract partial class ObservableNode : DispatcherViewModel, IObservableNode, IDynamicMetaObjectProvider
+    public abstract class ObservableNode : DispatcherViewModel, IObservableNode, IDynamicMetaObjectProvider
     {
         private readonly SortedObservableCollection<IObservableNode> children = new SortedObservableCollection<IObservableNode>(new AnonymousComparer<IObservableNode>(CompareChildren));
 
@@ -34,7 +34,6 @@ namespace SiliconStudio.Presentation.Quantum
             Guid = Guid.NewGuid();
             IsVisible = true;
             IsReadOnly = false;
-            InitializeTypeDescriptor(ownerViewModel.ObservableViewModelService);
         }
 
         /// <summary>
@@ -115,7 +114,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets additional data associated to this content. This can be used when the content itself does not contain enough information to be used as a view model.
         /// </summary>
-        public abstract IReadOnlyDictionary<string, object> AssociatedData { get; }
+        public abstract IDictionary<string, object> AssociatedData { get; }
 
         /// <summary>
         /// Gets the order number of this node in its parent.
@@ -281,12 +280,28 @@ namespace SiliconStudio.Presentation.Quantum
         
         protected void AddCommand(INodeCommandWrapper command)
         {
+            if (command == null) throw new ArgumentNullException("command");
+            OnPropertyChanging(string.Format("{0}{1}", ObservableViewModel.HasCommandPrefix, command.Name));
+            OnPropertyChanging(command.Name);
             commands.Add(command);
+            OnPropertyChanged(command.Name);
+            OnPropertyChanged(string.Format("{0}{1}", ObservableViewModel.HasCommandPrefix, command.Name));
         }
 
         protected void ClearCommands()
         {
+            var commandNames = commands.Select(x => x.Name).ToList();
+            foreach (string commandName in commandNames)
+            {
+                OnPropertyChanging(string.Format("{0}{1}", ObservableViewModel.HasCommandPrefix, commandName));
+                OnPropertyChanging(commandName);
+            }
             commands.Clear();
+            for (int i = commandNames.Count - 1; i >= 0; --i)
+            {
+                OnPropertyChanged(commandNames[i]);
+                OnPropertyChanged(string.Format("{0}{1}", ObservableViewModel.HasCommandPrefix, commandNames[i]));
+            }
         }
         
         protected void CheckDynamicMemberConsistency()

@@ -33,7 +33,7 @@ namespace SiliconStudio.Paradox.Effects
         /// </value>
         public Color[] ClearColors { get; set; }
 
-        protected override void OnRender(RenderContext context)
+        protected override void OnRendering(RenderContext context)
         {
             var graphicsDevice = context.GraphicsDevice;
 

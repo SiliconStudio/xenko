@@ -24,6 +24,9 @@ namespace SiliconStudio.Paradox.Physics
             CharacterController
         };
 
+        /// <userdoc>
+        /// The physics type of this element. 
+        /// </userdoc>
         [DataMemberConvert]
         public Types Type { get; set; }
 
@@ -33,9 +36,15 @@ namespace SiliconStudio.Paradox.Physics
         /// <value>
         /// The mesh's linked bone name
         /// </value>
+        /// <userdoc>
+        /// In the case of skinned mesh this must be the bone node name linked with this element.
+        /// </userdoc>
         [DataMemberConvert]
         public string LinkedBoneName { get; set; }
 
+        /// <userdoc>
+        /// the Collider Shape of this element.
+        /// </userdoc>
         [DataMemberConvert]
         public PhysicsColliderShape Shape { get; set; }
 
@@ -83,6 +92,9 @@ namespace SiliconStudio.Paradox.Physics
         /// <value>
         /// The collision group.
         /// </value>
+        /// <userdoc>
+        /// The collision group of this element, default is AllFilter.
+        /// </userdoc>
         [DataMemberConvert]
         public CollisionFilterGroups1 CollisionGroup { get; set; }
 
@@ -92,6 +104,9 @@ namespace SiliconStudio.Paradox.Physics
         /// <value>
         /// The can collide with.
         /// </value>
+        /// <userdoc>
+        /// Which collider groups this element can collide with, when nothing is selected AllFilter is intended to be default.
+        /// </userdoc>
         [DataMemberConvert]
         public CollisionFilterGroups CanCollideWith { get; set; }
 
@@ -101,6 +116,9 @@ namespace SiliconStudio.Paradox.Physics
         /// <value>
         /// The height of the character step.
         /// </value>
+        /// <userdoc>
+        /// Only valid for CharacterController type, describes the max slope height a character can climb.
+        /// </userdoc>
         [DataMemberConvert]
         public float StepHeight { get; set; }
 
@@ -110,6 +128,9 @@ namespace SiliconStudio.Paradox.Physics
         /// <value>
         ///   <c>true</c> if sprite; otherwise, <c>false</c>.
         /// </value>
+        /// <userdoc>
+        /// If this element is associated with a Sprite Component's sprite. This is necessary because Sprites use an inverted Y axis and the physics engine must be aware of that.
+        /// </userdoc>
         [DataMemberConvert]
         public bool Sprite { get; set; }
 

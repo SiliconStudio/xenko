@@ -4,7 +4,7 @@
   <!-- Default values -->
   <PropertyGroup>
     <ParadoxGraphicsApi Condition=" '$(ParadoxGraphicsApi)' == ''">Direct3D11</ParadoxGraphicsApi>
-    <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioAssemblyProcessorOptions)' == ''">--auto-notify-property --parameter-key --auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
+    <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioAssemblyProcessorOptions)' == ''">$(SiliconStudioAssemblyProcessorDefaultOptions)</SiliconStudioAssemblyProcessorOptions>
   </PropertyGroup>
 
   <!-- 

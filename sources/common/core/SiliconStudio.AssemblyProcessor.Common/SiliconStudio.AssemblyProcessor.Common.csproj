@@ -72,6 +72,8 @@
     <Compile Include="CecilArraySerializerFactory.cs" />
     <Compile Include="Core\Utilities.cs" />
     <Compile Include="CustomAssemblyResolver.cs" />
+    <Compile Include="GenerateUserDocumentationProcessor.cs" />
+    <Compile Include="OpenSourceSignProcessor.cs" />
     <Compile Include="ProfileSerializerProcessor.cs" />
     <Compile Include="Serializers\CecilComplexClassSerializerProcessor.cs" />
     <Compile Include="CecilEnumSerializerFactory.cs" />

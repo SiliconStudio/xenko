@@ -21,7 +21,8 @@ namespace SiliconStudio.Quantum.Commands
         public object Invoke(object currentValue, ITypeDescriptor descriptor, object parameter, out UndoToken undoToken)
         {
             undoToken = new UndoToken(false);
-            return InvokeUncancellable(currentValue, descriptor, parameter);
+            InvokeUncancellable(currentValue, descriptor, parameter);
+            return currentValue;
         }
 
         public object Undo(object currentValue, ITypeDescriptor descriptor, UndoToken undoToken)
@@ -29,6 +30,6 @@ namespace SiliconStudio.Quantum.Commands
             throw new NotSupportedException("This command is not cancellable.");
         }
 
-        protected abstract object InvokeUncancellable(object currentValue, ITypeDescriptor descriptor, object parameter);
+        protected abstract void InvokeUncancellable(object currentValue, ITypeDescriptor descriptor, object parameter);
     }
 }

@@ -4,6 +4,8 @@ using System;
 using System.Drawing;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+
+using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.TextureConverter.Requests;
 
@@ -207,7 +209,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
                 for (int j = 0; j < h; ++j)
                 {
-                    Tools.CopyMemory(new IntPtr(atlasData + j * atlas.SubImageArray[i].RowPitch + yOffset + xOffset), new IntPtr(subImageData + j * request.Texture.SubImageArray[i].RowPitch), request.Texture.SubImageArray[i].RowPitch);
+                    Utilities.CopyMemory(new IntPtr(atlasData + j * atlas.SubImageArray[i].RowPitch + yOffset + xOffset), new IntPtr(subImageData + j * request.Texture.SubImageArray[i].RowPitch), request.Texture.SubImageArray[i].RowPitch);
                 }
 
                 w = w > 1 ? w >>= 1 : w;
@@ -283,7 +285,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                 {
                     srcPtr = new IntPtr(atlasData + j * atlas.SubImageArray[i].RowPitch + yOffset + xOffset);
                     destPtr = new IntPtr(textureData + j * rowPitch);
-                    Tools.CopyMemory(destPtr, srcPtr, rowPitch);
+                    Utilities.CopyMemory(destPtr, srcPtr, rowPitch);
                 }
 
                 offset += slicePitch;
@@ -553,7 +555,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                     {
                         destPtr = new IntPtr(atlasData + j * atlas.SubImageArray[i].RowPitch + yOffset + xOffset);
                         srcPtr = new IntPtr(textureData + j * node.Texture.SubImageArray[i].RowPitch);
-                        Tools.CopyMemory(destPtr, srcPtr, node.Texture.SubImageArray[i].RowPitch);
+                        Utilities.CopyMemory(destPtr, srcPtr, node.Texture.SubImageArray[i].RowPitch);
                     }
 
                     x = x <= 1 ? 0 : x >>= 1;

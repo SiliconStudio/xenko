@@ -56,8 +56,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         private Vector3[] points = new Vector3[8];
         private Vector3[] directions = new Vector3[4];
 
-        // VSM Blur quads
-        private PostEffectQuad vsmHorizontalBlurQuad, vsmVerticalBlurQuad;
+        private Effect vsmHorizontalBlur;
+
+        private Effect vsmVerticalBlur;
 
         // rectangles to blur for each shadow map
         private HashSet<ShadowMapTexture> shadowMapTexturesToBlur = new HashSet<ShadowMapTexture>();
@@ -69,18 +70,15 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         public ShadowMapRenderer(IServiceRegistry services, RenderPipeline recursivePipeline) : base(services, recursivePipeline)
         {
             // Build blur effects for VSM
-            var vsmHorizontalBlur = EffectSystem.LoadEffect("HorizontalVsmBlur");
-            var vsmVerticalBlur = EffectSystem.LoadEffect("VerticalVsmBlur");
-
-            vsmHorizontalBlurQuad = new PostEffectQuad(GraphicsDevice, vsmHorizontalBlur);
-            vsmVerticalBlurQuad = new PostEffectQuad(GraphicsDevice, vsmVerticalBlur);
+            vsmHorizontalBlur = EffectSystem.LoadEffect("HorizontalVsmBlur");
+            vsmVerticalBlur = EffectSystem.LoadEffect("VerticalVsmBlur");
         }
 
         #endregion
 
         #region Methods
 
-        protected override void Render(RenderContext context)
+        protected override void OnRendering(RenderContext context)
         {
             // get the lightprocessor
             var entitySystem = Services.GetServiceAs<EntitySystem>();
@@ -150,7 +148,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                         var cascade = shadowMap.Cascades[i];
 
                         // Override with current shadow map parameters
-                        graphicsDevice.Parameters.Set(ShadowMapKeys.DistanceMax, shadowMap.ShadowFarDistance);
+                        graphicsDevice.Parameters.Set(ShadowMapKeys.DistanceMax, shadowMap.LightType == LightType.Directional ? shadowMap.ShadowFarDistance : shadowMap.ShadowFarDistance - shadowMap.ShadowNearDistance);
                         graphicsDevice.Parameters.Set(LightKeys.LightDirection, shadowMap.LightDirectionNormalized);
                         graphicsDevice.Parameters.Set(ShadowMapCasterBaseKeys.shadowLightOffset, cascade.ReceiverInfo.Offset);
 
@@ -174,7 +172,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                             shadowMapTexturesToBlur.Add(shadowMap.Texture);
                         
                         graphicsDevice.Parameters.Set(ShadowMapParameters.FilterType, shadowMap.Filter);
-                        base.Render(context);
+                        base.OnRendering(context);
                     }
 
                     // reset layers
@@ -198,9 +196,13 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 graphicsDevice.SetDepthStencilState(graphicsDevice.DepthStencilStates.None);
                 graphicsDevice.SetRasterizerState(graphicsDevice.RasterizerStates.CullNone);
                 graphicsDevice.SetRenderTarget(shadowMap.ShadowMapDepthBuffer, shadowMap.IntermediateBlurRenderTarget);
-                vsmHorizontalBlurQuad.Draw(shadowMap.ShadowMapTargetTexture);
+
+                vsmHorizontalBlur.Parameters.Set(TexturingKeys.Texture0, shadowMap.ShadowMapTargetTexture);
+                graphicsDevice.DrawQuad(vsmHorizontalBlur);
+
                 graphicsDevice.SetRenderTarget(shadowMap.ShadowMapDepthBuffer, shadowMap.ShadowMapRenderTarget);
-                vsmVerticalBlurQuad.Draw(shadowMap.IntermediateBlurTexture);
+                vsmVerticalBlur.Parameters.Set(TexturingKeys.Texture0, shadowMap.IntermediateBlurTexture);
+                graphicsDevice.DrawQuad(vsmVerticalBlur);
             }
 
             shadowMapTexturesToBlur.Clear();
@@ -273,12 +275,22 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
                     // Compute caster view and projection matrices
                     shadowMapView = Matrix.LookAtRH(target - direction * zfar * 0.5f, target + direction * zfar * 0.5f, up); // View;
-                    shadowMapProjection = Matrix.OrthoOffCenterRH(-radius, radius, -radius, radius, znear / zfar, zfar); // Projection
+                    shadowMapProjection = Matrix.OrthoOffCenterRH(-radius, radius, -radius, radius, znear, zfar); // Projection
+                    // near and far are not correctly set but the shader will rewrite the z value
+                    // on the hand, the offset is correct
+
+                    // Compute offset
+                    Matrix shadowVInverse;
+                    Matrix.Invert(ref shadowMapView, out shadowVInverse);
+                    cascades[cascadeLevel].ReceiverInfo.Offset = new Vector3(shadowVInverse.M41, shadowVInverse.M42, shadowVInverse.M43);
                 }
                 else if (shadowMap.LightType == LightType.Spot)
                 {
-                    shadowMapView = Matrix.LookAtRH(shadowMap.LightPosition, shadowMap.LightPosition + shadowMap.LightDirection, Vector3.UnitY);
-                    shadowMapProjection = Matrix.PerspectiveFovRH(shadowMap.Fov, 1, shadowMap.ShadowNearDistance, shadowMap.ShadowFarDistance);
+                    shadowMapView = Matrix.LookAtRH(shadowMap.LightPosition, shadowMap.LightPosition + shadowMap.LightDirection, up);
+                    shadowMapProjection = Matrix.PerspectiveFovRH(shadowMap.Fov, 1, znear, zfar);
+
+                    // Set offset
+                    cascades[cascadeLevel].ReceiverInfo.Offset = shadowMap.LightPosition + znear * shadowMap.LightDirectionNormalized;
                 }
 
                 // Allocate shadow map area
@@ -318,11 +330,6 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
                 // Copy texture coords with border
                 cascades[cascadeLevel].ReceiverInfo.CascadeTextureCoordsBorder = cascadeTextureCoords;
-
-                // Compute offset
-                Matrix shadowVInverse;
-                Matrix.Invert(ref shadowMapView, out shadowVInverse);
-                cascades[cascadeLevel].ReceiverInfo.Offset = new Vector3(shadowVInverse.M41, shadowVInverse.M42, shadowVInverse.M43);
             }
         }
 

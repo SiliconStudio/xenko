@@ -3,8 +3,13 @@
 /// <summary>
 /// Computes point light attenuation.
 /// </summary>
-class PointShading : PointShadingBase, LightParameters
+class PointShading : ShadingGroup, LightParameters
 {
+    override float3 GetDirectionToLight(int lightIndex)
+    {
+        return GetLightPosition(lightIndex) - streams.ShadingEyePosition;
+    }
+
     override float3 GetAttenuation(int lightIndex)
     {
         // calculate basic attenuation

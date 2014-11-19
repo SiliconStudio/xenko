@@ -13,7 +13,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 
 
-#line 3 "C:\Projects\Paradox\sources\engine\SiliconStudio.Paradox.Engine\Effects\BasicEffect.pdxfx"
+#line 3 "D:\Code\Paradox\sources\engine\SiliconStudio.Paradox.Engine\Effects\BasicEffect.pdxfx"
 using SiliconStudio.Paradox.Effects.Data;
 
 #line 4
@@ -32,227 +32,190 @@ namespace ParadoxEffects
     };
 
     #line 13
-    public partial class WithSkinning  : IShaderMixinBuilder
-    {
-        public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
-        {
-
-            #line 19
-            context.CloneProperties();
-
-            #line 19
-            mixin.Mixin.CloneFrom(mixin.Parent.Mixin);
-
-            #line 20
-            if (context.GetParam(MaterialParameters.HasSkinningPosition))
-            {
-
-                #line 22
-                if (context.GetParam(MaterialParameters.SkinningBones) > context.GetParam(MaterialParameters.SkinningMaxBones))
-                {
-
-                    #line 25
-                    context.SetParam(MaterialParameters.SkinningMaxBones, context.GetParam(MaterialParameters.SkinningBones));
-                }
-
-                #line 27
-                mixin.Mixin.AddMacro("SkinningMaxBones", context.GetParam(MaterialParameters.SkinningMaxBones));
-
-                #line 28
-                context.Mixin(mixin, "TransformationSkinning");
-
-                #line 30
-                if (context.GetParam(MaterialParameters.HasSkinningNormal))
-                {
-
-                    #line 32
-                    if (context.GetParam(BasicEffectParameters.UsedNormalMap))
-
-                        #line 33
-                        context.Mixin(mixin, "TangentToViewSkinning");
-
-                    #line 35
-                    else
-
-                        #line 35
-                        context.Mixin(mixin, "NormalVSSkinning");
-
-                    #line 37
-                    context.Mixin(mixin, "NormalSkinning");
-                }
-
-                #line 40
-                if (context.GetParam(MaterialParameters.HasSkinningTangent))
-
-                    #line 41
-                    context.Mixin(mixin, "TangentSkinning");
-            }
-        }
-
-        [ModuleInitializer]
-        internal static void __Initialize__()
-
-        {
-            ShaderMixinManager.Register("WithSkinning", new WithSkinning());
-        }
-    }
-
-    #line 45
     public partial class BasicEffect  : IShaderMixinBuilder
     {
         public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
         {
 
-            #line 53
+            #line 21
             context.Mixin(mixin, "ShaderBase");
 
-            #line 54
+            #line 22
             context.Mixin(mixin, "TransformationWAndVP");
 
-            #line 56
+            #line 24
             context.Mixin(mixin, "PositionVSStream");
 
-            #line 58
+            #line 26
             if (context.GetParam(MaterialParameters.NormalMap) != null)
             {
 
-                #line 60
+                #line 28
                 context.Mixin(mixin, "NormalMapTexture");
 
                 {
 
-                    #line 61
+                    #line 29
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                    #line 61
+                    #line 29
                     context.Mixin(__subMixin, context.GetParam(MaterialParameters.NormalMap));
                     mixin.Mixin.AddComposition("normalMap", __subMixin.Mixin);
                 }
 
-                #line 62
+                #line 30
                 context.SetParam(BasicEffectParameters.UsedNormalMap, true);
             }
 
-            #line 65
+            #line 33
             else
             {
 
-                #line 66
+                #line 34
                 context.Mixin(mixin, "NormalVSStream");
             }
 
-            #line 69
+            #line 37
             context.Mixin(mixin, "BRDFDiffuseBase");
 
-            #line 70
+            #line 38
             context.Mixin(mixin, "BRDFSpecularBase");
 
-            #line 71
+            #line 39
             context.Mixin(mixin, "LightMultiDirectionalShadingPerPixel", 2);
 
-            #line 72
+            #line 40
             context.Mixin(mixin, "TransparentShading");
 
-            #line 73
+            #line 41
             context.Mixin(mixin, "DiscardTransparent");
 
-            #line 75
+            #line 43
             if (context.GetParam(MaterialParameters.AlbedoDiffuse) != null)
             {
 
                 {
 
-                    #line 77
+                    #line 45
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                    #line 77
+                    #line 45
                     context.Mixin(__subMixin, "ComputeBRDFDiffuseLambert");
                     mixin.Mixin.AddComposition("DiffuseLighting", __subMixin.Mixin);
                 }
 
                 {
 
-                    #line 78
+                    #line 46
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                    #line 78
+                    #line 46
                     context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoDiffuse));
                     mixin.Mixin.AddComposition("albedoDiffuse", __subMixin.Mixin);
                 }
             }
 
-            #line 81
+            #line 49
             if (context.GetParam(MaterialParameters.AlbedoSpecular) != null)
             {
 
                 {
 
-                    #line 83
+                    #line 51
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                    #line 83
+                    #line 51
                     context.Mixin(__subMixin, "ComputeBRDFColorSpecularBlinnPhong");
                     mixin.Mixin.AddComposition("SpecularLighting", __subMixin.Mixin);
                 }
 
                 {
 
-                    #line 84
+                    #line 52
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                    #line 84
+                    #line 52
                     context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoSpecular));
                     mixin.Mixin.AddComposition("albedoSpecular", __subMixin.Mixin);
                 }
 
-                #line 86
+                #line 54
                 if (context.GetParam(MaterialParameters.SpecularPowerMap) != null)
                 {
 
-                    #line 88
+                    #line 56
                     context.Mixin(mixin, "SpecularPower");
 
                     {
 
-                        #line 89
+                        #line 57
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                        #line 89
+                        #line 57
                         context.Mixin(__subMixin, context.GetParam(MaterialParameters.SpecularPowerMap));
                         mixin.Mixin.AddComposition("SpecularPowerMap", __subMixin.Mixin);
                     }
                 }
 
-                #line 92
+                #line 60
                 if (context.GetParam(MaterialParameters.SpecularIntensityMap) != null)
                 {
 
                     {
 
-                        #line 94
+                        #line 62
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                        #line 94
+                        #line 62
                         context.Mixin(__subMixin, context.GetParam(MaterialParameters.SpecularIntensityMap));
                         mixin.Mixin.AddComposition("SpecularIntensityMap", __subMixin.Mixin);
                     }
                 }
             }
 
+            #line 66
+            if (context.GetParam(MaterialParameters.HasSkinningPosition))
             {
 
-                #line 98
-                var __subMixin = new ShaderMixinSourceTree() { Name = "WithSkinning", Parent = mixin };
-                mixin.Children.Add(__subMixin);
+                #line 68
+                if (context.GetParam(MaterialParameters.SkinningBones) > context.GetParam(MaterialParameters.SkinningMaxBones))
+                {
 
-                #line 98
-                context.BeginChild(__subMixin);
+                    #line 71
+                    context.SetParam(MaterialParameters.SkinningMaxBones, context.GetParam(MaterialParameters.SkinningBones));
+                }
 
-                #line 98
-                context.Mixin(__subMixin, "WithSkinning");
+                #line 73
+                mixin.Mixin.AddMacro("SkinningMaxBones", context.GetParam(MaterialParameters.SkinningMaxBones));
 
-                #line 98
-                context.EndChild();
+                #line 74
+                context.Mixin(mixin, "TransformationSkinning");
+
+                #line 76
+                if (context.GetParam(MaterialParameters.HasSkinningNormal))
+                {
+
+                    #line 78
+                    if (context.GetParam(BasicEffectParameters.UsedNormalMap))
+
+                        #line 79
+                        context.Mixin(mixin, "TangentToViewSkinning");
+
+                    #line 81
+                    else
+
+                        #line 81
+                        context.Mixin(mixin, "NormalVSSkinning");
+
+                    #line 83
+                    context.Mixin(mixin, "NormalSkinning");
+                }
+
+                #line 86
+                if (context.GetParam(MaterialParameters.HasSkinningTangent))
+
+                    #line 87
+                    context.Mixin(mixin, "TangentSkinning");
             }
         }
 

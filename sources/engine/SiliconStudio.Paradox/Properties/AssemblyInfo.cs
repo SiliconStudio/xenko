@@ -16,8 +16,8 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.Graphics" + SiliconStudio.PublicKeys.Default)]
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.Audio" + SiliconStudio.PublicKeys.Default)]
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.Games" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Graphics.Regression" + SiliconStudio.PublicKeys.Default)]
 
 #if !SILICONSTUDIO_SIGNED
 [assembly: InternalsVisibleTo("SiliconStudio.ImageComparerService")]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Graphics.Regression")]
 #endif

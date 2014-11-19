@@ -58,7 +58,7 @@ namespace SiliconStudio.Paradox.Effects.Modules
                 mainPipeline.Renderers.Add(new BackgroundRenderer(serviceRegistry, backgroundName));
 
             // Renders all the meshes with the correct lighting.
-            mainPipeline.Renderers.Add(new LightForwardModelRenderer(serviceRegistry, effectName));
+            mainPipeline.Renderers.Add(new ModelRenderer(serviceRegistry, effectName).AddLightForwardSupport());
 
             // Renders the UI.
             if (ui)
@@ -96,6 +96,7 @@ namespace SiliconStudio.Paradox.Effects.Modules
             
             var mainPipeline = renderSystem.Pipeline;
 
+            /** TODO rewrite this
             mainPipeline.Renderers.Remove(mainPipeline.GetProcessor<UIRenderer>());
             mainPipeline.Renderers.Remove(mainPipeline.GetProcessor<LightForwardModelRenderer>());
             mainPipeline.Renderers.Remove(mainPipeline.GetProcessor<BackgroundRenderer>());
@@ -103,6 +104,7 @@ namespace SiliconStudio.Paradox.Effects.Modules
             mainPipeline.Renderers.Remove(mainPipeline.GetProcessor<ShadowMapRenderer>());
             mainPipeline.Renderers.Remove(mainPipeline.GetProcessor<CameraSetter>());
             entitySystem.Processors.Remove(entitySystem.GetProcessor<LightShadowProcessor>());
+             */
         }
 
         /// <summary>
@@ -142,7 +144,7 @@ namespace SiliconStudio.Paradox.Effects.Modules
             var gbufferPipeline = new RenderPipeline("GBuffer");
 
             // Renders the G-buffer for opaque geometry.
-            gbufferPipeline.Renderers.Add(new OpaqueModelRenderer(serviceRegistry, effectName + ".ParadoxGBufferShaderPass"));
+            gbufferPipeline.Renderers.Add(new ModelRenderer(serviceRegistry, effectName + ".ParadoxGBufferShaderPass").AddOpaqueFilter());
             var gbufferProcessor = new GBufferRenderProcessor(serviceRegistry, gbufferPipeline, graphicsService.GraphicsDevice.DepthStencilBuffer, false);
 
             // Add sthe G-buffer pass to the pipeline.
@@ -169,7 +171,7 @@ namespace SiliconStudio.Paradox.Effects.Modules
 
             // Prevents depth write since depth was already computed in G-buffer pas.
             mainPipeline.Renderers.Add(new RenderStateSetter(serviceRegistry) { DepthStencilState = graphicsService.GraphicsDevice.DepthStencilStates.DepthRead });
-            mainPipeline.Renderers.Add(new OpaqueModelRenderer(serviceRegistry, effectName));
+            mainPipeline.Renderers.Add(new ModelRenderer(serviceRegistry, effectName).AddOpaqueFilter());
             mainPipeline.Renderers.Add(new RenderTargetSetter(serviceRegistry)
             {
                 EnableClearDepth = false,
@@ -181,7 +183,7 @@ namespace SiliconStudio.Paradox.Effects.Modules
 
             // Renders transparent geometry. Depth stencil state is determined by the object to draw.
             //mainPipeline.Renderers.Add(new RenderStateSetter(serviceRegistry) { DepthStencilState = graphicsService.GraphicsDevice.DepthStencilStates.DepthRead });
-            mainPipeline.Renderers.Add(new TransparentModelRenderer(serviceRegistry, effectName));
+            mainPipeline.Renderers.Add(new ModelRenderer(serviceRegistry, effectName).AddTransparentFilter());
 
             // Renders the UI.
             if (ui)
@@ -221,6 +223,7 @@ namespace SiliconStudio.Paradox.Effects.Modules
 
             var mainPipeline = renderSystem.Pipeline;
 
+            /*TODO REVIEW THIS CLASS
             mainPipeline.Renderers.Remove(mainPipeline.GetProcessor<UIRenderer>());
             mainPipeline.Renderers.Remove(mainPipeline.GetProcessor<TransparentModelRenderer>());
             mainPipeline.Renderers.Remove(mainPipeline.GetProcessor<RenderStateSetter>());
@@ -233,6 +236,7 @@ namespace SiliconStudio.Paradox.Effects.Modules
             mainPipeline.Renderers.Remove(mainPipeline.GetProcessor<GBufferRenderProcessor>());
             mainPipeline.Renderers.Remove(mainPipeline.GetProcessor<ShadowMapRenderer>());
             mainPipeline.Renderers.Remove(mainPipeline.GetProcessor<CameraSetter>());
+             */
             entitySystem.Processors.Remove(entitySystem.GetProcessor<LightShadowProcessor>());
         }
 
@@ -243,7 +247,7 @@ namespace SiliconStudio.Paradox.Effects.Modules
         private static ShadowMapRenderer AddShadowMap(IServiceRegistry serviceRegistry, RenderPipeline pipeline, string effectName)
         {
             var shadowMapPipeline = new RenderPipeline("ShadowMap");
-            shadowMapPipeline.Renderers.Add(new ShadowMapModelRenderer(serviceRegistry, effectName + ".ShadowMapCaster"));
+            shadowMapPipeline.Renderers.Add(new ModelRenderer(serviceRegistry, effectName + ".ShadowMapCaster").AddShadowCasterFilter());
 
             var shadowMapRenderer = new ShadowMapRenderer(serviceRegistry, shadowMapPipeline);
             pipeline.Renderers.Add(shadowMapRenderer);

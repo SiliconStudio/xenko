@@ -12,11 +12,8 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("SiliconStudio.Core.IO.Serializers" + SiliconStudio.PublicKeys.Default)]
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.Engine" + SiliconStudio.PublicKeys.Default)]
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.Engine.Step1" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Core.Tests" + SiliconStudio.PublicKeys.Default)]
 
-#if !SILICONSTUDIO_SIGNED
-[assembly: InternalsVisibleTo("SiliconStudio.Core.Tests")]
-// looks like whenever we open the generated iOS solution with visual studio, it removes the dot in the assembly name -_-
 #if SILICONSTUDIO_PLATFORM_IOS
-[assembly: InternalsVisibleTo("SiliconStudioCoreTests")]
-#endif
+[assembly: InternalsVisibleTo("SiliconStudioCoreTests" + SiliconStudio.PublicKeys.Default)]
 #endif

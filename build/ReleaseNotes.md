@@ -1,3 +1,33 @@
+### Version 1.0.0-beta04
+
+Release date: 2014/??/??
+
+#### New Features
+- Build: We now use OSS (OpenSource Signing) so that you can fake-sign assemblies with the same keys as ours, and use your own compiled Paradox with the official editor.
+- Graphics: Spot light shadow maps in deferred rendering.
+
+#### Enhancements
+- Graphics: Better computation of shadow maps (for both directional and spot lights).
+- Graphics: Add geometric primitive for Cone.
+- Samples: Spot light shadows in DeferredLighting sample.
+- Studio: Added documentation on properties of the property grid.
+
+#### Issues fixed
+- Assets: Textures with arbitrary size (non square and non power-of-two) are now correctly loaded.
+- Graphics: Fix spot light shadow computation.
+- Shaders: Simplify some deferred lighting shaders.
+- Studio: Fix renamed button for string-indexed dictionary that was misplaced and not working
+- Studio: Fix add parameter key control filtering and mouse selection
+
+#### Breaking changes
+- Engine: Remove obsolete MeshDrawHelper file (use GeometricPrimitive instead), move ToMeshDraw method to GeometricPrimitiveExtensions.
+
+#### Known Issues
+- Physics: Complex convex hull decomposition can be a very long process and there is visual feedback for it.
+- Physics: Convex hull shape debug shapes in game studio are not rendering very well, although the asset will be OK.
+
+___
+
 ### Version 1.0.0-beta03
 
 Release date: 2014/11/11
@@ -50,6 +80,8 @@ Release date: 2014/11/11
 - Physics: Complex convex hull decomposition can be a very long process and there is visual feedback for it.
 - Physics: Convex hull shape debug shapes in game studio are not rendering very well, although the asset will be OK.
 
+___
+
 ### Version 1.0.0-beta02
 
 Release date: 2014/10/22
@@ -73,6 +105,8 @@ Release date: 2014/10/22
 - UI: Opacity is new correctly taken into account when drawing background color of UI elements ([#43](https://github.com/SiliconStudio/paradox/issues/43)).
 - UI: Fix rendering problems on the Button/ToggleButton's content when setting their background color.
 - Visual Studio Package: Syntax highlighting was not working properly on VS2012 ([#45](https://github.com/SiliconStudio/paradox/issues/45)).
+
+___
 
 ### Version 1.0.0-beta01
 
@@ -144,6 +178,7 @@ More details at [http://paradox3d.net/blog/new-version-open-sourcing](http://par
 - Samples: Since there is no accelerometer Input API yet, Accelerometer sample is currently removed.
 - Windows Store/Phone: UI EditText and Game Resume/Destroy cycles are not implemented.
 - Windows Store/Phone: SharpFont.dll is still compiled against .NET 4.5 (might not pass certifications).
+
 ___
 
 ### Version 1.0.0-alpha11

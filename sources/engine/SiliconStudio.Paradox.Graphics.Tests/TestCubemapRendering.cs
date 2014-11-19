@@ -7,13 +7,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Modules;
 using SiliconStudio.Paradox.Effects.Modules.Processors;
 using SiliconStudio.Paradox.Effects.Modules.Renderers;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
+using SiliconStudio.Paradox.Extensions;
 using SiliconStudio.Paradox.Input;
 
 namespace SiliconStudio.Paradox.Graphics.Tests
@@ -133,7 +133,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             // Rendering pipeline
             var cubeMapPipeline = new RenderPipeline("CubeMap");
-            cubeMapPipeline.Renderers.Add(new LayerModelRenderer(Services, renderInOnePass ? "CubemapGeomEffect" : "CubemapEffect", RenderLayers.RenderLayer1));
+            cubeMapPipeline.Renderers.Add(new ModelRenderer(Services, renderInOnePass ? "CubemapGeomEffect" : "CubemapEffect").AddLayerFilter(RenderLayers.RenderLayer1));
             RenderSystem.Pipeline.Renderers.Add(new CubemapRenderer(Services, cubeMapPipeline, renderInOnePass));
             RenderSystem.Pipeline.Renderers.Add(new CameraSetter(Services));
             RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services) { ClearColor = Color.CornflowerBlue });

@@ -25,7 +25,7 @@ class ShadowMapCasterBase : Transformation, ShaderBase, PositionStream
         float4 vPositionWS = mul(streams.Position, World);
         // For each cascade, adjust Z position according to the light offset, then project along the light.
         // linear depth
-        streams.ShadingPosition.z = dot(shadowLightDirection, vPositionWS.xyz - shadowLightOffset) / ShadowMapDistance;
+        streams.ShadingPosition.z = streams.ShadingPosition.w * dot(shadowLightDirection, vPositionWS.xyz - shadowLightOffset) / ShadowMapDistance;
     }
     
     /// --------------------------------------------------------------------------------

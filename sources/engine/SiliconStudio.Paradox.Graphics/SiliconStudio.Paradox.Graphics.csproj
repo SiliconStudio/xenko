@@ -120,6 +120,8 @@
     <Compile Include="GeometricMultiTexcoordPrimitive.Cube.cs" />
     <Compile Include="GeometricMultiTexcoordPrimitive.Cylinder.cs" />
     <Compile Include="GeometricMultiTexcoordPrimitive.Torus.cs" />
+    <Compile Include="GeometricPrimitive.Cone.cs" />
+    <Compile Include="GraphicsDeviceExtensions.cs" />
     <Compile Include="GraphicsOutput.cs" />
     <Compile Include="ImageFragment.cs" />
     <Compile Include="ImageGroup.cs" />
@@ -127,7 +129,6 @@
     <Compile Include="OpenGL\GraphicsOutput.OpenGL.cs" />
     <Compile Include="OpenGL\VertexArrayObjectInstance.cs" />
     <Compile Include="OpenGL\VertexAttrib.cs" />
-    <Compile Include="PostEffectQuad.cs" />
     <Compile Include="ResumeManager.cs" />
     <Compile Include="Direct3D\VertexArrayLayout.Direct3D.cs" />
     <Compile Include="Effects\ConstantBufferData.cs" />
@@ -188,6 +189,7 @@
     <Compile Include="Shaders.Bytecodes\UIEffectSeparateAlpha.bytecode.Direct3D11.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\UIEffectSeparateAlpha.bytecode.OpenGL.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\UIEffectSeparateAlpha.bytecode.OpenGLES.Level_9_1.cs" />
+    <Compile Include="Shaders\TexturingKeys.cs" />
     <Compile Include="Shaders\UIEffectSeparateAlpha.cs">
       <DependentUpon>UIEffectSeparateAlpha.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -304,6 +306,7 @@
     <Compile Include="VertexPosition2.cs" />
     <Compile Include="VertexPositionColorTexture.cs" />
     <Compile Include="VertexPositionColorTextureSwizzle.cs" />
+    <Compile Include="VertexPositionNormalColor.cs" />
     <Compile Include="VertexPositionNormalTangentMultiTexture.cs" />
     <Compile Include="VertexPositionNormalTexture.cs" />
     <Compile Include="VertexPositionTexture.cs" />

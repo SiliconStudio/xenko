@@ -10,38 +10,6 @@ namespace ParadoxEffects
         bool UsedNormalMap = false;
     };
 
-    partial shader WithSkinning
-    {
-        using params MaterialParameters;
-        using params CompilerParameters;
-        using params BasicEffectParameters;
-
-        mixin clone;
-        if (MaterialParameters.HasSkinningPosition)
-        {
-            if (MaterialParameters.SkinningBones > MaterialParameters.SkinningMaxBones)
-            {
-                // TODO: We should use next power of two minus constant to limit shader permutations?
-                MaterialParameters.SkinningMaxBones = MaterialParameters.SkinningBones;
-            }
-            mixin macro MaterialParameters.SkinningMaxBones;
-            mixin TransformationSkinning;
-         
-            if (MaterialParameters.HasSkinningNormal)
-            {
-                if (BasicEffectParameters.UsedNormalMap)
-                    mixin TangentToViewSkinning;
-                else
-                    mixin NormalVSSkinning;
-
-                mixin NormalSkinning;
-            }
-
-            if (MaterialParameters.HasSkinningTangent)
-                mixin TangentSkinning;
-        }
-    };
-
     shader BasicEffect
     {
         using params RenderingParameters;
@@ -95,6 +63,28 @@ namespace ParadoxEffects
             }
         }
 
-        mixin child WithSkinning;
+        if (MaterialParameters.HasSkinningPosition)
+        {
+            if (MaterialParameters.SkinningBones > MaterialParameters.SkinningMaxBones)
+            {
+                // TODO: We should use next power of two minus constant to limit shader permutations?
+                MaterialParameters.SkinningMaxBones = MaterialParameters.SkinningBones;
+            }
+            mixin macro MaterialParameters.SkinningMaxBones;
+            mixin TransformationSkinning;
+         
+            if (MaterialParameters.HasSkinningNormal)
+            {
+                if (BasicEffectParameters.UsedNormalMap)
+                    mixin TangentToViewSkinning;
+                else
+                    mixin NormalVSSkinning;
+
+                mixin NormalSkinning;
+            }
+
+            if (MaterialParameters.HasSkinningTangent)
+                mixin TangentSkinning;
+        }
     };
 }

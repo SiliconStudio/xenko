@@ -448,6 +448,27 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>MaterialReflectanceGBuffer.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Renderers\DirectLightData.cs" />
+    <Compile Include="Renderers\LightForwardModelRendererExtensions.cs" />
+    <Compile Include="Renderers\LightingGroupInfo.cs" />
+    <Compile Include="Renderers\LightingUpdateInfo.cs" />
+    <Compile Include="Renderers\LightingUpdateType.cs" />
+    <Compile Include="Renderers\LightParamSemantic.cs" />
+    <Compile Include="Renderers\PointLightData.cs" />
+    <Compile Include="Renderers\ShadowUpdateInfo.cs" />
+    <Compile Include="Renderers\SpotLightData.cs" />
+    <Compile Include="LightPrepass\DeferredSpotShadowLighting.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>DeferredSpotShadowLighting.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="LightPrepass\DeferredTiledShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>DeferredTiledShader.pdxsl</DependentUpon>
+    </Compile>
     <Compile Include="Shading\MaterialReflectance.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -518,7 +539,6 @@
     <Compile Include="Renderers\LightForwardModelRenderer.cs" />
     <Compile Include="Renderers\LightingIBLRenderer.cs" />
     <Compile Include="Renderers\LightingPrepassRenderer.cs" />
-    <Compile Include="Renderers\PostProcessRenderer.cs" />
     <Compile Include="Renderers\ShadowMapRenderer.cs" />
     <Compile Include="Renderers\SkyboxRenderer.cs" />
     <Compile Include="Shading\AmbientMapShading.cs">
@@ -634,12 +654,6 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ShadowMapBase.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="LightPrepass\DeferredShadowMapCascadeBase.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>DeferredShadowMapCascadeBase.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="LightPrepass\DeferredSpotLighting.cs">
       <AutoGen>True</AutoGen>
@@ -905,12 +919,6 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>PointShading.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="Shading\PointShadingBase.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>PointShadingBase.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Shading\ShadingDiffuse.cs">
       <AutoGen>True</AutoGen>
@@ -1887,6 +1895,14 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialReflectanceGBuffer.cs</LastGenOutput>
     </None>
+    <None Include="LightPrepass\DeferredSpotShadowLighting.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>DeferredSpotShadowLighting.cs</LastGenOutput>
+    </None>
+    <None Include="LightPrepass\DeferredTiledShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>DeferredTiledShader.cs</LastGenOutput>
+    </None>
     <None Include="Shading\MaterialReflectance.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialReflectance.cs</LastGenOutput>
@@ -2035,10 +2051,6 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadowMapBase.cs</LastGenOutput>
     </None>
-    <None Include="LightPrepass\DeferredShadowMapCascadeBase.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>DeferredShadowMapCascadeBase.cs</LastGenOutput>
-    </None>
     <None Include="LightPrepass\DeferredSpotLighting.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>DeferredSpotLighting.cs</LastGenOutput>
@@ -2102,10 +2114,6 @@
     <None Include="Shading\PointShading.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>PointShading.cs</LastGenOutput>
-    </None>
-    <None Include="Shading\PointShadingBase.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>PointShadingBase.cs</LastGenOutput>
     </None>
     <None Include="Shading\ShadingDiffuse.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

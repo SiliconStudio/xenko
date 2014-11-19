@@ -1,5 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
+  </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -152,7 +155,6 @@
     <Compile Include="FBXEntityAnimTestGame.cs" />
     <Compile Include="FBXTestGame.cs" />
     <Compile Include="FBXEntityTestGame.cs" />
-    <Compile Include="CubeTestGame.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="TestAnimationChannel.cs" />
     <Compile Include="TestEntitySerializer.cs" />

@@ -3,6 +3,8 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
+
+using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.TextureConverter.Requests;
 
@@ -122,7 +124,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                 current = request.TextureList[i];
                 buffer = new IntPtr(arrayData + offset1);
                 offset1 += current.DataSize;
-                Tools.CopyMemory(buffer, current.Data, current.DataSize);
+                Utilities.CopyMemory(buffer, current.Data, current.DataSize);
 
                 offset2 = 0;
                 currentData = buffer.ToInt64();
@@ -256,7 +258,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
             for (int i = 0; i < subImageCount; ++i)
             {
-                Tools.CopyMemory(array.SubImageArray[indice].Data, request.Texture.SubImageArray[i].Data, request.Texture.SubImageArray[i].DataSize);
+                Utilities.CopyMemory(array.SubImageArray[indice].Data, request.Texture.SubImageArray[i].Data, request.Texture.SubImageArray[i].DataSize);
                 ++indice;
             }
         }
@@ -296,7 +298,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             {
                 subImages[i] = array.SubImageArray[i];
                 subImages[i].Data = new IntPtr(bufferData + offset);
-                Tools.CopyMemory(subImages[i].Data, array.SubImageArray[i].Data, array.SubImageArray[i].DataSize);
+                Utilities.CopyMemory(subImages[i].Data, array.SubImageArray[i].Data, array.SubImageArray[i].DataSize);
                 offset += array.SubImageArray[i].DataSize;
             }
 
@@ -305,7 +307,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             for (int i = 0; i < subImageCount; ++i)
             {
                 subImages[ct] = request.Texture.SubImageArray[i];
-                Tools.CopyMemory(subImages[ct].Data, request.Texture.SubImageArray[i].Data, request.Texture.SubImageArray[i].DataSize);
+                Utilities.CopyMemory(subImages[ct].Data, request.Texture.SubImageArray[i].Data, request.Texture.SubImageArray[i].DataSize);
                 offset += request.Texture.SubImageArray[i].DataSize;
                 ++ct;
             }
@@ -315,7 +317,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             {
                 subImages[ct] = array.SubImageArray[i];
                 subImages[ct].Data = new IntPtr(bufferData + offset);
-                Tools.CopyMemory(subImages[ct].Data, array.SubImageArray[i].Data, array.SubImageArray[i].DataSize);
+                Utilities.CopyMemory(subImages[ct].Data, array.SubImageArray[i].Data, array.SubImageArray[i].DataSize);
                 offset += array.SubImageArray[i].DataSize;
                 ++ct;
             }
@@ -365,7 +367,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             {
                 subImages[i] = array.SubImageArray[i];
                 subImages[i].Data = new IntPtr(bufferData + offset);
-                Tools.CopyMemory(subImages[i].Data, array.SubImageArray[i].Data, array.SubImageArray[i].DataSize);
+                Utilities.CopyMemory(subImages[i].Data, array.SubImageArray[i].Data, array.SubImageArray[i].DataSize);
                 offset += array.SubImageArray[i].DataSize;
             }
 
@@ -374,7 +376,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             {
                 subImages[indice] = array.SubImageArray[i];
                 subImages[indice].Data = new IntPtr(bufferData + offset);
-                Tools.CopyMemory(subImages[indice].Data, array.SubImageArray[i].Data, array.SubImageArray[i].DataSize);
+                Utilities.CopyMemory(subImages[indice].Data, array.SubImageArray[i].Data, array.SubImageArray[i].DataSize);
                 offset += array.SubImageArray[i].DataSize;
                 ++indice;
             }

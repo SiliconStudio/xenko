@@ -26,6 +26,12 @@ namespace SiliconStudio.AssemblyProcessor
 
             MethodDefinition parameterKeysMergeMethod = null;
             TypeDefinition assemblyEffectKeysAttributeType = null;
+            var getTypeFromHandleMethod = new Lazy<MethodReference>(() =>
+            {
+                // Find Type.GetTypeFromHandle
+                var typeType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(Type).FullName);
+                return assembly.MainModule.Import(typeType.Methods.First(x => x.Name == "GetTypeFromHandle"));   
+            });
 
             var effectKeysStaticConstructors = new List<MethodReference>();
 
@@ -110,6 +116,8 @@ namespace SiliconStudio.AssemblyProcessor
 
                         var nextInstruction = cctorInstructions[i + 1];
                         cctorIL.InsertBefore(nextInstruction, Instruction.Create(OpCodes.Ldsfld, activeField));
+                        cctorIL.InsertBefore(nextInstruction, Instruction.Create(OpCodes.Ldtoken, type));
+                        cctorIL.InsertBefore(nextInstruction, Instruction.Create(OpCodes.Call, getTypeFromHandleMethod.Value));
                         cctorIL.InsertBefore(nextInstruction, Instruction.Create(OpCodes.Ldstr, keyClassName + activeField.Name));
                         cctorIL.InsertBefore(nextInstruction, Instruction.Create(OpCodes.Call, assembly.MainModule.Import(parameterKeysMergeMethod)));
                         cctorIL.InsertBefore(nextInstruction, Instruction.Create(OpCodes.Castclass, activeField.FieldType));
@@ -156,7 +164,6 @@ namespace SiliconStudio.AssemblyProcessor
                 var typeType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(Type).FullName);
                 var typeHandleProperty = typeType.Properties.First(x => x.Name == "TypeHandle");
                 var getTypeHandleMethod = assembly.MainModule.Import(typeHandleProperty.GetMethod);
-                var getTypeFromHandleMethod = assembly.MainModule.Import(typeType.Methods.First(x => x.Name == "GetTypeFromHandle"));
 
                 var runtimeHelpersType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(RuntimeHelpers).FullName);
                 var runClassConstructorMethod = assembly.MainModule.Import(runtimeHelpersType.Methods.Single(x => x.IsPublic && x.Name == "RunClassConstructor" && x.Parameters.Count == 1 && x.Parameters[0].ParameterType.FullName == typeof(RuntimeTypeHandle).FullName));
@@ -166,7 +173,7 @@ namespace SiliconStudio.AssemblyProcessor
                 foreach (var effectKeysStaticConstructor in effectKeysStaticConstructors)
                 {
                     il.Append(Instruction.Create(OpCodes.Ldtoken, effectKeysStaticConstructor.DeclaringType));
-                    il.Append(Instruction.Create(OpCodes.Call, getTypeFromHandleMethod));
+                    il.Append(Instruction.Create(OpCodes.Call, getTypeFromHandleMethod.Value));
                     il.Append(Instruction.Create(OpCodes.Callvirt, getTypeHandleMethod));
                     il.Append(Instruction.Create(OpCodes.Call, runClassConstructorMethod));
                 }
