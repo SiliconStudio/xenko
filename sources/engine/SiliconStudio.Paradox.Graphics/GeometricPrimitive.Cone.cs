@@ -65,8 +65,8 @@ namespace SiliconStudio.Paradox.Graphics
                     vertices[vertice++] = new VertexPositionNormalColor { Position = position, Normal = normal, Color = color };
 
                     indices[index++] = i * 2;
-                    indices[index++] = i * 2 + 1;
                     indices[index++] = (i * 2 + 3) % (tessellation * 2);
+                    indices[index++] = i * 2 + 1;
                 }
 
                 // End cap
@@ -78,11 +78,11 @@ namespace SiliconStudio.Paradox.Graphics
                     vertices[vertice++] = (new VertexPositionNormalColor { Position = position, Normal = -Vector3.UnitX, Color = color });
 
                     indices[index++] = tessellation * 2;
-                    indices[index++] = tessellation * 2 + 1 + ((i + 1) % tessellation);
                     indices[index++] = tessellation * 2 + 1 + i;
+                    indices[index++] = tessellation * 2 + 1 + ((i + 1) % tessellation);
                 }
 
-                return new GeometricMeshData<VertexPositionNormalColor>(vertices, indices, toLeftHanded, VertexPositionNormalColor.Layout) { Name = "Cone"};
+                return new GeometricMeshData<VertexPositionNormalColor>(vertices, indices, toLeftHanded) { Name = "Cone"};
             }
         }
     }

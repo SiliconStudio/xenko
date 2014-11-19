@@ -191,7 +191,7 @@ namespace SiliconStudio.Paradox.EntityModel
         /// <param name="entity">The entity.</param>
         public void Remove(Entity entity)
         {
-            InternalRemoveEntity(entity);
+            InternalRemoveEntity(entity, true);
         }
 
         /// <summary>
@@ -201,7 +201,7 @@ namespace SiliconStudio.Paradox.EntityModel
         {
             foreach (var entity in entities.Keys.ToList())
             {
-                InternalRemoveEntity(entity);
+                InternalRemoveEntity(entity, true);
             }
         }
 
@@ -251,7 +251,8 @@ namespace SiliconStudio.Paradox.EntityModel
         /// Removes the specified entity.
         /// </summary>
         /// <param name="entity">The entity to remove.</param>
-        internal void InternalRemoveEntity(Entity entity)
+        /// <param name="removeParent">Indicate if entity should be removed from its parent</param>
+        internal void InternalRemoveEntity(Entity entity, bool removeParent)
         {
             // Entity wasn't already added
             List<EntityProcessor> entityProcessors;
@@ -261,8 +262,11 @@ namespace SiliconStudio.Paradox.EntityModel
             entities.Remove(entity);
             enabledEntities.Remove(entity);
 
-            // Force parent to be null, so that it is removed even if it is not a root node
-            entity.Transformation.Parent = null;
+            if (removeParent)
+            {
+                // Force parent to be null, so that it is removed even if it is not a root node
+                entity.Transformation.Parent = null;
+            }
 
             // Notify Processors thie entity has been removed
             foreach (var system in processors)

@@ -43,6 +43,7 @@
     <Compile Include="IO\UFileSerializer.cs" />
     <Compile Include="IO\UPath.cs" />
     <Compile Include="IO\UPathType.cs" />
+    <Compile Include="IO\UPathTypeConverter.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="NamingHelper.cs" />

@@ -195,13 +195,17 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             {
                 graphicsDevice.SetDepthStencilState(graphicsDevice.DepthStencilStates.None);
                 graphicsDevice.SetRasterizerState(graphicsDevice.RasterizerStates.CullNone);
-                graphicsDevice.SetRenderTarget(shadowMap.ShadowMapDepthBuffer, shadowMap.IntermediateBlurRenderTarget);
 
+                // TODO: use next post effect instead
+                graphicsDevice.SetRenderTarget(shadowMap.ShadowMapDepthBuffer, shadowMap.IntermediateBlurRenderTarget);
                 vsmHorizontalBlur.Parameters.Set(TexturingKeys.Texture0, shadowMap.ShadowMapTargetTexture);
+                vsmHorizontalBlur.Parameters.Set(TexturingKeys.Sampler, GraphicsDevice.SamplerStates.LinearClamp);
                 graphicsDevice.DrawQuad(vsmHorizontalBlur);
 
+                // TODO: use next post effect instead
                 graphicsDevice.SetRenderTarget(shadowMap.ShadowMapDepthBuffer, shadowMap.ShadowMapRenderTarget);
                 vsmVerticalBlur.Parameters.Set(TexturingKeys.Texture0, shadowMap.IntermediateBlurTexture);
+                vsmVerticalBlur.Parameters.Set(TexturingKeys.Sampler, GraphicsDevice.SamplerStates.LinearClamp);
                 graphicsDevice.DrawQuad(vsmVerticalBlur);
             }
 

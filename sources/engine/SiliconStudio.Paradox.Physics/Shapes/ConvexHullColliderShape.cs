@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox.Physics
             }
 
             var intIndices = indices.Select(x => (int)x).ToArray();
-            var meshData = new GeometricMeshData<VertexPositionNormalTexture>(verts, intIndices, false, VertexPositionNormalTexture.Layout);
+            var meshData = new GeometricMeshData<VertexPositionNormalTexture>(verts, intIndices, false);
 
             DebugPrimitive = new GeometricPrimitive(PhysicsEngine.Singleton.DebugGraphicsDevice, meshData);
             DebugPrimitiveScaling = Matrix.Scaling(new Vector3(1, 1, 1) * 1.01f);
