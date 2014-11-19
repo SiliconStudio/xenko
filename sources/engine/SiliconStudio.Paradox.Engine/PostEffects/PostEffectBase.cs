@@ -14,6 +14,9 @@ namespace SiliconStudio.Paradox.PostEffects
     /// </summary>
     public abstract class PostEffectBase : ComponentBase
     {
+        private readonly Texture[] inputTextures;
+        private int maxInputTextureIndex;
+
         private DepthStencilBuffer outputDepthStencilBuffer;
 
         private RenderTarget outputRenderTargetView;
@@ -35,6 +38,8 @@ namespace SiliconStudio.Paradox.PostEffects
             Assets = context.Services.GetSafeServiceAs<AssetManager>();
             Name = name ?? GetType().Name;
             Enabled = true;
+            inputTextures = new Texture[128];
+            maxInputTextureIndex = -1;
         }
 
         /// <summary>
@@ -60,28 +65,55 @@ namespace SiliconStudio.Paradox.PostEffects
         /// </summary>
         /// <value>The graphics device.</value>
         protected GraphicsDevice GraphicsDevice { get; private set; }
+
+        /// <summary>
+        /// Sets an input texture
+        /// </summary>
+        /// <param name="slot">The slot.</param>
+        /// <param name="texture">The texture.</param>
+        public void SetInput(int slot, Texture texture)
+        {
+            if (slot < 0 || slot >= inputTextures.Length)
+                throw new ArgumentOutOfRangeException("slot", "slot must be in the range [0, 128[");
+
+            inputTextures[slot] = texture;
+            if (slot > maxInputTextureIndex)
+            {
+                maxInputTextureIndex = slot;
+            }
+        }
+
+        /// <summary>
+        /// Resets the input textures.
+        /// </summary>
+        public void ResetInputs()
+        {
+            maxInputTextureIndex = -1;
+            Array.Clear(inputTextures, 0, inputTextures.Length);
+        }
+
         /// <summary>
         /// Sets the render target output.
         /// </summary>
         /// <param name="view">The render target output view.</param>
-        public PostEffectBase SetOutput(RenderTarget view, DepthStencilBuffer depthStencilBuffer = null)
+        /// <param name="depthStencilBuffer">The depth stencil buffer.</param>
+        /// <exception cref="System.ArgumentNullException">view</exception>
+        public void SetOutput(RenderTarget view, DepthStencilBuffer depthStencilBuffer = null)
         {
             if (view == null) throw new ArgumentNullException("view");
 
             SetOutputInternal(view, depthStencilBuffer);
-            return this;
         }
 
         /// <summary>
         /// Sets the render target outputs.
         /// </summary>
         /// <param name="views">The render target output views.</param>
-        public virtual PostEffectBase SetOutput(params RenderTarget[] views)
+        public void SetOutput(params RenderTarget[] views)
         {
             if (views == null) throw new ArgumentNullException("views");
 
             SetOutputInternal(null, views);
-            return this;
         }
 
         /// <summary>
@@ -91,12 +123,11 @@ namespace SiliconStudio.Paradox.PostEffects
         /// <param name="views">The render target output views.</param>
         /// <returns>PostEffectBase.</returns>
         /// <exception cref="System.ArgumentNullException">views</exception>
-        public virtual PostEffectBase SetOutput(DepthStencilBuffer depthStencilBuffer, params RenderTarget[] views)
+        public void SetOutput(DepthStencilBuffer depthStencilBuffer, params RenderTarget[] views)
         {
             if (views == null) throw new ArgumentNullException("views");
 
             SetOutputInternal(depthStencilBuffer, views);
-            return this;
         }
 
         /// <summary>
@@ -153,6 +184,31 @@ namespace SiliconStudio.Paradox.PostEffects
             outputDepthStencilBuffer = depthStencilBuffer;
             outputRenderTargetView = null;
             outputRenderTargetViews = views;
+        }
+
+        protected int GetInputCount()
+        {
+            return maxInputTextureIndex + 1;
+        }
+
+        protected Texture GetInput(int index)
+        {
+            if (index < 0 || index > maxInputTextureIndex)
+            {
+                throw new ArgumentOutOfRangeException("index", string.Format("Invald texture input index [{0}]. Max value is [{1}]", index, maxInputTextureIndex));
+            }
+            return inputTextures[index];
+        }
+
+        protected Texture GetSafeInput(int index)
+        {
+            var input = GetInput(index);
+            if (input == null)
+            {
+                throw new InvalidOperationException(string.Format("Expecting texture input on slot [{0}]", index));
+            }
+
+            return input;
         }
 
         protected int GetOutputCount()
