@@ -70,49 +70,49 @@ namespace SiliconStudio.Paradox.Assets
         /// <summary>
         /// Gets or sets a value indicating whether to generate texture atlas
         /// </summary>
-        [DataMember(80)]
+        [DataMember(1000)]
         [DefaultValue(true)]
-        public bool GenerateTextureAtlas { get; set; }
+        public bool AtlasPackingEnabled { get; set; }
 
         /// <summary>
         /// Gets or sets MaxRects rectangles placement algorithm
         /// </summary>
-        [DataMember(90)]
+        [DataMember(1010)]
         [DefaultValue(TexturePackingMethod.Best)]
         public TexturePackingMethod AtlasPackingAlgorithm { get; set; }
 
         /// <summary>
         /// Gets or sets the use of Multipack atlas mode which allows more than one texture atlas to fit all given textures
         /// </summary>
-        [DataMember(100)]
+        [DataMember(1020)]
         [DefaultValue(true)]
-        public bool UseMultipackAtlas { get; set; }
+        public bool AtlasUseMultipack { get; set; }
 
         /// <summary>
         /// Gets or sets whether or not to use Rotation for images inside atlas texture
         /// </summary>
-        [DataMember(110)]
+        [DataMember(1030)]
         [DefaultValue(true)]
-        public bool UseRotationInAtlas { get; set; }
+        public bool AtlasUseRotation { get; set; }
 
         /// <summary>
         /// Gets or sets max width for generated atlas textures
         /// </summary>
-        [DataMember(120)]
+        [DataMember(1040)]
         public int AtlasMaxWidth { get; set; }
 
         /// <summary>
         /// Gets or sets max height for generated atlas textures
         /// </summary>
-        [DataMember(130)]
+        [DataMember(1050)]
         public int AtlasMaxHeight { get; set; }
 
         /// <summary>
         /// Gets or sets atlas border size for images inside atlas texture
         /// </summary>
-        [DataMember(140)]
+        [DataMember(1060)]
         [DefaultValue(0)]
-        public int BorderSize { get; set; }
+        public int AtlasBorderSize { get; set; }
 
         /// <summary>
         /// Sets default values for fields
@@ -126,16 +126,16 @@ namespace SiliconStudio.Paradox.Assets
             GenerateMipmaps = false;
             PremultiplyAlpha = true;
 
-            GenerateTextureAtlas = true;
+            AtlasPackingEnabled = true;
             AtlasPackingAlgorithm = TexturePackingMethod.Best;
-            UseMultipackAtlas = true;
+            AtlasUseMultipack = true;
 
-            UseRotationInAtlas = true;
+            AtlasUseRotation = true;
 
             AtlasMaxWidth = 2048;
             AtlasMaxHeight = 2048;
 
-            BorderSize = 0;
+            AtlasBorderSize = 0;
         }
 
         /// <summary>

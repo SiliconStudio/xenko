@@ -68,7 +68,7 @@ namespace SiliconStudio.Paradox.Assets
                         SpriteToTextureKey[spriteAsset] = ImageGroupAsset.BuildTextureUrl(urlInStorage, i);
                     
                     // texture asset does not need to be generated if using texture atlas
-                    if(asset.GenerateTextureAtlas) 
+                    if(asset.AtlasPackingEnabled) 
                         continue;
 
                     // create an texture asset.
@@ -121,7 +121,7 @@ namespace SiliconStudio.Paradox.Assets
 
         public override IEnumerable<ObjectUrl> GetInputFiles()
         {
-            if (asset.GroupAsset.GenerateTextureAtlas) 
+            if (asset.GroupAsset.AtlasPackingEnabled) 
                 yield break;
 
             foreach (var textureSource in ImageToTextureKey.Values.Distinct())
@@ -148,7 +148,7 @@ namespace SiliconStudio.Paradox.Assets
             var regionDictionary = new Dictionary<TImageInfo, Tuple<int, RotatableRectangle>>();
 
             // Generate texture atlas
-            if (asset.GroupAsset.GenerateTextureAtlas)
+            if (asset.GroupAsset.AtlasPackingEnabled)
             {
                 var resultStatus = CreateAndSaveTextureAtlasImage(commandContext.Logger, ref regionDictionary);
 
@@ -166,13 +166,13 @@ namespace SiliconStudio.Paradox.Assets
                 };
 
                 // Set region for each image
-                if (asset.GroupAsset.GenerateTextureAtlas)
+                if (asset.GroupAsset.AtlasPackingEnabled)
                 {
                     var regionData = regionDictionary[image];
                     var region = regionData.Item2;
 
-                    var imageRegion = new Rectangle(asset.GroupAsset.BorderSize + region.Value.X, asset.GroupAsset.BorderSize + region.Value.Y,
-                        region.Value.Width - 2 * asset.GroupAsset.BorderSize, region.Value.Height - 2 * asset.GroupAsset.BorderSize);
+                    var imageRegion = new Rectangle(asset.GroupAsset.AtlasBorderSize + region.Value.X, asset.GroupAsset.AtlasBorderSize + region.Value.Y,
+                        region.Value.Width - 2 * asset.GroupAsset.AtlasBorderSize, region.Value.Height - 2 * asset.GroupAsset.AtlasBorderSize);
 
                     newImage.Region = imageRegion;
 
@@ -190,7 +190,7 @@ namespace SiliconStudio.Paradox.Assets
 
                 if (UseSeparateAlphaTexture)
                 {
-                    var baseLocation = (asset.GroupAsset.GenerateTextureAtlas)
+                    var baseLocation = (asset.GroupAsset.AtlasPackingEnabled)
                         ? ImageGroupAsset.BuildTextureAtlasUrl(Url, regionDictionary[image].Item1) 
                         : ImageToTextureKey[image];
 
@@ -199,7 +199,7 @@ namespace SiliconStudio.Paradox.Assets
                 }
                 else
                 {
-                    newImage.Texture = new ContentReference<Texture2D> { Location = (asset.GroupAsset.GenerateTextureAtlas)
+                    newImage.Texture = new ContentReference<Texture2D> { Location = (asset.GroupAsset.AtlasPackingEnabled)
                         ? ImageGroupAsset.BuildTextureAtlasUrl(Url, regionDictionary[image].Item1) 
                         : ImageToTextureKey[image] };
                 }
@@ -270,11 +270,11 @@ namespace SiliconStudio.Paradox.Assets
                 var texturePacker = new TexturePacker
                     {
                         Algorithm = asset.GroupAsset.AtlasPackingAlgorithm,
-                        UseMultipack = asset.GroupAsset.UseMultipackAtlas,
+                        UseMultipack = asset.GroupAsset.AtlasUseMultipack,
                         MaxHeight = asset.GroupAsset.AtlasMaxHeight,
                         MaxWidth = asset.GroupAsset.AtlasMaxWidth,
-                        UseRotation = asset.GroupAsset.UseRotationInAtlas,
-                        BorderSize = asset.GroupAsset.BorderSize,
+                        UseRotation = asset.GroupAsset.AtlasUseRotation,
+                        BorderSize = asset.GroupAsset.AtlasBorderSize,
                         AtlasSizeContraint = AtlasSizeConstraints.PowerOfTwo
                     };
 
