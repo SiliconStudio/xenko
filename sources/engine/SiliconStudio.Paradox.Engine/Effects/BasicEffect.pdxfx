@@ -3,31 +3,25 @@
 using SiliconStudio.Paradox.Effects.Data;
 using SiliconStudio.Paradox.Shaders.Compiler;
 
-namespace ParadoxEffects
+namespace SiliconStudio.Paradox.Effects
 {
-    params BasicEffectParameters
-    {
-        bool UsedNormalMap = false;
-    };
-
     shader BasicEffect
     {
         using params RenderingParameters;
         using params MaterialParameters;
         using params EffectSystem;
         using params CompilerParameters;
-        using params BasicEffectParameters;
               
         mixin ShaderBase;
         mixin TransformationWAndVP;
 
         mixin PositionVSStream;
 
-        if (MaterialParameters.NormalMap != null)
+        var hasNormals = MaterialParameters.NormalMap != null;
+        if (hasNormals)
         {
             mixin NormalMapTexture;
             mixin compose normalMap = MaterialParameters.NormalMap;
-            BasicEffectParameters.UsedNormalMap = true;
         }
         else
         {
@@ -75,7 +69,7 @@ namespace ParadoxEffects
          
             if (MaterialParameters.HasSkinningNormal)
             {
-                if (BasicEffectParameters.UsedNormalMap)
+                if (hasNormals)
                     mixin TangentToViewSkinning;
                 else
                     mixin NormalVSSkinning;
