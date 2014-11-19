@@ -51,14 +51,14 @@ namespace SiliconStudio.Paradox.Assets
         /// Gets or sets atlas border mode in X axis for images inside atlas texture
         /// </summary>
         [DataMember(40)]
-        [DefaultValue(TextureAddressMode.Border)]
+        [DefaultValue(TextureAddressMode.Clamp)]
         public TextureAddressMode AddressModeU { get; set; }
 
         /// <summary>
         /// Gets or sets atlas border mode in Y axis for images inside atlas texture
         /// </summary>
         [DataMember(50)]
-        [DefaultValue(TextureAddressMode.Border)]
+        [DefaultValue(TextureAddressMode.Clamp)]
         public TextureAddressMode AddressModeV { get; set; }
 
         /// <summary>
