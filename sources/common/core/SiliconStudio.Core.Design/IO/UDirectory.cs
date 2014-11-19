@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.ComponentModel;
 
 namespace SiliconStudio.Core.IO
 {
@@ -8,6 +9,7 @@ namespace SiliconStudio.Core.IO
     /// Defines a normalized directory path. See <see cref="UPath"/> for details. This class cannot be inherited.
     /// </summary>
     [DataContract("UDirectory")]
+    [TypeConverter(typeof(UDirectoryTypeConverter))]
     public sealed class UDirectory : UPath
     {
         /// <summary>

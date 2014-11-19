@@ -18,6 +18,8 @@ Release date: 2014/??/??
 - Shaders: Simplify some deferred lighting shaders.
 - Studio: Fix renamed button for string-indexed dictionary that was misplaced and not working
 - Studio: Fix add parameter key control filtering and mouse selection
+- Studio: Fix some actions from the property grid that were not undo-able
+- Studio: Some buttons were sometimes hidden where they should be visible in the property grid.
 
 #### Breaking changes
 - Engine: Remove obsolete MeshDrawHelper file (use GeometricPrimitive instead), move ToMeshDraw method to GeometricPrimitiveExtensions.

@@ -10,6 +10,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// <summary>
     /// Base implementation for <see cref="IMaterialNode"/>.
     /// </summary>
+    [DataContract(Inherited = true)]
     public abstract class MaterialNodeBase : IMaterialNode
     {
         /// <summary>

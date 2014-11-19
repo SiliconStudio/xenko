@@ -1,13 +1,10 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
-
-using SiliconStudio.ActionStack;
+﻿using SiliconStudio.ActionStack;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Quantum.Commands
 {
-    public abstract class UncancellableCommand : INodeCommand
+    // TODO: This class is temporary to workaround the cancellation of commands that just modify the value of the node
+    public abstract class ModifyValueCommand : INodeCommand
     {
         /// <inheritdoc/>
         public abstract string Name { get; }
@@ -20,16 +17,16 @@ namespace SiliconStudio.Quantum.Commands
 
         public object Invoke(object currentValue, ITypeDescriptor descriptor, object parameter, out UndoToken undoToken)
         {
-            undoToken = new UndoToken(false);
-            InvokeUncancellable(currentValue, descriptor, parameter);
-            return currentValue;
+            var newValue = ModifyValue(currentValue, descriptor, parameter);
+            undoToken = !Equals(newValue, currentValue) ? new UndoToken(true, currentValue) : new UndoToken(false);
+            return newValue;
         }
 
         public object Undo(object currentValue, ITypeDescriptor descriptor, UndoToken undoToken)
         {
-            throw new NotSupportedException("This command is not cancellable.");
+            return undoToken.TokenValue;
         }
 
-        protected abstract void InvokeUncancellable(object currentValue, ITypeDescriptor descriptor, object parameter);
+        protected abstract object ModifyValue(object currentValue, ITypeDescriptor descriptor, object parameter);
     }
 }

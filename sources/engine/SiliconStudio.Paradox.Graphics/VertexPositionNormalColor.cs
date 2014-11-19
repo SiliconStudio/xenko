@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Graphics
     /// Describes a custom vertex format structure that contains position, normal and color information. 
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct VertexPositionNormalColor : IEquatable<VertexPositionNormalColor>, IVertexWindable
+    public struct VertexPositionNormalColor : IEquatable<VertexPositionNormalColor>, IVertex
     {
         /// <summary>
         /// Initializes a new <see cref="VertexPositionNormalColor"/> instance.
@@ -79,6 +79,11 @@ namespace SiliconStudio.Paradox.Graphics
                 hashCode = (hashCode * 397) ^ Color.GetHashCode();
                 return hashCode;
             }
+        }
+
+        public VertexDeclaration GetLayout()
+        {
+            return Layout;
         }
 
         public void FlipWinding()
