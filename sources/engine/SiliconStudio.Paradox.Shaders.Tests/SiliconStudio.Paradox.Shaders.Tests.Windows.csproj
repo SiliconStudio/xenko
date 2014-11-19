@@ -226,6 +226,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
     </Compile>
+    <Compile Include="GameAssets\Shaders\TestStructInheritanceExtensions.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="GameAssets\Shaders\GenericClass.cs">
       <AutoGen>True</AutoGen>
