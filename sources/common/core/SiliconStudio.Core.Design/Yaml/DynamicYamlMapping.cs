@@ -11,6 +11,14 @@ namespace SiliconStudio.Core.Yaml
     {
         internal YamlMappingNode node;
 
+        public YamlMappingNode Node
+        {
+            get
+            {
+                return node;
+            }
+        }
+
         public DynamicYamlMapping(YamlMappingNode node)
         {
             this.node = node;
@@ -34,6 +42,13 @@ namespace SiliconStudio.Core.Yaml
 
             // Insert item at new position
             node.Children.Insert(movePosition, item.Key, item.Value);
+        }
+
+        public void RemoveChild(object key)
+        {
+            var yamlKey = ConvertFromDynamic(key);
+            var keyPosition = node.Children.IndexOf(yamlKey);
+            node.Children.RemoveAt(keyPosition);
         }
 
         public int IndexOf(object key)
