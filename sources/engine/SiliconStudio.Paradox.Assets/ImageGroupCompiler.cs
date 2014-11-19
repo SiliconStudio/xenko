@@ -40,9 +40,15 @@ namespace SiliconStudio.Paradox.Assets
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, TGroupAsset asset, AssetCompilerResult result)
         {
             result.BuildSteps = new ListBuildStep();
-            
+
+            // TODO: temporary disable compress mode for the texture in Android; consequently there's no separate alpha. Since, SpriteBatch does not support currently.
             // Evaluate if we need to use a separate the alpha texture
-            SeparateAlphaTexture = context.Platform == PlatformType.Android && asset.Alpha != AlphaFormat.None && asset.Format == TextureFormat.Compressed;
+            // SeparateAlphaTexture = context.Platform == PlatformType.Android && asset.Alpha != AlphaFormat.None && asset.Format == TextureFormat.Compressed;
+
+            SeparateAlphaTexture = false;
+
+            if (context.Platform == PlatformType.Android && asset.Format == TextureFormat.Compressed)
+                asset.Format = TextureFormat.AsIs;
 
             // create the registry containing the sprite assets texture index association
             SpriteToTextureKey = new Dictionary<TImageInfo, string>();
