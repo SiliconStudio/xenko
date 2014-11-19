@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Shaders.Compiler;
 
 namespace SiliconStudio.Paradox.PostEffects
 {
@@ -142,6 +141,10 @@ namespace SiliconStudio.Paradox.PostEffects
             return newTexture;
         }
 
+        /// <summary>
+        /// Increments the reference to an temporary texture.
+        /// </summary>
+        /// <param name="texture"></param>
         public void AddReferenceToTemporaryTexture(Texture texture)
         {
             if (texture == null)
@@ -163,6 +166,11 @@ namespace SiliconStudio.Paradox.PostEffects
             }
         }
 
+        /// <summary>
+        /// Decrements the reference to a temporary texture.
+        /// </summary>
+        /// <param name="texture">The texture.</param>
+        /// <exception cref="System.InvalidOperationException">Unexpected Texture RefCount < 0</exception>
         public void ReleaseTemporaryTexture(Texture texture)
         {
             if (texture == null)
