@@ -12,8 +12,6 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         private Effect skyboxEffect;
         
-        private PostEffectQuad skyQuad;
-
         public SkyboxRenderer(IServiceRegistry services, TextureCube skyboxTexture)
             : base(services)
         {
@@ -26,7 +24,6 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
             skyboxEffect = EffectSystem.LoadEffect("SkyboxShader");
             skyboxEffect.Parameters.Set(TexturingKeys.TextureCube0, skybox);
-            skyQuad = new PostEffectQuad(GraphicsDevice, skyboxEffect);
         }
 
         public override void Unload()
@@ -34,14 +31,13 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             base.Unload();
 
             skyboxEffect.Dispose();
-            skyQuad.Dispose();
         }
 
         protected override void OnRendering(RenderContext context)
         {
             GraphicsDevice.SetDepthStencilState(GraphicsDevice.DepthStencilStates.DepthRead);
             skyboxEffect.Apply(context.CurrentPass.Parameters);
-            skyQuad.Draw();
+            GraphicsDevice.DrawQuad();
         }
     }
 }

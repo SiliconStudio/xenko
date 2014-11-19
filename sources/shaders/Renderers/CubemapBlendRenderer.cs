@@ -51,10 +51,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// </summary>
         private Dictionary<int, Effect> cubemapBlendEffects;
 
-        /// <summary>
-        /// The post effect draw quad.
-        /// </summary>
-        private PostEffectQuad drawQuad;
+        private Effect defaultCubeMapBlendEffect;
 
         /// <summary>
         /// A flag to use multiple render target to blend the cubemaps in one call.
@@ -109,7 +106,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 compilerParameter.Set(CubemapBlendRenderer.UseMultipleRenderTargets, useMultipleRenderTargets);
                 cubemapBlendEffects.Add(maxBlendCount, EffectSystem.LoadEffect("CubemapBlendEffect", compilerParameter));
             }
-            drawQuad = new PostEffectQuad(GraphicsDevice, cubemapBlendEffects[2]);
+
+            // TODO: Change this code
+            defaultCubeMapBlendEffect = cubemapBlendEffects[2];
         }
 
         #endregion
@@ -187,7 +186,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 {
                     GraphicsDevice.SetRenderTargets(cubemap.Value.RenderTargets);
                     cubemapBlendEffect.Apply(blendEffectParameters);
-                    drawQuad.Draw();
+                    GraphicsDevice.DrawQuad(defaultCubeMapBlendEffect);
                 }
                 else
                 {
@@ -197,7 +196,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                         GraphicsDevice.SetRenderTarget(cubemap.Value.RenderTargets[i]);
                         blendEffectParameters.Set(CubemapBlenderKeys.ViewIndex, i);
                         cubemapBlendEffect.Apply(blendEffectParameters);
-                        drawQuad.Draw();
+                        GraphicsDevice.DrawQuad(defaultCubeMapBlendEffect);
                     }
                 }
             }

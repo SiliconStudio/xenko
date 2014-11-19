@@ -539,7 +539,6 @@
     <Compile Include="Renderers\LightForwardModelRenderer.cs" />
     <Compile Include="Renderers\LightingIBLRenderer.cs" />
     <Compile Include="Renderers\LightingPrepassRenderer.cs" />
-    <Compile Include="Renderers\PostProcessRenderer.cs" />
     <Compile Include="Renderers\ShadowMapRenderer.cs" />
     <Compile Include="Renderers\SkyboxRenderer.cs" />
     <Compile Include="Shading\AmbientMapShading.cs">

@@ -106,18 +106,18 @@ namespace SiliconStudio.Paradox.Effects
             var nodeTransformationsLocal = this.nodeTransformations;
 
             // Set World matrices in mesh parameters
-            foreach (var meshes in renderModel.InternalMeshes)
+            foreach (var meshes in renderModel.RenderMeshes)
             {
                 if (meshes == null)
                     continue;
 
-                foreach (var mesh in meshes)
+                foreach (var renderMesh in meshes)
                 {
-                    var enabled = nodeTransformationsLocal[mesh.Mesh.NodeIndex].RenderingEnabledRecursive;
-                    mesh.Enabled = enabled;
+                    var enabled = nodeTransformationsLocal[renderMesh.Mesh.NodeIndex].RenderingEnabledRecursive;
+                    renderMesh.Enabled = enabled;
                     if (enabled)
                     {
-                        mesh.Parameters.Set(TransformationKeys.World, nodeTransformationsLocal[mesh.Mesh.NodeIndex].WorldMatrix);
+                        renderMesh.Mesh.Parameters.Set(TransformationKeys.World, nodeTransformationsLocal[renderMesh.Mesh.NodeIndex].WorldMatrix);
                     }
                 }
             }

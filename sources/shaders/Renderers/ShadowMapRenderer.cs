@@ -56,8 +56,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         private Vector3[] points = new Vector3[8];
         private Vector3[] directions = new Vector3[4];
 
-        // VSM Blur quads
-        private PostEffectQuad vsmHorizontalBlurQuad, vsmVerticalBlurQuad;
+        private Effect vsmHorizontalBlur;
+
+        private Effect vsmVerticalBlur;
 
         // rectangles to blur for each shadow map
         private HashSet<ShadowMapTexture> shadowMapTexturesToBlur = new HashSet<ShadowMapTexture>();
@@ -69,11 +70,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         public ShadowMapRenderer(IServiceRegistry services, RenderPipeline recursivePipeline) : base(services, recursivePipeline)
         {
             // Build blur effects for VSM
-            var vsmHorizontalBlur = EffectSystem.LoadEffect("HorizontalVsmBlur");
-            var vsmVerticalBlur = EffectSystem.LoadEffect("VerticalVsmBlur");
-
-            vsmHorizontalBlurQuad = new PostEffectQuad(GraphicsDevice, vsmHorizontalBlur);
-            vsmVerticalBlurQuad = new PostEffectQuad(GraphicsDevice, vsmVerticalBlur);
+            vsmHorizontalBlur = EffectSystem.LoadEffect("HorizontalVsmBlur");
+            vsmVerticalBlur = EffectSystem.LoadEffect("VerticalVsmBlur");
         }
 
         #endregion
@@ -198,9 +196,13 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 graphicsDevice.SetDepthStencilState(graphicsDevice.DepthStencilStates.None);
                 graphicsDevice.SetRasterizerState(graphicsDevice.RasterizerStates.CullNone);
                 graphicsDevice.SetRenderTarget(shadowMap.ShadowMapDepthBuffer, shadowMap.IntermediateBlurRenderTarget);
-                vsmHorizontalBlurQuad.Draw(shadowMap.ShadowMapTargetTexture);
+
+                vsmHorizontalBlur.Parameters.Set(TexturingKeys.Texture0, shadowMap.ShadowMapTargetTexture);
+                graphicsDevice.DrawQuad(vsmHorizontalBlur);
+
                 graphicsDevice.SetRenderTarget(shadowMap.ShadowMapDepthBuffer, shadowMap.ShadowMapRenderTarget);
-                vsmVerticalBlurQuad.Draw(shadowMap.IntermediateBlurTexture);
+                vsmVerticalBlur.Parameters.Set(TexturingKeys.Texture0, shadowMap.IntermediateBlurTexture);
+                graphicsDevice.DrawQuad(vsmVerticalBlur);
             }
 
             shadowMapTexturesToBlur.Clear();

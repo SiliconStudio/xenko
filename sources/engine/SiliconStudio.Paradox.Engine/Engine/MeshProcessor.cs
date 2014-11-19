@@ -62,25 +62,13 @@ namespace SiliconStudio.Paradox.Engine
                 }
 
                 var renderModel = new RenderModel(pipeline, modelInstance);
-                if (renderModel.InternalMeshes == null)
+                if (renderModel.RenderMeshes == null)
                 {
                     continue;
                 }
                 
                 // Register RenderModel
                 associatedData.RenderModels.Add(new KeyValuePair<ModelRendererState, RenderModel>(modelRenderState, renderModel));
-
-                // Assign component to EffectMesh so it can be used during sorting
-                foreach (var meshes in renderModel.InternalMeshes)
-                {
-                    if (meshes == null)
-                        continue;
-
-                    foreach (var mesh in meshes)
-                    {
-                        mesh.ModelInstance = associatedData.ModelComponent;
-                    }
-                }
             }
         }
 

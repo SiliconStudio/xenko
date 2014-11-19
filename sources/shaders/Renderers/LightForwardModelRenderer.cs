@@ -21,8 +21,6 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
     /// </summary>
     internal class LightForwardModelRenderer
     {
-        #region Internal static members
-
         internal static Dictionary<ParameterKey, LightParamSemantic> LightParametersDict = new Dictionary<ParameterKey, LightParamSemantic>
         {
             { ShadingEyeNormalVSKeys.LightDirectionsVS, LightParamSemantic.DirectionVS },
@@ -36,8 +34,6 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             { LightParametersKeys.LightSpotFieldAngle,  LightParamSemantic.SpotFieldAngle },
             { LightParametersKeys.LightCount,           LightParamSemantic.Count }
         };
-
-        #endregion
 
         #region Private members
 
@@ -216,9 +212,11 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// Update light lists and choose the new light configuration.
         /// </summary>
         /// <param name="context">The render context.</param>
-        /// <param name="effectMesh">The current EffectMesh (the same as <seealso cref="PostEffectUpdate"/>)</param>
-        public void PreEffectUpdate(RenderContext context, EffectMesh effectMesh)
+        /// <param name="renderMesh">The current RenderMesh (the same as <seealso cref="PostEffectUpdate"/>)</param>
+        public void PreEffectUpdate(RenderContext context, RenderMesh renderMesh)
         {
+            var mesh = renderMesh.Mesh;
+
             // TODO:
             // light selection based on:
             //    - from the same entity?
@@ -238,16 +236,16 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             spotLightsForMesh.Clear();
             spotLightsWithShadowForMesh.Clear();
             
-            var receiveShadows = effectMesh.Mesh.ReceiveShadows;
+            var receiveShadows = renderMesh.Mesh.ReceiveShadows;
 
             foreach (var light in directionalLights)
             {
-                if ((light.Light.Layers & effectMesh.Mesh.Layer) != 0)
+                if ((light.Light.Layers & renderMesh.Mesh.Layer) != 0)
                     directionalLightsForMesh.Add(light);
             }
             foreach (var light in directionalLightsWithShadows)
             {
-                if ((light.Light.Layers & effectMesh.Mesh.Layer) != 0)
+                if ((light.Light.Layers & renderMesh.Mesh.Layer) != 0)
                 {
                     if (receiveShadows)
                         directionalLightsWithShadowForMesh.Add(light);
@@ -257,17 +255,17 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             }
             foreach (var light in pointLights)
             {
-                if ((light.Light.Layers & effectMesh.Mesh.Layer) != 0)
+                if ((light.Light.Layers & renderMesh.Mesh.Layer) != 0)
                     pointLightsForMesh.Add(light);
             }
             foreach (var light in spotLights)
             {
-                if ((light.Light.Layers & effectMesh.Mesh.Layer) != 0)
+                if ((light.Light.Layers & renderMesh.Mesh.Layer) != 0)
                     spotLightsForMesh.Add(light);
             }
             foreach (var light in spotLightsWithShadows)
             {
-                if ((light.Light.Layers & effectMesh.Mesh.Layer) != 0)
+                if ((light.Light.Layers & renderMesh.Mesh.Layer) != 0)
                 {
                     if (receiveShadows)
                         spotLightsWithShadowForMesh.Add(light);
@@ -282,7 +280,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
             // TODO: improve detection - better heuristics
             // choose configuration
-            var configurations = effectMesh.Mesh.Lighting;
+            var configurations = renderMesh.Mesh.Lighting;
             var lastConfigWithoutShadow = -1;
             if (configurations != null)
             {
@@ -322,10 +320,10 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 var maxNumSpotLights = foundConfiguration.MaxNumSpotLight;
 
                 //create the parameters to get the correct shader
-                if (configurationIndex != effectMesh.ConfigurationIndex)
+                if (configurationIndex != mesh.Parameters.Get(LightKeys.ConfigurationIndex))
                 {
-                    CreateParametersFromLightingConfiguration(foundConfiguration, effectMesh.Parameters);
-                    effectMesh.ConfigurationIndex = configurationIndex;
+                    CreateParametersFromLightingConfiguration(foundConfiguration, mesh.Parameters);
+                    mesh.Parameters.Set(LightKeys.ConfigurationIndex, configurationIndex);
                 }
 
                 // assign the shadow ligths to a specific group
@@ -358,15 +356,17 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// Update the light values of the shader.
         /// </summary>
         /// <param name="context">The render context.</param>
-        /// <param name="effectMesh">The current EffectMesh (the same as <seealso cref="PreEffectUpdate"/>)</param>
-        public void PostEffectUpdate(RenderContext context, EffectMesh effectMesh)
+        /// <param name="renderMesh">The current RenderMesh (the same as <seealso cref="PreEffectUpdate"/>)</param>
+        public void PostEffectUpdate(RenderContext context, RenderMesh renderMesh)
         {
-            var lightingGroupInfo = LightingGroupInfo.GetOrCreate(effectMesh.Effect);
+            var lightingGroupInfo = LightingGroupInfo.GetOrCreate(renderMesh.Effect);
+
+            var mesh = renderMesh.Mesh;
 
             // update the info if necessary
             if (!lightingGroupInfo.IsLightingSetup)
             {
-                lightingGroupInfo.LightingParameters = CreateLightingUpdateInfo(effectMesh);
+                lightingGroupInfo.LightingParameters = CreateLightingUpdateInfo(renderMesh);
                 if (lastConfiguration.ShadowConfigurations != null)
                     lightingGroupInfo.ShadowParameters = CreateEffectShadowParams(lastConfiguration);
 
@@ -382,7 +382,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             if (lightingGroupInfo.ShadowParameters != null)
             {
                 for (var i = 0; i < lightingGroupInfo.ShadowParameters.Count; ++i)
-                    UpdateShadowParameters(effectMesh.Parameters, lightingGroupInfo.ShadowParameters[i], shadowMapGroups[i]);
+                    UpdateShadowParameters(mesh.Parameters, lightingGroupInfo.ShadowParameters[i], shadowMapGroups[i]);
             }
 
             // Apply parameters
@@ -391,19 +391,19 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 switch (info.Type)
                 {
                     case LightingUpdateType.Point:
-                        UpdateLightingParameters(info, ref effectMesh, ref viewMatrix, pointLightsForMesh);
+                        UpdateLightingParameters(info, ref renderMesh, ref viewMatrix, pointLightsForMesh);
                         break;
                     case LightingUpdateType.Directional:
-                        UpdateLightingParameters(info, ref effectMesh, ref viewMatrix, directionalLightsForMesh);
+                        UpdateLightingParameters(info, ref renderMesh, ref viewMatrix, directionalLightsForMesh);
                         break;
                     case LightingUpdateType.Spot:
-                        UpdateLightingParameters(info, ref effectMesh, ref viewMatrix, spotLightsForMesh);
+                        UpdateLightingParameters(info, ref renderMesh, ref viewMatrix, spotLightsForMesh);
                         break;
                     case LightingUpdateType.DirectionalShadow:
-                        UpdateLightingParameters(info, ref effectMesh, ref viewMatrix, directionalLightsWithShadowForMeshGroups[info.Index]);
+                        UpdateLightingParameters(info, ref renderMesh, ref viewMatrix, directionalLightsWithShadowForMeshGroups[info.Index]);
                         break;
                     case LightingUpdateType.SpotShadow:
-                        UpdateLightingParameters(info, ref effectMesh, ref viewMatrix, spotLightsWithShadowForMeshGroups[info.Index]);
+                        UpdateLightingParameters(info, ref renderMesh, ref viewMatrix, spotLightsWithShadowForMeshGroups[info.Index]);
                         break;
                     //TODO: implement later when shadow map are supported
                     case LightingUpdateType.PointShadow:
@@ -510,8 +510,10 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             }
         }
 
-        private void UpdateLightingParameters(LightingUpdateInfo info, ref EffectMesh effectMesh, ref Matrix viewMatrix, List<EntityLightShadow> lightsForMesh)
+        private void UpdateLightingParameters(LightingUpdateInfo info, ref RenderMesh renderMesh, ref Matrix viewMatrix, List<EntityLightShadow> lightsForMesh)
         {
+            var mesh = renderMesh.Mesh;
+
             var maxLights = info.Count;
             if (maxLights > 0)
             {
@@ -584,30 +586,30 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 }
 
                 if ((info.Semantic & LightParamSemantic.DirectionVS) != 0)
-                    effectMesh.Parameters.Set(info.DirectionKey, arrayVector3, 0, lightCount);
+                    mesh.Parameters.Set(info.DirectionKey, arrayVector3, 0, lightCount);
                 if ((info.Semantic & LightParamSemantic.PositionVS) != 0)
-                    effectMesh.Parameters.Set(info.PositionKey, arrayVector3, maxLights, 0, lightCount);
+                    mesh.Parameters.Set(info.PositionKey, arrayVector3, maxLights, 0, lightCount);
                 if ((info.Semantic & LightParamSemantic.DirectionWS) != 0)
-                    effectMesh.Parameters.Set(info.DirectionKey, arrayVector3, 0, lightCount);
+                    mesh.Parameters.Set(info.DirectionKey, arrayVector3, 0, lightCount);
                 if ((info.Semantic & LightParamSemantic.PositionWS) != 0)
-                    effectMesh.Parameters.Set(info.PositionKey, arrayVector3, maxLights, 0, lightCount);
+                    mesh.Parameters.Set(info.PositionKey, arrayVector3, maxLights, 0, lightCount);
                 if ((info.Semantic & LightParamSemantic.ColorWithGamma) != 0)
-                    effectMesh.Parameters.Set(info.ColorKey, arrayColor3, 0, lightCount);
+                    mesh.Parameters.Set(info.ColorKey, arrayColor3, 0, lightCount);
                 if ((info.Semantic & LightParamSemantic.Intensity) != 0)
-                    effectMesh.Parameters.Set(info.IntensityKey, arrayFloat, 0, lightCount);
+                    mesh.Parameters.Set(info.IntensityKey, arrayFloat, 0, lightCount);
                 if ((info.Semantic & LightParamSemantic.Decay) != 0)
-                    effectMesh.Parameters.Set(info.DecayKey, arrayFloat, maxLights, 0, lightCount);
+                    mesh.Parameters.Set(info.DecayKey, arrayFloat, maxLights, 0, lightCount);
                 if ((info.Semantic & LightParamSemantic.SpotBeamAngle) != 0)
-                    effectMesh.Parameters.Set(info.SpotBeamAngleKey, arrayFloat, 2 * maxLights, 0, lightCount);
+                    mesh.Parameters.Set(info.SpotBeamAngleKey, arrayFloat, 2 * maxLights, 0, lightCount);
                 if ((info.Semantic & LightParamSemantic.SpotFieldAngle) != 0)
-                    effectMesh.Parameters.Set(info.SpotFieldAngleKey, arrayFloat, 3 * maxLights, 0, lightCount);
+                    mesh.Parameters.Set(info.SpotFieldAngleKey, arrayFloat, 3 * maxLights, 0, lightCount);
                 if ((info.Semantic & LightParamSemantic.Count) != 0)
-                    effectMesh.Parameters.Set(info.LightCountKey, lightCount);
+                    mesh.Parameters.Set(info.LightCountKey, lightCount);
             }
             else
             {
                 if ((info.Semantic & LightParamSemantic.Count) != 0)
-                    effectMesh.Parameters.Set(info.LightCountKey, 0);
+                    mesh.Parameters.Set(info.LightCountKey, 0);
             }
         }
 
@@ -642,14 +644,14 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 parameters.Set(shadowUpdateInfo.ShadowMapLightCountKey, 0);
         }
 
-        private List<LightingUpdateInfo> CreateLightingUpdateInfo(EffectMesh effectMesh)
+        private List<LightingUpdateInfo> CreateLightingUpdateInfo(RenderMesh renderMesh)
         {
             var finalList = new List<LightingUpdateInfo>();
             var continueSearch = true;
             var index = 0;
             while (continueSearch)
             {
-                continueSearch = SearchShadingGroup(effectMesh, index, "ShadingGroups", 0, finalList);
+                continueSearch = SearchShadingGroup(renderMesh, index, "ShadingGroups", 0, finalList);
                 ++index;
             }
 
@@ -657,16 +659,17 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             index = 0;
             while (continueSearch)
             {
-                continueSearch = SearchShadingGroup(effectMesh, index, "shadows", 3, finalList);
+                continueSearch = SearchShadingGroup(renderMesh, index, "shadows", 3, finalList);
                 ++index;
             }
 
             return finalList;
         }
 
-        private bool SearchShadingGroup(EffectMesh effectMesh, int index, string groupName, int typeOffset, List<LightingUpdateInfo> finalList)
+        private bool SearchShadingGroup(RenderMesh renderMesh, int index, string groupName, int typeOffset, List<LightingUpdateInfo> finalList)
         {
-            var constantBuffers = effectMesh.Effect.ConstantBuffers;
+            var mesh = renderMesh.Mesh;
+            var constantBuffers = renderMesh.Effect.ConstantBuffers;
             var info = new LightingUpdateInfo();
 
             LightParamSemantic foundParameterSemantic;
@@ -687,53 +690,53 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                         {
                             case LightParamSemantic.PositionVS:
                                 info.PositionKey = (ParameterKey<Vector3[]>)member.Param.Key;
-                                effectMesh.Parameters.Set(info.PositionKey, new Vector3[member.Count]);
+                                mesh.Parameters.Set(info.PositionKey, new Vector3[member.Count]);
                                 info.Count = member.Count;
                                 lightTypeGuess = lightTypeGuess | LightTypeGuess.Point;
                                 break;
                             case LightParamSemantic.DirectionVS:
                                 info.DirectionKey = (ParameterKey<Vector3[]>)member.Param.Key;
-                                effectMesh.Parameters.Set(info.DirectionKey, new Vector3[member.Count]);
+                                mesh.Parameters.Set(info.DirectionKey, new Vector3[member.Count]);
                                 info.Count = member.Count;
                                 lightTypeGuess = lightTypeGuess | LightTypeGuess.Directional;
                                 break;
                             case LightParamSemantic.PositionWS:
                                 info.PositionKey = (ParameterKey<Vector3[]>)member.Param.Key;
-                                effectMesh.Parameters.Set(info.PositionKey, new Vector3[member.Count]);
+                                mesh.Parameters.Set(info.PositionKey, new Vector3[member.Count]);
                                 info.Count = member.Count;
                                 lightTypeGuess = lightTypeGuess | LightTypeGuess.Point;
                                 break;
                             case LightParamSemantic.DirectionWS:
                                 info.DirectionKey = (ParameterKey<Vector3[]>)member.Param.Key;
-                                effectMesh.Parameters.Set(info.DirectionKey, new Vector3[member.Count]);
+                                mesh.Parameters.Set(info.DirectionKey, new Vector3[member.Count]);
                                 info.Count = member.Count;
                                 lightTypeGuess = lightTypeGuess | LightTypeGuess.Directional;
                                 break;
                             case LightParamSemantic.ColorWithGamma:
                                 info.ColorKey = (ParameterKey<Color3[]>)member.Param.Key;
-                                effectMesh.Parameters.Set(info.ColorKey, new Color3[member.Count]);
+                                mesh.Parameters.Set(info.ColorKey, new Color3[member.Count]);
                                 info.Count = member.Count;
                                 break;
                             case LightParamSemantic.Intensity:
                                 info.IntensityKey = (ParameterKey<float[]>)member.Param.Key;
-                                effectMesh.Parameters.Set(info.IntensityKey, new float[member.Count]);
+                                mesh.Parameters.Set(info.IntensityKey, new float[member.Count]);
                                 info.Count = member.Count;
                                 break;
                             case LightParamSemantic.Decay:
                                 info.DecayKey = (ParameterKey<float[]>)member.Param.Key;
-                                effectMesh.Parameters.Set(info.DecayKey, new float[member.Count]);
+                                mesh.Parameters.Set(info.DecayKey, new float[member.Count]);
                                 info.Count = member.Count;
                                 lightTypeGuess = lightTypeGuess | LightTypeGuess.Point;
                                 break;
                             case LightParamSemantic.SpotBeamAngle:
                                 info.SpotBeamAngleKey = (ParameterKey<float[]>)member.Param.Key;
-                                effectMesh.Parameters.Set(info.SpotBeamAngleKey, new float[member.Count]);
+                                mesh.Parameters.Set(info.SpotBeamAngleKey, new float[member.Count]);
                                 info.Count = member.Count;
                                 lightTypeGuess = lightTypeGuess | LightTypeGuess.Spot;
                                 break;
                             case LightParamSemantic.SpotFieldAngle:
                                 info.SpotFieldAngleKey = (ParameterKey<float[]>)member.Param.Key;
-                                effectMesh.Parameters.Set(info.SpotFieldAngleKey, new float[member.Count]);
+                                mesh.Parameters.Set(info.SpotFieldAngleKey, new float[member.Count]);
                                 info.Count = member.Count;
                                 lightTypeGuess = lightTypeGuess | LightTypeGuess.Spot;
                                 break;
@@ -855,9 +858,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             else
                 parameters.Remove(ShadowMapParameters.ShadowMaps);
             
-            //effectMesh.Parameters.Set(LightingKeys.UnrollDirectionalLightLoop, foundConfiguration.UnrollDirectionalLightLoop);
-            //effectMesh.Parameters.Set(LightingKeys.UnrollPointLightLoop, foundConfiguration.UnrollPointLightLoop);
-            //effectMesh.Parameters.Set(LightingKeys.UnrollSpotLightLoop, foundConfiguration.UnrollSpotLightLoop);
+            //mesh.Parameters.Set(LightingKeys.UnrollDirectionalLightLoop, foundConfiguration.UnrollDirectionalLightLoop);
+            //mesh.Parameters.Set(LightingKeys.UnrollPointLightLoop, foundConfiguration.UnrollPointLightLoop);
+            //mesh.Parameters.Set(LightingKeys.UnrollSpotLightLoop, foundConfiguration.UnrollSpotLightLoop);
         }
         
         #endregion

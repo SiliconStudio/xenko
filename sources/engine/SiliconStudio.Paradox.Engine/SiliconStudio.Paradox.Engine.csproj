@@ -108,6 +108,8 @@
     <Compile Include="Effects\BackgroundRenderer.cs" />
     <Compile Include="Effects\CameraSetter.cs" />
     <Compile Include="Effects\DelegateRenderer.cs" />
+    <Compile Include="Effects\DynamicEffectCompiler.cs" />
+    <Compile Include="Effects\DynamicEffectInstance.cs" />
     <Compile Include="Effects\EffectParameterUpdater.cs" />
     <Compile Include="Effects\BasicEffect.cs">
       <DependentUpon>BasicEffect.pdxfx</DependentUpon>
@@ -158,7 +160,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Effects\RenderMeshEntry.cs" />
     <Compile Include="Effects\Mesh.cs" />
     <Compile Include="Effects\Model.cs" />
     <Compile Include="Effects\EffectSystem.cs" />
@@ -210,7 +211,6 @@
     <Compile Include="Particles\ParticleField.cs" />
     <Compile Include="Particles\ParticleFieldAccessor.cs" />
     <Compile Include="Particles\ParticleFieldDescription.cs" />
-    <Compile Include="EntityModel\EffectMeshCloner.cs" />
     <Compile Include="ScriptSystem.cs" />
     <Compile Include="Particles\IParticlePlugin.cs" />
     <Compile Include="Particles\IParticlePluginListener.cs" />
@@ -255,7 +255,7 @@
     <Compile Include="Effects\RenderPass.cs" />
     <Compile Include="Effects\RenderPass.Extensions.cs" />
     <Compile Include="Data\MeshDrawData.cs" />
-    <Compile Include="Effects\EffectMesh.cs" />
+    <Compile Include="Effects\RenderMesh.cs" />
     <Compile Include="Effects\RenderContext.cs" />
     <Compile Include="Engine\AnimationComponent.cs" />
     <Compile Include="Engine\AnimationProcessor.cs" />

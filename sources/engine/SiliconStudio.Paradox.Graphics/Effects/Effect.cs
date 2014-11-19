@@ -70,11 +70,7 @@ namespace SiliconStudio.Paradox.Graphics
 
             parameters = new ParameterCollection();
             Initialize(device, bytecode, usedParameters);
-        }
-
-        public void ForceEffectUpdate(GraphicsDevice device, EffectBytecode bytecode, ParameterCollection usedParameters = null)
-        {
-            Initialize(device, bytecode, usedParameters);
+            Changed = false;
         }
 
         /// <summary>
@@ -99,6 +95,15 @@ namespace SiliconStudio.Paradox.Graphics
             {
                 return parameters;
             }
+        }
+
+        /// <summary>
+        /// Gets a boolean indicating if the effect changed since last update.
+        /// </summary>
+        /// <value>The changed.</value>
+        public bool Changed
+        {
+            get; internal set;
         }
 
         public List<ShaderConstantBufferDescription> ConstantBuffers
@@ -347,6 +352,8 @@ namespace SiliconStudio.Paradox.Graphics
             {
                 DefaultCompilationParameters.RegisterParameter(key, false);
             }
+
+            Changed = true;
         }
 
         private void LoadDefaultParameters()
