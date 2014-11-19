@@ -106,6 +106,9 @@ namespace SiliconStudio.Core.MicroThreading
         /// <returns>Task.</returns>
         public ChannelMicroThreadAwaiter<int> NextFrame()
         {
+            if(MicroThread.Current == null)
+                throw new Exception("NextFrame cannot be called out of the micro-thread context.");
+
             return FrameChannel.Receive();
         }
 
