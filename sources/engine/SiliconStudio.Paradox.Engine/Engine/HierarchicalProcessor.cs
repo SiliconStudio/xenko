@@ -76,7 +76,7 @@ namespace SiliconStudio.Paradox.Engine
 
             foreach (var childEntity in entityToRemove)
             {
-                InternalRemoveEntity(childEntity);
+                InternalRemoveEntity(childEntity, false);
             }
 
             // If sub entity is removed but its parent is still there, it needs to be detached.
