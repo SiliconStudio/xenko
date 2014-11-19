@@ -281,7 +281,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
             // TODO: improve detection - better heuristics
             // choose configuration
-            var configurations = renderMesh.Mesh.Lighting;
+            var configurations = renderMesh.Mesh.Parameters.Get(LightingKeys.LightingConfigurations);
             var lastConfigWithoutShadow = -1;
             if (configurations != null)
             {

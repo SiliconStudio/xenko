@@ -212,11 +212,6 @@ namespace SiliconStudio.Paradox.Effects.Data
         public SiliconStudio.Paradox.Effects.Data.ParameterCollectionData Parameters;
 
         /// <summary>
-        /// Data field for <see cref="SiliconStudio.Paradox.Effects.Mesh.Lighting"/>.
-        /// </summary>
-        public SiliconStudio.Core.Serialization.ContentReference<SiliconStudio.Paradox.Effects.Data.LightingConfigurationsSetData> Lighting;
-
-        /// <summary>
         /// Data field for <see cref="SiliconStudio.Paradox.Effects.Mesh.NodeIndex"/>.
         /// </summary>
         public System.Int32 NodeIndex;
@@ -898,7 +893,6 @@ namespace SiliconStudio.Paradox.Effects.Data
             context.ConvertToData(ref target.Draw, source.Draw);
             context.ConvertToData(ref target.Material, source.Material);
             context.ConvertToData(ref target.Parameters, source.Parameters);
-            context.ConvertToData(ref target.Lighting, source.Lighting);
             target.NodeIndex = source.NodeIndex;
             target.Name = source.Name;
             target.BoundingBox = source.BoundingBox;
@@ -925,11 +919,6 @@ namespace SiliconStudio.Paradox.Effects.Data
                 var temp = source.Parameters;
                 context.ConvertFromData(target.Parameters, ref temp);
                 source.Parameters = temp;
-            }
-            {
-                var temp = source.Lighting;
-                context.ConvertFromData(target.Lighting, ref temp);
-                source.Lighting = temp;
             }
             source.NodeIndex = target.NodeIndex;
             source.Name = target.Name;

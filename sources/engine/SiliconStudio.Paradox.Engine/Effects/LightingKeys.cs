@@ -76,6 +76,14 @@ namespace SiliconStudio.Paradox.Effects
         public static readonly ParameterKey<bool> ReceiveShadows = ParameterKeys.New(false);
 
         /// <summary>
+        /// Supported lighting configurations.
+        /// </summary>
+        /// <userdoc>
+        /// The supported lighting configurations.
+        /// </userdoc>
+        public static readonly ParameterKey<LightingConfigurationsSet> LightingConfigurations = ParameterKeys.New<LightingConfigurationsSet>();
+
+        /// <summary>
         /// Maximum number of deferred lights.
         /// </summary>
         /// <userdoc>

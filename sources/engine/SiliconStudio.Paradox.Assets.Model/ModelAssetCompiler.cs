@@ -9,6 +9,7 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Assets.Effect;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Data;
@@ -39,13 +40,10 @@ namespace SiliconStudio.Paradox.Assets.Model
 
             // compute material and lighting configuration dictionaries here because some null reference can occur
             var materials = new Dictionary<string, Tuple<Guid, string>>();
-            var lightings = new Dictionary<string, Tuple<Guid, string>>();
             foreach (var meshParam in asset.MeshParameters)
             {
                 if (meshParam.Value.Material != null)
                     materials.Add(meshParam.Key, new Tuple<Guid, string>(meshParam.Value.Material.Id, meshParam.Value.Material.Location));
-                if (meshParam.Value.LightingParameters != null)
-                    lightings.Add(meshParam.Key, new Tuple<Guid, string>(meshParam.Value.LightingParameters.Id, meshParam.Value.LightingParameters.Location));
             }
 
             // TODO: temporary while the assets are modified
@@ -54,6 +52,8 @@ namespace SiliconStudio.Paradox.Assets.Model
                 meshParam.Value.Parameters.Set(LightingKeys.CastShadows, meshParam.Value.CastShadows);
                 meshParam.Value.Parameters.Set(LightingKeys.ReceiveShadows, meshParam.Value.ReceiveShadows);
                 meshParam.Value.Parameters.Set(RenderingParameters.RenderLayer, meshParam.Value.Layer);
+                //if (meshParam.Value.LightingParameters != null)
+                //    meshParam.Value.Parameters.Set(LightingKeys.LightingConfigurations, new ContentReference<LightingConfigurationsSetData>(meshParam.Value.LightingParameters.Id, meshParam.Value.LightingParameters.Location));
             }
 
             if (ImportFbxCommand.IsSupportingExtensions(extension))
@@ -70,7 +70,6 @@ namespace SiliconStudio.Paradox.Assets.Model
                                 PreservedNodes = asset.PreservedNodes,
                                 // Transform AssetReference to Tuple<Guid,UFile> as AssetReference is not working
                                 Materials = materials,
-                                Lightings = lightings,
                                 Parameters = asset.MeshParameters.ToDictionary(pair => pair.Key, pair => pair.Value.Parameters),
                                 ViewDirectionForTransparentZSort = asset.ViewDirectionForTransparentZSort.HasValue ? asset.ViewDirectionForTransparentZSort.Value : -Vector3.UnitZ,
                             },
@@ -91,7 +90,6 @@ namespace SiliconStudio.Paradox.Assets.Model
                                 PreservedNodes = asset.PreservedNodes,
                                 // Transform AssetReference to Tuple<Guid,UFile> as AssetReference is not working
                                 Materials = materials,
-                                Lightings = lightings,
                                 Parameters = asset.MeshParameters.ToDictionary(pair => pair.Key, pair => pair.Value.Parameters),
                             },
                         new WaitBuildStep(),

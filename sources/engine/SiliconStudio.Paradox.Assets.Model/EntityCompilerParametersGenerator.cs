@@ -8,6 +8,7 @@ using System.Linq;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Paradox.Assets.Model;
@@ -169,11 +170,12 @@ namespace SiliconStudio.Paradox.Assets.Effect.Generators
         /// <returns>The lighting configurations.</returns>
         private List<ParameterCollectionData> GetLightingParameters(MeshData meshData)
         {
-            if (meshData != null)
+            if (meshData != null && meshData.Parameters != null && meshData.Parameters.ContainsKey(LightingKeys.LightingConfigurations))
             {
-                if (meshData.Lighting != null)
+                var lightingDescContent = meshData.Parameters[LightingKeys.LightingConfigurations];
+                if (lightingDescContent != null && lightingDescContent is ContentReference<LightingConfigurationsSetData>)
                 {
-                    var lightingDesc = meshData.Lighting.Value;
+                    var lightingDesc = ((ContentReference<LightingConfigurationsSetData>)lightingDescContent).Value;
                     if (lightingDesc != null)
                     {
                         var collection = new List<ParameterCollectionData>();

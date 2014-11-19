@@ -21,7 +21,7 @@ namespace SiliconStudio.BuildEngine
 {
     public abstract class ImportModelCommand : SingleFileImportCommand
     {
-        private delegate bool SameGroup(MeshData baseMesh, MeshData newMesh, object extra);
+        private delegate bool SameGroup(MeshData baseMesh, MeshData newMesh);
 
         /// <inheritdoc/>
         public override IEnumerable<Tuple<string, string>> TagList { get { yield return Tuple.Create("Texture", "Value of the TextureTag property"); } }
@@ -37,7 +37,6 @@ namespace SiliconStudio.BuildEngine
         public AnimationRepeatMode AnimationRepeatMode { get; set; }
 
         public Dictionary<string, Tuple<Guid, string>> Materials { get; set; }
-        public Dictionary<string, Tuple<Guid, string>> Lightings { get; set; }
         public Dictionary<string, ParameterCollectionData> Parameters;
 
         public bool Compact { get; set; }
@@ -136,11 +135,6 @@ namespace SiliconStudio.BuildEngine
                             foreach (var keyValue in Parameters[mesh.Name])
                                 mesh.Parameters.Set(keyValue.Key, keyValue.Value);
                         }
-
-                        // set the lighting configuration description
-                        Tuple<Guid, string> lightingReference;
-                        if (Lightings.TryGetValue(mesh.Name, out lightingReference))
-                            mesh.Lighting = new ContentReference<LightingConfigurationsSetData>(lightingReference.Item1, lightingReference.Item2);
                     }
 
                     // split the meshes if necessary
@@ -205,7 +199,7 @@ namespace SiliconStudio.BuildEngine
                             // only regroup meshes if they share the shadow options
                             newMeshGroups = RefineGroups(newMeshGroups, CompareShadowOptions);
                             //only regroup meshes if they share the same lighting configurations
-                            newMeshGroups = RefineGroups(newMeshGroups, CompareLightingConfigurations, Lightings);
+                            newMeshGroups = RefineGroups(newMeshGroups, CompareLightingConfigurations);
 
 
                             // add to the final meshes groups
@@ -222,7 +216,6 @@ namespace SiliconStudio.BuildEngine
                                             Draw = generatedMesh,
                                             NodeIndex = meshList.Key,
                                             Skinning = null,
-                                            Lighting = baseMesh.Lighting,
                                         });
                                 }
                             }
@@ -392,9 +385,8 @@ namespace SiliconStudio.BuildEngine
         /// </summary>
         /// <param name="meshList">The list of mesh groups.</param>
         /// <param name="sameGroupDelegate">The test delegate.</param>
-        /// <param name="extra">Additional info.</param>
         /// <returns>The new list of mesh groups.</returns>
-        private List<GroupList<int, MeshData>> RefineGroups(List<GroupList<int, MeshData>> meshList, SameGroup sameGroupDelegate, object extra = null)
+        private List<GroupList<int, MeshData>> RefineGroups(List<GroupList<int, MeshData>> meshList, SameGroup sameGroupDelegate)
         {
             var finalGroups = new List<GroupList<int, MeshData>>();
             foreach (var meshGroup in meshList)
@@ -405,7 +397,7 @@ namespace SiliconStudio.BuildEngine
                     var createNewGroup = true;
                     foreach (var sameParamsMeshes in updatedGroups)
                     {
-                        if (sameGroupDelegate(sameParamsMeshes[0], mesh, extra))
+                        if (sameGroupDelegate(sameParamsMeshes[0], mesh))
                         {
                             sameParamsMeshes.Add(mesh);
                             createNewGroup = false;
@@ -566,7 +558,7 @@ namespace SiliconStudio.BuildEngine
         /// <param name="newMesh">The mesh to compare.</param>
         /// <param name="extra">Unused parameter.</param>
         /// <returns>True if all the parameters are the same, false otherwise.</returns>
-        private static bool CompareParameters(MeshData baseMesh, MeshData newMesh, object extra)
+        private static bool CompareParameters(MeshData baseMesh, MeshData newMesh)
         {
             var localParams = baseMesh.Parameters;
             if (localParams == null && newMesh.Parameters == null)
@@ -583,7 +575,7 @@ namespace SiliconStudio.BuildEngine
         /// <param name="newMesh">The mesh to compare.</param>
         /// <param name="extra">Unused parameter.</param>
         /// <returns>True if the options are the same, false otherwise.</returns>
-        private static bool CompareShadowOptions(MeshData baseMesh, MeshData newMesh, object extra)
+        private static bool CompareShadowOptions(MeshData baseMesh, MeshData newMesh)
         {
             return CompareKeyValue(baseMesh.Parameters, newMesh.Parameters, LightingKeys.CastShadows)
                    && CompareKeyValue(baseMesh.Parameters, newMesh.Parameters, LightingKeys.ReceiveShadows);
@@ -610,19 +602,29 @@ namespace SiliconStudio.BuildEngine
         /// <param name="baseMesh">The base mesh.</param>
         /// <param name="newMesh">The mesh to compare.</param>
         /// <returns>True if all the configurations are the same, false otherwise.</returns>
-        private static bool CompareLightingConfigurations(MeshData baseMesh, MeshData newMesh, object extra)
+        private static bool CompareLightingConfigurations(MeshData baseMesh, MeshData newMesh)
         {
-            var lightingConfigurations = (Dictionary<string, Tuple<Guid, string>>)extra;
-            Guid baseLightingId = Guid.Empty;
-            Guid newLightingId = Guid.Empty;
+            var config0Content = GetLightingConfigurations(baseMesh);
+            var config1Content = GetLightingConfigurations(newMesh);
+            if (config0Content == null || config1Content == null)
+                return false;
+            return config0Content.Id == config1Content.Id;
+        }
 
-            Tuple<Guid, string> lightingConfig;
-            if (lightingConfigurations.TryGetValue(baseMesh.Name, out lightingConfig))
-                baseLightingId = lightingConfig.Item1;
-            if (lightingConfigurations.TryGetValue(newMesh.Name, out lightingConfig))
-                newLightingId = lightingConfig.Item1;
-
-            return baseLightingId == newLightingId;
+        /// <summary>
+        /// Retrives the lighting configurations if present.
+        /// </summary>
+        /// <param name="mesh">The mesh containing the lighting configurations.</param>
+        /// <returns>The content reference to the lighting configuration.</returns>
+        private static ContentReference GetLightingConfigurations(MeshData mesh)
+        {
+            if (mesh != null && mesh.Parameters != null && mesh.Parameters.ContainsKey(LightingKeys.LightingConfigurations))
+            {
+                var config = mesh.Parameters[LightingKeys.LightingConfigurations];
+                if (config != null)
+                    return config as ContentReference;
+            }
+            return null;
         }
 
         /// <summary>

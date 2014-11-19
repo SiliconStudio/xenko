@@ -35,11 +35,6 @@ namespace SiliconStudio.Paradox.Effects
             Name = mesh.Name;
             BoundingBox = mesh.BoundingBox;
             Skinning = mesh.Skinning;
-            if (mesh.Lighting != null)
-            {
-                Lighting = new LightingConfigurationsSet();
-                Lighting.Configs = mesh.Lighting.Configs.ToArray();
-            }
         }
 
         [DataMemberConvert]
@@ -69,11 +64,5 @@ namespace SiliconStudio.Paradox.Effects
         // TODO: Skinning could be shared between multiple Mesh inside a ModelView (multimaterial, etc...)
         [DataMemberConvert]
         public MeshSkinningDefinition Skinning;
-
-        /// <summary>
-        /// The list of available lighting configurations. Should be sorted based on the total number of lights.
-        /// </summary>
-        [DataMemberConvert]
-        public LightingConfigurationsSet Lighting { get; set; }
     }
 }
