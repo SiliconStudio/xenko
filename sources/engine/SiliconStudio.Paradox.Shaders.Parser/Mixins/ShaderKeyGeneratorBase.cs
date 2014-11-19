@@ -30,6 +30,11 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         protected bool ProcessInitialValueStatus = false;
 
         /// <summary>
+        /// A flag indicating whether a variable must be transformed to a parameter key
+        /// </summary>
+        protected bool VariableAsParameterKey = true;
+
+        /// <summary>
         /// Runs the code generation. Results is accessible from <see cref="ShaderWriter.Text"/> property.
         /// </summary>
         public virtual bool Run()
@@ -40,6 +45,18 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <inheritdoc />
         [Visit]
         public override void Visit(Variable variable)
+        {
+            if (VariableAsParameterKey)
+            {
+                WriteVariableAsParameterKey(variable);
+            }
+            else
+            {
+                base.Visit(variable);
+            }
+        }
+
+        protected void WriteVariableAsParameterKey(Variable variable)
         {
             if (variable.Qualifiers.Contains(SiliconStudio.Shaders.Ast.Hlsl.StorageQualifier.Extern)
                 || variable.Qualifiers.Contains(SiliconStudio.Shaders.Ast.Hlsl.StorageQualifier.Const)

@@ -293,6 +293,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             WriteLinkLine(shaderBlock);
             currentBlock = shaderBlock;
 
+            VariableAsParameterKey = false;
+
             Write("internal partial class");
             Write(" ");
             Write(shaderBlock.Name);
@@ -320,6 +322,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
             CloseBrace();
 
+            VariableAsParameterKey = true;
             currentBlock = null;
         }
 
