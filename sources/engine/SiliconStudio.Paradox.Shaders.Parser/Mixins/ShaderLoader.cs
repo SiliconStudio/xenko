@@ -245,13 +245,22 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 }
 
                 var shader = parsingResult.Shader;
-                shaderClass = shader.Declarations.OfType<ShaderClassType>().Single();
+
+                // As shaders can be embedded in namespaces, get only the shader class and make sure there is only one in a pdxsl.
+                var shaderClassTypes = GetShaderClassTypes(shader.Declarations).ToList();
+                if (shaderClassTypes.Count != 1)
+                {
+                    throw new InvalidOperationException(string.Format("Shader [{0}] must contain only a single Shader class type intead of [{1}]", type, shaderClassTypes.Count));
+                }
+
+                shaderClass = shaderClassTypes.First();
                 shaderClass.SourcePath = shaderSource.Path;
                 shaderClass.SourceHash = shaderSource.Hash;
                 shaderClass.PreprocessedSourceHash = hashPreprocessSource;
                 shaderClass.IsInstanciated = false;
 
-                Console.WriteLine("Loading Shader {0}{1}", type, macros != null && macros.Length > 0 ? string.Format("<{0}>", string.Join(", ", macros)) : string.Empty);
+                // TODO: We should not use Console. Change the way we log things here
+                Console.WriteLine("Loading Shader {0}{1}", type, macros != null && macros.Length > 0 ? String.Format("<{0}>", string.Join(", ", macros)) : string.Empty);
 
                 if (shaderClass.Name.Text != type)
                 {
@@ -328,6 +337,29 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 return source.ClassName + "_" + hash.ToString();
             }
             return source.ClassName;
+        }
+
+        private static IEnumerable<ShaderClassType> GetShaderClassTypes(IEnumerable<SiliconStudio.Shaders.Ast.Node> nodes)
+        {
+            foreach (var node in nodes)
+            {
+                var namespaceBlock = node as NamespaceBlock;
+                if (namespaceBlock != null)
+                {
+                    foreach (var type in GetShaderClassTypes(namespaceBlock.Body))
+                    {
+                        yield return type;
+                    }
+                }
+                else
+                {
+                    var shaderClass = node as ShaderClassType;
+                    if (shaderClass != null)
+                    {
+                        yield return shaderClass;
+                    }
+                }
+            }
         }
 
         private class ShaderSourceKey : IEquatable<ShaderSourceKey>

@@ -56,22 +56,32 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             }
         }
 
-        protected void WriteVariableAsParameterKey(Variable variable)
+        /// <summary>
+        /// Visits the specified namespace block.
+        /// </summary>
+        /// <param name="namespaceBlock">The namespace block.</param>
+        [Visit]
+        protected virtual void Visit(NamespaceBlock namespaceBlock)
+        {
+            WriteLinkLine(namespaceBlock);
+            Write("namespace ").Write(namespaceBlock.Name);
+            OpenBrace();
+            foreach (Node node in namespaceBlock.Body)
+            {
+                VisitDynamic(node);
+            }
+            CloseBrace();
+        }
+
+        internal bool IsParameterKey(Variable variable)
         {
             if (variable.Qualifiers.Contains(SiliconStudio.Shaders.Ast.Hlsl.StorageQualifier.Extern)
                 || variable.Qualifiers.Contains(SiliconStudio.Shaders.Ast.Hlsl.StorageQualifier.Const)
                 || variable.Qualifiers.Contains(ParadoxStorageQualifier.Stream))
-                return;
+                return false;
 
             if (variable.Attributes.OfType<AttributeDeclaration>().Any(x => x.Name == "RenameLink"))
-                return;
-
-            var variableType = variable.Attributes.OfType<AttributeDeclaration>().Where(x => x.Name == "Type").Select(x => (string)x.Parameters[0].Value).FirstOrDefault();
-            var variableMap = variable.Attributes.OfType<AttributeDeclaration>().Where(x => x.Name == "Map").Select(x => (string)x.Parameters[0].Value).FirstOrDefault();
-            IsColorStatus = variable.Attributes.OfType<AttributeDeclaration>().Any(x => x.Name == "Color");
-
-            ProcessInitialValueStatus = false;
-            IsArrayStatus = false;
+                return false;
 
             var type = variable.Type.ResolveType();
             bool isArray = type is ArrayType;
@@ -79,8 +89,22 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             {
                 type = ((ArrayType)type).Type.ResolveType();
             }
-            if (!IsKeyType(type))
+            return IsParameterKeyType(type);
+        }
+
+        protected void WriteVariableAsParameterKey(Variable variable)
+        {
+            if (!IsParameterKey(variable))
+            {
                 return;
+            }
+
+            IsColorStatus = variable.Attributes.OfType<AttributeDeclaration>().Any(x => x.Name == "Color");
+            ProcessInitialValueStatus = false;
+            IsArrayStatus = false;
+
+            var variableType = variable.Attributes.OfType<AttributeDeclaration>().Where(x => x.Name == "Type").Select(x => (string)x.Parameters[0].Value).FirstOrDefault();
+            var variableMap = variable.Attributes.OfType<AttributeDeclaration>().Where(x => x.Name == "Map").Select(x => (string)x.Parameters[0].Value).FirstOrDefault();
 
             Write("public static readonly ParameterKey<");
             if (variableType == null)
@@ -145,7 +169,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns>True if a key should be generated, false otherwise.</returns>
-        protected virtual bool IsKeyType(TypeBase type)
+        protected virtual bool IsParameterKeyType(TypeBase type)
         {
             return (type is ScalarType)
                    || (type is VectorType)
