@@ -1,76 +1,93 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Effects.Modules;
 using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Shaders.Compiler;
 
 namespace SiliconStudio.Paradox.PostEffects
 {
     /// <summary>
-    /// Post effect using a single shader.
+    /// Post effect using a an effect or shader file (either pdxfx or pdxsl).
     /// </summary>
     public class PostEffectShader : PostEffectBase
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PostEffectShader" /> class.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        public PostEffectShader(PostEffectContext context)
-            : base(context)
-        {
-        }
+        private readonly ParameterCollection parameters;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PostEffectShader" /> class.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="effect">The effect.</param>
-        /// <param name="parameters">The parameters.</param>
-        /// <exception cref="System.ArgumentNullException">effect</exception>
-        public PostEffectShader(PostEffectContext context, Effect effect, ParameterCollection parameters = null) : base(context)
-        {
-            if (effect == null) throw new ArgumentNullException("effect");
-            Effect = effect;
-            Name = Effect.Name;
-            Parameters = parameters ?? new ParameterCollection();
-        }
+        private readonly InternalEffectInstance effectInstance;
+
+        private readonly DynamicEffectCompiler effectCompiler;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PostEffectShader"/> class.
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="effectName">Name of the shader.</param>
-        /// <param name="parameters">The compiler parameters.</param>
-        public PostEffectShader(PostEffectContext context, string effectName, ParameterCollection parameters = null)
-            : this(context, SafeLoadEffect(context, effectName, parameters), parameters)
+        public PostEffectShader(PostEffectContext context, string effectName)
+            : base(context, effectName)
         {
+            if (effectName == null) throw new ArgumentNullException("effectName");
+
+            // Setup this instance parameters
+            parameters = new ParameterCollection();
+            // As this is used by PostEffectBase, we just setup it here by default
+            parameters.Set(TexturingKeys.Sampler, GraphicsDevice.SamplerStates.LinearClamp);
+
+            // Setup the effect compiler
+            effectInstance = new InternalEffectInstance(parameters);
+            effectCompiler = new DynamicEffectCompiler(context.Services, effectName);
         }
 
         /// <summary>
-        /// Gets the effect associated to this post effect.
+        /// Gets the name of the effect.
         /// </summary>
-        /// <value>The effect.</value>
-        public Effect Effect { get; private set; }
+        public string EffectName
+        {
+            get
+            {
+                return effectCompiler.EffectName;
+            }
+        }
 
         /// <summary>
         /// Gets the effect parameters.
         /// </summary>
         /// <value>The parameters.</value>
-        public ParameterCollection Parameters { get; private set; }
+        public ParameterCollection Parameters
+        {
+            get
+            {
+                return parameters;
+            }
+        }
 
         protected override void DrawCore()
         {
-            GraphicsDevice.DrawQuad(Effect, Parameters);
+            // Dynamically update/compile the effect based on the current parameters.
+            effectCompiler.Update(effectInstance);
+
+            // Draw a full screen quad
+            GraphicsDevice.DrawQuad(effectInstance.Effect, Parameters);
         }
 
-        private static Effect SafeLoadEffect(PostEffectContext context, string effectName, ParameterCollection compilerParameters)
+        /// <summary>
+        /// Internal class used for dynamic effect compilation.
+        /// </summary>
+        private class InternalEffectInstance : DynamicEffectInstance
         {
-            if (context == null) throw new ArgumentNullException("context");
-            if (effectName == null) throw new ArgumentNullException("effectName");
+            private readonly ParameterCollection parameters;
 
-            return context.LoadEffect(effectName, new CompilerParameters());
+            public InternalEffectInstance(ParameterCollection parameters)
+            {
+                this.parameters = parameters;
+            }
+
+            protected internal override void FillParameterCollections(IList<ParameterCollection> parameterCollections)
+            {
+                parameterCollections.Add(parameters);
+            }
         }
     }
 }
