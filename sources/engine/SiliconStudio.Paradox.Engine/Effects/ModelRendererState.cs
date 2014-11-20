@@ -40,6 +40,18 @@ namespace SiliconStudio.Paradox.Effects
         }
 
         /// <summary>
+        /// Gets a value indicating whether this instance is valid.
+        /// </summary>
+        /// <value><c>true</c> if this instance is valid; otherwise, <c>false</c>.</value>
+        public bool IsValid
+        {
+            get
+            {
+                return AcceptModel != null && PrepareRenderModel != null && AcceptRenderModel != null;
+            }
+        }
+
+        /// <summary>
         /// The action that will be applied on every model to test whether to add it to the render pipeline.
         /// </summary>
         public Func<IModelInstance, bool> AcceptModel { get; set; }
