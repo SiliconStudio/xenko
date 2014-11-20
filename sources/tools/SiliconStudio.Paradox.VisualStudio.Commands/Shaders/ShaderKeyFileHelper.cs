@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Linq;
 using System.Text;
 
 using SiliconStudio.Paradox.Shaders.Parser;
@@ -29,7 +30,9 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands.Shaders
                 result = "// Unexpected exceptions occured while generating the file\n" + ex;
             }
 
-            return Encoding.UTF8.GetBytes(result);
+            // We force the UTF8 to include the BOM to match VS default
+            var data = Encoding.UTF8.GetBytes(result);
+            return Encoding.UTF8.GetPreamble().Concat(data).ToArray();
         }
     }
 }
