@@ -15,11 +15,11 @@ using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 
-#line 3 "C:\Code\Paradox\sources\shaders\Shadowmap\ShadowMaps.pdxfx"
+#line 3 "C:\Code\Paradox\sources\shaders\ShadowMaps\ShadowMaps.pdxfx"
 using SiliconStudio.Paradox.Engine;
 
 #line 5
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Effects.ShadowMaps
 {
 
     #line 8

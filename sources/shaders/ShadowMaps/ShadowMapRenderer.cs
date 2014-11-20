@@ -8,12 +8,11 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.Effects.Processors;
-using SiliconStudio.Paradox.Effects.Shadowmap;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.Effects.Renderers
+namespace SiliconStudio.Paradox.Effects.ShadowMaps
 {
     /// <summary>
     /// Handles shadow mapping.
@@ -150,7 +149,7 @@ namespace SiliconStudio.Paradox.Effects.Renderers
                         // Override with current shadow map parameters
                         graphicsDevice.Parameters.Set(ShadowMapKeys.DistanceMax, shadowMap.LightType == LightType.Directional ? shadowMap.ShadowFarDistance : shadowMap.ShadowFarDistance - shadowMap.ShadowNearDistance);
                         graphicsDevice.Parameters.Set(LightKeys.LightDirection, shadowMap.LightDirectionNormalized);
-                        graphicsDevice.Parameters.Set(ShadowMapCasterBaseKeys.shadowLightOffset, cascade.ReceiverInfo.Offset);
+                        graphicsDevice.Parameters.Set(ShadowMapKeys.LightOffset, cascade.ReceiverInfo.Offset);
 
                         // We computed ViewProjection, so let's use View = Identity & Projection = ViewProjection
                         // (ideally we should override ViewProjection dynamic)
@@ -182,7 +181,7 @@ namespace SiliconStudio.Paradox.Effects.Renderers
                 // Reset parameters
                 graphicsDevice.Parameters.Reset(ShadowMapKeys.DistanceMax);
                 graphicsDevice.Parameters.Reset(LightKeys.LightDirection);
-                graphicsDevice.Parameters.Reset(ShadowMapCasterBaseKeys.shadowLightOffset);
+                graphicsDevice.Parameters.Reset(ShadowMapKeys.LightOffset);
                 graphicsDevice.Parameters.Reset(TransformationKeys.View);
                 graphicsDevice.Parameters.Reset(TransformationKeys.Projection);
                 if (hasFilter)

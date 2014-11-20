@@ -5,6 +5,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects.Processors;
 using SiliconStudio.Paradox.Effects.Renderers;
+using SiliconStudio.Paradox.Effects.ShadowMaps;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
 

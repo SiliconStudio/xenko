@@ -1,9 +1,10 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Effects.ShadowMaps
 {
 
     /// <summary>
@@ -25,5 +26,10 @@ namespace SiliconStudio.Paradox.Effects
         /// Maximum distance used by a shadow map.
         /// </summary>
         public static readonly ParameterKey<float> DistanceMax = ParameterKeys.New(0.0f);
+
+        /// <summary>
+        /// Light Offset
+        /// </summary>
+        public static readonly ParameterKey<Vector3> LightOffset = ParameterKeys.New(Vector3.Zero);
     }
 }
