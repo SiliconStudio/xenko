@@ -18,9 +18,6 @@ namespace SiliconStudio.Paradox.Assets.Model
         public MeshMaterialParameters()
         {
             Parameters = new ParameterCollectionData();
-            CastShadows = false;
-            ReceiveShadows = false;
-            Layer = RenderLayers.RenderLayerAll;
         }
 
         /// <summary>
