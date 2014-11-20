@@ -7,7 +7,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.PostEffects
+namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
     /// Post effect base class.

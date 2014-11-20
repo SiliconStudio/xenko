@@ -5,10 +5,9 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.PostEffects
+namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
     /// Context for post effects.

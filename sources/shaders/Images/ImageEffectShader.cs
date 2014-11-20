@@ -3,11 +3,10 @@
 using System;
 using System.Collections.Generic;
 
-using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Modules;
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.PostEffects
+namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
     /// Post effect using an <see cref="Effect"/> (either pdxfx or pdxsl).

@@ -3,7 +3,7 @@
 
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.PostEffects
+namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
     /// Extensions for <see cref="ImageEffectBase"/>.
