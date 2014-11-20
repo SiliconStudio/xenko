@@ -4,19 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.Assets.Effect;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Data;
-using SiliconStudio.Paradox.Effects.Modules;
 using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Importer.Common;
-using SiliconStudio.Paradox.Shaders.Compiler;
 
 namespace SiliconStudio.Paradox.Assets.Model
 {

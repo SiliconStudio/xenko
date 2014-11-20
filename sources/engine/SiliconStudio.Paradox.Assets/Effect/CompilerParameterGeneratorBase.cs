@@ -6,7 +6,6 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Data;
-using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders.Compiler;
 
 namespace SiliconStudio.Paradox.Assets.Effect
@@ -28,7 +27,8 @@ namespace SiliconStudio.Paradox.Assets.Effect
             {
                 foreach (var keyValue in sourceParameters)
                 {
-                    if (!typeof(GraphicsResourceBase).IsAssignableFrom(keyValue.Key.PropertyType))
+                    // only keep what can be assigned
+                    if (keyValue.Value.GetType().IsAssignableFrom(keyValue.Key.PropertyType))
                         destParameters.SetObject(keyValue.Key, keyValue.Key.ConvertValue(keyValue.Value));
                 }
             }

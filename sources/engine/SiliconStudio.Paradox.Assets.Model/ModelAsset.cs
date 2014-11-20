@@ -5,10 +5,16 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 
+using SharpYaml;
+using SharpYaml.Serialization;
+
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Yaml;
+using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.Assets.Model
 {
@@ -18,8 +24,11 @@ namespace SiliconStudio.Paradox.Assets.Model
     [ThumbnailCompiler(PreviewerCompilerNames.ModelThumbnailCompilerQualifiedName)]
     [AssetFactory((Type)null)]
     [AssetDescription("Model", "A 3D model", true)]
+    [AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
     public sealed class ModelAsset : AssetImportTracked
     {
+        public const int AssetFormatVersion = 0;
+
         /// <summary>
         /// The default file extension used by the <see cref="ModelAsset"/>.
         /// </summary>
@@ -159,6 +168,43 @@ namespace SiliconStudio.Paradox.Assets.Model
             FrontAxis = Vector3.UnitZ;
             if (Nodes != null)
                 Nodes.Clear();
+        }
+
+        class Upgrader : IAssetUpgrader
+        {
+            public void Upgrade(ILogger log, YamlMappingNode yamlAssetNode)
+            {
+                dynamic asset = new DynamicYamlMapping(yamlAssetNode);
+
+                foreach (var keyValue in asset.MeshParameters)
+                {
+                    var parameters = asset.MeshParameters[keyValue.Key].Parameters["~Items"];
+                    parameters.Node.Style = YamlStyle.Block;
+
+                    MoveToParameters(asset, parameters, keyValue.Key, "CastShadows", LightingKeys.CastShadows);
+                    MoveToParameters(asset, parameters, keyValue.Key, "ReceiveShadows", LightingKeys.ReceiveShadows);
+                    MoveToParameters(asset, parameters, keyValue.Key, "Layer", RenderingParameters.RenderLayer);
+                }
+
+                // Get the Model, and generate an Id
+                asset.Id = Guid.NewGuid().ToString().ToLowerInvariant();
+
+                asset["~Base"] = DynamicYamlEmpty.Default;
+
+                // Bump asset version -- make sure it is stored right after Id
+                asset.SerializedVersion = AssetFormatVersion;
+                asset.MoveChild("SerializedVersion", asset.IndexOf("Id") + 1);
+            }
+
+            public void MoveToParameters(dynamic asset, dynamic parameters, object key, string paramName, ParameterKey pk)
+            {
+                var paramValue = asset.MeshParameters[key][paramName];
+                if (paramValue != null)
+                {
+                    parameters[pk.Name] = paramValue;
+                    asset.MeshParameters[key].RemoveChild(paramName);
+                }
+            }
         }
     }
 }
