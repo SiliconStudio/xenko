@@ -37,36 +37,6 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// </userdoc>
         [DataMember(20)]
         public AssetReference<MaterialAsset> Material;
-        
-        /// <summary>
-        /// The mesh casts shadow.
-        /// </summary>
-        /// <userdoc>
-        /// If checked, the mesh will cast shadows.
-        /// </userdoc>
-        [DataMember(30)]
-        [DefaultValue(false)]
-        public bool CastShadows;
-
-        /// <summary>
-        /// The mesh receives shadow.
-        /// </summary>
-        /// <userdoc>
-        /// If checked, the mesh will receive shadows.
-        /// </userdoc>
-        [DataMember(40)]
-        [DefaultValue(false)]
-        public bool ReceiveShadows;
-
-        /// <summary>
-        /// The layer of the mesh.
-        /// </summary>
-        /// <userdoc>
-        /// The layer the mesh belongs to.
-        /// </userdoc>
-        [DataMember(50)]
-        [DefaultValue(RenderLayers.RenderLayerAll)]
-        public RenderLayers Layer;
 
         /// <summary>
         /// The mesh parameters.
@@ -74,7 +44,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <userdoc>
         /// The mesh-specific parameters. This will override the material parameters.
         /// </userdoc>
-        [DataMember(60)]
+        [DataMember(30)]
         public ParameterCollectionData Parameters;
 
         /// <summary>
@@ -83,7 +53,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <userdoc>
         /// The lighting configurations the mesh supports.
         /// </userdoc>
-        [DataMember(70)]
+        [DataMember(40)]
         [DefaultValue(null)]
         public AssetReference<LightingAsset> LightingParameters;
     }
