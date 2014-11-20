@@ -442,6 +442,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
     </Compile>
+    <Compile Include="Cubemap\CubemapBlendComponent.cs" />
     <Compile Include="Cubemap\CubemapBlendEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -550,11 +551,18 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>CubemapSkybox.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Cubemap\CubemapSourceComponent.cs" />
     <Compile Include="Cubemap\CubemapUtils.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>CubemapUtils.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Data\EffectsData.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>EffectsData.pdxdata</DependentUpon>
     </Compile>
     <Compile Include="Deferred\EnvironmentMapDiffuseDeferredShading.cs">
       <AutoGen>True</AutoGen>
@@ -659,8 +667,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>PostEffectBack.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Processors\CubemapBlendProcessor.cs" />
-    <Compile Include="Processors\CubemapSourceProcessor.cs" />
+    <Compile Include="Cubemap\CubemapBlendProcessor.cs" />
+    <Compile Include="Cubemap\CubemapSourceProcessor.cs" />
     <Compile Include="Cubemap\CubemapBlendRenderer.cs" />
     <Compile Include="Processors\DynamicLightShadowProcessor.cs" />
     <Compile Include="Processors\EntityLightShadow.cs" />
@@ -1914,6 +1922,10 @@
     <None Include="Cubemap\CubemapUtils.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CubemapUtils.cs</LastGenOutput>
+    </None>
+    <None Include="Data\EffectsData.pdxdata">
+      <Generator>ParadoxDataCodeGenerator</Generator>
+      <LastGenOutput>EffectsData.cs</LastGenOutput>
     </None>
     <None Include="Deferred\EnvironmentMapDiffuseDeferredShading.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

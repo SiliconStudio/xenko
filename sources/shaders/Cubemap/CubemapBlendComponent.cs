@@ -5,11 +5,10 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Converters;
-using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Paradox.Effects.Cubemap
 {
     /// <summary>
     /// Performs a blend at the location of the containing entity. When enabled, takes the up to the MaxBlendCount-most important cubemaps and blends them.

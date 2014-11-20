@@ -9,6 +9,7 @@ using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Effects.Cubemap;
 using SiliconStudio.Paradox.Effects.Processors;
 using SiliconStudio.Paradox.Effects.Renderers;
 using SiliconStudio.Paradox.Engine;

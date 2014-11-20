@@ -179,8 +179,6 @@
     <Compile Include="Data\BoundingBoxExtensions.cs" />
     <Compile Include="Data\HalfBufferExtensions.cs" />
     <Compile Include="Data\PolySortExtensions.cs" />
-    <Compile Include="Engine\CubemapBlendComponent.cs" />
-    <Compile Include="Engine\CubemapSourceComponent.cs" />
     <Compile Include="Effects\IModelInstance.cs" />
     <Compile Include="Engine\LightProcessor.cs" />
     <Compile Include="Engine\PlayingAnimation.cs" />

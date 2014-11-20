@@ -8,7 +8,7 @@ using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Paradox.Effects.Cubemap
 {
     /// <summary>
     /// Puts a cubemap at the containing entity location. This could be dynamic (runtime rendered) or static (from a file).
