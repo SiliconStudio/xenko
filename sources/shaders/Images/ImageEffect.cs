@@ -30,12 +30,13 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             // Setup this instance parameters
             parameters = new ParameterCollection();
-            // As this is used by PostEffectBase, we just setup it here by default
-            parameters.Set(TexturingKeys.Sampler, GraphicsDevice.SamplerStates.LinearClamp);
 
             // Setup the effect compiler
             effectInstance = new InternalEffectInstance(parameters);
             effectCompiler = new DynamicEffectCompiler(context.Services, effectName);
+
+            // As this is used by PostEffectBase, we just setup it here by default
+            parameters.Set(TexturingKeys.Sampler, GraphicsDevice.SamplerStates.LinearClamp);
         }
 
         /// <summary>
@@ -59,6 +60,14 @@ namespace SiliconStudio.Paradox.Effects.Images
             {
                 return parameters;
             }
+        }
+
+        /// <summary>
+        /// Reset all parameters to their default values.
+        /// </summary>
+        public virtual void Reset()
+        {
+            Parameters.Set(TexturingKeys.Sampler, GraphicsDevice.SamplerStates.LinearClamp);
         }
 
         protected override void PreDrawCore(string name)

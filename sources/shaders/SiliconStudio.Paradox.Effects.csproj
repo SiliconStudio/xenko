@@ -582,10 +582,18 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>MaterialReflectanceGBuffer.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Images\ImageCopier.cs" />
+    <Compile Include="Images\ImageCopierShader.Extensions.cs" />
     <Compile Include="Images\ImageEffectBase.cs" />
     <Compile Include="Images\ImageEffectBaseExtensions.cs" />
     <Compile Include="Images\ImageEffectContext.cs" />
     <Compile Include="Images\ImageEffect.cs" />
+    <Compile Include="Images\ImageCopierShader.cs">
+      <DependentUpon>ImageCopierShader.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Images\ImageEffectShader.cs">
       <DependentUpon>ImageEffectShader.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -1937,6 +1945,10 @@
     <None Include="Deferred\MaterialReflectanceGBuffer.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialReflectanceGBuffer.cs</LastGenOutput>
+    </None>
+    <None Include="Images\ImageCopierShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ImageCopierShader.cs</LastGenOutput>
     </None>
     <None Include="LightPrepass\DeferredSpotShadowLighting.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
