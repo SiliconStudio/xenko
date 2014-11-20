@@ -15,7 +15,7 @@ using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 
-#line 3 "C:\Code\Paradox\sources\shaders\CubemapBlendEffect.pdxfx"
+#line 3 "C:\Code\Paradox\sources\shaders\Cubemap\CubemapBlendEffect.pdxfx"
 using SiliconStudio.Paradox.Effects.Data;
 
 #line 4
@@ -25,7 +25,7 @@ using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Renderers;
 
 #line 7
-namespace CubemapBlendShader
+namespace SiliconStudio.Paradox.Effects.Cubemap
 {
 
     #line 9

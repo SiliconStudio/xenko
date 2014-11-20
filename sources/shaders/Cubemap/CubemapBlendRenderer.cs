@@ -13,7 +13,7 @@ using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Paradox.Shaders.Compiler;
 
-namespace SiliconStudio.Paradox.Effects.Renderers
+namespace SiliconStudio.Paradox.Effects.Cubemap
 {
     /// <summary>
     /// Blends the cubemaps at the defined locations.

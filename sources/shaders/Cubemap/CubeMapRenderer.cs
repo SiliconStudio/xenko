@@ -10,7 +10,7 @@ using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.Effects.Renderers
+namespace SiliconStudio.Paradox.Effects.Cubemap
 {
     /// <summary>
     /// Render dynamic cubemaps.

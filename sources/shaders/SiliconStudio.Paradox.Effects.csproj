@@ -22,7 +22,7 @@
     <Compile Include="..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="BasicShaders.cs">
+    <Compile Include="Core\BasicShaders.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -442,7 +442,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Include="CubemapBlendEffect.cs">
+    <Compile Include="Cubemap\CubemapBlendEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -661,7 +661,7 @@
     </Compile>
     <Compile Include="Processors\CubemapBlendProcessor.cs" />
     <Compile Include="Processors\CubemapSourceProcessor.cs" />
-    <Compile Include="Renderers\CubemapBlendRenderer.cs" />
+    <Compile Include="Cubemap\CubemapBlendRenderer.cs" />
     <Compile Include="Processors\DynamicLightShadowProcessor.cs" />
     <Compile Include="Processors\EntityLightShadow.cs" />
     <Compile Include="Processors\GuillotinePacker.cs" />
@@ -671,7 +671,7 @@
     <Compile Include="Processors\LightShadowProcessorWithBudget.cs" />
     <Compile Include="Processors\ShadowMap.cs" />
     <Compile Include="Processors\ShadowMapTexture.cs" />
-    <Compile Include="Renderers\CubeMapRenderer.cs" />
+    <Compile Include="Cubemap\CubeMapRenderer.cs" />
     <Compile Include="Renderers\LightForwardModelRenderer.cs" />
     <Compile Include="Renderers\LightingIBLRenderer.cs" />
     <Compile Include="Renderers\LightingPrepassRenderer.cs" />
@@ -1495,7 +1495,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="BasicShaders.pdxfx">
+    <None Include="Core\BasicShaders.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>BasicShaders.cs</LastGenOutput>
     </None>
@@ -1775,7 +1775,7 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorSubtractMaya.cs</LastGenOutput>
     </None>
-    <None Include="CubemapBlendEffect.pdxfx">
+    <None Include="Cubemap\CubemapBlendEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CubemapBlendEffect.cs</LastGenOutput>
     </None>
