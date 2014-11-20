@@ -32,9 +32,9 @@ Release date: 2014/??/??
 - Studio: Some buttons were sometimes hidden where they should be visible in the property grid.
 
 #### Breaking changes
-- Asset: CastShadows, ReceiveShadows and Layer members of ModelAsset class are removed. They should be set in the Parameters of the ModelAsset behind the corresponding keys.
+- Asset: CastShadows, ReceiveShadows and Layer members of `ModelAsset` class are removed. They should be set in the Parameters of the `ModelAsset` behind the corresponding keys.
 - Engine: Remove obsolete MeshDrawHelper file (use GeometricPrimitive instead), move ToMeshDraw method to GeometricPrimitiveExtensions.
-- Engine: Default value for ParameterKeys LightingKeys.CastShadows and LightingKeys.ReceiveShadows becomes false.
+- Engine: Default value for ParameterKeys `LightingKeys.CastShadows` and `LightingKeys.ReceiveShadows` becomes false.
 - Engine: Remove obsolete `MeshDrawHelper` file (use `GeometricPrimitive` instead), move `ToMeshDraw` method to `GeometricPrimitiveExtensions`.
 - Engine: `ModelRenderer` is no longer inheritable but extensible via compositions.
 - Engine: `ModelRenderer.EnableFrustrumCulling` is replaced by the extension method `ModelRenderer.AddDefaultFrustrumCulling`
