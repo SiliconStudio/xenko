@@ -18,7 +18,6 @@ namespace SiliconStudio.Paradox.Shaders
         private readonly ParameterCollection defaultPropertyContainer;
         private readonly Stack<ParameterCollection> propertyContainers = new Stack<ParameterCollection>();
         private readonly Dictionary<string, IShaderMixinBuilder> registeredBuilders;
-        private readonly Dictionary<string, IShaderMixinBuilder> localBuilders = new Dictionary<string, IShaderMixinBuilder>();
         private readonly Dictionary<object, object> strippedPropertyContainers = new Dictionary<object, object>();
         private readonly Stack<ShaderMixinParameters> currentUsedParameters = new Stack<ShaderMixinParameters>();
         private readonly List<ShaderMixinParameters> finalUsedParameters = new List<ShaderMixinParameters>();
@@ -214,13 +213,10 @@ namespace SiliconStudio.Paradox.Shaders
         public void Mixin(ShaderMixinSourceTree mixinTree, string name, params object[] genericParameters)
         {
             IShaderMixinBuilder builder;
-            if (!localBuilders.TryGetValue(name, out builder))
+            if (!registeredBuilders.TryGetValue(name, out builder))
             {
-                if (registeredBuilders != null && !registeredBuilders.TryGetValue(name, out builder))
-                {
-                    // Else simply add the name of the shader
-                    mixinTree.Mixin.Mixins.Add(new ShaderClassSource(name, genericParameters));
-                }
+                // Else simply add the name of the shader
+                mixinTree.Mixin.Mixins.Add(new ShaderClassSource(name, genericParameters));
             }
 
             if (builder != null)
@@ -288,25 +284,6 @@ namespace SiliconStudio.Paradox.Shaders
         public void Mixin(ShaderMixinSourceTree mixinTree, ShaderMixinSource shaderMixinSource)
         {
             mixinTree.Mixin.CloneFrom(shaderMixinSource);
-        }
-
-        /// <summary>
-        /// Registers a shader mixin builder.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <param name="builder">The builder.</param>
-        public void RegisterBuilder(string name, IShaderMixinBuilder builder)
-        {
-            localBuilders[name] = builder;
-        }
-
-        /// <summary>
-        /// Unregisters a shader mixin builder.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        public void UnregisterBuilder(string name)
-        {
-            localBuilders.Remove(name);
         }
     }
 }
