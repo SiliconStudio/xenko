@@ -103,6 +103,24 @@ namespace SiliconStudio.Core.Serialization
             return Equals((ContentReference)obj);
         }
 
+        /// <summary>
+        /// Creates a new reference of the specified type with given id and location.
+        /// </summary>
+        /// <param name="referenceType">Type of the reference.</param>
+        /// <param name="id">The identifier.</param>
+        /// <param name="location">The location.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">referenceType</exception>
+        /// <exception cref="System.ArgumentException">Reference must inherit from ContentReference;referenceType</exception>
+        public static ContentReference New(Type referenceType, Guid id, string location)
+        {
+            if (referenceType == null) throw new ArgumentNullException("referenceType");
+            if (!typeof(ContentReference).IsAssignableFrom(referenceType)) throw new ArgumentException("Reference must inherit from ContentReference", "referenceType");
+
+            return (ContentReference)Activator.CreateInstance(referenceType, id, location);
+        }
+
+
         public override int GetHashCode()
         {
             unchecked
