@@ -179,17 +179,16 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             Write(" ");
             Write(enumType.Name);
             WriteSpace();
-
-            OpenBrace();
-
-            foreach (Expression fieldDeclaration in enumType.Values)
             {
-                WriteLinkLine(fieldDeclaration);
-                VisitDynamic(fieldDeclaration);
-                WriteLine(",");
+                OpenBrace();
+                foreach (Expression fieldDeclaration in enumType.Values)
+                {
+                    WriteLinkLine(fieldDeclaration);
+                    VisitDynamic(fieldDeclaration);
+                    WriteLine(",");
+                }
+                CloseBrace(false).Write(";").WriteLine();
             }
-
-            CloseBrace(false).Write(";").WriteLine();
         }
 
         /// <summary>
@@ -206,20 +205,21 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             Write(paramsBlock.Name);
             WriteSpace();
             Write(": ShaderMixinParameters");
-
-            OpenBrace();
-
-            foreach (DeclarationStatement parameter in paramsBlock.Body.Statements.OfType<DeclarationStatement>())
             {
-                var variable = parameter.Content as Variable;
-                if (variable == null)
-                    continue;
+                OpenBrace();
 
-                WriteLinkLine(parameter);
-                VisitDynamic(variable);
+                foreach (DeclarationStatement parameter in paramsBlock.Body.Statements.OfType<DeclarationStatement>())
+                {
+                    var variable = parameter.Content as Variable;
+                    if (variable == null)
+                        continue;
+
+                    WriteLinkLine(parameter);
+                    VisitDynamic(variable);
+                }
+
+                CloseBrace(false).Write(";").WriteLine();
             }
-
-            CloseBrace(false).Write(";").WriteLine();
         }
 
         /// <summary>
@@ -246,12 +246,14 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             Write("public static partial class ");
             Write(shader.Name);
             Write("Keys");
-            OpenBrace();
-            foreach (var decl in shader.Members.OfType<Variable>())
             {
-                VisitDynamic(decl);
+                OpenBrace();
+                foreach (var decl in shader.Members.OfType<Variable>())
+                {
+                    VisitDynamic(decl);
+                }
+                CloseBrace();
             }
-            CloseBrace();
         }
 
         [Visit]
@@ -328,33 +330,42 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
             VariableAsParameterKey = false;
 
-            Write("internal partial class");
-            Write(" ");
-            Write(shaderBlock.Name);
-            WriteSpace();
-            Write(" : IShaderMixinBuilder");
-            OpenBrace();
-
-            // Generate the main generate method for each shader block
-            Write("public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)");
-            OpenBrace();
-
-            // Create a context associated with ShaderBlock
-            foreach (Statement statement in shaderBlock.Body.Statements)
+            // Use a single internal class for all shader mixins
+            Write("internal static partial class ShaderMixins");
             {
-                VisitDynamic(statement);
+                OpenBrace();
+                Write("internal partial class");
+                Write(" ");
+                Write(shaderBlock.Name);
+                WriteSpace();
+                Write(" : IShaderMixinBuilder");
+                {
+                    OpenBrace();
+                    // Generate the main generate method for each shader block
+                    Write("public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)");
+                    {
+                        OpenBrace();
+                        // Create a context associated with ShaderBlock
+                        foreach (Statement statement in shaderBlock.Body.Statements)
+                        {
+                            VisitDynamic(statement);
+                        }
+                        CloseBrace();
+                    }
+
+                    WriteLine();
+                    WriteLine("[ModuleInitializer]");
+                    WriteLine("internal static void __Initialize__()");
+                    {
+                        OpenBrace();
+                        Write("ShaderMixinManager.Register(\"").Write(shaderBlock.Name).Write("\", new ").Write(shaderBlock.Name).WriteLine("());");
+                        CloseBrace();
+                    }
+                    CloseBrace();
+                }
+                CloseBrace();
             }
-            CloseBrace();
-
-            WriteLine();
-            WriteLine("[ModuleInitializer]");
-            WriteLine("internal static void __Initialize__()");
-            OpenBrace();
-            Write("ShaderMixinManager.Register(\"").Write(shaderBlock.Name).Write("\", new ").Write(shaderBlock.Name).WriteLine("());");
-            CloseBrace();
-
-            CloseBrace();
-
+    
             VariableAsParameterKey = true;
             currentBlock = null;
         }
@@ -373,7 +384,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             switch (mixinStatement.Type)
             {
                 case MixinStatementType.Default:
-                    ExtractGenericParameters(mixinStatement.Target, out mixinName, genericParameters);
+                    ExtractGenericParameters(mixinStatement.Value, out mixinName, genericParameters);
 
                     WriteLinkLine(mixinStatement);
                     Write("context.Mixin(mixin, ");
@@ -383,32 +394,45 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     break;
 
                 case MixinStatementType.Child:
-                    ExtractGenericParameters(mixinStatement.Target, out mixinName, genericParameters);
 
-                    OpenBrace();
-                    WriteLinkLine(mixinStatement);
-                    Write("var __subMixin = new ShaderMixinSourceTree() { Name = ");
-                    WriteMixinName(mixinName);
-                    WriteLine(", Parent = mixin };");
-                    WriteLine("mixin.Children.Add(__subMixin);");
-                    
-                    WriteLinkLine(mixinStatement);
-                    WriteLine("context.BeginChild(__subMixin);");
-                    
-                    WriteLinkLine(mixinStatement);
-                    Write("context.Mixin(__subMixin, ");
-                    WriteMixinName(mixinName);
-                    WriteGenericParameters(genericParameters);
-                    WriteLine(");");
+                    // mixin child can come in 2 flavour:
+                    // 1) mixin child MyEffect => equivalent to mixin child MyEffect = MyEffect
+                    // 2) mixin child MyGenericEffectName = MyEffect
+                    var targetExpression = mixinStatement.Value;
+                    assignExpression = mixinStatement.Value as AssignmentExpression;
+                    if (assignExpression != null)
+                    {
+                        targetExpression = assignExpression.Value;
+                    }
 
-                    WriteLinkLine(mixinStatement);
-                    WriteLine("context.EndChild();");
+                    ExtractGenericParameters(targetExpression, out mixinName, genericParameters);
+                    var childName = assignExpression != null ? assignExpression.Target : mixinName;
+                    {
+                        OpenBrace();
+                        WriteLinkLine(mixinStatement);
+                        Write("var __subMixin = new ShaderMixinSourceTree() { Name = ");
+                        WriteMixinName(childName);
+                        WriteLine(", Parent = mixin };");
+                        WriteLine("mixin.Children.Add(__subMixin);");
 
-                    CloseBrace();
+                        WriteLinkLine(mixinStatement);
+                        WriteLine("context.BeginChild(__subMixin);");
+
+                        WriteLinkLine(mixinStatement);
+                        Write("context.Mixin(__subMixin, ");
+                        WriteMixinName(mixinName);
+                        WriteGenericParameters(genericParameters);
+                        WriteLine(");");
+
+                        WriteLinkLine(mixinStatement);
+                        WriteLine("context.EndChild();");
+
+                        CloseBrace();
+                    }
                     break;
 
                 case MixinStatementType.Remove:
-                    ExtractGenericParameters(mixinStatement.Target, out mixinName, genericParameters);
+                    ExtractGenericParameters(mixinStatement.Value, out mixinName, genericParameters);
 
                     WriteLinkLine(mixinStatement);
                     Write("context.RemoveMixin(mixin, ");
@@ -431,7 +455,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 case MixinStatementType.Macro:
                     WriteLinkLine(mixinStatement);
                     var context = (ShaderBlockContext)currentBlock.GetTag(BlockContextTag);
-                    assignExpression = mixinStatement.Target as AssignmentExpression;
+                    assignExpression = mixinStatement.Value as AssignmentExpression;
                     Expression macroName;
                     Expression macroValue;
 
@@ -446,17 +470,17 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     }
                     else
                     {
-                        var variableReference = mixinStatement.Target as MemberReferenceExpression;
+                        var variableReference = mixinStatement.Value as MemberReferenceExpression;
                         if (variableReference == null || !(variableReference.Target is VariableReferenceExpression) || !context.DeclaredParameters.Contains((((VariableReferenceExpression)variableReference.Target).Name.Text)))
                         {
                             logging.Error("Invalid syntax. Expecting: mixin macro Parameters.NameOfProperty or mixin macro nameOfProperty = value", mixinStatement.Span);
                             macroName = new LiteralExpression("#INVALID_MACRO_NAME");
-                            macroValue = mixinStatement.Target;
+                            macroValue = mixinStatement.Value;
                         }
                         else
                         {
                             macroName = new LiteralExpression(variableReference.Member.Text);
-                            macroValue = mixinStatement.Target;
+                            macroValue = mixinStatement.Value;
                         }
                     }
 
@@ -468,10 +492,10 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     break;
 
                 case MixinStatementType.Compose:
-                    assignExpression = mixinStatement.Target as AssignmentExpression;
+                    assignExpression = mixinStatement.Value as AssignmentExpression;
                     if (assignExpression == null)
                     {
-                        logging.Error("Expecting assign expression for composition", mixinStatement.Target.Span);
+                        logging.Error("Expecting assign expression for composition", mixinStatement.Value.Span);
                         return;
                     }
 
@@ -485,23 +509,25 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
                     ExtractGenericParameters(assignExpression.Value, out mixinName, genericParameters);
 
-                    OpenBrace();
-                    WriteLinkLine(mixinStatement);
-                    WriteLine("var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };");
+                    {
+                        OpenBrace();
+                        WriteLinkLine(mixinStatement);
+                        WriteLine("var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };");
 
-                    WriteLinkLine(mixinStatement);
-                    Write("context.Mixin(__subMixin, ");
-                    WriteMixinName(mixinName);
-                    WriteGenericParameters(genericParameters);
-                    WriteLine(");");
+                        WriteLinkLine(mixinStatement);
+                        Write("context.Mixin(__subMixin, ");
+                        WriteMixinName(mixinName);
+                        WriteGenericParameters(genericParameters);
+                        WriteLine(");");
 
-                    Write("mixin.Mixin.");
-                    Write(addCompositionFunction);
-                    Write("(");
-                    WriteMixinName(assignExpression.Target);
-                    Write(", __subMixin.Mixin");
-                    WriteLine(");");
-                    CloseBrace();
+                        Write("mixin.Mixin.");
+                        Write(addCompositionFunction);
+                        Write("(");
+                        WriteMixinName(assignExpression.Target);
+                        Write(", __subMixin.Mixin");
+                        WriteLine(");");
+                        CloseBrace();
+                    }
                     break;
             }
         }

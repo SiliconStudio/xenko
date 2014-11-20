@@ -154,9 +154,9 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
             foreach (var childTree in mixinTree.Children)
             {
-                var childEffectName = effectName == string.Empty ? childTree.Name : effectName + "." + childTree.Name;
-                var fullChildEffectName = fullEffectName == string.Empty ? childTree.Name : fullEffectName + "." + childTree.Name;
-                wasCompiled |= Compile(childEffectName, fullChildEffectName, childTree, mainCompilerParameters, compilerParameters, modifiedShaders, recentlyModifiedShaders, compilerResults);
+                var childEffectName = effectName == string.Empty ? childTree.Key : effectName + "." + childTree.Key;
+                var fullChildEffectName = fullEffectName == string.Empty ? childTree.Key : fullEffectName + "." + childTree.Key;
+                wasCompiled |= Compile(childEffectName, fullChildEffectName, childTree.Value, mainCompilerParameters, compilerParameters, modifiedShaders, recentlyModifiedShaders, compilerResults);
             }
 
             return wasCompiled;

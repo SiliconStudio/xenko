@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.IO;
+using System.Linq;
 
 using NUnit.Framework;
 
@@ -93,7 +94,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             mixin.Mixin.CheckMixin("A", "B", "C");
             Assert.That(mixin.Children.Count, Is.EqualTo(1), "Expecting one children mixin");
 
-            mixin.Children[0].Mixin.CheckMixin("A", "B", "C", "C1", "C2");
+            mixin.Children.Values.First().Mixin.CheckMixin("A", "B", "C", "C1", "C2");
         }
 
         /// <summary>
@@ -109,7 +110,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             var mixin = GenerateMixin("DefaultSimpleChildParams", properties, out usedProperties);
             mixin.Mixin.CheckMixin("A", "B", "C");
             Assert.That(mixin.Children.Count, Is.EqualTo(1), "Expecting one children mixin");
-            mixin.Children[0].Mixin.CheckMixin("A", "B", "C1");
+            mixin.Children.Values.First().Mixin.CheckMixin("A", "B", "C1");
         }
 
         /// <summary>
