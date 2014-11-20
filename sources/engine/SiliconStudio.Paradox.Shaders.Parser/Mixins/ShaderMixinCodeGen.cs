@@ -248,9 +248,19 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             Write("Keys");
             {
                 OpenBrace();
-                foreach (var decl in shader.Members.OfType<Variable>())
+                foreach (var decl in shader.Members)
                 {
-                    VisitDynamic(decl);
+                    if (decl is Variable)
+                    {
+                        VisitDynamic(decl);
+                    }
+                    else if (decl is ConstantBuffer)
+                    {
+                        foreach (var subDecl in ((ConstantBuffer)decl).Members.OfType<Variable>())
+                        {
+                            VisitDynamic(subDecl);
+                        }
+                    }
                 }
                 CloseBrace();
             }
@@ -719,8 +729,6 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
             private readonly ShaderKeyGeneratorBase parent;
 
-            private bool isVisitingShaderClassType;
-
             public ShaderBlockVisitor(ShaderKeyGeneratorBase parent, LoggerResult logging)
                 : base(false, false)
             {
@@ -746,10 +754,16 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             [Visit]
             private void Visit(ShaderClassType shaderClassType)
             {
-                isVisitingShaderClassType = true;
-                foreach (var variable in shaderClassType.Members.OfType<Variable>())
+                // Check if there are any parameter keys in ShaderClassType and ConstantBuffer
+                CheckParameterKeys(shaderClassType.Members.OfType<Variable>());
+                CheckParameterKeys(shaderClassType.Members.OfType<ConstantBuffer>().SelectMany(cbuffer => cbuffer.Members).OfType<Variable>());
+            }
+
+            private void CheckParameterKeys(IEnumerable<Variable> variables)
+            {
+                foreach (var variable in variables)
                 {
-                    if (isVisitingShaderClassType && !HasShaderClassType)
+                    if (!HasShaderClassType)
                     {
                         if (parent.IsParameterKey(variable))
                         {
@@ -757,8 +771,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                         }
                     }
                 }
-                isVisitingShaderClassType = false;
             }
+
 
             [Visit]
             private void Visit(ShaderBlock shaderBlock)
