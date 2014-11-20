@@ -11,6 +11,7 @@ Release date: 2014/??/??
 - Graphics: Add geometric primitive for Cone.
 - Samples: Spot light shadows in DeferredLighting sample.
 - Studio: Added documentation on properties of the property grid.
+- Engine: Add possibility to set the View and Projection matrix used by SpriteRenderer.
 
 #### Issues fixed
 - Assets: Textures with arbitrary size (non square and non power-of-two) are now correctly loaded.
@@ -24,6 +25,7 @@ Release date: 2014/??/??
 
 #### Breaking changes
 - Engine: Remove obsolete MeshDrawHelper file (use GeometricPrimitive instead), move ToMeshDraw method to GeometricPrimitiveExtensions.
+- Graphics: Some overloads of SpriteBatch.Begin have changed signature for better clarity and easier usage.
 
 #### Known Issues
 - Physics: Complex convex hull decomposition can be a very long process and there is visual feedback for it.
