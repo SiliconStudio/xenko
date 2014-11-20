@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
         private SpriteComponent spriteComponent;
 
-        private Vector2 areaSize;
+        private Vector3 areaSize;
 
         private TransformationComponent transfoComponent;
 
@@ -49,15 +49,21 @@ namespace SiliconStudio.Paradox.Engine.Tests
         protected override async Task LoadContent()
         {
             await base.LoadContent();
+            
+            // sets the virtual resolution
+            areaSize = new Vector3(GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height, SpriteBatch.DefaultDepth);
+            VirtualResolution = new Vector3(areaSize.X, areaSize.Y, 1000);
+
+            // Creates the camera
+            var cameraComponent = new CameraComponent(Matrix.Identity, Matrix.OrthoOffCenterRH(0, areaSize.X, areaSize.Y, 0, -areaSize.Z/2, areaSize.Z/2));
+            var camera = new Entity("Camera") { cameraComponent };
 
             // Create Main pass
             var mainPipeline = RenderSystem.Pipeline;
+            mainPipeline.Renderers.Add(new CameraSetter(Services) { Camera = cameraComponent });
             mainPipeline.Renderers.Add(new RenderTargetSetter(Services) { ClearColor = Color.LightBlue });
             mainPipeline.Renderers.Add(new SpriteRenderer(Services));
             
-            areaSize = new Vector2(GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height);
-            VirtualResolution = new Vector3(areaSize, 1000);
-
             // Load assets
             groundSprites = Asset.Load<SpriteGroup>("GroundSprite");
             ballSprite1 = Asset.Load<SpriteGroup>("BallSprite1");
@@ -69,7 +75,8 @@ namespace SiliconStudio.Paradox.Engine.Tests
             background = new Entity();
             foreground.Add(new SpriteComponent { SpriteGroup = groundSprites, CurrentFrame = 1 });
             background.Add(new SpriteComponent { SpriteGroup = groundSprites, CurrentFrame = 0 });
-
+            
+            Entities.Add(camera);
             Entities.Add(ball);
             Entities.Add(foreground);
             Entities.Add(background);

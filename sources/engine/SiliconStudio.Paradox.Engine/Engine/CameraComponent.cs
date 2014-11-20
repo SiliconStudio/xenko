@@ -48,6 +48,19 @@ namespace SiliconStudio.Paradox.Engine
         }
 
         /// <summary>
+        /// Create a new <see cref="CameraComponent"/> from a view and projection matrix.
+        /// </summary>
+        /// <param name="viewMatrix">The view matrix</param>
+        /// <param name="projectionMatrix">The projection matrix</param>
+        public CameraComponent(Matrix viewMatrix, Matrix projectionMatrix)
+        {
+            ViewMatrix = viewMatrix;
+            ProjectionMatrix = projectionMatrix;
+            UseViewMatrix = true;
+            UseProjectionMatrix = true;
+        }
+
+        /// <summary>
         /// Associates an entity with this camera component.
         /// </summary>
         /// <param name="name">The name of entity.</param>
@@ -174,6 +187,20 @@ namespace SiliconStudio.Paradox.Engine
         public Matrix ViewMatrix { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to use custom <see cref="ProjectionMatrix"/>. Default is <c>false</c>
+        /// </summary>
+        /// <value><c>true</c> if use custom <see cref="ProjectionMatrix"/>; otherwise, <c>false</c>.</value>
+        [DataMemberConvert]
+        public bool UseProjectionMatrix { get; set; }
+
+        /// <summary>
+        /// Gets or sets the local projection matrix, only used when <see cref="UseProjectionMatrix"/> is <c>true</c>.
+        /// </summary>
+        /// <value>The local projection matrix.</value>
+        [DataMemberConvert]
+        public Matrix ProjectionMatrix { get; set; }
+
+        /// <summary>
         /// Gets or sets the position.
         /// </summary>
         /// <value>The position.</value>
@@ -223,9 +250,16 @@ namespace SiliconStudio.Paradox.Engine
                     Matrix.Invert(ref worldMatrix, out viewMatrix);
                 }
             }
-
+            
             // Calculates the projection
-            Matrix.PerspectiveFovRH(VerticalFieldOfView, AspectRatio, NearPlane, FarPlane, out projection);
+            if (UseProjectionMatrix)
+            {
+                projection = ProjectionMatrix;
+            }
+            else
+            {
+                Matrix.PerspectiveFovRH(VerticalFieldOfView, AspectRatio, NearPlane, FarPlane, out projection);
+            }
         }
 
         public override PropertyKey DefaultKey

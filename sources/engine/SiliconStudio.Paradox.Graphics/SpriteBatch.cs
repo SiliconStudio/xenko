@@ -22,7 +22,10 @@ namespace SiliconStudio.Paradox.Graphics
 
         private Vector3? userVirtualResolution;
 
-        private const float DefaultDepth = 100f;
+        /// <summary>
+        /// The default value of the depth used by the <see cref="SpriteBatch"/>. That is the value of (farPlane-nearPlane) used by the default projection matrix.
+        /// </summary>
+        public const float DefaultDepth = 200f;
 
         /// <summary>
         /// Gets the sprite batch default projection matrix.
@@ -37,7 +40,7 @@ namespace SiliconStudio.Paradox.Graphics
                 var yRatio = (viewport.Height > 0) ? -1f / viewport.Height : 0f;
                 const float zRatio = -1f / DefaultDepth;
                 
-                return new Matrix { M11 = xRatio * 2f, M22 = yRatio * 2f, M33 = zRatio * 0.5f, M44 = 1f, M41 = -1f, M42 = 1f, M43 = 0.5f };
+                return new Matrix { M11 = xRatio * 2f, M22 = yRatio * 2f, M33 = zRatio, M44 = 1f, M41 = -1f, M42 = 1f, M43 = 0.5f };
             }
         }
 

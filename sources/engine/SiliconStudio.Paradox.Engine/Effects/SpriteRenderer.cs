@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Effects.Modules;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
@@ -28,33 +29,11 @@ namespace SiliconStudio.Paradox.Effects
 
         private static readonly Dictionary<string, List<Entity>> effectNamesToEntityDatas = new Dictionary<string, List<Entity>>();
 
-        private Matrix? userProjectionMatrix;
-
-        /// <summary>
-        /// Gets or sets the view matrix used to render the sprites.
-        /// </summary>
-        public Matrix ViewMatrix { get; set; }
-        
         public SpriteRenderer(IServiceRegistry services)
             : base(services)
         {
             renderSystem = (RenderSystem)services.GetService(typeof(RenderSystem));
             gameVirtualResolution = (IVirtualResolution)services.GetService(typeof(IVirtualResolution));
-        }
-
-        /// <summary>
-        /// Gets or sets the projection matrix used to render the sprites.
-        /// </summary>
-        public Matrix ProjectionMatrix
-        {
-            get
-            {
-                if (userProjectionMatrix.HasValue)
-                    return userProjectionMatrix.Value;
-
-                return spriteBatch.DefaultProjectionMatrix;
-            }
-            set { userProjectionMatrix = value; }
         }
 
         private void GameVirtualResolutionChanged(object sender, EventArgs eventArgs)
@@ -67,7 +46,6 @@ namespace SiliconStudio.Paradox.Effects
             base.Load();
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            ViewMatrix = spriteBatch.DefaultViewMatrix;
 
             gameVirtualResolution.VirtualResolutionChanged += GameVirtualResolutionChanged;
             GameVirtualResolutionChanged(null, EventArgs.Empty);
@@ -90,11 +68,11 @@ namespace SiliconStudio.Paradox.Effects
         {
             // draw opaque sprites 
             SelectAndSortEntitiesByEffects(SpriteIsOpaque);
-            DrawSprites(SpriteSortMode.FrontToBack, GraphicsDevice.BlendStates.Opaque);
+            DrawSprites(context, SpriteSortMode.FrontToBack, GraphicsDevice.BlendStates.Opaque);
 
             // draw transparent objects
             SelectAndSortEntitiesByEffects(SpriteIsTransparent);
-            DrawSprites(SpriteSortMode.BackToFront, GraphicsDevice.BlendStates.AlphaBlend);
+            DrawSprites(context, SpriteSortMode.BackToFront, GraphicsDevice.BlendStates.AlphaBlend);
         }
 
         private bool SpriteIsTransparent(SpriteComponent spriteComponent)
@@ -130,14 +108,19 @@ namespace SiliconStudio.Paradox.Effects
             }
         }
 
-        private void DrawSprites(SpriteSortMode sortMode, BlendState blendState)
+        private void DrawSprites(RenderContext context, SpriteSortMode sortMode, BlendState blendState)
         {
+            var viewParameters = context.CurrentPass.Parameters;
+
+            var viewMatrix = viewParameters.Get(TransformationKeys.View);
+            var projectionMatrix = viewParameters.Get(TransformationKeys.Projection);
+
             foreach (var entities in effectNamesToEntityDatas.Values)
             {
                 if (entities.Count == 0)
                     continue;
 
-                spriteBatch.Begin(ViewMatrix, ProjectionMatrix, sortMode, blendState, effect:entities[0].Get(SpriteComponent.Key).Effect);
+                spriteBatch.Begin(viewMatrix, projectionMatrix, sortMode, blendState, effect: entities[0].Get(SpriteComponent.Key).Effect);
 
                 foreach (var entity in entities)
                 {
