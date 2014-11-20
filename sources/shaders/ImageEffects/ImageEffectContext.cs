@@ -13,25 +13,25 @@ namespace SiliconStudio.Paradox.PostEffects
     /// <summary>
     /// Context for post effects.
     /// </summary>
-    public class PostEffectContext : ComponentBase
+    public class ImageEffectContext : ComponentBase
     {
         public TextureDescription DefaultTextureDescription;
         private readonly Dictionary<TextureDescription, List<TextureLink>> textureCache = new Dictionary<TextureDescription, List<TextureLink>>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PostEffectContext" /> class.
+        /// Initializes a new instance of the <see cref="ImageEffectContext" /> class.
         /// </summary>
         /// <param name="game">The game.</param>
-        public PostEffectContext(Game game)
+        public ImageEffectContext(Game game)
             : this(game.Services)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PostEffectContext" /> class.
+        /// Initializes a new instance of the <see cref="ImageEffectContext" /> class.
         /// </summary>
         /// <param name="serviceRegistry">The service registry.</param>
-        public PostEffectContext(IServiceRegistry serviceRegistry)
+        public ImageEffectContext(IServiceRegistry serviceRegistry)
         {
             Services = serviceRegistry;
             Effects = serviceRegistry.GetSafeServiceAs<EffectSystem>();

@@ -6,7 +6,7 @@ namespace SiliconStudio.Paradox.PostEffects
     /// <summary>
     /// Base class to perform post effects. Draws the input mesh without transformation.
     /// </summary>
-    class PostEffectShader : SpriteBase
+    class ImageEffectShader : SpriteBase
     {
     };
 }

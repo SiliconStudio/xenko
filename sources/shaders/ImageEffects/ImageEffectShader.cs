@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.PostEffects
     /// <summary>
     /// Post effect using an <see cref="Effect"/> (either pdxfx or pdxsl).
     /// </summary>
-    public class PostEffectShader : PostEffectBase
+    public class ImageEffectShader : ImageEffectBase
     {
         private readonly ParameterCollection parameters;
 
@@ -21,11 +21,11 @@ namespace SiliconStudio.Paradox.PostEffects
         private readonly DynamicEffectCompiler effectCompiler;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PostEffectShader"/> class.
+        /// Initializes a new instance of the <see cref="ImageEffectShader"/> class.
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="effectName">Name of the shader.</param>
-        public PostEffectShader(PostEffectContext context, string effectName)
+        public ImageEffectShader(ImageEffectContext context, string effectName)
             : base(context, effectName)
         {
             if (effectName == null) throw new ArgumentNullException("effectName");
@@ -145,7 +145,7 @@ namespace SiliconStudio.Paradox.PostEffects
                 this.parameters = parameters;
             }
 
-            protected internal override void FillParameterCollections(IList<ParameterCollection> parameterCollections)
+            public override void FillParameterCollections(IList<ParameterCollection> parameterCollections)
             {
                 parameterCollections.Add(parameters);
             }

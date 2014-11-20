@@ -9,7 +9,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{0342C3E7-4A38-46B4-A8EC-E728D50085D3}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>SiliconStudio.Paradox.Effects.Modules</RootNamespace>
+    <RootNamespace>SiliconStudio.Paradox.Effects</RootNamespace>
     <AssemblyName>SiliconStudio.Paradox.Effects.Modules</AssemblyName>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <ParadoxBuildTags>*</ParadoxBuildTags>
@@ -573,6 +573,16 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>MaterialReflectanceGBuffer.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="ImageEffects\ImageEffectBase.cs" />
+    <Compile Include="ImageEffects\ImageEffectBaseExtensions.cs" />
+    <Compile Include="ImageEffects\ImageEffectContext.cs" />
+    <Compile Include="ImageEffects\ImageEffectShader.cs" />
+    <Compile Include="ImageEffects\Shaders\ImageEffectShader.cs">
+      <DependentUpon>ImageEffectShader.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Renderers\DirectLightData.cs" />
     <Compile Include="Renderers\LightForwardModelRendererExtensions.cs" />
@@ -1924,6 +1934,10 @@
     <None Include="LightPrepass\DeferredTiledShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>DeferredTiledShader.cs</LastGenOutput>
+    </None>
+    <None Include="ImageEffects\Shaders\ImageEffectShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ImageEffectShader.cs</LastGenOutput>
     </None>
     <None Include="Shading\MaterialReflectance.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

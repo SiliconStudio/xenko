@@ -28,6 +28,6 @@ namespace SiliconStudio.Paradox.Effects
         /// Fills the parameter collections used by this instance.
         /// </summary>
         /// <param name="parameterCollections">The parameter collections.</param>
-        protected internal abstract void FillParameterCollections(IList<ParameterCollection> parameterCollections);
+        public abstract void FillParameterCollections(IList<ParameterCollection> parameterCollections);
     }
 }
