@@ -29,7 +29,7 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands.Shaders
                 result = "// Unexpected exceptions occured while generating the file\n" + ex;
             }
 
-            return Encoding.ASCII.GetBytes(result);
+            return Encoding.UTF8.GetBytes(result);
         }
     }
 }
