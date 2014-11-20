@@ -23,7 +23,9 @@ Release date: 2014/??/??
 - Engine: Fix EntitySystem.Remove that was destroying the hierarchy of entities.
 
 #### Breaking changes
+- Asset: CastShadows, ReceiveShadows and Layer members of ModelAsset class are removed. They should be set in the Parameters of the ModelAsset behind the corresponding keys.
 - Engine: Remove obsolete MeshDrawHelper file (use GeometricPrimitive instead), move ToMeshDraw method to GeometricPrimitiveExtensions.
+- Engine: Default value for ParameterKeys LightingKeys.CastShadows and LightingKeys.ReceiveShadows becomes false.
 
 #### Known Issues
 - Physics: Complex convex hull decomposition can be a very long process and there is visual feedback for it.
