@@ -204,6 +204,26 @@ namespace SiliconStudio.Paradox.Shaders
         }
 
         /// <summary>
+        /// Mixins a <see cref="ShaderClassSource"/> identified by its name into the specified mixin tree.
+        /// </summary>
+        /// <param name="mixinTree">The mixin tree.</param>
+        /// <param name="name">The name.</param>
+        public void Mixin(ShaderMixinSourceTree mixinTree, string name)
+        {
+            IShaderMixinBuilder builder;
+            if (!registeredBuilders.TryGetValue(name, out builder))
+            {
+                // Else simply add the name of the shader
+                mixinTree.Mixin.Mixins.Add(new ShaderClassSource(name));
+            }
+
+            if (builder != null)
+            {
+                builder.Generate(mixinTree, this);
+            }
+        }
+
+        /// <summary>
         /// Mixins a <see cref="ShaderClassSource"/> identified by its name/generic parameters into the specified mixin tree.
         /// </summary>
         /// <param name="mixinTree">The mixin tree.</param>
