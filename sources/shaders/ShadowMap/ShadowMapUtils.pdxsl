@@ -5,6 +5,6 @@
 /// </summary>
 class ShadowMapUtils
 {
-    [Map("ShadowMapKeys.Texture")]
+    [Link("ShadowMapKeys.Texture")]
     Texture2D shadowMapTexture;
 };

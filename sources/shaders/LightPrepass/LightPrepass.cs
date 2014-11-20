@@ -20,6 +20,5 @@ namespace SiliconStudio.Paradox.Effects
     {
         public static readonly ParameterKey<int> LightCount = ParameterKeys.New<int>(64);
         public static readonly ParameterKey<int> TileIndex = ParameterKeys.New<int>(0);
-        public static readonly ParameterKey<float> LightAttenuationCutoff = LightKeys.LightAttenuationCutoff;
     }
 }

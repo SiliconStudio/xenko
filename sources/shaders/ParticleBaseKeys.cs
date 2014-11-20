@@ -11,8 +11,6 @@ namespace SiliconStudio.Paradox.Effects
     {
         static ParticleBaseKeys()
         {
-            ParticleGlobalBufferRO = ParticleGlobalBuffer;
-            ParticleSortBufferRO = ParticleSortBuffer;
         }
     }
 }

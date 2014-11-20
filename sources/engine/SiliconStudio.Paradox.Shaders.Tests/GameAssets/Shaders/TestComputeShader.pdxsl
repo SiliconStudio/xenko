@@ -22,7 +22,7 @@ class TestComputeShader
     stage stream uint  ThreadGroupIndex;
 
     cbuffer PerDispatch {
-        //[Map("Paradox.Effects.ComputeShaderPluginKeys.ThreadGroupCount")]
+        //[Link("Paradox.Effects.ComputeShaderPluginKeys.ThreadGroupCount")]
         stage uint3 ThreadGroupCountGlobal;
     };
 
@@ -32,7 +32,7 @@ class TestComputeShader
     };
 
     stage RWStructuredBuffer<uint2> ParticleSortBuffer;
-    [Map("ParticleSortBuffer")]
+    [Link("ParticleSortBuffer")]
     stage StructuredBuffer<uint2> ParticleSortBufferRO;
 
     [numthreads(ThreadCountX, ThreadCountY, ThreadCountZ)]
