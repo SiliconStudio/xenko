@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 class DeepExternTest
 {
-    DeepExtern myExtern;
+    compose DeepExtern myExtern;
     
     float externCall()
     {

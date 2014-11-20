@@ -11,8 +11,8 @@
 #endif
 class DeferredPointLighting : DeferredLightingBase
 {
-    BRDFDiffuseBase brdfDiffuse = stage;
-    BRDFSpecularBase brdfSpecular = stage;
+    compose BRDFDiffuseBase brdfDiffuse = stage;
+    compose BRDFSpecularBase brdfSpecular = stage;
 
     struct PointLightInfo
     {

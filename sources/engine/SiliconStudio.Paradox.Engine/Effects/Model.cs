@@ -123,7 +123,7 @@ namespace SiliconStudio.Paradox.Effects
             return FromGeometricMeshData(graphicsDevice, geometryMesh, boundingBox, VertexPositionNormalTangentMultiTexture.Layout, effectName);
         }
 
-        public static Model FromGeometricMeshData<T>(GraphicsDevice graphicsDevice, GeometricMeshData<T> geometryMesh, BoundingBox boundingBox, VertexDeclaration layout, string effectName = "Default") where T : struct, IVertexWindable
+        public static Model FromGeometricMeshData<T>(GraphicsDevice graphicsDevice, GeometricMeshData<T> geometryMesh, BoundingBox boundingBox, VertexDeclaration layout, string effectName = "Default") where T : struct, IVertex
         {
             var meshDraw = new MeshDraw();
 

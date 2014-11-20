@@ -11,6 +11,6 @@
 #endif
 class CubemapBlenderBase
 {
-    CubemapFaceBase Cubemaps[];
+    compose CubemapFaceBase Cubemaps[];
     float BlendIndices[TEXTURECUBE_BLEND_COUNT];
 };

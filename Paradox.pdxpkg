@@ -15,6 +15,7 @@ Profiles:
     - Name: Shared
       AssetFolders:
         - Path: sources/shaders
+        - Path: sources/engine/SiliconStudio.Paradox.Engine/PostEffects/Shaders
         - Path: sources/engine/SiliconStudio.Paradox.Engine/Shaders
         - Path: sources/engine/SiliconStudio.Paradox.Graphics/Shaders
 TemplateFolders:

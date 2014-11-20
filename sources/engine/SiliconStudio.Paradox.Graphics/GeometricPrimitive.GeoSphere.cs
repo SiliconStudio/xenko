@@ -343,7 +343,7 @@ namespace SiliconStudio.Paradox.Graphics
                     indices = (int*)0;
                 }
 
-                return new GeometricMeshData<VertexPositionNormalTexture>(vertices.ToArray(), indexList.ToArray(), toLeftHanded, VertexPositionNormalTexture.Layout) {Name = "GeoSphere"};
+                return new GeometricMeshData<VertexPositionNormalTexture>(vertices.ToArray(), indexList.ToArray(), toLeftHanded) {Name = "GeoSphere"};
             }
 
             private unsafe void FixPole(int poleIndex)

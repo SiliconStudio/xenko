@@ -36,8 +36,8 @@ class ShadowMapCascadeBase : ShadowMapBase, ShadowMapUtils, ShadowMapFilterBase
     stream float4 vShadowMapTexPos[SHADOWMAP_TOTAL_COUNT];
     stream float4 vShadowMapDepth[SHADOWMAP_COUNT];
 
-    NormalVSBase normal = stage;
-    PositionVSBase position = stage;
+    compose NormalVSBase normal = stage;
+    compose PositionVSBase position = stage;
 
     cbuffer PerPass
     {

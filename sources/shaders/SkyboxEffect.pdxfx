@@ -6,7 +6,7 @@ namespace SkyboxEffect
 {
    partial shader SkyboxShader
     {
-        mixin PostEffectBase;
+        mixin PostEffectShader;
 		mixin AlbedoFlatShading;
         mixin compose albedoDiffuse = CubemapSkybox<TexturingKeys.TextureCube0>;
 	};

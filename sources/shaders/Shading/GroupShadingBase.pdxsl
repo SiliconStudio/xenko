@@ -5,7 +5,7 @@
 /// </summary>
 class GroupShadingBase : ShadingBase
 {
-    ShadingGroup ShadingGroups[];
+    compose ShadingGroup ShadingGroups[];
 
     override stage float4 Shading()
     {

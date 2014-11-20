@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 class StaticStageCallTest : StageBase
 {
-    StageCallExtern myExtern;
+    compose StageCallExtern myExtern;
 
     stage void stageCall()
     {

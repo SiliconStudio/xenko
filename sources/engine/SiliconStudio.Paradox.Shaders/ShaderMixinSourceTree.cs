@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Generic;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Paradox.Shaders
 {
@@ -27,7 +26,7 @@ namespace SiliconStudio.Paradox.Shaders
         public ShaderMixinSourceTree(ShaderMixinSourceTree parent)
         {
             Parent = parent;
-            Children = new List<ShaderMixinSourceTree>();
+            Children = new Dictionary<string, ShaderMixinSourceTree>();
             Mixin = new ShaderMixinSource();
         }
 
@@ -53,6 +52,6 @@ namespace SiliconStudio.Paradox.Shaders
         /// Gets or sets the children.
         /// </summary>
         /// <value>The children.</value>
-        public List<ShaderMixinSourceTree> Children { get; set; }
+        public Dictionary<string, ShaderMixinSourceTree> Children { get; set; }
     }
 }

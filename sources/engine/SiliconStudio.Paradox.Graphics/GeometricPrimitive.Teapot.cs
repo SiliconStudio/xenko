@@ -320,7 +320,7 @@ namespace SiliconStudio.Paradox.Graphics
                     }
                 }
 
-                return new GeometricMeshData<VertexPositionNormalTexture>(vertices.ToArray(), indices.ToArray(), toLeftHanded, VertexPositionNormalTexture.Layout) { Name = "Teapot" };
+                return new GeometricMeshData<VertexPositionNormalTexture>(vertices.ToArray(), indices.ToArray(), toLeftHanded) { Name = "Teapot" };
             }
 
             // Performs a cubic bezier interpolation between four control points,

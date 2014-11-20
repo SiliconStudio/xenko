@@ -5,7 +5,7 @@
 /// </summary>
 class ShadingDiffusePerVertex : ShadingDiffuse, ShadingPerVertex
 {
-    BRDFDiffuseBase brdfDiffuse = stage;
+    compose BRDFDiffuseBase brdfDiffuse = stage;
 
     override float3 ComputeDiffuseInfluence(float3 albedo, int lightIndex)
     {

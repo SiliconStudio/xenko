@@ -3,7 +3,7 @@
 /// <summary>
 /// put the post effect quad at the back of the frustum.
 /// </summary>
-class PostEffectBack : PostEffectBase
+class PostEffectBack : PostEffectShader
 {
     override stage void TransformPosition()
     {
