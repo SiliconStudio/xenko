@@ -31,6 +31,14 @@ namespace SiliconStudio.Presentation.ViewModel
             services.Add(service);
         }
 
+        public void UnregisterService(object service)
+        {
+            if (DisallowRegister) throw new InvalidOperationException("Unable to unregister a service in this service provider.");
+            if (service == null) throw new ArgumentNullException("service");
+
+            services.Remove(service);
+        }
+
         /// <inheritdoc/>
         public IViewModelServiceProvider Clone()
         {
