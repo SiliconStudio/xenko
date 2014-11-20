@@ -18,6 +18,7 @@ Release date: 2014/??/??
 - Shaders: Add support for declaring a namespace in a `pdxsl`, only valid and used for `ParameterKey` declarations.
 - Shaders
 - Studio: Added documentation on properties of the property grid.
+- Engine: Add possibility to set the View and Projection matrix used by SpriteRenderer.
 
 #### Issues fixed
 - Assets: Textures with arbitrary size (non square and non power-of-two) are now correctly loaded.
@@ -37,6 +38,7 @@ Release date: 2014/??/??
 - Engine: `ModelRenderer.EnableFrustrumCulling` is replaced by the extension method `ModelRenderer.AddDefaultFrustrumCulling`
 - Engine: `EffectMesh` is renamed to `RenderMesh` 
 - Shaders: Declaring a composition member in a shader class must be now prefixed with the `compose` attribute. 
+- Graphics: Some overloads of SpriteBatch.Begin have changed signature for better clarity and easier usage.
 
 #### Known Issues
 - Physics: Complex convex hull decomposition can be a very long process and there is visual feedback for it.
