@@ -52,8 +52,8 @@ namespace SiliconStudio.Paradox.Assets.Model
                 meshParam.Value.Parameters.Set(LightingKeys.CastShadows, meshParam.Value.CastShadows);
                 meshParam.Value.Parameters.Set(LightingKeys.ReceiveShadows, meshParam.Value.ReceiveShadows);
                 meshParam.Value.Parameters.Set(RenderingParameters.RenderLayer, meshParam.Value.Layer);
-                //if (meshParam.Value.LightingParameters != null)
-                //    meshParam.Value.Parameters.Set(LightingKeys.LightingConfigurations, new ContentReference<LightingConfigurationsSetData>(meshParam.Value.LightingParameters.Id, meshParam.Value.LightingParameters.Location));
+                if (meshParam.Value.LightingParameters != null)
+                    meshParam.Value.Parameters.Set(LightingKeys.LightingConfigurations, new ContentReference<LightingConfigurationsSetData>(meshParam.Value.LightingParameters.Id, meshParam.Value.LightingParameters.Location));
             }
 
             if (ImportFbxCommand.IsSupportingExtensions(extension))

@@ -606,6 +606,8 @@ namespace SiliconStudio.BuildEngine
         {
             var config0Content = GetLightingConfigurations(baseMesh);
             var config1Content = GetLightingConfigurations(newMesh);
+            if (config0Content == null && config1Content == null)
+                return true;
             if (config0Content == null || config1Content == null)
                 return false;
             return config0Content.Id == config1Content.Id;

@@ -27,9 +27,8 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
-    <Reference Include="SharpYaml, Version=2.0.1.25063, Culture=neutral, PublicKeyToken=2b53052c5884d7a1, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\common\deps\SharpYaml\SharpYaml.dll</HintPath>
+    <Reference Include="SharpYaml">
+      <HintPath>..\..\common\deps\SharpYaml\SharpYaml.dll</HintPath>
     </Reference>
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.XML" />
@@ -67,6 +66,7 @@
     <Compile Include="AssetItemAccessor.cs" />
     <Compile Include="AssetItemCollection.cs" />
     <Compile Include="AssetMemberValue.cs" />
+    <Compile Include="AssetPropertyKeyNameResolver.cs" />
     <Compile Include="AssetSelector.cs" />
     <Compile Include="AssetFormatVersionAttribute.cs" />
     <Compile Include="AssetToImportMergeGroup.cs" />
