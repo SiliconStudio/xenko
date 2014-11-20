@@ -28,11 +28,33 @@ namespace SiliconStudio.Paradox.Effects
 
         private static readonly Dictionary<string, List<Entity>> effectNamesToEntityDatas = new Dictionary<string, List<Entity>>();
 
+        private Matrix? userProjectionMatrix;
+
+        /// <summary>
+        /// Gets or sets the view matrix used to render the sprites.
+        /// </summary>
+        public Matrix ViewMatrix { get; set; }
+        
         public SpriteRenderer(IServiceRegistry services)
             : base(services)
         {
             renderSystem = (RenderSystem)services.GetService(typeof(RenderSystem));
             gameVirtualResolution = (IVirtualResolution)services.GetService(typeof(IVirtualResolution));
+        }
+
+        /// <summary>
+        /// Gets or sets the projection matrix used to render the sprites.
+        /// </summary>
+        public Matrix ProjectionMatrix
+        {
+            get
+            {
+                if (userProjectionMatrix.HasValue)
+                    return userProjectionMatrix.Value;
+
+                return spriteBatch.DefaultProjectionMatrix;
+            }
+            set { userProjectionMatrix = value; }
         }
 
         private void GameVirtualResolutionChanged(object sender, EventArgs eventArgs)
@@ -45,6 +67,7 @@ namespace SiliconStudio.Paradox.Effects
             base.Load();
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            ViewMatrix = spriteBatch.DefaultViewMatrix;
 
             gameVirtualResolution.VirtualResolutionChanged += GameVirtualResolutionChanged;
             GameVirtualResolutionChanged(null, EventArgs.Empty);
@@ -114,7 +137,7 @@ namespace SiliconStudio.Paradox.Effects
                 if (entities.Count == 0)
                     continue;
 
-                spriteBatch.Begin(sortMode, blendState, effect:entities[0].Get(SpriteComponent.Key).Effect);
+                spriteBatch.Begin(ViewMatrix, ProjectionMatrix, sortMode, blendState, effect:entities[0].Get(SpriteComponent.Key).Effect);
 
                 foreach (var entity in entities)
                 {
