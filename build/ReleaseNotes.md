@@ -12,12 +12,12 @@ Release date: 2014/??/??
 - Graphics: Add geometric primitive for Cone.
 - Engine: Several internal improvements and factorization to support upcoming `PostEffects` framework.
 - Engine: Add support for filtering model selection and rendering in `ModelRenderer`.  
+- Engine: `SpriteRenderer` now uses the current View and Projection matrices of the pipeline.
 - Samples: Spot light shadows in DeferredLighting sample.
 - Shaders: Add support for naming a child in a `pdxfx` to allow child override.
 - Shaders: `cs` files generated from `pfxfx` are now using internal and nested types instead of putting everything in the root namespace.
 - Shaders: Add support for declaring a namespace in a `pdxsl`, only valid and used for `ParameterKey` declarations.
 - Studio: Added documentation on properties of the property grid.
-- Engine: Add possibility to set the View and Projection matrices used by `SpriteRenderer`. // TODO change that after next modification.
 
 #### Issues fixed
 - Assets: Textures with arbitrary size (non square and non power-of-two) are now correctly loaded.
@@ -36,6 +36,7 @@ Release date: 2014/??/??
 - Engine: `ModelRenderer` is no longer inheritable but extensible via compositions.
 - Engine: `ModelRenderer.EnableFrustrumCulling` is replaced by the extension method `ModelRenderer.AddDefaultFrustrumCulling`
 - Engine: `EffectMesh` is renamed to `RenderMesh` 
+- Engine: `SpriteRenderer` now requires a valid camera to be set in the pipeline.
 - Shaders: Declaring a composition member in a shader class must be now prefixed with the `compose` attribute. 
 - Graphics: The signature of some overloads of `SpriteBatch.Begin` have changed for better clarity and easier usage.
 
