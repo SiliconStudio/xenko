@@ -42,6 +42,11 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Ast
         public static readonly SiliconStudio.Shaders.Ast.StorageQualifier Compose = new ParadoxStorageQualifier("compose");
 
         /// <summary>
+        ///   Internal keyword (internal).
+        /// </summary>
+        public static readonly SiliconStudio.Shaders.Ast.StorageQualifier Internal = new ParadoxStorageQualifier("internal");
+
+        /// <summary>
         ///   Internal map used for parsing.
         /// </summary>
         private static readonly StringEnumMap Map = PrepareParsing<ParadoxStorageQualifier>();

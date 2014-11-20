@@ -243,7 +243,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         [Visit]
         protected virtual void Visit(ShaderClassType shader)
         {
-            Write("public static partial class ");
+            Write(shader.Qualifiers.Any(qualifier => qualifier == ParadoxStorageQualifier.Internal) ? "internal " : "public ");
+            Write("static partial class ");
             Write(shader.Name);
             Write("Keys");
             {
