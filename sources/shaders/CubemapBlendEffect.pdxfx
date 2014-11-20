@@ -13,7 +13,7 @@ namespace CubemapBlendShader
         using params CubemapBlendRenderer;
 
         mixin ShaderBase;
-        mixin PostEffectBase;
+        mixin PostEffectShader;
         
         // TODO: make this configurable
         mixin macro TEXTURECUBE_BLEND_COUNT = CubemapBlendRenderer.CubemapCount;
