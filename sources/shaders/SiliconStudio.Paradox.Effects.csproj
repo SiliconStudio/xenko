@@ -676,7 +676,7 @@
     <Compile Include="Renderers\LightingIBLRenderer.cs" />
     <Compile Include="Renderers\LightingPrepassRenderer.cs" />
     <Compile Include="Renderers\ShadowMapRenderer.cs" />
-    <Compile Include="Renderers\SkyboxRenderer.cs" />
+    <Compile Include="Skybox\SkyboxRenderer.cs" />
     <Compile Include="Shading\AmbientMapShading.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1306,11 +1306,11 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>TransformationSkinning.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="SkyboxEffect.cs">
+    <Compile Include="Skybox\SkyboxShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>SkyboxEffect.pdxfx</DependentUpon>
+      <DependentUpon>SkyboxShader.pdxfx</DependentUpon>
     </Compile>
     <Compile Include="SSAOKeys.cs" />
     <Compile Include="PostEffectKeys.cs" />
@@ -2323,9 +2323,9 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>TransformationSkinning.cs</LastGenOutput>
     </None>
-    <None Include="SkyboxEffect.pdxfx">
+    <None Include="Skybox\SkyboxShader.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>SkyboxEffect.cs</LastGenOutput>
+      <LastGenOutput>SkyboxShader.cs</LastGenOutput>
     </None>
     <None Include="Tessellation\ShaderBaseTessellation.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

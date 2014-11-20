@@ -4,14 +4,22 @@
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.Effects.Renderers
+namespace SiliconStudio.Paradox.Effects.Skybox
 {
+    /// <summary>
+    /// A renderer for a skybox.
+    /// </summary>
     public class SkyboxRenderer : Renderer
     {
-        private TextureCube skybox;
+        private readonly TextureCube skybox;
 
         private Effect skyboxEffect;
-        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SkyboxRenderer"/> class.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        /// <param name="skyboxTexture">The skybox texture.</param>
         public SkyboxRenderer(IServiceRegistry services, TextureCube skyboxTexture)
             : base(services)
         {

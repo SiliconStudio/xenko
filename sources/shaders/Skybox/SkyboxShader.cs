@@ -15,14 +15,11 @@ using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 
-#line 3 "C:\Code\Paradox\sources\shaders\SkyboxEffect.pdxfx"
-using SiliconStudio.Paradox.Effects;
-
-#line 5
-namespace SkyboxEffect
+#line 4 "C:\Code\Paradox\sources\shaders\Skybox\SkyboxShader.pdxfx"
+namespace SiliconStudio.Paradox.Effects.Skybox
 {
 
-    #line 7
+    #line 6
     internal static partial class ShaderMixins
     {
         internal partial class SkyboxShader  : IShaderMixinBuilder
@@ -30,18 +27,18 @@ namespace SkyboxEffect
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
 
-                #line 9
+                #line 8
                 context.Mixin(mixin, "ImageEffectShader");
 
-                #line 10
+                #line 9
                 context.Mixin(mixin, "AlbedoFlatShading");
 
                 {
 
-                    #line 11
+                    #line 10
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                    #line 11
+                    #line 10
                     context.Mixin(__subMixin, "CubemapSkybox", TexturingKeys.TextureCube0);
                     mixin.Mixin.AddComposition("albedoDiffuse", __subMixin.Mixin);
                 }
