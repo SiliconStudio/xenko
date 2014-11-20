@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -30,17 +31,17 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// Gets the sprite batch default projection matrix.
         /// </summary>
-        /// <remarks>This matrix depends on current viewport.</remarks>
+        /// <remarks>This matrix depends on the virtual resolution.</remarks>
         public Matrix DefaultProjectionMatrix
         {
             get
             {
-                var viewport = GraphicsDevice.Viewport;
-                var xRatio = (viewport.Width > 0) ? 1f / viewport.Width : 0f;
-                var yRatio = (viewport.Height > 0) ? -1f / viewport.Height : 0f;
-                const float zRatio = -1f / DefaultDepth;
+                var virtualResolution = VirtualResolution;
+                var xRatio = 1f / virtualResolution.X;
+                var yRatio = -1f / virtualResolution.Y;
+                var zRatio = -1f / virtualResolution.Z;
                 
-                return new Matrix { M11 = xRatio * 2f, M22 = yRatio * 2f, M33 = zRatio, M44 = 1f, M41 = -1f, M42 = 1f, M43 = 0.5f };
+                return new Matrix { M11 = 2f * xRatio, M22 = 2f * yRatio, M33 = zRatio, M44 = 1f, M41 = -1f, M42 = 1f, M43 = 0.5f };
             }
         }
 
@@ -291,13 +292,14 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         /// <param name="spriteFont">The font used to draw the text.</param>
         /// <param name="text">The text to measure.</param>
+        /// <param name="targetSize">The size of the target to render in</param>
         /// <returns>The size of the text in virtual pixels.</returns>
         /// <exception cref="ArgumentNullException">The provided sprite font is null.</exception>
-        public Vector2 MeasureString(SpriteFont spriteFont, string text)
+        public Vector2 MeasureString(SpriteFont spriteFont, string text, Vector2 targetSize)
         {
             if (spriteFont == null) throw new ArgumentNullException("spriteFont");
 
-            return MeasureString(spriteFont, text, spriteFont.Size);
+            return MeasureString(spriteFont, text, spriteFont.Size, targetSize);
         }
 
         /// <summary>
@@ -305,10 +307,11 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         /// <param name="spriteFont">The font used to draw the text.</param>
         /// <param name="text">The text to measure.</param>
+        /// <param name="targetSize">The size of the target to render in</param>
         /// <param name="fontSize">The font size (in pixels) used to draw the text.</param>
         /// <returns>The size of the text in virtual pixels.</returns>
         /// <exception cref="ArgumentNullException">The provided sprite font is null.</exception>
-        public Vector2 MeasureString(SpriteFont spriteFont, string text, float fontSize)
+        public Vector2 MeasureString(SpriteFont spriteFont, string text, float fontSize, Vector2 targetSize)
         {
             if (spriteFont == null) throw new ArgumentNullException("spriteFont");
 
@@ -316,23 +319,15 @@ namespace SiliconStudio.Paradox.Graphics
                 return Vector2.Zero;
 
             // calculate the size of the text that will be used to draw
-            var ratio = Vector2.One;
-            if (userVirtualResolution.HasValue)
-            {
-                var virtualResolution = userVirtualResolution.Value;
-                ratio.X = GraphicsDevice.BackBuffer.Width / virtualResolution.X;
-                ratio.Y = GraphicsDevice.BackBuffer.Height / virtualResolution.Y;
-            }
+            var virtualResolution = VirtualResolution;
+            var ratio = new Vector2(targetSize.X / virtualResolution.X, targetSize.Y / virtualResolution.Y);
 
             var realSize = spriteFont.MeasureString(text, fontSize * ratio);
 
             // convert pixel size into virtual pixel size (if needed) 
             var virtualSize = realSize;
-            if (userVirtualResolution.HasValue)
-            {
-                virtualSize.X /= ratio.X;
-                virtualSize.Y /= ratio.Y;
-            }
+            virtualSize.X /= ratio.X;
+            virtualSize.Y /= ratio.Y;
 
             return virtualSize;
         }
@@ -476,32 +471,21 @@ namespace SiliconStudio.Paradox.Graphics
                 fontSize = spriteFont.Size;
 
             // calculate the resolution ratio between the screen real size and the virtual resolution
-            var resolutionRatio = Vector2.One;
-            if (userVirtualResolution.HasValue)
-            {
-                var virtualResolution = userVirtualResolution.Value;
-                resolutionRatio.X = GraphicsDevice.BackBuffer.Width / virtualResolution.X;
-                resolutionRatio.Y = GraphicsDevice.BackBuffer.Height / virtualResolution.Y;
-                layerDepth *= DefaultDepth / virtualResolution.Z;
-            }
+            var viewportSize = GraphicsDevice.Viewport;
+            var virtualResolution = VirtualResolution;
+            var resolutionRatio = new Vector2(viewportSize.Width / virtualResolution.X, viewportSize.Height / virtualResolution.Y);
+            scale.X = scale.X / resolutionRatio.X;
+            scale.Y = scale.Y / resolutionRatio.Y;
 
-            var fontSize2 = fontSize * Vector2.One;
-            if (spriteFont.IsDynamic) // adjust the size of the dynamic font so that size is in virtual pixels
-                fontSize2 *= resolutionRatio;
-
+            var fontSize2 = fontSize * (spriteFont.IsDynamic ? resolutionRatio : Vector2.One);
             var drawCommand = new SpriteFont.InternalDrawCommand(this, ref fontSize2, ref position, ref color, rotation, ref origin, ref scale, effects, layerDepth);
 
-            // convert position from virtual pixels to real pixels
-            if (userVirtualResolution.HasValue)
-            {
-                drawCommand.Position.X = drawCommand.Position.X * resolutionRatio.X;
-                drawCommand.Position.Y = drawCommand.Position.Y * resolutionRatio.Y;
-                drawCommand.Origin.X = drawCommand.Origin.X * resolutionRatio.X;
-                drawCommand.Origin.Y = drawCommand.Origin.Y * resolutionRatio.Y;
-            }
-
+            // snap the position the closest 'real' pixel
+            Vector2.Modulate(ref drawCommand.Position, ref resolutionRatio, out drawCommand.Position);
             drawCommand.Position.X = (float)Math.Round(drawCommand.Position.X);
             drawCommand.Position.Y = (float)Math.Round(drawCommand.Position.Y);
+            drawCommand.Position.X /= resolutionRatio.X;
+            drawCommand.Position.Y /= resolutionRatio.Y;
 
             spriteFont.InternalDraw(ref text, ref drawCommand, alignment);
         }
@@ -514,22 +498,7 @@ namespace SiliconStudio.Paradox.Graphics
             {
                 throw new ArgumentNullException("texture");
             }
-
-            // adjust the destination rectangle accordingly to the VirtualResolution value
-            if (!realSize)
-            {
-                var virtualResolution = VirtualResolution;
-                var ratioX = GraphicsDevice.BackBuffer.Width / virtualResolution.X;
-                var ratioY = GraphicsDevice.BackBuffer.Height / virtualResolution.Y;
-                var ratioZ = DefaultDepth / virtualResolution.Z;
-
-                destination.X *= ratioX;
-                destination.Width *= ratioX;
-                destination.Y *= ratioY;
-                destination.Height *= ratioY;
-                depth *= ratioZ;
-            }
-
+            
             // Put values in next ElementInfo
             var elementInfo = new ElementInfo();
             var spriteInfo = &elementInfo.DrawInfo;
