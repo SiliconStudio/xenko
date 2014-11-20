@@ -32,14 +32,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 
         public override AssetImporterParameters GetDefaultParameters(bool isForReImport)
         {
-            var parameters = new AssetImporterParameters(supportedTypes);
-
-            // When we are reimporting, we don't want the asset to be reimported by default
-            if (isForReImport)
-            {
-                parameters.SelectedOutputTypes[typeof(EntityAsset)] = false;
-            }
-            return parameters;
+            return new AssetImporterParameters(supportedTypes);
         }
 
         /// <summary>

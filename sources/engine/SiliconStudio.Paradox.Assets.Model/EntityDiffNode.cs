@@ -32,14 +32,23 @@ namespace SiliconStudio.Paradox.Assets.Model
 
             Data = entityHierarchy.Entities[entityGuid];
 
-            transformationComponent = (TransformationComponentData)Data.Components[TransformationComponent.Key];
+            EntityComponentData entityComponent;
+            if (!Data.Components.TryGetValue(TransformationComponent.Key, out entityComponent))
+            {
+                // If there was no transformation component, add one
+                Data.Components.Add(TransformationComponent.Key, transformationComponent = new TransformationComponentData());
+            }
+            else
+            {
+                transformationComponent = (TransformationComponentData)entityComponent;
+            }
 
             // Build children
             var children = transformationComponent.Children;
             Children = new EntityDiffNode[children.Count];
             for (int i = 0; i < children.Count; ++i)
             {
-                Children.Add(new EntityDiffNode(entityHierarchy, children[i].Entity.Id));
+                Children[i] = new EntityDiffNode(entityHierarchy, children[i].Entity.Id);
             }
         }
 

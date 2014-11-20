@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Assets.Model
     [AssetFactory(typeof(EntityFactory))]
     [AssetDescription("Entity", "An entity", true)]
     [AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
-    public class EntityAsset : AssetImport
+    public class EntityAsset : AssetImportTracked
     {
         public const int AssetFormatVersion = 1;
 
