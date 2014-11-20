@@ -3,13 +3,8 @@
 using SiliconStudio.Paradox.Effects.Data;
 using SiliconStudio.Paradox.Effects;
 
-namespace BasicShaders
+namespace SiliconStudio.Paradox.Effects.Core
 {
-    params BasicShadersParameters
-    {
-        bool UsedNormalMap = false;
-    };
-
     /// <summary>
     /// Computes tessellation
     /// </summary>
@@ -30,7 +25,6 @@ namespace BasicShaders
     partial shader ParadoxSkinning
     {
         using params MaterialParameters;
-        using params BasicShadersParameters;
 
         if (MaterialParameters.HasSkinningPosition)
         {
@@ -44,7 +38,7 @@ namespace BasicShaders
 
             if (MaterialParameters.HasSkinningNormal)
             {
-                if (BasicShadersParameters.UsedNormalMap)
+                if (MaterialParameters.NormalMap != null)
                     mixin TangentToViewSkinning;
                 else
                     mixin NormalVSSkinning;
@@ -87,7 +81,6 @@ namespace BasicShaders
         {
             mixin NormalMapTexture;
             mixin compose normalMap = MaterialParameters.NormalMap;
-            BasicShadersParameters.UsedNormalMap = true;
         }
         else
         {

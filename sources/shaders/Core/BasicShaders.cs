@@ -15,25 +15,17 @@ using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 
-#line 3 "C:\Code\Paradox\sources\shaders\BasicShaders.pdxfx"
+#line 3 "C:\Code\Paradox\sources\shaders\Core\BasicShaders.pdxfx"
 using SiliconStudio.Paradox.Effects.Data;
 
 #line 4
 using SiliconStudio.Paradox.Effects;
 
 #line 6
-namespace BasicShaders
+namespace SiliconStudio.Paradox.Effects.Core
 {
-    [DataContract]
-#line 8
-    public partial class BasicShadersParameters : ShaderMixinParameters
-    {
 
-        #line 10
-        public static readonly ParameterKey<bool> UsedNormalMap = ParameterKeys.New<bool>(false);
-    };
-
-    #line 16
+    #line 11
     internal static partial class ShaderMixins
     {
         internal partial class ParadoxTessellation  : IShaderMixinBuilder
@@ -51,7 +43,7 @@ namespace BasicShaders
         }
     }
 
-    #line 30
+    #line 25
     internal static partial class ShaderMixins
     {
         internal partial class ParadoxSkinning  : IShaderMixinBuilder
@@ -59,48 +51,48 @@ namespace BasicShaders
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
 
-                #line 35
+                #line 29
                 if (context.GetParam(MaterialParameters.HasSkinningPosition))
                 {
 
-                    #line 37
+                    #line 31
                     if (context.GetParam(MaterialParameters.SkinningBones) > context.GetParam(MaterialParameters.SkinningMaxBones))
                     {
 
-                        #line 40
+                        #line 34
                         context.SetParam(MaterialParameters.SkinningMaxBones, context.GetParam(MaterialParameters.SkinningBones));
                     }
 
-                    #line 42
+                    #line 36
                     mixin.Mixin.AddMacro("SkinningMaxBones", context.GetParam(MaterialParameters.SkinningMaxBones));
 
-                    #line 43
+                    #line 37
                     context.Mixin(mixin, "TransformationSkinning");
 
-                    #line 45
+                    #line 39
                     if (context.GetParam(MaterialParameters.HasSkinningNormal))
                     {
 
-                        #line 47
-                        if (context.GetParam(BasicShadersParameters.UsedNormalMap))
+                        #line 41
+                        if (context.GetParam(MaterialParameters.NormalMap) != null)
 
-                            #line 48
+                            #line 42
                             context.Mixin(mixin, "TangentToViewSkinning");
 
-                        #line 50
+                        #line 44
                         else
 
-                            #line 50
+                            #line 44
                             context.Mixin(mixin, "NormalVSSkinning");
 
-                        #line 52
+                        #line 46
                         context.Mixin(mixin, "NormalSkinning");
                     }
 
-                    #line 55
+                    #line 49
                     if (context.GetParam(MaterialParameters.HasSkinningTangent))
 
-                        #line 56
+                        #line 50
                         context.Mixin(mixin, "TangentSkinning");
                 }
             }
@@ -114,7 +106,7 @@ namespace BasicShaders
         }
     }
 
-    #line 63
+    #line 57
     internal static partial class ShaderMixins
     {
         internal partial class ParadoxShadowCast  : IShaderMixinBuilder
@@ -122,22 +114,22 @@ namespace BasicShaders
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
 
-                #line 68
+                #line 62
                 if (context.GetParam(LightingKeys.CastShadows))
 
                     {
 
-                        #line 69
+                        #line 63
                         var __subMixin = new ShaderMixinSourceTree() { Name = "ShadowMapCaster", Parent = mixin };
                         mixin.Children.Add(__subMixin);
 
-                        #line 69
+                        #line 63
                         context.BeginChild(__subMixin);
 
-                        #line 69
+                        #line 63
                         context.Mixin(__subMixin, "ShadowMapCaster");
 
-                        #line 69
+                        #line 63
                         context.EndChild();
                     }
             }
@@ -151,7 +143,7 @@ namespace BasicShaders
         }
     }
 
-    #line 75
+    #line 69
     internal static partial class ShaderMixins
     {
         internal partial class ParadoxBaseShader  : IShaderMixinBuilder
@@ -159,44 +151,41 @@ namespace BasicShaders
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
 
-                #line 80
+                #line 74
                 context.Mixin(mixin, "ShaderBase");
 
-                #line 81
+                #line 75
                 context.Mixin(mixin, "ShadingBase");
 
-                #line 82
+                #line 76
                 context.Mixin(mixin, "TransformationWAndVP");
 
-                #line 84
+                #line 78
                 context.Mixin(mixin, "PositionVSStream");
 
-                #line 86
+                #line 80
                 if (context.GetParam(MaterialParameters.NormalMap) != null)
                 {
 
-                    #line 88
+                    #line 82
                     context.Mixin(mixin, "NormalMapTexture");
 
                     {
 
-                        #line 89
+                        #line 83
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                        #line 89
+                        #line 83
                         context.Mixin(__subMixin, context.GetParam(MaterialParameters.NormalMap));
                         mixin.Mixin.AddComposition("normalMap", __subMixin.Mixin);
                     }
-
-                    #line 90
-                    context.SetParam(BasicShadersParameters.UsedNormalMap, true);
                 }
 
-                #line 93
+                #line 86
                 else
                 {
 
-                    #line 94
+                    #line 87
                     context.Mixin(mixin, "NormalVSStream");
                 }
             }
