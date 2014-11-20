@@ -61,6 +61,18 @@ namespace SiliconStudio.Paradox.Effects
         }
 
         /// <summary>
+        /// Adds a layer filter for rendering meshes only on the context active layers.
+        /// </summary>
+        /// <param name="modelRenderer">The model renderer.</param>
+        /// <returns>ModelRenderer.</returns>
+        public static ModelRenderer AddContextActiveLayerFilter(this ModelRenderer modelRenderer)
+        {
+            modelRenderer.AcceptRenderMesh.Add((context, effectMesh) => (context.Parameters.Get(RenderingParameters.ActiveRenderLayer) & effectMesh.Mesh.Parameters.Get(RenderingParameters.RenderLayer)) != RenderLayers.RenderLayerNone);
+            modelRenderer.AppendDebugName("Active Layer");
+            return modelRenderer;
+        }
+
+        /// <summary>
         /// Adds a shadow caster filter for rendering only meshes that can cast shadows.
         /// </summary>
         /// <param name="modelRenderer">The model renderer.</param>

@@ -7,5 +7,6 @@ namespace SiliconStudio.Paradox.Effects
         bool UseDeferred;           // True to use deferred rendering. False to use standard Forward rendering.
         bool UseTransparent;        // True to use transparent shading.
         RenderLayers RenderLayer = RenderLayers.RenderLayerAll;  // the render layers
+        RenderLayers ActiveRenderLayer = RenderLayers.RenderLayerAll;  // the active render layers
     };
 }
