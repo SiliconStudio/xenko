@@ -22,6 +22,12 @@ namespace SiliconStudio.Paradox.Assets.Effect.Generators
 {
     class EntityCompilerParametersGenerator : CompilerParameterGeneratorBase
     {
+        private static ParameterKey[] shadowKeys =
+        {
+            LightingKeys.CastShadows,
+            LightingKeys.ReceiveShadows
+        };
+
         public struct EntityParameters
         {
             public ParameterCollectionData MaterialParameters;
@@ -182,27 +188,28 @@ namespace SiliconStudio.Paradox.Assets.Effect.Generators
                         foreach (var config in lightingDesc.Configs)
                         {
                             var parameters = config.GetCollection();
-                            SetShadowCasterReceiverConfiguration(meshData.Parameters, parameters);
+                            SetShadowCasterReceiverConfiguration(meshData.Parameters, parameters, shadowKeys);
                             collection.Add(parameters);
                         }
                         return collection;
                     }
                 }
                 var defaultParameters = new ParameterCollectionData();
-                SetShadowCasterReceiverConfiguration(meshData.Parameters, defaultParameters);
+                SetShadowCasterReceiverConfiguration(meshData.Parameters, defaultParameters, shadowKeys);
                 return new List<ParameterCollectionData> { defaultParameters };
             }
             return null;
         }
 
-        private static void SetShadowCasterReceiverConfiguration(ParameterCollectionData sourceParameters, ParameterCollectionData targetParameters)
+        private static void SetShadowCasterReceiverConfiguration(ParameterCollectionData sourceParameters, ParameterCollectionData targetParameters, params ParameterKey[] keys)
         {
             if (sourceParameters != null)
             {
-                var castShadows = sourceParameters.ContainsKey(LightingKeys.CastShadows) && (bool)sourceParameters[LightingKeys.CastShadows];
-                var receiveShadows = sourceParameters.ContainsKey(LightingKeys.ReceiveShadows) && (bool)sourceParameters[LightingKeys.ReceiveShadows];
-                targetParameters.Set(LightingKeys.CastShadows, castShadows);
-                targetParameters.Set(LightingKeys.ReceiveShadows, receiveShadows);
+                foreach (var key in keys)
+                {
+                    if (sourceParameters.ContainsKey(key))
+                        targetParameters.Set(key, sourceParameters[key]);
+                }
             }
         }
 

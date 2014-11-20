@@ -588,11 +588,10 @@ namespace SiliconStudio.BuildEngine
         /// <param name="parameters1">The second ParameterCollectionData.</param>
         /// <param name="key">The ParameterKey.</param>
         /// <returns>True</returns>
-        private static bool CompareKeyValue(ParameterCollectionData parameters0, ParameterCollectionData parameters1, ParameterKey key)
+        private static bool CompareKeyValue<T>(ParameterCollectionData parameters0, ParameterCollectionData parameters1, ParameterKey<T> key)
         {
-            // TODO: compare default values?
-            var value0 = parameters0.ContainsKey(key) ? parameters0[key] : null;
-            var value1 = parameters1.ContainsKey(key) ? parameters1[key] : null;
+            var value0 = parameters0.ContainsKey(key) ? parameters0[key] : key.DefaultMetadataT.DefaultValue;
+            var value1 = parameters1.ContainsKey(key) ? parameters1[key] : key.DefaultMetadataT.DefaultValue;
             return value0 == value1;
         }
 
