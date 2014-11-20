@@ -7,23 +7,36 @@ Release date: 2014/??/??
 - Graphics: Spot light shadow maps in deferred rendering.
 
 #### Enhancements
+- Core: Add support for `ModuleInitializer` in nested types
 - Graphics: Better computation of shadow maps (for both directional and spot lights).
 - Graphics: Add geometric primitive for Cone.
+- Engine: Several internal improvements and factorization to support upcoming `PostEffects` framework.
+- Engine: Add support for filtering model selection and rendering in `ModelRenderer`.  
 - Samples: Spot light shadows in DeferredLighting sample.
+- Shaders: Add support for naming a child in a `pdxfx` to allow child override.
+- Shaders: `cs` files generated from `pfxfx` are now using internal and nested types instead of putting everything in the root namespace.
+- Shaders: Add support for declaring a namespace in a `pdxsl`, only valid and used for `ParameterKey` declarations.
+- Shaders
 - Studio: Added documentation on properties of the property grid.
 
 #### Issues fixed
 - Assets: Textures with arbitrary size (non square and non power-of-two) are now correctly loaded.
+- Engine: Fix `EntitySystem.Remove` that was destroying the hierarchy of entities.
 - Graphics: Fix spot light shadow computation.
+- Samples: Fix effect compilation occurring at runtime for some samples 
 - Shaders: Simplify some deferred lighting shaders.
+- Shaders: Don't generate an empty class for `pdxsl` files that don't declare any shader `ParameterKey`
 - Studio: Fix renamed button for string-indexed dictionary that was misplaced and not working
 - Studio: Fix add parameter key control filtering and mouse selection
 - Studio: Fix some actions from the property grid that were not undo-able
 - Studio: Some buttons were sometimes hidden where they should be visible in the property grid.
-- Engine: Fix EntitySystem.Remove that was destroying the hierarchy of entities.
 
 #### Breaking changes
-- Engine: Remove obsolete MeshDrawHelper file (use GeometricPrimitive instead), move ToMeshDraw method to GeometricPrimitiveExtensions.
+- Engine: Remove obsolete `MeshDrawHelper` file (use `GeometricPrimitive` instead), move `ToMeshDraw` method to `GeometricPrimitiveExtensions`.
+- Engine: `ModelRenderer` is no longer inheritable but extensible via compositions.
+- Engine: `ModelRenderer.EnableFrustrumCulling` is replaced by the extension method `ModelRenderer.AddDefaultFrustrumCulling`
+- Engine: `EffectMesh` is renamed to `RenderMesh` 
+- Shaders: Declaring a composition member in a shader class must be now prefixed with the `compose` attribute. 
 
 #### Known Issues
 - Physics: Complex convex hull decomposition can be a very long process and there is visual feedback for it.
