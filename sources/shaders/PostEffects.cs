@@ -28,50 +28,56 @@ namespace PostEffects
     };
 
     #line 10
-    internal partial class VerticalVsmBlur  : IShaderMixinBuilder
+    internal static partial class ShaderMixins
     {
-        public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+        internal partial class VerticalVsmBlur  : IShaderMixinBuilder
         {
+            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            {
 
-            #line 14
-            context.Mixin(mixin, "PostEffectBase");
+                #line 14
+                context.Mixin(mixin, "PostEffectBase");
 
-            #line 17
-            context.SetParam(PostEffectsParameters.verticalBlur, true);
+                #line 17
+                context.SetParam(PostEffectsParameters.verticalBlur, true);
 
-            #line 19
-            context.Mixin(mixin, "PostEffectVsmBlur", context.GetParam(PostEffectsParameters.verticalBlur));
-        }
+                #line 19
+                context.Mixin(mixin, "PostEffectVsmBlur", context.GetParam(PostEffectsParameters.verticalBlur));
+            }
 
-        [ModuleInitializer]
-        internal static void __Initialize__()
+            [ModuleInitializer]
+            internal static void __Initialize__()
 
-        {
-            ShaderMixinManager.Register("VerticalVsmBlur", new VerticalVsmBlur());
+            {
+                ShaderMixinManager.Register("VerticalVsmBlur", new VerticalVsmBlur());
+            }
         }
     }
 
     #line 22
-    internal partial class HorizontalVsmBlur  : IShaderMixinBuilder
+    internal static partial class ShaderMixins
     {
-        public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+        internal partial class HorizontalVsmBlur  : IShaderMixinBuilder
         {
+            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            {
 
-            #line 26
-            context.Mixin(mixin, "PostEffectBase");
+                #line 26
+                context.Mixin(mixin, "PostEffectBase");
 
-            #line 29
-            context.SetParam(PostEffectsParameters.verticalBlur, false);
+                #line 29
+                context.SetParam(PostEffectsParameters.verticalBlur, false);
 
-            #line 31
-            context.Mixin(mixin, "PostEffectVsmBlur", context.GetParam(PostEffectsParameters.verticalBlur));
-        }
+                #line 31
+                context.Mixin(mixin, "PostEffectVsmBlur", context.GetParam(PostEffectsParameters.verticalBlur));
+            }
 
-        [ModuleInitializer]
-        internal static void __Initialize__()
+            [ModuleInitializer]
+            internal static void __Initialize__()
 
-        {
-            ShaderMixinManager.Register("HorizontalVsmBlur", new HorizontalVsmBlur());
+            {
+                ShaderMixinManager.Register("HorizontalVsmBlur", new HorizontalVsmBlur());
+            }
         }
     }
 }

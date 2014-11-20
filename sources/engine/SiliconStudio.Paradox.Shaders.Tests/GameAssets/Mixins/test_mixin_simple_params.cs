@@ -34,65 +34,68 @@ namespace Test7
     };
 
     #line 12
-    internal partial class DefaultSimpleParams  : IShaderMixinBuilder
+    internal static partial class ShaderMixins
     {
-        public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+        internal partial class DefaultSimpleParams  : IShaderMixinBuilder
         {
-
-            #line 16
-            context.Mixin(mixin, "A");
-
-            #line 17
-            context.Mixin(mixin, "B");
-
-            #line 20
-            if (context.GetParam(TestParameters.param1))
+            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
 
-                #line 23
-                context.Mixin(mixin, "C");
+                #line 16
+                context.Mixin(mixin, "A");
 
-                #line 26
-                mixin.Mixin.AddMacro("param2", context.GetParam(TestParameters.param2));
+                #line 17
+                context.Mixin(mixin, "B");
 
+                #line 20
+                if (context.GetParam(TestParameters.param1))
                 {
 
-                    #line 29
-                    var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                    #line 23
+                    context.Mixin(mixin, "C");
 
-                    #line 29
-                    context.Mixin(__subMixin, "X");
-                    mixin.Mixin.AddComposition("x", __subMixin.Mixin);
+                    #line 26
+                    mixin.Mixin.AddMacro("param2", context.GetParam(TestParameters.param2));
+
+                    {
+
+                        #line 29
+                        var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+
+                        #line 29
+                        context.Mixin(__subMixin, "X");
+                        mixin.Mixin.AddComposition("x", __subMixin.Mixin);
+                    }
+                }
+
+                #line 32
+                else
+                {
+
+                    #line 33
+                    context.Mixin(mixin, "D");
+
+                    #line 34
+                    mixin.Mixin.AddMacro("Test", context.GetParam(TestParameters.param3));
+
+                    {
+
+                        #line 35
+                        var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+
+                        #line 35
+                        context.Mixin(__subMixin, "Y");
+                        mixin.Mixin.AddComposition("y", __subMixin.Mixin);
+                    }
                 }
             }
 
-            #line 32
-            else
+            [ModuleInitializer]
+            internal static void __Initialize__()
+
             {
-
-                #line 33
-                context.Mixin(mixin, "D");
-
-                #line 34
-                mixin.Mixin.AddMacro("Test", context.GetParam(TestParameters.param3));
-
-                {
-
-                    #line 35
-                    var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-
-                    #line 35
-                    context.Mixin(__subMixin, "Y");
-                    mixin.Mixin.AddComposition("y", __subMixin.Mixin);
-                }
+                ShaderMixinManager.Register("DefaultSimpleParams", new DefaultSimpleParams());
             }
-        }
-
-        [ModuleInitializer]
-        internal static void __Initialize__()
-
-        {
-            ShaderMixinManager.Register("DefaultSimpleParams", new DefaultSimpleParams());
         }
     }
 }

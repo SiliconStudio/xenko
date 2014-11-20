@@ -20,20 +20,23 @@ namespace Test
 {
 
     #line 5
-    internal partial class ToGlslEffect  : IShaderMixinBuilder
+    internal static partial class ShaderMixins
     {
-        public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+        internal partial class ToGlslEffect  : IShaderMixinBuilder
         {
+            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            {
 
-            #line 7
-            context.Mixin(mixin, "ToGlslShader");
-        }
+                #line 7
+                context.Mixin(mixin, "ToGlslShader");
+            }
 
-        [ModuleInitializer]
-        internal static void __Initialize__()
+            [ModuleInitializer]
+            internal static void __Initialize__()
 
-        {
-            ShaderMixinManager.Register("ToGlslEffect", new ToGlslEffect());
+            {
+                ShaderMixinManager.Register("ToGlslEffect", new ToGlslEffect());
+            }
         }
     }
 }

@@ -23,68 +23,71 @@ namespace Test
 {
 
     #line 7
-    internal partial class MultipleRenderTargetsEffect  : IShaderMixinBuilder
+    internal static partial class ShaderMixins
     {
-        public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+        internal partial class MultipleRenderTargetsEffect  : IShaderMixinBuilder
         {
+            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            {
 
-            #line 13
-            context.Mixin(mixin, "ShaderBase");
+                #line 13
+                context.Mixin(mixin, "ShaderBase");
 
-            #line 14
-            context.Mixin(mixin, "TransformationWAndVP");
+                #line 14
+                context.Mixin(mixin, "TransformationWAndVP");
 
-            #line 15
-            context.Mixin(mixin, "PositionVSStream");
+                #line 15
+                context.Mixin(mixin, "PositionVSStream");
 
-            #line 16
-            context.Mixin(mixin, "NormalVSStream");
+                #line 16
+                context.Mixin(mixin, "NormalVSStream");
 
-            #line 18
-            mixin.Mixin.AddMacro("RENDER_TARGET_COUNT", 3);
+                #line 18
+                mixin.Mixin.AddMacro("RENDER_TARGET_COUNT", 3);
 
-            #line 19
-            context.Mixin(mixin, "ShadingBase");
+                #line 19
+                context.Mixin(mixin, "ShadingBase");
 
-            #line 20
-            if (context.GetParam(MaterialParameters.AlbedoDiffuse) != null)
+                #line 20
+                if (context.GetParam(MaterialParameters.AlbedoDiffuse) != null)
+
+                    {
+
+                        #line 21
+                        var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+
+                        #line 21
+                        context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoDiffuse));
+                        mixin.Mixin.AddComposition("ShadingColor0", __subMixin.Mixin);
+                    }
 
                 {
 
-                    #line 21
+                    #line 22
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                    #line 21
-                    context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoDiffuse));
-                    mixin.Mixin.AddComposition("ShadingColor0", __subMixin.Mixin);
+                    #line 22
+                    context.Mixin(__subMixin, "LinearDepth");
+                    mixin.Mixin.AddComposition("ShadingColor1", __subMixin.Mixin);
                 }
 
-            {
+                {
 
-                #line 22
-                var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                    #line 23
+                    var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
 
-                #line 22
-                context.Mixin(__subMixin, "LinearDepth");
-                mixin.Mixin.AddComposition("ShadingColor1", __subMixin.Mixin);
+                    #line 23
+                    context.Mixin(__subMixin, "NormalColor");
+                    mixin.Mixin.AddComposition("ShadingColor2", __subMixin.Mixin);
+                }
             }
 
+            [ModuleInitializer]
+            internal static void __Initialize__()
+
             {
-
-                #line 23
-                var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-
-                #line 23
-                context.Mixin(__subMixin, "NormalColor");
-                mixin.Mixin.AddComposition("ShadingColor2", __subMixin.Mixin);
+                ShaderMixinManager.Register("MultipleRenderTargetsEffect", new MultipleRenderTargetsEffect());
             }
-        }
-
-        [ModuleInitializer]
-        internal static void __Initialize__()
-
-        {
-            ShaderMixinManager.Register("MultipleRenderTargetsEffect", new MultipleRenderTargetsEffect());
         }
     }
 }

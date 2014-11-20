@@ -20,69 +20,75 @@ namespace Test5
 {
 
     #line 5
-    internal partial class ChildClone  : IShaderMixinBuilder
+    internal static partial class ShaderMixins
     {
-        public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+        internal partial class ChildClone  : IShaderMixinBuilder
         {
+            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            {
 
-            #line 7
-            context.CloneProperties();
+                #line 7
+                context.CloneProperties();
 
-            #line 7
-            mixin.Mixin.CloneFrom(mixin.Parent.Mixin);
+                #line 7
+                mixin.Mixin.CloneFrom(mixin.Parent.Mixin);
 
-            #line 8
-            context.Mixin(mixin, "C1");
+                #line 8
+                context.Mixin(mixin, "C1");
 
-            #line 9
-            context.Mixin(mixin, "C2");
-        }
+                #line 9
+                context.Mixin(mixin, "C2");
+            }
 
-        [ModuleInitializer]
-        internal static void __Initialize__()
+            [ModuleInitializer]
+            internal static void __Initialize__()
 
-        {
-            ShaderMixinManager.Register("ChildClone", new ChildClone());
+            {
+                ShaderMixinManager.Register("ChildClone", new ChildClone());
+            }
         }
     }
 
     #line 12
-    internal partial class DefaultSimpleClone  : IShaderMixinBuilder
+    internal static partial class ShaderMixins
     {
-        public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+        internal partial class DefaultSimpleClone  : IShaderMixinBuilder
         {
-
-            #line 14
-            context.Mixin(mixin, "A");
-
-            #line 15
-            context.Mixin(mixin, "B");
-
-            #line 16
-            context.Mixin(mixin, "C");
-
+            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
 
-                #line 17
-                var __subMixin = new ShaderMixinSourceTree() { Name = "ChildClone", Parent = mixin };
-                mixin.Children.Add(__subMixin);
+                #line 14
+                context.Mixin(mixin, "A");
 
-                #line 17
-                context.BeginChild(__subMixin);
+                #line 15
+                context.Mixin(mixin, "B");
 
-                #line 17
-                context.Mixin(__subMixin, "ChildClone");
+                #line 16
+                context.Mixin(mixin, "C");
 
-                #line 17
-                context.EndChild();
+                {
+
+                    #line 18
+                    var __subMixin = new ShaderMixinSourceTree() { Name = "Test", Parent = mixin };
+                    mixin.Children.Add(__subMixin);
+
+                    #line 18
+                    context.BeginChild(__subMixin);
+
+                    #line 18
+                    context.Mixin(__subMixin, "ChildClone");
+
+                    #line 18
+                    context.EndChild();
+                }
             }
-        }
 
-        [ModuleInitializer]
-        internal static void __Initialize__()
+            [ModuleInitializer]
+            internal static void __Initialize__()
 
-        {
-            ShaderMixinManager.Register("DefaultSimpleClone", new DefaultSimpleClone());
+            {
+                ShaderMixinManager.Register("DefaultSimpleClone", new DefaultSimpleClone());
+            }
         }
     }
 }

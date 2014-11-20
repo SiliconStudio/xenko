@@ -23,33 +23,36 @@ namespace SkyboxEffect
 {
 
     #line 7
-    internal partial class SkyboxShader  : IShaderMixinBuilder
+    internal static partial class ShaderMixins
     {
-        public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+        internal partial class SkyboxShader  : IShaderMixinBuilder
         {
-
-            #line 9
-            context.Mixin(mixin, "PostEffectBase");
-
-            #line 10
-            context.Mixin(mixin, "AlbedoFlatShading");
-
+            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
 
-                #line 11
-                var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                #line 9
+                context.Mixin(mixin, "PostEffectBase");
 
-                #line 11
-                context.Mixin(__subMixin, "CubemapSkybox", TexturingKeys.TextureCube0);
-                mixin.Mixin.AddComposition("albedoDiffuse", __subMixin.Mixin);
+                #line 10
+                context.Mixin(mixin, "AlbedoFlatShading");
+
+                {
+
+                    #line 11
+                    var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+
+                    #line 11
+                    context.Mixin(__subMixin, "CubemapSkybox", TexturingKeys.TextureCube0);
+                    mixin.Mixin.AddComposition("albedoDiffuse", __subMixin.Mixin);
+                }
             }
-        }
 
-        [ModuleInitializer]
-        internal static void __Initialize__()
+            [ModuleInitializer]
+            internal static void __Initialize__()
 
-        {
-            ShaderMixinManager.Register("SkyboxShader", new SkyboxShader());
+            {
+                ShaderMixinManager.Register("SkyboxShader", new SkyboxShader());
+            }
         }
     }
 }

@@ -20,20 +20,23 @@ namespace Test
 {
 
     #line 5
-    internal partial class SimpleEffect  : IShaderMixinBuilder
+    internal static partial class ShaderMixins
     {
-        public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+        internal partial class SimpleEffect  : IShaderMixinBuilder
         {
+            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            {
 
-            #line 7
-            context.Mixin(mixin, "SimpleShader");
-        }
+                #line 7
+                context.Mixin(mixin, "SimpleShader");
+            }
 
-        [ModuleInitializer]
-        internal static void __Initialize__()
+            [ModuleInitializer]
+            internal static void __Initialize__()
 
-        {
-            ShaderMixinManager.Register("SimpleEffect", new SimpleEffect());
+            {
+                ShaderMixinManager.Register("SimpleEffect", new SimpleEffect());
+            }
         }
     }
 }

@@ -29,60 +29,63 @@ namespace CubemapBlendShader
 {
 
     #line 9
-    internal partial class CubemapBlendEffect  : IShaderMixinBuilder
+    internal static partial class ShaderMixins
     {
-        public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+        internal partial class CubemapBlendEffect  : IShaderMixinBuilder
         {
-
-            #line 15
-            context.Mixin(mixin, "ShaderBase");
-
-            #line 16
-            context.Mixin(mixin, "PostEffectBase");
-
-            #line 19
-            mixin.Mixin.AddMacro("TEXTURECUBE_BLEND_COUNT", context.GetParam(CubemapBlendRenderer.CubemapCount));
-
-            #line 21
-            if (context.GetParam(CubemapBlendRenderer.UseMultipleRenderTargets))
-
-                #line 22
-                context.Mixin(mixin, "CubemapBlenderMRT");
-
-            #line 24
-            else
-
-                #line 24
-                context.Mixin(mixin, "CubemapBlender");
-
-            #line 26
-            foreach(var ____1 in context.GetParam(CubemapBlendRenderer.Cubemaps))
-
+            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
 
+                #line 15
+                context.Mixin(mixin, "ShaderBase");
+
+                #line 16
+                context.Mixin(mixin, "PostEffectBase");
+
+                #line 19
+                mixin.Mixin.AddMacro("TEXTURECUBE_BLEND_COUNT", context.GetParam(CubemapBlendRenderer.CubemapCount));
+
+                #line 21
+                if (context.GetParam(CubemapBlendRenderer.UseMultipleRenderTargets))
+
+                    #line 22
+                    context.Mixin(mixin, "CubemapBlenderMRT");
+
+                #line 24
+                else
+
+                    #line 24
+                    context.Mixin(mixin, "CubemapBlender");
+
                 #line 26
-                context.PushParameters(____1);
+                foreach(var ____1 in context.GetParam(CubemapBlendRenderer.Cubemaps))
 
                 {
 
-                    #line 28
-                    var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                    #line 26
+                    context.PushParameters(____1);
 
-                    #line 28
-                    context.Mixin(__subMixin, "CubemapFace", context.GetParam(CubemapBlendRenderer.CubemapKey));
-                    mixin.Mixin.AddCompositionToArray("Cubemaps", __subMixin.Mixin);
+                    {
+
+                        #line 28
+                        var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+
+                        #line 28
+                        context.Mixin(__subMixin, "CubemapFace", context.GetParam(CubemapBlendRenderer.CubemapKey));
+                        mixin.Mixin.AddCompositionToArray("Cubemaps", __subMixin.Mixin);
+                    }
+
+                    #line 26
+                    context.PopParameters();
                 }
-
-                #line 26
-                context.PopParameters();
             }
-        }
 
-        [ModuleInitializer]
-        internal static void __Initialize__()
+            [ModuleInitializer]
+            internal static void __Initialize__()
 
-        {
-            ShaderMixinManager.Register("CubemapBlendEffect", new CubemapBlendEffect());
+            {
+                ShaderMixinManager.Register("CubemapBlendEffect", new CubemapBlendEffect());
+            }
         }
     }
 }

@@ -28,78 +28,84 @@ namespace Test4
     };
 
     #line 10
-    internal partial class ChildParamsMixin  : IShaderMixinBuilder
+    internal static partial class ShaderMixins
     {
-        public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+        internal partial class ChildParamsMixin  : IShaderMixinBuilder
         {
+            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            {
 
-            #line 14
-            context.CloneProperties();
+                #line 14
+                context.CloneProperties();
 
-            #line 14
-            mixin.Mixin.CloneFrom(mixin.Parent.Mixin);
+                #line 14
+                mixin.Mixin.CloneFrom(mixin.Parent.Mixin);
 
-            #line 15
-            context.SetParam(TestParameters.TestCount, 1);
+                #line 15
+                context.SetParam(TestParameters.TestCount, 1);
 
-            #line 16
-            if (context.GetParam(TestParameters.TestCount) == 1)
+                #line 16
+                if (context.GetParam(TestParameters.TestCount) == 1)
 
-                #line 17
-                context.Mixin(mixin, "C1");
-        }
+                    #line 17
+                    context.Mixin(mixin, "C1");
+            }
 
-        [ModuleInitializer]
-        internal static void __Initialize__()
+            [ModuleInitializer]
+            internal static void __Initialize__()
 
-        {
-            ShaderMixinManager.Register("ChildParamsMixin", new ChildParamsMixin());
+            {
+                ShaderMixinManager.Register("ChildParamsMixin", new ChildParamsMixin());
+            }
         }
     }
 
     #line 20
-    internal partial class DefaultSimpleChildParams  : IShaderMixinBuilder
+    internal static partial class ShaderMixins
     {
-        public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+        internal partial class DefaultSimpleChildParams  : IShaderMixinBuilder
         {
-
-            #line 24
-            context.Mixin(mixin, "A");
-
-            #line 25
-            if (context.GetParam(TestParameters.TestCount) == 0)
-
-                #line 26
-                context.Mixin(mixin, "B");
-
+            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
 
-                #line 28
-                var __subMixin = new ShaderMixinSourceTree() { Name = "ChildParamsMixin", Parent = mixin };
-                mixin.Children.Add(__subMixin);
+                #line 24
+                context.Mixin(mixin, "A");
 
-                #line 28
-                context.BeginChild(__subMixin);
+                #line 25
+                if (context.GetParam(TestParameters.TestCount) == 0)
 
-                #line 28
-                context.Mixin(__subMixin, "ChildParamsMixin");
+                    #line 26
+                    context.Mixin(mixin, "B");
 
-                #line 28
-                context.EndChild();
+                {
+
+                    #line 28
+                    var __subMixin = new ShaderMixinSourceTree() { Name = "ChildParamsMixin", Parent = mixin };
+                    mixin.Children.Add(__subMixin);
+
+                    #line 28
+                    context.BeginChild(__subMixin);
+
+                    #line 28
+                    context.Mixin(__subMixin, "ChildParamsMixin");
+
+                    #line 28
+                    context.EndChild();
+                }
+
+                #line 30
+                if (context.GetParam(TestParameters.TestCount) == 0)
+
+                    #line 31
+                    context.Mixin(mixin, "C");
             }
 
-            #line 30
-            if (context.GetParam(TestParameters.TestCount) == 0)
+            [ModuleInitializer]
+            internal static void __Initialize__()
 
-                #line 31
-                context.Mixin(mixin, "C");
-        }
-
-        [ModuleInitializer]
-        internal static void __Initialize__()
-
-        {
-            ShaderMixinManager.Register("DefaultSimpleChildParams", new DefaultSimpleChildParams());
+            {
+                ShaderMixinManager.Register("DefaultSimpleChildParams", new DefaultSimpleChildParams());
+            }
         }
     }
 }

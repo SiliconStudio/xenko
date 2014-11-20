@@ -20,50 +20,56 @@ namespace Test3
 {
 
     #line 5
-    internal partial class ChildMixin  : IShaderMixinBuilder
+    internal static partial class ShaderMixins
     {
-        public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+        internal partial class ChildMixin  : IShaderMixinBuilder
         {
+            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            {
 
-            #line 7
-            context.Mixin(mixin, "C1");
+                #line 7
+                context.Mixin(mixin, "C1");
 
-            #line 8
-            context.Mixin(mixin, "C2");
-        }
+                #line 8
+                context.Mixin(mixin, "C2");
+            }
 
-        [ModuleInitializer]
-        internal static void __Initialize__()
+            [ModuleInitializer]
+            internal static void __Initialize__()
 
-        {
-            ShaderMixinManager.Register("ChildMixin", new ChildMixin());
+            {
+                ShaderMixinManager.Register("ChildMixin", new ChildMixin());
+            }
         }
     }
 
     #line 11
-    internal partial class DefaultSimpleChild  : IShaderMixinBuilder
+    internal static partial class ShaderMixins
     {
-        public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+        internal partial class DefaultSimpleChild  : IShaderMixinBuilder
         {
+            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            {
 
-            #line 13
-            context.Mixin(mixin, "A");
+                #line 13
+                context.Mixin(mixin, "A");
 
-            #line 14
-            context.Mixin(mixin, "B");
+                #line 14
+                context.Mixin(mixin, "B");
 
-            #line 15
-            context.Mixin(mixin, "C");
+                #line 15
+                context.Mixin(mixin, "C");
 
-            #line 16
-            context.Mixin(mixin, "ChildMixin");
-        }
+                #line 16
+                context.Mixin(mixin, "ChildMixin");
+            }
 
-        [ModuleInitializer]
-        internal static void __Initialize__()
+            [ModuleInitializer]
+            internal static void __Initialize__()
 
-        {
-            ShaderMixinManager.Register("DefaultSimpleChild", new DefaultSimpleChild());
+            {
+                ShaderMixinManager.Register("DefaultSimpleChild", new DefaultSimpleChild());
+            }
         }
     }
 }

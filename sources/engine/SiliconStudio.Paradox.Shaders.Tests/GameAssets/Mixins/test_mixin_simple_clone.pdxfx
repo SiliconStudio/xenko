@@ -14,6 +14,7 @@ namespace Test5
         mixin A;
         mixin B;
         mixin C;
-        mixin child ChildClone;
+        // Rename the sub child as Test
+        mixin child Test = ChildClone;
     };
 }

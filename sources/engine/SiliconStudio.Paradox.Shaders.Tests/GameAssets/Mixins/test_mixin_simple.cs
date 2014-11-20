@@ -20,26 +20,29 @@ namespace Test2
 {
 
     #line 5
-    internal partial class DefaultSimple  : IShaderMixinBuilder
+    internal static partial class ShaderMixins
     {
-        public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+        internal partial class DefaultSimple  : IShaderMixinBuilder
         {
+            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            {
 
-            #line 7
-            context.Mixin(mixin, "A");
+                #line 7
+                context.Mixin(mixin, "A");
 
-            #line 8
-            context.Mixin(mixin, "B");
+                #line 8
+                context.Mixin(mixin, "B");
 
-            #line 9
-            context.Mixin(mixin, "C");
-        }
+                #line 9
+                context.Mixin(mixin, "C");
+            }
 
-        [ModuleInitializer]
-        internal static void __Initialize__()
+            [ModuleInitializer]
+            internal static void __Initialize__()
 
-        {
-            ShaderMixinManager.Register("DefaultSimple", new DefaultSimple());
+            {
+                ShaderMixinManager.Register("DefaultSimple", new DefaultSimple());
+            }
         }
     }
 }

@@ -20,36 +20,39 @@ namespace Test6
 {
 
     #line 5
-    internal partial class DefaultSimpleCompose  : IShaderMixinBuilder
+    internal static partial class ShaderMixins
     {
-        public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+        internal partial class DefaultSimpleCompose  : IShaderMixinBuilder
         {
-
-            #line 7
-            context.Mixin(mixin, "A");
-
-            #line 8
-            context.Mixin(mixin, "B");
-
-            #line 9
-            context.Mixin(mixin, "C");
-
+            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
 
-                #line 10
-                var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                #line 7
+                context.Mixin(mixin, "A");
 
-                #line 10
-                context.Mixin(__subMixin, "X");
-                mixin.Mixin.AddComposition("x", __subMixin.Mixin);
+                #line 8
+                context.Mixin(mixin, "B");
+
+                #line 9
+                context.Mixin(mixin, "C");
+
+                {
+
+                    #line 10
+                    var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+
+                    #line 10
+                    context.Mixin(__subMixin, "X");
+                    mixin.Mixin.AddComposition("x", __subMixin.Mixin);
+                }
             }
-        }
 
-        [ModuleInitializer]
-        internal static void __Initialize__()
+            [ModuleInitializer]
+            internal static void __Initialize__()
 
-        {
-            ShaderMixinManager.Register("DefaultSimpleCompose", new DefaultSimpleCompose());
+            {
+                ShaderMixinManager.Register("DefaultSimpleCompose", new DefaultSimpleCompose());
+            }
         }
     }
 }

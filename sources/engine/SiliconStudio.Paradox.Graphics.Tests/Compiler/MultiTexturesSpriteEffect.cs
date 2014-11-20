@@ -20,20 +20,23 @@ namespace Test
 {
 
     #line 5
-    internal partial class MultiTexturesSpriteEffect  : IShaderMixinBuilder
+    internal static partial class ShaderMixins
     {
-        public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+        internal partial class MultiTexturesSpriteEffect  : IShaderMixinBuilder
         {
+            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            {
 
-            #line 7
-            context.Mixin(mixin, "MultiTexturesSpriteShader");
-        }
+                #line 7
+                context.Mixin(mixin, "MultiTexturesSpriteShader");
+            }
 
-        [ModuleInitializer]
-        internal static void __Initialize__()
+            [ModuleInitializer]
+            internal static void __Initialize__()
 
-        {
-            ShaderMixinManager.Register("MultiTexturesSpriteEffect", new MultiTexturesSpriteEffect());
+            {
+                ShaderMixinManager.Register("MultiTexturesSpriteEffect", new MultiTexturesSpriteEffect());
+            }
         }
     }
 }
