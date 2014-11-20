@@ -3,7 +3,7 @@
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Effects.Modules.Renderers
+namespace SiliconStudio.Paradox.Effects.Renderers
 {
     public class LightingUpdateInfo
     {

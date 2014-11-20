@@ -3,11 +3,11 @@
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Effects.Modules.Renderers;
-using SiliconStudio.Paradox.Effects.Modules.Shadowmap;
+using SiliconStudio.Paradox.Effects.Renderers;
+using SiliconStudio.Paradox.Effects.Shadowmap;
 using SiliconStudio.Paradox.Engine;
 
-namespace SiliconStudio.Paradox.Effects.Modules.Processors
+namespace SiliconStudio.Paradox.Effects.Processors
 {
     /// <summary>
     /// Represents a shadow map for the <see cref="ShadowMapRenderer"/>.

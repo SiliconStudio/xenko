@@ -6,14 +6,14 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects.Modules.Processors;
+using SiliconStudio.Paradox.Effects.Processors;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Paradox.Shaders.Compiler;
 
-namespace SiliconStudio.Paradox.Effects.Modules.Renderers
+namespace SiliconStudio.Paradox.Effects.Renderers
 {
     /// <summary>
     /// Blends the cubemaps at the defined locations.

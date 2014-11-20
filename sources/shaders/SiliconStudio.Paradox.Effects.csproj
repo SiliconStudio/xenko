@@ -10,7 +10,7 @@
     <ProjectGuid>{0342C3E7-4A38-46B4-A8EC-E728D50085D3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>SiliconStudio.Paradox.Effects</RootNamespace>
-    <AssemblyName>SiliconStudio.Paradox.Effects.Modules</AssemblyName>
+    <AssemblyName>SiliconStudio.Paradox.Effects</AssemblyName>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <ParadoxBuildTags>*</ParadoxBuildTags>
   </PropertyGroup>

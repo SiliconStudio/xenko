@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
     /// </summary>
     public class ShaderMixinCodeGen : ShaderKeyGeneratorBase//ShaderWriter
     {
-        private const string DefaultNameSpace = "SiliconStudio.Paradox.Effects.Modules";
+        private const string DefaultNameSpace = "SiliconStudio.Paradox.Effects";
 
         private const string BlockContextTag = "BlockContextTag";
         private readonly LoggerResult logging;

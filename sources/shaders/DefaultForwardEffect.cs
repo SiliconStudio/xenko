@@ -15,11 +15,11 @@ using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 
-#line 3 "D:\Code\Paradox\sources\shaders\DefaultForwardEffect.pdxfx"
+#line 3 "C:\Code\Paradox\sources\shaders\DefaultForwardEffect.pdxfx"
 using SiliconStudio.Paradox.Effects.Data;
 
 #line 4
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 
 #line 5
 using SiliconStudio.Paradox.Engine;

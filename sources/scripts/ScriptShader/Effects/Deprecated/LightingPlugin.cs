@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 using SiliconStudio.Paradox.BinPacking;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core;

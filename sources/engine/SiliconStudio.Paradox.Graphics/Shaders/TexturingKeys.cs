@@ -6,7 +6,7 @@ using System;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.Effects.Modules
+namespace SiliconStudio.Paradox.Effects
 {
     public partial class TexturingKeys
     {

@@ -11,7 +11,7 @@ using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.Effects.Modules.Processors
+namespace SiliconStudio.Paradox.Effects.Processors
 {
     public abstract class LightShadowProcessor : EntityProcessor<EntityLightShadow>
     {

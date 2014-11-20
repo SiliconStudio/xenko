@@ -3,7 +3,7 @@
 
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.Effects.Modules
+namespace SiliconStudio.Paradox.Effects
 {
 
     /// <summary>

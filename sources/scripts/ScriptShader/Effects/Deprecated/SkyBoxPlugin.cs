@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;

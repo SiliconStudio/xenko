@@ -4,7 +4,7 @@
 
 using System.Runtime.CompilerServices;
 
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Paradox.Engine.Tests

@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Runtime.InteropServices;
 
-namespace SiliconStudio.Paradox.Effects.Modules.Shadowmap
+namespace SiliconStudio.Paradox.Effects.Shadowmap
 {
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     internal struct ShadowMapReceiverVsmInfo

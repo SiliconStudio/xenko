@@ -3,7 +3,7 @@
 using System.Runtime.InteropServices;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Effects.Modules
+namespace SiliconStudio.Paradox.Effects
 {
     [StructLayout(LayoutKind.Sequential)]
     internal struct ShadowMapCascadeInfo

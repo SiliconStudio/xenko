@@ -1,7 +1,7 @@
 // Copyright (c) 2011 Silicon Studio
 
 using System;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core;

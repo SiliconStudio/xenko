@@ -15,8 +15,8 @@ using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 
-#line 3 "D:\Code\Paradox\sources\shaders\SkyboxEffect.pdxfx"
-using SiliconStudio.Paradox.Effects.Modules;
+#line 3 "C:\Code\Paradox\sources\shaders\SkyboxEffect.pdxfx"
+using SiliconStudio.Paradox.Effects;
 
 #line 5
 namespace SkyboxEffect
