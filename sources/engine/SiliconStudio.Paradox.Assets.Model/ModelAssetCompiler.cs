@@ -41,12 +41,9 @@ namespace SiliconStudio.Paradox.Assets.Model
                     materials.Add(meshParam.Key, new Tuple<Guid, string>(meshParam.Value.Material.Id, meshParam.Value.Material.Location));
             }
 
-            // TODO: temporary while the assets are modified
+            // TODO: temporary while the LightingParameters is a Member of MeshMaterialParameter class
             foreach (var meshParam in asset.MeshParameters)
             {
-                meshParam.Value.Parameters.Set(LightingKeys.CastShadows, meshParam.Value.CastShadows);
-                meshParam.Value.Parameters.Set(LightingKeys.ReceiveShadows, meshParam.Value.ReceiveShadows);
-                meshParam.Value.Parameters.Set(RenderingParameters.RenderLayer, meshParam.Value.Layer);
                 if (meshParam.Value.LightingParameters != null)
                     meshParam.Value.Parameters.Set(LightingKeys.LightingConfigurations, new ContentReference<LightingConfigurationsSetData>(meshParam.Value.LightingParameters.Id, meshParam.Value.LightingParameters.Location));
             }

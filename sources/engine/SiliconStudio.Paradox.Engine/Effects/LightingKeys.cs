@@ -65,7 +65,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <userdoc>
         /// When checked, the mesh will cast shadows.
         /// </userdoc>
-        public static readonly ParameterKey<bool> CastShadows = ParameterKeys.New(false);
+        public static readonly ParameterKey<bool> CastShadows = ParameterKeys.New(true);
 
         /// <summary>
         /// Flag stating if the mesh receives shadows.
@@ -73,7 +73,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <userdoc>
         /// When checked, the mesh will receive shadows.
         /// </userdoc>
-        public static readonly ParameterKey<bool> ReceiveShadows = ParameterKeys.New(false);
+        public static readonly ParameterKey<bool> ReceiveShadows = ParameterKeys.New(true);
 
         /// <summary>
         /// Supported lighting configurations.
