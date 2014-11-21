@@ -332,6 +332,8 @@ namespace SiliconStudio.Paradox.Assets
         {
             using (var texImage = texTool.Load(sourcePath))
             {
+                texTool.Decompress(texImage);
+
                 if (texImage.Format == PixelFormat.B8G8R8A8_UNorm)
                     texTool.SwitchChannel(texImage);
 
