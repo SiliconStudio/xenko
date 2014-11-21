@@ -170,8 +170,6 @@ namespace SiliconStudio.Paradox.Assets
         protected virtual void SetImageSpecificFields(TImageInfo imageInfo, TImageData newImage)
         {
         }
-                texTool.Decompress(texImage);
-
     }
     
     /// <summary>
