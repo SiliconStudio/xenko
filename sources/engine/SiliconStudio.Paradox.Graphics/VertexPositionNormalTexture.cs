@@ -28,7 +28,7 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Paradox.Graphics
 {
     /// <summary>
-    /// Describes a custom vertex format structure that contains position and color information. 
+    /// Describes a custom vertex format structure that contains position, normal and texture information.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct VertexPositionNormalTexture : IEquatable<VertexPositionNormalTexture>, IVertex

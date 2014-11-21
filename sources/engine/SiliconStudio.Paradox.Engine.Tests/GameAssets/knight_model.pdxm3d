@@ -1,5 +1,6 @@
 !Model
-Id: a7567f41-33f5-4253-8ddf-397f6cfacbb0
+Id: 10d4f06c-ee97-402d-bdb4-21ff1f69bacb
+SerializedVersion: 1
 BuildOrder: 500
 Tags: []
 Source: ../../../data/tests/knight/scenes/knight.fbx
@@ -201,6 +202,7 @@ MeshParameters:
     Location: --import--
     Asset: !Model
         Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: 1
         BuildOrder: 500
         Tags: []
         ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595

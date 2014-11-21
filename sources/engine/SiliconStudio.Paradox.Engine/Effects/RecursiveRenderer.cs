@@ -11,12 +11,9 @@ namespace SiliconStudio.Paradox.Effects
     /// </summary>
     public class RecursiveRenderer : Renderer
     {
-		protected RenderLayers ActiveLayersBackup;
-
         public RecursiveRenderer(IServiceRegistry services, RenderPipeline recursivePipeline) : base(services)
         {
             RecursivePipeline = recursivePipeline;
-            ActiveLayersBackup = RenderLayers.RenderLayerAll;
         }
 
         public RenderPipeline RecursivePipeline { get; set; }

@@ -121,9 +121,11 @@ namespace SiliconStudio.Assets
                     throw new InvalidOperationException(string.Format("Asset of type {0} was migrated, but still its new version {1} doesn't match expected version {2}.", assetType, serializedVersion, expectedVersion));
                 }
 
+                var preferredIndent = YamlSerializer.GetSerializerSettings().PreferredIndent;
+
                 // Save asset back to disk
                 using (var streamWriter = new StreamWriter(assetFullPath))
-                    yamlStream.Save(streamWriter, true);
+                    yamlStream.Save(streamWriter, true, preferredIndent);
 
                 return true;
             }

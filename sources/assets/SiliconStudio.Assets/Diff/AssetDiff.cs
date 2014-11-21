@@ -299,9 +299,13 @@ namespace SiliconStudio.Assets.Diff
                         // Iterate on items
                         while ((baseIndex >= 0 && baseItems.Count > 0) || (from1Index >= 0 && asset1Items.Count > 0) || (from2Index >= 0 && asset2Items.Count > 0))
                         {
+                            var baseItem = GetSafeFromList(baseItems, ref baseIndex, ref change.Base);
+                            var asset1Item = GetSafeFromList(asset1Items, ref from1Index, ref change.From1);
+                            var asset2Item = GetSafeFromList(asset2Items, ref from2Index, ref change.From2);
+
                             var diff3Node = tryResolveConflict ? 
-                                DiffNode(GetSafeFromList(baseItems, ref baseIndex), GetSafeFromList(asset1Items, ref from1Index), GetSafeFromList(asset2Items, ref from2Index)) : 
-                                new Diff3Node(GetSafeFromList(baseItems, ref baseIndex), GetSafeFromList(asset1Items, ref from1Index), GetSafeFromList(asset2Items, ref from2Index)) { ChangeType = Diff3ChangeType.Conflict };
+                                DiffNode(baseItem, asset1Item, asset2Item) :
+                                new Diff3Node(baseItem, asset1Item, asset2Item) { ChangeType = Diff3ChangeType.Conflict };
                             AddItem(diff3, diff3Node);
                         }
                         break;
@@ -321,10 +325,10 @@ namespace SiliconStudio.Assets.Diff
             }
         }
 
-        private static DataVisitNode GetSafeFromList(List<DataVisitNode> nodes, ref int index)
+        private static DataVisitNode GetSafeFromList(List<DataVisitNode> nodes, ref int index, ref Span span)
         {
             if (nodes == null || index < 0) return null;
-            if (index >= nodes.Count)
+            if (index >= nodes.Count || (span.IsValid && index > span.To))
             {
                 index = -1;
                 return null;

@@ -138,8 +138,7 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
                         graphicsDevice.SetRenderTarget(shadowMap.Texture.ShadowMapDepthBuffer);
 
                     // set layers
-                    ActiveLayersBackup = context.ActiveLayers;
-                    context.ActiveLayers = shadowMap.Layers;
+                    context.Parameters.Set(RenderingParameters.ActiveRenderLayer, shadowMap.Layers);
 
                     // Render each cascade
                     for (int i = 0; i < shadowMap.CascadeCount; ++i)
@@ -175,7 +174,7 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
                     }
 
                     // reset layers
-                    context.ActiveLayers = ActiveLayersBackup;
+                    context.Parameters.Reset(RenderingParameters.ActiveRenderLayer);
                 }
 
                 // Reset parameters

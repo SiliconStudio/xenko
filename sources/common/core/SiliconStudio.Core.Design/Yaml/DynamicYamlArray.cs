@@ -11,6 +11,14 @@ namespace SiliconStudio.Core.Yaml
     {
         internal YamlSequenceNode node;
 
+        public YamlSequenceNode Node
+        {
+            get
+            {
+                return node;
+            }
+        }
+
         public DynamicYamlArray(YamlSequenceNode node)
         {
             this.node = node;

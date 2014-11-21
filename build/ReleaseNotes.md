@@ -5,6 +5,7 @@ Release date: 2014/??/??
 #### New Features
 - Build: We now use OSS (OpenSource Signing) so that you can fake-sign assemblies with the same keys as ours, and use your own compiled Paradox with the official editor.
 - Graphics: Spot light shadow maps in deferred rendering.
+- Studio: Sprites belonging to same Sprite Group can now be packed together in a texture atlas (using MaxRects algorithm).
 
 #### Enhancements
 - Core: Add support for `ModuleInitializer` in nested types
@@ -16,7 +17,6 @@ Release date: 2014/??/??
 - Shaders: Add support for naming a child in a `pdxfx` to allow child override.
 - Shaders: `cs` files generated from `pfxfx` are now using internal and nested types instead of putting everything in the root namespace.
 - Shaders: Add support for declaring a namespace in a `pdxsl`, only valid and used for `ParameterKey` declarations.
-- Shaders
 - Studio: Added documentation on properties of the property grid.
 
 #### Issues fixed
@@ -32,6 +32,9 @@ Release date: 2014/??/??
 - Studio: Some buttons were sometimes hidden where they should be visible in the property grid.
 
 #### Breaking changes
+- Asset: CastShadows, ReceiveShadows and Layer members of `ModelAsset` class are removed. They should be set in the Parameters of the `ModelAsset` behind the corresponding keys.
+- Engine: Remove obsolete MeshDrawHelper file (use GeometricPrimitive instead), move ToMeshDraw method to GeometricPrimitiveExtensions.
+- Engine: Default value for ParameterKeys `LightingKeys.CastShadows` and `LightingKeys.ReceiveShadows` becomes false.
 - Engine: Remove obsolete `MeshDrawHelper` file (use `GeometricPrimitive` instead), move `ToMeshDraw` method to `GeometricPrimitiveExtensions`.
 - Engine: `ModelRenderer` is no longer inheritable but extensible via compositions.
 - Engine: `ModelRenderer.EnableFrustrumCulling` is replaced by the extension method `ModelRenderer.AddDefaultFrustrumCulling`

@@ -528,7 +528,6 @@ public:
 			auto meshData = gcnew MeshData();
 			meshData->NodeIndex = nodeMapping[(IntPtr)pMesh->GetNode()];
 			meshData->Draw = drawData;
-			meshData->Layer = RenderLayers::RenderLayer1;
 			if (!controlPointWeights.empty())
 			{
 				meshData->Skinning = gcnew MeshSkinningDefinition();
