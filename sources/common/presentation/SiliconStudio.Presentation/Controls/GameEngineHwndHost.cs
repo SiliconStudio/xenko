@@ -35,6 +35,12 @@ namespace SiliconStudio.Presentation.Controls
             return hwnd;
         }
 
+        protected override void DestroyWindowCore(HandleRef hwnd)
+        {
+            NativeHelper.SetParent(childHandle, IntPtr.Zero);
+            NativeHelper.DestroyWindow(hwnd.Handle);
+        }
+
         protected override void OnWindowPositionChanged(Rect rcBoundingBox)
         {
             if (previousBoundingBox != rcBoundingBox)
@@ -44,9 +50,9 @@ namespace SiliconStudio.Presentation.Controls
             }
         }
 
-        protected override void DestroyWindowCore(HandleRef hwnd)
+        protected override void OnKeyDown(System.Windows.Input.KeyEventArgs e)
         {
-            NativeHelper.SetParent(childHandle, IntPtr.Zero);
+            base.OnKeyDown(e);
         }
     }
 }

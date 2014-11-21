@@ -39,6 +39,9 @@ namespace SiliconStudio.Presentation.Extensions
         [DllImport("user32.dll")]
         public static extern bool GetMonitorInfo(IntPtr hmonitor,   [In, Out] MONITORINFO monitorInfo);
 
+        [DllImport("user32.dll", EntryPoint = "DestroyWindow", CharSet = CharSet.Unicode)]
+        public static extern bool DestroyWindow(IntPtr hwnd);
+
         #endregion Methods
 
         #region Structures
