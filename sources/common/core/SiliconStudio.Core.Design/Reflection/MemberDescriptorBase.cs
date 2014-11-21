@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace SiliconStudio.Core.Reflection
@@ -47,6 +48,7 @@ namespace SiliconStudio.Core.Reflection
         public abstract object Get(object thisObject);
         public abstract void Set(object thisObject, object value);
         public abstract bool HasSet { get; }
+        public abstract IEnumerable<T> GetCustomAttributes<T>(bool inherit) where T : Attribute;
         public DataStyle Style { get; internal set; }
 
         /// <summary>

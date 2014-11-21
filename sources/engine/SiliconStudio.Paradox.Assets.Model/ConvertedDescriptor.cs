@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Paradox.Assets.Model
@@ -29,6 +31,11 @@ namespace SiliconStudio.Paradox.Assets.Model
         public override void Set(object thisObject, object value)
         {
             throw new NotImplementedException();
+        }
+
+        public override IEnumerable<T> GetCustomAttributes<T>(bool inherit)
+        {
+            return Enumerable.Empty<T>();
         }
 
         public override bool HasSet
