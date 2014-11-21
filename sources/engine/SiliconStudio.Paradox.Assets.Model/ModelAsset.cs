@@ -184,8 +184,11 @@ namespace SiliconStudio.Paradox.Assets.Model
                     MoveToParameters(asset, parameters, keyValue.Key, "Layer", RenderingParameters.RenderLayer);
                 }
 
-                // Get the Model, and generate an Id
-                asset.Id = Guid.NewGuid().ToString().ToLowerInvariant();
+                // Get the Model, and generate an Id if the previous one wasn't the empty one
+                var emptyGuid = Guid.Empty.ToString().ToLowerInvariant();
+                var id = asset.Id;
+                if (id != null && id.Node.Value != emptyGuid)
+                    asset.Id = Guid.NewGuid().ToString().ToLowerInvariant();
 
                 // Bump asset version -- make sure it is stored right after Id
                 asset.SerializedVersion = AssetFormatVersion;
