@@ -48,19 +48,6 @@ namespace SiliconStudio.Paradox.Engine
         }
 
         /// <summary>
-        /// Create a new <see cref="CameraComponent"/> from a view and projection matrix.
-        /// </summary>
-        /// <param name="viewMatrix">The view matrix</param>
-        /// <param name="projectionMatrix">The projection matrix</param>
-        public CameraComponent(Matrix viewMatrix, Matrix projectionMatrix)
-        {
-            ViewMatrix = viewMatrix;
-            ProjectionMatrix = projectionMatrix;
-            UseViewMatrix = true;
-            UseProjectionMatrix = true;
-        }
-
-        /// <summary>
         /// Associates an entity with this camera component.
         /// </summary>
         /// <param name="name">The name of entity.</param>
@@ -243,10 +230,8 @@ namespace SiliconStudio.Paradox.Engine
                 }
                 else
                 {
-                    // TODO: Test this path
+                    // TODO: determine which axis of the camera to look from
                     var worldMatrix = EnsureEntity.Transformation.WorldMatrix;
-                    // Invert of WorldMatrix will make everything face X, but for camera we want to face Z, so turn around Y.
-                    worldMatrix = Matrix.RotationY((float) (Math.PI*0.5))*worldMatrix;
                     Matrix.Invert(ref worldMatrix, out viewMatrix);
                 }
             }

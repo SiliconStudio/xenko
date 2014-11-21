@@ -21,34 +21,19 @@ namespace SiliconStudio.Paradox.Graphics
         private Matrix userViewMatrix;
         private Matrix userProjectionMatrix;
 
-        private Vector3? userVirtualResolution;
+        private readonly Matrix defaultViewMatrix = Matrix.Identity;
+        private Matrix defaultProjectionMatrix;
+        
+        /// <summary>
+        /// Gets or sets the default depth value used by the <see cref="SpriteBatch"/> when the <see cref="VirtualResolution"/> is not set. 
+        /// </summary>
+        /// <remarks>More precisely, this value represents the length "farPlane-nearPlane" used by the default projection matrix.</remarks>
+        public float DefaultDepth { get; set; }
 
         /// <summary>
-        /// The default value of the depth used by the <see cref="SpriteBatch"/>. That is the value of (farPlane-nearPlane) used by the default projection matrix.
+        /// Gets or sets the virtual resolution used for this <see cref="SpriteBatch"/>
         /// </summary>
-        public const float DefaultDepth = 200f;
-
-        /// <summary>
-        /// Gets the sprite batch default projection matrix.
-        /// </summary>
-        /// <remarks>This matrix depends on the virtual resolution.</remarks>
-        public Matrix DefaultProjectionMatrix
-        {
-            get
-            {
-                var virtualResolution = VirtualResolution;
-                var xRatio = 1f / virtualResolution.X;
-                var yRatio = -1f / virtualResolution.Y;
-                var zRatio = -1f / virtualResolution.Z;
-                
-                return new Matrix { M11 = 2f * xRatio, M22 = 2f * yRatio, M33 = zRatio, M44 = 1f, M41 = -1f, M42 = 1f, M43 = 0.5f };
-            }
-        }
-
-        /// <summary>
-        /// Gets the sprite batch default view matrix.
-        /// </summary>
-        public Matrix DefaultViewMatrix { get; private set; }
+        public Vector3? VirtualResolution { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SpriteBatch" /> class.
@@ -59,25 +44,45 @@ namespace SiliconStudio.Paradox.Graphics
         public SpriteBatch(GraphicsDevice graphicsDevice, int bufferElementCount = 1024, int batchCapacity = 64)
             : base(graphicsDevice, Bytecode, StaticQuadBufferInfo.CreateQuadBufferInfo("SpriteBatch.VertexIndexBuffer", bufferElementCount, batchCapacity), VertexPositionColorTextureSwizzle.Layout)
         {
-            DefaultViewMatrix = Matrix.Identity;
+            DefaultDepth = 200f;
         }
 
         /// <summary>
-        /// Gets or sets the virtual resolution used for this <see cref="SpriteBatch"/>
+        /// Calculate the default projection matrix for the provided virtual resolution.
         /// </summary>
-        public Vector3 VirtualResolution
+        /// <returns>The default projection matrix for the provided virtual resolution</returns>
+        /// <remarks>The sprite batch default projection is an orthogonal matrix such as (0,0) is the Top/Left corner of the screen and 
+        /// (VirtualResolution.X, VirtualResolution.Y) is the Bottom/Right corner of the screen.</remarks>
+        public static Matrix CalculateDefaultProjection(Vector3 virtualResolution)
         {
-            get
-            {
-                if (userVirtualResolution.HasValue)
-                    return userVirtualResolution.Value;
+            Matrix matrix;
 
-                return new Vector3(GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height, DefaultDepth);
-            }
-            set
-            {
-                userVirtualResolution = value;
-            }
+            CalculateDefaultProjection(ref virtualResolution, out matrix);
+
+            return matrix;
+        }
+
+        /// <summary>
+        /// Calculate the default projection matrix for the provided virtual resolution.
+        /// </summary>
+        public static void CalculateDefaultProjection(ref Vector3 virtualResolution, out Matrix projection)
+        {
+            var xRatio = 1f / virtualResolution.X;
+            var yRatio = -1f / virtualResolution.Y;
+            var zRatio = -1f / virtualResolution.Z;
+
+            projection = new Matrix { M11 = 2f * xRatio, M22 = 2f * yRatio, M33 = zRatio, M44 = 1f, M41 = -1f, M42 = 1f, M43 = 0.5f };
+        }
+
+        private Vector3 GetCurrentResolution()
+        {
+            return VirtualResolution.HasValue ? VirtualResolution.Value: new Vector3(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, DefaultDepth);
+        }
+
+        private void UpdateDefaultProjectionMatrix()
+        {
+            var resolution = GetCurrentResolution();
+            CalculateDefaultProjection(ref resolution, out defaultProjectionMatrix);
         }
 
         /// <summary>
@@ -87,7 +92,8 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="effect">The effect to use for the batch session</param>
         public void Begin(SpriteSortMode sortMode, Effect effect)
         {
-            Begin(DefaultViewMatrix, DefaultProjectionMatrix, sortMode, null, null, null, null, effect);
+            UpdateDefaultProjectionMatrix();
+            Begin(defaultViewMatrix, defaultProjectionMatrix, sortMode, null, null, null, null, effect);
         }
 
         /// <summary>
@@ -102,7 +108,8 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="stencilValue">The value of the stencil buffer to take as reference for the batch session</param>
         public void Begin(SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, RasterizerState rasterizerState = null, Effect effect = null, int stencilValue = 0)
         {
-            Begin(DefaultViewMatrix, DefaultProjectionMatrix, sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect, stencilValue);
+            UpdateDefaultProjectionMatrix();
+            Begin(defaultViewMatrix, defaultProjectionMatrix, sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect, stencilValue);
         }
 
         /// <summary>
@@ -118,7 +125,8 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="viewMatrix">The view matrix to use for the batch session</param>
         public void Begin(Matrix viewMatrix, SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, RasterizerState rasterizerState = null, Effect effect = null, int stencilValue = 0)
         {
-            Begin(viewMatrix, DefaultProjectionMatrix, sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect, stencilValue);
+            UpdateDefaultProjectionMatrix();
+            Begin(viewMatrix, defaultProjectionMatrix, sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect, stencilValue);
         }
 
         /// <summary>
@@ -319,7 +327,7 @@ namespace SiliconStudio.Paradox.Graphics
                 return Vector2.Zero;
 
             // calculate the size of the text that will be used to draw
-            var virtualResolution = VirtualResolution;
+            var virtualResolution = VirtualResolution.HasValue? VirtualResolution.Value: new Vector3(targetSize, DefaultDepth);
             var ratio = new Vector2(targetSize.X / virtualResolution.X, targetSize.Y / virtualResolution.Y);
 
             var realSize = spriteFont.MeasureString(text, fontSize * ratio);
@@ -472,7 +480,7 @@ namespace SiliconStudio.Paradox.Graphics
 
             // calculate the resolution ratio between the screen real size and the virtual resolution
             var viewportSize = GraphicsDevice.Viewport;
-            var virtualResolution = VirtualResolution;
+            var virtualResolution = GetCurrentResolution();
             var resolutionRatio = new Vector2(viewportSize.Width / virtualResolution.X, viewportSize.Height / virtualResolution.Y);
             scale.X = scale.X / resolutionRatio.X;
             scale.Y = scale.Y / resolutionRatio.Y;

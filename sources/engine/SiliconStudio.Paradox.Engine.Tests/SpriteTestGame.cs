@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
         private SpriteComponent spriteComponent;
 
-        private Vector3 areaSize;
+        private Vector2 areaSize;
 
         private TransformationComponent transfoComponent;
 
@@ -51,11 +51,11 @@ namespace SiliconStudio.Paradox.Engine.Tests
             await base.LoadContent();
             
             // sets the virtual resolution
-            areaSize = new Vector3(GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height, SpriteBatch.DefaultDepth);
+            areaSize = new Vector2(GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height);
             VirtualResolution = new Vector3(areaSize.X, areaSize.Y, 1000);
 
             // Creates the camera
-            var cameraComponent = new CameraComponent(Matrix.Identity, Matrix.OrthoOffCenterRH(0, areaSize.X, areaSize.Y, 0, -areaSize.Z/2, areaSize.Z/2));
+            var cameraComponent = new CameraComponent { UseProjectionMatrix = true, ProjectionMatrix = SpriteBatch.CalculateDefaultProjection(new Vector3(areaSize, 200))};
             var camera = new Entity("Camera") { cameraComponent };
 
             // Create Main pass
@@ -133,9 +133,9 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
         private void UpdateBall(float totalSeconds)
         {
-            const float rotationSpeed = (float)Math.PI / 2;
+            const float RotationSpeed = (float)Math.PI / 2;
 
-            var deltaRotation = rotationSpeed * totalSeconds;
+            var deltaRotation = RotationSpeed * totalSeconds;
 
             transfoComponent.RotationEulerXYZ = new Vector3(0,0, transfoComponent.RotationEulerXYZ.Z + deltaRotation);
 
