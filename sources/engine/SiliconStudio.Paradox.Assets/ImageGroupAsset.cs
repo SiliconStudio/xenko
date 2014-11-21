@@ -67,6 +67,58 @@ namespace SiliconStudio.Paradox.Assets
         [DefaultValue(true)]
         public bool PremultiplyAlpha { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to generate texture atlas
+        /// </summary>
+        [DataMember(1000)]
+        [DefaultValue(true)]
+        public bool AtlasPackingEnabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets MaxRects rectangles placement algorithm
+        /// </summary>
+        [DataMember(1010)]
+        [DefaultValue(TexturePackingMethod.Best)]
+        public TexturePackingMethod AtlasPackingAlgorithm { get; set; }
+
+        /// <summary>
+        /// Gets or sets the use of Multipack atlas mode which allows more than one texture atlas to fit all given textures
+        /// </summary>
+        [DataMember(1020)]
+        [DefaultValue(true)]
+        public bool AtlasUseMultipack { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether or not to use Rotation for images inside atlas texture
+        /// </summary>
+        [DataMember(1030)]
+        [DefaultValue(true)]
+        public bool AtlasUseRotation { get; set; }
+
+        /// <summary>
+        /// Gets or sets max width for generated atlas textures
+        /// </summary>
+        [DataMember(1040)]
+        [DefaultValue(2048)]
+        public int AtlasMaxWidth { get; set; }
+
+        /// <summary>
+        /// Gets or sets max height for generated atlas textures
+        /// </summary>
+        [DataMember(1050)]
+        [DefaultValue(2048)]
+        public int AtlasMaxHeight { get; set; }
+
+        /// <summary>
+        /// Gets or sets atlas border size for images inside atlas texture
+        /// </summary>
+        [DataMember(1060)]
+        [DefaultValue(0)]
+        public int AtlasBorderSize { get; set; }
+
+        /// <summary>
+        /// Sets default values for fields
+        /// </summary>
         public override void SetDefaults()
         {
             Format = TextureFormat.Compressed;
@@ -75,11 +127,39 @@ namespace SiliconStudio.Paradox.Assets
             ColorKeyEnabled = false;
             GenerateMipmaps = false;
             PremultiplyAlpha = true;
+
+            AtlasPackingEnabled = true;
+            AtlasPackingAlgorithm = TexturePackingMethod.Best;
+            AtlasUseMultipack = true;
+
+            AtlasUseRotation = true;
+
+            AtlasMaxWidth = 2048;
+            AtlasMaxHeight = 2048;
+
+            AtlasBorderSize = 0;
         }
 
+        /// <summary>
+        /// Retrieves Url for a texture given absolute path and sprite index
+        /// </summary>
+        /// <param name="textureAbsolutePath">Absolute Url of a texture</param>
+        /// <param name="spriteIndex">Sprite index</param>
+        /// <returns></returns>
         public static string BuildTextureUrl(UFile textureAbsolutePath, int spriteIndex)
         {
             return textureAbsolutePath + "__IMAGE_TEXTURE__" + spriteIndex;
+        }
+
+        /// <summary>
+        /// Retrieves Url for an atlas texture given absolute path and atlas index
+        /// </summary>
+        /// <param name="textureAbsolutePath">Absolute Url of an atlas texture</param>
+        /// <param name="atlasIndex">Atlas index</param>
+        /// <returns></returns>
+        public static string BuildTextureAtlasUrl(UFile textureAbsolutePath, int atlasIndex)
+        {
+            return textureAbsolutePath + "__ATLAS_TEXTURE__" + atlasIndex;
         }
     }
 
@@ -100,6 +180,9 @@ namespace SiliconStudio.Paradox.Assets
         [DataMember(10)]
         public List<TImage> Images { get; set; }
         
+        /// <summary>
+        /// Sets default value of ImageGroupAsset
+        /// </summary>
         public override void SetDefaults()
         {
             base.SetDefaults();

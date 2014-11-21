@@ -206,7 +206,11 @@
     <Compile Include="Sprite\SpriteInfo.cs" />
     <Compile Include="Sprite\SpriteGroupAsset.cs" />
     <Compile Include="Sprite\SpriteGroupCompiler.cs" />
+    <Compile Include="Texture\MaxRectanglesBinPack.cs" />
+    <Compile Include="Texture\MaxRectanglesBinPack.RotatableRectangle.cs" />
     <Compile Include="Texture\TextureCommandHelper.cs" />
+    <Compile Include="Texture\TexturePacker.cs" />
+    <Compile Include="Texture\TexturePacker.Factory.cs" />
     <Compile Include="Texture\TextureQuality.cs" />
     <Compile Include="Serializers\GenericDictionarySerializer.cs" />
     <Compile Include="Serializers\ParameterKeySerializer.cs" />
