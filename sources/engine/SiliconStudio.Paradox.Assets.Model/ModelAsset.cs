@@ -170,12 +170,10 @@ namespace SiliconStudio.Paradox.Assets.Model
                 Nodes.Clear();
         }
 
-        class Upgrader : IAssetUpgrader
+        class Upgrader : AssetUpgraderBase
         {
-            public void Upgrade(ILogger log, YamlMappingNode yamlAssetNode)
+            protected override void UpgradeAsset(ILogger log, dynamic asset)
             {
-                dynamic asset = new DynamicYamlMapping(yamlAssetNode);
-
                 foreach (var keyValue in asset.MeshParameters)
                 {
                     var parameters = asset.MeshParameters[keyValue.Key].Parameters["~Items"];
@@ -188,8 +186,6 @@ namespace SiliconStudio.Paradox.Assets.Model
 
                 // Get the Model, and generate an Id
                 asset.Id = Guid.NewGuid().ToString().ToLowerInvariant();
-
-                asset["~Base"] = DynamicYamlEmpty.Default;
 
                 // Bump asset version -- make sure it is stored right after Id
                 asset.SerializedVersion = AssetFormatVersion;
