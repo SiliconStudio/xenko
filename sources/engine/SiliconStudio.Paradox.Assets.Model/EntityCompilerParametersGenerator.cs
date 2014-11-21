@@ -8,6 +8,7 @@ using System.Linq;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Paradox.Assets.Model;
@@ -21,6 +22,12 @@ namespace SiliconStudio.Paradox.Assets.Effect.Generators
 {
     class EntityCompilerParametersGenerator : CompilerParameterGeneratorBase
     {
+        private static ParameterKey[] shadowKeys =
+        {
+            LightingKeys.CastShadows,
+            LightingKeys.ReceiveShadows
+        };
+
         public struct EntityParameters
         {
             public ParameterCollectionData MaterialParameters;
@@ -169,30 +176,41 @@ namespace SiliconStudio.Paradox.Assets.Effect.Generators
         /// <returns>The lighting configurations.</returns>
         private List<ParameterCollectionData> GetLightingParameters(MeshData meshData)
         {
-            if (meshData != null)
+            if (meshData != null && meshData.Parameters != null && meshData.Parameters.ContainsKey(LightingKeys.LightingConfigurations))
             {
-                if (meshData.Lighting != null)
+                var lightingDescContent = meshData.Parameters[LightingKeys.LightingConfigurations];
+                if (lightingDescContent != null && lightingDescContent is ContentReference<LightingConfigurationsSetData>)
                 {
-                    var lightingDesc = meshData.Lighting.Value;
+                    var lightingDesc = ((ContentReference<LightingConfigurationsSetData>)lightingDescContent).Value;
                     if (lightingDesc != null)
                     {
                         var collection = new List<ParameterCollectionData>();
                         foreach (var config in lightingDesc.Configs)
                         {
                             var parameters = config.GetCollection();
-                            parameters.Set(LightingKeys.CastShadows, meshData.CastShadows);
-                            parameters.Set(LightingKeys.ReceiveShadows, meshData.ReceiveShadows);
+                            SetShadowCasterReceiverConfiguration(meshData.Parameters, parameters, shadowKeys);
                             collection.Add(parameters);
                         }
                         return collection;
                     }
                 }
                 var defaultParameters = new ParameterCollectionData();
-                defaultParameters.Set(LightingKeys.CastShadows, meshData.CastShadows);
-                defaultParameters.Set(LightingKeys.ReceiveShadows, meshData.ReceiveShadows);
+                SetShadowCasterReceiverConfiguration(meshData.Parameters, defaultParameters, shadowKeys);
                 return new List<ParameterCollectionData> { defaultParameters };
             }
             return null;
+        }
+
+        private static void SetShadowCasterReceiverConfiguration(ParameterCollectionData sourceParameters, ParameterCollectionData targetParameters, params ParameterKey[] keys)
+        {
+            if (sourceParameters != null)
+            {
+                foreach (var key in keys)
+                {
+                    if (sourceParameters.ContainsKey(key))
+                        targetParameters.Set(key, sourceParameters[key]);
+                }
+            }
         }
 
         [ModuleInitializer]

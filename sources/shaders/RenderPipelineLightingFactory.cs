@@ -247,7 +247,7 @@ namespace SiliconStudio.Paradox.Effects.Modules
         private static ShadowMapRenderer AddShadowMap(IServiceRegistry serviceRegistry, RenderPipeline pipeline, string effectName)
         {
             var shadowMapPipeline = new RenderPipeline("ShadowMap");
-            shadowMapPipeline.Renderers.Add(new ModelRenderer(serviceRegistry, effectName + ".ShadowMapCaster").AddShadowCasterFilter());
+            shadowMapPipeline.Renderers.Add(new ModelRenderer(serviceRegistry, effectName + ".ShadowMapCaster").AddContextActiveLayerFilter().AddShadowCasterFilter());
 
             var shadowMapRenderer = new ShadowMapRenderer(serviceRegistry, shadowMapPipeline);
             pipeline.Renderers.Add(shadowMapRenderer);

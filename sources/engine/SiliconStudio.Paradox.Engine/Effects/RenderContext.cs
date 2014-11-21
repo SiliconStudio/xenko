@@ -18,7 +18,6 @@ namespace SiliconStudio.Paradox.Effects
         {
             this.graphicsDevice = graphicsDevice;
             parameters = new ParameterCollection("Thread Context parameters");
-            ActiveLayers = RenderLayers.RenderLayerAll;
         }
 
         /// <summary>
@@ -50,10 +49,5 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         /// <value>The current pass.</value>
         public RenderPass CurrentPass { get; set; }
-
-        /// <summary>
-        /// Gets the list of active layers
-        /// </summary>
-        public RenderLayers ActiveLayers { get; set; }
     }
 }

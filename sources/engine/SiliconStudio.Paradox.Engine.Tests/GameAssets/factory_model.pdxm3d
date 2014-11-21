@@ -1,5 +1,6 @@
 !Model
-Id: c51564a5-2840-4bcd-9f4f-4a505cf3913d
+Id: 4a8c60c7-e044-4ac8-991c-66632a3c6ff9
+SerializedVersion: 1
 BuildOrder: 500
 Tags: []
 Source: ../../../data/tests/Factory/factory.fbx
@@ -29,6 +30,7 @@ MeshParameters:
     Location: --import--
     Asset: !Model
         Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: 1
         BuildOrder: 500
         Tags: []
         Nodes:

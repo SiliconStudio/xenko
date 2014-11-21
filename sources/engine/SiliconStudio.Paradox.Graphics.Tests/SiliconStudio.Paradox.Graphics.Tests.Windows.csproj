@@ -49,7 +49,7 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SiliconStudio.Paradox.Graphics.Tests.TestCubemapDeferred</StartupObject>
+    <StartupObject>SiliconStudio.Paradox.Graphics.Tests.TestMultipleRenderTargets</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
