@@ -1,6 +1,5 @@
 !Model
-Id: bd42cdcd-e1fe-4567-bb4e-1e32a5ad84f4
-SerializedVersion: 1
+Id: 5e417f79-0561-42a6-bd6c-248665a3e4f8
 BuildOrder: 500
 Tags: []
 Source: ../../../../data/tests/Cube/cube.fbx
@@ -17,3 +16,20 @@ MeshParameters:
         Parameters:
             Capacity: 0
             ~Items: {}
+~Base:
+    Location: --import--
+    Asset: !Model
+        Id: 00000000-0000-0000-0000-000000000000
+        BuildOrder: 500
+        Tags: []
+        Nodes:
+            - {Name: RootNode, Depth: 0, Preserve: false}
+            - {Name: pCube1, Depth: 1, Preserve: false}
+        UpAxis: {X: 0, Y: 1, Z: 0}
+        MeshParameters:
+            pCube1:
+                NodeName: pCube1
+                Material: e93f11c9-a37b-4fd0-8823-451eb858bddb:cube_material_lambert1
+                Parameters:
+                    Capacity: 0
+                    ~Items: {}

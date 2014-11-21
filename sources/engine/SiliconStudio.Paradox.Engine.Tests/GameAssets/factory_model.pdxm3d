@@ -1,6 +1,5 @@
 !Model
-Id: 9b2bbc94-2812-407e-a1a7-a7c5a953cd3c
-SerializedVersion: 1
+Id: c51564a5-2840-4bcd-9f4f-4a505cf3913d
 BuildOrder: 500
 Tags: []
 Source: ../../../data/tests/Factory/factory.fbx
@@ -26,3 +25,29 @@ MeshParameters:
         Parameters:
             Capacity: 0
             ~Items: {}
+~Base:
+    Location: --import--
+    Asset: !Model
+        Id: 00000000-0000-0000-0000-000000000000
+        BuildOrder: 500
+        Tags: []
+        Nodes:
+            - {Name: RootNode, Depth: 0, Preserve: false}
+            - {Name: Plane01, Depth: 1, Preserve: false}
+            - {Name: group1, Depth: 1, Preserve: false}
+            - {Name: Factory_02, Depth: 2, Preserve: false}
+        UpAxis: {X: 0, Y: 1, Z: 0}
+        FrontAxis: {X: 0, Y: 0, Z: 1}
+        MeshParameters:
+            Factory_02:
+                NodeName: Factory_02
+                Material: 75c5a93f-771f-4a51-be6f-5a9e978bc665:factory_material_blinn1
+                Parameters:
+                    Capacity: 0
+                    ~Items: {}
+            Plane01:
+                NodeName: Plane01
+                Material: 675d4776-cee2-4759-a791-248c470eb3b5:factory_material_blinn2
+                Parameters:
+                    Capacity: 0
+                    ~Items: {}

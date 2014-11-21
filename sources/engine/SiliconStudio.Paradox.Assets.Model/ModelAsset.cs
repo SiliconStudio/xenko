@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.Assets.Model
     [AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
     public sealed class ModelAsset : AssetImportTracked
     {
-        public const int AssetFormatVersion = 1;
+        public const int AssetFormatVersion = 0;
 
         /// <summary>
         /// The default file extension used by the <see cref="ModelAsset"/>.
