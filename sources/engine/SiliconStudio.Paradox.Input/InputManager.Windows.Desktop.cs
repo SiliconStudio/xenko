@@ -19,6 +19,8 @@ namespace SiliconStudio.Paradox.Input
         private Control uiControl;
         private Stopwatch pointerClock;
 
+        public static bool UseRawInput = true;
+
         public InputManager(IServiceRegistry registry) : base(registry)
         {
             HasKeyboard = true;
@@ -62,8 +64,16 @@ namespace SiliconStudio.Paradox.Input
 
             pointerClock.Restart();
 
-            BindRawInputKeyboard(uiControl);
-
+            if (UseRawInput)
+            {
+                BindRawInputKeyboard(uiControl);
+            }
+            else
+            {
+                EnsureMapKeys();
+                uiControl.KeyDown += (_, e) => OnKeyEvent(e.KeyCode, false);
+                uiControl.KeyUp += (_, e) => OnKeyEvent(e.KeyCode, true);
+            }
             uiControl.MouseEnter += (_, e) => uiControl.Focus();
             uiControl.MouseMove += (_, e) => OnMouseMoveEvent(new Vector2(e.X, e.Y));
             uiControl.MouseDown += (_, e) => OnMouseInputEvent(new Vector2(e.X, e.Y), ConvertMouseButton(e.Button), InputEventType.Down);
@@ -74,6 +84,19 @@ namespace SiliconStudio.Paradox.Input
 
             ControlWidth = uiControl.ClientSize.Width;
             ControlHeight = uiControl.ClientSize.Height;
+        }
+
+        private void OnKeyEvent(System.Windows.Forms.Keys keyCode, bool isKeyUp)
+        {
+            Keys key;
+            if (mapKeys.TryGetValue(keyCode, out key) && key != Keys.None)
+            {
+                var type = isKeyUp ? InputEventType.Up : InputEventType.Down;
+                lock (KeyboardInputEvents)
+                {
+                    KeyboardInputEvents.Add(new KeyboardInputEvent { Key = key, Type = type });
+                }
+            }
         }
 
         private void InitializeFromWindowsWpf(GameContext uiContext)
@@ -107,6 +130,7 @@ namespace SiliconStudio.Paradox.Input
             ControlHeight = (float)e.NewSize.Height;
         }
         
+
         private void OnMouseInputEvent(Vector2 pixelPosition, MouseButton button, InputEventType type, float value = 0)
         {
             // The mouse wheel event are still received even when the mouse cursor is out of the control boundaries. Discard the event in this case.
