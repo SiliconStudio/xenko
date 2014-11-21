@@ -106,7 +106,7 @@ namespace SiliconStudio.Paradox.Effects
             vertexArrayObject = VertexArrayObject.New(device, Effect.InputSignature, Mesh.Draw.IndexBuffer, Mesh.Draw.VertexBuffers);
         }
 
-        protected internal override void FillParameterCollections(IList<ParameterCollection> parameterCollections)
+        public override void FillParameterCollections(IList<ParameterCollection> parameterCollections)
         {
             if (Mesh.Material != null)
             {

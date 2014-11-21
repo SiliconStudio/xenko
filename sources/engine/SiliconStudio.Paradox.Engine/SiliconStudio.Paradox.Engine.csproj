@@ -206,16 +206,6 @@
     <Compile Include="Particles\ParticleField.cs" />
     <Compile Include="Particles\ParticleFieldAccessor.cs" />
     <Compile Include="Particles\ParticleFieldDescription.cs" />
-    <Compile Include="PostEffects\PostEffectBase.cs" />
-    <Compile Include="PostEffects\PostEffectBaseExtensions.cs" />
-    <Compile Include="PostEffects\PostEffectContext.cs" />
-    <Compile Include="PostEffects\PostEffectShader.cs" />
-    <Compile Include="PostEffects\Shaders\PostEffectShader.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>PostEffectShader.pdxsl</DependentUpon>
-    </Compile>
     <Compile Include="ScriptSystem.cs" />
     <Compile Include="Particles\IParticlePlugin.cs" />
     <Compile Include="Particles\IParticlePluginListener.cs" />
@@ -314,10 +304,6 @@
       <LastGenOutput>RenderingParameters.cs</LastGenOutput>
     </None>
     <Compile Include="OpenGL\ParadoxApplicationDelegate.iOS.cs" />
-    <None Include="PostEffects\Shaders\PostEffectShader.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>PostEffectShader.cs</LastGenOutput>
-    </None>
     <None Include="Shaders\Camera.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>Camera.cs</LastGenOutput>
