@@ -7,12 +7,12 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.PostEffects
+namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
     /// Post effect base class.
     /// </summary>
-    public abstract class PostEffectBase : ComponentBase
+    public abstract class ImageEffectBase : ComponentBase
     {
         private readonly Texture[] inputTextures;
         private int maxInputTextureIndex;
@@ -24,12 +24,12 @@ namespace SiliconStudio.Paradox.PostEffects
         private RenderTarget[] outputRenderTargetViews;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PostEffectBase" /> class.
+        /// Initializes a new instance of the <see cref="ImageEffectBase" /> class.
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="name">The name.</param>
         /// <exception cref="System.ArgumentNullException">context</exception>
-        protected PostEffectBase(PostEffectContext context, string name = null) : base(name)
+        protected ImageEffectBase(ImageEffectContext context, string name = null) : base(name)
         {
             if (context == null) throw new ArgumentNullException("context");
 
@@ -52,7 +52,7 @@ namespace SiliconStudio.Paradox.PostEffects
         /// Gets the context.
         /// </summary>
         /// <value>The context.</value>
-        public PostEffectContext Context { get; private set; }
+        public ImageEffectContext Context { get; private set; }
 
         /// <summary>
         /// Gets the <see cref="AssetManager"/>.
