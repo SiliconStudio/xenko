@@ -104,9 +104,6 @@ namespace SiliconStudio.BuildEngine
             // Process input and outputs
             await CompleteCommands(executeContext, new List<BuildStep> { completeBuildStep.Result });
 
-            // Merge outputs with index file
-            IndexFileCommand.MergeOutputObjects(outputObjects);
-
             // Remove from list of build step to wait
             buildStepsToWait.Remove(completeBuildStep.Result);
         }
