@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -17,13 +18,22 @@ namespace SiliconStudio.Paradox.Graphics
         private static Vector2 vector2Zero = Vector2.Zero;
         private static RectangleF? nullRectangle;
         
-        private SpriteTransformMode spriteTransformMode;
+        private Matrix userViewMatrix;
+        private Matrix userProjectionMatrix;
 
-        private float projectionMatrix33 = -0.005f;
+        private readonly Matrix defaultViewMatrix = Matrix.Identity;
+        private Matrix defaultProjectionMatrix;
+        
+        /// <summary>
+        /// Gets or sets the default depth value used by the <see cref="SpriteBatch"/> when the <see cref="VirtualResolution"/> is not set. 
+        /// </summary>
+        /// <remarks>More precisely, this value represents the length "farPlane-nearPlane" used by the default projection matrix.</remarks>
+        public float DefaultDepth { get; set; }
 
-        private Matrix transformMatrix;
-
-        private Vector3? userVirtualResolution;
+        /// <summary>
+        /// Gets or sets the virtual resolution used for this <see cref="SpriteBatch"/>
+        /// </summary>
+        public Vector3? VirtualResolution { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SpriteBatch" /> class.
@@ -34,68 +44,109 @@ namespace SiliconStudio.Paradox.Graphics
         public SpriteBatch(GraphicsDevice graphicsDevice, int bufferElementCount = 1024, int batchCapacity = 64)
             : base(graphicsDevice, Bytecode, StaticQuadBufferInfo.CreateQuadBufferInfo("SpriteBatch.VertexIndexBuffer", bufferElementCount, batchCapacity), VertexPositionColorTextureSwizzle.Layout)
         {
+            DefaultDepth = 200f;
         }
 
         /// <summary>
-        /// Gets or sets the virtual resolution used for this <see cref="SpriteBatch"/>
+        /// Calculate the default projection matrix for the provided virtual resolution.
         /// </summary>
-        public Vector3 VirtualResolution
+        /// <returns>The default projection matrix for the provided virtual resolution</returns>
+        /// <remarks>The sprite batch default projection is an orthogonal matrix such as (0,0) is the Top/Left corner of the screen and 
+        /// (VirtualResolution.X, VirtualResolution.Y) is the Bottom/Right corner of the screen.</remarks>
+        public static Matrix CalculateDefaultProjection(Vector3 virtualResolution)
         {
-            get
-            {
-                if (userVirtualResolution.HasValue)
-                    return userVirtualResolution.Value;
+            Matrix matrix;
 
-                return new Vector3(GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height, -(0.5f / projectionMatrix33));
-            }
-            set
-            {
-                userVirtualResolution = value;
+            CalculateDefaultProjection(ref virtualResolution, out matrix);
 
-                projectionMatrix33 = -(0.5f / value.Z);
-            }
+            return matrix;
+        }
+
+        /// <summary>
+        /// Calculate the default projection matrix for the provided virtual resolution.
+        /// </summary>
+        public static void CalculateDefaultProjection(ref Vector3 virtualResolution, out Matrix projection)
+        {
+            var xRatio = 1f / virtualResolution.X;
+            var yRatio = -1f / virtualResolution.Y;
+            var zRatio = -1f / virtualResolution.Z;
+
+            projection = new Matrix { M11 = 2f * xRatio, M22 = 2f * yRatio, M33 = zRatio, M44 = 1f, M41 = -1f, M42 = 1f, M43 = 0.5f };
+        }
+
+        private Vector3 GetCurrentResolution()
+        {
+            return VirtualResolution.HasValue ? VirtualResolution.Value: new Vector3(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, DefaultDepth);
+        }
+
+        private void UpdateDefaultProjectionMatrix()
+        {
+            var resolution = GetCurrentResolution();
+            CalculateDefaultProjection(ref resolution, out defaultProjectionMatrix);
         }
 
         /// <summary>
         /// Begins a sprite batch operation using deferred sort and default state objects (BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise).
         /// </summary>
-        public void Begin(SpriteSortMode spritemode = SpriteSortMode.Deferred, Effect effect = null)
+        /// <param name="sortMode">The sprite drawing order to use for the batch session</param>
+        /// <param name="effect">The effect to use for the batch session</param>
+        public void Begin(SpriteSortMode sortMode, Effect effect)
         {
-            Begin(spritemode, null, null, null, null, effect, Matrix.Identity);
+            UpdateDefaultProjectionMatrix();
+            Begin(defaultViewMatrix, defaultProjectionMatrix, sortMode, null, null, null, null, effect);
         }
 
         /// <summary>
         /// Begins a sprite batch rendering using the specified sorting mode and blend state, sampler, depth stencil and rasterizer state objects, plus a custom effect. Passing null for any of the state objects selects the default default state objects (BlendState.AlphaBlend, DepthStencilState.None, RasterizerState.CullCounterClockwise, SamplerState.LinearClamp). Passing a null effect selects the default SpriteBatch Class shader.
         /// </summary>
-        /// <param name="sortMode">Sprite drawing order.</param>
-        /// <param name="blendState">Blending options.</param>
-        /// <param name="samplerState">Texture sampling options.</param>
-        /// <param name="depthStencilState">Depth and stencil options.</param>
-        /// <param name="rasterizerState">Rasterization options.</param>
-        /// <param name="effect">Effect state options.</param>
-        public void Begin(SpriteSortMode sortMode, BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, RasterizerState rasterizerState = null, Effect effect = null)
+        /// <param name="sortMode">The sprite drawing order to use for the batch session</param>
+        /// <param name="effect">The effect to use for the batch session</param>
+        /// <param name="blendState">The blending state to use for the batch session</param>
+        /// <param name="samplerState">The sampling state to use for the batch session</param>
+        /// <param name="depthStencilState">The depth stencil state to use for the batch session</param>
+        /// <param name="rasterizerState">The rasterizer state to use for the batch session</param>
+        /// <param name="stencilValue">The value of the stencil buffer to take as reference for the batch session</param>
+        public void Begin(SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, RasterizerState rasterizerState = null, Effect effect = null, int stencilValue = 0)
         {
-            Begin(sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect, Matrix.Identity);
+            UpdateDefaultProjectionMatrix();
+            Begin(defaultViewMatrix, defaultProjectionMatrix, sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect, stencilValue);
         }
 
         /// <summary>
         /// Begins a sprite batch rendering using the specified sorting mode and blend state, sampler, depth stencil, rasterizer state objects, plus a custom effect and a 2D transformation matrix. Passing null for any of the state objects selects the default default state objects (BlendState.AlphaBlend, DepthStencilState.None, RasterizerState.CullCounterClockwise, SamplerState.LinearClamp). Passing a null effect selects the default SpriteBatch Class shader. 
         /// </summary>
-        /// <param name="sortMode">Sprite drawing order.</param>
-        /// <param name="blendState">Blending options.</param>
-        /// <param name="samplerState">Texture sampling options.</param>
-        /// <param name="depthStencilState">Depth and stencil options.</param>
-        /// <param name="rasterizerState">Rasterization options.</param>
-        /// <param name="effect">Effect state options.</param>
-        /// <param name="transformationMatrix">Transformation matrix for scale, rotate, translate options.</param>
-        /// <param name="transformMode">The transformation mode indicating how the transformation matrix should be used</param>
-        /// <param name="stencilValue">The value of the stencil buffer to take as reference</param>
-        public void Begin(SpriteSortMode sortMode, BlendState blendState, SamplerState samplerState, DepthStencilState depthStencilState, RasterizerState rasterizerState, Effect effect, Matrix transformationMatrix, SpriteTransformMode transformMode = SpriteTransformMode.WorldTransform, int stencilValue = 0)
+        /// <param name="sortMode">The sprite drawing order to use for the batch session</param>
+        /// <param name="effect">The effect to use for the batch session</param>
+        /// <param name="blendState">The blending state to use for the batch session</param>
+        /// <param name="samplerState">The sampling state to use for the batch session</param>
+        /// <param name="depthStencilState">The depth stencil state to use for the batch session</param>
+        /// <param name="rasterizerState">The rasterizer state to use for the batch session</param>
+        /// <param name="stencilValue">The value of the stencil buffer to take as reference for the batch session</param>
+        /// <param name="viewMatrix">The view matrix to use for the batch session</param>
+        public void Begin(Matrix viewMatrix, SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, RasterizerState rasterizerState = null, Effect effect = null, int stencilValue = 0)
+        {
+            UpdateDefaultProjectionMatrix();
+            Begin(viewMatrix, defaultProjectionMatrix, sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect, stencilValue);
+        }
+
+        /// <summary>
+        /// Begins a sprite batch rendering using the specified sorting mode and blend state, sampler, depth stencil, rasterizer state objects, plus a custom effect and a 2D transformation matrix. Passing null for any of the state objects selects the default default state objects (BlendState.AlphaBlend, DepthStencilState.None, RasterizerState.CullCounterClockwise, SamplerState.LinearClamp). Passing a null effect selects the default SpriteBatch Class shader. 
+        /// </summary>
+        /// <param name="sortMode">The sprite drawing order to use for the batch session</param>
+        /// <param name="effect">The effect to use for the batch session</param>
+        /// <param name="blendState">The blending state to use for the batch session</param>
+        /// <param name="samplerState">The sampling state to use for the batch session</param>
+        /// <param name="depthStencilState">The depth stencil state to use for the batch session</param>
+        /// <param name="rasterizerState">The rasterizer state to use for the batch session</param>
+        /// <param name="stencilValue">The value of the stencil buffer to take as reference for the batch session</param>
+        /// <param name="viewMatrix">The view matrix to use for the batch session</param>
+        /// <param name="projectionMatrix">The projection matrix to use for the batch session</param>
+        public void Begin(Matrix viewMatrix, Matrix projectionMatrix, SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, RasterizerState rasterizerState = null, Effect effect = null, int stencilValue = 0)
         {
             CheckEndHasBeenCalled("begin");
 
-            transformMatrix = transformationMatrix;
-            spriteTransformMode = transformMode;
+            userViewMatrix = viewMatrix;
+            userProjectionMatrix = projectionMatrix;
 
             Begin(effect, sortMode, blendState, samplerState, depthStencilState, rasterizerState, stencilValue);
         }
@@ -249,13 +300,14 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         /// <param name="spriteFont">The font used to draw the text.</param>
         /// <param name="text">The text to measure.</param>
+        /// <param name="targetSize">The size of the target to render in</param>
         /// <returns>The size of the text in virtual pixels.</returns>
         /// <exception cref="ArgumentNullException">The provided sprite font is null.</exception>
-        public Vector2 MeasureString(SpriteFont spriteFont, string text)
+        public Vector2 MeasureString(SpriteFont spriteFont, string text, Vector2 targetSize)
         {
             if (spriteFont == null) throw new ArgumentNullException("spriteFont");
 
-            return MeasureString(spriteFont, text, spriteFont.Size);
+            return MeasureString(spriteFont, text, spriteFont.Size, targetSize);
         }
 
         /// <summary>
@@ -263,10 +315,11 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         /// <param name="spriteFont">The font used to draw the text.</param>
         /// <param name="text">The text to measure.</param>
+        /// <param name="targetSize">The size of the target to render in</param>
         /// <param name="fontSize">The font size (in pixels) used to draw the text.</param>
         /// <returns>The size of the text in virtual pixels.</returns>
         /// <exception cref="ArgumentNullException">The provided sprite font is null.</exception>
-        public Vector2 MeasureString(SpriteFont spriteFont, string text, float fontSize)
+        public Vector2 MeasureString(SpriteFont spriteFont, string text, float fontSize, Vector2 targetSize)
         {
             if (spriteFont == null) throw new ArgumentNullException("spriteFont");
 
@@ -274,23 +327,15 @@ namespace SiliconStudio.Paradox.Graphics
                 return Vector2.Zero;
 
             // calculate the size of the text that will be used to draw
-            var ratio = Vector2.One;
-            if (userVirtualResolution.HasValue)
-            {
-                var virtualResolution = userVirtualResolution.Value;
-                ratio.X = GraphicsDevice.BackBuffer.Width / virtualResolution.X;
-                ratio.Y = GraphicsDevice.BackBuffer.Height / virtualResolution.Y;
-            }
+            var virtualResolution = VirtualResolution.HasValue? VirtualResolution.Value: new Vector3(targetSize, DefaultDepth);
+            var ratio = new Vector2(targetSize.X / virtualResolution.X, targetSize.Y / virtualResolution.Y);
 
             var realSize = spriteFont.MeasureString(text, fontSize * ratio);
 
             // convert pixel size into virtual pixel size (if needed) 
             var virtualSize = realSize;
-            if (userVirtualResolution.HasValue)
-            {
-                virtualSize.X /= ratio.X;
-                virtualSize.Y /= ratio.Y;
-            }
+            virtualSize.X /= ratio.X;
+            virtualSize.Y /= ratio.Y;
 
             return virtualSize;
         }
@@ -434,31 +479,21 @@ namespace SiliconStudio.Paradox.Graphics
                 fontSize = spriteFont.Size;
 
             // calculate the resolution ratio between the screen real size and the virtual resolution
-            var resolutionRatio = Vector2.One;
-            if (userVirtualResolution.HasValue)
-            {
-                var virtualResolution = userVirtualResolution.Value;
-                resolutionRatio.X = GraphicsDevice.BackBuffer.Width / virtualResolution.X;
-                resolutionRatio.Y = GraphicsDevice.BackBuffer.Height / virtualResolution.Y;
-            }
+            var viewportSize = GraphicsDevice.Viewport;
+            var virtualResolution = GetCurrentResolution();
+            var resolutionRatio = new Vector2(viewportSize.Width / virtualResolution.X, viewportSize.Height / virtualResolution.Y);
+            scale.X = scale.X / resolutionRatio.X;
+            scale.Y = scale.Y / resolutionRatio.Y;
 
-            var fontSize2 = fontSize * Vector2.One;
-            if (spriteFont.IsDynamic) // adjust the size of the dynamic font so that size is in virtual pixels
-                fontSize2 *= resolutionRatio;
-
+            var fontSize2 = fontSize * (spriteFont.IsDynamic ? resolutionRatio : Vector2.One);
             var drawCommand = new SpriteFont.InternalDrawCommand(this, ref fontSize2, ref position, ref color, rotation, ref origin, ref scale, effects, layerDepth);
 
-            // convert position from virtual pixels to real pixels
-            if (userVirtualResolution.HasValue)
-            {
-                drawCommand.Position.X = drawCommand.Position.X * resolutionRatio.X;
-                drawCommand.Position.Y = drawCommand.Position.Y * resolutionRatio.Y;
-                drawCommand.Origin.X = drawCommand.Origin.X * resolutionRatio.X;
-                drawCommand.Origin.Y = drawCommand.Origin.Y * resolutionRatio.Y;
-            }
-
+            // snap the position the closest 'real' pixel
+            Vector2.Modulate(ref drawCommand.Position, ref resolutionRatio, out drawCommand.Position);
             drawCommand.Position.X = (float)Math.Round(drawCommand.Position.X);
             drawCommand.Position.Y = (float)Math.Round(drawCommand.Position.Y);
+            drawCommand.Position.X /= resolutionRatio.X;
+            drawCommand.Position.Y /= resolutionRatio.Y;
 
             spriteFont.InternalDraw(ref text, ref drawCommand, alignment);
         }
@@ -471,21 +506,7 @@ namespace SiliconStudio.Paradox.Graphics
             {
                 throw new ArgumentNullException("texture");
             }
-
-            // adjust the destination rectangle accordingly to the VirtualResolution value
-            if (!realSize && userVirtualResolution.HasValue)
-            {
-                var virtualResolution = userVirtualResolution.Value;
-
-                var ratioX = GraphicsDevice.BackBuffer.Width / virtualResolution.X;
-                var ratioY = GraphicsDevice.BackBuffer.Height / virtualResolution.Y;
-
-                destination.X *= ratioX;
-                destination.Width *= ratioX;
-                destination.Y *= ratioY;
-                destination.Height *= ratioY;
-            }
-
+            
             // Put values in next ElementInfo
             var elementInfo = new ElementInfo();
             var spriteInfo = &elementInfo.DrawInfo;
@@ -577,7 +598,7 @@ namespace SiliconStudio.Paradox.Graphics
                     // Apply rotation and destination offset
                     vertex->Position.X = drawInfo->Destination.X + (position.X * rotation.X) - (position.Y * rotation.Y);
                     vertex->Position.Y = drawInfo->Destination.Y + (position.X * rotation.Y) + (position.Y * rotation.X);
-                    vertex->Position.Z = elementInfo.Depth;
+                    vertex->Position.Z = drawInfo->Depth;
                     vertex->Position.W = 1f;
                     vertex->Color = drawInfo->Color;
 
@@ -594,21 +615,12 @@ namespace SiliconStudio.Paradox.Graphics
 
         protected override void PrepareForRendering()
         {
-            var finalMatrix = transformMatrix;
-            if (spriteTransformMode == SpriteTransformMode.WorldTransform)
-            {
-                // Build ortho-projection matrix
-                var viewport = GraphicsDevice.Viewport;
-                float xRatio = (viewport.Width > 0) ? (1f / (viewport.Width)) : 0f;
-                float yRatio = (viewport.Height > 0) ? (-1f / (viewport.Height)) : 0f;
-                var projectionMatrix = new Matrix { M11 = xRatio * 2f, M22 = yRatio * 2f, M33 = projectionMatrix33, M44 = 1f, M41 = -1f, M42 = 1f, M43 = 0.5f };
-                
-                Matrix.MultiplyTo(ref transformMatrix, ref projectionMatrix, out finalMatrix);
-            }
+            Matrix viewProjection;
+            Matrix.MultiplyTo(ref userViewMatrix, ref userProjectionMatrix, out viewProjection);
 
             // Setup effect states and parameters: SamplerState and MatrixTransform
             // Sets the sampler state
-            Effect.Parameters.Set(SpriteBaseKeys.MatrixTransform, finalMatrix);
+            Effect.Parameters.Set(SpriteBaseKeys.MatrixTransform, viewProjection);
 
             base.PrepareForRendering();
         }

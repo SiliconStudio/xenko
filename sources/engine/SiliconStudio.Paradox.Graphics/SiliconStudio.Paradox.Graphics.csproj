@@ -278,7 +278,6 @@
     <Compile Include="OpenGL\Texture2DBase.OpenGL.cs" />
     <Compile Include="Rational.cs" />
     <Compile Include="Direct3D\SwapChainGraphicsPresenter.Direct3D.cs" />
-    <Compile Include="SpriteTransformMode.cs" />
     <Compile Include="SwizzleMode.cs" />
     <Compile Include="TextAlignment.cs" />
     <Compile Include="Texture2DBase.cs" />
