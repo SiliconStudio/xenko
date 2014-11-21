@@ -1,5 +1,6 @@
 !Model
-Id: 5e417f79-0561-42a6-bd6c-248665a3e4f8
+Id: 7f3fde7c-fab1-412e-8f22-d37276477f6f
+SerializedVersion: 1
 BuildOrder: 500
 Tags: []
 Source: ../../../../data/tests/Cube/cube.fbx
@@ -20,6 +21,7 @@ MeshParameters:
     Location: --import--
     Asset: !Model
         Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: 1
         BuildOrder: 500
         Tags: []
         Nodes:

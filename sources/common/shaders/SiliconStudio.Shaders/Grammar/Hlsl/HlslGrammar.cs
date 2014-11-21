@@ -485,7 +485,7 @@ namespace SiliconStudio.Shaders.Grammar.Hlsl
 
             method_declarator.Rule |= method_special_identifier + "(" + parameter_list + ")";
 
-            parameter_qualifier.Rule = storage_qualifier | Keyword("in") | Keyword("out") | Keyword("inout") | Keyword("point") | Keyword("line") | Keyword("triangle") | Keyword("triangleadj");
+            parameter_qualifier.Rule = storage_qualifier | Keyword("in") | Keyword("out") | Keyword("inout") | Keyword("point") | Keyword("line") | Keyword("lineadj") | Keyword("triangle") | Keyword("triangleadj");
             parameter_qualifier.AstNodeCreator = CreateParameterQualifier;
 
             parameter_qualifier_pre_list_opt.Rule = parameter_qualifier.ListOpt();

@@ -11,19 +11,12 @@ namespace SiliconStudio.Paradox.Effects
     [DataConverter(AutoGenerate = true)]
     public class Mesh
     {
-        [DataMemberIgnore]
-        private bool castShadows;
-        
-        [DataMemberIgnore]
-        private bool receiveShadows;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Mesh"/> class.
         /// </summary>
         public Mesh()
         {
             Parameters = new ParameterCollection();
-            Layer = RenderLayers.RenderLayerAll;
         }
 
         /// <summary>
@@ -33,20 +26,15 @@ namespace SiliconStudio.Paradox.Effects
         public Mesh(Mesh mesh)
         {
             Draw = mesh.Draw;
+            
+            // TODO: share parameter collection or copy parameters in a new one?
             Parameters = mesh.Parameters ?? new ParameterCollection();
+            
             Material = mesh.Material;
             NodeIndex = mesh.NodeIndex;
             Name = mesh.Name;
             BoundingBox = mesh.BoundingBox;
             Skinning = mesh.Skinning;
-            Layer = mesh.Layer;
-            CastShadows = mesh.CastShadows;
-            ReceiveShadows = mesh.ReceiveShadows;
-            if (mesh.Lighting != null)
-            {
-                Lighting = new LightingConfigurationsSet();
-                Lighting.Configs = mesh.Lighting.Configs.ToArray();
-            }
         }
 
         [DataMemberConvert]
@@ -76,62 +64,5 @@ namespace SiliconStudio.Paradox.Effects
         // TODO: Skinning could be shared between multiple Mesh inside a ModelView (multimaterial, etc...)
         [DataMemberConvert]
         public MeshSkinningDefinition Skinning;
-
-        /// <summary>
-        /// The layer the model belongs to.
-        /// </summary>
-        /// <value>The layer mask.</value>
-        [DataMemberConvert]
-        public RenderLayers Layer { get; set; }
-
-        /// <summary>
-        /// The mesh casts shadow.
-        /// </summary>
-        [DataMemberConvert]
-        public bool CastShadows
-        {
-            get
-            {
-                return castShadows;
-            }
-            set
-            {
-                if (value != castShadows)
-                {
-                    castShadows = value;
-                    if (Parameters == null)
-                        Parameters = new ParameterCollection();
-                    Parameters.Set(LightingKeys.CastShadows, castShadows);
-                }
-            }
-        }
-        
-        /// <summary>
-        /// The mesh receives shadow.
-        /// </summary>
-        [DataMemberConvert]
-        public bool ReceiveShadows
-        {
-            get
-            {
-                return receiveShadows;
-            }
-            set
-            {
-                if (value != receiveShadows)
-                {
-                    receiveShadows = value;
-                    if (Parameters == null)
-                        Parameters = new ParameterCollection();
-                    Parameters.Set(LightingKeys.ReceiveShadows, receiveShadows);
-                }
-            }
-        }
-
-        /// <summary>
-        /// The list of available lighting configurations. Should be sorted based on the total number of lights.
-        /// </summary>
-        [DataMemberConvert]
-        public LightingConfigurationsSet Lighting { get; set; }
     }
 }

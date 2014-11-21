@@ -154,8 +154,8 @@ namespace SiliconStudio.Paradox.Effects
             meshDraw.DrawCount = indices.Length;
             meshDraw.PrimitiveType = PrimitiveType.TriangleList;
 
-            var mesh = new Mesh { Draw = meshDraw, BoundingBox = boundingBox, Parameters = new ParameterCollection() };
-            mesh.Layer = RenderLayers.RenderLayerAll;
+            var mesh = new Mesh { Draw = meshDraw, BoundingBox = boundingBox };
+            mesh.Parameters.Set(RenderingParameters.RenderLayer, RenderLayers.RenderLayerAll);
 
             var model = new Model { BoundingBox = boundingBox };
             model.Add(mesh);

@@ -285,8 +285,7 @@ namespace SiliconStudio.Paradox.Effects
             {
                 var mesh = meshes[i];
 
-                if (!mesh.Enabled || (context.ActiveLayers & meshes[i].Mesh.Layer) == RenderLayers.RenderLayerNone ||
-                    (acceptRenderMeshes.Count > 0 && !OnAcceptRenderMesh(context, mesh)))
+                if (!mesh.Enabled || (acceptRenderMeshes.Count > 0 && !OnAcceptRenderMesh(context, mesh)))
                 {
                     meshes.SwapRemoveAt(i--);
                 }
