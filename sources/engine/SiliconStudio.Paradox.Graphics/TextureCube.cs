@@ -139,12 +139,12 @@ namespace SiliconStudio.Paradox.Graphics
 
             var dataBoxes = new DataBox[6];
 
-            dataBoxes[1] = GetDataBox(format, size, size, 1, textureData[0], (IntPtr)Interop.Fixed(textureData[0]));
-            dataBoxes[2] = GetDataBox(format, size, size, 1, textureData[0], (IntPtr)Interop.Fixed(textureData[1]));
-            dataBoxes[3] = GetDataBox(format, size, size, 1, textureData[0], (IntPtr)Interop.Fixed(textureData[2]));
-            dataBoxes[4] = GetDataBox(format, size, size, 1, textureData[0], (IntPtr)Interop.Fixed(textureData[3]));
-            dataBoxes[5] = GetDataBox(format, size, size, 1, textureData[0], (IntPtr)Interop.Fixed(textureData[4]));
-            dataBoxes[6] = GetDataBox(format, size, size, 1, textureData[0], (IntPtr)Interop.Fixed(textureData[5]));
+            dataBoxes[0] = GetDataBox(format, size, size, 1, textureData[0], (IntPtr)Interop.Fixed(textureData[0]));
+            dataBoxes[1] = GetDataBox(format, size, size, 1, textureData[0], (IntPtr)Interop.Fixed(textureData[1]));
+            dataBoxes[2] = GetDataBox(format, size, size, 1, textureData[0], (IntPtr)Interop.Fixed(textureData[2]));
+            dataBoxes[3] = GetDataBox(format, size, size, 1, textureData[0], (IntPtr)Interop.Fixed(textureData[3]));
+            dataBoxes[4] = GetDataBox(format, size, size, 1, textureData[0], (IntPtr)Interop.Fixed(textureData[4]));
+            dataBoxes[5] = GetDataBox(format, size, size, 1, textureData[0], (IntPtr)Interop.Fixed(textureData[5]));
 
             return new TextureCube(device, NewTextureCubeDescription(size, format, textureFlags, 1, usage), dataBoxes);
         }

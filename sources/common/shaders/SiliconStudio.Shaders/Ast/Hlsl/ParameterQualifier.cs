@@ -21,6 +21,11 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
         public static readonly Ast.ParameterQualifier Line = new Ast.ParameterQualifier("line");
 
         /// <summary>
+        ///   LineAdjacent modifier, only for method parameters in Geometry Shader.
+        /// </summary>
+        public static readonly Ast.ParameterQualifier LineAdj = new Ast.ParameterQualifier("lineadj");
+
+        /// <summary>
         ///   Triangle modifier, only for method parameters in Geometry Shader.
         /// </summary>
         public static readonly Ast.ParameterQualifier Triangle = new Ast.ParameterQualifier("triangle");

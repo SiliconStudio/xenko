@@ -56,7 +56,7 @@ namespace SiliconStudio.Paradox.Engine
                 var modelRenderState = pipeline.GetOrCreateModelRendererState();
 
                 // If the model is not accepted
-                if (!modelRenderState.AcceptModel(modelInstance))
+                if (!modelRenderState.IsValid || !modelRenderState.AcceptModel(modelInstance))
                 {
                     continue;
                 }

@@ -2,8 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 class ComputeColorSubtractMaya : ComputeColor
 {
-    ComputeColor color1;
-    ComputeColor color2;
+    compose ComputeColor color1;
+    compose ComputeColor color2;
 
     override float4 Compute()
     {

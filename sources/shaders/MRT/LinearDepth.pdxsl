@@ -5,7 +5,7 @@
 /// </summary>
 class LinearDepth : ComputeColor, Camera
 {
-    PositionVSBase positionVS = stage;
+    compose PositionVSBase positionVS = stage;
 
     override float4 Compute()
     {

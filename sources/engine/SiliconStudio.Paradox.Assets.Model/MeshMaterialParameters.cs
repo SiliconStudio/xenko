@@ -1,5 +1,6 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System.ComponentModel;
 
 using SiliconStudio.Assets;
@@ -17,9 +18,6 @@ namespace SiliconStudio.Paradox.Assets.Model
         public MeshMaterialParameters()
         {
             Parameters = new ParameterCollectionData();
-            CastShadows = false;
-            ReceiveShadows = false;
-            Layer = RenderLayers.RenderLayerAll;
         }
 
         /// <summary>
@@ -39,36 +37,6 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// </userdoc>
         [DataMember(20)]
         public AssetReference<MaterialAsset> Material;
-        
-        /// <summary>
-        /// The mesh casts shadow.
-        /// </summary>
-        /// <userdoc>
-        /// If checked, the mesh will cast shadows.
-        /// </userdoc>
-        [DataMember(30)]
-        [DefaultValue(false)]
-        public bool CastShadows;
-
-        /// <summary>
-        /// The mesh receives shadow.
-        /// </summary>
-        /// <userdoc>
-        /// If checked, the mesh will receive shadows.
-        /// </userdoc>
-        [DataMember(40)]
-        [DefaultValue(false)]
-        public bool ReceiveShadows;
-
-        /// <summary>
-        /// The layer of the mesh.
-        /// </summary>
-        /// <userdoc>
-        /// The layer the mesh belongs to.
-        /// </userdoc>
-        [DataMember(50)]
-        [DefaultValue(RenderLayers.RenderLayerAll)]
-        public RenderLayers Layer;
 
         /// <summary>
         /// The mesh parameters.

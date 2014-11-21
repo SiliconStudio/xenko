@@ -5,7 +5,7 @@
 /// </summary>
 class ShadowMapReceiver : ShadingBase
 {
-    ShadingGroup shadows[];
+    compose ShadingGroup shadows[];
 
     override stage float4 Shading()
     {

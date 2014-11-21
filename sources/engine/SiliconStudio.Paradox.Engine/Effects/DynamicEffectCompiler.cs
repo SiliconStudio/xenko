@@ -17,6 +17,8 @@ namespace SiliconStudio.Paradox.Effects
         private readonly EffectParameterUpdater updater;
         private readonly FastList<ParameterCollection> parameterCollections;
 
+        private readonly string effectName;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DynamicEffectCompiler"/> class.
         /// </summary>
@@ -32,7 +34,7 @@ namespace SiliconStudio.Paradox.Effects
             if (services == null) throw new ArgumentNullException("services");
             if (effectName == null) throw new ArgumentNullException("effectName");
             Services = services;
-            EffectName = effectName;
+            this.effectName = effectName;
             EffectSystem = Services.GetSafeServiceAs<EffectSystem>();
             GraphicsDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
             updater = new EffectParameterUpdater();
@@ -49,7 +51,13 @@ namespace SiliconStudio.Paradox.Effects
         /// Gets the name of the effect.
         /// </summary>
         /// <value>The name of the effect.</value>
-        public string EffectName { get; private set; }
+        public string EffectName
+        {
+            get
+            {
+                return effectName;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the effect system.

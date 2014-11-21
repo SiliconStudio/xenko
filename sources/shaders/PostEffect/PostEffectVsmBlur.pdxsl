@@ -6,7 +6,7 @@
 /// <remarks>
 /// IsVertical: generic bool - flag stating if the gaussian is vertical or horizontal.
 /// </remarks>
-class PostEffectVsmBlur<bool IsVertical> : PostEffectBase
+class PostEffectVsmBlur<bool IsVertical> : ImageEffectShader
 {
     override stage void PSMain()
     {

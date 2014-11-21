@@ -2,5 +2,5 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 class GenericExtern
 {
-    GenericTexcoord<TEXCOORD1> myExtern;
+    compose GenericTexcoord<TEXCOORD1> myExtern;
 };

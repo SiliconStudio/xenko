@@ -5,7 +5,7 @@
 /// </summary>
 class DeferredShadowLightingShader : DeferredTiledShader, Transformation, PositionVSBase, NormalVSBase
 {
-    DeferredLightingBase shadows[];
+    compose DeferredLightingBase shadows[];
 
     // TODO: in Shading?
     override stage void PSMain()

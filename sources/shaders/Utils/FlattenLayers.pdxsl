@@ -5,7 +5,7 @@
 /// </summary>
 class FlattenLayers : ShaderBase, PositionStream4
 {
-    ComputeColor outColor;
+    compose ComputeColor outColor;
     
     stage override void VSMain()
     {

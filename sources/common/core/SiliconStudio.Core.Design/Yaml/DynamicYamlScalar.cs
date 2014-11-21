@@ -11,6 +11,14 @@ namespace SiliconStudio.Core.Yaml
     {
         internal YamlScalarNode node;
 
+        public YamlScalarNode Node
+        {
+            get
+            {
+                return node;
+            }
+        }
+
         public DynamicYamlScalar(YamlScalarNode node)
         {
             this.node = node;

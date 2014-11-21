@@ -55,8 +55,20 @@ namespace SiliconStudio.Paradox.Effects
         /// <returns>ModelRenderer.</returns>
         public static ModelRenderer AddLayerFilter(this ModelRenderer modelRenderer, RenderLayers activelayers)
         {
-            modelRenderer.AcceptRenderMesh.Add((context, effectMesh) => (effectMesh.Mesh.Layer & activelayers) != RenderLayers.RenderLayerNone);
+            modelRenderer.AcceptRenderMesh.Add((context, effectMesh) => (effectMesh.Mesh.Parameters.Get(RenderingParameters.RenderLayer) & activelayers) != RenderLayers.RenderLayerNone);
             modelRenderer.AppendDebugName("Layer " + activelayers);
+            return modelRenderer;
+        }
+
+        /// <summary>
+        /// Adds a layer filter for rendering meshes only on the context active layers.
+        /// </summary>
+        /// <param name="modelRenderer">The model renderer.</param>
+        /// <returns>ModelRenderer.</returns>
+        public static ModelRenderer AddContextActiveLayerFilter(this ModelRenderer modelRenderer)
+        {
+            modelRenderer.AcceptRenderMesh.Add((context, effectMesh) => (context.Parameters.Get(RenderingParameters.ActiveRenderLayer) & effectMesh.Mesh.Parameters.Get(RenderingParameters.RenderLayer)) != RenderLayers.RenderLayerNone);
+            modelRenderer.AppendDebugName("Active Layer");
             return modelRenderer;
         }
 
@@ -67,8 +79,8 @@ namespace SiliconStudio.Paradox.Effects
         /// <returns>ModelRenderer.</returns>
         public static ModelRenderer AddShadowCasterFilter(this ModelRenderer modelRenderer)
         {
-            modelRenderer.AcceptPrepareMeshForRendering.Add((model, mesh) => mesh.CastShadows);
-            modelRenderer.AcceptRenderMesh.Add((context, effectMesh) => effectMesh.Mesh.CastShadows);
+            modelRenderer.AcceptPrepareMeshForRendering.Add((model, mesh) => mesh.Parameters.Get(LightingKeys.CastShadows));
+            modelRenderer.AcceptRenderMesh.Add((context, effectMesh) => effectMesh.Mesh.Parameters.Get(LightingKeys.CastShadows));
             modelRenderer.AppendDebugName("ShadowMapCaster");
             return modelRenderer;
         }

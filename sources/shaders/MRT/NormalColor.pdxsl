@@ -5,7 +5,7 @@
 /// </summary>
 class NormalColor : ComputeColor
 {
-    NormalVSBase normalVS = stage;
+    compose NormalVSBase normalVS = stage;
 
     override float4 Compute()
     {

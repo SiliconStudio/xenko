@@ -43,7 +43,6 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                         new Mesh()
                         {
                             Draw = primitive.ToMeshDraw(),
-                            Layer = RenderLayers.RenderLayerAll,
                             Material = material
                         }
                     }
