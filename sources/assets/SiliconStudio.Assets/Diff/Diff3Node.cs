@@ -34,6 +34,10 @@ namespace SiliconStudio.Assets.Diff
 
         public Diff3Node Parent { get; set; }
 
+        public int Index { get; set; }
+
+        public Diff3NodeType Type { get; set; }
+
         /// <summary>
         /// Gets or sets the type of the instance. Null if instance type is different between the nodes.
         /// </summary>
@@ -107,7 +111,7 @@ namespace SiliconStudio.Assets.Diff
         /// <param name="dataInstance">The data instance.</param>
         /// <param name="selector">The selector.</param>
         /// <param name="isRemoved"></param>
-        public void ReplaceValue(object dataInstance, Func<Diff3Node, DataVisitNode> selector, bool isRemoved)
+        public void ReplaceValue(object dataInstance, Func<Diff3Node, DataVisitNode> selector)
         {
             if (selector == null) throw new ArgumentNullException("selector");
             var node = this.Asset1Node ?? this.BaseNode ?? this.Asset2Node;
@@ -122,15 +126,7 @@ namespace SiliconStudio.Assets.Diff
             else if (node is DataVisitListItem)
             {
                 var descriptor = ((DataVisitListItem)node).Descriptor;
-                if (isRemoved)
-                {
-                    var listNode = (DataVisitListItem)node;
-                    descriptor.RemoveAt(selector(parentNode).Instance, listNode.Index);
-                }
-                else
-                {
-                    descriptor.Add(selector(parentNode).Instance, dataInstance);
-                }
+                descriptor.SetValue(selector(parentNode).Instance, Index, dataInstance);
             }
             else if (node is DataVisitDictionaryItem)
             {

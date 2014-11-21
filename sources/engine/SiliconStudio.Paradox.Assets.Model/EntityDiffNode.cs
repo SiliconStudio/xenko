@@ -5,8 +5,6 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Assets.Model.Analysis;
-using SiliconStudio.Paradox.Data;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Data;
 using SiliconStudio.Paradox.EntityModel;
@@ -14,69 +12,58 @@ using SiliconStudio.Paradox.EntityModel.Data;
 
 namespace SiliconStudio.Paradox.Assets.Model
 {
-    [DataContract]
-    public class EntityDiffNode : IDataDiffProxy
+    [DataContract("EntityDiffNode")]
+    public class EntityDiffNode : IDiffKey
     {
-        private EntityHierarchyData entityHierarchy;
-        private TransformationComponentData transformationComponent;
-
         [DataMember(10)]
-        public EntityData Data { get; private set; }
+        public string Name { get; set; }
 
         [DataMember(20)]
-        public IList<EntityDiffNode> Children { get; private set; }
+        public Guid Guid { get; set; }
+
+        [DataMember(30)]
+        public List<EntityDiffNode> Children { get; private set; }
+
+        public EntityDiffNode()
+        {
+            Children = new List<EntityDiffNode>();
+        }
+
+        public EntityDiffNode(EntityHierarchyData entityHierarchy)
+            : this(entityHierarchy, entityHierarchy.RootEntity)
+        {
+        }
 
         public EntityDiffNode(EntityHierarchyData entityHierarchy, Guid entityGuid)
         {
-            this.entityHierarchy = entityHierarchy;
+            var entityData = entityHierarchy.Entities[entityGuid];
 
-            Data = entityHierarchy.Entities[entityGuid];
+            Guid = entityGuid;
+            Name = entityData.Name;
 
             EntityComponentData entityComponent;
-            if (!Data.Components.TryGetValue(TransformationComponent.Key, out entityComponent))
+            if (entityData.Components.TryGetValue(TransformationComponent.Key, out entityComponent))
             {
-                // If there was no transformation component, add one
-                Data.Components.Add(TransformationComponent.Key, transformationComponent = new TransformationComponentData());
-            }
-            else
-            {
-                transformationComponent = (TransformationComponentData)entityComponent;
-            }
+                var transformationComponent = (TransformationComponentData)entityComponent;
+                Children = new List<EntityDiffNode>(transformationComponent.Children.Count);
 
-            // Build children
-            var children = transformationComponent.Children;
-            Children = new List<EntityDiffNode>(children.Count);
-            for (int i = 0; i < children.Count; ++i)
-            {
-                Children.Add(new EntityDiffNode(entityHierarchy, children[i].Entity.Id));
+                // Build children
+                var children = transformationComponent.Children;
+                for (int i = 0; i < children.Count; ++i)
+                {
+                    Children.Add(new EntityDiffNode(entityHierarchy, children[i].Entity.Id));
+                }
             }
         }
 
-        public void ApplyChanges()
+        public override string ToString()
         {
-            entityHierarchy.Entities.Clear();
-
-            // Rebuild list of children and entityCollection recursively
-            ApplyChangesRecursive(entityHierarchy, this);
-
-            // Restore root entity Id
-            entityHierarchy.RootEntity = Data.Id;
-
-            // Remove references to invalid entities/components
-            // Currently doing a full round-trip to be safe, but this is probably not necessary
-            EntityAnalysis.UpdateEntityReferences(entityHierarchy);
-            EntityAnalysis.FixupEntityReferences(entityHierarchy);
+            return string.Format("{0}: {1} ({2} children)", Guid, Name, Children != null ? Children.Count : 0);
         }
 
-        private static void ApplyChangesRecursive(EntityHierarchyData entityHierarchy, EntityDiffNode entityNode)
+        object IDiffKey.GetDiffKey()
         {
-            entityHierarchy.Entities.Add(entityNode.Data);
-            entityNode.transformationComponent.Children.Clear();
-            foreach (var child in entityNode.Children)
-            {
-                ApplyChangesRecursive(entityHierarchy, child);
-                entityNode.transformationComponent.Children.Add(new EntityComponentReference<TransformationComponent>(child.transformationComponent));
-            }
+            return Name;
         }
     }
 }

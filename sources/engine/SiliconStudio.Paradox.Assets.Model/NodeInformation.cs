@@ -8,18 +8,18 @@ namespace SiliconStudio.Paradox.Assets.Model
 {
     [DataContract("NodeInformation")]
     [DataStyle(DataStyle.Compact)]
-    public class NodeInformation
+    public class NodeInformation : IDiffKey
     {
         /// <summary>
         /// The name of the node.
         /// </summary>
-        [DataMember(10), DiffUseAsset1, DiffCompareKey]
+        [DataMember(10), DiffUseAsset2]
         public string Name;
 
         /// <summary>
         ///  The index of the parent.
         /// </summary>
-        [DataMember(20), DiffUseAsset1]
+        [DataMember(20), DiffUseAsset2]
         public int Depth;
 
         /// <summary>
@@ -39,6 +39,11 @@ namespace SiliconStudio.Paradox.Assets.Model
             Name = name;
             Depth = depth;
             Preserve = preserve;
+        }
+
+        object IDiffKey.GetDiffKey()
+        {
+            return Name;
         }
     }
 }

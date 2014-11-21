@@ -1,12 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Assets.Visitors;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Paradox.Assets.Model.Analysis;
+using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Data;
 using SiliconStudio.Paradox.EntityModel;
+using SiliconStudio.Paradox.EntityModel.Data;
 
 namespace SiliconStudio.Paradox.Assets.Model
 {
@@ -18,7 +23,7 @@ namespace SiliconStudio.Paradox.Assets.Model
     {
         public bool CanVisit(Type type)
         {
-            return (type == typeof(EntityHierarchyData) || type == typeof(TransformationComponentData));
+            return (type == typeof(EntityHierarchyData));
         }
 
         public void Visit(ref VisitorContext context)
@@ -29,20 +34,63 @@ namespace SiliconStudio.Paradox.Assets.Model
             {
                 // Create alternative "proxy" object to run diff on
                 var entityHierarchy = (EntityHierarchyData)context.Instance;
-                var entityCollectionProxy = new EntityDiffNode(entityHierarchy, entityHierarchy.RootEntity);
+
+                var entitiesById = new EntityDictionary(entityHierarchy);
+                foreach (var entity in entityHierarchy.Entities)
+                {
+                    entitiesById.Add(entity.Id, entity);
+                }
 
                 // Add this object as member, so that it gets processed instead
-                dataVisitNodeBuilder.VisitObjectMember(context.Instance, context.Descriptor, new ConvertedDescriptor(context.DescriptorFactory, "Entities", entityCollectionProxy), entityCollectionProxy);
+                dataVisitNodeBuilder.VisitObjectMember(context.Instance, context.Descriptor, new ConvertedDescriptor(context.DescriptorFactory, "EntitiesById", entitiesById), entitiesById);
             }
-            else if (context.Instance is TransformationComponentData)
-            {
-                // Visit object, as usual
-                context.Visitor.VisitObject(context.Instance, context.Descriptor, true);
+        }
 
-                // Remove TransformationComponentData.Children
-                // We don't want any conflict here, as it will be computed back by EntityDiffNode.Children
-                var currentNode = dataVisitNodeBuilder.CurrentNode;
-                currentNode.Members.RemoveWhere(x => ((DataVisitMember)x).MemberDescriptor.Name == "Children");
+        class EntityDictionary : TrackingDictionary<Guid, EntityData>, IDiffProxy
+        {
+            private EntityHierarchyData source;
+
+            public EntityDictionary(EntityHierarchyData source)
+            {
+                this.source = source;
+            }
+
+            public void ApplyChanges()
+            {
+                // "Garbage collect" entities that are not referenced in hierarchy tree anymore
+                var entityHashes = new HashSet<Guid>();
+                CollectEntities(entityHashes, source.RootEntity);
+
+                source.Entities.Clear();
+                foreach (var item in this)
+                {
+                    if (entityHashes.Contains(item.Key))
+                        source.Entities.Add(item.Value);
+                }
+
+                // Fixup references
+                EntityAnalysis.FixupEntityReferences(source);
+            }
+
+            private void CollectEntities(HashSet<Guid> entityHashes, Guid rootEntity)
+            {
+                if (!entityHashes.Add(rootEntity))
+                    return;
+
+                EntityData entity;
+                if (!source.Entities.TryGetValue(rootEntity, out entity))
+                    return;
+
+                EntityComponentData entityComponent;
+                if (!entity.Components.TryGetValue(TransformationComponent.Key, out entityComponent))
+                    return;
+
+                var transformationComponent = (TransformationComponentData)entityComponent;
+
+                foreach (var child in transformationComponent.Children)
+                {
+                    CollectEntities(entityHashes, child.Entity.Id);
+                }
             }
         }
     }

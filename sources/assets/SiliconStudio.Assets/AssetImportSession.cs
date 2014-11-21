@@ -521,7 +521,7 @@ namespace SiliconStudio.Assets
                             {
                                 newReference = ContentReference.New(instance.GetType(), realItem.Id, realItem.Location);
                             }
-                            node.ReplaceValue(newReference, diff3Node => diff3Node.Asset2Node, false);
+                            node.ReplaceValue(newReference, diff3Node => diff3Node.Asset2Node);
                         }
 
                         return Diff3ChangeType.MergeFromAsset2;
