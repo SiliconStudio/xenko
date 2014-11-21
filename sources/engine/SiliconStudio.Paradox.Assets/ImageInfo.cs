@@ -13,13 +13,6 @@ namespace SiliconStudio.Paradox.Assets
     [DataContract("ImageInfo")]
     public class ImageInfo
     {
-        public ImageInfo()
-        {
-            AddressModeU = TextureAddressMode.Clamp;
-            AddressModeV = TextureAddressMode.Clamp;
-            BorderColor = Color.White;
-        }
-
         /// <summary>
         /// Gets or sets the source file of this 
         /// </summary>
@@ -46,25 +39,5 @@ namespace SiliconStudio.Paradox.Assets
         [DataMember(30)]
         [DefaultValue(ImageOrientation.AsIs)]
         public ImageOrientation Orientation { get; set; }
-
-        /// <summary>
-        /// Gets or sets atlas border mode in X axis for images inside atlas texture
-        /// </summary>
-        [DataMember(40)]
-        [DefaultValue(TextureAddressMode.Clamp)]
-        public TextureAddressMode AddressModeU { get; set; }
-
-        /// <summary>
-        /// Gets or sets atlas border mode in Y axis for images inside atlas texture
-        /// </summary>
-        [DataMember(50)]
-        [DefaultValue(TextureAddressMode.Clamp)]
-        public TextureAddressMode AddressModeV { get; set; }
-
-        /// <summary>
-        /// Gets or sets atlas border color for images inside atlas texture where Border mode is used in AddressModeU
-        /// </summary>
-        [DataMember(60)]
-        public Color BorderColor { get; set; }
     }
 }
