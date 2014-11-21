@@ -460,7 +460,7 @@ namespace SiliconStudio.BuildEngine
                         {
                             try
                             {
-                                IndexFileCommand.MountDatabases(executeContext);
+                                IndexFileCommand.MountDatabase(executeContext.GetOutputObjectsGroups());
 
                                 // Execute
                                 status = await buildStep.Execute(executeContext, builderContext);
@@ -479,7 +479,7 @@ namespace SiliconStudio.BuildEngine
                             }
                             finally
                             {
-                                IndexFileCommand.UnmountDatabases(executeContext);
+                                IndexFileCommand.UnmountDatabase();
                                 
                                 // Ensure the command set at least the result status
                                 if (status == ResultStatus.NotProcessed)

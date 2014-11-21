@@ -34,6 +34,15 @@ namespace SiliconStudio.BuildEngine
             }
         }
 
+        /// <summary>
+        /// Creates and mounts a database containing the given output object groups and the common group in the microthread-local <see cref="DatabaseFileProvider"/>.
+        /// </summary>
+        /// <param name="outputObjectsGroups">A collection of dictionaries representing a group of output object.</param>
+        public static void MountDatabase(IEnumerable<IDictionary<ObjectUrl, OutputObject>> outputObjectsGroups)
+        {
+            MountDatabases(CreateTransaction(outputObjectsGroups));
+        }
+        
         private static IEnumerable<IDictionary<ObjectUrl, OutputObject>> GetOutputObjectsGroups(IEnumerable<IDictionary<ObjectUrl, OutputObject>> transactionOutputObjectsGroups)
         {
             if (transactionOutputObjectsGroups != null)
@@ -42,17 +51,6 @@ namespace SiliconStudio.BuildEngine
                     yield return outputObjects;
             }
             yield return commomOutputObjects;
-        }
-
-
-        internal static void MountDatabases(IExecuteContext executeContext)
-        {
-            MountDatabases(CreateTransaction(executeContext.GetOutputObjectsGroups()));
-        }
-
-        public static void MountDatabases(ICommandContext commandContext)
-        {
-            MountDatabases(CreateTransaction(commandContext.GetOutputObjectsGroups()));
         }
 
         private static void MountDatabases(BuildTransaction transaction)
@@ -75,7 +73,7 @@ namespace SiliconStudio.BuildEngine
             return CreateDatabases(CreateTransaction(null));
         }
 
-        internal static void UnmountDatabases(IExecuteContext executeContext)
+        internal static void UnmountDatabase()
         {
             DatabaseFileProvider.Value = null;
         }
