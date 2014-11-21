@@ -50,7 +50,7 @@ namespace SiliconStudio.BuildEngine
 
         public override bool ShouldSpawnNewProcess()
         {
-            return false;
+            return true;
         }
 
         public override string ToString()
