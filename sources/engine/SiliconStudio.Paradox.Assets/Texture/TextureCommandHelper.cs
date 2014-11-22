@@ -21,11 +21,31 @@ namespace SiliconStudio.Paradox.Assets.Texture
     public static class TextureCommandHelper
     {
         /// <summary>
+        /// Returns the nearest and higher power of two of the given input.
+        /// If the input is already a power of two, returns the same value.
+        /// </summary>
+        /// <param name="value">input value</param>
+        /// <returns></returns>
+        public static int CeilingToNearestPowerOfTwo(int value)
+        {
+            if (IsPowerOfTwo(value)) return value;
+
+            return (int)Math.Pow(2, Math.Ceiling(Math.Log(value) / Math.Log(2)));
+        }
+
+        public static int FloorToNearestPowerOfTwo(int value)
+        {
+            if (IsPowerOfTwo(value)) return value;
+
+            return (int)Math.Pow(2, Math.Floor(Math.Log(value) / Math.Log(2)));
+        }
+
+        /// <summary>
         /// Returns true if the provided int is a power of 2.
         /// </summary>
         /// <param name="x">the int value to test</param>
         /// <returns>true if power of two</returns>
-        public static  bool IsPowerOfTwo(int x)
+        public static bool IsPowerOfTwo(int x)
         {
             return (x & (x - 1)) == 0;
         }
@@ -209,7 +229,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
 
                 if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
                     return ResultStatus.Cancelled;
-                
+
                 // Resize the image
                 if (textureAsset.IsSizeInPercentage)
                     texTool.Rescale(texImage, textureAsset.Width / 100.0f, textureAsset.Height / 100.0f, Filter.Rescaling.Lanczos3);
