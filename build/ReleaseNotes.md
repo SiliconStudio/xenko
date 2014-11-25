@@ -19,6 +19,7 @@ Release date: 2014/11/25
 - Shaders: Add support for naming a child in a `pdxfx` to allow child override.
 - Shaders: `cs` files generated from `pfxfx` are now using internal and nested types instead of putting everything in the root namespace.
 - Shaders: Add support for declaring a namespace in a `pdxsl`, only valid and used for `ParameterKey` declarations.
+- Studio: Custom enhanced title bar for all windows.
 
 #### Issues fixed
 - Assets: Textures with arbitrary size (non square and non power-of-two) are now correctly loaded.
