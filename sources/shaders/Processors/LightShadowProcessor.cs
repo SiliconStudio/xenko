@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
@@ -107,6 +108,16 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
             return new EntityLightShadow { Entity = entity, Light = entity.Get(LightComponent.Key), ShadowMap = null };
         }
 
+        /// <inheritdoc/>
+        protected override void OnEntityAdding(Entity entity, EntityLightShadow data)
+        {
+            base.OnEntityAdding(entity, data);
+            if (ManageShadows && (data.Light.Type == LightType.Directional || data.Light.Type == LightType.Spot) && data.Light.ShadowMap)
+                CreateShadowMap(data);
+        }
+
+        protected abstract void CreateShadowMap(EntityLightShadow light);
+
         #endregion
 
         #region Protected static methods
@@ -119,7 +130,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
             light.ShadowMap.Fov = light.Light.SpotFieldAngle;
             light.ShadowMap.ReceiverInfo.ShadowLightDirection = light.ShadowMap.LightDirectionNormalized;
             light.ShadowMap.ShadowFarDistance = light.Light.ShadowFarDistance;
-            light.ShadowMap.ReceiverInfo.ShadowMapDistance = light.ShadowMap.ShadowFarDistance;
+            light.ShadowMap.ReceiverInfo.ShadowMapDistance = light.Light.Type == LightType.Directional ? light.ShadowMap.ShadowFarDistance : light.ShadowMap.ShadowFarDistance - light.ShadowMap.ShadowNearDistance;
             light.ShadowMap.ReceiverVsmInfo.BleedingFactor = light.Light.BleedingFactor;
             light.ShadowMap.ReceiverVsmInfo.MinVariance = light.Light.MinVariance;
         }

@@ -5,6 +5,7 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -22,7 +23,7 @@ namespace SiliconStudio.AssemblyProcessor
     {
         public static CodeDomProvider codeDomProvider = new Microsoft.CSharp.CSharpCodeProvider();
 
-        public static AssemblyDefinition GenerateSerializationAssembly(PlatformType platformType, BaseAssemblyResolver assemblyResolver, AssemblyDefinition assembly, string serializationAssemblyLocation)
+        public static AssemblyDefinition GenerateSerializationAssembly(PlatformType platformType, BaseAssemblyResolver assemblyResolver, AssemblyDefinition assembly, string serializationAssemblyLocation, string signKeyFile = null)
         {
             // Create the serializer code generator
             var serializerGenerator = new ComplexSerializerCodeGenerator(assemblyResolver, assembly);
@@ -44,6 +45,27 @@ namespace SiliconStudio.AssemblyProcessor
             // Add reference from source assembly
             // Use a hash set because it seems including twice mscorlib (2.0 and 4.0) seems to be a problem.
             var skipWindows = "Windows, Version=255.255.255.255, Culture=neutral, PublicKeyToken=null";
+
+            // Sign the serialization assembly the same way the source was signed
+            // TODO: Transmit over command line
+            if (assembly.Name.HasPublicKey)
+            {
+                // TODO: If delay signed, we could actually extract the public key and apply it ourself maybe?
+                if (signKeyFile == null)
+                    throw new InvalidOperationException("Generating serialization code for signed assembly, but no key was specified.");
+
+                var assemblyPath = Path.GetDirectoryName(assembly.MainModule.FullyQualifiedName);
+                if ((assembly.MainModule.Attributes & ModuleAttributes.StrongNameSigned) == ModuleAttributes.StrongNameSigned)
+                {
+                    // Strongly signed
+                    compilerParameters.CompilerOptions += string.Format(" /keyfile:\"{0}\"", signKeyFile);
+                }
+                else
+                {
+                    // Delay signed
+                    compilerParameters.CompilerOptions += string.Format(" /delaysign+ /keyfile:\"{0}\"", signKeyFile);
+                }
+            }
 
             var assemblyLocations = new HashSet<string>();
             foreach (var referencedAssemblyName in assembly.MainModule.AssemblyReferences)
@@ -128,7 +150,8 @@ namespace SiliconStudio.AssemblyProcessor
                 merge.TargetAssemblyDefinition.Name.PublicKey = assembly.Name.PublicKey;
                 merge.TargetAssemblyDefinition.Name.PublicKeyToken = assembly.Name.PublicKeyToken;
                 merge.TargetAssemblyDefinition.Name.Attributes |= AssemblyAttributes.PublicKey;
-                merge.TargetAssemblyMainModule.Attributes |= ModuleAttributes.StrongNameSigned;
+                if ((assembly.MainModule.Attributes & ModuleAttributes.StrongNameSigned) == ModuleAttributes.StrongNameSigned)
+                    merge.TargetAssemblyMainModule.Attributes |= ModuleAttributes.StrongNameSigned;
             }
 
             try

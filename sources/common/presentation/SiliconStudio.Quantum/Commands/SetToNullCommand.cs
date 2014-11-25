@@ -4,7 +4,7 @@ using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Quantum.Commands
 {
-    public class SetToNullCommand : UncancellableCommand
+    public class SetToNullCommand : ModifyValueCommand
     {
         /// <inheritdoc/>
         public override string Name { get { return "SetToNull"; } }
@@ -20,7 +20,7 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        protected override object InvokeUncancellable(object currentValue, ITypeDescriptor descriptor, object parameter)
+        protected override object ModifyValue(object currentValue, ITypeDescriptor descriptor, object parameter)
         {
             return null;
         }

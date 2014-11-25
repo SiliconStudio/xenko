@@ -6,10 +6,10 @@
 class BRDFSpecularBase : AlbedoSpecularBase
 {
     // the color of the albedo based on light parameters, normal and relative position to the camera.
-    ComputeBRDFColor SpecularColor;
+    compose ComputeBRDFColor SpecularColor;
 
     // the model used to compute lighting.
-    ComputeBRDFColor SpecularLighting;
+    compose ComputeBRDFColor SpecularLighting;
 
     float3 ComputeSpecularColor(float3 color, float3 lightDir, float3 normal, float3 eye) {
         return SpecularColor.Compute(color, lightDir, normal, eye);

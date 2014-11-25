@@ -122,6 +122,7 @@
     <PropertyGroup>
       <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioAssemblyProcessorOptions)' == ''">--auto-notify-property --parameter-key --auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
       <SiliconStudioAssemblyProcessorCommand Condition="'$(SiliconStudioAssemblyProcessorCommand)' == ''">"$(SiliconStudioPackageParadoxSdkBin)\SiliconStudio.AssemblyProcessor.exe" --platform=$(SiliconStudioPlatform) --targetFramework=$(SiliconStudioNETFrameworkVersion)  $(SiliconStudioAssemblyProcessorOptions) "$(TargetPath)"</SiliconStudioAssemblyProcessorCommand>
+      <SiliconStudioAssemblyProcessorCommand Condition="'$(AssemblyOriginatorKeyFile)' != ''">$(SiliconStudioAssemblyProcessorCommand) --signkeyfile="$(AssemblyOriginatorKeyFile)"</SiliconStudioAssemblyProcessorCommand>
     </PropertyGroup>
     
     <!-- Run assembly processor -->

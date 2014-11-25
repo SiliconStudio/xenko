@@ -2,8 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 class ExternCloneTest
 {
-    DeepExtern ext0;
-    DeepExtern ext1;
+    compose DeepExtern ext0;
+    compose DeepExtern ext1;
 
     void Test()
     {

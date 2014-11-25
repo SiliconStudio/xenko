@@ -17,7 +17,8 @@ namespace SiliconStudio.AssemblyProcessor
             var assembly = context.Assembly;
             var moduleInitializers = new List<MethodReference>();
 
-            foreach (var type in assembly.MainModule.GetTypes())
+            // Generate a module initializer for all types, including nested types
+            foreach (var type in assembly.EnumerateTypes())
             {
                 foreach (var method in type.Methods)
                 {

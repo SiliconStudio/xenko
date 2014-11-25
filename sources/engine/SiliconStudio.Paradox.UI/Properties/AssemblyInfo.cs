@@ -23,9 +23,5 @@ using System.Runtime.InteropServices;
 
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.UI.Serializers" + SiliconStudio.PublicKeys.Default)]
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.Engine" + SiliconStudio.PublicKeys.Default)]
-
-#if !SILICONSTUDIO_SIGNED
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.UI.Tests")]
-[assembly: InternalsVisibleTo("SiliconStudioParadoxUITests")]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.UI.Regression.Tests")]
-#endif
+[assembly: InternalsVisibleTo("SiliconStudio.Paradox.UI.Tests" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudioParadoxUITests" + SiliconStudio.PublicKeys.Default)]

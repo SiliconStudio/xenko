@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 
+using SiliconStudio.Paradox.Shaders.Parser.Ast;
 using SiliconStudio.Paradox.Shaders.Parser.Mixins;
 using SiliconStudio.Paradox.Shaders.Parser.Performance;
 using SiliconStudio.Shaders.Analysis.Hlsl;
@@ -299,7 +300,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
                 foreach (var composition in shaderMixinSource.Compositions)
                 {
                     //look for the key
-                    var foundVars = finalModule.FindAllVariablesByName(composition.Key);
+                    var foundVars = finalModule.FindAllVariablesByName(composition.Key).Where(value => value.Variable.Qualifiers.Contains(ParadoxStorageQualifier.Compose)).ToList();
 
                     if (foundVars.Count > 0)
                     {
@@ -309,6 +310,10 @@ namespace SiliconStudio.Paradox.Shaders.Parser
                             return null;
 
                         dictionary.Add(foundVar, moduleMixins);
+                    }
+                    else
+                    {
+                        // TODO: log an error?
                     }
                 }
                 return new List<ModuleMixin> { finalModule };

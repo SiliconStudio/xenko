@@ -1,8 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Interop;
 
 using SiliconStudio.Presentation.Extensions;
 
@@ -17,6 +21,11 @@ namespace SiliconStudio.Presentation.Behaviors
         /// When attached to a <see cref="ScrollViewer"/> or a control that contains a <see cref="ScrollViewer"/>, this property allows to control whether the scroll viewer should handle scrolling with the mouse wheel.
         /// </summary>
         public static DependencyProperty HandlesMouseWheelScrollingProperty = DependencyProperty.RegisterAttached("HandlesMouseWheelScrolling", typeof(bool), typeof(BehaviorProperties), new PropertyMetadata(true, HandlesMouseWheelScrollingChanged));
+
+        /// <summary>
+        /// When attached to a <see cref="Window"/> that have the <see cref="Window.WindowStyle"/> value set to <see cref="WindowStyle.None"/>, prevent the window to expand over the taskbar when maximized.
+        /// </summary>
+        public static DependencyProperty KeepTaskbarWhenMaximizedProperty = DependencyProperty.RegisterAttached("KeepTaskbarWhenMaximized", typeof(bool), typeof(BehaviorProperties), new PropertyMetadata(false, KeepTaskbarWhenMaximizedChanged));
 
         /// <summary>
         /// Gets the current value of the <see cref="HandlesMouseWheelScrollingProperty"/> dependency property attached to the given <see cref="DependencyObject"/>.
@@ -38,6 +47,26 @@ namespace SiliconStudio.Presentation.Behaviors
             target.SetValue(HandlesMouseWheelScrollingProperty, value);
         }
 
+        /// <summary>
+        /// Gets the current value of the <see cref="KeepTaskbarWhenMaximizedProperty"/> dependency property attached to the given <see cref="DependencyObject"/>.
+        /// </summary>
+        /// <param name="target">The target <see cref="DependencyObject"/>.</param>
+        /// <returns>The value of the <see cref="KeepTaskbarWhenMaximizedProperty"/> dependency property.</returns>
+        public static bool GetKeepTaskbarWhenMaximized(DependencyObject target)
+        {
+            return (bool)target.GetValue(KeepTaskbarWhenMaximizedProperty);
+        }
+
+        /// <summary>
+        /// Sets the value of the <see cref="KeepTaskbarWhenMaximizedProperty"/> dependency property attached to the given <see cref="DependencyObject"/>.
+        /// </summary>
+        /// <param name="target">The target <see cref="DependencyObject"/>.</param>
+        /// <param name="value">The value to set.</param>
+        public static void SetKeepTaskbarWhenMaximized(DependencyObject target, bool value)
+        {
+            target.SetValue(KeepTaskbarWhenMaximizedProperty, value);
+        }
+
         private static void HandlesMouseWheelScrollingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var scrollViewer = d as ScrollViewer ?? d.FindVisualChildOfType<ScrollViewer>();
@@ -50,21 +79,75 @@ namespace SiliconStudio.Presentation.Behaviors
             else
             {
                 // The framework element is not loaded yet and thus the ScrollViewer is not reachable.
-                var loadedHandler = new RoutedEventHandler((sender, args) =>
+                var frameworkElement = d as FrameworkElement;
+                if (frameworkElement != null && !frameworkElement.IsLoaded)
+                {
+                    // Let's delay the behavior till the scroll viewer is loaded.
+                    frameworkElement.Loaded += (sender, args) =>
                     {
                         var dependencyObject = (DependencyObject)sender;
                         var loadedScrollViewer = dependencyObject.FindVisualChildOfType<ScrollViewer>();
                         if (loadedScrollViewer != null)
                             typeof(ScrollViewer).GetProperty("HandlesMouseWheelScrolling", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(loadedScrollViewer, e.NewValue);
-                    });
-
-                var frameworkElement = d as FrameworkElement;
-                if (frameworkElement != null && !frameworkElement.IsLoaded)
-                {
-                    // Let's delay the behavior till the scroll viewer is loaded.
-                    frameworkElement.Loaded += loadedHandler;
+                    };
                 }
             }
+        }
+
+        private static void KeepTaskbarWhenMaximizedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var window = d as Window;
+            if (window != null)
+            {
+                if (window.IsLoaded)
+                {
+                    var hwnd = new WindowInteropHelper(window).Handle;
+                    var source = HwndSource.FromHwnd(hwnd);
+                    if (source != null)
+                    {
+                        source.AddHook(WindowProc);
+                    }
+                }
+                else
+                {
+                window.SourceInitialized += (sender, arg) =>
+                    {
+                        var hwnd = new WindowInteropHelper(window).Handle;
+                        var source = HwndSource.FromHwnd(hwnd);
+                        if (source != null)
+                        {
+                            source.AddHook(WindowProc);
+                        }
+                    };
+                }
+            }
+        }
+
+        private static IntPtr WindowProc(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam, ref bool handled)
+        {
+            switch (msg)
+            {
+                /* WM_GETMINMAXINFO */
+                case 0x0024:
+                    var mmi = (NativeHelper.MINMAXINFO)Marshal.PtrToStructure(lparam, typeof(NativeHelper.MINMAXINFO));
+                    var monitor = NativeHelper.MonitorFromWindow(hwnd, NativeHelper.MONITOR_DEFAULTTONEAREST);
+                    if (monitor != IntPtr.Zero)
+                    {
+                        var monitorInfo = new NativeHelper.MONITORINFO();
+                        NativeHelper.GetMonitorInfo(monitor, monitorInfo);
+                        NativeHelper.RECT rcWorkArea = monitorInfo.rcWork;
+                        NativeHelper.RECT rcMonitorArea = monitorInfo.rcMonitor;
+                        mmi.ptMaxPosition.X = Math.Abs(rcWorkArea.Left - rcMonitorArea.Left);
+                        mmi.ptMaxPosition.Y = Math.Abs(rcWorkArea.Top - rcMonitorArea.Top);
+                        mmi.ptMaxSize.X = Math.Abs(rcWorkArea.Right - rcWorkArea.Left);
+                        mmi.ptMaxSize.Y = Math.Abs(rcWorkArea.Bottom - rcWorkArea.Top);
+                    }
+
+                    Marshal.StructureToPtr(mmi, lparam, true);
+                    handled = true;
+                    break;
+            }
+            return IntPtr.Zero;
         }
     }
 }

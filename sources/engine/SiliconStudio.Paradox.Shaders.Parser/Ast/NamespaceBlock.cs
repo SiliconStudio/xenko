@@ -11,6 +11,23 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Ast
         #region Public Properties
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="NamespaceBlock"/> class.
+        /// </summary>
+        public NamespaceBlock() : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TypeBase" /> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        public NamespaceBlock(string name)
+            : base(name)
+        {
+            Body = new List<Node>();
+        }
+
+        /// <summary>
         /// Gets or sets the body.
         /// </summary>
         /// <value>The body.</value>

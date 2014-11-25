@@ -4,18 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Assets.Effect;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Data;
-using SiliconStudio.Paradox.Effects.Modules;
 using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Importer.Common;
-using SiliconStudio.Paradox.Shaders.Compiler;
 
 namespace SiliconStudio.Paradox.Assets.Model
 {
@@ -44,6 +40,10 @@ namespace SiliconStudio.Paradox.Assets.Model
             {
                 if (meshParam.Value.Material != null)
                     materials.Add(meshParam.Key, new Tuple<Guid, string>(meshParam.Value.Material.Id, meshParam.Value.Material.Location));
+
+                // Transform AssetReference to Tuple<Guid,UFile> as AssetReference or ContentReference is not serializable (to generate the command hash)
+                // TODO: temporary while the LightingParameters is a Member of MeshMaterialParameter class
+                // TODO: should be passed directly in the Parameters of the mesh - no extra case is required
                 if (meshParam.Value.LightingParameters != null)
                     lightings.Add(meshParam.Key, new Tuple<Guid, string>(meshParam.Value.LightingParameters.Id, meshParam.Value.LightingParameters.Location));
             }
@@ -60,12 +60,8 @@ namespace SiliconStudio.Paradox.Assets.Model
                                 AllowUnsignedBlendIndices = allowUnsignedBlendIndices,
                                 Compact = asset.Compact,
                                 PreservedNodes = asset.PreservedNodes,
-                                // Transform AssetReference to Tuple<Guid,UFile> as AssetReference is not working
                                 Materials = materials,
-                                Lightings = lightings,
-                                CastShadows = asset.MeshParameters.ToDictionary(pair => pair.Key, pair => pair.Value.CastShadows),
-                                ReceiveShadows = asset.MeshParameters.ToDictionary(pair => pair.Key, pair => pair.Value.ReceiveShadows),
-                                Layers = asset.MeshParameters.ToDictionary(pair => pair.Key, pair => pair.Value.Layer),
+                                Lightings = lightings, // TODO: remove when lighting parameters will be behind a key
                                 Parameters = asset.MeshParameters.ToDictionary(pair => pair.Key, pair => pair.Value.Parameters),
                                 ViewDirectionForTransparentZSort = asset.ViewDirectionForTransparentZSort.HasValue ? asset.ViewDirectionForTransparentZSort.Value : -Vector3.UnitZ,
                             },
@@ -84,12 +80,8 @@ namespace SiliconStudio.Paradox.Assets.Model
                                 AllowUnsignedBlendIndices = allowUnsignedBlendIndices,
                                 Compact = asset.Compact,
                                 PreservedNodes = asset.PreservedNodes,
-                                // Transform AssetReference to Tuple<Guid,UFile> as AssetReference is not working
                                 Materials = materials,
-                                Lightings = lightings,
-                                CastShadows = asset.MeshParameters.ToDictionary(pair => pair.Key, pair => pair.Value.CastShadows),
-                                ReceiveShadows = asset.MeshParameters.ToDictionary(pair => pair.Key, pair => pair.Value.ReceiveShadows),
-                                Layers = asset.MeshParameters.ToDictionary(pair => pair.Key, pair => pair.Value.Layer),
+                                Lightings = lightings, // TODO: remove when lighting parameters will be behind a key
                                 Parameters = asset.MeshParameters.ToDictionary(pair => pair.Key, pair => pair.Value.Parameters),
                             },
                         new WaitBuildStep(),

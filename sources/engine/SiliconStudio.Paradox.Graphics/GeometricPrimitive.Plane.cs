@@ -130,7 +130,7 @@ namespace SiliconStudio.Paradox.Graphics
                 }
 
                 // Create the primitive object.
-                return new GeometricMeshData<VertexPositionNormalTexture>(vertices, indices, toLeftHanded, VertexPositionNormalTexture.Layout) { Name = "Plane" };
+                return new GeometricMeshData<VertexPositionNormalTexture>(vertices, indices, toLeftHanded) { Name = "Plane" };
             }
         }
     }

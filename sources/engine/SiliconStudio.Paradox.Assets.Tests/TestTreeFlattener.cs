@@ -25,7 +25,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
             AssetRegistry.RegisterAssembly(typeof(MaterialDescription).Assembly);
             AssetRegistry.RegisterAssembly(typeof(Color4).Assembly);
 
-            Game.InitializeAssetDatabase();
+            TestCommon.InitializeAssetDatabase();
         }
 
         [Test]

@@ -388,6 +388,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// </remarks>
         public unsafe bool GetData(Texture stagingTexture, DataPointer toData, int arraySlice = 0, int mipSlice = 0, bool doNotWait = false)
         {
+            if (stagingTexture == null) throw new ArgumentNullException("stagingTexture");
             var device = GraphicsDevice;
             //var deviceContext = device.NativeDeviceContext;
 
@@ -495,6 +496,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// </remarks>
         public unsafe void SetData(GraphicsDevice device, DataPointer fromData, int arraySlice = 0, int mipSlice = 0, ResourceRegion? region = null)
         {
+            if (device == null) throw new ArgumentNullException("device");
             if (region.HasValue && this.Description.Usage != GraphicsResourceUsage.Default)
                 throw new ArgumentException("Region is only supported for textures with ResourceUsage.Default");
 
@@ -635,12 +637,16 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// Loads a texture from a stream.
         /// </summary>
-        /// <param name="device">The <see cref="GraphicsDevice"/>.</param>
+        /// <param name="device">The <see cref="GraphicsDevice" />.</param>
+        /// <param name="image">The image.</param>
         /// <param name="textureFlags">True to load the texture with unordered access enabled. Default is false.</param>
-        /// <param name="usage">Usage of the resource. Default is <see cref="GraphicsResourceUsage.Immutable"/> </param>
+        /// <param name="usage">Usage of the resource. Default is <see cref="GraphicsResourceUsage.Immutable" /></param>
         /// <returns>A texture</returns>
+        /// <exception cref="System.InvalidOperationException">Dimension not supported</exception>
         public static Texture New(GraphicsDevice device, Image image, TextureFlags textureFlags = TextureFlags.ShaderResource, GraphicsResourceUsage usage = GraphicsResourceUsage.Immutable)
         {
+            if (device == null) throw new ArgumentNullException("device");
+            if (image == null) throw new ArgumentNullException("image");
             switch (image.Description.Dimension)
             {
                 case TextureDimension.Texture1D:
@@ -657,12 +663,39 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         /// <summary>
+        /// Creates a new texture with the specified generic texture description.
+        /// </summary>
+        /// <param name="graphicsDevice">The graphics device.</param>
+        /// <param name="description">The description.</param>
+        /// <returns>A Texture instance, either a RenderTarget or DepthStencilBuffer or Texture, depending on Binding flags.</returns>
+        public static Texture New(GraphicsDevice graphicsDevice, TextureDescription description)
+        {
+            if (graphicsDevice == null)
+            {
+                throw new ArgumentNullException("graphicsDevice");
+            }
+            switch (description.Dimension)
+            {
+                case TextureDimension.Texture1D:
+                    return new Texture1D(graphicsDevice, description);
+                case TextureDimension.Texture2D:
+                    return new Texture2D(graphicsDevice, description);
+                case TextureDimension.Texture3D:
+                    return new Texture3D(graphicsDevice, description);
+                case TextureDimension.TextureCube:
+                    return new TextureCube(graphicsDevice, description);
+            }
+            return null;
+        }
+
+        /// <summary>
         /// Saves this texture to a stream with a specified format.
         /// </summary>
         /// <param name="stream">The stream.</param>
         /// <param name="fileType">Type of the image file.</param>
         public void Save(Stream stream, ImageFileType fileType)
         {
+            if (stream == null) throw new ArgumentNullException("stream");
             using (var staging = ToStaging())
                 Save(stream, staging, fileType);
         }
@@ -683,6 +716,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <exception cref="ArgumentException">If stagingTexture is not a staging texture.</exception>
         public Image GetDataAsImage(Texture stagingTexture)
         {
+            if (stagingTexture == null) throw new ArgumentNullException("stagingTexture");
             if (stagingTexture.Description.Usage != GraphicsResourceUsage.Staging)
                 throw new ArgumentException("Invalid texture used as staging. Must have Usage = GraphicsResourceUsage.Staging", "stagingTexture");
 

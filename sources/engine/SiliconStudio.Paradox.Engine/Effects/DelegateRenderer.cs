@@ -37,23 +37,23 @@ namespace SiliconStudio.Paradox.Effects
 
         public override void Load()
         {
+            base.Load();
+
             var handler = OnLoad;
             if (handler != null)
                 handler();
-
-            Pass.StartPass += OnRender;
         }
 
         public override void Unload()
         {
-            Pass.StartPass -= OnRender;
+            base.Unload();
 
             var handler = OnUnload;
             if (handler != null)
                 handler();
         }
 
-        protected void OnRender(RenderContext context)
+        protected override void OnRendering(RenderContext context)
         {
             var handler = Render;
             if (handler != null)

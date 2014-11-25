@@ -23,18 +23,27 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <summary>
         /// The tree describing the flow of instructions leading to this material.
         /// </summary>
+        /// <userdoc>
+        /// All the color mapping nodes of the materials. They are map descriptions (texture or values) and operations on them.
+        /// </userdoc>
         [DataMember(10)]
         public Dictionary<string, IMaterialNode> Nodes { get; set; }
 
         /// <summary>
         /// The tree used in this model.
         /// </summary>
+        /// <userdoc>
+        /// The final output of the material. Each item references a node and put it behind the chosen ParameterKey.
+        /// </userdoc>
         [DataMember(30)]
         public Dictionary<ParameterKey<ShaderMixinSource>, string> ColorNodes { get; set; }
 
         /// <summary>
         /// The parameters of this model.
         /// </summary>
+        /// <userdoc>
+        /// The parameters of the material. Any parameter can be set here. This is the lowest priority collection so it can be overridden by the model and mesh parameters.
+        /// </userdoc>
         [DataMember(50)]
         public ParameterCollectionData Parameters { get; set; }
 

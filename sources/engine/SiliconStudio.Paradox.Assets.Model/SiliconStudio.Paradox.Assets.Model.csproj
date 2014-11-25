@@ -8,6 +8,7 @@
     <RootNamespace>SiliconStudio.Paradox.Assets.Model</RootNamespace>
     <AssemblyName>SiliconStudio.Paradox.Assets.Model</AssemblyName>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions) --generate-user-doc</SiliconStudioAssemblyProcessorOptions>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
   </PropertyGroup>
   <ItemGroup>
@@ -28,6 +29,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="SharpYaml, Version=1.0.2.26673, Culture=neutral, PublicKeyToken=1ced8108e942bc02, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\common\deps\SharpYaml\SharpYaml.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
@@ -55,6 +61,10 @@
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
       <Name>SiliconStudio.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\tools\SiliconStudio.BuildEngine.Paradox.FBX\SiliconStudio.BuildEngine.Paradox.FBX.csproj">
+      <Project>{72b86e84-e69d-46e4-a51e-dd4d5686eec9}</Project>
+      <Name>SiliconStudio.BuildEngine.Paradox.FBX</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\tools\SiliconStudio.Paradox.Importer.Assimp\SiliconStudio.Paradox.Importer.Assimp.vcxproj">
       <Project>{c2306552-6c42-464c-8981-32fef4f9458d}</Project>
       <Name>SiliconStudio.Paradox.Importer.Assimp</Name>
@@ -67,10 +77,6 @@
       <Project>{0467d515-fd66-4b8a-a128-cb642c2ed03f}</Project>
       <Name>SiliconStudio.Paradox.Importer.FBX</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\tools\SiliconStudio.BuildEngine.Paradox.FBX\SiliconStudio.BuildEngine.Paradox.FBX.csproj">
-      <Project>{72b86e84-e69d-46e4-a51e-dd4d5686eec9}</Project>
-      <Name>SiliconStudio.BuildEngine.Paradox.FBX</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Paradox.Assets\SiliconStudio.Paradox.Assets.csproj">
       <Project>{39ae9c77-e94b-404f-8768-b6261b3c1e0e}</Project>
       <Name>SiliconStudio.Paradox.Assets</Name>
@@ -78,10 +84,6 @@
     <ProjectReference Include="..\SiliconStudio.Paradox.Engine\SiliconStudio.Paradox.Engine.csproj">
       <Project>{c121a566-555e-42b9-9b0a-1696529a9088}</Project>
       <Name>SiliconStudio.Paradox.Engine</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.Graphics\SiliconStudio.Paradox.Graphics.csproj">
-      <Project>{fb06c76a-6bb7-40be-9afa-fec13b045fb5}</Project>
-      <Name>SiliconStudio.Paradox.Graphics</Name>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Paradox.Shaders\SiliconStudio.Paradox.Shaders.csproj">
       <Project>{273bdd15-7392-4078-91f0-af23594a3d7b}</Project>

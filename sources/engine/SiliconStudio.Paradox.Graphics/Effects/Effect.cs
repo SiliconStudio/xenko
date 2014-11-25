@@ -70,11 +70,7 @@ namespace SiliconStudio.Paradox.Graphics
 
             parameters = new ParameterCollection();
             Initialize(device, bytecode, usedParameters);
-        }
-
-        public void ForceEffectUpdate(GraphicsDevice device, EffectBytecode bytecode, ParameterCollection usedParameters = null)
-        {
-            Initialize(device, bytecode, usedParameters);
+            Changed = false;
         }
 
         /// <summary>
@@ -101,6 +97,15 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
+        /// <summary>
+        /// Gets a boolean indicating if the effect changed since last update.
+        /// </summary>
+        /// <value>The changed.</value>
+        public bool Changed
+        {
+            get; internal set;
+        }
+
         public List<ShaderConstantBufferDescription> ConstantBuffers
         {
             get
@@ -108,21 +113,6 @@ namespace SiliconStudio.Paradox.Graphics
                 return reflection.ConstantBuffers;
             }
         }
-
-        /// <summary>
-        /// The lighting parameters of this effect.
-        /// </summary>
-        public List<LightingUpdateInfo> LightingParameters { get; set; }
-
-        /// <summary>
-        /// The shadow parameters of this effect
-        /// </summary>
-        public List<ShadowUpdateInfo> ShadowParameters { get; set; }
-
-        /// <summary>
-        /// A flag stating if the LightingParameters should be updated.
-        /// </summary>
-        public bool UpdateLightingParameters { get; set; }
 
         public void Apply(bool applyEffectStates = false)
         {
@@ -363,10 +353,7 @@ namespace SiliconStudio.Paradox.Graphics
                 DefaultCompilationParameters.RegisterParameter(key, false);
             }
 
-            // reset Lighting Parameters
-            LightingParameters = null;
-            ShadowParameters = null;
-            UpdateLightingParameters = true;
+            Changed = true;
         }
 
         private void LoadDefaultParameters()
@@ -672,81 +659,4 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
     }
-
-    // TODO: convert to struct & IL patch to use ref
-    public class LightingUpdateInfo
-    {
-        public int Index;
-        public LightingUpdateType Type;
-        public int Count;
-        public LightParamSemantic Semantic;
-        public ParameterKey<Vector3[]> PositionKey;
-        public ParameterKey<Vector3[]> DirectionKey;
-        public ParameterKey<Color3[]> ColorKey;
-        public ParameterKey<float[]> IntensityKey;
-        public ParameterKey<float[]> DecayKey;
-        public ParameterKey<float[]> SpotBeamAngleKey;
-        public ParameterKey<float[]> SpotFieldAngleKey;
-        public ParameterKey<int> LightCountKey;
-
-        public LightingUpdateInfo()
-        {
-            Index = -1;
-            Type = LightingUpdateType.Directional;
-            Count = 0;
-            Semantic = 0;
-            PositionKey = null;
-            DirectionKey = null;
-            ColorKey = null;
-            IntensityKey = null;
-            DecayKey = null;
-            SpotBeamAngleKey = null;
-            SpotFieldAngleKey = null;
-            LightCountKey = null;
-        }
-    };
-
-    [Flags]
-    public enum LightParamSemantic
-    {
-        PositionVS = 0x1,
-        DirectionVS = 0x2,
-        PositionWS = 0x4,
-        DirectionWS = 0x8,
-        ColorWithGamma = 0x10,
-        Intensity = 0x20,
-        Decay = 0x40,
-        SpotBeamAngle = 0x80,
-        SpotFieldAngle = 0x100,
-        Count = 0x200,
-
-        PositionDirectionVS = PositionVS | DirectionVS,
-        PositionDirectionWS = PositionWS | DirectionWS
-    };
-
-    public enum LightingUpdateType
-    {
-        Directional = 0,
-        Point = 1,
-        Spot = 2,
-        DirectionalShadow = 3,
-        PointShadow = 4,
-        SpotShadow = 5
-    };
-
-    public class ShadowUpdateInfo
-    {
-        public int CascadeCount;
-
-        // Parameter keys
-        public ParameterKey ShadowMapReceiverInfoKey;
-
-        public ParameterKey ShadowMapReceiverVsmInfoKey;
-
-        public ParameterKey ShadowMapLevelReceiverInfoKey;
-
-        public ParameterKey<int> ShadowMapLightCountKey;
-
-        public ParameterKey<Texture> ShadowMapTextureKey;
-    };
 }

@@ -29,7 +29,7 @@ namespace SiliconStudio.Paradox.Graphics
     /// <summary>
     /// A geometric primitive used to draw a simple model built from a set of vertices and indices.
     /// </summary>
-    public class GeometricPrimitive<T> : ComponentBase where T : struct, IVertexWindable
+    public class GeometricPrimitive<T> : ComponentBase where T : struct, IVertex
     {
         /// <summary>
         /// The index buffer used by this geometric primitive.
@@ -96,7 +96,7 @@ namespace SiliconStudio.Paradox.Graphics
             // TODO: A better alternative would be to store recreation parameters so that we can reuse procedural code.
             VertexBuffer = Buffer.Vertex.New(graphicsDevice, vertices).RecreateWith(vertices).DisposeBy(this);
 
-            vertexArrayObject = VertexArrayObject.New(graphicsDevice, new IndexBufferBinding(IndexBuffer, IsIndex32Bits, indices.Length), new VertexBufferBinding(VertexBuffer, geometryMesh.Layout, vertices.Length)).DisposeBy(this);
+            vertexArrayObject = VertexArrayObject.New(graphicsDevice, new IndexBufferBinding(IndexBuffer, IsIndex32Bits, indices.Length), new VertexBufferBinding(VertexBuffer, new T().GetLayout(), vertices.Length)).DisposeBy(this);
         }
 
         /// <summary>

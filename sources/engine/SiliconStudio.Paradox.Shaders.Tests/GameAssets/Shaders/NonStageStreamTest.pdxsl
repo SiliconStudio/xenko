@@ -2,8 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 class NonStageStreamTest
 {
-    StreamParent2 ext0;
-    StreamParent2 ext1;
+    compose StreamParent2 ext0;
+    compose StreamParent2 ext1;
 
     float test()
     {

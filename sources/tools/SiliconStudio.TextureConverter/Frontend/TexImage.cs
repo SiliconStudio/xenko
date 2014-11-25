@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 
+using SiliconStudio.Core;
+
 namespace SiliconStudio.TextureConverter
 {
     /// <summary>
@@ -269,7 +271,7 @@ namespace SiliconStudio.TextureConverter
                 Disposed = this.Disposed,
             };
 
-            if(CopyMemory) Tools.CopyMemory(newTex.Data, this.Data, this.DataSize);
+            if (CopyMemory) Utilities.CopyMemory(newTex.Data, this.Data, this.DataSize);
 
             int offset = 0;
             for (int i = 0; i < this.SubImageArray.Length; ++i)

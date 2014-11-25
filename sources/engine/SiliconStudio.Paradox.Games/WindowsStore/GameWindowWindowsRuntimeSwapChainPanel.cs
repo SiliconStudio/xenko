@@ -171,11 +171,17 @@ namespace SiliconStudio.Paradox.Games
             // TODO: This code is just a workaround. We need to improve orientation handling PDX-1140
             var effectiveOrientation = bounds.Width > bounds.Height ? ApplicationViewOrientation.Landscape : ApplicationViewOrientation.Portrait;
             var currentOrientation = ApplicationView.GetForCurrentView().Orientation;
-            if (effectiveOrientation == currentOrientation)
+            if (effectiveOrientation == currentOrientation
+                && bounds.Width > 0 && bounds.Height > 0 && currentWidth > 0 && currentHeight > 0)
             {
                 double panelWidth;
                 double panelHeight;
-                if (currentWidth > currentHeight)
+                panelWidth = bounds.Width;
+                panelHeight = bounds.Height;
+                var panelRatio = panelWidth/panelHeight;
+                var currentRatio = currentWidth/currentHeight;
+
+                if (panelRatio < currentRatio)
                 {
                     panelWidth = bounds.Width;
                     panelHeight = (int)(currentHeight*bounds.Width/currentWidth);

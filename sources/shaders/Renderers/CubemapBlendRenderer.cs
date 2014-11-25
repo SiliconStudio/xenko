@@ -52,11 +52,6 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         private Dictionary<int, Effect> cubemapBlendEffects;
 
         /// <summary>
-        /// The post effect draw quad.
-        /// </summary>
-        private PostEffectQuad drawQuad;
-
-        /// <summary>
         /// A flag to use multiple render target to blend the cubemaps in one call.
         /// </summary>
         private bool useMultipleRenderTargets;
@@ -90,6 +85,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// <inheritdoc/>
         public override void Load()
         {
+            base.Load();
+
             useMultipleRenderTargets = GraphicsDevice.Features.Profile >= GraphicsProfile.Level_10_0;
 
             for (var maxBlendCount = 2; maxBlendCount < 5; ++maxBlendCount)
@@ -107,26 +104,13 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 compilerParameter.Set(CubemapBlendRenderer.UseMultipleRenderTargets, useMultipleRenderTargets);
                 cubemapBlendEffects.Add(maxBlendCount, EffectSystem.LoadEffect("CubemapBlendEffect", compilerParameter));
             }
-            drawQuad = new PostEffectQuad(GraphicsDevice, cubemapBlendEffects[2]);
-
-            Pass.StartPass += OnRender;
-        }
-
-        /// <inheritdoc/>
-        public override void Unload()
-        {
-            Pass.StartPass -= OnRender;
         }
 
         #endregion
 
         #region Protected methods
 
-        /// <summary>
-        /// Blends the cubemaps at designed points.
-        /// </summary>
-        /// <param name="context">The RenderContext.</param>
-        protected void OnRender(RenderContext context)
+        protected override void OnRendering(RenderContext context)
         {
             var entitySystem = Services.GetServiceAs<EntitySystem>();
             var cubemapBlendProcessor = entitySystem.GetProcessor<CubemapBlendProcessor>();
@@ -196,8 +180,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 if (useMultipleRenderTargets)
                 {
                     GraphicsDevice.SetRenderTargets(cubemap.Value.RenderTargets);
-                    cubemapBlendEffect.Apply(blendEffectParameters);
-                    drawQuad.Draw();
+                    GraphicsDevice.DrawQuad(cubemapBlendEffect, blendEffectParameters);
                 }
                 else
                 {
@@ -206,8 +189,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                         // set the render targets
                         GraphicsDevice.SetRenderTarget(cubemap.Value.RenderTargets[i]);
                         blendEffectParameters.Set(CubemapBlenderKeys.ViewIndex, i);
-                        cubemapBlendEffect.Apply(blendEffectParameters);
-                        drawQuad.Draw();
+                        GraphicsDevice.DrawQuad(cubemapBlendEffect, blendEffectParameters);
                     }
                 }
             }

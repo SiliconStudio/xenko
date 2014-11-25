@@ -6,7 +6,7 @@
 class NormalMapTexture : Transformation, Texturing, NormalVSBase, NormalStream, TangentToViewBase
 {
     // The source of the normals (usually a texture sampling)
-    ComputeColor normalMap;
+    compose ComputeColor normalMap;
 
     override void GenerateNormalVS_PS()
     {

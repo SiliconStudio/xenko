@@ -14,7 +14,7 @@
 class SpecularPower : SpecularPowerBase
 {
     // The shininess of the material.
-    ComputeColor SpecularPowerMap;
+    compose ComputeColor SpecularPowerMap;
 
     override float SpecularPowerValue()
     { 

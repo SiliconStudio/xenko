@@ -5,12 +5,10 @@ using System;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Modules;
-using SiliconStudio.Paradox.Effects.Modules.Renderers;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
+using SiliconStudio.Paradox.Extensions;
 using SiliconStudio.Paradox.Input;
 
 namespace SiliconStudio.Paradox.Graphics.Tests
@@ -45,7 +43,6 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                         new Mesh()
                         {
                             Draw = primitive.ToMeshDraw(),
-                            Layer = RenderLayers.RenderLayerAll,
                             Material = material
                         }
                     }

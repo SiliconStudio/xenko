@@ -1,9 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.ComponentModel;
+using System.Collections.Generic;
 
-using SiliconStudio.Presentation.Quantum.ComponentModel;
+using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.Presentation.Quantum
 {
@@ -12,20 +12,13 @@ namespace SiliconStudio.Presentation.Quantum
     /// </summary>
     public class ObservableViewModelService
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ObservableViewModelService"/> class.
-        /// </summary>
-        public ObservableViewModelService()
-            : this(x => new DefaultObservableNodePropertyProvider(x), x => null)
-        {
-        }
+        private readonly List<Action<IObservableNode, IDictionary<string, object>>> associatedDataProviders = new List<Action<IObservableNode, IDictionary<string, object>>>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObservableViewModelService"/> class.
         /// </summary>
-        /// <param name="nodePropertyProviderFactory">A function that returns an <see cref="IObservableNodePropertyProvider"/> for a given <see cref="IObservableNode"/>.</param>
-        public ObservableViewModelService(Func<IObservableNode, IObservableNodePropertyProvider> nodePropertyProviderFactory)
-            : this(nodePropertyProviderFactory, x => null)
+        public ObservableViewModelService()
+            : this(x => null)
         {
         }
 
@@ -34,20 +27,8 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         /// <param name="viewModelProvider">A function that returns an <see cref="ObservableViewModel"/> for an given <see cref="ObservableViewModelIdentifier"/>.</param>
         public ObservableViewModelService(Func<ObservableViewModelIdentifier, ObservableViewModel> viewModelProvider)
-            : this(x => new DefaultObservableNodePropertyProvider(x), viewModelProvider)
         {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ObservableViewModelService"/> class.
-        /// </summary>
-        /// <param name="nodePropertyProviderFactory">A function that returns an <see cref="IObservableNodePropertyProvider"/> for a given <see cref="IObservableNode"/>.</param>
-        /// <param name="viewModelProvider">A function that returns an <see cref="ObservableViewModel"/> for an given <see cref="ObservableViewModelIdentifier"/>.</param>
-        public ObservableViewModelService(Func<IObservableNode, IObservableNodePropertyProvider> nodePropertyProviderFactory, Func<ObservableViewModelIdentifier, ObservableViewModel> viewModelProvider)
-        {
-            if (nodePropertyProviderFactory == null) throw new ArgumentNullException("nodePropertyProviderFactory");
             if (viewModelProvider == null) throw new ArgumentNullException("viewModelProvider");
-            NodePropertyProviderFactory = nodePropertyProviderFactory;
             ViewModelProvider = viewModelProvider;
         }
 
@@ -58,11 +39,37 @@ namespace SiliconStudio.Presentation.Quantum
         public Func<ObservableViewModelIdentifier, ObservableViewModel> ViewModelProvider { get; set; }
 
         /// <summary>
-        /// Gets or sets the factory that provides instances of <see cref="IObservableNodePropertyProvider"/> for each <see cref="IObservableNode"/> of the
-        /// view models. The node property provider is used by each <see cref="ObservableNode"/> to provide a collection of member properties when the
-        /// view model is used as a <see cref="ICustomTypeDescriptor"/>.
+        /// Register a method that will associate additional data to an instance of <see cref="IObservableNode"/>.
         /// </summary>
-        /// <remarks>By default, this factory provides a new instance of <see cref="DefaultObservableNodePropertyProvider"/> for each node.</remarks>
-        public Func<IObservableNode, IObservableNodePropertyProvider> NodePropertyProviderFactory { get; set; }
+        /// <param name="provider">The method that will associate additional data to an instance of <see cref="IObservableNode"/>.</param>
+        public void RegisterAssociatedDataProvider(Action<IObservableNode, IDictionary<string, object>> provider)
+        {
+            associatedDataProviders.Add(provider);
+        }
+
+        /// <summary>
+        /// Unregister a previoulsy registered method that was associating additional data to an instance of <see cref="IObservableNode"/>.
+        /// </summary>
+        /// <param name="provider">The previoulsy registered method that was associating additional additional data to an instance of <see cref="IObservableNode"/>.</param>
+        public void UnregisterAssociatedDataProvider(Action<IObservableNode, IDictionary<string, object>> provider)
+        {
+            associatedDataProviders.Remove(provider);
+        }
+
+        internal IDictionary<string, object> RequestAssociatedData(IObservableNode node, bool updatingData)
+        {
+            var mergedResult = new Dictionary<string, object>();
+            foreach (var provider in associatedDataProviders)
+            {
+                var data = new Dictionary<string, object>();
+                provider(node, data);
+                // We use the Add method the first time to prevent unspotted key collision.
+                if (updatingData)
+                    data.ForEach(x => mergedResult.Add(x.Key, x.Value));
+                else
+                    data.ForEach(x => mergedResult[x.Key] = x.Value);
+            }
+            return mergedResult;
+        }
     }
 }

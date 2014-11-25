@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.ComponentModel;
 
 namespace SiliconStudio.Core.IO
 {
@@ -8,13 +9,15 @@ namespace SiliconStudio.Core.IO
     /// Defines a normalized file path. See <see cref="UPath"/> for details. This class cannot be inherited.
     /// </summary>
     [DataContract("UFile")]
+    [TypeConverter(typeof(UFileTypeConverter))]
     public sealed class UFile : UPath
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UFile"/> class.
         /// </summary>
         /// <param name="filePath">The file path.</param>
-        public UFile(string filePath) : base(filePath, false)
+        public UFile(string filePath)
+            : base(filePath, false)
         {
         }
 
@@ -46,7 +49,8 @@ namespace SiliconStudio.Core.IO
         /// <param name="directory">The directory.</param>
         /// <param name="name">The name.</param>
         /// <param name="extension">The extension.</param>
-        public UFile(string drive, string directory, string name, string extension) : base(drive, directory, name, extension)
+        public UFile(string drive, string directory, string name, string extension)
+            : base(drive, directory, name, extension)
         {
         }
 

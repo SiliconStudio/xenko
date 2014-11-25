@@ -15,7 +15,7 @@
 
 class TessellationDisplacement<float TFactor, float TBase> : ShaderBaseTessellation, TessellationFlat, Texturing, NormalVSBase
 {
-    ComputeColor tessellationDisplacement;
+    compose ComputeColor tessellationDisplacement;
 
     override float ComputeClipping(InputPatch<Input, InputControlPointCount> input, const OutputPatch<Input2, 3> output, inout Constants constants)
     {

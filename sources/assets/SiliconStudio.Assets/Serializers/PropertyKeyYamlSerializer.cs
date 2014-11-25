@@ -68,14 +68,9 @@ namespace SiliconStudio.Assets.Serializers
         {
             var propertyKey = (PropertyKey)objectContext.Instance;
 
-            var className = objectContext.SerializerContext.TagFromType(propertyKey.OwnerType);
-            var sb = new StringBuilder(className.Length + 1 + propertyKey.Name.Length);
-
-            sb.Append(className, 1, className.Length - 1); // Ignore initial '!'
-            sb.Append('.');
-            sb.Append(propertyKey.Name);
-
-            return sb.ToString();
+            return AssetPropertyKeyNameResolver.ComputePropertyKeyName(objectContext.SerializerContext, propertyKey);
         }
+
+        
     }
 }

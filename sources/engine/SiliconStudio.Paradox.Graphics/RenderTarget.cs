@@ -53,5 +53,15 @@ namespace SiliconStudio.Paradox.Graphics
             base.Destroy();
             Texture.ReleaseInternal();
         }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="RenderTarget"/> to <see cref="Texture"/>.
+        /// </summary>
+        /// <param name="renderTarget">The render target.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator Texture(RenderTarget renderTarget)
+        {
+            return renderTarget == null ? null : renderTarget.Texture;
+        }
     }
 }

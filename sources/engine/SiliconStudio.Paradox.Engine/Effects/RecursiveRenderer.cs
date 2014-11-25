@@ -11,33 +11,30 @@ namespace SiliconStudio.Paradox.Effects
     /// </summary>
     public class RecursiveRenderer : Renderer
     {
-		protected RenderLayers ActiveLayersBackup;
-
         public RecursiveRenderer(IServiceRegistry services, RenderPipeline recursivePipeline) : base(services)
         {
             RecursivePipeline = recursivePipeline;
-            ActiveLayersBackup = RenderLayers.RenderLayerAll;
         }
 
         public RenderPipeline RecursivePipeline { get; set; }
 
         public override void Load()
         {
+            base.Load();
+
             // Register pipeline
             RenderSystem.Pipelines.Add(RecursivePipeline);
-
-            Pass.StartPass += Render;
         }
 
         public override void Unload()
         {
-            Pass.StartPass -= Render;
+            base.Unload();
 
             // Unregister pipeline
             RenderSystem.Pipelines.Remove(RecursivePipeline);
         }
 
-        protected virtual void Render(RenderContext context)
+        protected override void OnRendering(RenderContext context)
         {
             // Save RenderPass
             var currentPass = context.CurrentPass;

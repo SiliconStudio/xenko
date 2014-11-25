@@ -1,18 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.TextTemplating.VSHost;
+
 using SiliconStudio.Paradox.Shaders.Parser;
-using SiliconStudio.Paradox.Shaders.Parser.Ast;
 using SiliconStudio.Paradox.Shaders.Parser.Mixins;
-using SiliconStudio.Shaders.Utility;
 
 namespace SiliconStudio.Paradox.VisualStudio.Commands.Shaders
 {
@@ -20,29 +13,26 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands.Shaders
     {
         public static byte[] GenerateCode(string inputFileName, string inputFileContent)
         {
-            // Compile
-            var shader = ParadoxShaderParser.PreProcessAndParse(inputFileContent, inputFileName);
-            var shaderClass = shader.Declarations.OfType<ShaderClassType>().FirstOrDefault();
-
-            ShaderKeyGeneratorBase shaderKeyGenerator;
-
-            if (shaderClass != null)
+            // Always output a result into the file
+            string result;
+            try
             {
-                shaderKeyGenerator = new ShaderKeyGenerator(shaderClass);
-            }
-            else
-            {
+                var parsingResult = ParadoxShaderParser.TryPreProcessAndParse(inputFileContent, inputFileName);
+
                 // Try to generate a mixin code.
-                var loggerResult = new LoggerResult();
-                shaderKeyGenerator = new ShaderMixinCodeGen(shader, loggerResult);
-            }
+                var shaderKeyGenerator = new ShaderMixinCodeGen(parsingResult.Shader, parsingResult);
 
-            if (!shaderKeyGenerator.Run())
+                shaderKeyGenerator.Run();
+                result = shaderKeyGenerator.Text ?? string.Empty;
+            }
+            catch (Exception ex)
             {
-                throw new InvalidOperationException(string.Format("Unable to parse shader class from {0}", inputFileName));
+                result = "// Unexpected exceptions occured while generating the file\n" + ex;
             }
 
-            return Encoding.ASCII.GetBytes(shaderKeyGenerator.Text);
+            // We force the UTF8 to include the BOM to match VS default
+            var data = Encoding.UTF8.GetBytes(result);
+            return Encoding.UTF8.GetPreamble().Concat(data).ToArray();
         }
     }
 }

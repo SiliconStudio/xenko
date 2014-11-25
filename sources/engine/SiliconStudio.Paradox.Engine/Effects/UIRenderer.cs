@@ -3,6 +3,7 @@
 using System;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.UI;
@@ -35,10 +36,14 @@ namespace SiliconStudio.Paradox.Effects
             batch = uiSystem.Batch;
 
             rendererManager = new RendererManager(new DefaultRenderersFactory(services));
+
+            DebugName = "UIRenderer";
         }
 
         public override void Load()
         {
+            base.Load();
+
             uiSystem.ResolutionChanged += UISystemOnResolutionChanged;
 
             renderingContext = new UIRenderingContext
@@ -46,9 +51,6 @@ namespace SiliconStudio.Paradox.Effects
                 DepthStencilBuffer = GraphicsDevice.DepthStencilBuffer,
                 RenderTarget = GraphicsDevice.BackBuffer,
             };
-
-            // Register callback for rendering meshes extracted from RenderModels
-            Pass.StartPass += RenderUI;
         }
 
         private void UISystemOnResolutionChanged(object sender, EventArgs eventArgs)
@@ -58,12 +60,13 @@ namespace SiliconStudio.Paradox.Effects
 
         public override void Unload()
         {
+            base.Unload();
+
             if (uiSystem != null)
                 uiSystem.ResolutionChanged -= UISystemOnResolutionChanged;
-            Pass.StartPass -= RenderUI;
         }
 
-        private void RenderUI(RenderContext param)
+        protected override void OnRendering(RenderContext context)
         {
             if (uiSystem.RootElement == null)
                 return;

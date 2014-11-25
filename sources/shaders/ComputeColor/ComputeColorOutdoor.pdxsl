@@ -2,10 +2,10 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 class ComputeColorOutdoor : ComputeColor
 {
-    ComputeColor color1;
-    ComputeColor color2;
-    ComputeColor color3;
-    ComputeColor color4;
+    compose ComputeColor color1;
+    compose ComputeColor color2;
+    compose ComputeColor color3;
+    compose ComputeColor color4;
 
     override float4 Compute()
     {

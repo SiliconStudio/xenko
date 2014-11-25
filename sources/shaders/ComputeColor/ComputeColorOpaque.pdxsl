@@ -5,7 +5,7 @@
 /// </summary>
 class ComputeColorOpaque : ComputeColor
 {
-    ComputeColor color1;
+    compose ComputeColor color1;
 
     override float4 Compute()
     {

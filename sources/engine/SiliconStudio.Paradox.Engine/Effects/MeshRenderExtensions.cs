@@ -4,25 +4,25 @@ using System;
 
 namespace SiliconStudio.Paradox.Effects
 {
-    public static class MeshRenderExtensions
+    internal static class MeshRenderExtensions
     {
-        public static MeshRenderState GetMeshRenderState(this RenderPass pass)
+        internal static ModelRendererState GetModelRendererState(this RenderPass pass)
         {
-            return GetOrCreateMeshRenderState(pass, false);
+            return GetOrCreateModelRendererState(pass, false);
         }
 
-        public static MeshRenderState GetOrCreateMeshRenderState(this RenderPass pass, bool createMeshStateIfNotFound = true)
+        internal static ModelRendererState GetOrCreateModelRendererState(this RenderPass pass, bool createMeshStateIfNotFound = true)
         {
             var pipeline = pass.Pipeline;
             if (pipeline == null)
             {
                 throw new ArgumentException("RenderPass is not associated with a RenderPipeline", "pass");
             }
-            var pipelineState = pipeline.Tags.Get(MeshRenderState.Key);
+            var pipelineState = pipeline.Tags.Get(ModelRendererState.Key);
             if (createMeshStateIfNotFound && pipelineState == null)
             {
-                pipelineState = new MeshRenderState();
-                pipeline.Tags.Set(MeshRenderState.Key, pipelineState);
+                pipelineState = new ModelRendererState();
+                pipeline.Tags.Set(ModelRendererState.Key, pipelineState);
             }
             return pipelineState;
         }

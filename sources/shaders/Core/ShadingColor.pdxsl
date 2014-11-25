@@ -5,7 +5,7 @@
 /// </summary>
 class ShadingColor : ShaderBase
 {
-    ComputeColor Color;
+    compose ComputeColor Color;
 
     override void PSMain()
     {

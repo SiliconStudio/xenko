@@ -40,7 +40,7 @@ namespace SiliconStudio.Presentation.Settings
         /// <inheritdoc/>
         internal override object GetSerializableValue()
         {
-            return new List<T>(items);
+            return new List<object>(items.Cast<object>().Select(x => x != null ? x.ToString() : null));
         }
 
         private void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
