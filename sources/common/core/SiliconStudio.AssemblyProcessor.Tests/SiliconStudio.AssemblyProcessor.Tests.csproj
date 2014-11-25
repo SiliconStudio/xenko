@@ -13,6 +13,7 @@
     <AssemblyName>SiliconStudio.AssemblyProcessor.Tests</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
+    <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioOfficialBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Cecil">
