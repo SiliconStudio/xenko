@@ -172,7 +172,7 @@ namespace SiliconStudio.Core.Collections
         /// <inheritdoc/>
         void IDictionary.Add(object key, object value)
         {
-            ((IDictionary)innerDictionary).Add(key, value);
+            Add((TKey)key, (TValue)value);
         }
 
         /// <inheritdoc/>
@@ -202,7 +202,7 @@ namespace SiliconStudio.Core.Collections
         /// <inheritdoc/>
         void IDictionary.Remove(object key)
         {
-            ((IDictionary)innerDictionary).Remove(key);
+            Remove((TKey)key);
         }
 
         /// <inheritdoc/>
@@ -214,8 +214,14 @@ namespace SiliconStudio.Core.Collections
         /// <inheritdoc/>
         object IDictionary.this[object key]
         {
-            get { return ((IDictionary)innerDictionary)[key]; }
-            set { ((IDictionary)innerDictionary)[key] = value; }
+            get
+            {
+                return this[(TKey)key];
+            }
+            set
+            {
+                this[(TKey)key] = (TValue)value;
+            }
         }
 
         /// <inheritdoc/>
