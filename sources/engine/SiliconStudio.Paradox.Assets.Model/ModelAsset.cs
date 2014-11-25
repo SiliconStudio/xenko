@@ -10,6 +10,7 @@ using SharpYaml.Serialization;
 
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
+using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
@@ -50,7 +51,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <userdoc>
         /// The nodes of the model.
         /// </userdoc>
-        [DataMember(20)]
+        [DataMember(20), DiffUseAsset1]
         public List<NodeInformation> Nodes { get; private set; }
         
             /// <summary>

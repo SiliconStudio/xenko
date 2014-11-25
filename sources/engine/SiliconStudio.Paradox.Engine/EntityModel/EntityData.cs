@@ -19,11 +19,12 @@ namespace SiliconStudio.Paradox.EntityModel.Data
         public string Name;
 
         [DataMember(20)]
-        public TrackingDictionary<PropertyKey, EntityComponentData> Components = new TrackingDictionary<PropertyKey, EntityComponentData>();
+        public TrackingDictionary<PropertyKey, EntityComponentData> Components { get; private set; }
 
         public EntityData()
         {
             Id = Guid.NewGuid();
+            Components = new TrackingDictionary<PropertyKey, EntityComponentData>();
             Components.CollectionChanged += Components_CollectionChanged;
         }
 

@@ -1,7 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.ComponentModel;
-
+using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Paradox.Assets.Model
@@ -13,13 +13,13 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <summary>
         /// The name of the node.
         /// </summary>
-        [DataMember(10)]
+        [DataMember(10), DiffUseAsset1, DiffCompareKey]
         public string Name;
 
         /// <summary>
         ///  The index of the parent.
         /// </summary>
-        [DataMember(20)]
+        [DataMember(20), DiffUseAsset1]
         public int Depth;
 
         /// <summary>

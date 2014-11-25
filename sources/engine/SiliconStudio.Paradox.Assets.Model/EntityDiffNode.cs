@@ -45,10 +45,10 @@ namespace SiliconStudio.Paradox.Assets.Model
 
             // Build children
             var children = transformationComponent.Children;
-            Children = new EntityDiffNode[children.Count];
+            Children = new List<EntityDiffNode>(children.Count);
             for (int i = 0; i < children.Count; ++i)
             {
-                Children[i] = new EntityDiffNode(entityHierarchy, children[i].Entity.Id);
+                Children.Add(new EntityDiffNode(entityHierarchy, children[i].Entity.Id));
             }
         }
 
@@ -57,23 +57,25 @@ namespace SiliconStudio.Paradox.Assets.Model
             entityHierarchy.Entities.Clear();
 
             // Rebuild list of children and entityCollection recursively
-            ApplyChangesRecursive();
+            ApplyChangesRecursive(entityHierarchy, this);
 
             // Restore root entity Id
             entityHierarchy.RootEntity = Data.Id;
 
             // Remove references to invalid entities/components
+            // Currently doing a full round-trip to be safe, but this is probably not necessary
+            EntityAnalysis.UpdateEntityReferences(entityHierarchy);
             EntityAnalysis.FixupEntityReferences(entityHierarchy);
         }
 
-        private void ApplyChangesRecursive()
+        private static void ApplyChangesRecursive(EntityHierarchyData entityHierarchy, EntityDiffNode entityNode)
         {
-            entityHierarchy.Entities.Add(Data);
-            transformationComponent.Children.Clear();
-            foreach (var child in Children)
+            entityHierarchy.Entities.Add(entityNode.Data);
+            entityNode.transformationComponent.Children.Clear();
+            foreach (var child in entityNode.Children)
             {
-                transformationComponent.Children.Add(new EntityComponentReference<TransformationComponent>(child.transformationComponent));
-                child.ApplyChangesRecursive();
+                ApplyChangesRecursive(entityHierarchy, child);
+                entityNode.transformationComponent.Children.Add(new EntityComponentReference<TransformationComponent>(child.transformationComponent));
             }
         }
     }
