@@ -36,7 +36,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// Gets or sets a method that retrieves the currently active <see cref="ObservableViewModel"/>. This method is used to get the current observable
         /// view model matching a Quantum object when using undo/redo features, since observable objects can be destroyed and recreated frequently.
         /// </summary>
-        public Func<ObservableViewModelIdentifier, ObservableViewModel> ViewModelProvider { get; set; }
+        public Func<ObservableViewModelIdentifier, ObservableViewModel> ViewModelProvider { get; private set; }
 
         /// <summary>
         /// Register a method that will associate additional data to an instance of <see cref="IObservableNode"/>.
