@@ -116,13 +116,29 @@ namespace SiliconStudio.Assets.Diff
                         continue;
                     }
 
-                    // As we are merging into asset1, the only relevant changes can only come from asset2
-                    if (changeType != Diff3ChangeType.MergeFromAsset2)
+                    object dataInstance2;
+                    switch (changeType)
                     {
-                        continue;
-                    }
+                        case Diff3ChangeType.MergeFromAsset2:
+                            // As we are merging into asset1, the only relevant changes can only come from asset2
+                            dataInstance2 = diff3Node.Asset2Node != null ? diff3Node.Asset2Node.Instance : null;
+                            break;
+                        case Diff3ChangeType.Children:
+                            if (diff3Node.Asset1Node == null)
+                            {
+                                diff3Node.Asset1Node = diff3Node.Asset2Node.CreateWithEmptyInstance();
+                            }
 
-                    var dataInstance2 = diff3Node.Asset2Node != null ? diff3Node.Asset2Node.Instance : null;
+                            // If a node has children, since DiffCollection/DiffDictionary takes null as empty arrays,
+                            // we should now create this array for it to be properly merged
+                            if (diff3Node.Asset1Node.Instance != null)
+                                continue;
+
+                            dataInstance2 = Activator.CreateInstance(diff3Node.InstanceType);
+                            break;
+                        default:
+                            continue;
+                    }
 
                     // Sets the value on the node
                     diff3Node.ReplaceValue(dataInstance2, node => node.Asset1Node, diff3Node.Asset2Node == null);

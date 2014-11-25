@@ -93,5 +93,10 @@ namespace SiliconStudio.Assets.Visitors
         {
             return string.Format("{0} => {1}", key, Instance ?? "null");
         }
+
+        public override DataVisitNode CreateWithEmptyInstance()
+        {
+            return new DataVisitDictionaryItem(key, KeyDescriptor, null, ValueDescriptor);
+        }
     }
 }
