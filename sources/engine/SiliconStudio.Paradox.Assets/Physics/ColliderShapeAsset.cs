@@ -24,6 +24,9 @@ namespace SiliconStudio.Paradox.Assets.Physics
             BuildOrder = 600; //make sure we build after Models
         }
 
+        /// <userdoc>
+        /// The collection of shapes in this asset, a collection shapes will automatically generate a compound shape.
+        /// </userdoc>
         [DataMember(10)]
         public PhysicsColliderShapeData Data { get; set; }
 

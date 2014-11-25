@@ -109,6 +109,16 @@ namespace SiliconStudio.Paradox.Effects.Processors
             return new EntityLightShadow { Entity = entity, Light = entity.Get(LightComponent.Key), ShadowMap = null };
         }
 
+        /// <inheritdoc/>
+        protected override void OnEntityAdding(Entity entity, EntityLightShadow data)
+        {
+            base.OnEntityAdding(entity, data);
+            if (ManageShadows && (data.Light.Type == LightType.Directional || data.Light.Type == LightType.Spot) && data.Light.ShadowMap)
+                CreateShadowMap(data);
+        }
+
+        protected abstract void CreateShadowMap(EntityLightShadow light);
+
         #endregion
 
         #region Protected static methods

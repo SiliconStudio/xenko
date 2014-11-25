@@ -73,14 +73,6 @@ namespace SiliconStudio.Paradox.Effects.Processors
         #region Protected methods
 
         /// <inheritdoc/>
-        protected override void OnEntityAdding(Entity entity, EntityLightShadow data)
-        {
-            base.OnEntityAdding(entity, data);
-            if (ManageShadows && (data.Light.Type == LightType.Directional || data.Light.Type == LightType.Spot) && data.Light.ShadowMap)
-                CreateShadowMap(data);
-        }
-
-        /// <inheritdoc/>
         protected override void OnEntityRemoved(Entity entity, EntityLightShadow data)
         {
             if (ManageShadows && data.ShadowMap != null)
@@ -113,12 +105,8 @@ namespace SiliconStudio.Paradox.Effects.Processors
             }
             base.OnEntityRemoved(entity, data);
         }
-
-        #endregion
-
-        #region Private methods
-
-        private void CreateShadowMap(EntityLightShadow light)
+        
+        protected override void CreateShadowMap(EntityLightShadow light)
         {
             // create the shadow map
             var shadowMap = new ShadowMap
@@ -143,6 +131,10 @@ namespace SiliconStudio.Paradox.Effects.Processors
             InternalShadowMaps.Add(shadowMap);
             light.ShadowMap = shadowMap;
         }
+
+        #endregion
+
+        #region Private methods
 
         private ShadowMapTexture AllocateOrChooseTexture(ShadowMap newShadowMap, Dictionary<ShadowMapTexture, List<ShadowMap>> shadowMapTextures)
         {

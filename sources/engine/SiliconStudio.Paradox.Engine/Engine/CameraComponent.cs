@@ -174,6 +174,20 @@ namespace SiliconStudio.Paradox.Engine
         public Matrix ViewMatrix { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to use custom <see cref="ProjectionMatrix"/>. Default is <c>false</c>
+        /// </summary>
+        /// <value><c>true</c> if use custom <see cref="ProjectionMatrix"/>; otherwise, <c>false</c>.</value>
+        [DataMemberConvert]
+        public bool UseProjectionMatrix { get; set; }
+
+        /// <summary>
+        /// Gets or sets the local projection matrix, only used when <see cref="UseProjectionMatrix"/> is <c>true</c>.
+        /// </summary>
+        /// <value>The local projection matrix.</value>
+        [DataMemberConvert]
+        public Matrix ProjectionMatrix { get; set; }
+
+        /// <summary>
         /// Gets or sets the position.
         /// </summary>
         /// <value>The position.</value>
@@ -216,16 +230,21 @@ namespace SiliconStudio.Paradox.Engine
                 }
                 else
                 {
-                    // TODO: Test this path
+                    // TODO: determine which axis of the camera to look from
                     var worldMatrix = EnsureEntity.Transformation.WorldMatrix;
-                    // Invert of WorldMatrix will make everything face X, but for camera we want to face Z, so turn around Y.
-                    worldMatrix = Matrix.RotationY((float) (Math.PI*0.5))*worldMatrix;
                     Matrix.Invert(ref worldMatrix, out viewMatrix);
                 }
             }
-
+            
             // Calculates the projection
-            Matrix.PerspectiveFovRH(VerticalFieldOfView, AspectRatio, NearPlane, FarPlane, out projection);
+            if (UseProjectionMatrix)
+            {
+                projection = ProjectionMatrix;
+            }
+            else
+            {
+                Matrix.PerspectiveFovRH(VerticalFieldOfView, AspectRatio, NearPlane, FarPlane, out projection);
+            }
         }
 
         public override PropertyKey DefaultKey

@@ -24,6 +24,9 @@ namespace SiliconStudio.Paradox.Physics
             ColliderShapes = new List<IColliderShapeDesc>();
         }
 
+        /// <userdoc>
+        /// The collection of shapes in this asset, a collection shapes will automatically generate a compound shape.
+        /// </userdoc>
         [DataMember(10)]
         public List<IColliderShapeDesc> ColliderShapes { get; set; }
     }

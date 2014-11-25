@@ -37,6 +37,7 @@ namespace SiliconStudio.BuildEngine
         public AnimationRepeatMode AnimationRepeatMode { get; set; }
 
         public Dictionary<string, Tuple<Guid, string>> Materials { get; set; }
+        public Dictionary<string, Tuple<Guid, string>> Lightings { get; set; }
         public Dictionary<string, ParameterCollectionData> Parameters;
 
         public bool Compact { get; set; }
@@ -135,6 +136,12 @@ namespace SiliconStudio.BuildEngine
                             foreach (var keyValue in Parameters[mesh.Name])
                                 mesh.Parameters.Set(keyValue.Key, keyValue.Value);
                         }
+
+                        // TODO: remove this when Lighting configuration will be behind a key in mesh parameters. This case will be handled by the code just above
+                        // set the lighting configuration description
+                        Tuple<Guid, string> lightingReference;
+                        if (Lightings.TryGetValue(mesh.Name, out lightingReference))
+                            mesh.Parameters.Set(LightingKeys.LightingConfigurations, new ContentReference<LightingConfigurationsSetData>(lightingReference.Item1, lightingReference.Item2));
                     }
 
                     // split the meshes if necessary
