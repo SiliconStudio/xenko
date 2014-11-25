@@ -13,6 +13,7 @@
     <AssemblyName>SiliconStudio.Paradox.ProjectGenerator</AssemblyName>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
     <ParadoxBuildTags>WindowsTools</ParadoxBuildTags>
+    <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <Prefer32Bit>true</Prefer32Bit>

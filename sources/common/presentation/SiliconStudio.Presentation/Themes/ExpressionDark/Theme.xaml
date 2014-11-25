@@ -120,7 +120,7 @@
     <BitmapImage x:Key="ImageMinimizeWindow" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/minimize_window.png" />
     <BitmapImage x:Key="ImageRestoreWindow" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/restore_window.png" />
 
-    <Style TargetType="Window">
+    <Style TargetType="Window" x:Key="WindowChromeStyle">
         <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
         <Setter Property="WindowChrome.WindowChrome">
             <Setter.Value>

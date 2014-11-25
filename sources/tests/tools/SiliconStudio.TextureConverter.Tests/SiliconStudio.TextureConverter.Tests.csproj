@@ -10,6 +10,7 @@
     <AssemblyName>SiliconStudio.TextureConverter.Tests</AssemblyName>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
     <ParadoxBuildTags>WindowsTools</ParadoxBuildTags>
+    <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="nunit.core.interfaces">
