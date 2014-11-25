@@ -1,10 +1,11 @@
 ### Version 1.0.0-beta04
 
-Release date: 2014/11/21
+Release date: 2014/11/25
 
 #### New Features
-- Build: We now use OSS (OpenSource Signing) so that you can fake-sign assemblies with the same keys as ours, and use your own compiled Paradox with the official editor.
-- Graphics: Spot light shadow maps in deferred rendering.
+- Build: We now use OSS (OpenSource Signing) so that you can fake-sign assemblies with the same keys as ours, and use your own compiled Paradox with the official editor ([#88](https://github.com/SiliconStudio/paradox/issues/88)).
+- Graphics: Spot light shadow maps in deferred rendering ([#96](https://github.com/SiliconStudio/paradox/issues/96)).
+- Engine: Unified 2D and 3D rendering: `SpriteRenderer` now works with custom matrices or camera.
 
 #### Enhancements
 - Core: Add support for `ModuleInitializer` in nested types
@@ -12,7 +13,7 @@ Release date: 2014/11/21
 - Graphics: Add geometric primitive for Cone.
 - Engine: Several internal improvements and factorization to support upcoming `PostEffects` framework.
 - Engine: Add support for filtering model selection and rendering in `ModelRenderer`.  
-- Engine: `SpriteRenderer` now uses the Projection and View matrices set in the pipeline.
+- Engine: `SpriteRenderer` now uses the Projection and View matrices set in the pipeline ([#96](https://github.com/SiliconStudio/paradox/issues/96)).
 - Samples: Spot light shadows in DeferredLighting sample.
 - Shaders: Add support for naming a child in a `pdxfx` to allow child override.
 - Shaders: `cs` files generated from `pfxfx` are now using internal and nested types instead of putting everything in the root namespace.
