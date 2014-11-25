@@ -4,8 +4,9 @@ Release date: 2014/11/25
 
 #### New Features
 - Build: We now use OSS (OpenSource Signing) so that you can fake-sign assemblies with the same keys as ours, and use your own compiled Paradox with the official editor ([#88](https://github.com/SiliconStudio/paradox/issues/88)).
-- Graphics: Spot light shadow maps in deferred rendering ([#96](https://github.com/SiliconStudio/paradox/issues/96)).
 - Engine: Unified 2D and 3D rendering: `SpriteRenderer` now works with custom matrices or camera.
+- Graphics: Spot light shadow maps in deferred rendering ([#96](https://github.com/SiliconStudio/paradox/issues/96)).
+- Studio: Added documentation on properties of the property grid.
 
 #### Enhancements
 - Core: Add support for `ModuleInitializer` in nested types
@@ -18,7 +19,6 @@ Release date: 2014/11/25
 - Shaders: Add support for naming a child in a `pdxfx` to allow child override.
 - Shaders: `cs` files generated from `pfxfx` are now using internal and nested types instead of putting everything in the root namespace.
 - Shaders: Add support for declaring a namespace in a `pdxsl`, only valid and used for `ParameterKey` declarations.
-- Studio: Added documentation on properties of the property grid.
 
 #### Issues fixed
 - Assets: Textures with arbitrary size (non square and non power-of-two) are now correctly loaded.
