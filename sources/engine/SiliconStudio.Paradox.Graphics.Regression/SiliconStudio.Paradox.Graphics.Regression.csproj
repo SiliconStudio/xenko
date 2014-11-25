@@ -1,5 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
+  </PropertyGroup>
   <Import Project="..\..\targets\Paradox.PreSettings.targets" />
   <PropertyGroup>
     <ProjectGuid>{D002FEB1-00A6-4AB1-A83F-1F253465E64D}</ProjectGuid>
@@ -130,6 +133,9 @@
     <Compile Include="TouchRunner\TouchViewController.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="BlockingBufferedStream.cs" />
     <Compile Include="FrameGameSystem.cs" />
     <Compile Include="GameTester.cs" />
