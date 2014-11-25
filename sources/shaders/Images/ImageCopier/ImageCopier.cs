@@ -25,7 +25,6 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             Sampler = GraphicsDevice.SamplerStates.LinearClamp;
             Color = Color4.White;
-            LodLevel = 0.0f;
         }
 
         /// <summary>
@@ -41,22 +40,6 @@ namespace SiliconStudio.Paradox.Effects.Images
             set
             {
                 Parameters.Set(ImageCopierShaderKeys.Color, value);
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the mipmap lod level to copy the texture from. Default is <c>0</c>
-        /// </summary>
-        /// <value>The lod level to copy the texture from.</value>
-        public float LodLevel
-        {
-            get
-            {
-                return Parameters.Get(ImageCopierShaderKeys.Lod);
-            }
-            set
-            {
-                Parameters.Set(ImageCopierShaderKeys.Lod, value);
             }
         }
 
