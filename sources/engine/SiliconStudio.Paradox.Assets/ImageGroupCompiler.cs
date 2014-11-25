@@ -326,16 +326,16 @@ namespace SiliconStudio.Paradox.Assets
                     if (resultStatus != ResultStatus.Successful)
                     {
                         // Dispose used textures
-                        //                        foreach (var image in imageDictionary.Values)
-                        //                            image.Dispose();
+                        foreach (var image in imageDictionary.Values)
+                            image.Dispose();
 
                         return resultStatus;
                     }
                 }
 
                 // Dispose used textures
-                //                foreach (var image in imageDictionary.Values)
-                //                    image.Dispose();
+                foreach (var image in imageDictionary.Values)
+                    image.Dispose();
             }
 
             return ResultStatus.Successful;

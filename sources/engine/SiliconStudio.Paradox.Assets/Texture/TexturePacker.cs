@@ -177,6 +177,8 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 return canPackAll;
             }
 
+            ResetPacker();
+
             return PackTextures(textureElements, Algorithm, width, height);
         }
 
