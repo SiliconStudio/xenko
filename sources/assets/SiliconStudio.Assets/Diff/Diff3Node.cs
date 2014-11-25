@@ -11,6 +11,7 @@ namespace SiliconStudio.Assets.Diff
     {
         private static readonly Func<Diff3Node, bool> StaticCheckVisitChildren = CheckVisitChildren;
         private static readonly Func<Diff3Node, bool> StaticCheckVisitNode = CheckVisitNode;
+        private static readonly Func<Diff3Node, bool> StaticCheckVisitLeaf = CheckVisitLeaf;
 
         public Diff3Node()
         {
@@ -44,12 +45,22 @@ namespace SiliconStudio.Assets.Diff
             return this.Children(StaticCheckVisitNode, StaticCheckVisitChildren);
         }
 
+        public IEnumerable<Diff3Node> FindLeafDifferences()
+        {
+            return this.Children(StaticCheckVisitLeaf, StaticCheckVisitChildren);
+        }
+
         private static bool CheckVisitChildren(Diff3Node diff3)
         {
             return diff3.ChangeType == Diff3ChangeType.Children || diff3.ChangeType != Diff3ChangeType.None;
         }
 
         private static bool CheckVisitNode(Diff3Node diff3)
+        {
+            return true;
+        }
+
+        private static bool CheckVisitLeaf(Diff3Node diff3)
         {
             return diff3.ChangeType != Diff3ChangeType.Children;
         }
@@ -146,6 +157,11 @@ namespace SiliconStudio.Assets.Diff
         public override string ToString()
         {
             var text = new StringBuilder();
+
+            var node = this.Asset1Node ?? this.BaseNode ?? this.Asset2Node;
+            if (node is DataVisitMember)
+                text.AppendFormat("{0}: ", ((DataVisitMember)node).MemberDescriptor.Name);
+
             text.Append("Diff = ");
             text.Append(ChangeType);
             if (HasMembers)

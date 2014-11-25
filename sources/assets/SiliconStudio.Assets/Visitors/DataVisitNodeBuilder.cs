@@ -128,7 +128,7 @@ namespace SiliconStudio.Assets.Visitors
         /// <param name="thisObject">The this object.</param>
         /// <param name="member">The member.</param>
         /// <exception cref="System.ArgumentNullException">member</exception>
-        private static void AddMember(DataVisitNode thisObject, DataVisitNode member)
+        private static void AddMember(DataVisitNode thisObject, DataVisitMember member)
         {
             if (member == null) throw new ArgumentNullException("member");
             if (thisObject.Members == null)
