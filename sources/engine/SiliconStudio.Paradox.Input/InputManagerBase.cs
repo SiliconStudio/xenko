@@ -45,9 +45,11 @@ namespace SiliconStudio.Paradox.Input
 
         internal bool LostFocus;
 
-        internal List<MouseInputEvent> MouseInputEvents = new List<MouseInputEvent>();
+        internal readonly List<MouseInputEvent> MouseInputEvents = new List<MouseInputEvent>();
 
         internal Vector2 CurrentMousePosition;
+
+        internal Vector2 CurrentMouseDelta;
 
         private readonly Dictionary<Keys, bool> activeKeys = new Dictionary<Keys, bool>();
 
@@ -315,6 +317,12 @@ namespace SiliconStudio.Paradox.Input
         /// </summary>
         /// <value>The mouse position.</value>
         public Vector2 MousePosition { get; private set; }
+
+        /// <summary>
+        /// Gets the mouse delta.
+        /// </summary>
+        /// <value>The mouse position.</value>
+        public Vector2 MouseDelta { get; private set; }
 
         /// <summary>
         /// Gets a binding value for the specified name and the specified config extract from the current <see cref="VirtualButtonConfigSet"/>.
@@ -657,9 +665,12 @@ namespace SiliconStudio.Paradox.Input
                     }
                 }
                 MouseInputEvents.Clear();
+
+                MousePosition = CurrentMousePosition;
+                MouseDelta = CurrentMouseDelta;
+                CurrentMouseDelta = Vector2.Zero;
             }
 
-            MousePosition = CurrentMousePosition;
 
             if (LostFocus)
             {

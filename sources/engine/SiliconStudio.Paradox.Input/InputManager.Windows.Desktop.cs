@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-
 using System;
 using System.Diagnostics;
 using System.Windows;
@@ -56,6 +55,29 @@ namespace SiliconStudio.Paradox.Input
 
             // Scan all registered inputs
             Scan();
+        }
+
+        private bool isCapturing;
+        private System.Drawing.Point capturedPosition;
+
+        public void CaptureMouse()
+        {
+            if (!isCapturing)
+            {
+                Game.IsMouseVisible = false;
+                capturedPosition = Cursor.Position;
+                isCapturing = true;
+            }
+        }
+
+        public void ReleaseMouse()
+        {
+            if (isCapturing)
+            {
+                isCapturing = false;
+                capturedPosition = System.Drawing.Point.Empty;
+                Game.IsMouseVisible = true;
+            }
         }
 
         private void InitializeFromWindowsForms(GameContext uiContext)
@@ -130,7 +152,6 @@ namespace SiliconStudio.Paradox.Input
             ControlHeight = (float)e.NewSize.Height;
         }
         
-
         private void OnMouseInputEvent(Vector2 pixelPosition, MouseButton button, InputEventType type, float value = 0)
         {
             // The mouse wheel event are still received even when the mouse cursor is out of the control boundaries. Discard the event in this case.
@@ -157,14 +178,25 @@ namespace SiliconStudio.Paradox.Input
 
         private void OnMouseMoveEvent(Vector2 pixelPosition)
         {
+            var previousMousePosition = CurrentMousePosition;
             CurrentMousePosition = NormalizeScreenPosition(pixelPosition);
+            // Discard this event if it has been triggered by the replacing the cursor to its capture initial position
+            if (isCapturing && Cursor.Position == capturedPosition)
+                return;
 
+            CurrentMouseDelta = CurrentMousePosition - previousMousePosition;
+            
             // trigger touch move events
             foreach (MouseButton button in Enum.GetValues(typeof(MouseButton)))
             {
                 var buttonId = (int)button;
                 if (MouseButtonCurrentlyDown[buttonId])
                     HandlePointerEvents(buttonId, CurrentMousePosition, PointerState.Move, PointerType.Mouse);
+            }
+
+            if (isCapturing)
+            {
+                Cursor.Position = capturedPosition;
             }
         }
 
