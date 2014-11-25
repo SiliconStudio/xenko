@@ -3,8 +3,8 @@
   <Import Project="$(SolutionDir)$(SolutionName).PreSettings.Local.targets" Condition="Exists('$(SolutionDir)$(SolutionName).PreSettings.Local.targets')" />
   
   <PropertyGroup>
-    <!-- Do not compile unit test when signing/packaging -->
-    <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioSign)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
+    <!-- Do not compile unit test when packaging -->
+    <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
     
     <SiliconStudioUnitTest>true</SiliconStudioUnitTest>
     <SiliconStudioDependenciesDir></SiliconStudioDependenciesDir>
