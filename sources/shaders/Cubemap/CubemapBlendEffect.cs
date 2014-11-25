@@ -15,7 +15,7 @@ using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 
-#line 3 "C:\Code\Paradox\sources\shaders\Cubemap\CubemapBlendEffect.pdxfx"
+#line 3 "D:\Code\Paradox\sources\shaders\Cubemap\CubemapBlendEffect.pdxfx"
 using SiliconStudio.Paradox.Effects.Data;
 
 #line 4
@@ -31,7 +31,7 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
     #line 9
     internal static partial class ShaderMixins
     {
-        internal partial class CubemapBlendEffect  : IShaderMixinBuilder
+        internal partial class CubemapBlendEffect  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -77,6 +77,35 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
 
                     #line 26
                     context.PopParameters();
+                }
+            }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+                CubemapBlendRenderer.CubemapCount,
+                CubemapBlendRenderer.CubemapKey,
+                CubemapBlendRenderer.Cubemaps,
+                CubemapBlendRenderer.UseMultipleRenderTargets,
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new []
+            {
+                "CubemapBlender",
+                "CubemapBlenderMRT",
+                "CubemapFace",
+                "ImageEffectShader",
+                "ShaderBase",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
                 }
             }
 

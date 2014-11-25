@@ -22,13 +22,34 @@ namespace Test
     #line 5
     internal static partial class ShaderMixins
     {
-        internal partial class ToGlslEffect  : IShaderMixinBuilder
+        internal partial class ToGlslEffect  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
 
                 #line 7
                 context.Mixin(mixin, "ToGlslShader");
+            }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new []
+            {
+                "ToGlslShader",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
+                }
             }
 
             [ModuleInitializer]

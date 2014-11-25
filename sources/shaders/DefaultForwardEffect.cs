@@ -15,7 +15,7 @@ using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 
-#line 3 "C:\Code\Paradox\sources\shaders\DefaultForwardEffect.pdxfx"
+#line 3 "D:\Code\Paradox\sources\shaders\DefaultForwardEffect.pdxfx"
 using SiliconStudio.Paradox.Effects.Data;
 
 #line 4
@@ -34,7 +34,7 @@ namespace DefaultForward
     #line 10
     internal static partial class ShaderMixins
     {
-        internal partial class ParadoxLightingTypeShader  : IShaderMixinBuilder
+        internal partial class ParadoxLightingTypeShader  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -77,6 +77,31 @@ namespace DefaultForward
                     context.Mixin(mixin, "ShadingDiffusePerVertexSpecularPerPixel");
                 }
             }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+                MaterialParameters.LightingType,
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new []
+            {
+                "ShadingDiffusePerPixel",
+                "ShadingDiffusePerVertex",
+                "ShadingDiffusePerVertexSpecularPerPixel",
+                "ShadingDiffuseSpecularPerPixel",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
+                }
+            }
 
             [ModuleInitializer]
             internal static void __Initialize__()
@@ -90,7 +115,7 @@ namespace DefaultForward
     #line 32
     internal static partial class ShaderMixins
     {
-        internal partial class ParadoxPointLightsShader  : IShaderMixinBuilder
+        internal partial class ParadoxPointLightsShader  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -107,6 +132,30 @@ namespace DefaultForward
                 #line 43
                 context.Mixin(mixin, "ShadingEyeNormalVS");
             }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+                LightingKeys.MaxPointLights,
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new []
+            {
+                "ParadoxLightingTypeShader",
+                "PointShading",
+                "ShadingEyeNormalVS",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
+                }
+            }
 
             [ModuleInitializer]
             internal static void __Initialize__()
@@ -120,7 +169,7 @@ namespace DefaultForward
     #line 46
     internal static partial class ShaderMixins
     {
-        internal partial class ParadoxSpotLightsShader  : IShaderMixinBuilder
+        internal partial class ParadoxSpotLightsShader  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -137,6 +186,30 @@ namespace DefaultForward
                 #line 57
                 context.Mixin(mixin, "ShadingEyeNormalVS");
             }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+                LightingKeys.MaxSpotLights,
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new []
+            {
+                "ParadoxLightingTypeShader",
+                "ShadingEyeNormalVS",
+                "SpotShading",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
+                }
+            }
 
             [ModuleInitializer]
             internal static void __Initialize__()
@@ -150,7 +223,7 @@ namespace DefaultForward
     #line 60
     internal static partial class ShaderMixins
     {
-        internal partial class ParadoxDirectionalLightsShader  : IShaderMixinBuilder
+        internal partial class ParadoxDirectionalLightsShader  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -167,6 +240,30 @@ namespace DefaultForward
                 #line 72
                 context.Mixin(mixin, "ShadingEyeNormalVS");
             }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+                LightingKeys.MaxDirectionalLights,
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new []
+            {
+                "DirectionalShading",
+                "ParadoxLightingTypeShader",
+                "ShadingEyeNormalVS",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
+                }
+            }
 
             [ModuleInitializer]
             internal static void __Initialize__()
@@ -180,7 +277,7 @@ namespace DefaultForward
     #line 75
     internal static partial class ShaderMixins
     {
-        internal partial class ParadoxDirectionalShadowLightsShader  : IShaderMixinBuilder
+        internal partial class ParadoxDirectionalShadowLightsShader  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -237,6 +334,38 @@ namespace DefaultForward
                     #line 104
                     context.Mixin(mixin, "ShadowMapFilterVsm");
             }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+                ShadowMapParameters.FilterType,
+                ShadowMapParameters.ShadowMapCascadeCount,
+                ShadowMapParameters.ShadowMapCount,
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new []
+            {
+                "DirectionalShading",
+                "ForwardShadowMapBase",
+                "ParadoxLightingTypeShader",
+                "ShadingEyeNormalVS",
+                "ShadingPerPixelShadow",
+                "ShadowMapCascadeBase",
+                "ShadowMapFilterDefault",
+                "ShadowMapFilterPcf",
+                "ShadowMapFilterVsm",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
+                }
+            }
 
             [ModuleInitializer]
             internal static void __Initialize__()
@@ -250,7 +379,7 @@ namespace DefaultForward
     #line 107
     internal static partial class ShaderMixins
     {
-        internal partial class ParadoxSpotShadowLightsShader  : IShaderMixinBuilder
+        internal partial class ParadoxSpotShadowLightsShader  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -307,6 +436,38 @@ namespace DefaultForward
                     #line 136
                     context.Mixin(mixin, "ShadowMapFilterVsm");
             }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+                ShadowMapParameters.FilterType,
+                ShadowMapParameters.ShadowMapCascadeCount,
+                ShadowMapParameters.ShadowMapCount,
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new []
+            {
+                "ForwardShadowMapBase",
+                "ParadoxLightingTypeShader",
+                "ShadingEyeNormalVS",
+                "ShadingPerPixelShadow",
+                "ShadowMapCascadeBase",
+                "ShadowMapFilterDefault",
+                "ShadowMapFilterPcf",
+                "ShadowMapFilterVsm",
+                "SpotShading",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
+                }
+            }
 
             [ModuleInitializer]
             internal static void __Initialize__()
@@ -320,7 +481,7 @@ namespace DefaultForward
     #line 139
     internal static partial class ShaderMixins
     {
-        internal partial class ParadoxDiffuseForward  : IShaderMixinBuilder
+        internal partial class ParadoxDiffuseForward  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -489,6 +650,47 @@ namespace DefaultForward
                     }
                 }
             }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+                LightingKeys.MaxDirectionalLights,
+                LightingKeys.MaxPointLights,
+                LightingKeys.MaxSpotLights,
+                LightingKeys.ReceiveShadows,
+                MaterialParameters.AlbedoDiffuse,
+                MaterialParameters.DiffuseModel,
+                ShadowMapParameters.LightType,
+                ShadowMapParameters.ShadowMaps,
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new []
+            {
+                "AlbedoDiffuseBase",
+                "AlbedoFlatShading",
+                "BRDFDiffuseBase",
+                "BRDFSpecularBase",
+                "ComputeBRDFDiffuseLambert",
+                "ComputeBRDFDiffuseOrenNayar",
+                "GroupShadingBase",
+                "ParadoxDirectionalLightsShader",
+                "ParadoxDirectionalShadowLightsShader",
+                "ParadoxPointLightsShader",
+                "ParadoxSpotLightsShader",
+                "ParadoxSpotShadowLightsShader",
+                "ShadowMapReceiver",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
+                }
+            }
 
             [ModuleInitializer]
             internal static void __Initialize__()
@@ -502,7 +704,7 @@ namespace DefaultForward
     #line 194
     internal static partial class ShaderMixins
     {
-        internal partial class ParadoxSpecularLighting  : IShaderMixinBuilder
+        internal partial class ParadoxSpecularLighting  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -568,6 +770,33 @@ namespace DefaultForward
                     }
                 }
             }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+                MaterialParameters.SpecularIntensityMap,
+                MaterialParameters.SpecularModel,
+                MaterialParameters.SpecularPowerMap,
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new []
+            {
+                "ComputeBRDFColorSpecularBlinnPhong",
+                "ComputeBRDFColorSpecularCookTorrance",
+                "ComputeBRDFColorSpecularPhong",
+                "SpecularPower",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
+                }
+            }
 
             [ModuleInitializer]
             internal static void __Initialize__()
@@ -581,7 +810,7 @@ namespace DefaultForward
     #line 225
     internal static partial class ShaderMixins
     {
-        internal partial class ParadoxSpecularForward  : IShaderMixinBuilder
+        internal partial class ParadoxSpecularForward  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -620,6 +849,31 @@ namespace DefaultForward
                     }
                 }
             }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+                MaterialParameters.AlbedoSpecular,
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new []
+            {
+                "AlbedoSpecularBase",
+                "BRDFDiffuseBase",
+                "BRDFSpecularBase",
+                "ParadoxSpecularLighting",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
+                }
+            }
 
             [ModuleInitializer]
             internal static void __Initialize__()
@@ -633,7 +887,7 @@ namespace DefaultForward
     #line 241
     internal static partial class ShaderMixins
     {
-        internal partial class ParadoxDefaultForwardShader  : IShaderMixinBuilder
+        internal partial class ParadoxDefaultForwardShader  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -693,6 +947,39 @@ namespace DefaultForward
 
                     #line 268
                     context.Mixin(mixin, "DiscardTransparent");
+                }
+            }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+                MaterialParameters.AlphaDiscardThreshold,
+                MaterialParameters.AmbientMap,
+                MaterialParameters.UseTransparent,
+                MaterialParameters.UseTransparentMask,
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new []
+            {
+                "AmbientMapShading",
+                "DiscardTransparent",
+                "DiscardTransparentThreshold",
+                "ParadoxBaseShader",
+                "ParadoxDiffuseForward",
+                "ParadoxShadowCast",
+                "ParadoxSkinning",
+                "ParadoxSpecularForward",
+                "TransparentShading",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
                 }
             }
 

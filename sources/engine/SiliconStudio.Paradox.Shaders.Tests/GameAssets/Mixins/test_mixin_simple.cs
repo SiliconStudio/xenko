@@ -22,7 +22,7 @@ namespace Test2
     #line 5
     internal static partial class ShaderMixins
     {
-        internal partial class DefaultSimple  : IShaderMixinBuilder
+        internal partial class DefaultSimple  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -35,6 +35,29 @@ namespace Test2
 
                 #line 9
                 context.Mixin(mixin, "C");
+            }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new []
+            {
+                "A",
+                "B",
+                "C",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
+                }
             }
 
             [ModuleInitializer]

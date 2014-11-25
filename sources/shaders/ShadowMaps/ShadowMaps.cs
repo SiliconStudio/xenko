@@ -15,7 +15,7 @@ using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 
-#line 3 "C:\Code\Paradox\sources\shaders\ShadowMaps\ShadowMaps.pdxfx"
+#line 3 "D:\Code\Paradox\sources\shaders\ShadowMaps\ShadowMaps.pdxfx"
 using SiliconStudio.Paradox.Engine;
 
 #line 5
@@ -25,7 +25,7 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
     #line 8
     internal static partial class ShaderMixins
     {
-        internal partial class ShadowMapReceiverEffect  : IShaderMixinBuilder
+        internal partial class ShadowMapReceiverEffect  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -61,6 +61,33 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
                     #line 22
                     context.Mixin(mixin, "ShadowMapFilterVsm");
             }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+                ShadowMapParameters.FilterType,
+                ShadowMapParameters.ShadowMapCascadeCount,
+                ShadowMapParameters.ShadowMapCount,
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new []
+            {
+                "ShadowMapCascadeBase",
+                "ShadowMapFilterDefault",
+                "ShadowMapFilterPcf",
+                "ShadowMapFilterVsm",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
+                }
+            }
 
             [ModuleInitializer]
             internal static void __Initialize__()
@@ -74,7 +101,7 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
     #line 26
     internal static partial class ShaderMixins
     {
-        internal partial class ShadowMapCaster  : IShaderMixinBuilder
+        internal partial class ShadowMapCaster  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -94,6 +121,29 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
                     #line 35
                     context.Mixin(mixin, "ShadowMapCasterVsm");
             }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+                ShadowMapParameters.FilterType,
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new []
+            {
+                "ShadowMapCasterBase",
+                "ShadowMapCasterVsm",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
+                }
+            }
 
             [ModuleInitializer]
             internal static void __Initialize__()
@@ -107,7 +157,7 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
     #line 39
     internal static partial class ShaderMixins
     {
-        internal partial class ShadowMapEffect  : IShaderMixinBuilder
+        internal partial class ShadowMapEffect  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -157,6 +207,30 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
 
                     #line 53
                     context.PopParameters();
+                }
+            }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+                ShadowMapParameters.ShadowMaps,
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new []
+            {
+                "ShadowMapCaster",
+                "ShadowMapReceiver",
+                "ShadowMapReceiverEffect",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
                 }
             }
 

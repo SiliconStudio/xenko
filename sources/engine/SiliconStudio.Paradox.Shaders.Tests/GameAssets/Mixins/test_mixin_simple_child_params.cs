@@ -30,7 +30,7 @@ namespace Test4
     #line 10
     internal static partial class ShaderMixins
     {
-        internal partial class ChildParamsMixin  : IShaderMixinBuilder
+        internal partial class ChildParamsMixin  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -50,6 +50,28 @@ namespace Test4
                     #line 17
                     context.Mixin(mixin, "C1");
             }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+                TestParameters.TestCount,
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new []
+            {
+                "C1",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
+                }
+            }
 
             [ModuleInitializer]
             internal static void __Initialize__()
@@ -63,7 +85,7 @@ namespace Test4
     #line 20
     internal static partial class ShaderMixins
     {
-        internal partial class DefaultSimpleChildParams  : IShaderMixinBuilder
+        internal partial class DefaultSimpleChildParams  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -98,6 +120,31 @@ namespace Test4
 
                     #line 31
                     context.Mixin(mixin, "C");
+            }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+                TestParameters.TestCount,
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new []
+            {
+                "A",
+                "B",
+                "C",
+                "ChildParamsMixin",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
+                }
             }
 
             [ModuleInitializer]

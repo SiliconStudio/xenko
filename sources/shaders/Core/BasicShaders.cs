@@ -15,7 +15,7 @@ using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 
-#line 3 "C:\Code\Paradox\sources\shaders\Core\BasicShaders.pdxfx"
+#line 3 "D:\Code\Paradox\sources\shaders\Core\BasicShaders.pdxfx"
 using SiliconStudio.Paradox.Effects.Data;
 
 #line 4
@@ -28,10 +28,30 @@ namespace SiliconStudio.Paradox.Effects.Core
     #line 11
     internal static partial class ShaderMixins
     {
-        internal partial class ParadoxTessellation  : IShaderMixinBuilder
+        internal partial class ParadoxTessellation  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
+            }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new []
+            {
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
+                }
             }
 
             [ModuleInitializer]
@@ -46,7 +66,7 @@ namespace SiliconStudio.Paradox.Effects.Core
     #line 25
     internal static partial class ShaderMixins
     {
-        internal partial class ParadoxSkinning  : IShaderMixinBuilder
+        internal partial class ParadoxSkinning  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -96,6 +116,37 @@ namespace SiliconStudio.Paradox.Effects.Core
                         context.Mixin(mixin, "TangentSkinning");
                 }
             }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+                MaterialParameters.HasSkinningNormal,
+                MaterialParameters.HasSkinningPosition,
+                MaterialParameters.HasSkinningTangent,
+                MaterialParameters.NormalMap,
+                MaterialParameters.SkinningBones,
+                MaterialParameters.SkinningMaxBones,
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new []
+            {
+                "NormalSkinning",
+                "NormalVSSkinning",
+                "TangentSkinning",
+                "TangentToViewSkinning",
+                "TransformationSkinning",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
+                }
+            }
 
             [ModuleInitializer]
             internal static void __Initialize__()
@@ -109,7 +160,7 @@ namespace SiliconStudio.Paradox.Effects.Core
     #line 57
     internal static partial class ShaderMixins
     {
-        internal partial class ParadoxShadowCast  : IShaderMixinBuilder
+        internal partial class ParadoxShadowCast  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -133,6 +184,28 @@ namespace SiliconStudio.Paradox.Effects.Core
                         context.EndChild();
                     }
             }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+                LightingKeys.CastShadows,
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new []
+            {
+                "ShadowMapCaster",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
+                }
+            }
 
             [ModuleInitializer]
             internal static void __Initialize__()
@@ -146,7 +219,7 @@ namespace SiliconStudio.Paradox.Effects.Core
     #line 69
     internal static partial class ShaderMixins
     {
-        internal partial class ParadoxBaseShader  : IShaderMixinBuilder
+        internal partial class ParadoxBaseShader  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -187,6 +260,33 @@ namespace SiliconStudio.Paradox.Effects.Core
 
                     #line 87
                     context.Mixin(mixin, "NormalVSStream");
+                }
+            }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+                MaterialParameters.NormalMap,
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new []
+            {
+                "NormalMapTexture",
+                "NormalVSStream",
+                "PositionVSStream",
+                "ShaderBase",
+                "ShadingBase",
+                "TransformationWAndVP",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
                 }
             }
 

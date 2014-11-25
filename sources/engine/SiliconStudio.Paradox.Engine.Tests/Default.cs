@@ -25,7 +25,7 @@ namespace Test
     #line 8
     internal static partial class ShaderMixins
     {
-        internal partial class GBufferShaderPass  : IShaderMixinBuilder
+        internal partial class GBufferShaderPass  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -42,6 +42,28 @@ namespace Test
                 #line 13
                 context.Mixin(mixin, "NormalVSStream");
             }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new []
+            {
+                "GBuffer",
+                "NormalVSStream",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
+                }
+            }
 
             [ModuleInitializer]
             internal static void __Initialize__()
@@ -55,7 +77,7 @@ namespace Test
     #line 17
     internal static partial class ShaderMixins
     {
-        internal partial class GBufferPlugin  : IShaderMixinBuilder
+        internal partial class GBufferPlugin  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -94,6 +116,33 @@ namespace Test
                 #line 29
                 context.Mixin(mixin, "SpecularPowerGBuffer");
             }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new []
+            {
+                "GBufferShaderPass",
+                "NormalVSGBuffer",
+                "NormalVSStream",
+                "PositionVSGBuffer",
+                "PositionVSStream",
+                "SpecularPowerGBuffer",
+                "SpecularPowerPerMesh",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
+                }
+            }
 
             [ModuleInitializer]
             internal static void __Initialize__()
@@ -107,7 +156,7 @@ namespace Test
     #line 32
     internal static partial class ShaderMixins
     {
-        internal partial class LightPrepassEffect  : IShaderMixinBuilder
+        internal partial class LightPrepassEffect  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -164,6 +213,34 @@ namespace Test
                     mixin.Mixin.AddComposition("SpecularLighting", __subMixin.Mixin);
                 }
             }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new []
+            {
+                "ComputeBRDFColor",
+                "ComputeBRDFColorFresnel",
+                "ComputeBRDFColorSpecularBlinnPhong",
+                "ComputeBRDFDiffuseLambert",
+                "LightPrepass",
+                "NormalVSGBuffer",
+                "PositionVSGBuffer",
+                "SpecularPowerGBuffer",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
+                }
+            }
 
             [ModuleInitializer]
             internal static void __Initialize__()
@@ -177,7 +254,7 @@ namespace Test
     #line 44
     internal static partial class ShaderMixins
     {
-        internal partial class Default  : IShaderMixinBuilder
+        internal partial class Default  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -275,6 +352,43 @@ namespace Test
 
                     #line 84
                     context.Mixin(mixin, "LightDeferredShading");
+                }
+            }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+                MaterialParameters.AlbedoDiffuse,
+                MaterialParameters.AlbedoSpecular,
+                MaterialParameters.HasSkinningPosition,
+                MaterialParameters.SkinningBones,
+                MaterialParameters.SkinningMaxBones,
+                RenderingParameters.UseDeferred,
+                RenderingParameters.UseTransparent,
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new []
+            {
+                "AlbedoFlatShading",
+                "BRDFDiffuseBase",
+                "BRDFSpecularBase",
+                "ComputeBRDFColorSpecularBlinnPhong",
+                "ComputeBRDFDiffuseLambert",
+                "GBufferPlugin",
+                "LightDeferredShading",
+                "ShaderBase",
+                "TransformationSkinning",
+                "TransformationWAndVP",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
                 }
             }
 
