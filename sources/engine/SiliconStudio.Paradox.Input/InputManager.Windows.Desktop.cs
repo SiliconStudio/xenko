@@ -134,7 +134,7 @@ namespace SiliconStudio.Paradox.Input
         private void OnMouseInputEvent(Vector2 pixelPosition, MouseButton button, InputEventType type, float value = 0)
         {
             // The mouse wheel event are still received even when the mouse cursor is out of the control boundaries. Discard the event in this case.
-            if (!uiControl.ClientRectangle.Contains(uiControl.PointToClient(Control.MousePosition)))
+            if (type == InputEventType.Wheel && !uiControl.ClientRectangle.Contains(uiControl.PointToClient(Control.MousePosition)))
                 return;
 
             // the mouse events series has been interrupted because out of the window.
