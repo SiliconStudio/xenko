@@ -73,7 +73,7 @@ namespace SiliconStudio.Paradox.VisualStudio
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
     public sealed class ParadoxPackage : Package
     {
-        public const string Version = "1.147";
+        public const string Version = "1.148";
 
         private DTE2 dte2;
         private AppDomain buildMonitorDomain;
