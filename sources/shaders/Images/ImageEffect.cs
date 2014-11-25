@@ -92,41 +92,13 @@ namespace SiliconStudio.Paradox.Effects.Images
             for (int i = 0; i < count; i++)
             {
                 var texture = GetInput(i);
-                switch (i)
+                if (i < TexturingKeys.DefaultTextures.Count)
                 {
-                    case 0:
-                        Parameters.Set(TexturingKeys.Texture0, texture);
-                        break;
-                    case 1:
-                        Parameters.Set(TexturingKeys.Texture1, texture);
-                        break;
-                    case 2:
-                        Parameters.Set(TexturingKeys.Texture2, texture);
-                        break;
-                    case 3:
-                        Parameters.Set(TexturingKeys.Texture3, texture);
-                        break;
-                    case 4:
-                        Parameters.Set(TexturingKeys.Texture4, texture);
-                        break;
-                    case 5:
-                        Parameters.Set(TexturingKeys.Texture5, texture);
-                        break;
-                    case 6:
-                        Parameters.Set(TexturingKeys.Texture6, texture);
-                        break;
-                    case 7:
-                        Parameters.Set(TexturingKeys.Texture7, texture);
-                        break;
-                    case 8:
-                        Parameters.Set(TexturingKeys.Texture8, texture);
-                        break;
-                    case 9:
-                        Parameters.Set(TexturingKeys.Texture9, texture);
-                        break;
-                    default:
-                        // TODO: This is not clean
-                        throw new InvalidOperationException("Expecting less than 10 textures in input");
+                    Parameters.Set(TexturingKeys.DefaultTextures[i], texture);
+                }
+                else
+                {
+                    throw new InvalidOperationException("Expecting less than 10 textures in input");
                 }
             }
         }
