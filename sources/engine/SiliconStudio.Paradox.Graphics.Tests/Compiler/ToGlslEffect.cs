@@ -40,7 +40,7 @@ namespace Test
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "ToGlslShader",
             };

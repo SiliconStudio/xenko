@@ -52,7 +52,7 @@ namespace Test
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "GBuffer",
                 "NormalVSStream",
@@ -126,7 +126,7 @@ namespace Test
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "GBufferShaderPass",
                 "NormalVSGBuffer",
@@ -223,7 +223,7 @@ namespace Test
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "ComputeBRDFColor",
                 "ComputeBRDFColorFresnel",
@@ -371,7 +371,7 @@ namespace Test
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "AlbedoFlatShading",
                 "BRDFDiffuseBase",

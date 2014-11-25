@@ -88,7 +88,7 @@ namespace DefaultForward
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "ShadingDiffusePerPixel",
                 "ShadingDiffusePerVertex",
@@ -143,7 +143,7 @@ namespace DefaultForward
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "ParadoxLightingTypeShader",
                 "PointShading",
@@ -197,7 +197,7 @@ namespace DefaultForward
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "ParadoxLightingTypeShader",
                 "ShadingEyeNormalVS",
@@ -251,7 +251,7 @@ namespace DefaultForward
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "DirectionalShading",
                 "ParadoxLightingTypeShader",
@@ -347,7 +347,7 @@ namespace DefaultForward
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "DirectionalShading",
                 "ForwardShadowMapBase",
@@ -449,7 +449,7 @@ namespace DefaultForward
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "ForwardShadowMapBase",
                 "ParadoxLightingTypeShader",
@@ -668,7 +668,7 @@ namespace DefaultForward
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "AlbedoDiffuseBase",
                 "AlbedoFlatShading",
@@ -783,7 +783,7 @@ namespace DefaultForward
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "ComputeBRDFColorSpecularBlinnPhong",
                 "ComputeBRDFColorSpecularCookTorrance",
@@ -860,7 +860,7 @@ namespace DefaultForward
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "AlbedoSpecularBase",
                 "BRDFDiffuseBase",
@@ -963,7 +963,7 @@ namespace DefaultForward
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "AmbientMapShading",
                 "DiscardTransparent",

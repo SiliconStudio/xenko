@@ -86,7 +86,7 @@ namespace DefaultEffects
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "AlbedoFlatShading",
                 "BRDFDiffuseBase",

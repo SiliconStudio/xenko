@@ -102,7 +102,7 @@ namespace Test7
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "A",
                 "B",

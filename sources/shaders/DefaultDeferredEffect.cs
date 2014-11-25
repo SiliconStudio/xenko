@@ -110,7 +110,7 @@ namespace DefaultEffects
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "GBuffer",
                 "NormalVSStream",
@@ -182,7 +182,7 @@ namespace DefaultEffects
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "NormalVSGBuffer",
                 "NormalVSStream",
@@ -233,7 +233,7 @@ namespace DefaultEffects
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "DeferredPointLighting",
             };
@@ -291,7 +291,7 @@ namespace DefaultEffects
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "DeferredDirectionalShadowLighting",
                 "ShadowMapCascadeBase",
@@ -350,7 +350,7 @@ namespace DefaultEffects
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "DeferredSpotShadowLighting",
                 "ShadowMapCascadeBase",
@@ -411,7 +411,7 @@ namespace DefaultEffects
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "DeferredLightingDirectShadowGroup",
                 "DeferredLightingSpotShadowGroup",
@@ -457,7 +457,7 @@ namespace DefaultEffects
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "DeferredLightTypeGroup",
                 "ShadowMapFilterDefault",
@@ -503,7 +503,7 @@ namespace DefaultEffects
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "DeferredLightTypeGroup",
                 "ShadowMapFilterPcf",
@@ -549,7 +549,7 @@ namespace DefaultEffects
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "DeferredLightTypeGroup",
                 "ShadowMapFilterVsm",
@@ -642,7 +642,7 @@ namespace DefaultEffects
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "DeferredShadowLightingShader",
                 "NearestFilterGroup",
@@ -687,7 +687,7 @@ namespace DefaultEffects
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "DeferredDirectionalLighting",
             };
@@ -729,7 +729,7 @@ namespace DefaultEffects
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "DeferredSpotLighting",
             };
@@ -784,7 +784,7 @@ namespace DefaultEffects
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "ParadoxDeferredLightingDirectGroup",
             };
@@ -843,7 +843,7 @@ namespace DefaultEffects
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "ParadoxDeferredLightingPointGroup",
             };
@@ -898,7 +898,7 @@ namespace DefaultEffects
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "ParadoxDeferredLightingSpotGroup",
             };
@@ -953,7 +953,7 @@ namespace DefaultEffects
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "ComputeBRDFColorSpecularBlinnPhong",
                 "ComputeColorOne",
@@ -1113,7 +1113,7 @@ namespace DefaultEffects
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "BRDFDiffuseBase",
                 "BRDFSpecularBase",
@@ -1220,7 +1220,7 @@ namespace DefaultEffects
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "DirectionalShading",
                 "ShadingDiffusePerPixel",
@@ -1280,7 +1280,7 @@ namespace DefaultEffects
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
             };
             public string[] Mixins
@@ -1334,7 +1334,7 @@ namespace DefaultEffects
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
             };
             public string[] Mixins
@@ -1459,7 +1459,7 @@ namespace DefaultEffects
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "AmbientMapShading",
                 "DiscardTransparent",

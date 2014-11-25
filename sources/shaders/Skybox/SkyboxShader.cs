@@ -53,7 +53,7 @@ namespace SiliconStudio.Paradox.Effects.Skybox
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "AlbedoFlatShading",
                 "CubemapSkybox",

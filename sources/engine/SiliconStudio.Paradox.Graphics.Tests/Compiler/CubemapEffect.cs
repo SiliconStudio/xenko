@@ -79,7 +79,7 @@ namespace Test
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "AlbedoFlatShading",
                 "ComputeColorTextureCubeReflect",
@@ -150,7 +150,7 @@ namespace Test
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "AlbedoFlatShading",
                 "CameraCube",
@@ -211,7 +211,7 @@ namespace Test
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "ParadoxBaseShader",
                 "ParadoxGBufferShaderPass",

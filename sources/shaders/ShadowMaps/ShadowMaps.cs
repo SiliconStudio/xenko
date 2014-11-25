@@ -74,7 +74,7 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "ShadowMapCascadeBase",
                 "ShadowMapFilterDefault",
@@ -132,7 +132,7 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "ShadowMapCasterBase",
                 "ShadowMapCasterVsm",
@@ -220,7 +220,7 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "ShadowMapCaster",
                 "ShadowMapReceiver",

@@ -43,7 +43,7 @@ namespace SiliconStudio.Paradox.Effects.Core
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
             };
             public string[] Mixins
@@ -132,7 +132,7 @@ namespace SiliconStudio.Paradox.Effects.Core
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "NormalSkinning",
                 "NormalVSSkinning",
@@ -195,7 +195,7 @@ namespace SiliconStudio.Paradox.Effects.Core
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "ShadowMapCaster",
             };
@@ -273,7 +273,7 @@ namespace SiliconStudio.Paradox.Effects.Core
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "NormalMapTexture",
                 "NormalVSStream",

@@ -52,7 +52,7 @@ namespace PostEffects
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "PostEffectVsmBlur",
             };
@@ -98,7 +98,7 @@ namespace PostEffects
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "PostEffectVsmBlur",
             };

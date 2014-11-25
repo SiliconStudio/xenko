@@ -93,7 +93,7 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
                     return __keys__;
                 }
             }
-            private readonly string[] __mixins__ = new []
+            private readonly string[] __mixins__ = new string[]
             {
                 "CubemapBlender",
                 "CubemapBlenderMRT",
