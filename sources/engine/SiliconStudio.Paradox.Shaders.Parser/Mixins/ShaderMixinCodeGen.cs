@@ -399,7 +399,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
                     // mixinsReferenced is filled by previous VisitDynamic on the body/statements of the ShaderBlock visit
                     // Generate the main generate method for each shader block
-                    Write("private readonly string[] __mixins__ = new []");
+                    Write("private readonly string[] __mixins__ = new string[]");
                     {
                         OpenBrace();
                         // Create a context associated with ShaderBlock
