@@ -19,9 +19,9 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             var defaultRadius = Enumerable.Range(1, 20).Select(value => (object)value).ToArray();
 
-            RadiusKey = ParameterKeys.New<int>(0, "GaussianBlur.RadiusKey", new ParameterKeyPermutationsMetadata(defaultRadius));
-            VerticalBlurKey = ParameterKeys.New<bool>(false, "GaussianBlur.VerticalBlurKey", new ParameterKeyPermutationsMetadata(true, false));
-            SigmaRatioKey = ParameterKeys.New<float>(2.0f, "GaussianBlur.SigmaRatioKey", new ParameterKeyPermutationsMetadata(2.0f, 3.0f));
+            RadiusKey = ParameterKeys.NewWithMetas<int>(new ParameterKeyPermutationsMetadata(defaultRadius));
+            VerticalBlurKey = ParameterKeys.NewWithMetas<bool>(new ParameterKeyPermutationsMetadata(true, false));
+            SigmaRatioKey = ParameterKeys.NewWithMetas<float>(new ParameterKeyPermutationsMetadata(2.0f, 3.0f));
         }
 
         private readonly ImageEffect blurH;

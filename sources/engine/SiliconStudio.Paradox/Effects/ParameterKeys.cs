@@ -26,25 +26,33 @@ namespace SiliconStudio.Paradox.Effects
             return new ParameterKey<T>(name, length, new ParameterKeyValueMetadata<T>(defaultValue));
         }
 
+
         /// <summary>
         /// Creates a value key.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="defaultValue">The default value.</param>
-        /// <param name="name">The name.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>ParameterKey{``0}.</returns>
+        public static ParameterKey<T> NewWithMetas<T>(PropertyKeyMetadata metadata)
+        {
+            return NewWithMetas<T>(new[] { metadata });
+        }
+
+        /// <summary>
+        /// Creates a value key.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <param name="metadatas">The metadatas.</param>
         /// <returns>ParameterKey{``0}.</returns>
-        public static ParameterKey<T> New<T>(T defaultValue, string name = null, params PropertyKeyMetadata[] metadatas)
+        public static ParameterKey<T> NewWithMetas<T>(PropertyKeyMetadata[] metadatas)
         {
-            var length = typeof(T).IsArray ? (defaultValue != null ? ((Array)(object)defaultValue).Length : -1) : 1;
-
             if (metadatas.Length > 0)
             {
-                var list = new List<PropertyKeyMetadata>(metadatas) { new ParameterKeyValueMetadata<T>(defaultValue) };
+                var list = new List<PropertyKeyMetadata>(metadatas) { new ParameterKeyValueMetadata<T>(default(T)) };
                 metadatas = list.ToArray();
             }
 
-            return new ParameterKey<T>(name, length, metadatas);
+            return new ParameterKey<T>(string.Empty, -1, metadatas);
         }
 
         public static ParameterKey<T> New<T>()
