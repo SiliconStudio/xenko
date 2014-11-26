@@ -83,12 +83,14 @@ namespace SiliconStudio.Paradox.Effects.Images
         }
 
         /// <summary>
-        /// Resets the input textures.
+        /// Resets the state of this effect.
         /// </summary>
-        public void ResetInputs()
+        public virtual void Reset()
         {
             maxInputTextureIndex = -1;
             Array.Clear(inputTextures, 0, inputTextures.Length);
+            outputRenderTargetView = null;
+            outputRenderTargetViews = null;
         }
 
         /// <summary>

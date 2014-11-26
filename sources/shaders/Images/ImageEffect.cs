@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <param name="context">The context.</param>
         /// <param name="effectName">Name of the shader.</param>
         public ImageEffect(ImageEffectContext context, string effectName)
-            : base(context, effectName)
+            : base(context)
         {
             if (effectName == null) throw new ArgumentNullException("effectName");
 
@@ -35,19 +35,8 @@ namespace SiliconStudio.Paradox.Effects.Images
             effectInstance = new InternalEffectInstance(parameters);
             effectCompiler = new DynamicEffectCompiler(context.Services, effectName);
 
-            // As this is used by PostEffectBase, we just setup it here by default
-            parameters.Set(TexturingKeys.Sampler, GraphicsDevice.SamplerStates.LinearClamp);
-        }
-
-        /// <summary>
-        /// Gets the name of the effect.
-        /// </summary>
-        public string EffectName
-        {
-            get
-            {
-                return effectCompiler.EffectName;
-            }
+            // Setup default parameters
+            SetDefaultParameters();
         }
 
         /// <summary>
@@ -62,10 +51,16 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
+        public override void Reset()
+        {
+            base.Reset();
+            SetDefaultParameters();
+        }
+
         /// <summary>
-        /// Reset all parameters to their default values.
+        /// Sets the default parameters (called at constructor time and if <see cref="Reset"/> is called)
         /// </summary>
-        public virtual void Reset()
+        protected virtual void SetDefaultParameters()
         {
             Parameters.Set(TexturingKeys.Sampler, GraphicsDevice.SamplerStates.LinearClamp);
         }

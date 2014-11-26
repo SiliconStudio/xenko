@@ -21,12 +21,6 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
         }
 
-        public override void Reset()
-        {
-            Sampler = GraphicsDevice.SamplerStates.LinearClamp;
-            Color = Color4.White;
-        }
-
         /// <summary>
         /// Gets or sets the color multiplier. Default is <see cref="SiliconStudio.Core.Mathematics.Color.White"/>
         /// </summary>
@@ -73,6 +67,13 @@ namespace SiliconStudio.Paradox.Effects.Images
             {
                 Parameters.Set(TexturingKeys.Sampler, value);
             }
+        }
+
+        protected override void SetDefaultParameters()
+        {
+            base.SetDefaultParameters();
+            Color = Color4.White;
+            IsOnlyChannelRed = false;
         }
     }
 }
