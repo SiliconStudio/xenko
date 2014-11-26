@@ -6,17 +6,7 @@ Permutations:
     Keys: {}
     Children:
         -   Keys:
-                Effect.Name: ImageCopierShader
-            Children: []
-        -   Keys:
-                Effect.Name: GaussianBlurEffect
-                GaussianBlur.SigmaRatioKey:
-                    - 2.0
-                    - 3.0
-                GaussianBlur.VerticalBlurKey:
-                    - true
-                    - false
-                GaussianBlur.RadiusKey: !fxparam.range
-                    From: 2
-                    To: 20
+                Effect.Name: 
+                    - ImageCopierShader
+                    - GaussianBlurEffect
             Children: []
