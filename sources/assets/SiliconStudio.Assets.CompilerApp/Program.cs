@@ -219,7 +219,7 @@ namespace SiliconStudio.Assets.CompilerApp
             }
             catch (Exception e)
             {
-                options.Logger.Error("{0}", e);
+                options.Logger.Error("Unhandled exception: {0}", e, e.Message);
                 exitCode = BuildResultCode.BuildError;
             }
             finally
