@@ -106,6 +106,12 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             writer.Visit(parsingResult.Shader);
             var shaderSourceText = writer.Text;
 
+            if (string.IsNullOrEmpty(shaderSourceText))
+            {
+                log.Error("No code generated for effect [{0}]", fullEffectName);
+                return null;
+            }
+
             // -------------------------------------------------------
             // Save shader log
             // TODO: TEMP code to allow debugging generated shaders on Windows Desktop
