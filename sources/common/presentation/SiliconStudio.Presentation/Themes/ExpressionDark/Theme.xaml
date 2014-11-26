@@ -1797,8 +1797,8 @@
                         </EventTrigger>
                         <Trigger Property="IsIndeterminate" Value="True">
                             <Trigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard x:Name="IndeterminateOnStoryboard">
+                                <BeginStoryboard x:Name="IndeterminateOnStoryboard">
+                                    <Storyboard>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="IndeterminateGradientFill" Storyboard.TargetProperty="(Shape.Fill).(Brush.Transform).(TransformGroup.Children)[0].X">
                                             <SplineDoubleKeyFrame KeyTime="0" Value="0" />
                                             <SplineDoubleKeyFrame KeyTime="00:00:2.4" Value="145" />
