@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Assets.Analysis
 {
@@ -46,5 +47,13 @@ namespace SiliconStudio.Assets.Analysis
         /// </summary>
         /// <value>The asset location.</value>
         public UFile AssetLocation { get; set; }
+
+        /// <summary>
+        /// Gets or sets the hash of the asset source (optional).
+        /// </summary>
+        /// <value>
+        /// The hash of the asset source.
+        /// </value>
+        public ObjectId? Hash { get; set; }
     }
 }
