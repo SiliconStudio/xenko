@@ -712,7 +712,7 @@ namespace SiliconStudio.Core.Storage
                 var bundleRealFile = VirtualFileSystem.GetAbsolutePath(bundleFile);
 
                 // Remove ".mp3" (Android only)
-                if (bundleRealFile.EndsWith(".mp3", StringComparison.InvariantCultureIgnoreCase))
+                if (bundleRealFile.EndsWith(".mp3", true, CultureInfo.InvariantCulture))
                     bundleRealFile = bundleRealFile.Substring(0, bundleRealFile.Length - 4);
 
                 if (bundleFileDeletePredicate(bundleRealFile))
