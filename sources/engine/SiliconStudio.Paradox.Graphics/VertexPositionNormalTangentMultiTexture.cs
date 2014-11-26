@@ -10,7 +10,7 @@ namespace SiliconStudio.Paradox.Graphics
     /// <summary>
     /// Describes a custom vertex format structure that contains position, color and 10 texture coordinates information. 
     /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct VertexPositionNormalTangentMultiTexture : IEquatable<VertexPositionNormalTangentMultiTexture>, IVertex
     {
         /// <summary>

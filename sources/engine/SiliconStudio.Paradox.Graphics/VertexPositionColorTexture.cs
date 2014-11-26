@@ -9,7 +9,7 @@ namespace SiliconStudio.Paradox.Graphics
     /// <summary>
     /// Describes a custom vertex format structure that contains position and color information. 
     /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct VertexPositionColorTexture : IEquatable<VertexPositionColorTexture>
     {
         /// <summary>
