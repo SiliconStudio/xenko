@@ -25,7 +25,7 @@ namespace DefaultEffects
     #line 7
     internal static partial class ShaderMixins
     {
-        internal partial class Default  : IShaderMixinBuilder
+        internal partial class Default  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -73,6 +73,34 @@ namespace DefaultEffects
                         context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoSpecular));
                         mixin.Mixin.AddComposition("albedoSpecular", __subMixin.Mixin);
                     }
+            }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+                MaterialParameters.AlbedoDiffuse,
+                MaterialParameters.AlbedoSpecular,
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new string[]
+            {
+                "AlbedoFlatShading",
+                "BRDFDiffuseBase",
+                "BRDFSpecularBase",
+                "ShaderBase",
+                "TransformationWVP",
+                "TransparentShading",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
+                }
             }
 
             [ModuleInitializer]

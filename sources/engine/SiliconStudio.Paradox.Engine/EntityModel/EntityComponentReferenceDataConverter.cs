@@ -5,7 +5,7 @@ using SiliconStudio.Core.Serialization.Converters;
 
 namespace SiliconStudio.Paradox.EntityModel
 {
-    internal class EntityComponentReferenceDataConverter<TSource> : DataConverter<EntityComponentReference<TSource>, TSource>
+    public class EntityComponentReferenceDataConverter<TSource> : DataConverter<EntityComponentReference<TSource>, TSource>
         where TSource : EntityComponent
     {
         public override bool CacheResult

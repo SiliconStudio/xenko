@@ -128,6 +128,7 @@ namespace SiliconStudio.Paradox.Games
             Services.AddService(typeof(IGame), this);
             Services.AddService(typeof(IVirtualResolution), this);
             Services.AddService(typeof(IAssetManager), Asset);
+            Services.AddService(typeof(AssetManager), Asset);
             Services.AddService(typeof(IGamePlatform), gamePlatform);
 
             IsActive = true;

@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2011 Silicon Studio
 
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.Effects
 {

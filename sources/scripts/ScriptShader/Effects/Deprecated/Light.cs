@@ -1,5 +1,5 @@
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Effects

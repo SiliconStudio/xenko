@@ -36,7 +36,7 @@ namespace Test7
     #line 12
     internal static partial class ShaderMixins
     {
-        internal partial class DefaultSimpleParams  : IShaderMixinBuilder
+        internal partial class DefaultSimpleParams  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -87,6 +87,35 @@ namespace Test7
                         context.Mixin(__subMixin, "Y");
                         mixin.Mixin.AddComposition("y", __subMixin.Mixin);
                     }
+                }
+            }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+                TestParameters.param1,
+                TestParameters.param2,
+                TestParameters.param3,
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new string[]
+            {
+                "A",
+                "B",
+                "C",
+                "D",
+                "X",
+                "Y",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
                 }
             }
 

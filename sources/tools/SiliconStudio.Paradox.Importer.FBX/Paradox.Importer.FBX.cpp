@@ -24,7 +24,6 @@ using namespace SiliconStudio::Paradox::EntityModel;
 using namespace SiliconStudio::Paradox::EntityModel::Data;
 using namespace SiliconStudio::Paradox::Effects;
 using namespace SiliconStudio::Paradox::Effects::Data;
-using namespace SiliconStudio::Paradox::Effects::Modules;
 using namespace SiliconStudio::Paradox::Engine;
 using namespace SiliconStudio::Paradox::Engine::Data;
 using namespace SiliconStudio::Paradox::Extensions;

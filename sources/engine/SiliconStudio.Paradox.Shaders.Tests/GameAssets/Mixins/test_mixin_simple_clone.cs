@@ -22,7 +22,7 @@ namespace Test5
     #line 5
     internal static partial class ShaderMixins
     {
-        internal partial class ChildClone  : IShaderMixinBuilder
+        internal partial class ChildClone  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -39,6 +39,28 @@ namespace Test5
                 #line 9
                 context.Mixin(mixin, "C2");
             }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new string[]
+            {
+                "C1",
+                "C2",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
+                }
+            }
 
             [ModuleInitializer]
             internal static void __Initialize__()
@@ -52,7 +74,7 @@ namespace Test5
     #line 12
     internal static partial class ShaderMixins
     {
-        internal partial class DefaultSimpleClone  : IShaderMixinBuilder
+        internal partial class DefaultSimpleClone  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -80,6 +102,31 @@ namespace Test5
 
                     #line 18
                     context.EndChild();
+                }
+            }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new string[]
+            {
+                "A",
+                "B",
+                "C",
+                "ChildClone",
+                "Test",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
                 }
             }
 

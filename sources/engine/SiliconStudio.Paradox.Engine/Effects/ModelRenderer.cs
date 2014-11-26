@@ -184,7 +184,6 @@ namespace SiliconStudio.Paradox.Effects
             // Register callbacks used by the MeshProcessor
             pipelineModelState.AcceptModel += OnAcceptModel;
             pipelineModelState.PrepareRenderModel += PrepareModelForRendering;
-            pipelineModelState.AcceptRenderModel += OnAcceptRenderModel;
         }
 
         public override void Unload()
@@ -196,7 +195,6 @@ namespace SiliconStudio.Paradox.Effects
             // Unregister callbacks
             pipelineModelState.AcceptModel -= OnAcceptModel;
             pipelineModelState.PrepareRenderModel -= PrepareModelForRendering;
-            pipelineModelState.AcceptRenderModel -= OnAcceptRenderModel;
         }
 
         protected override void OnRendering(RenderContext context)
@@ -207,6 +205,11 @@ namespace SiliconStudio.Paradox.Effects
             meshesToRender.Clear();
             foreach (var renderModel in state.RenderModels)
             {
+                if (!OnAcceptRenderModel(renderModel))
+                {
+                    continue;
+                }
+
                 var meshes = renderModel.RenderMeshes[meshPassSlot];
                 if (meshes != null)
                     meshesToRender.AddRange(meshes);

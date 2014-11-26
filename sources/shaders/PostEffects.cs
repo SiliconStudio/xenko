@@ -30,7 +30,7 @@ namespace PostEffects
     #line 10
     internal static partial class ShaderMixins
     {
-        internal partial class VerticalVsmBlur  : IShaderMixinBuilder
+        internal partial class VerticalVsmBlur  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -40,6 +40,28 @@ namespace PostEffects
 
                 #line 17
                 context.Mixin(mixin, "PostEffectVsmBlur", context.GetParam(PostEffectsParameters.verticalBlur));
+            }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+                PostEffectsParameters.verticalBlur,
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new string[]
+            {
+                "PostEffectVsmBlur",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
+                }
             }
 
             [ModuleInitializer]
@@ -54,7 +76,7 @@ namespace PostEffects
     #line 20
     internal static partial class ShaderMixins
     {
-        internal partial class HorizontalVsmBlur  : IShaderMixinBuilder
+        internal partial class HorizontalVsmBlur  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -64,6 +86,28 @@ namespace PostEffects
 
                 #line 27
                 context.Mixin(mixin, "PostEffectVsmBlur", context.GetParam(PostEffectsParameters.verticalBlur));
+            }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+                PostEffectsParameters.verticalBlur,
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new string[]
+            {
+                "PostEffectVsmBlur",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
+                }
             }
 
             [ModuleInitializer]

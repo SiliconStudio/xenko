@@ -19,7 +19,7 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 using SiliconStudio.Paradox.Effects.Data;
 
 #line 4
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 
 #line 6
 namespace Test
@@ -28,7 +28,7 @@ namespace Test
     #line 8
     internal static partial class ShaderMixins
     {
-        internal partial class CubemapEffect  : IShaderMixinBuilder
+        internal partial class CubemapEffect  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -68,6 +68,31 @@ namespace Test
                         mixin.Mixin.AddComposition("albedoDiffuse", __subMixin.Mixin);
                     }
             }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+                MaterialParameters.AlbedoDiffuse,
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new string[]
+            {
+                "AlbedoFlatShading",
+                "ComputeColorTextureCubeReflect",
+                "ShaderBase",
+                "TransformationWAndVP",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
+                }
+            }
 
             [ModuleInitializer]
             internal static void __Initialize__()
@@ -81,7 +106,7 @@ namespace Test
     #line 22
     internal static partial class ShaderMixins
     {
-        internal partial class CubemapGeomEffect  : IShaderMixinBuilder
+        internal partial class CubemapGeomEffect  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -114,6 +139,31 @@ namespace Test
                         mixin.Mixin.AddComposition("albedoDiffuse", __subMixin.Mixin);
                     }
             }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+                MaterialParameters.AlbedoDiffuse,
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new string[]
+            {
+                "AlbedoFlatShading",
+                "CameraCube",
+                "ShaderBase",
+                "TransformationWAndVP",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
+                }
+            }
 
             [ModuleInitializer]
             internal static void __Initialize__()
@@ -127,7 +177,7 @@ namespace Test
     #line 38
     internal static partial class ShaderMixins
     {
-        internal partial class CubemapIBLEffect  : IShaderMixinBuilder
+        internal partial class CubemapIBLEffect  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -149,6 +199,28 @@ namespace Test
 
                     #line 41
                     context.EndChild();
+                }
+            }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new string[]
+            {
+                "ParadoxBaseShader",
+                "ParadoxGBufferShaderPass",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
                 }
             }
 

@@ -12,7 +12,6 @@ using namespace SiliconStudio::Paradox::Assets::Materials;
 using namespace SiliconStudio::Paradox::Assets::Materials::Nodes;
 using namespace SiliconStudio::Paradox::Effects;
 using namespace SiliconStudio::Paradox::Effects::Data;
-using namespace SiliconStudio::Paradox::Effects::Modules;
 using namespace SiliconStudio::Paradox::Engine::Data;
 using namespace SiliconStudio::Paradox::Graphics;
 using namespace SiliconStudio::Paradox::Shaders;

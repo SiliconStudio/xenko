@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2011 Silicon Studio
 
 using System.Linq;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;

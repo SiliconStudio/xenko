@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Effects.Modules.Processors
+namespace SiliconStudio.Paradox.Effects.Processors
 {
     /// <summary>
     /// Implementation of a "Guillotine" packer.

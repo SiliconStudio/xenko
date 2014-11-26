@@ -1,0 +1,31 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Paradox.Effects.Images
+{
+
+    partial shader GaussianBlurEffectH
+    {
+        mixin macro BLUR_DIRECTION = "float2(1,0)";
+        mixin GaussianBlurShader;
+    }
+
+    partial shader GaussianBlurEffectV
+    {
+        mixin macro BLUR_DIRECTION = "float2(0,1)";
+        mixin GaussianBlurShader;
+    }
+
+    shader GaussianBlurEffect
+    {
+        using params GaussianBlur;
+
+        var blur = GaussianUtil.GetBlurMacros(GaussianBlur.RadiusKey, !GaussianBlur.UseSigma3Key);
+
+        mixin macro BLUR_COUNT = blur.Count;
+        mixin macro BLUR_OFFSETS = blur.Offsets;
+        mixin macro BLUR_WEIGHTS = blur.Weights;
+
+        mixin child Horizontal = GaussianBlurEffectH;
+        mixin child Vertical = GaussianBlurEffectV;
+    };
+}

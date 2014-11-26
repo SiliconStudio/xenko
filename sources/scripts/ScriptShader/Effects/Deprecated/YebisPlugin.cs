@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2011 ReShader - Alexandre Mutel
 
 using System;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Yebis;
 using SiliconStudio.Paradox.Graphics;
 

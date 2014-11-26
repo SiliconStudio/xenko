@@ -28,7 +28,6 @@ using namespace SiliconStudio::Paradox::Engine;
 using namespace SiliconStudio::Paradox::EntityModel;
 using namespace SiliconStudio::Paradox::Effects;
 using namespace SiliconStudio::Paradox::Effects::Data;
-using namespace SiliconStudio::Paradox::Effects::Modules;
 using namespace SiliconStudio::Paradox::Extensions;
 using namespace SiliconStudio::Paradox::Graphics;
 using namespace SiliconStudio::Paradox::Graphics::Data;
@@ -1031,7 +1030,7 @@ private:
                 propertyName = propertyName->Substring(index);
                 propertyName = propertyName->Replace('_','.');
                 // TODO Paradox Change name 
-                propertyName = gcnew String("SiliconStudio.Paradox.Effects.Modules") + propertyName;
+                propertyName = gcnew String("SiliconStudio.Paradox.Effects") + propertyName;
 
 				switch (pProp->mDataLength)
 				{

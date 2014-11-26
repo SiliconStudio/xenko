@@ -65,9 +65,9 @@
       <Name>SiliconStudio.Paradox.Graphics</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\shaders\SiliconStudio.Paradox.Effects.Modules.csproj">
+    <ProjectReference Include="..\..\shaders\SiliconStudio.Paradox.Effects.csproj">
       <Project>{0342c3e7-4a38-46b4-a8ec-e728d50085d3}</Project>
-      <Name>SiliconStudio.Paradox.Effects.Modules</Name>
+      <Name>SiliconStudio.Paradox.Effects</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\ScriptShader\ScriptShader.csproj">

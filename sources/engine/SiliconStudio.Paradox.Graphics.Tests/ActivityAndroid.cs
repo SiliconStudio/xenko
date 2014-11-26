@@ -1,7 +1,7 @@
 using System.Runtime.CompilerServices;
 using Android.App;
 using Android.OS;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Starter;
 
 namespace SiliconStudio.Paradox.Graphics.Tests

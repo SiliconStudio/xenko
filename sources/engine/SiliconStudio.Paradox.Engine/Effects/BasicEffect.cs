@@ -28,7 +28,7 @@ namespace SiliconStudio.Paradox.Effects
     #line 8
     internal static partial class ShaderMixins
     {
-        internal partial class BasicEffect  : IShaderMixinBuilder
+        internal partial class BasicEffect  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -214,6 +214,54 @@ namespace SiliconStudio.Paradox.Effects
 
                         #line 81
                         context.Mixin(mixin, "TangentSkinning");
+                }
+            }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+                MaterialParameters.AlbedoDiffuse,
+                MaterialParameters.AlbedoSpecular,
+                MaterialParameters.HasSkinningNormal,
+                MaterialParameters.HasSkinningPosition,
+                MaterialParameters.HasSkinningTangent,
+                MaterialParameters.NormalMap,
+                MaterialParameters.SkinningBones,
+                MaterialParameters.SkinningMaxBones,
+                MaterialParameters.SpecularIntensityMap,
+                MaterialParameters.SpecularPowerMap,
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new string[]
+            {
+                "BRDFDiffuseBase",
+                "BRDFSpecularBase",
+                "ComputeBRDFColorSpecularBlinnPhong",
+                "ComputeBRDFDiffuseLambert",
+                "DiscardTransparent",
+                "LightMultiDirectionalShadingPerPixel",
+                "NormalMapTexture",
+                "NormalSkinning",
+                "NormalVSSkinning",
+                "NormalVSStream",
+                "PositionVSStream",
+                "ShaderBase",
+                "SpecularPower",
+                "TangentSkinning",
+                "TangentToViewSkinning",
+                "TransformationSkinning",
+                "TransformationWAndVP",
+                "TransparentShading",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
                 }
             }
 

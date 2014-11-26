@@ -1,0 +1,33 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Paradox.Effects.Images
+{
+    /// <summary>
+    /// A gaussian blur shader
+    /// </summary>
+    internal class GaussianBlurShader : ImageEffectShader
+    {
+        stage override float4 Shading()
+        {
+            static const float offsets[BLUR_COUNT] = { BLUR_OFFSETS };
+            static const float weights[BLUR_COUNT] = { BLUR_WEIGHTS };
+
+            // Direction in texel size: (float2(1,0) or float2(0,1)) * texel size
+            float2 direction = BLUR_DIRECTION * Texture0TexelSize;
+
+            // Add center
+            float3 value = Texture0.Sample(LinearClamp, streams.TexCoord).rgb * weights[0];
+
+            // mirrored samples using bilinear filtering
+            [unroll]
+            for(int i = 1; i < BLUR_COUNT; i++)
+            {
+                value += Texture0.Sample(LinearClamp, streams.TexCoord - direction * offsets[i]).rgb * weights[i];
+                value += Texture0.Sample(LinearClamp, streams.TexCoord + direction * offsets[i]).rgb * weights[i];
+            }
+
+            return float4(value, 1);
+        }
+    };
+}

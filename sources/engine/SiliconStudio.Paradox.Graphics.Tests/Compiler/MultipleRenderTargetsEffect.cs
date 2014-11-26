@@ -25,7 +25,7 @@ namespace Test
     #line 7
     internal static partial class ShaderMixins
     {
-        internal partial class MultipleRenderTargetsEffect  : IShaderMixinBuilder
+        internal partial class MultipleRenderTargetsEffect  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -79,6 +79,34 @@ namespace Test
                     #line 23
                     context.Mixin(__subMixin, "NormalColor");
                     mixin.Mixin.AddComposition("ShadingColor2", __subMixin.Mixin);
+                }
+            }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+                MaterialParameters.AlbedoDiffuse,
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new string[]
+            {
+                "LinearDepth",
+                "NormalColor",
+                "NormalVSStream",
+                "PositionVSStream",
+                "ShaderBase",
+                "ShadingBase",
+                "TransformationWAndVP",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
                 }
             }
 

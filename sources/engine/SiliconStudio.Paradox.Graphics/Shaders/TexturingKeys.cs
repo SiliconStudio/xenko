@@ -2,11 +2,13 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.Effects.Modules
+namespace SiliconStudio.Paradox.Effects
 {
     public partial class TexturingKeys
     {
@@ -22,7 +24,26 @@ namespace SiliconStudio.Paradox.Effects.Modules
             Texture7TexelSize = CreateDynamicTexelSizeParameterKey(Texture7);
             Texture8TexelSize = CreateDynamicTexelSizeParameterKey(Texture8);
             Texture9TexelSize = CreateDynamicTexelSizeParameterKey(Texture9);
+
+            DefaultTextures = new ReadOnlyCollection<ParameterKey<Texture>>(new List<ParameterKey<Texture>>()
+            {
+                Texture0,
+                Texture1,
+                Texture2,
+                Texture3,
+                Texture4,
+                Texture5,
+                Texture6,
+                Texture7,
+                Texture8,
+                Texture9,
+            });
         }
+
+        /// <summary>
+        /// Default textures used by this class (<see cref="Texture0"/>, <see cref="Texture1"/>...etc.)
+        /// </summary>
+        public static readonly IReadOnlyList<ParameterKey<Texture>> DefaultTextures;
 
         /// <summary>
         /// Creates a dynamic parameter key for texel size updated from the texture size.
