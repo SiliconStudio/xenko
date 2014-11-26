@@ -133,9 +133,6 @@
             <Setter.Value>
                 <ControlTemplate TargetType="Window">
                     <Grid Background="#05000000" Margin="6">
-                        <Grid.Effect>
-                            <DropShadowEffect BlurRadius="4" RenderingBias="Quality" ShadowDepth="2"/>
-                        </Grid.Effect>
                         <Border x:Name="ContentBorder" Background="{StaticResource BackgroundBrush}" BorderBrush="Black" BorderThickness="1" IsHitTestVisible="True">
                             <DockPanel>
                                 <DockPanel DockPanel.Dock="Top" VerticalAlignment="Top" Height="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(WindowChrome.WindowChrome).ResizeBorderThickness}" WindowChrome.IsHitTestVisibleInChrome="False">
@@ -1749,7 +1746,6 @@
                                 <SplineDoubleKeyFrame KeyTime="0" Value="0" />
                                 <SplineDoubleKeyFrame KeyTime="00:00:2.4" Value="145" />
                             </DoubleAnimationUsingKeyFrames>
-
                         </Storyboard>
                     </ControlTemplate.Resources>
                     <Grid>
@@ -1801,8 +1797,18 @@
                         </EventTrigger>
                         <Trigger Property="IsIndeterminate" Value="True">
                             <Trigger.EnterActions>
-                                <BeginStoryboard Storyboard="{StaticResource IndeterminateOn}" />
+                                <BeginStoryboard>
+                                    <Storyboard x:Name="IndeterminateOnStoryboard">
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="IndeterminateGradientFill" Storyboard.TargetProperty="(Shape.Fill).(Brush.Transform).(TransformGroup.Children)[0].X">
+                                            <SplineDoubleKeyFrame KeyTime="0" Value="0" />
+                                            <SplineDoubleKeyFrame KeyTime="00:00:2.4" Value="145" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
                             </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <StopStoryboard BeginStoryboardName="IndeterminateOnStoryboard"/>
+                            </Trigger.ExitActions>
                             <Setter Property="Visibility" TargetName="IndeterminateRoot" Value="Visible"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
