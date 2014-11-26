@@ -1,4 +1,4 @@
-### Version 1.0.0-beta05
+### Version 1.0.0-beta06
 
 Release date: 2014/11/26
 
