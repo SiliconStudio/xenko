@@ -47,7 +47,7 @@ namespace SiliconStudio.Paradox.Effects
         {
             get
             {
-                return AcceptModel != null && PrepareRenderModel != null && AcceptRenderModel != null;
+                return AcceptModel != null && PrepareRenderModel != null;
             }
         }
 
@@ -61,12 +61,6 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         /// <value>The prepare render model.</value>
         public Action<RenderModel> PrepareRenderModel { get; set; }
-
-        /// <summary>
-        /// The action that will be applied on every render model to check 
-        /// </summary>
-        /// <value>The process mesh.</value>
-        public Func<RenderModel, bool> AcceptRenderModel { get; set; }
 
         /// <summary>
         /// Gets the current list of models to render.

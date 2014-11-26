@@ -158,11 +158,6 @@ namespace SiliconStudio.Paradox.Engine
                     var renderModelState = renderModelEntry.Key;
                     var renderModel = renderModelEntry.Value;
 
-                    if (!renderModelState.AcceptRenderModel(renderModel))
-                    {
-                        continue;
-                    }
-
                     // Add model to rendering
                     renderModelState.RenderModels.Add(renderModel);
 
