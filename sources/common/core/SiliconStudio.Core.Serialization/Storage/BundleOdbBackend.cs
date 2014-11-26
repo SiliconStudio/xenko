@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -713,7 +712,7 @@ namespace SiliconStudio.Core.Storage
                 var bundleRealFile = VirtualFileSystem.GetAbsolutePath(bundleFile);
 
                 // Remove ".mp3" (Android only)
-                if (bundleRealFile.EndsWith(".mp3", true, CultureInfo.InvariantCulture))
+                if (bundleRealFile.EndsWith(".mp3", StringComparison.CurrentCultureIgnoreCase))
                     bundleRealFile = bundleRealFile.Substring(0, bundleRealFile.Length - 4);
 
                 if (bundleFileDeletePredicate(bundleRealFile))
