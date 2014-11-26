@@ -33,25 +33,7 @@ namespace SiliconStudio.Core
             PropertyType = propertyType;
             OwnerType = ownerType;
             Metadatas = metadatas;
-            foreach (PropertyKeyMetadata metadata in metadatas)
-            {
-                if (metadata is DefaultValueMetadata)
-                {
-                    DefaultValueMetadata = (DefaultValueMetadata)metadata;
-                }
-                if (metadata is AccessorMetadata)
-                {
-                    AccessorMetadata = (AccessorMetadata)metadata;
-                }
-                if (metadata is ValidateValueMetadata)
-                {
-                    ValidateValueMetadata = (ValidateValueMetadata)metadata;
-                }
-                if (metadata is ObjectInvalidationMetadata)
-                {
-                    ObjectInvalidationMetadata = (ObjectInvalidationMetadata)metadata;
-                }
-            }
+            SetupMetadatas();
         }
 
         /// <summary>
@@ -62,6 +44,7 @@ namespace SiliconStudio.Core
         /// <summary>
         /// Gets the default value metadata.
         /// </summary>
+        [DataMemberIgnore]
         public DefaultValueMetadata DefaultValueMetadata
         {
             get { return defaultValueMetadata;}
@@ -76,27 +59,32 @@ namespace SiliconStudio.Core
         /// Gets the validate value metadata (may be null).
         /// </summary>
         /// <value>The validate value metadata.</value>
+        [DataMemberIgnore]
         public ValidateValueMetadata ValidateValueMetadata { get; private set; }
 
         /// <summary>
         /// Gets the object invalidation metadata (may be null).
         /// </summary>
         /// <value>The object invalidation metadata.</value>
+        [DataMemberIgnore]
         public ObjectInvalidationMetadata ObjectInvalidationMetadata { get; private set; }
 
         /// <summary>
         /// Gets the accessor metadata (may be null).
         /// </summary>
         /// <value>The accessor metadata.</value>
+        [DataMemberIgnore]
         public AccessorMetadata AccessorMetadata { get; private set; }
 
         /// <summary>Gets or sets the property update callback.</summary>
         /// <value>The property update callback.</value>
+        [DataMemberIgnore]
         internal PropertyContainer.PropertyUpdatedDelegate PropertyUpdateCallback { get; private set; }
 
         /// <summary>
         /// Gets the metadatas.
         /// </summary>
+        [DataMemberIgnore]
         public PropertyKeyMetadata[] Metadatas { get; private set; }
 
         /// <summary>
@@ -105,6 +93,7 @@ namespace SiliconStudio.Core
         /// <value>
         /// The type of the owner.
         /// </value>
+        [DataMemberIgnore]
         public Type OwnerType { get; protected set; }
 
         /// <summary>
@@ -113,6 +102,7 @@ namespace SiliconStudio.Core
         /// <value>
         /// The type of the property.
         /// </value>
+        [DataMemberIgnore]
         public Type PropertyType { get; protected set; }
 
         public abstract bool IsValueType { get; }
@@ -126,6 +116,34 @@ namespace SiliconStudio.Core
             }
 
             return string.Compare(Name, key.Name, StringComparison.OrdinalIgnoreCase);
+        }
+
+        protected virtual void SetupMetadatas()
+        {
+            foreach (PropertyKeyMetadata metadata in Metadatas)
+            {
+                SetupMetadata(metadata);
+            }
+        }
+
+        protected virtual void SetupMetadata(PropertyKeyMetadata metadata)
+        {
+            if (metadata is DefaultValueMetadata)
+            {
+                DefaultValueMetadata = (DefaultValueMetadata)metadata;
+            }
+            if (metadata is AccessorMetadata)
+            {
+                AccessorMetadata = (AccessorMetadata)metadata;
+            }
+            if (metadata is ValidateValueMetadata)
+            {
+                ValidateValueMetadata = (ValidateValueMetadata)metadata;
+            }
+            if (metadata is ObjectInvalidationMetadata)
+            {
+                ObjectInvalidationMetadata = (ObjectInvalidationMetadata)metadata;
+            }
         }
 
         internal abstract PropertyContainer.ValueHolder CreateValueHolder(object value);

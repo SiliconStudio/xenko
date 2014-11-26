@@ -365,7 +365,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
                 else
                 {
                     expectedType = pk.PropertyType;
-                    defaultValue = pk.DefaultMetadataT.DefaultValue;
+                    defaultValue = pk.DefaultValueMetadataT.DefaultValue;
                 }
 
                 if (Members.ContainsKey(pk))

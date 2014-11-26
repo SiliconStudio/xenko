@@ -597,8 +597,8 @@ namespace SiliconStudio.BuildEngine
         /// <returns>True</returns>
         private static bool CompareKeyValue<T>(ParameterCollectionData parameters0, ParameterCollectionData parameters1, ParameterKey<T> key)
         {
-            var value0 = parameters0.ContainsKey(key) ? parameters0[key] : key.DefaultMetadataT.DefaultValue;
-            var value1 = parameters1.ContainsKey(key) ? parameters1[key] : key.DefaultMetadataT.DefaultValue;
+            var value0 = parameters0.ContainsKey(key) ? parameters0[key] : key.DefaultValueMetadataT.DefaultValue;
+            var value1 = parameters1.ContainsKey(key) ? parameters1[key] : key.DefaultValueMetadataT.DefaultValue;
             return value0 == value1;
         }
 

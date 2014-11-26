@@ -59,6 +59,7 @@
     <Compile Include="Effects\AssemblyEffectKeysAttribute.cs" />
     <Compile Include="Effects\EffectParameterExtensions.cs" />
     <Compile Include="Effects\ParameterCollectionSerializer.cs" />
+    <Compile Include="Effects\ParameterKeyPermutationsMetadata.cs" />
     <Compile Include="Effects\ParameterUpdater.cs" />
     <Compile Include="Graphics\CompareFunction.cs" />
     <Compile Include="Graphics\DataBox.cs" />
@@ -106,7 +107,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Effects\ParameterKey.cs" />
-    <Compile Include="Effects\ParameterKeyMetadata.cs" />
+    <Compile Include="Effects\ParameterKeyValueMetadata.cs" />
     <Compile Include="Effects\ParameterKeys.cs" />
     <Compile Include="Effects\ParameterKeySerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
+using SiliconStudio.Core;
+
 namespace SiliconStudio.Paradox.Effects
 {
     public static class ParameterKeys
@@ -13,17 +15,36 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="defaultValue">The default value.</param>
-        /// <param name="name"></param>
-        /// <returns></returns>
+        /// <param name="name">The name.</param>
+        /// <returns>ParameterKey{``0}.</returns>
         public static ParameterKey<T> New<T>(T defaultValue, string name = null)
         {
             if (name == null)
                 name = string.Empty;
 
             var length = typeof(T).IsArray ? (defaultValue != null ? ((Array)(object)defaultValue).Length : -1) : 1;
-            var metadata = new ParameterKeyMetadata<T>(defaultValue);
-            var result = new ParameterKey<T>(name, length, metadata);
-            return result;
+            return new ParameterKey<T>(name, length, new ParameterKeyValueMetadata<T>(defaultValue));
+        }
+
+        /// <summary>
+        /// Creates a value key.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="defaultValue">The default value.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="metadatas">The metadatas.</param>
+        /// <returns>ParameterKey{``0}.</returns>
+        public static ParameterKey<T> New<T>(T defaultValue, string name = null, params PropertyKeyMetadata[] metadatas)
+        {
+            var length = typeof(T).IsArray ? (defaultValue != null ? ((Array)(object)defaultValue).Length : -1) : 1;
+
+            if (metadatas.Length > 0)
+            {
+                var list = new List<PropertyKeyMetadata>(metadatas) { new ParameterKeyValueMetadata<T>(defaultValue) };
+                metadatas = list.ToArray();
+            }
+
+            return new ParameterKey<T>(name, length, metadatas);
         }
 
         public static ParameterKey<T> New<T>()
@@ -41,7 +62,7 @@ namespace SiliconStudio.Paradox.Effects
             if (name == null)
                 name = string.Empty;
 
-            var metadata = new ParameterKeyMetadata<T>(dynamicValue);
+            var metadata = new ParameterKeyValueMetadata<T>(dynamicValue);
             var result = new ParameterKey<T>(name, 1, metadata);
             return result;
         }
@@ -51,7 +72,7 @@ namespace SiliconStudio.Paradox.Effects
             if (name == null)
                 name = string.Empty;
 
-            var metadata = new ParameterKeyMetadata<T[]>(dynamicValue);
+            var metadata = new ParameterKeyValueMetadata<T[]>(dynamicValue);
             var result = new ParameterKey<T[]>(name, arraySize, metadata);
             return result;
         }
@@ -148,11 +169,11 @@ namespace SiliconStudio.Paradox.Effects
                                 baseParameterKeyType = baseParameterKeyType.GetTypeInfo().BaseType;
 
                             // Get default value and use it for the new subkey
-                            var defaultValue = key.DefaultMetadata.DefaultDynamicValue ?? key.DefaultMetadata.GetDefaultValue();
+                            var defaultValue = key.DefaultValueMetadata.DefaultDynamicValue ?? key.DefaultValueMetadata.GetDefaultValue();
 
                             // Create metadata
                             var metadataParameters = defaultValue != null ? new[] { defaultValue } : new object[0]; 
-                            var metadata = Activator.CreateInstance(typeof(ParameterKeyMetadata<>).MakeGenericType(baseParameterKeyType.GetTypeInfo().GenericTypeArguments[0]), metadataParameters);
+                            var metadata = Activator.CreateInstance(typeof(ParameterKeyValueMetadata<>).MakeGenericType(baseParameterKeyType.GetTypeInfo().GenericTypeArguments[0]), metadataParameters);
 
                             var args = new[] { name, metadata };
                             if (key.GetType().GetGenericTypeDefinition() == typeof(ParameterKey<>))

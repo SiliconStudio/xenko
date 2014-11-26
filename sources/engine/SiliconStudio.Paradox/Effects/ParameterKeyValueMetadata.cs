@@ -4,7 +4,7 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Paradox.Effects
 {
-    public abstract class ParameterKeyMetadata : PropertyKeyMetadata
+    public abstract class ParameterKeyValueMetadata : PropertyKeyMetadata
     {
         public abstract object GetDefaultValue();
 
@@ -16,29 +16,29 @@ namespace SiliconStudio.Paradox.Effects
     /// <summary>
     /// Metadata used for <see cref="ParameterKey"/>
     /// </summary>
-    public class ParameterKeyMetadata<T> : ParameterKeyMetadata
+    public class ParameterKeyValueMetadata<T> : ParameterKeyValueMetadata
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ParameterKeyMetadata"/> class.
+        /// Initializes a new instance of the <see cref="ParameterKeyValueMetadata"/> class.
         /// </summary>
-        public ParameterKeyMetadata()
+        public ParameterKeyValueMetadata()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ParameterKeyMetadata"/> class.
+        /// Initializes a new instance of the <see cref="ParameterKeyValueMetadata"/> class.
         /// </summary>
         /// <param name="setupDelegate">The setup delegate.</param>
-        public ParameterKeyMetadata(T defaultValue)
+        public ParameterKeyValueMetadata(T defaultValue)
         {
             DefaultValue = defaultValue;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ParameterKeyMetadata&lt;T&gt;"/> class.
+        /// Initializes a new instance of the <see cref="ParameterKeyValueMetadataValueMetadata{T}"/> class.
         /// </summary>
         /// <param name="defaultDynamicValue">The default dynamic value.</param>
-        public ParameterKeyMetadata(ParameterDynamicValue<T> defaultDynamicValue)
+        public ParameterKeyValueMetadata(ParameterDynamicValue<T> defaultDynamicValue)
         {
             DefaultDynamicValueT = defaultDynamicValue;
         }
