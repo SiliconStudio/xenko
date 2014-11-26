@@ -19,97 +19,7 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 namespace SiliconStudio.Paradox.Effects.Images
 {
 
-    #line 6
-    internal static partial class ShaderMixins
-    {
-        internal partial class GaussianBlurEffectH  : IShaderMixinBuilderExtended
-        {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
-            {
-
-                #line 8
-                mixin.Mixin.AddMacro("BLUR_DIRECTION", "float2(1,0)");
-
-                #line 9
-                context.Mixin(mixin, "GaussianBlurShader");
-            }
-            private readonly ParameterKey[] __keys__ = new ParameterKey[]
-            {
-            };
-            public ParameterKey[] Keys
-            {
-                get
-                {
-                    return __keys__;
-                }
-            }
-            private readonly string[] __mixins__ = new string[]
-            {
-                "GaussianBlurShader",
-            };
-            public string[] Mixins
-            {
-                get
-                {
-                    return __mixins__;
-                }
-            }
-
-            [ModuleInitializer]
-            internal static void __Initialize__()
-
-            {
-                ShaderMixinManager.Register("GaussianBlurEffectH", new GaussianBlurEffectH());
-            }
-        }
-    }
-
-    #line 12
-    internal static partial class ShaderMixins
-    {
-        internal partial class GaussianBlurEffectV  : IShaderMixinBuilderExtended
-        {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
-            {
-
-                #line 14
-                mixin.Mixin.AddMacro("BLUR_DIRECTION", "float2(0,1)");
-
-                #line 15
-                context.Mixin(mixin, "GaussianBlurShader");
-            }
-            private readonly ParameterKey[] __keys__ = new ParameterKey[]
-            {
-            };
-            public ParameterKey[] Keys
-            {
-                get
-                {
-                    return __keys__;
-                }
-            }
-            private readonly string[] __mixins__ = new string[]
-            {
-                "GaussianBlurShader",
-            };
-            public string[] Mixins
-            {
-                get
-                {
-                    return __mixins__;
-                }
-            }
-
-            [ModuleInitializer]
-            internal static void __Initialize__()
-
-            {
-                ShaderMixinManager.Register("GaussianBlurEffectV", new GaussianBlurEffectV());
-            }
-        }
-    }
-
-    #line 18
+    #line 5
     internal static partial class ShaderMixins
     {
         internal partial class GaussianBlurEffect  : IShaderMixinBuilderExtended
@@ -117,56 +27,31 @@ namespace SiliconStudio.Paradox.Effects.Images
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
 
-                #line 22
+                #line 9
 
-                #line 22
+                #line 9
                 var blur = GaussianUtil.GetBlurMacros(context.GetParam(GaussianBlur.RadiusKey), !context.GetParam(GaussianBlur.UseSigma3Key));
 
-                #line 24
+                #line 11
                 mixin.Mixin.AddMacro("BLUR_COUNT", blur.Count);
 
-                #line 25
+                #line 12
                 mixin.Mixin.AddMacro("BLUR_OFFSETS", blur.Offsets);
 
-                #line 26
+                #line 13
                 mixin.Mixin.AddMacro("BLUR_WEIGHTS", blur.Weights);
 
-                {
+                #line 14
+                mixin.Mixin.AddMacro("BLUR_DIRECTION", context.GetParam(GaussianBlur.VerticalBlurKey) ? "float2(0,1)" : "float2(1,0)");
 
-                    #line 28
-                    var __subMixin = new ShaderMixinSourceTree() { Name = "Horizontal", Parent = mixin };
-                    mixin.Children.Add(__subMixin);
-
-                    #line 28
-                    context.BeginChild(__subMixin);
-
-                    #line 28
-                    context.Mixin(__subMixin, "GaussianBlurEffectH");
-
-                    #line 28
-                    context.EndChild();
-                }
-
-                {
-
-                    #line 29
-                    var __subMixin = new ShaderMixinSourceTree() { Name = "Vertical", Parent = mixin };
-                    mixin.Children.Add(__subMixin);
-
-                    #line 29
-                    context.BeginChild(__subMixin);
-
-                    #line 29
-                    context.Mixin(__subMixin, "GaussianBlurEffectV");
-
-                    #line 29
-                    context.EndChild();
-                }
+                #line 15
+                context.Mixin(mixin, "GaussianBlurShader");
             }
             private readonly ParameterKey[] __keys__ = new ParameterKey[]
             {
                 GaussianBlur.RadiusKey,
                 GaussianBlur.UseSigma3Key,
+                GaussianBlur.VerticalBlurKey,
             };
             public ParameterKey[] Keys
             {
@@ -177,10 +62,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
             private readonly string[] __mixins__ = new string[]
             {
-                "GaussianBlurEffectH",
-                "GaussianBlurEffectV",
-                "Horizontal",
-                "Vertical",
+                "GaussianBlurShader",
             };
             public string[] Mixins
             {

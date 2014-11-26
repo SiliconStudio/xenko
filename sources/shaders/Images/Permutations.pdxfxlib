@@ -1,0 +1,22 @@
+!EffectLibrary
+Id: 8B3DCE87-D31B-45E7-926D-CB6EF06B628E
+BuildOrder: 1000
+Tags: []
+Permutations:
+    Keys: {}
+    Children:
+        -   Keys:
+                Effect.Name: ImageCopierShader
+            Children: []
+        -   Keys:
+                Effect.Name: GaussianBlurEffect
+                GaussianBlur.UseSigma3Key:
+                    - true
+                    - false
+                GaussianBlur.VerticalBlurKey:
+                    - true
+                    - false
+                GaussianBlur.RadiusKey: !fxparam.range
+                    From: 2
+                    To: 20
+            Children: []

@@ -134,7 +134,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             else
             {
                 // Calculate offsets and weights with LinearSampling
-                int count = radius / 2 + 1;
+                int count = (radius + 1)/ 2 + 1;
                 offsetsWeights = new Vector2[count];
                 localWeights = new double[count];
                 int index = 1;

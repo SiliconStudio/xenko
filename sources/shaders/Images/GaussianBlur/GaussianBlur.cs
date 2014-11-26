@@ -8,6 +8,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     public class GaussianBlur : ImageEffectBase
     {
         internal static readonly ParameterKey<int> RadiusKey = ParameterKeys.New<int>();
+        internal static readonly ParameterKey<bool> VerticalBlurKey  = ParameterKeys.New<bool>();
         internal static readonly ParameterKey<bool> UseSigma3Key = ParameterKeys.New<bool>();
 
         private readonly ImageEffect blurH;
@@ -16,8 +17,11 @@ namespace SiliconStudio.Paradox.Effects.Images
         public GaussianBlur(ImageEffectContext context)
             : base(context)
         {
-            blurH = new ImageEffect(context, "GaussianBlurEffect.Horizontal").DisposeBy(this);
-            blurV = new ImageEffect(context, "GaussianBlurEffect.Vertical").DisposeBy(this);
+            blurH = new ImageEffect(context, "GaussianBlurEffect").DisposeBy(this);
+            blurH.Parameters.Set(VerticalBlurKey, false);
+
+            blurV = new ImageEffect(context, "GaussianBlurEffect").DisposeBy(this);
+            blurH.Parameters.Set(VerticalBlurKey, true);
 
             Radius = 4;
             UseSigma3 = false;
