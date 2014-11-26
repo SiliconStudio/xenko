@@ -1,3 +1,12 @@
+### Version 1.0.0-beta05
+
+Release date: 2014/11/26
+
+#### Issues fixed
+- Build: Fixed build issues due to Asset Compiler ([#116](https://github.com/SiliconStudio/paradox/issues/116)).
+- Samples: Fixed various samples that didn't build since recent changes in SpriteBatch.MeasureString ([#117](https://github.com/SiliconStudio/paradox/issues/117)).
+- Studio: Fixed high CPU usage due to improper WPF refreshes ([#115](https://github.com/SiliconStudio/paradox/issues/115)).
+
 ### Version 1.0.0-beta04
 
 Release date: 2014/11/25

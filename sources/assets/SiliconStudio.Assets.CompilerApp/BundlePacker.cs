@@ -161,7 +161,16 @@ namespace SiliconStudio.Assets.CompilerApp
             VirtualFileSystem.CreateDirectory("/data_output/db");
 
             // Mount output database and delete previous bundles that shouldn't exist anymore (others should be overwritten)
-            var outputDatabase = new ObjectDatabase("/data_output/db");
+            var outputDatabase = new ObjectDatabase("/data_output/db", loadDefaultBundle: false);
+            try
+            {
+                outputDatabase.LoadBundle("default").GetAwaiter().GetResult();
+            }
+            catch (Exception)
+            {
+                logger.Info("Generate bundles: Tried to load previous 'default' bundle but it was invalid. Deleting it...");
+                outputDatabase.BundleBackend.DeleteBundles(x => Path.GetFileNameWithoutExtension(x) == "default");
+            }
             var outputBundleBackend = outputDatabase.BundleBackend;
 
             var outputGroupBundleBackends = new Dictionary<string, BundleOdbBackend>();
