@@ -52,61 +52,35 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// </summary>
     internal class GaussianUtil
     {
-        private readonly static Dictionary<GaussianKey, GaussianMacros> GaussianMacros = new Dictionary<GaussianKey,GaussianMacros>();
-
         /// <summary>
         /// Gets the blur macros defined for the specified radius and LDR boolean.
         /// </summary>
         /// <param name="radius">The radius.</param>
-        /// <param name="isLDR">if set to <c>true</c> the <c>sigma = radius / 2.0f</c>; otherwise <c>sigma = radius = 3.0f;</c>.</param>
+        /// <param name="sigmaRatio">The sigma ratio. Default is ratio is 2.0f. Sigma = radius / SigmaRatio</param>
         /// <returns>A GaussianMacros for effect compilation.</returns>
-        public static GaussianMacros GetBlurMacros(int radius, bool isLDR)
+        public static GaussianMacros GetBlurMacros(int radius, float sigmaRatio)
         {
-            GaussianMacros result;
-            lock (GaussianMacros)
-            {
-                var key = new GaussianKey(radius, isLDR);
-                if (!GaussianMacros.TryGetValue(key, out result))
-                {
-                    result = new GaussianMacros(Calculate1D(radius, isLDR));
-                    GaussianMacros.Add(key, result);
-                }
-            }
-            return result;
-        }
-
-
-        /// <summary>
-        /// Calculate a 1D gaussian filter.
-        /// </summary>
-        /// <param name="radius">The radius.</param>
-        /// <param name="isLDR">if set to <c>true</c> the <c>sigma = radius / 2.0f</c>; otherwise <c>sigma = radius = 3.0f;</c>.</param>
-        /// <returns>An array of offsets (<see cref="Vector2.X"/>) and weights (<see cref="Vector2.Y"/>).</returns>
-        public static Vector2[] Calculate1D(int radius, bool isLDR)
-        {
-            if (radius < 1)
-                radius = 1;
-
-            var sigma = radius / (isLDR ? 2.0f : 3.0f);
-            return Calculate1D(radius, sigma);
+            return new GaussianMacros(Calculate1D(radius, sigmaRatio));
         }
 
         /// <summary>
         /// Calculate a 1D gaussian filter.
         /// </summary>
         /// <param name="radius">The radius.</param>
-        /// <param name="sigma">The sigma.</param>
+        /// <param name="sigmaRatio">The sigma ratio. Default is ratio is 2.0f. Sigma = radius / SigmaRatio</param>
         /// <param name="disableBilinear">if set to <c>true</c> to disable bilinear offsets/weights.</param>
         /// <returns>An array of offsets (<see cref="Vector2.X" />) and weights (<see cref="Vector2.Y" />).</returns>
-        public static Vector2[] Calculate1D(int radius, float sigma, bool disableBilinear = false)
+        public static Vector2[] Calculate1D(int radius, float sigmaRatio, bool disableBilinear = false)
         {
             if (radius < 1)
                 radius = 1;
+
+            var sigma = radius / sigmaRatio;
 
             // Precalculate a default sigma if not specified
             if (MathUtil.IsZero(sigma))
             {
-                sigma = radius / 3.0f;
+                sigma = radius / 2.0f;
             }
 
             var sigma2 = sigma * sigma;
@@ -171,38 +145,6 @@ namespace SiliconStudio.Paradox.Effects.Images
                 offsetsWeights[i].Y = (float)(localWeights[i] / total);
 
             return offsetsWeights;
-        }
-
-        private struct GaussianKey : IEquatable<GaussianKey>
-        {
-            public GaussianKey(int radius, bool isLDR)
-            {
-                Radius = radius;
-                IsLDR = isLDR;
-            }
-
-            public readonly int Radius;
-
-            public readonly bool IsLDR;
-
-            public bool Equals(GaussianKey other)
-            {
-                return Radius == other.Radius && IsLDR.Equals(other.IsLDR);
-            }
-
-            public override bool Equals(object obj)
-            {
-                if (ReferenceEquals(null, obj)) return false;
-                return obj is GaussianKey && Equals((GaussianKey)obj);
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-                    return (Radius * 397) ^ IsLDR.GetHashCode();
-                }
-            }
         }
     }
 }

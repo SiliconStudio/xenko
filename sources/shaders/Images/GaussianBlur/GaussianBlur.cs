@@ -9,7 +9,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     {
         internal static readonly ParameterKey<int> RadiusKey = ParameterKeys.New<int>();
         internal static readonly ParameterKey<bool> VerticalBlurKey  = ParameterKeys.New<bool>();
-        internal static readonly ParameterKey<bool> UseSigma3Key = ParameterKeys.New<bool>();
+        internal static readonly ParameterKey<float> SigmaRatioKey = ParameterKeys.New<float>();
 
         private readonly ImageEffect blurH;
         private readonly ImageEffect blurV;
@@ -24,12 +24,12 @@ namespace SiliconStudio.Paradox.Effects.Images
             blurH.Parameters.Set(VerticalBlurKey, true);
 
             Radius = 4;
-            UseSigma3 = false;
+            SigmaRatio = 2.0f;
         }
 
         public int Radius { get; set; }
 
-        public bool UseSigma3 { get; set; }
+        public float SigmaRatio { get; set; }
 
         protected override void DrawCore()
         {
@@ -40,18 +40,17 @@ namespace SiliconStudio.Paradox.Effects.Images
             blurH.SetInput(inputTexture);
             blurH.SetOutput(outputHorizontal);
             blurH.Parameters.Set(RadiusKey, Radius);
-            blurH.Parameters.Set(UseSigma3Key, UseSigma3);
+            blurH.Parameters.Set(SigmaRatioKey, SigmaRatio);
 
-            // TODO: this is alocating a string, we should try to not allocate here.
             var size = Radius * 2 + 1;
-            blurH.Draw(string.Format("GaussianBlurH{0}x{0}", size));
+            blurH.Draw("GaussianBlurH{0}x{0}", size);
 
             // Vertical pass
             blurV.SetInput(outputHorizontal);
             blurV.SetOutput(GetSafeOutput(0));
             blurV.Parameters.Set(RadiusKey, Radius);
-            blurV.Parameters.Set(UseSigma3Key, UseSigma3);
-            blurV.Draw(string.Format("GaussianBlurV{0}x{0}", size));
+            blurV.Parameters.Set(SigmaRatioKey, SigmaRatio);
+            blurV.Draw("GaussianBlurV{0}x{0}", size);
 
             Context.ReleaseTemporaryTexture(outputHorizontal);            
         }

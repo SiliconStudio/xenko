@@ -10,9 +10,9 @@ Permutations:
             Children: []
         -   Keys:
                 Effect.Name: GaussianBlurEffect
-                GaussianBlur.UseSigma3Key:
-                    - true
-                    - false
+                GaussianBlur.SigmaRatioKey:
+                    - 2.0
+                    - 3.0
                 GaussianBlur.VerticalBlurKey:
                     - true
                     - false

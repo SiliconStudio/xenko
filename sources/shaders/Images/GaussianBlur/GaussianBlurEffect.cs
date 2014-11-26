@@ -15,7 +15,7 @@ using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 
-#line 3 "D:\Code\Paradox\sources\shaders\Images\GaussianBlur\GaussianBlurEffect.pdxfx"
+#line 3 "C:\Code\Paradox\sources\shaders\Images\GaussianBlur\GaussianBlurEffect.pdxfx"
 namespace SiliconStudio.Paradox.Effects.Images
 {
 
@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                 #line 9
 
                 #line 9
-                var blur = GaussianUtil.GetBlurMacros(context.GetParam(GaussianBlur.RadiusKey), !context.GetParam(GaussianBlur.UseSigma3Key));
+                var blur = GaussianUtil.GetBlurMacros(context.GetParam(GaussianBlur.RadiusKey), context.GetParam(GaussianBlur.SigmaRatioKey));
 
                 #line 11
                 mixin.Mixin.AddMacro("BLUR_COUNT", blur.Count);
@@ -50,7 +50,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             private readonly ParameterKey[] __keys__ = new ParameterKey[]
             {
                 GaussianBlur.RadiusKey,
-                GaussianBlur.UseSigma3Key,
+                GaussianBlur.SigmaRatioKey,
                 GaussianBlur.VerticalBlurKey,
             };
             public ParameterKey[] Keys

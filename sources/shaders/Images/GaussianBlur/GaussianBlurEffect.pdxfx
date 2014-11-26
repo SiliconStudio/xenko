@@ -6,7 +6,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     {
         using params GaussianBlur;
 
-        var blur = GaussianUtil.GetBlurMacros(GaussianBlur.RadiusKey, !GaussianBlur.UseSigma3Key);
+        var blur = GaussianUtil.GetBlurMacros(GaussianBlur.RadiusKey, GaussianBlur.SigmaRatioKey);
 
         mixin macro BLUR_COUNT = blur.Count;
         mixin macro BLUR_OFFSETS = blur.Offsets;
