@@ -1342,7 +1342,10 @@ namespace SiliconStudio.Assets.Analysis
                     {
                         // If the hash is empty, the source file has been deleted
                         var changeType = (hash == ObjectId.Empty) ? AssetFileChangedType.SourceDeleted : AssetFileChangedType.SourceUpdated;
-                        sourceImportFileChangedEventsToAdd.Add(new AssetFileChangedEvent(item.Package, changeType, item.Location) { AssetId = assetImport.Id });
+
+                        // Transmit the hash in the event as well, so that we can check again if the asset has not been updated during the async round-trip
+                        // (it happens when reimporting multiple assets at once).
+                        sourceImportFileChangedEventsToAdd.Add(new AssetFileChangedEvent(item.Package, changeType, item.Location) { AssetId = assetImport.Id, Hash = hash });
                     }
                 }
 
