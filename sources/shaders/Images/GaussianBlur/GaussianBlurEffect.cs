@@ -19,7 +19,7 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 namespace SiliconStudio.Paradox.Effects.Images
 {
 
-    #line 5
+    #line 8
     internal static partial class ShaderMixins
     {
         internal partial class GaussianBlurEffect  : IShaderMixinBuilderExtended
@@ -27,31 +27,31 @@ namespace SiliconStudio.Paradox.Effects.Images
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
 
-                #line 9
-
-                #line 9
-                var blur = GaussianUtil.GetBlurMacros(context.GetParam(GaussianBlur.RadiusKey), context.GetParam(GaussianBlur.SigmaRatioKey));
-
-                #line 11
-                mixin.Mixin.AddMacro("BLUR_COUNT", blur.Count);
-
-                #line 12
-                mixin.Mixin.AddMacro("BLUR_OFFSETS", blur.Offsets);
+                #line 13
 
                 #line 13
+                var blur = GaussianUtil.GetBlurMacros(context.GetParam(GaussianBlurKeys.Radius), context.GetParam(GaussianBlurKeys.SigmaRatio));
+
+                #line 16
+                mixin.Mixin.AddMacro("BLUR_COUNT", blur.Count);
+
+                #line 17
+                mixin.Mixin.AddMacro("BLUR_OFFSETS", blur.Offsets);
+
+                #line 18
                 mixin.Mixin.AddMacro("BLUR_WEIGHTS", blur.Weights);
 
-                #line 14
-                mixin.Mixin.AddMacro("BLUR_DIRECTION", context.GetParam(GaussianBlur.VerticalBlurKey) ? "float2(0,1)" : "float2(1,0)");
+                #line 19
+                mixin.Mixin.AddMacro("BLUR_DIRECTION", context.GetParam(GaussianBlurKeys.VerticalBlur) ? "float2(0,1)" : "float2(1,0)");
 
-                #line 15
+                #line 22
                 context.Mixin(mixin, "GaussianBlurShader");
             }
             private readonly ParameterKey[] __keys__ = new ParameterKey[]
             {
-                GaussianBlur.RadiusKey,
-                GaussianBlur.SigmaRatioKey,
-                GaussianBlur.VerticalBlurKey,
+                GaussianBlurKeys.Radius,
+                GaussianBlurKeys.SigmaRatio,
+                GaussianBlurKeys.VerticalBlur,
             };
             public ParameterKey[] Keys
             {

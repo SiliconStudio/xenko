@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
@@ -10,43 +9,6 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
-    internal class GaussianMacros
-    {
-        public GaussianMacros(Vector2[] defines)
-        {
-            this.defines = defines;
-            Count = defines.Length.ToString(CultureInfo.InvariantCulture);
-            Dump(defines, out Offsets, out Weights);
-        }
-
-        private readonly Vector2[] defines;
-
-        public readonly string Count;
-
-        public readonly string Offsets;
-
-        public readonly string Weights;
-
-        private static void Dump(Vector2[] defines, out string offsets, out string weights)
-        {
-            var offsetsBuffer = new StringBuilder(defines.Length * 10);
-            var weightsBuffer = new StringBuilder(defines.Length * 10);
-            for (int i = 0; i < defines.Length; i++)
-            {
-                if (i > 0)
-                {
-                    offsetsBuffer.Append(',');
-                    weightsBuffer.Append(',');
-                }
-                offsetsBuffer.Append(defines[i].X.ToString(CultureInfo.InvariantCulture));
-                weightsBuffer.Append(defines[i].Y.ToString(CultureInfo.InvariantCulture));
-            }
-            offsets = offsetsBuffer.ToString();
-            weights = weightsBuffer.ToString();
-        }
-    }
-
-
     /// <summary>
     /// Utility class to calculate 1D Gaussian filter used for separable 2D Gaussian filters.
     /// </summary>
@@ -145,6 +107,42 @@ namespace SiliconStudio.Paradox.Effects.Images
                 offsetsWeights[i].Y = (float)(localWeights[i] / total);
 
             return offsetsWeights;
+        }
+
+        internal class GaussianMacros
+        {
+            public GaussianMacros(Vector2[] defines)
+            {
+                this.defines = defines;
+                Count = defines.Length.ToString(CultureInfo.InvariantCulture);
+                Dump(defines, out Offsets, out Weights);
+            }
+
+            private readonly Vector2[] defines;
+
+            public readonly string Count;
+
+            public readonly string Offsets;
+
+            public readonly string Weights;
+
+            private static void Dump(Vector2[] defines, out string offsets, out string weights)
+            {
+                var offsetsBuffer = new StringBuilder(defines.Length * 10);
+                var weightsBuffer = new StringBuilder(defines.Length * 10);
+                for (int i = 0; i < defines.Length; i++)
+                {
+                    if (i > 0)
+                    {
+                        offsetsBuffer.Append(',');
+                        weightsBuffer.Append(',');
+                    }
+                    offsetsBuffer.Append(defines[i].X.ToString(CultureInfo.InvariantCulture));
+                    weightsBuffer.Append(defines[i].Y.ToString(CultureInfo.InvariantCulture));
+                }
+                offsets = offsetsBuffer.ToString();
+                weights = weightsBuffer.ToString();
+            }
         }
     }
 }

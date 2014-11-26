@@ -583,6 +583,7 @@
       <DependentUpon>MaterialReflectanceGBuffer.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Images\GaussianBlur\GaussianBlur.cs" />
+    <Compile Include="Images\GaussianBlur\GaussianBlurKeys.cs" />
     <Compile Include="Images\GaussianBlur\GaussianBlurShader.cs">
       <DependentUpon>GaussianBlurShader.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
