@@ -19,11 +19,26 @@ namespace SiliconStudio.Paradox.Effects.Images
         private readonly DynamicEffectCompiler effectCompiler;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImageEffect"/> class.
+        /// Initializes a new instance of the <see cref="ImageEffect" /> class.
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="effectName">Name of the shader.</param>
+        /// <param name="sharedParameters">The shared parameters.</param>
+        /// <exception cref="System.ArgumentNullException">effectName</exception>
         public ImageEffect(ImageEffectContext context, string effectName)
+            : this(context, effectName, (ParameterCollection[])null)
+        {
+        }
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImageEffect" /> class.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="effectName">Name of the shader.</param>
+        /// <param name="sharedParameterCollections">The shared parameters.</param>
+        /// <exception cref="System.ArgumentNullException">effectName</exception>
+        public ImageEffect(ImageEffectContext context, string effectName, params ParameterCollection[] sharedParameterCollections)
             : base(context)
         {
             if (effectName == null) throw new ArgumentNullException("effectName");
@@ -31,8 +46,20 @@ namespace SiliconStudio.Paradox.Effects.Images
             // Setup this instance parameters
             parameters = new ParameterCollection();
 
+            ParameterCollection[] parameterCollections;
+            if (sharedParameterCollections != null)
+            {
+                parameterCollections = new ParameterCollection[sharedParameterCollections.Length + 1];
+                sharedParameterCollections.CopyTo(parameterCollections, 0);
+                parameterCollections[parameterCollections.Length - 1] = parameters;
+            }
+            else
+            {
+                parameterCollections = new[] { parameters };
+            }
+
             // Setup the effect compiler
-            effectInstance = new DefaultEffectInstance(parameters);
+            effectInstance = new DefaultEffectInstance(parameterCollections);
             effectCompiler = new DynamicEffectCompiler(context.Services, effectName);
 
             // Setup default parameters

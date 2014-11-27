@@ -19,16 +19,26 @@ namespace SiliconStudio.Paradox.Effects.Images
         private readonly ImageEffect blurV;
 
         /// <summary>
+        /// Shared parameters used by both by the Horizontal and Vertical pass.
+        /// </summary>
+        private readonly ParameterCollection sharedParameters;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="GaussianBlur"/> class.
         /// </summary>
         /// <param name="context">The context.</param>
         public GaussianBlur(ImageEffectContext context)
             : base(context)
         {
-            blurH = new ImageEffect(context, "GaussianBlurEffect").DisposeBy(this);
+            sharedParameters = new ParameterCollection();
+
+            // Use shared Parameters for blurH and blurV
+            blurH = new ImageEffect(context, "GaussianBlurEffect", sharedParameters).DisposeBy(this);
+            // Setup specific Horizontal parameter for blurH
             blurH.Parameters.Set(GaussianBlurKeys.VerticalBlur, false);
 
-            blurV = new ImageEffect(context, "GaussianBlurEffect").DisposeBy(this);
+            blurV = new ImageEffect(context, "GaussianBlurEffect", sharedParameters).DisposeBy(this);
+            // Setup specific Vertical parameter for blurV
             blurV.Parameters.Set(GaussianBlurKeys.VerticalBlur, true);
 
             Radius = 4;
@@ -50,23 +60,22 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         protected override void DrawCore()
         {
+            // Input texture
             var inputTexture = GetSafeInput(0);
             var outputHorizontal = Context.GetTemporaryRenderTarget2D(inputTexture.Description);
+            // Update shared parameters
+            sharedParameters.Set(GaussianBlurKeys.Radius, Radius);
+            sharedParameters.Set(GaussianBlurKeys.SigmaRatio, SigmaRatio);
 
             // Horizontal pass
             blurH.SetInput(inputTexture);
             blurH.SetOutput(outputHorizontal);
-            blurH.Parameters.Set(GaussianBlurKeys.Radius, Radius);
-            blurH.Parameters.Set(GaussianBlurKeys.SigmaRatio, SigmaRatio);
-
             var size = Radius * 2 + 1;
             blurH.Draw("GaussianBlurH{0}x{0}", size);
 
             // Vertical pass
             blurV.SetInput(outputHorizontal);
             blurV.SetOutput(GetSafeOutput(0));
-            blurV.Parameters.Set(GaussianBlurKeys.Radius, Radius);
-            blurV.Parameters.Set(GaussianBlurKeys.SigmaRatio, SigmaRatio);
             blurV.Draw("GaussianBlurV{0}x{0}", size);
 
             Context.ReleaseTemporaryTexture(outputHorizontal);            
