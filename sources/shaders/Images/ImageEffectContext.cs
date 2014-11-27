@@ -61,6 +61,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <returns>A new instance of <see cref="RenderTarget" /> class.</returns>
         public RenderTarget GetTemporaryRenderTarget2D(TextureDescription description)
         {
+            // TODO: Check if we should introduce an enum for the kind of scope (per DrawCore, per Frame...etc.)
             return GetTemporaryTexture(description).ToRenderTarget();
         }
 
@@ -86,15 +87,15 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-        /// <param name="mipCount">Number of mipmaps, set to true to have all mipmaps, set to an int &gt;=1 for a particular mipmap count.</param>
         /// <param name="format">Describes the format to use.</param>
+        /// <param name="mipCount">Number of mipmaps, set to true to have all mipmaps, set to an int &gt;=1 for a particular mipmap count.</param>
         /// <param name="flags">Sets the texture flags (for unordered access...etc.)</param>
         /// <param name="arraySize">Size of the texture 2D array, default to 1.</param>
         /// <returns>A new instance of <see cref="RenderTarget" /> class.</returns>
         /// <msdn-id>ff476521</msdn-id>
         ///   <unmanaged>HRESULT ID3D11Device::CreateTexture2D([In] const D3D11_TEXTURE2D_DESC* pDesc,[In, Buffer, Optional] const D3D11_SUBRESOURCE_DATA* pInitialData,[Out, Fast] ID3D11Texture2D** ppTexture2D)</unmanaged>
         ///   <unmanaged-short>ID3D11Device::CreateTexture2D</unmanaged-short>
-        public RenderTarget GetTemporaryRenderTarget2D(int width, int height, MipMapCount mipCount, PixelFormat format, TextureFlags flags = TextureFlags.RenderTarget | TextureFlags.ShaderResource, int arraySize = 1)
+        public RenderTarget GetTemporaryRenderTarget2D(int width, int height, PixelFormat format, MipMapCount mipCount, TextureFlags flags = TextureFlags.RenderTarget | TextureFlags.ShaderResource, int arraySize = 1)
         {
             return GetTemporaryTexture(Texture2DBase.NewDescription(width, height, format, flags, mipCount, arraySize, GraphicsResourceUsage.Default)).ToRenderTarget();
         }

@@ -62,23 +62,25 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             // Input texture
             var inputTexture = GetSafeInput(0);
-            var outputHorizontal = Context.GetTemporaryRenderTarget2D(inputTexture.Description);
+
+            // Get a temporary texture for the intermediate pass
+            // This texture will be allocated only in the scope of this draw and returned to the pool at the exit of this method
+            var outputTextureH = NewScopedRenderTarget2D(inputTexture.Description);
+
             // Update shared parameters
             sharedParameters.Set(GaussianBlurKeys.Radius, Radius);
             sharedParameters.Set(GaussianBlurKeys.SigmaRatio, SigmaRatio);
 
             // Horizontal pass
             blurH.SetInput(inputTexture);
-            blurH.SetOutput(outputHorizontal);
+            blurH.SetOutput(outputTextureH);
             var size = Radius * 2 + 1;
             blurH.Draw("GaussianBlurH{0}x{0}", size);
 
             // Vertical pass
-            blurV.SetInput(outputHorizontal);
+            blurV.SetInput(outputTextureH);
             blurV.SetOutput(GetSafeOutput(0));
             blurV.Draw("GaussianBlurV{0}x{0}", size);
-
-            Context.ReleaseTemporaryTexture(outputHorizontal);            
         }
     }
 }
