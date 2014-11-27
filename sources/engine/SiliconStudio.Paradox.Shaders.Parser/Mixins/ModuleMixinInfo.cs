@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 using SiliconStudio.Core.Storage;
@@ -10,6 +11,7 @@ using SiliconStudio.Shaders.Utility;
 
 namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 {
+    [DebuggerDisplay("Mixin: {mixinName}")]
     internal class ModuleMixinInfo
     {
         #region Private members
