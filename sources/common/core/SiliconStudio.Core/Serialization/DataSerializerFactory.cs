@@ -112,7 +112,7 @@ namespace SiliconStudio.Core.Serialization
             // New assemblies loaded?
             if (serializationProfileInitializers.Count > serializationProfileInitializerCount)
             {
-                lock (SerializationProfileInitializers)
+                lock (serializationProfileInitializers)
                 {
                     var start = serializationProfileInitializerCount;
                     serializationProfileInitializerCount = serializationProfileInitializers.Count;
