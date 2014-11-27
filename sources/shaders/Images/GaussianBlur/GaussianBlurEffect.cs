@@ -15,7 +15,7 @@ using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 
-#line 3 "C:\Code\Paradox\sources\shaders\Images\GaussianBlur\GaussianBlurEffect.pdxfx"
+#line 3 "D:\Code\Paradox\sources\shaders\Images\GaussianBlur\GaussianBlurEffect.pdxfx"
 namespace SiliconStudio.Paradox.Effects.Images
 {
 

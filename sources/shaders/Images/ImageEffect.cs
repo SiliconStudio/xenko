@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     {
         private readonly ParameterCollection parameters;
 
-        private readonly InternalEffectInstance effectInstance;
+        private readonly DefaultEffectInstance effectInstance;
 
         private readonly DynamicEffectCompiler effectCompiler;
 
@@ -32,7 +32,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             parameters = new ParameterCollection();
 
             // Setup the effect compiler
-            effectInstance = new InternalEffectInstance(parameters);
+            effectInstance = new DefaultEffectInstance(parameters);
             effectCompiler = new DynamicEffectCompiler(context.Services, effectName);
 
             // Setup default parameters
@@ -105,24 +105,6 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             // Draw a full screen quad
             GraphicsDevice.DrawQuad(effectInstance.Effect, Parameters);
-        }
-
-        /// <summary>
-        /// Internal class used for dynamic effect compilation.
-        /// </summary>
-        private class InternalEffectInstance : DynamicEffectInstance
-        {
-            private readonly ParameterCollection parameters;
-
-            public InternalEffectInstance(ParameterCollection parameters)
-            {
-                this.parameters = parameters;
-            }
-
-            public override void FillParameterCollections(IList<ParameterCollection> parameterCollections)
-            {
-                parameterCollections.Add(parameters);
-            }
         }
     }
 }
