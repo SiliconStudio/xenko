@@ -242,10 +242,8 @@ namespace SiliconStudio.Paradox.Effects
             {
                 DefaultValueMetadataT = (ParameterKeyValueMetadata<T>)metadata;
             }
-            else
-            {
-                base.SetupMetadata(metadata);
-            }
+            // Run the always base as ParameterKeyValueMetadata<T> is also ParameterKeyValueMetadata used by the base
+            base.SetupMetadata(metadata);
         }
 
         internal override PropertyContainer.ValueHolder CreateValueHolder(object value)
