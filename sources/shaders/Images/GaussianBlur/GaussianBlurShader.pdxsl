@@ -17,14 +17,14 @@ namespace SiliconStudio.Paradox.Effects.Images
             float2 direction = BLUR_DIRECTION * Texture0TexelSize;
 
             // Add center
-            float3 value = Texture0.Sample(LinearClamp, streams.TexCoord).rgb * weights[0];
+            float3 value = Texture0.Sample(LinearSampler, streams.TexCoord).rgb * weights[0];
 
             // mirrored samples using bilinear filtering
             [unroll]
             for(int i = 1; i < BLUR_COUNT; i++)
             {
-                value += Texture0.Sample(LinearClamp, streams.TexCoord - direction * offsets[i]).rgb * weights[i];
-                value += Texture0.Sample(LinearClamp, streams.TexCoord + direction * offsets[i]).rgb * weights[i];
+                value += Texture0.Sample(LinearSampler, streams.TexCoord - direction * offsets[i]).rgb * weights[i];
+                value += Texture0.Sample(LinearSampler, streams.TexCoord + direction * offsets[i]).rgb * weights[i];
             }
 
             return float4(value, 1);

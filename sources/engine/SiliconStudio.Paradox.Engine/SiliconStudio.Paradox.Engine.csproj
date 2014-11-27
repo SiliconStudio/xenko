@@ -107,6 +107,7 @@
     <Compile Include="DelegateHolder.cs" />
     <Compile Include="Effects\BackgroundRenderer.cs" />
     <Compile Include="Effects\CameraSetter.cs" />
+    <Compile Include="Effects\DefaultEffectInstance.cs" />
     <Compile Include="Effects\DelegateRenderer.cs" />
     <Compile Include="Effects\DynamicEffectCompiler.cs" />
     <Compile Include="Effects\DynamicEffectInstance.cs" />

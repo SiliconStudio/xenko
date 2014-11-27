@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     {
         private readonly ParameterCollection parameters;
 
-        private readonly InternalEffectInstance effectInstance;
+        private readonly DefaultEffectInstance effectInstance;
 
         private readonly DynamicEffectCompiler effectCompiler;
 
@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <param name="context">The context.</param>
         /// <param name="effectName">Name of the shader.</param>
         public ImageEffect(ImageEffectContext context, string effectName)
-            : base(context, effectName)
+            : base(context)
         {
             if (effectName == null) throw new ArgumentNullException("effectName");
 
@@ -32,22 +32,11 @@ namespace SiliconStudio.Paradox.Effects.Images
             parameters = new ParameterCollection();
 
             // Setup the effect compiler
-            effectInstance = new InternalEffectInstance(parameters);
+            effectInstance = new DefaultEffectInstance(parameters);
             effectCompiler = new DynamicEffectCompiler(context.Services, effectName);
 
-            // As this is used by PostEffectBase, we just setup it here by default
-            parameters.Set(TexturingKeys.Sampler, GraphicsDevice.SamplerStates.LinearClamp);
-        }
-
-        /// <summary>
-        /// Gets the name of the effect.
-        /// </summary>
-        public string EffectName
-        {
-            get
-            {
-                return effectCompiler.EffectName;
-            }
+            // Setup default parameters
+            SetDefaultParameters();
         }
 
         /// <summary>
@@ -62,10 +51,16 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
+        public override void Reset()
+        {
+            base.Reset();
+            SetDefaultParameters();
+        }
+
         /// <summary>
-        /// Reset all parameters to their default values.
+        /// Sets the default parameters (called at constructor time and if <see cref="Reset"/> is called)
         /// </summary>
-        public virtual void Reset()
+        protected virtual void SetDefaultParameters()
         {
             Parameters.Set(TexturingKeys.Sampler, GraphicsDevice.SamplerStates.LinearClamp);
         }
@@ -110,24 +105,6 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             // Draw a full screen quad
             GraphicsDevice.DrawQuad(effectInstance.Effect, Parameters);
-        }
-
-        /// <summary>
-        /// Internal class used for dynamic effect compilation.
-        /// </summary>
-        private class InternalEffectInstance : DynamicEffectInstance
-        {
-            private readonly ParameterCollection parameters;
-
-            public InternalEffectInstance(ParameterCollection parameters)
-            {
-                this.parameters = parameters;
-            }
-
-            public override void FillParameterCollections(IList<ParameterCollection> parameterCollections)
-            {
-                parameterCollections.Add(parameters);
-            }
         }
     }
 }

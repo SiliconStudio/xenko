@@ -646,7 +646,7 @@ namespace SiliconStudio.Paradox.Graphics
                     {
                         // Add Dependencies (if not already overriden)
                         // This is done only at this level because top-level keys dependencies are supposed to be present.
-                        var sourceMetadata = source.Metadatas.OfType<ParameterKeyMetadata>().FirstOrDefault();
+                        var sourceMetadata = source.Metadatas.OfType<ParameterKeyValueMetadata>().FirstOrDefault();
                         if (sourceMetadata != null
                             && sourceMetadata.DefaultDynamicValue != null
                             && !allDependencies.ContainsKey(source))

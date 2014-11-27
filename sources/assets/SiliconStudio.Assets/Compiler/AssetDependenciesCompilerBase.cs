@@ -57,7 +57,7 @@ namespace SiliconStudio.Assets.Compiler
             var dependenciesCompilePackage = AssetsSession.CreateCompilePackageFromAsset(AssetItem);
 
             // compile the fake package (create the build steps)
-            var assetPackageCompiler = new PackageAssetsCompiler(dependenciesCompilePackage);
+            var assetPackageCompiler = new PackageCompiler();
             context.Package = dependenciesCompilePackage.LocalPackages.FirstOrDefault();
             var dependenciesCompileResult = assetPackageCompiler.Compile(context);
 

@@ -37,6 +37,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
         
         protected IEnumerable<CompilerParameters> GenerateKeysPermutation(CompilerParameters parameters, IList<KeyValuePair<ParameterKey, List<object>>> parameterKeys, int keyIndex = 0)
         {
+            // TODO: Merge this code with the code found in DefaultCompilerParametersGenerator
             if (keyIndex >= parameterKeys.Count)
             {
                 yield return parameters.Clone();
@@ -44,8 +45,11 @@ namespace SiliconStudio.Paradox.Assets.Effect
             else
             {
                 var keyValues = parameterKeys[keyIndex];
-                // Create one CompilerParameter per keys
-                parameters = parameters.Clone();
+                // Duplicate new parameters collection only for the first level
+                if (keyIndex == 0)
+                {
+                    parameters = parameters.Clone();
+                }
                 foreach (var value in keyValues.Value)
                 {
                     parameters.SetObject(keyValues.Key, value);

@@ -14,10 +14,64 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-namespace SiliconStudio.Paradox.Effects
+
+#line 3 "D:\Code\Paradox\sources\engine\SiliconStudio.Paradox.Graphics.Tests\Assets\CustomEffect.pdxfx"
+namespace SiliconStudio.Paradox.Graphics.Tests
 {
-    public static partial class CustomEffectKeys
+
+    #line 8
+    internal static partial class ShaderMixins
     {
-        public static readonly ParameterKey<Vector4> ColorFactor2 = ParameterKeys.New<Vector4>();
+        internal partial class CustomEffect  : IShaderMixinBuilderExtended
+        {
+            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            {
+
+                #line 12
+                if (context.GetParam(CustomShaderKeys.SwitchEffectLevel) < 10)
+                {
+
+                    #line 14
+                    context.Mixin(mixin, "CustomShader");
+                }
+
+                #line 17
+                else
+                {
+
+                    #line 18
+                    context.Mixin(mixin, "CustomShader");
+                }
+            }
+            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+            {
+                CustomShaderKeys.SwitchEffectLevel,
+            };
+            public ParameterKey[] Keys
+            {
+                get
+                {
+                    return __keys__;
+                }
+            }
+            private readonly string[] __mixins__ = new string[]
+            {
+                "CustomShader",
+            };
+            public string[] Mixins
+            {
+                get
+                {
+                    return __mixins__;
+                }
+            }
+
+            [ModuleInitializer]
+            internal static void __Initialize__()
+
+            {
+                ShaderMixinManager.Register("CustomEffect", new CustomEffect());
+            }
+        }
     }
 }

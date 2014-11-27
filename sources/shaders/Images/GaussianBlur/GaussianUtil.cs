@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
@@ -10,103 +9,40 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
-    internal class GaussianMacros
-    {
-        public GaussianMacros(Vector2[] defines)
-        {
-            this.defines = defines;
-            Count = defines.Length.ToString(CultureInfo.InvariantCulture);
-            Dump(defines, out Offsets, out Weights);
-        }
-
-        private readonly Vector2[] defines;
-
-        public readonly string Count;
-
-        public readonly string Offsets;
-
-        public readonly string Weights;
-
-        private static void Dump(Vector2[] defines, out string offsets, out string weights)
-        {
-            var offsetsBuffer = new StringBuilder(defines.Length * 10);
-            var weightsBuffer = new StringBuilder(defines.Length * 10);
-            for (int i = 0; i < defines.Length; i++)
-            {
-                if (i > 0)
-                {
-                    offsetsBuffer.Append(',');
-                    weightsBuffer.Append(',');
-                }
-                offsetsBuffer.Append(defines[i].X.ToString(CultureInfo.InvariantCulture));
-                weightsBuffer.Append(defines[i].Y.ToString(CultureInfo.InvariantCulture));
-            }
-            offsets = offsetsBuffer.ToString();
-            weights = weightsBuffer.ToString();
-        }
-    }
-
-
     /// <summary>
     /// Utility class to calculate 1D Gaussian filter used for separable 2D Gaussian filters.
     /// </summary>
     internal class GaussianUtil
     {
-        private readonly static Dictionary<GaussianKey, GaussianMacros> GaussianMacros = new Dictionary<GaussianKey,GaussianMacros>();
-
         /// <summary>
         /// Gets the blur macros defined for the specified radius and LDR boolean.
         /// </summary>
         /// <param name="radius">The radius.</param>
-        /// <param name="isLDR">if set to <c>true</c> the <c>sigma = radius / 2.0f</c>; otherwise <c>sigma = radius = 3.0f;</c>.</param>
+        /// <param name="sigmaRatio">The sigma ratio. Default is ratio is 2.0f. Sigma = radius / SigmaRatio</param>
         /// <returns>A GaussianMacros for effect compilation.</returns>
-        public static GaussianMacros GetBlurMacros(int radius, bool isLDR)
+        public static GaussianMacros GetBlurMacros(int radius, float sigmaRatio)
         {
-            GaussianMacros result;
-            lock (GaussianMacros)
-            {
-                var key = new GaussianKey(radius, isLDR);
-                if (!GaussianMacros.TryGetValue(key, out result))
-                {
-                    result = new GaussianMacros(Calculate1D(radius, isLDR));
-                    GaussianMacros.Add(key, result);
-                }
-            }
-            return result;
-        }
-
-
-        /// <summary>
-        /// Calculate a 1D gaussian filter.
-        /// </summary>
-        /// <param name="radius">The radius.</param>
-        /// <param name="isLDR">if set to <c>true</c> the <c>sigma = radius / 2.0f</c>; otherwise <c>sigma = radius = 3.0f;</c>.</param>
-        /// <returns>An array of offsets (<see cref="Vector2.X"/>) and weights (<see cref="Vector2.Y"/>).</returns>
-        public static Vector2[] Calculate1D(int radius, bool isLDR)
-        {
-            if (radius < 1)
-                radius = 1;
-
-            var sigma = radius / (isLDR ? 2.0f : 3.0f);
-            return Calculate1D(radius, sigma);
+            return new GaussianMacros(Calculate1D(radius, sigmaRatio));
         }
 
         /// <summary>
         /// Calculate a 1D gaussian filter.
         /// </summary>
         /// <param name="radius">The radius.</param>
-        /// <param name="sigma">The sigma.</param>
+        /// <param name="sigmaRatio">The sigma ratio. Default is ratio is 2.0f. Sigma = radius / SigmaRatio</param>
         /// <param name="disableBilinear">if set to <c>true</c> to disable bilinear offsets/weights.</param>
         /// <returns>An array of offsets (<see cref="Vector2.X" />) and weights (<see cref="Vector2.Y" />).</returns>
-        public static Vector2[] Calculate1D(int radius, float sigma, bool disableBilinear = false)
+        public static Vector2[] Calculate1D(int radius, float sigmaRatio, bool disableBilinear = false)
         {
             if (radius < 1)
                 radius = 1;
+
+            var sigma = radius / sigmaRatio;
 
             // Precalculate a default sigma if not specified
             if (MathUtil.IsZero(sigma))
             {
-                sigma = radius / 3.0f;
+                sigma = radius / 2.0f;
             }
 
             var sigma2 = sigma * sigma;
@@ -134,7 +70,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             else
             {
                 // Calculate offsets and weights with LinearSampling
-                int count = radius / 2 + 1;
+                int count = (radius + 1)/ 2 + 1;
                 offsetsWeights = new Vector2[count];
                 localWeights = new double[count];
                 int index = 1;
@@ -173,35 +109,39 @@ namespace SiliconStudio.Paradox.Effects.Images
             return offsetsWeights;
         }
 
-        private struct GaussianKey : IEquatable<GaussianKey>
+        internal class GaussianMacros
         {
-            public GaussianKey(int radius, bool isLDR)
+            public GaussianMacros(Vector2[] defines)
             {
-                Radius = radius;
-                IsLDR = isLDR;
+                this.defines = defines;
+                Count = defines.Length.ToString(CultureInfo.InvariantCulture);
+                Dump(defines, out Offsets, out Weights);
             }
 
-            public readonly int Radius;
+            private readonly Vector2[] defines;
 
-            public readonly bool IsLDR;
+            public readonly string Count;
 
-            public bool Equals(GaussianKey other)
+            public readonly string Offsets;
+
+            public readonly string Weights;
+
+            private static void Dump(Vector2[] defines, out string offsets, out string weights)
             {
-                return Radius == other.Radius && IsLDR.Equals(other.IsLDR);
-            }
-
-            public override bool Equals(object obj)
-            {
-                if (ReferenceEquals(null, obj)) return false;
-                return obj is GaussianKey && Equals((GaussianKey)obj);
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
+                var offsetsBuffer = new StringBuilder(defines.Length * 10);
+                var weightsBuffer = new StringBuilder(defines.Length * 10);
+                for (int i = 0; i < defines.Length; i++)
                 {
-                    return (Radius * 397) ^ IsLDR.GetHashCode();
+                    if (i > 0)
+                    {
+                        offsetsBuffer.Append(',');
+                        weightsBuffer.Append(',');
+                    }
+                    offsetsBuffer.Append(defines[i].X.ToString(CultureInfo.InvariantCulture));
+                    weightsBuffer.Append(defines[i].Y.ToString(CultureInfo.InvariantCulture));
                 }
+                offsets = offsetsBuffer.ToString();
+                weights = weightsBuffer.ToString();
             }
         }
     }

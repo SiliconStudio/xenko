@@ -434,7 +434,7 @@ namespace SiliconStudio.Paradox.Effects
             int index;
             if (!GetKeyIndex(key, out index))
             {
-                result = key.DefaultMetadataT.DefaultValue;
+                result = key.DefaultValueMetadataT.DefaultValue;
                 return;
             }
 
@@ -448,7 +448,7 @@ namespace SiliconStudio.Paradox.Effects
             int index;
             if (!GetKeyIndex(key, out index))
             {
-                return key.DefaultMetadata.GetDefaultValue();
+                return key.DefaultValueMetadata.GetDefaultValue();
             }
 
             var internalValue = valueList.Items[index].Value;
@@ -1285,7 +1285,7 @@ namespace SiliconStudio.Paradox.Effects
                 if (parameterKeyT == null)
                     return false;
 
-                return comparer.Equals(Value, parameterKeyT.DefaultMetadataT.DefaultValue);
+                return comparer.Equals(Value, parameterKeyT.DefaultValueMetadataT.DefaultValue);
             }
 
             public override bool Equals(InternalValue internalValue)

@@ -15,43 +15,23 @@ using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 
-#line 3 "D:\Code\Paradox\sources\shaders\Images\GaussianBlur\GaussianBlurEffect.pdxfx"
+#line 3 "D:\Code\Paradox\sources\shaders\Images\ImageCopier\ImageCopierEffect.pdxfx"
 namespace SiliconStudio.Paradox.Effects.Images
 {
 
     #line 8
     internal static partial class ShaderMixins
     {
-        internal partial class GaussianBlurEffect  : IShaderMixinBuilderExtended
+        internal partial class ImageCopierEffect  : IShaderMixinBuilderExtended
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
 
-                #line 13
-
-                #line 13
-                var blur = GaussianUtil.GetBlurMacros(context.GetParam(GaussianBlurKeys.Radius), context.GetParam(GaussianBlurKeys.SigmaRatio));
-
-                #line 16
-                mixin.Mixin.AddMacro("BLUR_COUNT", blur.Count);
-
-                #line 17
-                mixin.Mixin.AddMacro("BLUR_OFFSETS", blur.Offsets);
-
-                #line 18
-                mixin.Mixin.AddMacro("BLUR_WEIGHTS", blur.Weights);
-
-                #line 19
-                mixin.Mixin.AddMacro("BLUR_DIRECTION", context.GetParam(GaussianBlurKeys.VerticalBlur) ? "float2(0,1)" : "float2(1,0)");
-
-                #line 22
-                context.Mixin(mixin, "GaussianBlurShader");
+                #line 10
+                context.Mixin(mixin, "ImageCopierShader");
             }
             private readonly ParameterKey[] __keys__ = new ParameterKey[]
             {
-                GaussianBlurKeys.Radius,
-                GaussianBlurKeys.SigmaRatio,
-                GaussianBlurKeys.VerticalBlur,
             };
             public ParameterKey[] Keys
             {
@@ -62,7 +42,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
             private readonly string[] __mixins__ = new string[]
             {
-                "GaussianBlurShader",
+                "ImageCopierShader",
             };
             public string[] Mixins
             {
@@ -76,7 +56,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             internal static void __Initialize__()
 
             {
-                ShaderMixinManager.Register("GaussianBlurEffect", new GaussianBlurEffect());
+                ShaderMixinManager.Register("ImageCopierEffect", new ImageCopierEffect());
             }
         }
     }

@@ -36,7 +36,6 @@ namespace SiliconStudio.Paradox.Effects.Images
             Context = context;
             GraphicsDevice = Context.GraphicsDevice;
             Assets = context.Services.GetSafeServiceAs<AssetManager>();
-            Name = name ?? GetType().Name;
             Enabled = true;
             inputTextures = new Texture[128];
             maxInputTextureIndex = -1;
@@ -84,12 +83,14 @@ namespace SiliconStudio.Paradox.Effects.Images
         }
 
         /// <summary>
-        /// Resets the input textures.
+        /// Resets the state of this effect.
         /// </summary>
-        public void ResetInputs()
+        public virtual void Reset()
         {
             maxInputTextureIndex = -1;
             Array.Clear(inputTextures, 0, inputTextures.Length);
+            outputRenderTargetView = null;
+            outputRenderTargetViews = null;
         }
 
         /// <summary>
@@ -143,6 +144,15 @@ namespace SiliconStudio.Paradox.Effects.Images
             PreDrawCore(name);
             DrawCore();
             PostDrawCore();
+        }
+
+        /// <summary>
+        /// Draws a full screen quad using iterating on each pass of this effect.
+        /// </summary>
+        public void Draw(string nameFormat, params object[] args)
+        {
+            // TODO: this is alocating a string, we should try to not allocate here.
+            Draw(string.Format(nameFormat, args));
         }
 
         /// <summary>

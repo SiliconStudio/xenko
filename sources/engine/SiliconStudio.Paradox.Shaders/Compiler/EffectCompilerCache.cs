@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
     public class EffectCompilerCache : EffectCompilerChain
     {
         private static readonly Logger Log = GlobalLogger.GetLogger("EffectCompilerCache");
-        private readonly Dictionary<ObjectId, EffectBytecode> storedResults = new Dictionary<ObjectId, EffectBytecode>();
+        private readonly Dictionary<ObjectId, EffectBytecode> bytecodes = new Dictionary<ObjectId, EffectBytecode>();
         private const string CompiledShadersKey = "__shaders_bytecode__";
 
         public EffectCompilerCache(EffectCompilerBase compiler) : base(compiler)
@@ -37,44 +37,22 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 throw new NotSupportedException("Using the cache requires to AssetManager.FileProvider to be valid.");
             }
 
-            // remove the old shaders
-            if (recentlyModifiedShaders != null && recentlyModifiedShaders.Count != 0)
-                RemoveObsoleteStoredResults(recentlyModifiedShaders);
-
             var ids = ShaderMixinObjectId.Compute(mixin, compilerParameters);
 
             EffectBytecode bytecode = null;
-            lock (storedResults)
+            lock (bytecodes)
             {
-                if (storedResults.TryGetValue(ids.FullParametersId, out bytecode))
-                {
-                    return bytecode;
-                }
-
+                // remove the old shaders
+                if (recentlyModifiedShaders != null && recentlyModifiedShaders.Count != 0)
+                    RemoveObsoleteStoredResults(recentlyModifiedShaders);
+                
                 // Final url of the compiled bytecode
                 var compiledUrl = string.Format("{0}/{1}", CompiledShadersKey, ids.CompileParametersId);
 
                 // ------------------------------------------------------------------------------------------------------------
                 // 1) Try to load latest bytecode
                 // ------------------------------------------------------------------------------------------------------------
-                ObjectId bytecodeId;
-                if (database.AssetIndexMap.TryGetValue(compiledUrl, out bytecodeId))
-                {
-                    using (var stream = database.ObjectDatabase.OpenStream(bytecodeId))
-                    {
-                        var localBytecode = BinarySerialization.Read<EffectBytecode>(stream);
-
-                        // If latest bytecode is in sync
-                        if (!Platform.IsWindowsDesktop || CheckBytecodeInSyncAgainstSources(localBytecode, database))
-                        {
-                            bytecode = localBytecode;
-
-                            // if bytecode contains a modified shource, do not use it.
-                            if (modifiedShaders != null && modifiedShaders.Count != 0 && IsBytecodeObsolete(bytecode, modifiedShaders))
-                                bytecode = null;
-                        }
-                    }
-                }
+                bytecode = LoadEffectBytecode(compiledUrl, modifiedShaders, true);
 
                 // On non Windows platform, we are expecting to have the bytecode stored directly
                 if (!Platform.IsWindowsDesktop && bytecode == null)
@@ -145,34 +123,63 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     {
                         BinarySerialization.Write(stream, bytecode);
                     }
-                }
-                else
-                {
-                    // clone the bytecode since it is not the first time we load it.
-                    bytecode = bytecode.Clone();
-                }
 
-                // Store the bytecode in the memory cache
-                storedResults[ids.FullParametersId] = bytecode;
+                    bytecode = LoadEffectBytecode(compiledUrl, null, false);
+                }
             }
 
             return bytecode;
         }
 
-        private void RemoveObsoleteStoredResults(HashSet<string> modifiedShaders)
+        private EffectBytecode LoadEffectBytecode(string url, HashSet<string> modifiedShaders, bool checkAgainstSource)
         {
-            lock (storedResults)
+            var database = AssetManager.FileProvider;
+            ObjectId bytecodeId;
+            EffectBytecode bytecode = null;
+            if (database.AssetIndexMap.TryGetValue(url, out bytecodeId))
             {
-                var keysToRemove = new List<ObjectId>();
-                foreach (var bytecodePair in storedResults)
+                bool isInCache = true;
+                if (!bytecodes.TryGetValue(bytecodeId, out bytecode))
                 {
-                    if (IsBytecodeObsolete(bytecodePair.Value, modifiedShaders))
-                        keysToRemove.Add(bytecodePair.Key);
+                    isInCache = false;
+                    using (var stream = database.ObjectDatabase.OpenStream(bytecodeId))
+                    {
+                        bytecode = BinarySerialization.Read<EffectBytecode>(stream);
+                    }
                 }
 
-                foreach (var key in keysToRemove)
-                    storedResults.Remove(key);
+                // If latest bytecode is in sync
+                if (!Platform.IsWindowsDesktop || !checkAgainstSource || (bytecode != null && CheckBytecodeInSyncAgainstSources(bytecode, database)))
+                {
+                    // if bytecode contains a modified shource, do not use it.
+                    if (modifiedShaders != null && modifiedShaders.Count != 0 && IsBytecodeObsolete(bytecode, modifiedShaders))
+                        bytecode = null;
+                }
+                else
+                {
+                    bytecode = null;
+                }
+
+                if (!isInCache && bytecode != null)
+                {
+                    bytecodes.Add(bytecodeId, bytecode);
+                }
             }
+            return bytecode;
+        }
+
+        private void RemoveObsoleteStoredResults(HashSet<string> modifiedShaders)
+        {
+            // TODO: avoid List<ObjectId> creation?
+            var keysToRemove = new List<ObjectId>();
+            foreach (var bytecodePair in bytecodes)
+            {
+                if (IsBytecodeObsolete(bytecodePair.Value, modifiedShaders))
+                    keysToRemove.Add(bytecodePair.Key);
+            }
+
+            foreach (var key in keysToRemove)
+                bytecodes.Remove(key);
         }
 
         private bool IsBytecodeObsolete(EffectBytecode bytecode, HashSet<string> modifiedShaders)

@@ -17,14 +17,8 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Initializes a new instance of the <see cref="ImageCopier"/> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        public ImageCopier(ImageEffectContext context) : base(context, "ImageCopierShader")
+        public ImageCopier(ImageEffectContext context) : base(context, "ImageCopierEffect")
         {
-        }
-
-        public override void Reset()
-        {
-            Sampler = GraphicsDevice.SamplerStates.LinearClamp;
-            Color = Color4.White;
         }
 
         /// <summary>
@@ -73,6 +67,13 @@ namespace SiliconStudio.Paradox.Effects.Images
             {
                 Parameters.Set(TexturingKeys.Sampler, value);
             }
+        }
+
+        protected override void SetDefaultParameters()
+        {
+            base.SetDefaultParameters();
+            Color = Color4.White;
+            IsOnlyChannelRed = false;
         }
     }
 }

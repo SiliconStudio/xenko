@@ -583,6 +583,7 @@
       <DependentUpon>MaterialReflectanceGBuffer.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Images\GaussianBlur\GaussianBlur.cs" />
+    <Compile Include="Images\GaussianBlur\GaussianBlurKeys.cs" />
     <Compile Include="Images\GaussianBlur\GaussianBlurShader.cs">
       <DependentUpon>GaussianBlurShader.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -592,6 +593,12 @@
     <Compile Include="Images\GaussianBlur\GaussianUtil.cs" />
     <Compile Include="Images\GaussianBlur\GaussianBlurEffect.cs">
       <DependentUpon>GaussianBlurEffect.pdxfx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Images\ImageCopier\ImageCopierEffect.cs">
+      <DependentUpon>ImageCopierEffect.pdxfx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -1967,6 +1974,10 @@
     <None Include="Images\GaussianBlur\GaussianBlurEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>GaussianBlurEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Images\ImageCopier\ImageCopierEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ImageCopierEffect.cs</LastGenOutput>
     </None>
     <None Include="Images\ImageCopier\ImageCopierShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

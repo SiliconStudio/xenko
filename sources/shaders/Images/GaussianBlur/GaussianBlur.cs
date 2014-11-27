@@ -5,27 +5,48 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
+    /// <summary>
+    /// Provides a gaussian blur effect.
+    /// </summary>
+    /// <remarks>
+    /// To improve performance of this gaussian blur is using:
+    /// - a separable 1D horizontal and vertical blur
+    /// - linear filtering to reduce the number of taps
+    /// </remarks>
     public class GaussianBlur : ImageEffectBase
     {
-        internal static readonly ParameterKey<int> RadiusKey = ParameterKeys.New<int>();
-        internal static readonly ParameterKey<bool> UseSigma3Key = ParameterKeys.New<bool>();
-
         private readonly ImageEffect blurH;
         private readonly ImageEffect blurV;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GaussianBlur"/> class.
+        /// </summary>
+        /// <param name="context">The context.</param>
         public GaussianBlur(ImageEffectContext context)
             : base(context)
         {
-            blurH = new ImageEffect(context, "GaussianBlurEffect.Horizontal").DisposeBy(this);
-            blurV = new ImageEffect(context, "GaussianBlurEffect.Vertical").DisposeBy(this);
+            blurH = new ImageEffect(context, "GaussianBlurEffect").DisposeBy(this);
+            blurH.Parameters.Set(GaussianBlurKeys.VerticalBlur, false);
+
+            blurV = new ImageEffect(context, "GaussianBlurEffect").DisposeBy(this);
+            blurH.Parameters.Set(GaussianBlurKeys.VerticalBlur, true);
 
             Radius = 4;
-            UseSigma3 = false;
+            SigmaRatio = 2.0f;
         }
 
+        /// <summary>
+        /// Gets or sets the radius.
+        /// </summary>
+        /// <value>The radius.</value>
         public int Radius { get; set; }
 
-        public bool UseSigma3 { get; set; }
+        /// <summary>
+        /// Gets or sets the sigma ratio. The sigma ratio is used to calculate the sigma based on the radius: The actual
+        /// formula is <c>sigma = radius / SigmaRatio</c>. The default value is 2.0f.
+        /// </summary>
+        /// <value>The sigma ratio.</value>
+        public float SigmaRatio { get; set; }
 
         protected override void DrawCore()
         {
@@ -35,19 +56,18 @@ namespace SiliconStudio.Paradox.Effects.Images
             // Horizontal pass
             blurH.SetInput(inputTexture);
             blurH.SetOutput(outputHorizontal);
-            blurH.Parameters.Set(RadiusKey, Radius);
-            blurH.Parameters.Set(UseSigma3Key, UseSigma3);
+            blurH.Parameters.Set(GaussianBlurKeys.Radius, Radius);
+            blurH.Parameters.Set(GaussianBlurKeys.SigmaRatio, SigmaRatio);
 
-            // TODO: this is alocating a string, we should try to not allocate here.
             var size = Radius * 2 + 1;
-            blurH.Draw(string.Format("GaussianBlurH{0}x{0}", size));
+            blurH.Draw("GaussianBlurH{0}x{0}", size);
 
             // Vertical pass
             blurV.SetInput(outputHorizontal);
             blurV.SetOutput(GetSafeOutput(0));
-            blurV.Parameters.Set(RadiusKey, Radius);
-            blurV.Parameters.Set(UseSigma3Key, UseSigma3);
-            blurV.Draw(string.Format("GaussianBlurV{0}x{0}", size));
+            blurV.Parameters.Set(GaussianBlurKeys.Radius, Radius);
+            blurV.Parameters.Set(GaussianBlurKeys.SigmaRatio, SigmaRatio);
+            blurV.Draw("GaussianBlurV{0}x{0}", size);
 
             Context.ReleaseTemporaryTexture(outputHorizontal);            
         }
