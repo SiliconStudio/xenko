@@ -1,15 +1,22 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-class CustomShader : SpriteBase
+namespace SiliconStudio.Paradox.Graphics.Tests
 {
-    // factor used by CustomEffect
-    stage float SwitchEffectLevel;
-
-    stage float4 ColorFactor2;
-
-    // Shading of the sprite with dual texturing
-    stage override float4 Shading()
+    class CustomShader : SpriteBase
     {
-        return base.Shading() * ColorFactor2;
-    }
-};
+        // factor used by CustomEffect
+        stage float SwitchEffectLevel;
+
+        cbuffer PerPass
+        {
+            [Link("MyCustomShaderKeys.ColorFactor2")]
+            stage float4 ColorFactor2;
+        };
+
+        // Shading of the sprite with dual texturing
+        stage override float4 Shading()
+        {
+            return base.Shading() * ColorFactor2;
+        }
+    };
+}

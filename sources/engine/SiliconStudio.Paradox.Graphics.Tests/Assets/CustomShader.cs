@@ -14,11 +14,12 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-namespace SiliconStudio.Paradox.Effects
+
+#line 3 "D:\Code\Paradox\sources\engine\SiliconStudio.Paradox.Graphics.Tests\Assets\CustomShader.pdxsl"
+namespace SiliconStudio.Paradox.Graphics.Tests
 {
     public static partial class CustomShaderKeys
     {
         public static readonly ParameterKey<float> SwitchEffectLevel = ParameterKeys.New<float>();
-        public static readonly ParameterKey<Vector4> ColorFactor2 = ParameterKeys.New<Vector4>();
     }
 }

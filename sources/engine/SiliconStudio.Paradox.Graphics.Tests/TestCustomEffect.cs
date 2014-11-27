@@ -9,6 +9,11 @@ using SiliconStudio.Paradox.Games;
 
 namespace SiliconStudio.Paradox.Graphics.Tests
 {
+    public static partial class MyCustomShaderKeys
+    {
+        public static readonly ParameterKey<Vector4> ColorFactor2 = ParameterKeys.New<Vector4>();
+    }
+
     [TestFixture]
     public class TestCustomEffect : TestGameBase
     {
@@ -56,11 +61,12 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
             GraphicsDevice.SetRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
 
+            effectParameters.Set(MyCustomShaderKeys.ColorFactor2, (Vector4)Color.Red);
             effectParameters.Set(CustomShaderKeys.SwitchEffectLevel, switchEffectLevel);
+            effectParameters.Set(TexturingKeys.Texture0, UVTexture);
             switchEffectLevel++;
             dynamicEffectCompiler.Update(effectInstance);
 
-            effectParameters.Set(CustomShaderKeys.ColorFactor2, (Vector4)Color.Red);
             GraphicsDevice.DrawQuad(effectInstance.Effect, effectParameters);
         }
 

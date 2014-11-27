@@ -16,7 +16,7 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 
 #line 3 "D:\Code\Paradox\sources\engine\SiliconStudio.Paradox.Graphics.Tests\Assets\CustomEffect.pdxfx"
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Graphics.Tests
 {
 
     #line 8
