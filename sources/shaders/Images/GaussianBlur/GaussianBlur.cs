@@ -29,7 +29,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             blurH.Parameters.Set(GaussianBlurKeys.VerticalBlur, false);
 
             blurV = new ImageEffect(context, "GaussianBlurEffect").DisposeBy(this);
-            blurH.Parameters.Set(GaussianBlurKeys.VerticalBlur, true);
+            blurV.Parameters.Set(GaussianBlurKeys.VerticalBlur, true);
 
             Radius = 4;
             SigmaRatio = 2.0f;
