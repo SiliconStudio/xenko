@@ -9,7 +9,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         cbuffer PerPass
         {
-            [Link("MyCustomShaderKeys.ColorFactor2")]
+            [Link("MyCustomShader.ColorFactor2")]
             stage float4 ColorFactor2;
         };
 

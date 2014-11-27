@@ -7,7 +7,7 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
     /// </summary>
     class ShadowMapUtils
     {
-        [Link("ShadowMapKeys.Texture")]
+        [Link("ShadowMap.Texture")]
         Texture2D shadowMapTexture;
     };
 }
