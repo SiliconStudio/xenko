@@ -597,6 +597,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Images\ImageCopier\ImageCopierEffect.cs">
+      <DependentUpon>ImageCopierEffect.pdxfx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Images\ImageCopier\ImageCopier.cs" />
     <Compile Include="Images\ImageCopier\ImageCopierShader.Extensions.cs" />
     <Compile Include="Images\ImageEffectBase.cs" />
@@ -1968,6 +1974,10 @@
     <None Include="Images\GaussianBlur\GaussianBlurEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>GaussianBlurEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Images\ImageCopier\ImageCopierEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ImageCopierEffect.cs</LastGenOutput>
     </None>
     <None Include="Images\ImageCopier\ImageCopierShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Initializes a new instance of the <see cref="ImageCopier"/> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        public ImageCopier(ImageEffectContext context) : base(context, "ImageCopierShader")
+        public ImageCopier(ImageEffectContext context) : base(context, "ImageCopierEffect")
         {
         }
 
