@@ -247,7 +247,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 var shader = parsingResult.Shader;
 
                 // As shaders can be embedded in namespaces, get only the shader class and make sure there is only one in a pdxsl.
-                var shaderClassTypes = GetShaderClassTypes(shader.Declarations).ToList();
+                var shaderClassTypes = ParadoxShaderParser.GetShaderClassTypes(shader.Declarations).ToList();
                 if (shaderClassTypes.Count != 1)
                 {
                     throw new InvalidOperationException(string.Format("Shader [{0}] must contain only a single Shader class type intead of [{1}]", type, shaderClassTypes.Count));
@@ -337,29 +337,6 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 return source.ClassName + "_" + hash.ToString();
             }
             return source.ClassName;
-        }
-
-        private static IEnumerable<ShaderClassType> GetShaderClassTypes(IEnumerable<SiliconStudio.Shaders.Ast.Node> nodes)
-        {
-            foreach (var node in nodes)
-            {
-                var namespaceBlock = node as NamespaceBlock;
-                if (namespaceBlock != null)
-                {
-                    foreach (var type in GetShaderClassTypes(namespaceBlock.Body))
-                    {
-                        yield return type;
-                    }
-                }
-                else
-                {
-                    var shaderClass = node as ShaderClassType;
-                    if (shaderClass != null)
-                    {
-                        yield return shaderClass;
-                    }
-                }
-            }
         }
 
         private class ShaderSourceKey : IEquatable<ShaderSourceKey>
