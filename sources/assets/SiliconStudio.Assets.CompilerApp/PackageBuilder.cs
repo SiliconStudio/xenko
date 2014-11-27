@@ -98,7 +98,7 @@ namespace SiliconStudio.Assets.CompilerApp
             var outputDirectory = builderOptions.OutputDirectory;
 
             // Builds the project
-            var assetBuilder = new PackageAssetsCompiler(projectSession);
+            var assetBuilder = new PackageCompiler();
             assetBuilder.AssetCompiled += RegisterBuildStepProcessedHandler;
 
             // Create context
