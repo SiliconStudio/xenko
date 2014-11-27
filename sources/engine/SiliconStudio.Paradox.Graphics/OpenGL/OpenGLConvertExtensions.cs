@@ -2,11 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
+using ES30 = OpenTK.Graphics.ES30;
 #else
 using OpenTK.Graphics.OpenGL;
 #endif
@@ -47,6 +45,27 @@ namespace SiliconStudio.Paradox.Graphics
                     throw new NotImplementedException();
             }
         }
+
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+        public static ES30.PrimitiveType ToOpenGLES(this PrimitiveType primitiveType)
+        {
+            switch (primitiveType)
+            {
+                case PrimitiveType.PointList:
+                    return ES30.PrimitiveType.Points;
+                case PrimitiveType.LineList:
+                    return ES30.PrimitiveType.Lines;
+                case PrimitiveType.LineStrip:
+                    return ES30.PrimitiveType.LineStrip;
+                case PrimitiveType.TriangleList:
+                    return ES30.PrimitiveType.Triangles;
+                case PrimitiveType.TriangleStrip:
+                    return ES30.PrimitiveType.TriangleStrip;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+#endif
 
         public static TextureWrapMode ToOpenGL(this TextureAddressMode addressMode)
         {

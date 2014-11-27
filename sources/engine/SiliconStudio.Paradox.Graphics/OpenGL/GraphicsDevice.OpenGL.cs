@@ -126,7 +126,6 @@ namespace SiliconStudio.Paradox.Graphics
         private iPhoneOSGameView gameWindow;
 #endif
 
-
         private VertexArrayObject currentVertexArrayObject;
         private VertexArrayObject boundVertexArrayObject;
         internal uint enabledVertexAttribArrays;
@@ -158,6 +157,8 @@ namespace SiliconStudio.Paradox.Graphics
         private SamplerState[] samplerStates = new SamplerState[64];
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+        private bool isOpenGLES2;
+
         private Buffer constantBuffer;
 
         // Need to change sampler state depending on if texture has mipmap or not during PreDraw
@@ -456,6 +457,7 @@ namespace SiliconStudio.Paradox.Graphics
 
                 GL.Viewport(0, 0, destTexture.Description.Width, destTexture.Description.Height);
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, FindOrCreateFBO(source));
+
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 GL.ReadPixels(sourceRectangle.Left, sourceRectangle.Top, sourceRectangle.Width, sourceRectangle.Height, destTexture.FormatGl, destTexture.Type, destTexture.StagingData);
 #else
@@ -671,9 +673,10 @@ namespace SiliconStudio.Paradox.Graphics
             EnsureContextActive();
 #endif
             PreDraw();
+
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
             if(baseVertexLocation != 0)
-                throw new NotSupportedException("DrawIndexed with no null baseVertexLocation is not supported on OpenGL ES2.");
+                throw new NotSupportedException("DrawIndexed with no null baseVertexLocation is not supported on OpenGL ES.");
             GL.DrawElements(primitiveType.ToOpenGL(), indexCount, drawElementsType, indexBufferOffset + (startIndexLocation * indexElementSize)); // conversion to IntPtr required on Android
 #else
             GL.DrawElementsBaseVertex(primitiveType.ToOpenGL(), indexCount, drawElementsType, indexBufferOffset + (startIndexLocation * indexElementSize), baseVertexLocation);
@@ -734,8 +737,11 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
             //TODO: review code
             PreDraw();
+
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-            throw new NotImplementedException();
+            if (isOpenGLES2)
+                throw new NotSupportedException("DrawArraysInstanced is not supported on OpenGL ES 2");
+            GL.DrawArraysInstanced(primitiveType.ToOpenGLES(), startVertexLocation, vertexCountPerInstance, instanceCount);
 #else
             GL.DrawArraysInstanced(primitiveType.ToOpenGL(), startVertexLocation, vertexCountPerInstance, instanceCount);
 #endif
@@ -750,12 +756,13 @@ namespace SiliconStudio.Paradox.Graphics
         public void DrawInstanced(PrimitiveType primitiveType, Buffer argumentsBuffer, int alignedByteOffsetForArgs = 0)
         {
             if (argumentsBuffer == null) throw new ArgumentNullException("argumentsBuffer");
-
+            throw new NotImplementedException();
+            /*
 #if DEBUG
             EnsureContextActive();
 #endif
             PreDraw();
-            throw new NotImplementedException();
+            */
         }
 
         public void EnableProfile(bool enabledFlag)
@@ -1587,10 +1594,11 @@ namespace SiliconStudio.Paradox.Graphics
             if (HasVAO)
             {
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                OpenTK.Graphics.ES20.GL.Oes.BindVertexArray(0);
-#else
-                GL.BindVertexArray(0);
+                if (isOpenGLES2)
+                    OpenTK.Graphics.ES20.GL.Oes.BindVertexArray(0);
+                else
 #endif
+                    GL.BindVertexArray(0);
             }
 
             // Disable all vertex attribs
@@ -1924,16 +1932,36 @@ namespace SiliconStudio.Paradox.Graphics
 
             // TODO: How to control Debug flags?
             var creationFlags = GraphicsContextFlags.Default;
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-            versionMajor = 2;
+
+            // set default values
+            versionMajor = 1;
             versionMinor = 0;
+
+            // get real values
+            // using glGetIntegerv(GL_MAJOR_VERSION / GL_MINOR_VERSION) only works on opengl (es) > 3.0
+            var version = GL.GetString(StringName.Version);
+            if (version != null)
+            {
+                var splitVersion = version.Split(new char[] { '.', ' ' });
+                // find first number occurence because:
+                //   - on OpenGL, "<major>.<minor>"
+                //   - on OpenGL ES, "OpenGL ES <profile> <major>.<minor>"
+                for (var i = 0; i < splitVersion.Length - 1; ++i)
+                {
+                    if (int.TryParse(splitVersion[i], out versionMajor))
+                    {
+                        int.TryParse(splitVersion[i+1], out versionMinor);
+                        break;
+                    }
+                }
+            }
+
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+            isOpenGLES2 = (versionMajor < 3);
 #if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
             OpenTK.Platform.Utilities.ForceEmbedded = true;
 #endif
             creationFlags |= GraphicsContextFlags.Embedded;
-#else
-            versionMajor = 4;
-            versionMinor = 2;
 #endif
 
             // Doesn't seems to be working on Android

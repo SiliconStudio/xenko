@@ -21,9 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
-using OpenTK.Graphics;
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
 #else
