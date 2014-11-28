@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Runtime.InteropServices;
-using System.Windows;
 using System.Windows.Interop;
 
 using SiliconStudio.Presentation.Extensions;
@@ -12,7 +11,6 @@ namespace SiliconStudio.Presentation.Controls
     public class GameEngineHwndHost : HwndHost
     {
         private readonly IntPtr childHandle;
-        private Rect previousBoundingBox;
 
         public GameEngineHwndHost(IntPtr childHandle)
         {
@@ -39,15 +37,6 @@ namespace SiliconStudio.Presentation.Controls
         {
             NativeHelper.SetParent(childHandle, IntPtr.Zero);
             NativeHelper.DestroyWindow(hwnd.Handle);
-        }
-
-        protected override void OnWindowPositionChanged(Rect rcBoundingBox)
-        {
-            if (previousBoundingBox != rcBoundingBox)
-            {
-                base.OnWindowPositionChanged(rcBoundingBox);
-                previousBoundingBox = rcBoundingBox;
-            }
         }
 
         protected override void OnKeyDown(System.Windows.Input.KeyEventArgs e)
