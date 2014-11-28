@@ -157,7 +157,7 @@ namespace SiliconStudio.Paradox.Graphics
         private SamplerState[] samplerStates = new SamplerState[64];
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-        private bool isOpenGLES2;
+        public bool IsOpenGLES2 { get; private set; }
 
         private Buffer constantBuffer;
 
@@ -739,7 +739,7 @@ namespace SiliconStudio.Paradox.Graphics
             PreDraw();
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-            if (isOpenGLES2)
+            if (IsOpenGLES2)
                 throw new NotSupportedException("DrawArraysInstanced is not supported on OpenGL ES 2");
             GL.DrawArraysInstanced(primitiveType.ToOpenGLES(), startVertexLocation, vertexCountPerInstance, instanceCount);
 #else
@@ -1594,7 +1594,7 @@ namespace SiliconStudio.Paradox.Graphics
             if (HasVAO)
             {
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                if (isOpenGLES2)
+                if (IsOpenGLES2)
                     OpenTK.Graphics.ES20.GL.Oes.BindVertexArray(0);
                 else
 #endif
@@ -1957,7 +1957,7 @@ namespace SiliconStudio.Paradox.Graphics
             }
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-            isOpenGLES2 = (versionMajor < 3);
+            IsOpenGLES2 = (versionMajor < 3);
 #if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
             OpenTK.Platform.Utilities.ForceEmbedded = true;
 #endif
