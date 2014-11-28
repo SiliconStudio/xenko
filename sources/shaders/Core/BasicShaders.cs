@@ -14,44 +14,16 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-
-#line 3 "D:\Code\Paradox\sources\shaders\Core\BasicShaders.pdxfx"
 using SiliconStudio.Paradox.Effects.Data;
-
-#line 4
 using SiliconStudio.Paradox.Effects;
-
-#line 6
 namespace SiliconStudio.Paradox.Effects.Core
 {
-
-    #line 11
     internal static partial class ShaderMixins
     {
-        internal partial class ParadoxTessellation  : IShaderMixinBuilderExtended
+        internal partial class ParadoxTessellation  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-            }
-            private readonly ParameterKey[] __keys__ = new ParameterKey[]
-            {
-            };
-            public ParameterKey[] Keys
-            {
-                get
-                {
-                    return __keys__;
-                }
-            }
-            private readonly string[] __mixins__ = new string[]
-            {
-            };
-            public string[] Mixins
-            {
-                get
-                {
-                    return __mixins__;
-                }
             }
 
             [ModuleInitializer]
@@ -62,89 +34,30 @@ namespace SiliconStudio.Paradox.Effects.Core
             }
         }
     }
-
-    #line 25
     internal static partial class ShaderMixins
     {
-        internal partial class ParadoxSkinning  : IShaderMixinBuilderExtended
+        internal partial class ParadoxSkinning  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-
-                #line 29
                 if (context.GetParam(MaterialParameters.HasSkinningPosition))
                 {
-
-                    #line 31
                     if (context.GetParam(MaterialParameters.SkinningBones) > context.GetParam(MaterialParameters.SkinningMaxBones))
                     {
-
-                        #line 34
                         context.SetParam(MaterialParameters.SkinningMaxBones, context.GetParam(MaterialParameters.SkinningBones));
                     }
-
-                    #line 36
                     mixin.Mixin.AddMacro("SkinningMaxBones", context.GetParam(MaterialParameters.SkinningMaxBones));
-
-                    #line 37
                     context.Mixin(mixin, "TransformationSkinning");
-
-                    #line 39
                     if (context.GetParam(MaterialParameters.HasSkinningNormal))
                     {
-
-                        #line 41
                         if (context.GetParam(MaterialParameters.NormalMap) != null)
-
-                            #line 42
                             context.Mixin(mixin, "TangentToViewSkinning");
-
-                        #line 44
                         else
-
-                            #line 44
                             context.Mixin(mixin, "NormalVSSkinning");
-
-                        #line 46
                         context.Mixin(mixin, "NormalSkinning");
                     }
-
-                    #line 49
                     if (context.GetParam(MaterialParameters.HasSkinningTangent))
-
-                        #line 50
                         context.Mixin(mixin, "TangentSkinning");
-                }
-            }
-            private readonly ParameterKey[] __keys__ = new ParameterKey[]
-            {
-                MaterialParameters.HasSkinningNormal,
-                MaterialParameters.HasSkinningPosition,
-                MaterialParameters.HasSkinningTangent,
-                MaterialParameters.NormalMap,
-                MaterialParameters.SkinningBones,
-                MaterialParameters.SkinningMaxBones,
-            };
-            public ParameterKey[] Keys
-            {
-                get
-                {
-                    return __keys__;
-                }
-            }
-            private readonly string[] __mixins__ = new string[]
-            {
-                "NormalSkinning",
-                "NormalVSSkinning",
-                "TangentSkinning",
-                "TangentToViewSkinning",
-                "TransformationSkinning",
-            };
-            public string[] Mixins
-            {
-                get
-                {
-                    return __mixins__;
                 }
             }
 
@@ -156,55 +69,20 @@ namespace SiliconStudio.Paradox.Effects.Core
             }
         }
     }
-
-    #line 57
     internal static partial class ShaderMixins
     {
-        internal partial class ParadoxShadowCast  : IShaderMixinBuilderExtended
+        internal partial class ParadoxShadowCast  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-
-                #line 62
                 if (context.GetParam(LightingKeys.CastShadows))
 
                     {
-
-                        #line 63
-                        var __subMixin = new ShaderMixinSourceTree() { Name = "ShadowMapCaster", Parent = mixin };
-                        mixin.Children.Add(__subMixin);
-
-                        #line 63
+                        var __subMixin = new ShaderMixinSourceTree() { Name = "ShadowMapCaster" };
                         context.BeginChild(__subMixin);
-
-                        #line 63
                         context.Mixin(__subMixin, "ShadowMapCaster");
-
-                        #line 63
                         context.EndChild();
                     }
-            }
-            private readonly ParameterKey[] __keys__ = new ParameterKey[]
-            {
-                LightingKeys.CastShadows,
-            };
-            public ParameterKey[] Keys
-            {
-                get
-                {
-                    return __keys__;
-                }
-            }
-            private readonly string[] __mixins__ = new string[]
-            {
-                "ShadowMapCaster",
-            };
-            public string[] Mixins
-            {
-                get
-                {
-                    return __mixins__;
-                }
             }
 
             [ModuleInitializer]
@@ -215,78 +93,29 @@ namespace SiliconStudio.Paradox.Effects.Core
             }
         }
     }
-
-    #line 69
     internal static partial class ShaderMixins
     {
-        internal partial class ParadoxBaseShader  : IShaderMixinBuilderExtended
+        internal partial class ParadoxBaseShader  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-
-                #line 74
                 context.Mixin(mixin, "ShaderBase");
-
-                #line 75
                 context.Mixin(mixin, "ShadingBase");
-
-                #line 76
                 context.Mixin(mixin, "TransformationWAndVP");
-
-                #line 78
                 context.Mixin(mixin, "PositionVSStream");
-
-                #line 80
                 if (context.GetParam(MaterialParameters.NormalMap) != null)
                 {
-
-                    #line 82
                     context.Mixin(mixin, "NormalMapTexture");
 
                     {
-
-                        #line 83
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-
-                        #line 83
                         context.Mixin(__subMixin, context.GetParam(MaterialParameters.NormalMap));
                         mixin.Mixin.AddComposition("normalMap", __subMixin.Mixin);
                     }
                 }
-
-                #line 86
                 else
                 {
-
-                    #line 87
                     context.Mixin(mixin, "NormalVSStream");
-                }
-            }
-            private readonly ParameterKey[] __keys__ = new ParameterKey[]
-            {
-                MaterialParameters.NormalMap,
-            };
-            public ParameterKey[] Keys
-            {
-                get
-                {
-                    return __keys__;
-                }
-            }
-            private readonly string[] __mixins__ = new string[]
-            {
-                "NormalMapTexture",
-                "NormalVSStream",
-                "PositionVSStream",
-                "ShaderBase",
-                "ShadingBase",
-                "TransformationWAndVP",
-            };
-            public string[] Mixins
-            {
-                get
-                {
-                    return __mixins__;
                 }
             }
 

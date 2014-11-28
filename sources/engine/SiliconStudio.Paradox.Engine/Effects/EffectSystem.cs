@@ -237,7 +237,10 @@ namespace SiliconStudio.Paradox.Effects
             var isPdxfx = ShaderMixinManager.Contains(mainEffectName);
             var source = isPdxfx ? new ShaderMixinGeneratorSource(mainEffectName) : (ShaderSource)new ShaderClassSource(mainEffectName);
 
-            var compilerResult = compiler.Compile(source, compilerParameters, modifiedShaders, recentlyModifiedShaders);
+            compilerParameters.ModifiedShaders = modifiedShaders;
+            compilerParameters.RecentlyModifiedShaders = recentlyModifiedShaders;
+
+            var compilerResult = compiler.Compile(source, compilerParameters);
 
             foreach (var message in compilerResult.Messages)
             {

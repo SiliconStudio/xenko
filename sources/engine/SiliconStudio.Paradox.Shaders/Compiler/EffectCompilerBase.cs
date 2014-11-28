@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Storage;
@@ -21,14 +22,14 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
         {
         }
 
-        public CompilerResults Compile(ShaderSource shaderSource, CompilerParameters compilerParameters, HashSet<string> modifiedShaders, HashSet<string> recentlyModifiedShaders)
+        public CompilerResults Compile(ShaderSource shaderSource, CompilerParameters compilerParameters)
         {
             ShaderMixinSourceTree mixinTree;
             var shaderMixinGeneratorSource = shaderSource as ShaderMixinGeneratorSource;
-            var mainUsedParameters = new ShaderMixinParameters();
-            var usedParameters = new List<ShaderMixinParameters>();
 
             string effectName = null;
+
+            var modifiedShaders = compilerParameters.ModifiedShaders;
 
             if (shaderMixinGeneratorSource != null)
             {
@@ -58,7 +59,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                         return earlyCompilerResults;
                     }
                 }
-                mixinTree = ShaderMixinManager.Generate(effectName, compilerParameters, out mainUsedParameters, out usedParameters);
+                mixinTree = ShaderMixinManager.Generate(effectName, compilerParameters);
             }
             else
             {
@@ -75,7 +76,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
                 if (shaderMixinSource != null)
                 {
-                    mixinTree = new ShaderMixinSourceTree() { Mixin = shaderMixinSource };
+                    mixinTree = new ShaderMixinSourceTree() { Mixin = shaderMixinSource, UsedParameters =  new ShaderMixinParameters()};
                 }
                 else
                 {
@@ -84,21 +85,15 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             }
 
             // Copy global parameters to used Parameters by default, as it is used by the compiler
-            mainUsedParameters.Set(CompilerParameters.GraphicsPlatformKey, compilerParameters.Platform);
-            mainUsedParameters.Set(CompilerParameters.GraphicsProfileKey, compilerParameters.Profile);
-            mainUsedParameters.Set(CompilerParameters.DebugKey, compilerParameters.Debug);
-
-            foreach (var parameters in usedParameters)
-            {
-                parameters.Set(CompilerParameters.GraphicsPlatformKey, compilerParameters.Platform);
-                parameters.Set(CompilerParameters.GraphicsProfileKey, compilerParameters.Profile);
-                parameters.Set(CompilerParameters.DebugKey, compilerParameters.Debug);
-            }
+            mixinTree.SetGlobalUsedParameter(CompilerParameters.GraphicsPlatformKey, compilerParameters.Platform);
+            mixinTree.SetGlobalUsedParameter(CompilerParameters.GraphicsProfileKey, compilerParameters.Profile);
+            mixinTree.SetGlobalUsedParameter(CompilerParameters.DebugKey, compilerParameters.Debug);
 
             // Compile the whole mixin tree
-            var compilerResults = new CompilerResults();
-            compilerResults.Module = string.Format("EffectCompile [{0}]", effectName);
-            var wasCompiled = Compile(string.Empty, effectName, mixinTree, mainUsedParameters, usedParameters, modifiedShaders, recentlyModifiedShaders, compilerResults);
+            var compilerResults = new CompilerResults { Module = string.Format("EffectCompile [{0}]", effectName) };
+            var internalCompilerParameters = new InternalCompilerParameters(mixinTree, compilerParameters, compilerResults);
+
+            var wasCompiled = Compile(string.Empty, internalCompilerParameters, compilerResults);
 
             if (wasCompiled && shaderMixinGeneratorSource != null)
             {
@@ -122,41 +117,42 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
         /// <summary>
         /// Compile the effect and its children.
         /// </summary>
-        /// <param name="effectName">The name of the effect (without the base effect name).</param>
-        /// <param name="fullEffectName">The full name of the effect (with the base effect name).</param>
-        /// <param name="mixinTree">The ShaderMixinSourceTree.</param>
-        /// <param name="mainCompilerParameters">The parameters used to create the main effect.</param>
-        /// <param name="compilerParameters">The parameters used to create the child effects</param>
-        /// <param name="modifiedShaders">The list of modified shaders since the beginning of the runtime.</param>
-        /// <param name="recentlyModifiedShaders">The list of modified shaders that have not been replaced yet.</param>
-        /// <param name="compilerResults">The result of the compilation.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="internalCompilerParameters">The internal compiler parameters.</param>
+        /// <param name="compilerResults">The compiler results.</param>
         /// <returns>true if the compilation succeded, false otherwise.</returns>
-        protected virtual bool Compile(string effectName, string fullEffectName, ShaderMixinSourceTree mixinTree, ShaderMixinParameters mainCompilerParameters, List<ShaderMixinParameters> compilerParameters, HashSet<string> modifiedShaders, HashSet<string> recentlyModifiedShaders, CompilerResults compilerResults)
+        /// <exception cref="System.ArgumentNullException">name</exception>
+        private bool Compile(string name, InternalCompilerParameters internalCompilerParameters, CompilerResults compilerResults)
         {
-            if (mixinTree.Mixin == null) return false;
+            if (name == null) throw new ArgumentNullException("name");
 
-            var cp = compilerParameters.FirstOrDefault(x => x.Name == fullEffectName);
-            var bytecode = Compile(mixinTree.Mixin, fullEffectName, cp ?? mainCompilerParameters, modifiedShaders, recentlyModifiedShaders, compilerResults);
+            var mixinTree = internalCompilerParameters.MixinTree;
+            if (mixinTree.Mixin == null) return false;
+            
+            var bytecode = Compile(internalCompilerParameters);
 
             var wasCompiled = false;
             if (bytecode != null)
             {
-                if (effectName == string.Empty)
+                if (internalCompilerParameters.MixinTree.Parent == null)
                 {
                     compilerResults.MainBytecode = bytecode;
-                    compilerResults.MainUsedParameters = mainCompilerParameters;
+                    compilerResults.MainUsedParameters = internalCompilerParameters.MixinTree.UsedParameters;
                 }
-                compilerResults.Bytecodes.Add(effectName, bytecode);
-                compilerResults.UsedParameters.Add(effectName, cp);
+                compilerResults.Bytecodes.Add(name, bytecode);
+                compilerResults.UsedParameters.Add(name, internalCompilerParameters.MixinTree.UsedParameters);
 
                 wasCompiled = true;
             }
 
             foreach (var childTree in mixinTree.Children)
             {
-                var childEffectName = effectName == string.Empty ? childTree.Key : effectName + "." + childTree.Key;
-                var fullChildEffectName = fullEffectName == string.Empty ? childTree.Key : fullEffectName + "." + childTree.Key;
-                wasCompiled |= Compile(childEffectName, fullChildEffectName, childTree.Value, mainCompilerParameters, compilerParameters, modifiedShaders, recentlyModifiedShaders, compilerResults);
+                var childName = (string.IsNullOrEmpty(name) ? string.Empty : name + ".") + childTree.Value.Name;
+
+                var subParameters = internalCompilerParameters;
+                subParameters.MixinTree = childTree.Value;
+
+                wasCompiled |= Compile(childName, subParameters, compilerResults);
             }
 
             return wasCompiled;
@@ -165,14 +161,60 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
         /// <summary>
         /// Compiles the ShaderMixinSource into a platform bytecode.
         /// </summary>
-        /// <param name="mixin">The ShaderMixinSource.</param>
-        /// <param name="fullEffectName">The name of the effect.</param>
-        /// <param name="compilerParameters">The parameters used for compilation.</param>
-        /// <param name="modifiedShaders">The list of modified shaders.</param>
-        /// <param name="recentlyModifiedShaders">The list of recently modified shaders.</param>
-        /// <param name="log">The logger.</param>
+        /// <param name="internalCompilerParameters">The internal compiler parameters.</param>
         /// <returns>The platform-dependent bytecode.</returns>
-        public abstract EffectBytecode Compile(ShaderMixinSource mixin, string fullEffectName, ShaderMixinParameters compilerParameters, HashSet<string> modifiedShaders, HashSet<string> recentlyModifiedShaders, LoggerResult log);
+        public abstract EffectBytecode Compile(InternalCompilerParameters internalCompilerParameters);
+
+        /// <summary>
+        /// Internal parameters used to compile a shader.
+        /// </summary>
+        public struct InternalCompilerParameters
+        {
+            private ShaderMixinSourceTree mixinTree;
+
+            private readonly CompilerParameters compilerParameters;
+
+            private LoggerResult log;
+
+            public InternalCompilerParameters(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters, LoggerResult log)
+            {
+                this.mixinTree = mixinTree;
+                this.compilerParameters = compilerParameters ;
+                this.log = log;
+            }
+
+            public ShaderMixinSourceTree MixinTree
+            {
+                get
+                {
+                    return mixinTree;
+                }
+                set
+                {
+                    mixinTree = value;
+                }
+            }
+
+            public CompilerParameters CompilerParameters
+            {
+                get
+                {
+                    return compilerParameters;
+                }
+            }
+
+            public LoggerResult Log
+            {
+                get
+                {
+                    return log;
+                }
+                set
+                {
+                    log = value;
+                }
+            }
+        }
 
         /// <summary>
         /// Get the shader from the database based on the parameters used for its compilation.

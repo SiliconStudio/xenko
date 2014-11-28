@@ -14,84 +14,33 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-
-#line 3 "D:\Code\Paradox\sources\engine\SiliconStudio.Paradox.Graphics.Tests\Compiler\CubemapEffect.pdxfx"
 using SiliconStudio.Paradox.Effects.Data;
-
-#line 4
 using SiliconStudio.Paradox.Effects;
-
-#line 6
 namespace Test
 {
-
-    #line 8
     internal static partial class ShaderMixins
     {
-        internal partial class CubemapEffect  : IShaderMixinBuilderExtended
+        internal partial class CubemapEffect  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-
-                #line 12
                 context.Mixin(mixin, "ShaderBase");
-
-                #line 13
                 context.Mixin(mixin, "TransformationWAndVP");
-
-                #line 14
                 context.Mixin(mixin, "AlbedoFlatShading");
-
-                #line 16
                 if (context.GetParam(MaterialParameters.AlbedoDiffuse) != null)
 
                     {
-
-                        #line 17
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-
-                        #line 17
                         context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoDiffuse));
                         mixin.Mixin.AddComposition("albedoDiffuse", __subMixin.Mixin);
                     }
-
-                #line 19
                 else
 
                     {
-
-                        #line 19
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-
-                        #line 19
                         context.Mixin(__subMixin, "ComputeColorTextureCubeReflect", TexturingKeys.TextureCube0);
                         mixin.Mixin.AddComposition("albedoDiffuse", __subMixin.Mixin);
                     }
-            }
-            private readonly ParameterKey[] __keys__ = new ParameterKey[]
-            {
-                MaterialParameters.AlbedoDiffuse,
-            };
-            public ParameterKey[] Keys
-            {
-                get
-                {
-                    return __keys__;
-                }
-            }
-            private readonly string[] __mixins__ = new string[]
-            {
-                "AlbedoFlatShading",
-                "ComputeColorTextureCubeReflect",
-                "ShaderBase",
-                "TransformationWAndVP",
-            };
-            public string[] Mixins
-            {
-                get
-                {
-                    return __mixins__;
-                }
             }
 
             [ModuleInitializer]
@@ -102,67 +51,24 @@ namespace Test
             }
         }
     }
-
-    #line 22
     internal static partial class ShaderMixins
     {
-        internal partial class CubemapGeomEffect  : IShaderMixinBuilderExtended
+        internal partial class CubemapGeomEffect  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-
-                #line 26
                 context.Mixin(mixin, "ShaderBase");
-
-                #line 27
                 context.Mixin(mixin, "TransformationWAndVP");
-
-                #line 29
                 mixin.Mixin.AddMacro("MAX_VERTEX_COUNT", 9);
-
-                #line 30
                 context.Mixin(mixin, "CameraCube");
-
-                #line 32
                 context.Mixin(mixin, "AlbedoFlatShading");
-
-                #line 34
                 if (context.GetParam(MaterialParameters.AlbedoDiffuse) != null)
 
                     {
-
-                        #line 35
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-
-                        #line 35
                         context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoDiffuse));
                         mixin.Mixin.AddComposition("albedoDiffuse", __subMixin.Mixin);
                     }
-            }
-            private readonly ParameterKey[] __keys__ = new ParameterKey[]
-            {
-                MaterialParameters.AlbedoDiffuse,
-            };
-            public ParameterKey[] Keys
-            {
-                get
-                {
-                    return __keys__;
-                }
-            }
-            private readonly string[] __mixins__ = new string[]
-            {
-                "AlbedoFlatShading",
-                "CameraCube",
-                "ShaderBase",
-                "TransformationWAndVP",
-            };
-            public string[] Mixins
-            {
-                get
-                {
-                    return __mixins__;
-                }
             }
 
             [ModuleInitializer]
@@ -173,54 +79,19 @@ namespace Test
             }
         }
     }
-
-    #line 38
     internal static partial class ShaderMixins
     {
-        internal partial class CubemapIBLEffect  : IShaderMixinBuilderExtended
+        internal partial class CubemapIBLEffect  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-
-                #line 40
                 context.Mixin(mixin, "ParadoxBaseShader");
 
                 {
-
-                    #line 41
-                    var __subMixin = new ShaderMixinSourceTree() { Name = "ParadoxGBufferShaderPass", Parent = mixin };
-                    mixin.Children.Add(__subMixin);
-
-                    #line 41
+                    var __subMixin = new ShaderMixinSourceTree() { Name = "ParadoxGBufferShaderPass" };
                     context.BeginChild(__subMixin);
-
-                    #line 41
                     context.Mixin(__subMixin, "ParadoxGBufferShaderPass");
-
-                    #line 41
                     context.EndChild();
-                }
-            }
-            private readonly ParameterKey[] __keys__ = new ParameterKey[]
-            {
-            };
-            public ParameterKey[] Keys
-            {
-                get
-                {
-                    return __keys__;
-                }
-            }
-            private readonly string[] __mixins__ = new string[]
-            {
-                "ParadoxBaseShader",
-                "ParadoxGBufferShaderPass",
-            };
-            public string[] Mixins
-            {
-                get
-                {
-                    return __mixins__;
                 }
             }
 

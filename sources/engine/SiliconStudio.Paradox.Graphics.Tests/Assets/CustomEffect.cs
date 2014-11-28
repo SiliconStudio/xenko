@@ -14,55 +14,39 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-
-#line 3 "D:\Code\Paradox\sources\engine\SiliconStudio.Paradox.Graphics.Tests\Assets\CustomEffect.pdxfx"
 namespace SiliconStudio.Paradox.Graphics.Tests
 {
-
-    #line 8
     internal static partial class ShaderMixins
     {
-        internal partial class CustomEffect  : IShaderMixinBuilderExtended
+        internal partial class CustomSubEffect  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-
-                #line 12
-                if (context.GetParam(CustomShaderKeys.SwitchEffectLevel) < 10)
-                {
-
-                    #line 14
-                    context.Mixin(mixin, "CustomShader");
-                }
-
-                #line 17
-                else
-                {
-
-                    #line 18
-                    context.Mixin(mixin, "CustomShader");
-                }
+                context.CloneParentMixinToCurrent();
+                context.Mixin(mixin, "CustomShader2");
             }
-            private readonly ParameterKey[] __keys__ = new ParameterKey[]
+
+            [ModuleInitializer]
+            internal static void __Initialize__()
+
             {
-                CustomShaderKeys.SwitchEffectLevel,
-            };
-            public ParameterKey[] Keys
-            {
-                get
-                {
-                    return __keys__;
-                }
+                ShaderMixinManager.Register("CustomSubEffect", new CustomSubEffect());
             }
-            private readonly string[] __mixins__ = new string[]
+        }
+    }
+    internal static partial class ShaderMixins
+    {
+        internal partial class CustomEffect  : IShaderMixinBuilder
+        {
+            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-                "CustomShader",
-            };
-            public string[] Mixins
-            {
-                get
+                context.Mixin(mixin, "CustomShader");
+
                 {
-                    return __mixins__;
+                    var __subMixin = new ShaderMixinSourceTree() { Name = "CustomSubEffect" };
+                    context.BeginChild(__subMixin);
+                    context.Mixin(__subMixin, "CustomSubEffect");
+                    context.EndChild();
                 }
             }
 

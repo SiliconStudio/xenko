@@ -113,7 +113,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
             }
             commandContext.Logger.Info("Create permutation #{0} for effect [{1}]: \n{2}", permutationCount, effectName, compilerParameters.ToStringDetailed());
 
-            var compilerResults = compiler.Compile(source, compilerParameters, null, null);
+            var compilerResults = compiler.Compile(source, compilerParameters);
 
             // Copy logs and if there are errors, exit directlry
             compilerResults.CopyTo(commandContext.Logger);

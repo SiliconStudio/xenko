@@ -1,5 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System.Collections.Generic;
+
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
@@ -26,6 +29,14 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
         /// The debug flag.
         /// </summary>
         public static readonly ParameterKey<bool> DebugKey = ParameterKeys.New(true);
+
+        // TODO: Don't PUT THIS HERE (use Tags?)
+        [DataMemberIgnore]
+        public HashSet<string> ModifiedShaders { get; set; }
+
+        // TODO: Don't PUT THIS HERE (use Tags?)
+        [DataMemberIgnore]
+        public HashSet<string> RecentlyModifiedShaders { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CompilerParameters"/> class.

@@ -41,7 +41,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
         #region Public methods
 
-        public override EffectBytecode Compile(ShaderMixinSource shaderMixinSource, string fullEffectName, ShaderMixinParameters compilerParameters, HashSet<string> modifiedShaders, HashSet<string> recentlyModifiedShaders, LoggerResult log)
+        public override EffectBytecode Compile(InternalCompilerParameters config)
         {
             // Load D3D compiler dll
             // Note: No lock, it's probably fine if it gets called from multiple threads at the same time.
@@ -51,14 +51,18 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 d3dcompilerLoaded = true;
             }
 
+            var shaderMixinSource = config.MixinTree.Mixin;
+            var fullEffectName = config.MixinTree.Name;
+            var usedParameters = config.MixinTree.UsedParameters;
+            var log = config.Log;
+
             // Make a copy of shaderMixinSource. Use deep clone since shaderMixinSource can be altered during compilation (e.g. macros)
             var shaderMixinSourceCopy = new ShaderMixinSource();
             shaderMixinSourceCopy.DeepCloneFrom(shaderMixinSource);
-
             shaderMixinSource = shaderMixinSourceCopy;
 
             // Generate platform-specific macros
-            var platform = compilerParameters.Get(CompilerParameters.GraphicsPlatformKey);
+            var platform = usedParameters.Get(CompilerParameters.GraphicsPlatformKey);
             switch (platform)
             {
                 case GraphicsPlatform.Direct3D11:
@@ -84,6 +88,9 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 shaderMixinParser.SourceManager.LookupDirectoryList = SourceDirectories; // TODO: temp
                 shaderMixinParser.SourceManager.UrlToFilePath = UrlToFilePath; // TODO: temp
             }
+
+            var recentlyModifiedShaders = config.CompilerParameters.RecentlyModifiedShaders;
+            var modifiedShaders = config.CompilerParameters.ModifiedShaders;
 
             if (recentlyModifiedShaders != null && recentlyModifiedShaders.Count > 0)
             {
@@ -132,7 +139,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     builder.AppendLine("/***** Used Parameters *****");
                     builder.Append(" * EffectName: ");
                     builder.AppendLine(fullEffectName ?? "");
-                    WriteParameters(builder, compilerParameters, 0, false);
+                    WriteParameters(builder, usedParameters, 0, false);
                     builder.AppendLine(" ***************************/");
                     builder.Append(shaderSourceText);
                     File.WriteAllText(shaderSourceFilename, builder.ToString());
@@ -163,7 +170,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             foreach (var stageBinding in parsingResult.EntryPoints)
             {
                 // Compile
-                var result = compiler.Compile(shaderSourceText, stageBinding.Value, stageBinding.Key, compilerParameters, bytecode.Reflection, shaderSourceFilename);
+                var result = compiler.Compile(shaderSourceText, stageBinding.Value, stageBinding.Key, usedParameters, bytecode.Reflection, shaderSourceFilename);
                 result.CopyTo(log);
 
                 if (result.HasErrors)

@@ -51,6 +51,9 @@ namespace SiliconStudio.Paradox.Shaders.Tests
                 Console.WriteLine("Unexpected error {0}: {1}", filePath, ex);
             }
         }
-         
+
+        public static void Main()
+        {
+        }
     }
 }

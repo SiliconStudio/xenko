@@ -114,7 +114,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Flattener
                     var finalShader = new ShaderMixinSource();
                     finalShader.Mixins.Add(new ShaderClassSource("FlattenLayers"));
                     finalShader.Compositions.Add("outColor", computeColorShader);
-                    var results = compiler.Compile(finalShader, compilerParameters, null, null);
+                    var results = compiler.Compile(finalShader, compilerParameters);
 
                     if (results.HasErrors)
                         continue;

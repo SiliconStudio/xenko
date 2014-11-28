@@ -9,7 +9,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 {
     public class NullEffectCompiler : EffectCompilerBase
     {
-        public override EffectBytecode Compile(ShaderMixinSource mixin, string fullEffectName, ShaderMixinParameters compilerParameters, HashSet<string> modifiedShaders, HashSet<string> recentlyModifiedShaders, LoggerResult log)
+        public override EffectBytecode Compile(InternalCompilerParameters internalCompilerParameters)
         {
             throw new NotSupportedException("Shader Compilation is not allowed at run time on this platform.");
         }

@@ -42,7 +42,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             await base.LoadContent();
 
 
-            dynamicEffectCompiler = new DynamicEffectCompiler(Services, "CustomEffect");
+            dynamicEffectCompiler = new DynamicEffectCompiler(Services, "CustomEffect.CustomSubEffect");
             effectParameters = new ParameterCollection();
             effectInstance = new DefaultEffectInstance(effectParameters);
         }

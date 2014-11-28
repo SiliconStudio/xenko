@@ -95,7 +95,9 @@ namespace SiliconStudio.Paradox.Shaders.Tests
 
             var compiler = new EffectCompiler();
             compiler.SourceDirectories.Add("shaders");
-            var effectByteCode = compiler.Compile(mixinSource, "TestShaderCompilationGenericClass", compilerParameters, null, null, log);
+
+            var mixinTree = new ShaderMixinSourceTree() { Name = "TestShaderCompilationGenericClass", Mixin = mixinSource, UsedParameters = compilerParameters };
+            var effectByteCode = compiler.Compile(new EffectCompilerBase.InternalCompilerParameters(mixinTree, new CompilerParameters(), log));
         }
 
 

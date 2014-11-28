@@ -14,54 +14,20 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-
-#line 3 "D:\Code\Paradox\sources\shaders\PostEffects.pdxfx"
 namespace PostEffects
 {
-    [DataContract]
-#line 5
-    public partial class PostEffectsParameters : ShaderMixinParameters
+    [DataContract]public partial class PostEffectsParameters : ShaderMixinParameters
     {
-
-        #line 7
         public static readonly ParameterKey<bool> verticalBlur = ParameterKeys.New<bool>();
     };
-
-    #line 10
     internal static partial class ShaderMixins
     {
-        internal partial class VerticalVsmBlur  : IShaderMixinBuilderExtended
+        internal partial class VerticalVsmBlur  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-
-                #line 15
                 context.SetParam(PostEffectsParameters.verticalBlur, true);
-
-                #line 17
                 context.Mixin(mixin, "PostEffectVsmBlur", context.GetParam(PostEffectsParameters.verticalBlur));
-            }
-            private readonly ParameterKey[] __keys__ = new ParameterKey[]
-            {
-                PostEffectsParameters.verticalBlur,
-            };
-            public ParameterKey[] Keys
-            {
-                get
-                {
-                    return __keys__;
-                }
-            }
-            private readonly string[] __mixins__ = new string[]
-            {
-                "PostEffectVsmBlur",
-            };
-            public string[] Mixins
-            {
-                get
-                {
-                    return __mixins__;
-                }
             }
 
             [ModuleInitializer]
@@ -72,42 +38,14 @@ namespace PostEffects
             }
         }
     }
-
-    #line 20
     internal static partial class ShaderMixins
     {
-        internal partial class HorizontalVsmBlur  : IShaderMixinBuilderExtended
+        internal partial class HorizontalVsmBlur  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-
-                #line 25
                 context.SetParam(PostEffectsParameters.verticalBlur, false);
-
-                #line 27
                 context.Mixin(mixin, "PostEffectVsmBlur", context.GetParam(PostEffectsParameters.verticalBlur));
-            }
-            private readonly ParameterKey[] __keys__ = new ParameterKey[]
-            {
-                PostEffectsParameters.verticalBlur,
-            };
-            public ParameterKey[] Keys
-            {
-                get
-                {
-                    return __keys__;
-                }
-            }
-            private readonly string[] __mixins__ = new string[]
-            {
-                "PostEffectVsmBlur",
-            };
-            public string[] Mixins
-            {
-                get
-                {
-                    return __mixins__;
-                }
             }
 
             [ModuleInitializer]

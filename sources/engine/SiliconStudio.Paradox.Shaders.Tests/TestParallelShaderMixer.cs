@@ -89,7 +89,10 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             parameters.Set(CompilerParameters.GraphicsPlatformKey, GraphicsPlatform.Direct3D11);
             parameters.Set(CompilerParameters.GraphicsProfileKey, GraphicsProfile.Level_11_0);
             var logger = new LoggerResult();
-            var result = effectCompiler.Compile(mixinSource, "TestParallelMix", parameters, null, null, logger);
+
+            var mixinTree = new ShaderMixinSourceTree() { Name = "TestParallelMix", Mixin = mixinSource, UsedParameters = parameters };
+
+            var result = effectCompiler.Compile(new EffectCompilerBase.InternalCompilerParameters(mixinTree, new CompilerParameters(), logger));
 
             Assert.IsFalse(logger.HasErrors);
             Assert.IsNotNull(result);

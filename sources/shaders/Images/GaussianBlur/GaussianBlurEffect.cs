@@ -14,62 +14,20 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-
-#line 3 "D:\Code\Paradox\sources\shaders\Images\GaussianBlur\GaussianBlurEffect.pdxfx"
 namespace SiliconStudio.Paradox.Effects.Images
 {
-
-    #line 8
     internal static partial class ShaderMixins
     {
-        internal partial class GaussianBlurEffect  : IShaderMixinBuilderExtended
+        internal partial class GaussianBlurEffect  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-
-                #line 13
-
-                #line 13
                 var blur = GaussianUtil.GetBlurMacros(context.GetParam(GaussianBlurKeys.Radius), context.GetParam(GaussianBlurKeys.SigmaRatio));
-
-                #line 16
                 mixin.Mixin.AddMacro("BLUR_COUNT", blur.Count);
-
-                #line 17
                 mixin.Mixin.AddMacro("BLUR_OFFSETS", blur.Offsets);
-
-                #line 18
                 mixin.Mixin.AddMacro("BLUR_WEIGHTS", blur.Weights);
-
-                #line 19
                 mixin.Mixin.AddMacro("BLUR_DIRECTION", context.GetParam(GaussianBlurKeys.VerticalBlur) ? "float2(0,1)" : "float2(1,0)");
-
-                #line 22
                 context.Mixin(mixin, "GaussianBlurShader");
-            }
-            private readonly ParameterKey[] __keys__ = new ParameterKey[]
-            {
-                GaussianBlurKeys.Radius,
-                GaussianBlurKeys.SigmaRatio,
-                GaussianBlurKeys.VerticalBlur,
-            };
-            public ParameterKey[] Keys
-            {
-                get
-                {
-                    return __keys__;
-                }
-            }
-            private readonly string[] __mixins__ = new string[]
-            {
-                "GaussianBlurShader",
-            };
-            public string[] Mixins
-            {
-                get
-                {
-                    return __mixins__;
-                }
             }
 
             [ModuleInitializer]

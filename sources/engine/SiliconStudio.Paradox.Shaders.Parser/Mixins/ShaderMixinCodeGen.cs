@@ -46,7 +46,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
             this.shader = shader;
             this.logging = logging;
-            EnablePreprocessorLine = true;
+            EnablePreprocessorLine = false;
         }
 
         /// <summary>
@@ -358,7 +358,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 Write(" ");
                 Write(shaderBlock.Name);
                 WriteSpace();
-                Write(" : IShaderMixinBuilderExtended");
+                Write(" : IShaderMixinBuilder");
                 {
                     OpenBrace();
                     // Generate the main generate method for each shader block
@@ -369,55 +369,6 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                         foreach (Statement statement in shaderBlock.Body.Statements)
                         {
                             VisitDynamic(statement);
-                        }
-                        CloseBrace();
-                    }
-
-                    // parameterKeys is filled by previous VisitDynamic on the body/statements of the ShaderBlock visit
-                    // Generate the main generate method for each shader block
-                    Write("private readonly ParameterKey[] __keys__ = new ParameterKey[]");
-                    {
-                        OpenBrace();
-                        // Create a context associated with ShaderBlock
-                        foreach (var key in parameterKeysReferenced.OrderBy(key => key))
-                        {
-                            Write(key).WriteLine(",");
-                        }
-                        CloseBrace(false).WriteLine(";");
-                    }
-                    Write("public ParameterKey[] Keys");
-                    {
-                        OpenBrace();
-                        Write("get");
-                        {
-                            OpenBrace();
-                            WriteLine("return __keys__;");
-                            CloseBrace();
-                        }
-                        CloseBrace();
-                    }
-
-                    // mixinsReferenced is filled by previous VisitDynamic on the body/statements of the ShaderBlock visit
-                    // Generate the main generate method for each shader block
-                    Write("private readonly string[] __mixins__ = new string[]");
-                    {
-                        OpenBrace();
-                        // Create a context associated with ShaderBlock
-                        foreach (var mixinName in mixinsReferenced.OrderBy(x => x))
-                        {
-                            Write("\"").Write(mixinName).WriteLine("\",");
-                        }
-                        CloseBrace(false).WriteLine(";");
-                    }
-
-                    Write("public string[] Mixins");
-                    {
-                        OpenBrace();
-                        Write("get");
-                        {
-                            OpenBrace();
-                            WriteLine("return __mixins__;");
-                            CloseBrace();
                         }
                         CloseBrace();
                     }
@@ -481,10 +432,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                         WriteLinkLine(mixinStatement);
                         Write("var __subMixin = new ShaderMixinSourceTree() { Name = ");
                         WriteMixinName(childName);
-                        WriteLine(", Parent = mixin };");
-                        WriteLine("mixin.Children.Add(__subMixin);");
-
-                        WriteLinkLine(mixinStatement);
+                        WriteLine(" };");
                         WriteLine("context.BeginChild(__subMixin);");
 
                         WriteLinkLine(mixinStatement);
@@ -515,10 +463,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
                 case MixinStatementType.Clone:
                     WriteLinkLine(mixinStatement);
-                    WriteLine("context.CloneProperties();");
-
-                    WriteLinkLine(mixinStatement);
-                    WriteLine("mixin.Mixin.CloneFrom(mixin.Parent.Mixin);");
+                    WriteLine("context.CloneParentMixinToCurrent();");
                     break;
 
                 case MixinStatementType.Macro:

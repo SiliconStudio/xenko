@@ -29,7 +29,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
         {
         }
 
-        public override EffectBytecode Compile(ShaderMixinSource mixin, string fullEffectName, ShaderMixinParameters compilerParameters, HashSet<string> modifiedShaders, HashSet<string> recentlyModifiedShaders, LoggerResult log)
+        public override EffectBytecode Compile(InternalCompilerParameters internalCompilerParameters)
         {
             var database = AssetManager.FileProvider;
             if (database == null)
@@ -37,7 +37,13 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 throw new NotSupportedException("Using the cache requires to AssetManager.FileProvider to be valid.");
             }
 
-            var ids = ShaderMixinObjectId.Compute(mixin, compilerParameters);
+            var mixin = internalCompilerParameters.MixinTree.Mixin;
+            var usedParameters = internalCompilerParameters.MixinTree.UsedParameters;
+            var recentlyModifiedShaders = internalCompilerParameters.CompilerParameters.RecentlyModifiedShaders;
+            var modifiedShaders = internalCompilerParameters.CompilerParameters.ModifiedShaders;
+
+
+            var ids = ShaderMixinObjectId.Compute(mixin, usedParameters);
 
             EffectBytecode bytecode = null;
             lock (bytecodes)
@@ -57,7 +63,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 // On non Windows platform, we are expecting to have the bytecode stored directly
                 if (!Platform.IsWindowsDesktop && bytecode == null)
                 {
-                    Log.Error("Unable to find compiled shaders [{0}] for mixin [{1}] with parameters [{2}]", compiledUrl, mixin, compilerParameters.ToStringDetailed());
+                    Log.Error("Unable to find compiled shaders [{0}] for mixin [{1}] with parameters [{2}]", compiledUrl, mixin, internalCompilerParameters.CompilerParameters.ToStringDetailed());
                     throw new InvalidOperationException("Unable to find compiled shaders [{0}]".ToFormat(compiledUrl));
                 }
 
@@ -102,10 +108,13 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                         {
                             var localLogger = new LoggerResult();
 
+                            var newCompilerParameters = internalCompilerParameters;
+                            newCompilerParameters.Log = localLogger;
+
                             // Compile the mixin
-                            bytecode = base.Compile(mixin, fullEffectName, compilerParameters, modifiedShaders, recentlyModifiedShaders, localLogger);
-                            log.Info("New effect compiled [{0}]\r\n{1}", ids.CompileParametersId, compilerParameters.ToStringDetailed());
-                            localLogger.CopyTo(log);
+                            bytecode = base.Compile(newCompilerParameters);
+                            internalCompilerParameters.Log.Info("New effect compiled [{0}]\r\n{1}", ids.CompileParametersId, usedParameters.ToStringDetailed());
+                            localLogger.CopyTo(internalCompilerParameters.Log);
 
                             // If there are any errors, return immediately
                             if (localLogger.HasErrors)

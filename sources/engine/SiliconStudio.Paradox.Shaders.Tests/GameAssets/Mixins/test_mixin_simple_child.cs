@@ -14,46 +14,16 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-
-#line 3 "D:\Code\Paradox\sources\engine\SiliconStudio.Paradox.Shaders.Tests\GameAssets\Mixins\test_mixin_simple_child.pdxfx"
 namespace Test3
 {
-
-    #line 5
     internal static partial class ShaderMixins
     {
-        internal partial class ChildMixin  : IShaderMixinBuilderExtended
+        internal partial class ChildMixin  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-
-                #line 7
                 context.Mixin(mixin, "C1");
-
-                #line 8
                 context.Mixin(mixin, "C2");
-            }
-            private readonly ParameterKey[] __keys__ = new ParameterKey[]
-            {
-            };
-            public ParameterKey[] Keys
-            {
-                get
-                {
-                    return __keys__;
-                }
-            }
-            private readonly string[] __mixins__ = new string[]
-            {
-                "C1",
-                "C2",
-            };
-            public string[] Mixins
-            {
-                get
-                {
-                    return __mixins__;
-                }
             }
 
             [ModuleInitializer]
@@ -64,50 +34,16 @@ namespace Test3
             }
         }
     }
-
-    #line 11
     internal static partial class ShaderMixins
     {
-        internal partial class DefaultSimpleChild  : IShaderMixinBuilderExtended
+        internal partial class DefaultSimpleChild  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-
-                #line 13
                 context.Mixin(mixin, "A");
-
-                #line 14
                 context.Mixin(mixin, "B");
-
-                #line 15
                 context.Mixin(mixin, "C");
-
-                #line 16
                 context.Mixin(mixin, "ChildMixin");
-            }
-            private readonly ParameterKey[] __keys__ = new ParameterKey[]
-            {
-            };
-            public ParameterKey[] Keys
-            {
-                get
-                {
-                    return __keys__;
-                }
-            }
-            private readonly string[] __mixins__ = new string[]
-            {
-                "A",
-                "B",
-                "C",
-                "ChildMixin",
-            };
-            public string[] Mixins
-            {
-                get
-                {
-                    return __mixins__;
-                }
             }
 
             [ModuleInitializer]

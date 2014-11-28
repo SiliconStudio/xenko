@@ -14,50 +14,17 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-
-#line 3 "D:\Code\Paradox\sources\engine\SiliconStudio.Paradox.Shaders.Tests\GameAssets\Mixins\test_mixin_simple.pdxfx"
 namespace Test2
 {
-
-    #line 5
     internal static partial class ShaderMixins
     {
-        internal partial class DefaultSimple  : IShaderMixinBuilderExtended
+        internal partial class DefaultSimple  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-
-                #line 7
                 context.Mixin(mixin, "A");
-
-                #line 8
                 context.Mixin(mixin, "B");
-
-                #line 9
                 context.Mixin(mixin, "C");
-            }
-            private readonly ParameterKey[] __keys__ = new ParameterKey[]
-            {
-            };
-            public ParameterKey[] Keys
-            {
-                get
-                {
-                    return __keys__;
-                }
-            }
-            private readonly string[] __mixins__ = new string[]
-            {
-                "A",
-                "B",
-                "C",
-            };
-            public string[] Mixins
-            {
-                get
-                {
-                    return __mixins__;
-                }
             }
 
             [ModuleInitializer]

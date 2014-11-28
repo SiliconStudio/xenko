@@ -26,9 +26,9 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             get { return compiler; }
         }
 
-        public override EffectBytecode Compile(ShaderMixinSource mixin, string fullEffectName, ShaderMixinParameters compilerParameters, HashSet<string> modifiedShaders, HashSet<string> recentlyModifiedShaders, LoggerResult log)
+        public override EffectBytecode Compile(InternalCompilerParameters internalCompilerParameters)
         {
-            return compiler.Compile(mixin, fullEffectName, compilerParameters, modifiedShaders, recentlyModifiedShaders, log);
+            return compiler.Compile(internalCompilerParameters);
         }
     }
 }

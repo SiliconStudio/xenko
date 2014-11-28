@@ -14,42 +14,15 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-
-#line 3 "D:\Code\Paradox\sources\shaders\Images\ImageCopier\ImageCopierEffect.pdxfx"
 namespace SiliconStudio.Paradox.Effects.Images
 {
-
-    #line 8
     internal static partial class ShaderMixins
     {
-        internal partial class ImageCopierEffect  : IShaderMixinBuilderExtended
+        internal partial class ImageCopierEffect  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-
-                #line 10
                 context.Mixin(mixin, "ImageCopierShader");
-            }
-            private readonly ParameterKey[] __keys__ = new ParameterKey[]
-            {
-            };
-            public ParameterKey[] Keys
-            {
-                get
-                {
-                    return __keys__;
-                }
-            }
-            private readonly string[] __mixins__ = new string[]
-            {
-                "ImageCopierShader",
-            };
-            public string[] Mixins
-            {
-                get
-                {
-                    return __mixins__;
-                }
             }
 
             [ModuleInitializer]
