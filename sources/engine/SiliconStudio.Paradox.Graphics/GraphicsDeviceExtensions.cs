@@ -39,5 +39,26 @@ namespace SiliconStudio.Paradox.Graphics
             // Unapply
             effect.UnbindResources(device);
         }
+
+        /// <summary>
+        /// Draws a fullscreen quad with the specified effect and parameters.
+        /// </summary>
+        /// <param name="device">The device.</param>
+        /// <param name="effect">The effect.</param>
+        /// <param name="parameterCollections">The parameter collections.</param>
+        /// <exception cref="System.ArgumentNullException">effect</exception>
+        public static void DrawQuad(this GraphicsDevice device, Effect effect, params ParameterCollection[] parameterCollections)
+        {
+            if (effect == null) throw new ArgumentNullException("effect");
+
+            // Apply the effect
+            effect.Apply(device, parameterCollections, false);
+
+            // Draw a full screen quad
+            device.DrawQuad();
+
+            // Unapply
+            effect.UnbindResources(device);
+        }
     }
 }
