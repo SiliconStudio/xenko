@@ -7,10 +7,12 @@ using MonoTouch.CoreAnimation;
 using MonoTouch.Foundation;
 using MonoTouch.ObjCRuntime;
 using MonoTouch.UIKit;
-using OpenTK.Graphics.ES20;
+using MonoTouch.OpenGLES;
+using OpenTK.Graphics.ES30;
 using OpenTK.Platform.iPhoneOS;
 using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.UI;
+
+using RenderbufferInternalFormat = OpenTK.Graphics.ES30.RenderbufferInternalFormat;
 
 namespace SiliconStudio.Paradox.Starter
 {
@@ -63,7 +65,7 @@ namespace SiliconStudio.Paradox.Starter
         }
 
         // note: for more information on iOS application life cycle, 
-        // see http://docs.xamarin.com/guides/cross-platform/application_fundamentals/backgrounding/part_1_introduction_to_backgrounding_in_ios/y
+        // see http://docs.xamarin.com/guides/cross-platform/application_fundamentals/backgrounding/part_1_introduction_to_backgrounding_in_ios
 
         [Register("iOSParadoxView")]
         internal class iOSParadoxView : iPhoneOSGameView, IAnimatedGameView
@@ -78,6 +80,22 @@ namespace SiliconStudio.Paradox.Starter
 
             protected override void CreateFrameBuffer()
             {
+                // test Opengl ES 3 availability
+                this.ContextRenderingApi = EAGLRenderingAPI.OpenGLES3;
+                EAGLContext contextTest = null;
+                try
+                {
+                    contextTest = new EAGLContext(ContextRenderingApi);
+                }
+                catch (Exception)
+                {
+                    ContextRenderingApi = EAGLRenderingAPI.OpenGLES2;
+                }
+                
+                // delete extra context
+                if (contextTest != null)
+                    contextTest.Dispose();
+
                 base.CreateFrameBuffer();
 
                 // TODO: PDX-364: depth format is currently hard coded (need to investigate how it can be transmitted)
@@ -87,7 +105,7 @@ namespace SiliconStudio.Paradox.Starter
                 GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, depthRenderBuffer);
 
                 // Allocate storage for the new renderbuffer
-                GL.RenderbufferStorage(All.Renderbuffer, All.Depth24Stencil8Oes, (int)(Size.Width * Layer.ContentsScale), (int)(Size.Height * Layer.ContentsScale));
+                GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferInternalFormat.Depth24Stencil8, (int)(Size.Width * Layer.ContentsScale), (int)(Size.Height * Layer.ContentsScale));
 
                 // Attach the renderbuffer to the framebuffer's depth attachment point
                 GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferSlot.DepthAttachment, RenderbufferTarget.Renderbuffer, depthRenderBuffer);
