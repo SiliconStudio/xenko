@@ -15,17 +15,6 @@ namespace SiliconStudio.Paradox.Effects.Images
     internal class GaussianUtil
     {
         /// <summary>
-        /// Gets the blur macros defined for the specified radius and LDR boolean.
-        /// </summary>
-        /// <param name="radius">The radius.</param>
-        /// <param name="sigmaRatio">The sigma ratio. Default is ratio is 2.0f. Sigma = radius / SigmaRatio</param>
-        /// <returns>A GaussianMacros for effect compilation.</returns>
-        public static GaussianMacros GetBlurMacros(int radius, float sigmaRatio)
-        {
-            return new GaussianMacros(Calculate1D(radius, sigmaRatio));
-        }
-
-        /// <summary>
         /// Calculate a 1D gaussian filter.
         /// </summary>
         /// <param name="radius">The radius.</param>
@@ -107,42 +96,6 @@ namespace SiliconStudio.Paradox.Effects.Images
                 offsetsWeights[i].Y = (float)(localWeights[i] / total);
 
             return offsetsWeights;
-        }
-
-        internal class GaussianMacros
-        {
-            public GaussianMacros(Vector2[] defines)
-            {
-                this.defines = defines;
-                Count = defines.Length.ToString(CultureInfo.InvariantCulture);
-                Dump(defines, out Offsets, out Weights);
-            }
-
-            private readonly Vector2[] defines;
-
-            public readonly string Count;
-
-            public readonly string Offsets;
-
-            public readonly string Weights;
-
-            private static void Dump(Vector2[] defines, out string offsets, out string weights)
-            {
-                var offsetsBuffer = new StringBuilder(defines.Length * 10);
-                var weightsBuffer = new StringBuilder(defines.Length * 10);
-                for (int i = 0; i < defines.Length; i++)
-                {
-                    if (i > 0)
-                    {
-                        offsetsBuffer.Append(',');
-                        weightsBuffer.Append(',');
-                    }
-                    offsetsBuffer.Append(defines[i].X.ToString(CultureInfo.InvariantCulture));
-                    weightsBuffer.Append(defines[i].Y.ToString(CultureInfo.InvariantCulture));
-                }
-                offsets = offsetsBuffer.ToString();
-                weights = weightsBuffer.ToString();
-            }
         }
     }
 }

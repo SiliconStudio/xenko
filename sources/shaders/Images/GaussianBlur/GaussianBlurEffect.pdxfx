@@ -9,16 +9,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     {
         using params GaussianBlurKeys;
 
-        // Calculate offsets and weights
-        var blur = GaussianUtil.GetBlurMacros(GaussianBlurKeys.Radius, GaussianBlurKeys.SigmaRatio);
-
-        // Defines the macro used by GaussianBlurShader
-        mixin macro BLUR_COUNT = blur.Count;
-        mixin macro BLUR_OFFSETS = blur.Offsets;
-        mixin macro BLUR_WEIGHTS = blur.Weights;
-        mixin macro BLUR_DIRECTION = GaussianBlurKeys.VerticalBlur ? "float2(0,1)" : "float2(1,0)";
-
         // Mixin 
-        mixin GaussianBlurShader;
+        mixin GaussianBlurShader<GaussianBlurKeys.Count, GaussianBlurKeys.VerticalBlur>;
     };
 }

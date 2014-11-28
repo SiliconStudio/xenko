@@ -22,12 +22,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-                var blur = GaussianUtil.GetBlurMacros(context.GetParam(GaussianBlurKeys.Radius), context.GetParam(GaussianBlurKeys.SigmaRatio));
-                mixin.Mixin.AddMacro("BLUR_COUNT", blur.Count);
-                mixin.Mixin.AddMacro("BLUR_OFFSETS", blur.Offsets);
-                mixin.Mixin.AddMacro("BLUR_WEIGHTS", blur.Weights);
-                mixin.Mixin.AddMacro("BLUR_DIRECTION", context.GetParam(GaussianBlurKeys.VerticalBlur) ? "float2(0,1)" : "float2(1,0)");
-                context.Mixin(mixin, "GaussianBlurShader");
+                context.Mixin(mixin, "GaussianBlurShader", context.GetParam(GaussianBlurKeys.Count), context.GetParam(GaussianBlurKeys.VerticalBlur));
             }
 
             [ModuleInitializer]

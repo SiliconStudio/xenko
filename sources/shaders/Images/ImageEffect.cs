@@ -18,6 +18,9 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         private readonly DynamicEffectCompiler effectCompiler;
 
+        private readonly ParameterCollection[] parameterCollections;
+
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageEffect" /> class.
         /// </summary>
@@ -46,7 +49,6 @@ namespace SiliconStudio.Paradox.Effects.Images
             // Setup this instance parameters
             parameters = new ParameterCollection();
 
-            ParameterCollection[] parameterCollections;
             if (sharedParameterCollections != null)
             {
                 parameterCollections = new ParameterCollection[sharedParameterCollections.Length + 1];
@@ -131,7 +133,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             effectCompiler.Update(effectInstance);
 
             // Draw a full screen quad
-            GraphicsDevice.DrawQuad(effectInstance.Effect, Parameters);
+            GraphicsDevice.DrawQuad(effectInstance.Effect, parameterCollections);
         }
     }
 }

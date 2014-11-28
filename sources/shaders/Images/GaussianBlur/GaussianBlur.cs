@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
@@ -18,10 +19,16 @@ namespace SiliconStudio.Paradox.Effects.Images
         private readonly ImageEffect blurH;
         private readonly ImageEffect blurV;
 
+        private Vector2[] offsetsWeights;
+
         /// <summary>
         /// Shared parameters used by both by the Horizontal and Vertical pass.
         /// </summary>
         private readonly ParameterCollection sharedParameters;
+
+        private int radius;
+
+        private float sigmaRatio;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GaussianBlur"/> class.
@@ -49,14 +56,42 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Gets or sets the radius.
         /// </summary>
         /// <value>The radius.</value>
-        public int Radius { get; set; }
+        public int Radius
+        {
+            get
+            {
+                return radius;
+            }
+            set
+            {
+                if (radius != value)
+                {
+                    radius = value;
+                    offsetsWeights = null;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets or sets the sigma ratio. The sigma ratio is used to calculate the sigma based on the radius: The actual
         /// formula is <c>sigma = radius / SigmaRatio</c>. The default value is 2.0f.
         /// </summary>
         /// <value>The sigma ratio.</value>
-        public float SigmaRatio { get; set; }
+        public float SigmaRatio
+        {
+            get
+            {
+                return sigmaRatio;
+            }
+            set
+            {
+                if (sigmaRatio != value)
+                {
+                    sigmaRatio = value;
+                    offsetsWeights = null;
+                }
+            }
+        }
 
         protected override void DrawCore()
         {
@@ -67,9 +102,15 @@ namespace SiliconStudio.Paradox.Effects.Images
             // This texture will be allocated only in the scope of this draw and returned to the pool at the exit of this method
             var outputTextureH = NewScopedRenderTarget2D(inputTexture.Description);
 
+            if (offsetsWeights == null)
+            {
+                // TODO: cache if necessary
+                offsetsWeights = GaussianUtil.Calculate1D(Radius, SigmaRatio);
+            }
+
             // Update shared parameters
-            sharedParameters.Set(GaussianBlurKeys.Radius, Radius);
-            sharedParameters.Set(GaussianBlurKeys.SigmaRatio, SigmaRatio);
+            sharedParameters.Set(GaussianBlurKeys.Count, offsetsWeights.Length);
+            sharedParameters.Set(GaussianBlurShaderKeys.OffsetsWeights, offsetsWeights);
 
             // Horizontal pass
             blurH.SetInput(inputTexture);
