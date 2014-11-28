@@ -1,6 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Generic;
+using System.Text;
+
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Effects;
 
@@ -61,6 +63,23 @@ namespace SiliconStudio.Paradox.Shaders
         /// <value>The used parameters.</value>
         [DataMemberIgnore]
         public ShaderMixinParameters UsedParameters { get; set; }
+
+        /// <summary>
+        /// Gets the fullname using parents name.
+        /// </summary>
+        /// <returns></returns>
+        public string GetFullName()
+        {
+            // TODO: method not optimal, but only used for debugging
+            var tree = this;
+            var list = new Stack<string>();
+            while (tree != null)
+            {
+                list.Push(tree.Name);
+                tree = tree.Parent;
+            }
+            return string.Join(".", list);
+        }
 
         /// <summary>
         /// Set a global used parameter for all used parameters

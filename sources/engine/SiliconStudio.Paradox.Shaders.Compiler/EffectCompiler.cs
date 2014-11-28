@@ -52,7 +52,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             }
 
             var shaderMixinSource = config.MixinTree.Mixin;
-            var fullEffectName = config.MixinTree.Name;
+            var fullEffectName = config.MixinTree.GetFullName();
             var usedParameters = config.MixinTree.UsedParameters;
             var log = config.Log;
 
@@ -130,7 +130,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             {
                 Directory.CreateDirectory(logDir);
             }
-            var shaderSourceFilename = Path.Combine(logDir, "shader_" + shaderId);
+            var shaderSourceFilename = Path.Combine(logDir, "shader_" +  fullEffectName.Replace('.', '_') + "_" + shaderId + ".hlsl");
             lock (WriterLock) // protect write in case the same shader is created twice
             {
                 if (!File.Exists(shaderSourceFilename))
@@ -266,16 +266,24 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     builder.AppendLine("NullValue");
                 else
                 {
-                    builder.AppendLine(usedParam.Value.ToString());
                     if (usedParam.Value is ParameterCollection)
-                        WriteParameters(builder, usedParam.Value as ParameterCollection, indent+1, false);
+                    {
+                        WriteParameters(builder, usedParam.Value as ParameterCollection, indent + 1, false);
+                    }
                     else if (usedParam.Value is ParameterCollection[])
                     {
                         var collectionArray = (ParameterCollection[])usedParam.Value;
                         foreach (var collection in collectionArray)
                             WriteParameters(builder, collection, indent + 1, true);
                     }
-                        
+                    else if (usedParam.Value is Array)
+                    {
+                        builder.AppendLine(string.Join(", ", (Array)usedParam.Value));
+                    }
+                    else
+                    {
+                        builder.AppendLine(usedParam.Value.ToString());
+                    }
                 }
             }
         }
