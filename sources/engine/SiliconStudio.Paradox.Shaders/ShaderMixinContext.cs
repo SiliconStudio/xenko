@@ -15,41 +15,41 @@ namespace SiliconStudio.Paradox.Shaders
     /// </summary>
     public class ShaderMixinContext
     {
-        private readonly ParameterCollection defaultPropertyContainer;
-        private readonly Stack<ParameterCollection> propertyContainers = new Stack<ParameterCollection>();
+        private readonly ParameterCollection compilerParameters;
+        private readonly Stack<ParameterCollection> parameterCollections = new Stack<ParameterCollection>();
         private readonly Dictionary<string, IShaderMixinBuilder> registeredBuilders;
         private ShaderMixinSourceTree currentMixinSourceTree;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderMixinContext" /> class.
         /// </summary>
-        /// <param name="defaultPropertyContainer">The default property container.</param>
+        /// <param name="compilerParameters">The default property container.</param>
         /// <param name="registeredBuilders">The registered builders.</param>
-        /// <exception cref="System.ArgumentNullException">defaultPropertyContainer
+        /// <exception cref="System.ArgumentNullException">compilerParameters
         /// or
         /// registeredBuilders</exception>
-        public ShaderMixinContext(ParameterCollection defaultPropertyContainer, Dictionary<string, IShaderMixinBuilder> registeredBuilders)
+        public ShaderMixinContext(ParameterCollection compilerParameters, Dictionary<string, IShaderMixinBuilder> registeredBuilders)
         {
-            if (defaultPropertyContainer == null)
-                throw new ArgumentNullException("defaultPropertyContainer");
+            if (compilerParameters == null)
+                throw new ArgumentNullException("compilerParameters");
 
             if (registeredBuilders == null)
                 throw new ArgumentNullException("registeredBuilders");
 
-            // TODO: use a copy of the defaultPropertyContainer?
-            this.defaultPropertyContainer = defaultPropertyContainer;
+            // TODO: use a copy of the compilerParameters?
+            this.compilerParameters = compilerParameters;
             this.registeredBuilders = registeredBuilders;
-            this.propertyContainers = new Stack<ParameterCollection>();
+            this.parameterCollections = new Stack<ParameterCollection>();
         }
 
         /// <summary>
         /// Pushes the current parameters collection being used.
         /// </summary>
         /// <typeparam name="T">Type of the parameter collection</typeparam>
-        /// <param name="propertyContainer">The property container.</param>
-        public void PushParameters<T>(T propertyContainer) where T : ParameterCollection
+        /// <param name="parameterCollection">The property container.</param>
+        public void PushParameters<T>(T parameterCollection) where T : ParameterCollection
         {
-            propertyContainers.Push(propertyContainer);
+            parameterCollections.Push(parameterCollection);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace SiliconStudio.Paradox.Shaders
         /// </summary>
         public void PopParameters()
         {
-            propertyContainers.Pop();
+            parameterCollections.Pop();
         }
 
         public ShaderMixinSource CurrentMixin
@@ -80,25 +80,25 @@ namespace SiliconStudio.Paradox.Shaders
             if (key == null)
                 throw new ArgumentNullException("key");
 
-            var sourcePropertyContainer = defaultPropertyContainer;
+            var sourceParameters = compilerParameters;
 
             T value;
             // Try to get a value from registered containers
-            foreach (var propertyContainer in propertyContainers)
+            foreach (var parameterCollection in parameterCollections)
             {
-                if (propertyContainer.TryGet(key, out value))
+                if (parameterCollection.TryGet(key, out value))
                 {
-                    sourcePropertyContainer = propertyContainer;
+                    sourceParameters = parameterCollection;
                     break;
                 }
             }
 
-            value = sourcePropertyContainer.Get(key);
-            var tree = currentMixinSourceTree;
-            while (tree != null)
+            value = sourceParameters.Get(key);
+
+            // Onlt stored used parameters if we are 
+            if (sourceParameters == compilerParameters)
             {
-                tree.UsedParameters.Set(key, value);
-                tree = tree.Parent;
+                currentMixinSourceTree.UsedParameters.Set(key, value);
             }
 
             return value;
@@ -109,7 +109,7 @@ namespace SiliconStudio.Paradox.Shaders
             if (key == null)
                 throw new ArgumentNullException("key");
 
-            var propertyContainer = propertyContainers.Count > 0 ? propertyContainers.Peek() : defaultPropertyContainer;
+            var propertyContainer = parameterCollections.Count > 0 ? parameterCollections.Peek() : compilerParameters;
             propertyContainer.Set(key, value);
         }
 

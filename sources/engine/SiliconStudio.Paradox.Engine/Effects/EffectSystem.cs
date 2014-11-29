@@ -228,14 +228,11 @@ namespace SiliconStudio.Paradox.Effects
 #endif
 
             // Get main effect name (before the first dot)
-            var mainEffectNameEnd = effectName.IndexOf('.');
-            var mainEffectName = mainEffectNameEnd != -1 ? effectName.Substring(0, mainEffectNameEnd) : effectName;
-
-            subEffect = mainEffectNameEnd != -1 ? effectName.Substring(mainEffectNameEnd + 1) : string.Empty;
+            var mainEffectName = EffectCompilerBase.GetEffectName(effectName, out subEffect);
 
             // Compile shader
             var isPdxfx = ShaderMixinManager.Contains(mainEffectName);
-            var source = isPdxfx ? new ShaderMixinGeneratorSource(mainEffectName) : (ShaderSource)new ShaderClassSource(mainEffectName);
+            var source = isPdxfx ? new ShaderMixinGeneratorSource(effectName) : (ShaderSource)new ShaderClassSource(mainEffectName);
 
             compilerParameters.ModifiedShaders = modifiedShaders;
             compilerParameters.RecentlyModifiedShaders = recentlyModifiedShaders;

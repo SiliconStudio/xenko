@@ -27,43 +27,31 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             ShaderMixinSourceTree mixinTree;
             var shaderMixinGeneratorSource = shaderSource as ShaderMixinGeneratorSource;
 
-            string effectName = null;
+            string mainEffectName = null;
 
             var modifiedShaders = compilerParameters.ModifiedShaders;
 
             if (shaderMixinGeneratorSource != null)
             {
-                effectName = shaderMixinGeneratorSource.Name;
+                string subEffect;
+                mainEffectName = GetEffectName(shaderMixinGeneratorSource.Name, out subEffect);
 
                 // getting the effect from the used parameters only makes sense when the source files are the same
                 // TODO: improve this by updating earlyCompilerCache - cache can still be relevant
                 if (modifiedShaders == null || modifiedShaders.Count == 0)
                 {
                     // perform an early test only based on the parameters
-                    var foundCompilerResults = GetShaderFromParameters(effectName, compilerParameters);
+                    var foundCompilerResults = GetShaderFromParameters(mainEffectName, subEffect, compilerParameters);
                     if (foundCompilerResults != null)
                     {
-                        var earlyCompilerResults = new CompilerResults();
-                        earlyCompilerResults.Module = string.Format("EffectCompile [{0}]", effectName);
-                        earlyCompilerResults.MainBytecode = foundCompilerResults.MainBytecode;
-                        earlyCompilerResults.MainUsedParameters = foundCompilerResults.MainUsedParameters;
-                        foreach (var foundBytecode in foundCompilerResults.Bytecodes)
-                        {
-                            earlyCompilerResults.Bytecodes.Add(foundBytecode.Key, foundBytecode.Value);
-                        }
-
-                        foreach (var foundUsedParameters in foundCompilerResults.UsedParameters)
-                        {
-                            earlyCompilerResults.UsedParameters.Add(foundUsedParameters.Key, foundUsedParameters.Value);
-                        }
-                        return earlyCompilerResults;
+                        return foundCompilerResults;
                     }
                 }
-                mixinTree = ShaderMixinManager.Generate(effectName, compilerParameters);
+                mixinTree = ShaderMixinManager.Generate(mainEffectName, compilerParameters);
             }
             else
             {
-                effectName = "Effect";
+                mainEffectName = "Effect";
 
                 var shaderMixinSource = shaderSource as ShaderMixinSource;
                 var shaderClassSource = shaderSource as ShaderClassSource;
@@ -72,11 +60,12 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 {
                     shaderMixinSource = new ShaderMixinSource();
                     shaderMixinSource.Mixins.Add(shaderClassSource);
+                    mainEffectName = shaderClassSource.ClassName;
                 }
 
                 if (shaderMixinSource != null)
                 {
-                    mixinTree = new ShaderMixinSourceTree() { Mixin = shaderMixinSource, UsedParameters =  new ShaderMixinParameters()};
+                    mixinTree = new ShaderMixinSourceTree() { Name = mainEffectName,  Mixin = shaderMixinSource, UsedParameters =  new ShaderMixinParameters()};
                 }
                 else
                 {
@@ -90,7 +79,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             mixinTree.SetGlobalUsedParameter(CompilerParameters.DebugKey, compilerParameters.Debug);
 
             // Compile the whole mixin tree
-            var compilerResults = new CompilerResults { Module = string.Format("EffectCompile [{0}]", effectName) };
+            var compilerResults = new CompilerResults { Module = string.Format("EffectCompile [{0}]", mainEffectName) };
             var internalCompilerParameters = new InternalCompilerParameters(mixinTree, compilerParameters, compilerResults);
 
             var wasCompiled = Compile(string.Empty, internalCompilerParameters, compilerResults);
@@ -100,10 +89,10 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 lock (earlyCompilerCache)
                 {
                     List<CompilerResults> effectCompilerResults;
-                    if (!earlyCompilerCache.TryGetValue(effectName, out effectCompilerResults))
+                    if (!earlyCompilerCache.TryGetValue(mainEffectName, out effectCompilerResults))
                     {
                         effectCompilerResults = new List<CompilerResults>();
-                        earlyCompilerCache.Add(effectName, effectCompilerResults);
+                        earlyCompilerCache.Add(mainEffectName, effectCompilerResults);
                     }
 
                     // Register bytecode used parameters so that they are checked when another effect is instanced
@@ -219,28 +208,40 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
         /// <summary>
         /// Get the shader from the database based on the parameters used for its compilation.
         /// </summary>
-        /// <param name="effectName">Name of the effect.</param>
+        /// <param name="rootEffectName">Name of the effect.</param>
+        /// <param name="subEffectName">Name of the sub effect.</param>
         /// <param name="parameters">The parameters.</param>
         /// <returns>The EffectBytecode if found.</returns>
-        protected CompilerResults GetShaderFromParameters(string effectName, CompilerParameters parameters)
+        protected CompilerResults GetShaderFromParameters(string rootEffectName, string subEffectName, CompilerParameters parameters)
         {
             lock (earlyCompilerCache)
             {
-                List<CompilerResults> effectCompilerResults;
-                if (!earlyCompilerCache.TryGetValue(effectName, out effectCompilerResults))
+                List<CompilerResults> compilerResultsList;
+                if (!earlyCompilerCache.TryGetValue(rootEffectName, out compilerResultsList))
                     return null;
 
                 // TODO: Optimize it so that search is not linear?
-                // TODO: are macros taken into account?
                 // Probably not trivial for subset testing
-                foreach (var compiledResults in effectCompilerResults)
+                foreach (var compiledResults in compilerResultsList)
                 {
-                    if (compiledResults.MainUsedParameters != null && parameters.Contains(compiledResults.MainUsedParameters))
+                    ShaderMixinParameters usedParameters;
+                    if (compiledResults.UsedParameters.TryGetValue(subEffectName, out usedParameters) && parameters.Contains(usedParameters))
+                    {
                         return compiledResults;
+                    }
                 }
             }
 
             return null;
+        }
+
+        public static string GetEffectName(string fullEffectName, out string subEffect)
+        {
+            var mainEffectNameEnd = fullEffectName.IndexOf('.');
+            var mainEffectName = mainEffectNameEnd != -1 ? fullEffectName.Substring(0, mainEffectNameEnd) : fullEffectName;
+
+            subEffect = mainEffectNameEnd != -1 ? fullEffectName.Substring(mainEffectNameEnd + 1) : string.Empty;
+            return mainEffectName;
         }
     }
 }
