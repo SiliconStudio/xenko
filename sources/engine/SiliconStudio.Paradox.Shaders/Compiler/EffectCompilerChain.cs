@@ -1,10 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections.Generic;
 
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.Shaders.Compiler
 {
@@ -26,9 +24,9 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             get { return compiler; }
         }
 
-        public override EffectBytecode Compile(InternalCompilerParameters internalCompilerParameters)
+        public override EffectBytecode Compile(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters, LoggerResult log)
         {
-            return compiler.Compile(internalCompilerParameters);
+            return compiler.Compile(mixinTree, compilerParameters, log);
         }
     }
 }

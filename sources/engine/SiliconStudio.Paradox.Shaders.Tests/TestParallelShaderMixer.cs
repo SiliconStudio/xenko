@@ -12,7 +12,6 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders.Compiler;
 
@@ -25,16 +24,13 @@ namespace SiliconStudio.Paradox.Shaders.Tests
 
         private static int NumThreads = 15;
 
-        public static void Main()
+        public static void Main3()
         {
-            using (var profile = Profiler.Begin(GameProfilingKeys.ObjectDatabaseInitialize))
-            {
-                // Create and mount database file system
-                var objDatabase = new ObjectDatabase("/data/db");
-                var assetIndexMap = AssetIndexMap.Load();
-                var databaseFileProvider = new DatabaseFileProvider(assetIndexMap, objDatabase);
-                AssetManager.GetFileProvider = () => databaseFileProvider;
-            }
+            // Create and mount database file system
+            var objDatabase = new ObjectDatabase("/data/db");
+            var assetIndexMap = AssetIndexMap.Load();
+            var databaseFileProvider = new DatabaseFileProvider(assetIndexMap, objDatabase);
+            AssetManager.GetFileProvider = () => databaseFileProvider;
 
             compiler = new EffectCompiler();
             compiler.SourceDirectories.Add("shaders");
@@ -92,7 +88,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
 
             var mixinTree = new ShaderMixinSourceTree() { Name = "TestParallelMix", Mixin = mixinSource, UsedParameters = parameters };
 
-            var result = effectCompiler.Compile(new EffectCompilerBase.InternalCompilerParameters(mixinTree, new CompilerParameters(), logger));
+            var result = effectCompiler.Compile(mixinTree, new CompilerParameters(), logger);
 
             Assert.IsFalse(logger.HasErrors);
             Assert.IsNotNull(result);

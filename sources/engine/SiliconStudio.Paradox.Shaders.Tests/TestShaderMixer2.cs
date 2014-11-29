@@ -1,19 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using NUnit.Framework;
 
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders.Compiler;
 
@@ -31,13 +23,10 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         [TestFixtureSetUp]
         public void Init()
         {
-            using (var profile = Profiler.Begin(GameProfilingKeys.ObjectDatabaseInitialize))
-            {
-                // Create and mount database file system
-                var objDatabase = new ObjectDatabase("/data/db", "index", "/local/db");
-                var databaseFileProvider = new DatabaseFileProvider(objDatabase);
-                AssetManager.GetFileProvider = () => databaseFileProvider;
-            }
+            // Create and mount database file system
+            var objDatabase = new ObjectDatabase("/data/db", "index", "/local/db");
+            var databaseFileProvider = new DatabaseFileProvider(objDatabase);
+            AssetManager.GetFileProvider = () => databaseFileProvider;
 
             Compiler = new EffectCompiler();
             Compiler.SourceDirectories.Add("shaders");
@@ -64,7 +53,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             mixinSource.AddComposition("albedoDiffuse", compMixin);
 
             var mixinSourceTree = new ShaderMixinSourceTree { Name = "testRenaming", Mixin = mixinSource, UsedParameters = MixinParameters };
-            var byteCode = Compiler.Compile(new EffectCompilerBase.InternalCompilerParameters(mixinSourceTree, new CompilerParameters(), ResultLogger));
+            var byteCode = Compiler.Compile(mixinSourceTree, new CompilerParameters(), ResultLogger);
             Assert.IsNotNull(byteCode);
         }
 
@@ -87,7 +76,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             mixinSource.AddComposition("albedoDiffuse", compMixin);
 
             var mixinSourceTree = new ShaderMixinSourceTree { Name = "TestRenaming2", Mixin = mixinSource, UsedParameters = MixinParameters };
-            var byteCode = Compiler.Compile(new EffectCompilerBase.InternalCompilerParameters(mixinSourceTree, new CompilerParameters(), ResultLogger));
+            var byteCode = Compiler.Compile(mixinSourceTree, new CompilerParameters(), ResultLogger);
             Assert.IsNotNull(byteCode);
         }
 
@@ -104,7 +93,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             TestRenaming();
         }
 
-        public static void Main()
+        public static void Main4()
         {
             var testClass = new TestShaderMixer2();
             testClass.Init();

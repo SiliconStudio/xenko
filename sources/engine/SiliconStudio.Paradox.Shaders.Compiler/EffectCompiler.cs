@@ -41,7 +41,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
         #region Public methods
 
-        public override EffectBytecode Compile(InternalCompilerParameters config)
+        public override EffectBytecode Compile(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters, LoggerResult log)
         {
             // Load D3D compiler dll
             // Note: No lock, it's probably fine if it gets called from multiple threads at the same time.
@@ -51,10 +51,9 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 d3dcompilerLoaded = true;
             }
 
-            var shaderMixinSource = config.MixinTree.Mixin;
-            var fullEffectName = config.MixinTree.GetFullName();
-            var usedParameters = config.MixinTree.UsedParameters;
-            var log = config.Log;
+            var shaderMixinSource = mixinTree.Mixin;
+            var fullEffectName = mixinTree.GetFullName();
+            var usedParameters = mixinTree.UsedParameters;
 
             // Make a copy of shaderMixinSource. Use deep clone since shaderMixinSource can be altered during compilation (e.g. macros)
             var shaderMixinSourceCopy = new ShaderMixinSource();
@@ -89,8 +88,8 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 shaderMixinParser.SourceManager.UrlToFilePath = UrlToFilePath; // TODO: temp
             }
 
-            var recentlyModifiedShaders = config.CompilerParameters.RecentlyModifiedShaders;
-            var modifiedShaders = config.CompilerParameters.ModifiedShaders;
+            var recentlyModifiedShaders = compilerParameters.RecentlyModifiedShaders;
+            var modifiedShaders = compilerParameters.ModifiedShaders;
 
             if (recentlyModifiedShaders != null && recentlyModifiedShaders.Count > 0)
             {
