@@ -206,9 +206,6 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     break;
             }
 
-            // Get the current time of compilation
-            bytecode.Time = DateTime.Now;
-
             // In case of Direct3D, we can safely remove reflection data as it is entirely resolved at compile time.
             if (platform == GraphicsPlatform.Direct3D11)
             {

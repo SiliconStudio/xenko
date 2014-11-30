@@ -51,18 +51,18 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             var mixin = mixinTree.Mixin;
             var usedParameters = mixinTree.UsedParameters;
 
-            var ids = ShaderMixinObjectId.Compute(mixin, usedParameters);
+            var mixinObjectId = ShaderMixinObjectId.Compute(mixin, usedParameters);
 
             EffectBytecode bytecode = null;
             lock (bytecodes)
             {                
                 // Final url of the compiled bytecode
-                var compiledUrl = string.Format("{0}/{1}", CompiledShadersKey, ids.CompileParametersId);
+                var compiledUrl = string.Format("{0}/{1}", CompiledShadersKey, mixinObjectId);
 
                 // ------------------------------------------------------------------------------------------------------------
                 // 1) Try to load latest bytecode
                 // ------------------------------------------------------------------------------------------------------------
-                bytecode = LoadEffectBytecode(compiledUrl, false);
+                bytecode = LoadEffectBytecode(compiledUrl);
 
                 // On non Windows platform, we are expecting to have the bytecode stored directly
                 if (!Platform.IsWindowsDesktop && bytecode == null)
@@ -86,7 +86,6 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
                     // Compile the mixin
                     bytecode = base.Compile(mixinTree, compilerParameters, localLogger);
-                    localLogger.Info("New effect compiled [{0}]\r\n{1}", ids.CompileParametersId, usedParameters.ToStringDetailed());
                     localLogger.CopyTo(log);
 
                     // If there are any errors, return immediately
@@ -95,20 +94,38 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                         return null;
                     }
 
-                    // Save latest bytecode into the storage
-                    using (var stream = database.OpenStream(compiledUrl, VirtualFileMode.Create, VirtualFileAccess.Write, VirtualFileShare.Write))
+                    // Not optimized: Pre-calculate bytecodeId in order to avoid writing to same storage
+                    ObjectId newBytecodeId;
+                    var memStream = new MemoryStream();
+                    using (var stream = new DigestStream(memStream))
                     {
                         BinarySerialization.Write(stream, bytecode);
+                        newBytecodeId = stream.CurrentHash;
                     }
 
-                    bytecode = LoadEffectBytecode(compiledUrl, true);
+                    ObjectId previousBytecodeId;
+                    if (!database.AssetIndexMap.TryGetValue(compiledUrl, out previousBytecodeId) || previousBytecodeId != newBytecodeId)
+                    {
+                        Console.WriteLine("Writing {0}, previousId {1}, newId: {2}", compiledUrl, previousBytecodeId, newBytecodeId);
+
+                        localLogger.Info("New effect compiled [{0}]\r\n{1}", mixinObjectId, usedParameters.ToStringDetailed());
+
+                        // Save latest bytecode into the storage
+                        using (var stream = database.OpenStream(compiledUrl, VirtualFileMode.Create, VirtualFileAccess.Write, VirtualFileShare.Write))
+                        {
+                            BinarySerialization.Write(stream, bytecode);
+                        }
+
+                        // Replace or add new bytecode
+                        bytecodes[newBytecodeId] = bytecode;
+                    }
                 }
             }
 
             return bytecode;
         }
 
-        private EffectBytecode LoadEffectBytecode(string url, bool alwaysUseStorage)
+        private EffectBytecode LoadEffectBytecode(string url)
         {
             var database = AssetManager.FileProvider;
             ObjectId bytecodeId;
@@ -117,7 +134,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             {
                 if (!bytecodes.TryGetValue(bytecodeId, out bytecode))
                 {
-                    if (alwaysUseStorage || !bytecodesByPassingStorage.Contains(bytecodeId))
+                    if (!bytecodesByPassingStorage.Contains(bytecodeId))
                     {
                         using (var stream = database.ObjectDatabase.OpenStream(bytecodeId))
                         {
