@@ -123,15 +123,6 @@ namespace SiliconStudio.Paradox.Effects
 
             if (!ReferenceEquals(effect, effectInstance.Effect))
             {
-                // Copy back parameters set on previous effect to new effect
-                if (effectInstance.Effect != null)
-                {
-                    foreach (var parameter in effectInstance.Effect.Parameters.InternalValues)
-                    {
-                        effect.Parameters.SetObject(parameter.Key, parameter.Value.Object);
-                    }
-                }
-
                 effectInstance.Effect = effect;
                 effectInstance.UpdaterDefinition = new EffectParameterUpdaterDefinition(effect);
             }

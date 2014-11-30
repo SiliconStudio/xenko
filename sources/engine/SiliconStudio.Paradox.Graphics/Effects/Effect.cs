@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Paradox.Effects;
@@ -18,17 +17,16 @@ namespace SiliconStudio.Paradox.Graphics
     [ContentSerializer(typeof(DataContentConverterSerializer<Effect>))]
     public class Effect : ComponentBase
     {
-        private GraphicsDevice graphicsDeviceDefault;
+        private readonly GraphicsDevice graphicsDeviceDefault;
         private EffectProgram program;
         private ShaderParameterUpdaterDefinition updaterDefinition;
         private EffectParameterResourceBinding[] resourceBindings;
         private ParameterCollection defaultParameters;
         private EffectReflection reflection;
         private EffectInputSignature inputSignature;
-        private readonly ParameterCollection parameters;
 
         private readonly EffectBytecode bytecode;
-        private const int DefaultParameterCollectionCount = 3;
+        private const int DefaultParameterCollectionCount = 2;
 
         private EffectStateBindings effectStateBindings;
 
@@ -62,7 +60,6 @@ namespace SiliconStudio.Paradox.Graphics
 
             this.graphicsDeviceDefault = device;
             this.bytecode = bytecode;
-            parameters = new ParameterCollection();
             Initialize(usedParameters);
         }
 
@@ -75,18 +72,6 @@ namespace SiliconStudio.Paradox.Graphics
             get
             {
                 return inputSignature;
-            }
-        }
-
-        /// <summary>
-        /// Gets the parameters.
-        /// </summary>
-        /// <value>The parameters.</value>
-        public ParameterCollection Parameters
-        {
-            get
-            {
-                return parameters;
             }
         }
 
@@ -175,8 +160,7 @@ namespace SiliconStudio.Paradox.Graphics
             var stageStatus = graphicsDevice.StageStatus;
 
             stageStatus.ParameterCollections[0] = defaultParameters; // Default Parameters contains all registered Parameters used effectively by the effect
-            stageStatus.ParameterCollections[1] = parameters;
-            stageStatus.ParameterCollections[2] = graphicsDevice.Parameters; // GraphicsDevice.Parameters is overriding all parameters
+            stageStatus.ParameterCollections[1] = graphicsDevice.Parameters; // GraphicsDevice.Parameters is overriding all parameters
             stageStatus.UpdateParameters(graphicsDevice, updaterDefinition, DefaultParameterCollectionCount);
             stageStatus.Apply(graphicsDevice, resourceBindings, ref effectStateBindings, applyEffectStates);
         }
@@ -187,9 +171,8 @@ namespace SiliconStudio.Paradox.Graphics
             var stageStatus = graphicsDevice.StageStatus;
 
             stageStatus.ParameterCollections[0] = defaultParameters; // Default Parameters contains all registered Parameters used effectively by the effect
-            stageStatus.ParameterCollections[1] = parameters;
-            stageStatus.ParameterCollections[2] = paramCollection1;
-            stageStatus.ParameterCollections[3] = graphicsDevice.Parameters; // GraphicsDevice.Parameters is overriding all parameters
+            stageStatus.ParameterCollections[1] = paramCollection1;
+            stageStatus.ParameterCollections[2] = graphicsDevice.Parameters; // GraphicsDevice.Parameters is overriding all parameters
             stageStatus.UpdateParameters(graphicsDevice, updaterDefinition, DefaultParameterCollectionCount + 1);
             stageStatus.Apply(graphicsDevice, resourceBindings, ref effectStateBindings, applyEffectStates);
         }
@@ -200,10 +183,9 @@ namespace SiliconStudio.Paradox.Graphics
             var stageStatus = graphicsDevice.StageStatus;
 
             stageStatus.ParameterCollections[0] = defaultParameters; // Default Parameters contains all registered Parameters used effectively by the effect
-            stageStatus.ParameterCollections[1] = parameters;
-            stageStatus.ParameterCollections[2] = paramCollection1;
-            stageStatus.ParameterCollections[3] = paramCollection2;
-            stageStatus.ParameterCollections[4] = graphicsDevice.Parameters; // GraphicsDevice.Parameters is overriding all parameters
+            stageStatus.ParameterCollections[1] = paramCollection1;
+            stageStatus.ParameterCollections[2] = paramCollection2;
+            stageStatus.ParameterCollections[3] = graphicsDevice.Parameters; // GraphicsDevice.Parameters is overriding all parameters
             stageStatus.UpdateParameters(graphicsDevice, updaterDefinition, DefaultParameterCollectionCount + 2);
             stageStatus.Apply(graphicsDevice, resourceBindings, ref effectStateBindings, applyEffectStates);
         }
@@ -214,11 +196,10 @@ namespace SiliconStudio.Paradox.Graphics
             var stageStatus = graphicsDevice.StageStatus;
 
             stageStatus.ParameterCollections[0] = defaultParameters; // Default Parameters contains all registered Parameters used effectively by the effect
-            stageStatus.ParameterCollections[1] = parameters;
-            stageStatus.ParameterCollections[2] = paramCollection1;
-            stageStatus.ParameterCollections[3] = paramCollection2;
-            stageStatus.ParameterCollections[4] = paramCollection3;
-            stageStatus.ParameterCollections[5] = graphicsDevice.Parameters; // GraphicsDevice.Parameters is overriding all parameters
+            stageStatus.ParameterCollections[1] = paramCollection1;
+            stageStatus.ParameterCollections[2] = paramCollection2;
+            stageStatus.ParameterCollections[3] = paramCollection3;
+            stageStatus.ParameterCollections[4] = graphicsDevice.Parameters; // GraphicsDevice.Parameters is overriding all parameters
             stageStatus.UpdateParameters(graphicsDevice, updaterDefinition, DefaultParameterCollectionCount + 3);
             stageStatus.Apply(graphicsDevice, resourceBindings, ref effectStateBindings, applyEffectStates);
         }
@@ -229,12 +210,11 @@ namespace SiliconStudio.Paradox.Graphics
             var stageStatus = graphicsDevice.StageStatus;
 
             stageStatus.ParameterCollections[0] = defaultParameters; // Default Parameters contains all registered Parameters used effectively by the effect
-            stageStatus.ParameterCollections[1] = parameters;
-            stageStatus.ParameterCollections[2] = paramCollection1;
-            stageStatus.ParameterCollections[3] = paramCollection2;
-            stageStatus.ParameterCollections[4] = paramCollection3;
-            stageStatus.ParameterCollections[5] = paramCollection4;
-            stageStatus.ParameterCollections[6] = graphicsDevice.Parameters; // GraphicsDevice.Parameters is overriding all parameters
+            stageStatus.ParameterCollections[1] = paramCollection1;
+            stageStatus.ParameterCollections[2] = paramCollection2;
+            stageStatus.ParameterCollections[3] = paramCollection3;
+            stageStatus.ParameterCollections[4] = paramCollection4;
+            stageStatus.ParameterCollections[5] = graphicsDevice.Parameters; // GraphicsDevice.Parameters is overriding all parameters
             stageStatus.UpdateParameters(graphicsDevice, updaterDefinition, DefaultParameterCollectionCount + 4);
             stageStatus.Apply(graphicsDevice, resourceBindings, ref effectStateBindings, applyEffectStates);
         }
@@ -245,13 +225,12 @@ namespace SiliconStudio.Paradox.Graphics
             var stageStatus = graphicsDevice.StageStatus;
 
             stageStatus.ParameterCollections[0] = defaultParameters; // Default Parameters contains all registered Parameters used effectively by the effect
-            stageStatus.ParameterCollections[1] = parameters;
-            stageStatus.ParameterCollections[2] = paramCollection1;
-            stageStatus.ParameterCollections[3] = paramCollection2;
-            stageStatus.ParameterCollections[4] = paramCollection3;
-            stageStatus.ParameterCollections[5] = paramCollection4;
-            stageStatus.ParameterCollections[6] = paramCollection5;
-            stageStatus.ParameterCollections[7] = graphicsDevice.Parameters; // GraphicsDevice.Parameters is overriding all parameters
+            stageStatus.ParameterCollections[1] = paramCollection1;
+            stageStatus.ParameterCollections[2] = paramCollection2;
+            stageStatus.ParameterCollections[3] = paramCollection3;
+            stageStatus.ParameterCollections[4] = paramCollection4;
+            stageStatus.ParameterCollections[5] = paramCollection5;
+            stageStatus.ParameterCollections[6] = graphicsDevice.Parameters; // GraphicsDevice.Parameters is overriding all parameters
             stageStatus.UpdateParameters(graphicsDevice, updaterDefinition, DefaultParameterCollectionCount + 5);
             stageStatus.Apply(graphicsDevice, resourceBindings, ref effectStateBindings, applyEffectStates);
         }
@@ -262,14 +241,13 @@ namespace SiliconStudio.Paradox.Graphics
             var stageStatus = graphicsDevice.StageStatus;
 
             stageStatus.ParameterCollections[0] = defaultParameters; // Default Parameters contains all registered Parameters used effectively by the effect
-            stageStatus.ParameterCollections[1] = parameters;
-            stageStatus.ParameterCollections[2] = paramCollection1;
-            stageStatus.ParameterCollections[3] = paramCollection2;
-            stageStatus.ParameterCollections[4] = paramCollection3;
-            stageStatus.ParameterCollections[5] = paramCollection4;
-            stageStatus.ParameterCollections[6] = paramCollection5;
-            stageStatus.ParameterCollections[7] = paramCollection6;
-            stageStatus.ParameterCollections[8] = graphicsDevice.Parameters; // GraphicsDevice.Parameters is overriding all parameters
+            stageStatus.ParameterCollections[1] = paramCollection1;
+            stageStatus.ParameterCollections[2] = paramCollection2;
+            stageStatus.ParameterCollections[3] = paramCollection3;
+            stageStatus.ParameterCollections[4] = paramCollection4;
+            stageStatus.ParameterCollections[5] = paramCollection5;
+            stageStatus.ParameterCollections[6] = paramCollection6;
+            stageStatus.ParameterCollections[7] = graphicsDevice.Parameters; // GraphicsDevice.Parameters is overriding all parameters
             stageStatus.UpdateParameters(graphicsDevice, updaterDefinition, DefaultParameterCollectionCount + 6);
             stageStatus.Apply(graphicsDevice, resourceBindings, ref effectStateBindings, applyEffectStates);
         }
@@ -287,7 +265,6 @@ namespace SiliconStudio.Paradox.Graphics
             }
 
             stageStatus.ParameterCollections[0] = defaultParameters; // Default Parameters contains all registered Parameters used effectively by the effect
-            stageStatus.ParameterCollections[1] = parameters;
             for (int i = 0; i < parameterCollections.Length; i++ )
             {
                 stageStatus.ParameterCollections[i + DefaultParameterCollectionCount - 1] = parameterCollections[i];
@@ -576,7 +553,7 @@ namespace SiliconStudio.Paradox.Graphics
             keys.Add(BlendStateKey);
 
             // Handle dynamic values
-            foreach (var dynamicValue in defaultParameters.DynamicValues.Concat(parameters.DynamicValues))
+            foreach (var dynamicValue in defaultParameters.DynamicValues)
             {
                 allParameterDependencies[dynamicValue.Target] = new ParameterDependency { Destination = dynamicValue.Target, Dynamic = dynamicValue, Sources = dynamicValue.Dependencies };
             }
@@ -599,7 +576,6 @@ namespace SiliconStudio.Paradox.Graphics
             // Cache internal values by specified index in EffectPass parameters (since they will be used by a given EffectPass.ParameterUpdater)
             var keyMapping = updaterDefinition.SortedKeys.Select((x, i) => new { x, i }).ToDictionary(k => k.x, k => k.i);
             defaultParameters.SetKeyMapping(keyMapping);
-            parameters.SetKeyMapping(keyMapping);
 
             for (int i = 0; i < resourceBindings.Length; ++i)
             {

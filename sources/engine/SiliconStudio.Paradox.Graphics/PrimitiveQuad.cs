@@ -16,6 +16,8 @@ namespace SiliconStudio.Paradox.Graphics
         private readonly SharedData sharedData;
         private const int QuadCount = 3;
 
+        private readonly ParameterCollection parameters;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PrimitiveQuad" /> class with a <see cref="SimpleEffect"/>.
         /// </summary>
@@ -33,7 +35,8 @@ namespace SiliconStudio.Paradox.Graphics
         {
             GraphicsDevice = graphicsDevice;
             simpleEffect = effect;
-            simpleEffect.Parameters.Set(SpriteBaseKeys.MatrixTransform, Matrix.Identity);
+            parameters = new ParameterCollection();
+            parameters.Set(SpriteBaseKeys.MatrixTransform, Matrix.Identity);
             sharedData = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, "PrimitiveQuad::VertexBuffer", () => new SharedData(GraphicsDevice, simpleEffect.InputSignature));
         }
 
@@ -75,10 +78,10 @@ namespace SiliconStudio.Paradox.Graphics
             if (texture2D == null) throw new ArgumentException("Expecting a Texture2D", "texture");
 
             // Make sure that we are using our vertex shader
-            simpleEffect.Parameters.Set(SpriteEffectKeys.Color, color);
-            simpleEffect.Parameters.Set(TexturingKeys.Texture0, texture as Texture2D);
-            simpleEffect.Parameters.Set(TexturingKeys.Sampler, samplerState ?? GraphicsDevice.SamplerStates.LinearClamp);
-            simpleEffect.Apply();
+            parameters.Set(SpriteEffectKeys.Color, color);
+            parameters.Set(TexturingKeys.Texture0, texture as Texture2D);
+            parameters.Set(TexturingKeys.Sampler, samplerState ?? GraphicsDevice.SamplerStates.LinearClamp);
+            simpleEffect.Apply(parameters);
             Draw();
 
             // TODO ADD QUICK UNBIND FOR SRV

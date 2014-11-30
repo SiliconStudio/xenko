@@ -30,7 +30,6 @@ namespace SiliconStudio.Paradox.Effects
         private Dictionary<EffectBytecode, Effect> cachedEffects = new Dictionary<EffectBytecode, Effect>();
         private DirectoryWatcher directoryWatcher;
 
-        private readonly HashSet<string> modifiedShaders = new HashSet<string>();
         private readonly HashSet<string> recentlyModifiedShaders = new HashSet<string>();
         private bool clearNextFrame = false;
 
@@ -204,7 +203,7 @@ namespace SiliconStudio.Paradox.Effects
 
             CompilerResults compilerResult = null;
 
-            if (isPdxfx && (modifiedShaders == null || modifiedShaders.Count == 0))
+            if (isPdxfx)
             {
                 // perform an early test only based on the parameters
                 compilerResult = GetShaderFromParameters(mainEffectName, subEffect, compilerParameters);
@@ -255,15 +254,14 @@ namespace SiliconStudio.Paradox.Effects
 
                 lock (cachedEffects)
                 {
-                    // TODO: cache keys in a HashSet instead of ToList
                     foreach (var shaderSourceName in recentlyModifiedShaders)
                     {
+                        // TODO: cache keys in a HashSet instead of ToHashSet
                         var bytecodes = new HashSet<EffectBytecode>(cachedEffects.Keys);
                         foreach (var bytecode in bytecodes)
                         {
                             if (bytecode.HashSources.ContainsKey(shaderSourceName))
                             {
-
                                 bytecodeRemoved.Add(bytecode);
 
                                 // Dispose previous effect
