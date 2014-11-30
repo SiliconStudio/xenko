@@ -139,6 +139,14 @@ namespace SiliconStudio.Paradox.Effects
             return result;
         }
 
+        // TODO: THIS IS JUST A WORKAROUND, REMOVE THIS
+        public static string GetStoragePathFromShaderType(string type)
+        {
+            if (type == null) throw new ArgumentNullException("type");
+            // TODO: harcoded values, bad bad bad
+            return DefaultSourceShaderFolder + "/" + type + ".pdxsl";
+        }
+
         private static void CheckResult(CompilerResults compilerResult)
         {
             // Check errors
@@ -159,9 +167,9 @@ namespace SiliconStudio.Paradox.Effects
                     cachedEffects.Add(bytecode, effect);
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-                    foreach (var sourcePath in bytecode.HashSources.Keys)
+                    foreach (var type in bytecode.HashSources.Keys)
                     {
-                        using (var pathStream = Asset.OpenAsStream(sourcePath + "/path"))
+                        using (var pathStream = Asset.OpenAsStream(GetStoragePathFromShaderType(type) + "/path"))
                         using (var reader = new StreamReader(pathStream))
                         {
                             var path = reader.ReadToEnd();
@@ -289,11 +297,9 @@ namespace SiliconStudio.Paradox.Effects
         {
             if (e.ChangeType == FileEventChangeType.Changed || e.ChangeType == FileEventChangeType.Renamed)
             {
-                var shaderSourceName = DefaultSourceShaderFolder + "/" + e.Name;
-
                 lock (recentlyModifiedShaders)
                 {
-                    recentlyModifiedShaders.Add(shaderSourceName);
+                    recentlyModifiedShaders.Add(Path.GetFileNameWithoutExtension(e.Name));
                 }
             }
         }

@@ -127,7 +127,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
             foreach (var hashSource in bytecode.HashSources)
             {
                 commandContext.Logger.Verbose("Shader [{0}] is using [{1}]", effectName, hashSource.Key);
-                commandContext.RegisterInputDependency(new ObjectUrl(UrlType.Internal, hashSource.Key));
+                commandContext.RegisterInputDependency(new ObjectUrl(UrlType.Internal, EffectSystem.GetStoragePathFromShaderType(hashSource.Key)));
             }
 
             // Generate sourcecode if configured

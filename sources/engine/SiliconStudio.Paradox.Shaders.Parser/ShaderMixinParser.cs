@@ -141,10 +141,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
                 var shaderClassSource = moduleMixinInfo.ShaderSource as ShaderClassSource;
                 if (ast != null && shaderClassSource != null)
                 {
-                    var sourcePath = SourceManager.FindFilePath(shaderClassSource.ClassName);
-                    if (sourcePath == null)
-                        throw new InvalidOperationException(string.Format("Can't find source path for class {0}", shaderClassSource.ClassName));
-                    parsingResult.HashSources[sourcePath] = ast.SourceHash;
+                    parsingResult.HashSources[shaderClassSource.ClassName] = ast.SourceHash;
                 }
             }
 

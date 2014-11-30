@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
     /// </summary>
     public class EffectCompiler : EffectCompilerBase
     {
-        private bool d3dcompilerLoaded = false;
+        private bool d3dCompilerLoaded = false;
         private static readonly Object WriterLock = new Object();
 
         private ShaderMixinParser shaderMixinParser;
@@ -39,11 +39,9 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             UrlToFilePath = new Dictionary<string, string>();
         }
 
-        #region Public methods
-
         public override ObjectId GetShaderSourceHash(string type)
         {
-            return GetMixinParser().SourceManager.GetShaderSourceHash(GetShaderName(type));
+            return GetMixinParser().SourceManager.GetShaderSourceHash(type);
         }
 
         /// <summary>
@@ -52,7 +50,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
         /// <param name="modifiedShaders"></param>
         public override void ResetCache(HashSet<string> modifiedShaders)
         {
-            GetMixinParser().DeleteObsoleteCache(GetShaderNames(modifiedShaders));
+            GetMixinParser().DeleteObsoleteCache(modifiedShaders);
         }
 
         private ShaderMixinParser GetMixinParser()
@@ -71,10 +69,10 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
         {
             // Load D3D compiler dll
             // Note: No lock, it's probably fine if it gets called from multiple threads at the same time.
-            if (Platform.IsWindowsDesktop && !d3dcompilerLoaded)
+            if (Platform.IsWindowsDesktop && !d3dCompilerLoaded)
             {
                 NativeLibrary.PreloadLibrary("d3dcompiler_47.dll");
-                d3dcompilerLoaded = true;
+                d3dCompilerLoaded = true;
             }
 
             var shaderMixinSource = mixinTree.Mixin;
@@ -221,10 +219,6 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             return bytecode;
         }
 
-        #endregion
-
-        #region Private static methods
-
         private static void CopyLogs(SiliconStudio.Shaders.Utility.LoggerResult inputLog, LoggerResult outputLog)
         {
             foreach (var inputMessage in inputLog.Messages)
@@ -317,35 +311,5 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 }
             }
         }
-
-        private static HashSet<string> GetShaderNames(HashSet<string> shaderPaths)
-        {
-            var shaderNames = new HashSet<string>();
-
-            foreach (var shader in shaderPaths)
-            {
-                if (String.IsNullOrEmpty(shader))
-                    continue;
-
-                var shaderName = GetShaderName(shader);
-
-                shaderNames.Add(shaderName);
-            }
-            if (shaderNames.Count == 0)
-                return null;
-
-            return shaderNames;
-        }
-
-        private static string GetShaderName(string shaderPath)
-        {
-            // TODO: rewrite this
-            var shaderNameWithExtensionParts = shaderPath.Split('/');
-            var shaderNameWithExtension = shaderNameWithExtensionParts[shaderNameWithExtensionParts.Length - 1];
-            var shaderNameParts = shaderNameWithExtension.Split('.');
-            return shaderNameParts[0];
-        }
-
-        #endregion
     }
 }

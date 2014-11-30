@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
+using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
@@ -19,7 +20,6 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         private readonly object locker = new object();
         private readonly Dictionary<string, ShaderSourceWithHash> loadedShaderSources = new Dictionary<string, ShaderSourceWithHash>();
         private readonly Dictionary<string, string> classNameToPath = new Dictionary<string, string>();
-        private readonly HashSet<string> shadersToReload = new HashSet<string>();
 
         private const string DefaultEffectFileExtension = ".pdxsl";
 
@@ -55,7 +55,6 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 foreach (var shaderName in modifiedShaders)
                 {
                     loadedShaderSources.Remove(shaderName);
-                    shadersToReload.Add(shaderName);
                     classNameToPath.Remove(shaderName);
                 }
             }
@@ -85,30 +84,31 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     {
                         shaderSource = new ShaderSourceWithHash();
 
-                        if (shadersToReload.Contains(type))
+                        // On Windows, Always try to load first from the original URL in order to get the latest version
+                        if (Platform.IsWindowsDesktop)
                         {
-                            using (var fileStream = AssetManager.FileProvider.OpenStream(sourceUrl + "/path", VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read))
+                            var pathUrl = sourceUrl + "/path";
+                            if (AssetManager.FileProvider.FileExists(pathUrl))
                             {
-                                string shaderSourcePath;
-                                using (var sr = new StreamReader(fileStream, Encoding.UTF8))
-                                    shaderSourcePath = sr.ReadToEnd();
-
-                                try
+                                using (var fileStream = AssetManager.FileProvider.OpenStream(pathUrl, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read))
                                 {
-                                    using (var sourceStream = File.Open(shaderSourcePath, FileMode.Open, FileAccess.Read))
+                                    string shaderSourcePath;
+                                    using (var sr = new StreamReader(fileStream, Encoding.UTF8))
+                                        shaderSourcePath = sr.ReadToEnd();
+
+                                    if (File.Exists(shaderSourcePath))
                                     {
-                                        using (var sr = new StreamReader(sourceStream))
-                                            shaderSource.Source = sr.ReadToEnd();
+                                        using (var sourceStream = File.Open(shaderSourcePath, FileMode.Open, FileAccess.Read))
+                                        {
+                                            using (var sr = new StreamReader(sourceStream))
+                                                shaderSource.Source = sr.ReadToEnd();
+                                        }
                                     }
                                 }
-                                catch (FileNotFoundException)
-                                {
-                                    throw new FileNotFoundException(string.Format("Unable to find shader [{0}] on disk", type), string.Format("{0}.pdxsl", type));
-                                }
                             }
-                            shadersToReload.Remove(type);
                         }
-                        else
+
+                        if (shaderSource.Source == null)
                         {
                             using (var fileStream = AssetManager.FileProvider.OpenStream(sourceUrl, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read))
                             {

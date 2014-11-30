@@ -7,7 +7,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         // Shading of the sprite with dual texturing
         stage override float4 Shading()
         {
-            return float4(1,0,0,1);
+            return float4(1,1,0,1);
         }
     };
 }
