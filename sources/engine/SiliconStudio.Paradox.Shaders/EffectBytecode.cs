@@ -16,19 +16,9 @@ namespace SiliconStudio.Paradox.Shaders
     public sealed class EffectBytecode
     {
         /// <summary>
-        /// The name of this effect.
-        /// </summary>
-        public string Name;
-
-        /// <summary>
         /// The time this bytecode was compiled.
         /// </summary>
         public DateTime Time;
-
-        /// <summary>
-        /// The shader source.
-        /// </summary>
-        public ShaderSource Source;
 
         /// <summary>
         /// The reflection from the bytecode.

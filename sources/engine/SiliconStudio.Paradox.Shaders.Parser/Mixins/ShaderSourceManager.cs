@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Configuration;
 using System.Text;
 
 using SiliconStudio.Core.IO;
@@ -19,6 +19,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         private readonly object locker = new object();
         private readonly Dictionary<string, ShaderSourceWithHash> loadedShaderSources = new Dictionary<string, ShaderSourceWithHash>();
         private readonly Dictionary<string, string> classNameToPath = new Dictionary<string, string>();
+        private readonly HashSet<string> shadersToReload = new HashSet<string>();
 
         private const string DefaultEffectFileExtension = ".pdxsl";
 
@@ -49,10 +50,14 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <param name="modifiedShaders">The modified shaders.</param>
         public void DeleteObsoleteCache(HashSet<string> modifiedShaders)
         {
-            foreach (var shaderName in modifiedShaders)
+            lock (locker)
             {
-                loadedShaderSources.Remove(shaderName);
-                //classNameToPath.Remove(shaderName); // is it really useful?
+                foreach (var shaderName in modifiedShaders)
+                {
+                    loadedShaderSources.Remove(shaderName);
+                    shadersToReload.Add(shaderName);
+                    classNameToPath.Remove(shaderName);
+                }
             }
         }
 
@@ -65,10 +70,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// Loads the shader source with the specified type name.
         /// </summary>
         /// <param name="type">The typeName.</param>
-        /// <param name="modifiedShaders">The list of modified shaders.</param>
         /// <returns>ShaderSourceWithHash.</returns>
         /// <exception cref="System.IO.FileNotFoundException">If the file was not found</exception>
-        public ShaderSourceWithHash LoadShaderSource(string type, HashSet<string> modifiedShaders = null)
+        public ShaderSourceWithHash LoadShaderSource(string type)
         {
             lock (locker)
             {
@@ -81,7 +85,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     {
                         shaderSource = new ShaderSourceWithHash();
 
-                        if (modifiedShaders != null && modifiedShaders.Contains(sourceUrl))
+                        if (shadersToReload.Contains(type))
                         {
                             using (var fileStream = AssetManager.FileProvider.OpenStream(sourceUrl + "/path", VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read))
                             {
@@ -102,6 +106,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                                     throw new FileNotFoundException(string.Format("Unable to find shader [{0}] on disk", type), string.Format("{0}.pdxsl", type));
                                 }
                             }
+                            shadersToReload.Remove(type);
                         }
                         else
                         {
@@ -161,7 +166,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 if (LookupDirectoryList == null)
                     return null;
 
-                string path;
+                string path = null;
                 if (classNameToPath.TryGetValue(type, out path))
                     return path;
 
@@ -176,7 +181,10 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     }
                 }
 
-                classNameToPath.Add(type, path);
+                if (path != null)
+                {
+                    classNameToPath.Add(type, path);
+                }
 
                 return path;
             }

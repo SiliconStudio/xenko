@@ -30,14 +30,6 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
         /// </summary>
         public static readonly ParameterKey<bool> DebugKey = ParameterKeys.New(true);
 
-        // TODO: Don't PUT THIS HERE (use Tags?)
-        [DataMemberIgnore]
-        public HashSet<string> ModifiedShaders { get; set; }
-
-        // TODO: Don't PUT THIS HERE (use Tags?)
-        [DataMemberIgnore]
-        public HashSet<string> RecentlyModifiedShaders { get; set; }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="CompilerParameters"/> class.
         /// </summary>

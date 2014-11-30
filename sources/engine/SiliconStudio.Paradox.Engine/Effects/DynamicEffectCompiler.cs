@@ -80,14 +80,7 @@ namespace SiliconStudio.Paradox.Effects
         {
             bool effectChanged = false;
 
-            if (effectInstance.Effect != null && effectInstance.Effect.Changed)
-            {
-                effectInstance.UpdaterDefinition.Initialize(effectInstance.Effect);
-                UpdateLevels(effectInstance);
-                effectChanged = true;
-            }
-
-            if (effectInstance.Effect == null || HasCollectionChanged(effectInstance))
+            if (effectInstance.Effect == null || !EffectSystem.IsValid(effectInstance.Effect) || HasCollectionChanged(effectInstance))
             {
                 CreateEffect(effectInstance);
                 effectChanged = true;

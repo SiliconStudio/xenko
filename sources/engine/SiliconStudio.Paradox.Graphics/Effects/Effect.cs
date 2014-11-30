@@ -26,6 +26,8 @@ namespace SiliconStudio.Paradox.Graphics
         private EffectReflection reflection;
         private EffectInputSignature inputSignature;
         private readonly ParameterCollection parameters;
+
+        private readonly EffectBytecode bytecode;
         private const int DefaultParameterCollectionCount = 3;
 
         private EffectStateBindings effectStateBindings;
@@ -47,16 +49,6 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         /// <param name="device">The device.</param>
         /// <param name="bytecode">The bytecode.</param>
-        public Effect(GraphicsDevice device, byte[] bytecode)
-            : this(device, BinarySerialization.Read<EffectBytecode>(bytecode))
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Effect"/> class.
-        /// </summary>
-        /// <param name="device">The device.</param>
-        /// <param name="bytecode">The bytecode.</param>
         /// <param name="usedParameters">The parameters used to create this shader (from a pdxfx).</param>
         /// <exception cref="System.ArgumentNullException">
         /// device
@@ -68,9 +60,10 @@ namespace SiliconStudio.Paradox.Graphics
             if (device == null) throw new ArgumentNullException("device");
             if (bytecode == null) throw new ArgumentNullException("bytecode");
 
+            this.graphicsDeviceDefault = device;
+            this.bytecode = bytecode;
             parameters = new ParameterCollection();
-            Initialize(device, bytecode, usedParameters);
-            Changed = false;
+            Initialize(usedParameters);
         }
 
         /// <summary>
@@ -98,14 +91,18 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         /// <summary>
-        /// Gets a boolean indicating if the effect changed since last update.
+        /// Gets the bytecode.
         /// </summary>
-        /// <value>The changed.</value>
-        public bool Changed
+        /// <value>The bytecode.</value>
+        public EffectBytecode Bytecode
         {
-            get; internal set;
+            get
+            {
+                return bytecode;
+            }
         }
 
+        // TODO: REMOVE THIS
         public List<ShaderConstantBufferDescription> ConstantBuffers
         {
             get
@@ -320,18 +317,16 @@ namespace SiliconStudio.Paradox.Graphics
             graphicsDevice.ApplyPlatformSpecificParams(this);
         }
 
-        internal void Initialize(GraphicsDevice device, EffectBytecode byteCode, ParameterCollection usedParameters)
+        private void Initialize(ParameterCollection usedParameters)
         {
-            Name = byteCode.Name;
-            graphicsDeviceDefault = device.RootDevice;
-            program = EffectProgram.New(graphicsDeviceDefault, byteCode);
-            reflection = byteCode.Reflection;
+            program = EffectProgram.New(graphicsDeviceDefault, bytecode);
+            reflection = bytecode.Reflection;
 
             // prepare resource bindings used internally
-            resourceBindings = new EffectParameterResourceBinding[byteCode.Reflection.ResourceBindings.Count];
+            resourceBindings = new EffectParameterResourceBinding[bytecode.Reflection.ResourceBindings.Count];
             for (int i = 0; i < resourceBindings.Length; i++)
             {
-                resourceBindings[i].Description = byteCode.Reflection.ResourceBindings[i];
+                resourceBindings[i].Description = bytecode.Reflection.ResourceBindings[i];
             }
             defaultParameters = new ParameterCollection();
             inputSignature = program.InputSignature;
@@ -352,8 +347,6 @@ namespace SiliconStudio.Paradox.Graphics
             {
                 DefaultCompilationParameters.RegisterParameter(key, false);
             }
-
-            Changed = true;
         }
 
         private void LoadDefaultParameters()

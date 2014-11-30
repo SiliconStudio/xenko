@@ -78,10 +78,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <param name="shaderClassSource">The shader class source.</param>
         /// <param name="shaderMacros">The shader macros.</param>
         /// <param name="log">The log to output error logs.</param>
-        /// <param name="modifiedShaders">The list of modified shaders.</param>
         /// <returns>A ShaderClassType or null if there was some errors.</returns>
         /// <exception cref="System.ArgumentNullException">shaderClassSource</exception>
-        public ShaderClassType LoadClassSource(ShaderClassSource shaderClassSource, SiliconStudio.Shaders.Parser.ShaderMacro[] shaderMacros, LoggerResult log, HashSet<string> modifiedShaders = null)
+        public ShaderClassType LoadClassSource(ShaderClassSource shaderClassSource, SiliconStudio.Shaders.Parser.ShaderMacro[] shaderMacros, LoggerResult log)
         {
             if (shaderClassSource == null) throw new ArgumentNullException("shaderClassSource");
 
@@ -90,9 +89,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             {
                 generics = "";
                 foreach (var gen in shaderClassSource.GenericArguments)
-                    generics += "___" + gen.ToString();
+                    generics += "___" + gen;
             }
-            var shaderClassType = LoadShaderClass(shaderClassSource.ClassName, generics, log, shaderMacros, modifiedShaders);
+            var shaderClassType = LoadShaderClass(shaderClassSource.ClassName, generics, log, shaderMacros);
 
             if (shaderClassType == null)
                 return null;
@@ -210,7 +209,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             return (Expression)result.Root.AstNode;
         }
 
-        private ShaderClassType LoadShaderClass(string type, string generics, LoggerResult log, SiliconStudio.Shaders.Parser.ShaderMacro[] macros = null, HashSet<string> modifiedShaders = null)
+        private ShaderClassType LoadShaderClass(string type, string generics, LoggerResult log, SiliconStudio.Shaders.Parser.ShaderMacro[] macros = null)
         {
             if (type == null) throw new ArgumentNullException("type");
 
@@ -227,7 +226,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 }
 
                 // Load file
-                var shaderSource = SourceManager.LoadShaderSource(type, modifiedShaders);
+                var shaderSource = SourceManager.LoadShaderSource(type);
 
                 // TODO USE ORIGINAL SOURCE PATH and not to object database path
                 var preprocessedSource = PreProcessor.Run(shaderSource.Source, shaderSource.Path, macros);

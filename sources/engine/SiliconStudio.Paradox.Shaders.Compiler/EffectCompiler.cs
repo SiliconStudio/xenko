@@ -41,6 +41,32 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
         #region Public methods
 
+        public override ObjectId GetShaderSourceHash(string type)
+        {
+            return GetMixinParser().SourceManager.GetShaderSourceHash(GetShaderName(type));
+        }
+
+        /// <summary>
+        /// Remove cached files for modified shaders
+        /// </summary>
+        /// <param name="modifiedShaders"></param>
+        public override void ResetCache(HashSet<string> modifiedShaders)
+        {
+            GetMixinParser().DeleteObsoleteCache(GetShaderNames(modifiedShaders));
+        }
+
+        private ShaderMixinParser GetMixinParser()
+        {
+            // Generate the AST from the mixin description
+            if (shaderMixinParser == null)
+            {
+                shaderMixinParser = new ShaderMixinParser();
+                shaderMixinParser.SourceManager.LookupDirectoryList = SourceDirectories; // TODO: temp
+                shaderMixinParser.SourceManager.UrlToFilePath = UrlToFilePath; // TODO: temp
+            }
+            return shaderMixinParser;
+        }
+
         public override EffectBytecode Compile(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters, LoggerResult log)
         {
             // Load D3D compiler dll
@@ -80,23 +106,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     throw new NotSupportedException();
             }
 
-            // Generate the AST from the mixin description
-            if (shaderMixinParser == null)
-            {
-                shaderMixinParser = new ShaderMixinParser();
-                shaderMixinParser.SourceManager.LookupDirectoryList = SourceDirectories; // TODO: temp
-                shaderMixinParser.SourceManager.UrlToFilePath = UrlToFilePath; // TODO: temp
-            }
-
-            var recentlyModifiedShaders = compilerParameters.RecentlyModifiedShaders;
-            var modifiedShaders = compilerParameters.ModifiedShaders;
-
-            if (recentlyModifiedShaders != null && recentlyModifiedShaders.Count > 0)
-            {
-                shaderMixinParser.DeleteObsoleteCache(GetShaderNames(recentlyModifiedShaders));
-                recentlyModifiedShaders.Clear();
-            }
-            var parsingResult = shaderMixinParser.Parse(shaderMixinSource, shaderMixinSource.Macros.ToArray(), modifiedShaders);
+            var parsingResult = GetMixinParser().Parse(shaderMixinSource, shaderMixinSource.Macros.ToArray());
 
             // Copy log from parser results to output
             CopyLogs(parsingResult, log);
@@ -317,10 +327,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 if (String.IsNullOrEmpty(shader))
                     continue;
 
-                var shaderNameWithExtensionParts = shader.Split('/');
-                var shaderNameWithExtension = shaderNameWithExtensionParts[shaderNameWithExtensionParts.Length - 1];
-                var shaderNameParts = shaderNameWithExtension.Split('.');
-                var shaderName = shaderNameParts[0];
+                var shaderName = GetShaderName(shader);
 
                 shaderNames.Add(shaderName);
             }
@@ -328,6 +335,15 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 return null;
 
             return shaderNames;
+        }
+
+        private static string GetShaderName(string shaderPath)
+        {
+            // TODO: rewrite this
+            var shaderNameWithExtensionParts = shaderPath.Split('/');
+            var shaderNameWithExtension = shaderNameWithExtensionParts[shaderNameWithExtensionParts.Length - 1];
+            var shaderNameParts = shaderNameWithExtension.Split('.');
+            return shaderNameParts[0];
         }
 
         #endregion
