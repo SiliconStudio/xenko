@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
@@ -25,6 +27,8 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
         private readonly Dictionary<ObjectId, EffectBytecode> bytecodes = new Dictionary<ObjectId, EffectBytecode>();
         private readonly HashSet<ObjectId> bytecodesByPassingStorage = new HashSet<ObjectId>();
         private const string CompiledShadersKey = "__shaders_bytecode__";
+
+        private int effectCompileCount;
 
         public EffectCompilerCache(EffectCompilerBase compiler) : base(compiler)
         {
@@ -64,16 +68,17 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 // ------------------------------------------------------------------------------------------------------------
                 bytecode = LoadEffectBytecode(compiledUrl);
 
+                // Always check that the bytecode is in sync with hash sources on all platforms
+                if (bytecode != null && IsBytecodeObsolete(bytecode))
+                {
+                    bytecode = null;
+                }
+
                 // On non Windows platform, we are expecting to have the bytecode stored directly
                 if (!Platform.IsWindowsDesktop && bytecode == null)
                 {
                     Log.Error("Unable to find compiled shaders [{0}] for mixin [{1}] with parameters [{2}]", compiledUrl, mixin, compilerParameters.ToStringDetailed());
                     throw new InvalidOperationException("Unable to find compiled shaders [{0}]".ToFormat(compiledUrl));
-                }
-
-                if (bytecode != null && IsBytecodeObsolete(bytecode))
-                {
-                    bytecode = null;
                 }
             }
 
@@ -118,26 +123,27 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     bytecode.Stages[i].Data = previousStages[i];
                 }
 
-                ObjectId previousBytecodeId;
-                if (!database.AssetIndexMap.TryGetValue(compiledUrl, out previousBytecodeId) || previousBytecodeId != newBytecodeId)
+                // Check if we really need to store the bytecode
+                lock (bytecodes)
                 {
-                    localLogger.Info("New effect compiled [{0}] (db: {1})\r\n{1}", mixinObjectId, newBytecodeId, usedParameters.ToStringDetailed());
-
                     // Using custom serialization to the database to store an object with a custom id
+                    // TODO: Check if we really need to write the bytecode everytime even if id is not changed
                     var memoryStream = new MemoryStream();
                     BinarySerialization.Write(memoryStream, bytecode);
                     memoryStream.Position = 0;
                     database.ObjectDatabase.Write(memoryStream, newBytecodeId);
                     database.AssetIndexMap[compiledUrl] = newBytecodeId;
 
-                    lock (bytecodes)
+                    if (!bytecodes.ContainsKey(newBytecodeId))
                     {
+                        log.Info("New effect compiled #{0} [{1}] (db: {2})\r\n{3}", effectCompileCount, mixinObjectId, newBytecodeId, usedParameters.ToStringDetailed());
+                        Interlocked.Increment(ref effectCompileCount);
+
                         // Replace or add new bytecode
                         bytecodes[newBytecodeId] = bytecode;
                     }
                 }
             }
-
 
             return bytecode;
         }
@@ -196,7 +202,6 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
         private bool IsBytecodeObsolete(EffectBytecode bytecode)
         {
- #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
            foreach (var hashSource in bytecode.HashSources)
             {
                 if (GetShaderSourceHash(hashSource.Key) != hashSource.Value)
@@ -204,7 +209,6 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     return true;
                 }
             }
-#endif
             return false;
         }
    }
