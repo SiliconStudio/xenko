@@ -20,8 +20,6 @@ namespace SiliconStudio.Paradox.Effects
     /// </summary>
     public class EffectSystem : GameSystemBase
     {
-        public static readonly string DefaultSourceShaderFolder = "shaders";
-
         private readonly static Logger Log = GlobalLogger.GetLogger("EffectSystem");
 
         private readonly IGraphicsDeviceService graphicsDeviceService;
@@ -55,7 +53,7 @@ namespace SiliconStudio.Paradox.Effects
             // Create compiler
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             var effectCompiler = new Shaders.Compiler.EffectCompiler();
-            effectCompiler.SourceDirectories.Add(DefaultSourceShaderFolder);
+            effectCompiler.SourceDirectories.Add(EffectCompilerBase.DefaultSourceShaderFolder);
 
             Enabled = true;
             directoryWatcher = new DirectoryWatcher("*.pdxsl");
@@ -139,12 +137,6 @@ namespace SiliconStudio.Paradox.Effects
         }
 
         // TODO: THIS IS JUST A WORKAROUND, REMOVE THIS
-        public static string GetStoragePathFromShaderType(string type)
-        {
-            if (type == null) throw new ArgumentNullException("type");
-            // TODO: harcoded values, bad bad bad
-            return DefaultSourceShaderFolder + "/" + type + ".pdxsl";
-        }
 
         private static void CheckResult(CompilerResults compilerResult)
         {
@@ -168,7 +160,8 @@ namespace SiliconStudio.Paradox.Effects
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
                     foreach (var type in bytecode.HashSources.Keys)
                     {
-                        using (var pathStream = Asset.OpenAsStream(GetStoragePathFromShaderType(type) + "/path"))
+                        // TODO: the "/path" is hardcoded, used in ImportStreamCommand and ShaderSourceManager. Find a place to share this correctly.
+                        using (var pathStream = Asset.OpenAsStream(EffectCompilerBase.GetStoragePathFromShaderType(type) + "/path"))
                         using (var reader = new StreamReader(pathStream))
                         {
                             var path = reader.ReadToEnd();

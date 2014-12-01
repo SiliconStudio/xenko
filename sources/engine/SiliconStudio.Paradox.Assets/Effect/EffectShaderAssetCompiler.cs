@@ -7,6 +7,7 @@ using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Shaders.Compiler;
 
 namespace SiliconStudio.Paradox.Assets.Effect
 {
@@ -19,7 +20,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
 
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, EffectShaderAsset asset, AssetCompilerResult result)
         {
-            var url = EffectSystem.DefaultSourceShaderFolder + "/" + Path.GetFileName(assetAbsolutePath);
+            var url = EffectCompilerBase.DefaultSourceShaderFolder + "/" + Path.GetFileName(assetAbsolutePath);
 
             var originalSourcePath = asset.AbsoluteSourceLocation;
             result.BuildSteps = new ListBuildStep { new ImportStreamCommand { SourcePath = originalSourcePath, Location = url, SaveSourcePath = true } };

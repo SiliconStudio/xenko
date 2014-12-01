@@ -128,5 +128,14 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             subEffect = mainEffectNameEnd != -1 ? fullEffectName.Substring(mainEffectNameEnd + 1) : string.Empty;
             return mainEffectName;
         }
+
+        public static readonly string DefaultSourceShaderFolder = "shaders";
+
+        public static string GetStoragePathFromShaderType(string type)
+        {
+            if (type == null) throw new ArgumentNullException("type");
+            // TODO: harcoded values, bad bad bad
+            return DefaultSourceShaderFolder + "/" + type + ".pdxsl";
+        }
     }
 }
