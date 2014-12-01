@@ -68,7 +68,7 @@ namespace SiliconStudio.Paradox.EntityModel
                     }
                 }
 
-                stream.Serialize(ref obj.name);
+                stream.SerializeExtended(ref obj.name, mode);
                 stream.Serialize(ref obj.id, mode);
             }
         }
