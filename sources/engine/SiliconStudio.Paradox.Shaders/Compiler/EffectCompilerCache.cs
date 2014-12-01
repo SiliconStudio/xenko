@@ -113,7 +113,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 var memStream = new MemoryStream();
                 using (var stream = new DigestStream(memStream))
                 {
-                    BinarySerialization.Write(stream, bytecode);
+                    bytecode.WriteTo(stream);
                     newBytecodeId = stream.CurrentHash;
                 }
 
@@ -129,7 +129,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     // Using custom serialization to the database to store an object with a custom id
                     // TODO: Check if we really need to write the bytecode everytime even if id is not changed
                     var memoryStream = new MemoryStream();
-                    BinarySerialization.Write(memoryStream, bytecode);
+                    bytecode.WriteTo(memoryStream);
                     memoryStream.Position = 0;
                     database.ObjectDatabase.Write(memoryStream, newBytecodeId);
                     database.AssetIndexMap[compiledUrl] = newBytecodeId;
@@ -161,7 +161,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     {
                         using (var stream = database.ObjectDatabase.OpenStream(bytecodeId))
                         {
-                            bytecode = BinarySerialization.Read<EffectBytecode>(stream);
+                            bytecode = EffectBytecode.FromStream(stream);
                         }
                     }
                     if (bytecode != null)

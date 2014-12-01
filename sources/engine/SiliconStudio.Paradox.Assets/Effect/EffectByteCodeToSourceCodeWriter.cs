@@ -41,9 +41,7 @@ namespace {1}
             effectToGenerateText.AppendFormat("//     Effect [{0}]\r\n", name);
 
             var buffer = new MemoryStream();
-            var serializer = new BinarySerializationWriter(buffer);
-            serializer.Write(effectData);
-            serializer.Flush();
+            effectData.WriteTo(buffer);
 
             var bufferAsText = new StringBuilder();
             var bufferArray = buffer.ToArray();
