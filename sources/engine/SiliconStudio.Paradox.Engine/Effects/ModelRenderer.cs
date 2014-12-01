@@ -273,15 +273,15 @@ namespace SiliconStudio.Paradox.Effects
                         continue;
                     }
 
-                    var effectMesh = new RenderMesh(renderModel, mesh);
-                    UpdateEffect(effectMesh);
+                    var renderMesh = new RenderMesh(renderModel, mesh);
+                    UpdateEffect(renderMesh);
 
                     // Register mesh for rendering
                     if (renderModel.RenderMeshes[meshPassSlot] == null)
                     {
                         renderModel.RenderMeshes[meshPassSlot] = new List<RenderMesh>();
                     }
-                    renderModel.RenderMeshes[meshPassSlot].Add(effectMesh);
+                    renderModel.RenderMeshes[meshPassSlot].Add(renderMesh);
                 }
             }
         }

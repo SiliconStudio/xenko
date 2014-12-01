@@ -1200,7 +1200,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
             var effectPassDefault = new ParameterCollection("EffectPassDefault");
             var effectPass = new ParameterCollection("EffectPass");
             var effectMeshPass = new ParameterCollection("EffectMeshPass");
-            var effectMesh = new ParameterCollection("RenderMesh");
+            var renderMesh = new ParameterCollection("RenderMesh");
             var effect = new ParameterCollection("Effect");
 
             effectPassDefault.Set(paramV, new Vector3(2.0f, 2.0f, 2.0f));
@@ -1212,9 +1212,9 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
             Assert.AreEqual(new Vector3(2.0f, 1.0f, 1.0f), effectPass.Get(paramV2));
 
-            effectMesh.AddSources(effect);
+            renderMesh.AddSources(effect);
 
-            effectMeshPass.AddSources(effectPass, effectMesh);
+            effectMeshPass.AddSources(effectPass, renderMesh);
 
 
             Assert.AreEqual(new Vector3(2.0f, 1.0f, 1.0f), effectMeshPass.Get(paramV2));

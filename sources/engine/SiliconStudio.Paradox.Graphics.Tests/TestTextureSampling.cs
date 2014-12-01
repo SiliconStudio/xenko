@@ -74,7 +74,6 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             var mesh = new Mesh
             {
                 Draw = meshDraw,
-                Parameters = new ParameterCollection()
             };
 
             simpleEffect = new SimpleEffect(GraphicsDevice);
