@@ -11,7 +11,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// </summary>
     /// <remarks>This effect can be used for downscaling or upscaling if the output rendertarget is smaller/larger than
     /// the input texture</remarks>
-    public class ImageCopier : ImageEffect
+    public sealed class ImageCopier : ImageEffect
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageCopier"/> class.
