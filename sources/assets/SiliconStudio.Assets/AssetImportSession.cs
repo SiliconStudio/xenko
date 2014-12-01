@@ -530,7 +530,8 @@ namespace SiliconStudio.Assets
             toImport.MergedResult = result;
             if (result.HasErrors)
             {
-                toImport.Log.Warning("Error while trying to merge asset [{0}]", toImport.Item);
+                toImport.Log.Error("Error while trying to merge asset [{0}]", toImport.Item);
+                result.CopyTo(toImport.Log);
                 return;
             }
 

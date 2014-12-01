@@ -7,17 +7,17 @@ namespace SiliconStudio.Paradox.Effects
     /// <summary>
     /// Describes the expected parameters when using a <see cref="ParameterUpdater"/>.
     /// </summary>
-    public class ParameterUpdaterDefinition
+    internal abstract class ParameterUpdaterDefinition
     {
-        public ParameterKey[] SortedKeys;
+        public ParameterKey[] SortedKeys { get; protected set; }
 
-        public ulong[] SortedKeyHashes;
+        public ulong[] SortedKeyHashes { get; protected set; }
     }
 
     /// <summary>
     /// Merges and filters parameters coming from multiple <see cref="ParameterCollection"/>.
     /// </summary>
-    public class ParameterUpdater
+    internal class ParameterUpdater
     {
         protected KeyValuePair<int, ParameterCollection.InternalValue>[] InternalValues;
 

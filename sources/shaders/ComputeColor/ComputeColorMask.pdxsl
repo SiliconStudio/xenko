@@ -3,8 +3,8 @@
 //class ComputeColorDifference3ds : ComputeColor
 class ComputeColorMask : ComputeColor
 {
-    ComputeColor color1;
-    ComputeColor color2;
+    compose ComputeColor color1;
+    compose ComputeColor color2;
 
     override float4 Compute()
     {

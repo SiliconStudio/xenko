@@ -99,6 +99,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// <inheritdoc/>
         public override void Load()
         {
+            base.Load();
+
             // Create necessary objects
             if (IBLRenderTarget == null)
                 IBLRenderTarget = Texture2D.New(GraphicsDevice, readOnlyDepthBuffer.Description.Width, readOnlyDepthBuffer.Description.Height, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget).ToRenderTarget();
@@ -136,16 +138,12 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
             parameters = new ParameterCollection();
             parameters.Set(RenderTargetKeys.DepthStencilSource, readOnlyDepthBuffer.Texture);
-
-            // Add to pipeline
-            Pass.StartPass += RenderIBL;
         }
 
         /// <inheritdoc/>
         public override void Unload()
         {
-            // Remove from pipeline
-            Pass.StartPass -= RenderIBL;
+            base.Unload();
 
             parameters.Clear();
 
@@ -161,7 +159,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         #region Private methods
 
-        private void RenderIBL(RenderContext context)
+        protected override void OnRendering(RenderContext context)
         {
             var entitySystem = Services.GetServiceAs<EntitySystem>();
             var cubemapSourceProcessor = entitySystem.GetProcessor<CubemapSourceProcessor>();

@@ -5,7 +5,7 @@
 /// </summary>
 class TransparentShading : ShadingBase
 {
-    BRDFDiffuseBase brdfDiffuse = stage;
+    compose BRDFDiffuseBase brdfDiffuse = stage;
 
     override stage float4 Shading()
     {

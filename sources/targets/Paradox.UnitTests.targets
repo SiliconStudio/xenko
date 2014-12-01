@@ -3,8 +3,8 @@
   <Import Project="$(SolutionDir)$(SolutionName).PreSettings.Local.targets" Condition="Exists('$(SolutionDir)$(SolutionName).PreSettings.Local.targets')" />
   
   <PropertyGroup>
-    <!-- Do not compile unit test when signing/packaging -->
-    <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioSign)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
+    <!-- Do not compile unit test when packaging -->
+    <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
     
     <SiliconStudioUnitTest>true</SiliconStudioUnitTest>
     <SiliconStudioDependenciesDir></SiliconStudioDependenciesDir>
@@ -18,6 +18,17 @@
     -->
     <SiliconStudioParadoxCompileAssetOptions>--compile-property:SolutionDir=$([System.IO.Path]::GetFullPath('$(SiliconStudioParadoxDir)'))\build\;SolutionName=Paradox;BuildProjectReferences=false</SiliconStudioParadoxCompileAssetOptions>
   </PropertyGroup>
+  
+  <!-- On Windows, let's sign the assemblies with fake strong signing (OpenSource Signing, OSS),
+       so that people can compile Paradox themself and still use the editor which expect strongly signed assemblies.
+    -->
+  <PropertyGroup Condition="'$(SiliconStudioOpenSourceSign)' != 'false'">
+    <SignAssembly>true</SignAssembly>
+    <DelaySign Condition="'$(SiliconStudioSign)' != 'true'">true</DelaySign>
+    <AssemblyOriginatorKeyFile Condition="'$(SiliconStudioSign)' == 'true'">$(SolutionDir)paradox.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile Condition="'$(SiliconStudioSign)' != 'true'">$(SolutionDir)paradox.public.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  
   <Import Project="$(MSBuildThisFileDirectory)\..\..\Targets\SiliconStudio.Common.targets"/>
 
   <!-- Add Default targets used by Msbuild for undefined Platforms / or when skipping compilation under a platform -->

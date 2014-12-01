@@ -82,7 +82,7 @@ namespace SiliconStudio.Paradox.Effects
 
         private static Dictionary<string, ParameterKey> keyByNames = new Dictionary<string,ParameterKey>();
 
-        public static ParameterKey Merge(ParameterKey key, string name)
+        public static ParameterKey Merge(ParameterKey key, Type ownerType, string name)
         {
             lock (keyByNames)
             {
@@ -100,6 +100,9 @@ namespace SiliconStudio.Paradox.Effects
                 if (string.IsNullOrEmpty(key.Name))
                     key.SetName(name);
                 keyByNames[name] = key;
+                
+                if (key.OwnerType == null && ownerType != null)
+                    key.SetOwnerType(ownerType);
             }
             return key;
         }

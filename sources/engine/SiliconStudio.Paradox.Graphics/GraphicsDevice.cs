@@ -308,6 +308,14 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         /// <summary>
+        /// Draws a full screen quad. An <see cref="Effect"/> must be applied before calling this method.
+        /// </summary>
+        public void DrawQuad()
+        {
+            primitiveQuad.Draw();
+        }
+
+        /// <summary>
         /// Draws a fullscreen texture using a <see cref="SamplerStateFactory.LinearClamp"/> sampler. See <see cref="Draw+a+texture"/> to learn how to use it.
         /// </summary>
         /// <param name="texture">The texture. Expecting an instance of <see cref="Texture2D"/>.</param>

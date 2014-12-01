@@ -168,7 +168,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                         {
                             for (int j = 0; j < ct; ++j)
                             {
-                                Tools.CopyMemory(pdxImage.PixelBuffer[ct2].DataPointer, pdxImage.PixelBuffer[j + i * SubImagePerArrayElement].DataPointer, pdxImage.PixelBuffer[j + i * SubImagePerArrayElement].BufferStride);
+                                Utilities.CopyMemory(pdxImage.PixelBuffer[ct2].DataPointer, pdxImage.PixelBuffer[j + i * SubImagePerArrayElement].DataPointer, pdxImage.PixelBuffer[j + i * SubImagePerArrayElement].BufferStride);
                                 ++ct2;
                             }
                         }
@@ -223,7 +223,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                         for (int i = 0; i < image.ArraySize * newMipMapCount; ++i)
                         {
                             if (i == newMipMapCount || (i > newMipMapCount && (i % newMipMapCount == 0))) j += gap;
-                            Tools.CopyMemory(pdxImage.PixelBuffer[i].DataPointer, image.SubImageArray[j].Data, image.SubImageArray[j].DataSize);
+                            Utilities.CopyMemory(pdxImage.PixelBuffer[i].DataPointer, image.SubImageArray[j].Data, image.SubImageArray[j].DataSize);
                             ++j;
                         }
                     }

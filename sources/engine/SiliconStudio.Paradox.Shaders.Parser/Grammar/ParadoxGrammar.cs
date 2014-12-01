@@ -75,7 +75,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Grammar
             iteration_statement.Rule |= foreach_statement;
 
             // Add inheritance qualifiers
-            storage_qualifier.Rule |= Keyword("override") | Keyword("abstract") | Keyword("stream") | Keyword("patchstream") | Keyword("stage") | Keyword("clone");
+            storage_qualifier.Rule |= Keyword("override") | Keyword("abstract") | Keyword("stream") | Keyword("patchstream") | Keyword("stage") | Keyword("clone") | Keyword("compose");
 
             // override Hlsl class
             class_specifier.AstNodeCreator = CreateShaderClassSpecifierAst;

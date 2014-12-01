@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     [DataConverter(AutoGenerate = true)]
     [DataContract("ModelComponent")]
-    public sealed class ModelComponent : EntityComponent
+    public sealed class ModelComponent : EntityComponent, IModelInstance
     {
         public static PropertyKey<ModelComponent> Key = new PropertyKey<ModelComponent>("Key", typeof(ModelComponent));
 

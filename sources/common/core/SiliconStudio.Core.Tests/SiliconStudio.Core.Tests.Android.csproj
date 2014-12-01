@@ -3,6 +3,7 @@
   <PropertyGroup>
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <AndroidApplication>true</AndroidApplication>
+    <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
   </PropertyGroup>
   <Import Project="..\..\targets\SiliconStudio.PreSettings.targets" />
   <PropertyGroup>
@@ -16,7 +17,7 @@
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
     <ParadoxBuildTags>Windows;Android;iOS</ParadoxBuildTags>
-    <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioSign)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
+    <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Android" Label="Paradox.DoNotSync" />

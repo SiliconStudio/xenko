@@ -41,18 +41,18 @@ namespace SiliconStudio.Paradox.Effects
         /// <inheritdoc/>
         public override void Load()
         {
-            Pass.StartPass += StartPass;
+            base.Load();
             Pass.EndPass += EndPass;
         }
 
         /// <inheritdoc/>
         public override void Unload()
         {
-            Pass.StartPass -= StartPass;
+            base.Unload();
             Pass.EndPass -= EndPass;
         }
 
-        private void StartPass(RenderContext context)
+        protected override void OnRendering(RenderContext context)
         {
             var graphicsParameters = context.GraphicsDevice.Parameters;
 

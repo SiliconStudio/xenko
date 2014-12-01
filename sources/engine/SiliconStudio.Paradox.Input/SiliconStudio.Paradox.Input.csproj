@@ -11,6 +11,8 @@
     <RootNamespace>SiliconStudio.Paradox.Input</RootNamespace>
     <AssemblyName>SiliconStudio.Paradox.Input</AssemblyName>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer</SiliconStudioAssemblyProcessorOptions>
     <ParadoxProjectPlatformDependentWindows>true</ParadoxProjectPlatformDependentWindows>
     <FileAlignment>512</FileAlignment>
     <ParadoxBuildTags>*</ParadoxBuildTags>

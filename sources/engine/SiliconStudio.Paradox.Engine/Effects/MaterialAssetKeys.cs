@@ -11,12 +11,17 @@ namespace SiliconStudio.Paradox.Effects
         /// When compiling effect with an EffectLibraryAsset (pdxfxlib), set it to true to allow permutation based on the 
         /// parameters of all materials.
         /// </summary>
-        /// TODO: allow permutation for a specific mesh
+        /// <userdoc>
+        /// If checked, the material parameters will be used to generate effects.
+        /// </userdoc>
         public static readonly ParameterKey<bool> UseParameters = ParameterKeys.New<bool>();
 
         /// <summary>
         /// Allow material compilation without mesh.
         /// </summary>
+        /// <userdoc>
+        /// If checked, the materials will generate a shader even if they are not attached to a mesh.
+        /// </userdoc>
         public static readonly ParameterKey<bool> GenerateShader = ParameterKeys.New<bool>();
     }
 }

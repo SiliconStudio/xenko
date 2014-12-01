@@ -11,6 +11,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions) --generate-user-doc</SiliconStudioAssemblyProcessorOptions>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="SharpYaml, Version=1.0.2.26673, Culture=neutral, PublicKeyToken=1ced8108e942bc02, processorArchitecture=MSIL">
@@ -94,16 +95,6 @@
       <Name>SiliconStudio.Paradox.Graphics</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj">
-      <Project>{1de01410-22c9-489b-9796-1addab1f64e5}</Project>
-      <Name>SiliconStudio.Core.IO</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.MicroThreading\SiliconStudio.Core.MicroThreading.csproj">
-      <Project>{1320f627-ee43-4115-8e89-19d1753e51f2}</Project>
-      <Name>SiliconStudio.Core.MicroThreading</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
       <Project>{5210fb81-b807-49bb-af0d-31fb6a83a572}</Project>
       <Name>SiliconStudio.Core.Serialization</Name>
@@ -151,7 +142,6 @@
     <Compile Include="Effect\EffectShaderAsset.cs" />
     <Compile Include="Effect\EffectByteCodeToSourceCodeWriter.cs" />
     <Compile Include="Effect\EffectKeys.cs" />
-    <Compile Include="Effect\EffectSourceCodeKeys.cs" />
     <Compile Include="Effect\Generators\DefaultCompilerParametersGenerator.cs" />
     <Compile Include="Effect\EffectCompileCommand.cs" />
     <Compile Include="Effect\EffectCompileGeneratorBuildStep.cs" />

@@ -8,12 +8,12 @@
 /// </remarks>
 class LightMultiDirectionalShadingPerPixel<int MAX_LIGHT_COUNT> : ShadingBase
 {
-    BRDFDiffuseBase brdfDiffuse = stage;
-    BRDFSpecularBase brdfSpecular = stage;
-    AlbedoDiffuseBase albedoDiffuseBase = stage;
-    AlbedoSpecularBase albedoSpecularBase = stage;
-    NormalVSBase normal = stage;
-    PositionVSBase position = stage;
+    compose BRDFDiffuseBase brdfDiffuse = stage;
+    compose BRDFSpecularBase brdfSpecular = stage;
+    compose AlbedoDiffuseBase albedoDiffuseBase = stage;
+    compose AlbedoSpecularBase albedoSpecularBase = stage;
+    compose NormalVSBase normal = stage;
+    compose PositionVSBase position = stage;
 
     cbuffer PerPass
     {

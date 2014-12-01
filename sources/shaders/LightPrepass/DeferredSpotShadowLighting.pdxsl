@@ -1,0 +1,21 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Computes lighting prepass from spot lights with shadows.
+/// </summary>
+class DeferredSpotShadowLighting : DeferredSpotLighting, ShadowBase, Transformation
+{
+    override float4 ComputeLighting(float3 positionVS, float3 normalVS, float3 eyeVS)
+    {
+        float4 vPositionWS = mul(float4(positionVS,1), ViewInverse);
+        ComputeShadowMapPositions(vPositionWS / vPositionWS.w);
+
+        float4 lighting = base.ComputeLighting(positionVS, normalVS, eyeVS);
+
+        float3 shadowFactor = ComputeShadowFactor(0);
+
+        lighting *= float4(shadowFactor, shadowFactor.x);
+      
+        return lighting;
+    }
+};

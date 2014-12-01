@@ -8,9 +8,15 @@ namespace SiliconStudio.Paradox.Physics
     [DataContract("StaticPlaneColliderShapeDesc")]
     public class StaticPlaneColliderShapeDesc : IColliderShapeDesc
     {
+        /// <userdoc>
+        /// The normal of the infinite plane.
+        /// </userdoc>
         [DataMember(10)]
         public Vector3 Normal = Vector3.UnitY;
 
+        /// <userdoc>
+        /// The distance offset.
+        /// </userdoc>
         [DataMember(20)]
         public float Offset;
     }

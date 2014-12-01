@@ -3,8 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
-using System.Threading.Tasks;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Paradox.EntityModel;
 
@@ -78,7 +76,7 @@ namespace SiliconStudio.Paradox.Engine
 
             foreach (var childEntity in entityToRemove)
             {
-                InternalRemoveEntity(childEntity);
+                InternalRemoveEntity(childEntity, false);
             }
 
             // If sub entity is removed but its parent is still there, it needs to be detached.

@@ -11,7 +11,7 @@ using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Effects
 {
-    public delegate void UpdateMeshesDelegate(RenderPass currentRenderPass, ref FastList<EffectMesh> meshes);
+    public delegate void UpdateMeshesDelegate(RenderPass currentRenderPass, ref FastList<RenderMesh> meshes);
 
     /// <summary>
     /// RenderPass is a hierarchy that defines how to collect and render meshes.

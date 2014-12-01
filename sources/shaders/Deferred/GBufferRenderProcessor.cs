@@ -29,14 +29,14 @@ namespace SiliconStudio.Paradox.Effects.Modules
             get { return gbufferTexture; }
         }
 
-        protected override void Render(RenderContext context)
+        protected override void OnRendering(RenderContext context)
         {
             // Setup render target
             GraphicsDevice.Clear(gbufferTextureRenderTarget, Color.Transparent);
             GraphicsDevice.Clear(depthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
             GraphicsDevice.SetRenderTarget(depthStencilBuffer, gbufferTextureRenderTarget);
 
-            base.Render(context);
+            base.OnRendering(context);
         }
 
         public override void Load()

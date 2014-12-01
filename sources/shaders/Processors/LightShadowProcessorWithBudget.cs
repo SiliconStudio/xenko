@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Paradox.DataModel;
@@ -164,19 +165,29 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
         }
 
         /// <inheritdoc/>
-        protected override void OnEntityAdding(Entity entity, EntityLightShadow data)
-        {
-            base.OnEntityAdding(entity, data);
-            if (ManageShadows && data.Light.Type == LightType.Directional && data.Light.ShadowMap)
-                CreateShadowMap(data);
-        }
-
-        /// <inheritdoc/>
         protected override void OnEntityRemoved(Entity entity, EntityLightShadow data)
         {
             if (ManageShadows && data.ShadowMap != null)
                 RemoveShadowMap(data);
             base.OnEntityRemoved(entity, data);
+        }
+        
+        protected override void CreateShadowMap(EntityLightShadow light)
+        {
+            // create the shadow map
+            var shadowMap = new ShadowMap
+            {
+                LightDirection = light.Light.LightDirection,
+                ShadowMapSize = light.Light.ShadowMapMinSize,
+                ShadowNearDistance = light.Light.ShadowNearDistance,
+                ShadowFarDistance = light.Light.ShadowFarDistance,
+                CascadeCount = light.Light.ShadowMapCascadeCount,
+                Filter = light.Light.ShadowMapFilterType,
+                Layers = light.Light.Layers
+            };
+
+            InternalShadowMaps.Add(shadowMap);
+            light.ShadowMap = shadowMap;
         }
 
         #endregion
@@ -194,24 +205,6 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
 
             // sort the maps
             activeLightShadowMaps.Sort(CompareShadows);
-        }
-
-        private void CreateShadowMap(EntityLightShadow light)
-        {
-            // create the shadow map
-            var shadowMap = new ShadowMap
-            {
-                LightDirection = light.Light.LightDirection,
-                ShadowMapSize = light.Light.ShadowMapMinSize,
-                ShadowNearDistance = light.Light.ShadowNearDistance,
-                ShadowFarDistance = light.Light.ShadowFarDistance,
-                CascadeCount = light.Light.ShadowMapCascadeCount,
-                Filter = light.Light.ShadowMapFilterType,
-                Layers = light.Light.Layers
-            };
-
-            InternalShadowMaps.Add(shadowMap);
-            light.ShadowMap = shadowMap;
         }
 
         private void RemoveShadowMap(EntityLightShadow data)
@@ -275,14 +268,10 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
         // returns shadow0 - shadow1
         private static int CompareShadows(EntityLightShadow shadow0, EntityLightShadow shadow1)
         {
-            if (shadow0.Light.Type == LightType.Directional && shadow1.Light.Type != LightType.Directional)
-                return -1;
-            if (shadow0.Light.Type != LightType.Directional && shadow1.Light.Type == LightType.Directional)
-                return 1;
-            // TODO: handle non directional shadow maps
-            if (shadow0.Light.Type != LightType.Directional && shadow1.Light.Type != LightType.Directional)
-                return 0;
-
+            var lightTypeComparaison = GetLightTypeValue(shadow0.Light.Type) - GetLightTypeValue(shadow1.Light.Type);
+            if (lightTypeComparaison != 0)
+                return lightTypeComparaison;
+            
             var shadowMapSizeDiff = shadow0.Light.ShadowMapMaxSize - shadow1.Light.ShadowMapMaxSize;
             if (shadowMapSizeDiff > 0)
                 return -1;
@@ -292,6 +281,23 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
             // TODO: more comparisons
 
             return 0;
+        }
+
+        private static int GetLightTypeValue(LightType lightType)
+        {
+            switch (lightType)
+            {
+                case LightType.Point:
+                    return 3;
+                case LightType.Spherical:
+                    return 4;
+                case LightType.Directional:
+                    return 0;
+                case LightType.Spot:
+                    return 1;
+                default:
+                    throw new ArgumentOutOfRangeException("lightType");
+            }
         }
 
         #endregion

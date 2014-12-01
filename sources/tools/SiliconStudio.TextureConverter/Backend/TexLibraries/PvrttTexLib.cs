@@ -131,7 +131,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                     {
                         for (uint k = 0; k < image.MipmapCount; ++k)
                         {
-                            Tools.CopyMemory(libraryData.Texture.GetDataPtr(k, j, i), image.SubImageArray[imageCount].Data, image.SubImageArray[imageCount].DataSize * depth);
+                            Core.Utilities.CopyMemory(libraryData.Texture.GetDataPtr(k, j, i), image.SubImageArray[imageCount].Data, image.SubImageArray[imageCount].DataSize * depth);
                             imageCount += depth;
 
                             depth = depth > 1 ? depth >>= 1 : depth;
@@ -393,7 +393,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                         {
                             for (uint k = 0; k < newMipMapCount; ++k)
                             {
-                                Tools.CopyMemory(texture.GetDataPtr(k, j, i), libraryData.Texture.GetDataPtr(k, j, i), (int)libraryData.Header.GetDataSize((int)k, false, false));
+                                Core.Utilities.CopyMemory(texture.GetDataPtr(k, j, i), libraryData.Texture.GetDataPtr(k, j, i), (int)libraryData.Header.GetDataSize((int)k, false, false));
                             }
                         }
                     }

@@ -123,7 +123,7 @@ namespace SiliconStudio.Paradox.Effects
             return FromGeometricMeshData(graphicsDevice, geometryMesh, boundingBox, VertexPositionNormalTangentMultiTexture.Layout, effectName);
         }
 
-        public static Model FromGeometricMeshData<T>(GraphicsDevice graphicsDevice, GeometricMeshData<T> geometryMesh, BoundingBox boundingBox, VertexDeclaration layout, string effectName = "Default") where T : struct, IVertexWindable
+        public static Model FromGeometricMeshData<T>(GraphicsDevice graphicsDevice, GeometricMeshData<T> geometryMesh, BoundingBox boundingBox, VertexDeclaration layout, string effectName = "Default") where T : struct, IVertex
         {
             var meshDraw = new MeshDraw();
 
@@ -154,8 +154,8 @@ namespace SiliconStudio.Paradox.Effects
             meshDraw.DrawCount = indices.Length;
             meshDraw.PrimitiveType = PrimitiveType.TriangleList;
 
-            var mesh = new Mesh { Draw = meshDraw, BoundingBox = boundingBox, Parameters = new ParameterCollection() };
-            mesh.Layer = RenderLayers.RenderLayerAll;
+            var mesh = new Mesh { Draw = meshDraw, BoundingBox = boundingBox };
+            mesh.Parameters.Set(RenderingParameters.RenderLayer, RenderLayers.RenderLayerAll);
 
             var model = new Model { BoundingBox = boundingBox };
             model.Add(mesh);

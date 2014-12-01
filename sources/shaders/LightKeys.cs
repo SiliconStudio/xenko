@@ -9,6 +9,8 @@ namespace SiliconStudio.Paradox.Effects.Modules
     /// </summary>
     public static class LightKeys
     {
+        internal static readonly ParameterKey<int> ConfigurationIndex = ParameterKeys.New(-1);
+
         /// <summary>
         /// Diffuse color.
         /// </summary>

@@ -21,6 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Runtime.InteropServices;
 
 namespace SiliconStudio.Paradox.Graphics
@@ -29,7 +30,7 @@ namespace SiliconStudio.Paradox.Graphics
     /// A Common description for all textures.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct TextureDescription
+    public struct TextureDescription : IEquatable<TextureDescription>
     {
         /// <summary>
         /// The dimension of a texture.
@@ -149,6 +150,58 @@ namespace SiliconStudio.Paradox.Graphics
                 MipLevels = description.MipLevels,
                 Format = description.Format,
             };
+        }
+
+        public bool Equals(TextureDescription other)
+        {
+            return Dimension == other.Dimension && Width == other.Width && Height == other.Height && Depth == other.Depth && ArraySize == other.ArraySize && MipLevels == other.MipLevels && Format == other.Format && Level == other.Level && Usage == other.Usage && Flags == other.Flags;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is TextureDescription && Equals((TextureDescription)obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hashCode = (int)Dimension;
+                hashCode = (hashCode * 397) ^ Width;
+                hashCode = (hashCode * 397) ^ Height;
+                hashCode = (hashCode * 397) ^ Depth;
+                hashCode = (hashCode * 397) ^ ArraySize;
+                hashCode = (hashCode * 397) ^ MipLevels;
+                hashCode = (hashCode * 397) ^ (int)Format;
+                hashCode = (hashCode * 397) ^ (int)Level;
+                hashCode = (hashCode * 397) ^ (int)Usage;
+                hashCode = (hashCode * 397) ^ (int)Flags;
+                return hashCode;
+            }
+        }
+
+        /// <summary>
+        /// Implements the operator ==.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator ==(TextureDescription left, TextureDescription right)
+        {
+            return left.Equals(right);
+        }
+
+        /// <summary>
+        /// Implements the operator !=.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator !=(TextureDescription left, TextureDescription right)
+        {
+            return !left.Equals(right);
         }
     }
 }

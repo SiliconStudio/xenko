@@ -1,3 +1,66 @@
+### Version 1.0.0-beta05
+
+Release date: 2014/11/26
+
+#### Issues fixed
+- Build: Fixed build issues due to Asset Compiler ([#116](https://github.com/SiliconStudio/paradox/issues/116)).
+- Samples: Fixed various samples that didn't build since recent changes in SpriteBatch.MeasureString ([#117](https://github.com/SiliconStudio/paradox/issues/117)).
+- Studio: Fixed high CPU usage due to improper WPF refreshes ([#115](https://github.com/SiliconStudio/paradox/issues/115)).
+
+### Version 1.0.0-beta04
+
+Release date: 2014/11/25
+
+#### New Features
+- Build: We now use OSS (OpenSource Signing) so that you can fake-sign assemblies with the same keys as ours, and use your own compiled Paradox with the official editor ([#88](https://github.com/SiliconStudio/paradox/issues/88)).
+- Engine: Unified 2D and 3D rendering: `SpriteRenderer` now works with custom matrices or camera.
+- Graphics: Spot light shadow maps in deferred rendering ([#96](https://github.com/SiliconStudio/paradox/issues/96)).
+- Studio: Added documentation on properties of the property grid.
+
+#### Enhancements
+- Core: Add support for `ModuleInitializer` in nested types
+- Graphics: Better computation of shadow maps (for both directional and spot lights).
+- Graphics: Add geometric primitive for Cone.
+- Engine: Several internal improvements and factorization to support upcoming `PostEffects` framework.
+- Engine: Add support for filtering model selection and rendering in `ModelRenderer`.  
+- Engine: `SpriteRenderer` now uses the Projection and View matrices set in the pipeline ([#96](https://github.com/SiliconStudio/paradox/issues/96)).
+- Samples: Spot light shadows in DeferredLighting sample.
+- Shaders: Add support for naming a child in a `pdxfx` to allow child override.
+- Shaders: `cs` files generated from `pfxfx` are now using internal and nested types instead of putting everything in the root namespace.
+- Shaders: Add support for declaring a namespace in a `pdxsl`, only valid and used for `ParameterKey` declarations.
+- Studio: Custom enhanced title bar for all windows.
+
+#### Issues fixed
+- Assets: Textures with arbitrary size (non square and non power-of-two) are now correctly loaded.
+- Engine: Fix `EntitySystem.Remove` that was destroying the hierarchy of entities.
+- Graphics: Fix spot light shadow computation.
+- Samples: Fix effect compilation occurring at runtime for some samples 
+- Shaders: Simplify some deferred lighting shaders.
+- Shaders: Don't generate an empty class for `pdxsl` files that don't declare any shader `ParameterKey`
+- Studio: Fix renamed button for string-indexed dictionary that was misplaced and not working
+- Studio: Fix add parameter key control filtering and mouse selection
+- Studio: Fix some actions from the property grid that were not undo-able
+- Studio: Some buttons were sometimes hidden where they should be visible in the property grid.
+
+#### Breaking changes
+- Asset: CastShadows, ReceiveShadows and Layer members of `ModelAsset` class are removed. They should be set in the Parameters of the `ModelAsset` behind the corresponding keys.
+- Engine: Default value for ParameterKeys `LightingKeys.CastShadows` and `LightingKeys.ReceiveShadows` becomes true.
+- Engine: Remove obsolete `MeshDrawHelper` file (use `GeometricPrimitive` instead), move `ToMeshDraw` method to `GeometricPrimitiveExtensions`.
+- Engine: `ModelRenderer` is no longer inheritable but extensible via compositions.
+- Engine: `ModelRenderer.EnableFrustrumCulling` is replaced by the extension method `ModelRenderer.AddDefaultFrustrumCulling`
+- Engine: `EffectMesh` is renamed to `RenderMesh` 
+- Engine: `SpriteRenderer` now requires a valid camera to be set in the pipeline.
+- Engine: `CameraComponent` now uses the Z-axis as camera direction vector to compute the view matrix when `Target` entity is null.
+- Shaders: Declaring a composition member in a shader class must be now prefixed with the `compose` attribute. 
+- Graphics: The signature of some overloads of `SpriteBatch.Begin` have changed for better clarity and easier usage.
+- Graphics: `SpriteBatch.MeasureString` now requires the size of the final render target as parameter.
+
+#### Known Issues
+- Physics: Complex convex hull decomposition can be a very long process and there is visual feedback for it.
+- Physics: Convex hull shape debug shapes in game studio are not rendering very well, although the asset will be OK.
+
+___
+
 ### Version 1.0.0-beta03
 
 Release date: 2014/11/11
@@ -49,6 +112,8 @@ Release date: 2014/11/11
 - Physics: Complex convex hull decomposition can be a very long process and there is visual feedback for it.
 - Physics: Convex hull shape debug shapes in game studio are not rendering very well, although the asset will be OK.
 
+___
+
 ### Version 1.0.0-beta02
 
 Release date: 2014/10/22
@@ -72,6 +137,8 @@ Release date: 2014/10/22
 - UI: Opacity is new correctly taken into account when drawing background color of UI elements ([#43](https://github.com/SiliconStudio/paradox/issues/43)).
 - UI: Fix rendering problems on the Button/ToggleButton's content when setting their background color.
 - Visual Studio Package: Syntax highlighting was not working properly on VS2012 ([#45](https://github.com/SiliconStudio/paradox/issues/45)).
+
+___
 
 ### Version 1.0.0-beta01
 
@@ -143,6 +210,7 @@ More details at [http://paradox3d.net/blog/new-version-open-sourcing](http://par
 - Samples: Since there is no accelerometer Input API yet, Accelerometer sample is currently removed.
 - Windows Store/Phone: UI EditText and Game Resume/Destroy cycles are not implemented.
 - Windows Store/Phone: SharpFont.dll is still compiled against .NET 4.5 (might not pass certifications).
+
 ___
 
 ### Version 1.0.0-alpha11

@@ -72,8 +72,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         #region Protected methods
 
-        /// <inheritdoc/>
-        protected override void Render(RenderContext context)
+        protected override void OnRendering(RenderContext context)
         {
             var entitySystem = Services.GetServiceAs<EntitySystem>();
             var cubemapSourceProcessor = entitySystem.GetProcessor<CubemapSourceProcessor>();
@@ -130,7 +129,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
                 
                 // TODO: flip face culling
 
-                base.Render(context);
+                base.OnRendering(context);
             }
 
             GraphicsDevice.SetRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
@@ -173,7 +172,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             
             GraphicsDevice.SetRenderTargets(component.DepthStencil, component.RenderTarget);
             
-            base.Render(context);
+            base.OnRendering(context);
 
             GraphicsDevice.SetRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
 

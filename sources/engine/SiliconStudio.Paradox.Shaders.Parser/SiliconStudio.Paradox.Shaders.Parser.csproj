@@ -12,8 +12,8 @@
     <RootNamespace>SiliconStudio.Paradox.Shaders.Parser</RootNamespace>
     <AssemblyName>SiliconStudio.Paradox.Shaders.Parser</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <SiliconStudioAssemblyProcessor Condition=" '$(SiliconStudioShaderUseSharpDX)' == 'true' ">true</SiliconStudioAssemblyProcessor>
-    <SiliconStudioAssemblyProcessorOptions>--serialization</SiliconStudioAssemblyProcessorOptions>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
     <ParadoxBuildTags>Windows</ParadoxBuildTags>
   </PropertyGroup>
   <ItemGroup>

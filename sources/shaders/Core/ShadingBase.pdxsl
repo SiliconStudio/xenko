@@ -13,28 +13,28 @@
 
 class ShadingBase : ShaderBase
 {
-    ComputeColor ShadingColor0;
+    compose ComputeColor ShadingColor0;
 
 #if RENDER_TARGET_COUNT > 1
-    ComputeColor ShadingColor1;
+    compose ComputeColor ShadingColor1;
 #endif
 #if RENDER_TARGET_COUNT > 2
-    ComputeColor ShadingColor2;
+    compose ComputeColor ShadingColor2;
 #endif
 #if RENDER_TARGET_COUNT > 3
-    ComputeColor ShadingColor3;
+    compose ComputeColor ShadingColor3;
 #endif
 #if RENDER_TARGET_COUNT > 4
-    ComputeColor ShadingColor4;
+    compose ComputeColor ShadingColor4;
 #endif
 #if RENDER_TARGET_COUNT > 5
-    ComputeColor ShadingColor5;
+    compose ComputeColor ShadingColor5;
 #endif
 #if RENDER_TARGET_COUNT > 6
-    ComputeColor ShadingColor6;
+    compose ComputeColor ShadingColor6;
 #endif
 #if RENDER_TARGET_COUNT > 7
-    ComputeColor ShadingColor7;
+    compose ComputeColor ShadingColor7;
 #endif
 
     // method computing color

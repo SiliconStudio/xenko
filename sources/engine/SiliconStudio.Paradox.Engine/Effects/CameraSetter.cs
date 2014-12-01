@@ -1,5 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects.Modules;
@@ -26,41 +29,29 @@ namespace SiliconStudio.Paradox.Effects
         /// <value>The camera.</value>
         public CameraComponent Camera { get; set; }
 
-        public override void Load()
-        {
-            // Clear scene
-            Pass.StartPass += OnRender;
-        }
-
-        public override void Unload()
-        {
-            Pass.StartPass -= OnRender;
-        }
-        
-        protected void OnRender(RenderContext context)
+        protected override void OnRendering(RenderContext context)
         {
             var pass = context.CurrentPass;
 
-            if (Camera != null && Camera.Entity != null)
-            {
-                var viewParameters = pass.Parameters;
+            if (Camera == null)
+                return;
 
-                Matrix projection;
-                Matrix worldToCamera;
-                Camera.Calculate(out projection, out worldToCamera);
+            if(Camera.Entity == null)
+                throw new Exception("The camera component provided to 'CameraSetter' should be associated to an entity");
 
-                viewParameters.Set(TransformationKeys.View, worldToCamera);
-                viewParameters.Set(TransformationKeys.Projection, projection);
-                viewParameters.Set(CameraKeys.NearClipPlane, Camera.NearPlane);
-                viewParameters.Set(CameraKeys.FarClipPlane, Camera.FarPlane);
-                viewParameters.Set(CameraKeys.FieldOfView, Camera.VerticalFieldOfView);
-                viewParameters.Set(CameraKeys.Aspect, Camera.AspectRatio);
-                viewParameters.Set(CameraKeys.FocusDistance, Camera.FocusDistance);
+            var viewParameters = pass.Parameters;
 
-                // TODO: move the following code in a more suitable place
-                //viewParameters.Set(GlobalKeys.Time, (float)game.PlayTime.TotalTime.TotalSeconds);
-                //viewParameters.Set(GlobalKeys.TimeStep, (float)game.PlayTime.ElapsedTime.TotalSeconds);            
-            }
+            Matrix projection;
+            Matrix worldToCamera;
+            Camera.Calculate(out projection, out worldToCamera);
+
+            viewParameters.Set(TransformationKeys.View, worldToCamera);
+            viewParameters.Set(TransformationKeys.Projection, projection);
+            viewParameters.Set(CameraKeys.NearClipPlane, Camera.NearPlane);
+            viewParameters.Set(CameraKeys.FarClipPlane, Camera.FarPlane);
+            viewParameters.Set(CameraKeys.FieldOfView, Camera.VerticalFieldOfView);
+            viewParameters.Set(CameraKeys.Aspect, Camera.AspectRatio);
+            viewParameters.Set(CameraKeys.FocusDistance, Camera.FocusDistance);   
         }
     }
 }
