@@ -8,6 +8,6 @@ class AmbientLightShading : ShadingBase, AlbedoDiffuseBase, AlbedoSpecularBase
     stage float4 AmbientLight;
     
     override stage float4 Shading() {
-        return base.Shading() + float4(this.DiffuseAlbedo() * AmbientLight, 0);
+        return base.Shading() + float4(this.DiffuseAlbedo() * AmbientLight);
     }
 };
