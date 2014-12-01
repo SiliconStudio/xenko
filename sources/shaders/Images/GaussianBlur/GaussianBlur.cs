@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
@@ -64,6 +66,11 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
             set
             {
+                if (value < 1)
+                {
+                    throw new ArgumentOutOfRangeException("Radius cannot be < 1");
+                }
+
                 if (radius != value)
                 {
                     radius = value;
@@ -85,6 +92,11 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
             set
             {
+                if (value < 0.0f)
+                {
+                    throw new ArgumentOutOfRangeException("SigmaRatio cannot be < 0.0f");
+                }
+
                 if (sigmaRatio != value)
                 {
                     sigmaRatio = value;

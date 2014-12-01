@@ -100,28 +100,8 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     return null;
                 }
 
-                // Because ShaderBytecode.Data can vary, we are calculating the bytecodeId without it (but with the ShaderBytecode.Id)
-                var previousStages = new byte[bytecode.Stages.Length][];
-                for (int i = 0; i < bytecode.Stages.Length; i++)
-                {
-                    previousStages[i] = bytecode.Stages[i].Data;
-                    bytecode.Stages[i].Data = null;
-                }
-
-                // Not optimized: Pre-calculate bytecodeId in order to avoid writing to same storage
-                ObjectId newBytecodeId;
-                var memStream = new MemoryStream();
-                using (var stream = new DigestStream(memStream))
-                {
-                    bytecode.WriteTo(stream);
-                    newBytecodeId = stream.CurrentHash;
-                }
-
-                // Revert back
-                for (int i = 0; i < bytecode.Stages.Length; i++)
-                {
-                    bytecode.Stages[i].Data = previousStages[i];
-                }
+                // Compute the bytecodeId
+                var newBytecodeId = bytecode.ComputeId();
 
                 // Check if we really need to store the bytecode
                 lock (bytecodes)

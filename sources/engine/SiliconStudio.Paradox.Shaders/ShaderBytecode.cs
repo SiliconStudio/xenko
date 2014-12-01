@@ -49,6 +49,15 @@ namespace SiliconStudio.Paradox.Shaders
         }
 
         /// <summary>
+        /// Shallow clones this instance.
+        /// </summary>
+        /// <returns>ShaderBytecode.</returns>
+        public ShaderBytecode Clone()
+        {
+            return (ShaderBytecode)MemberwiseClone();
+        }
+
+        /// <summary>
         /// Performs an implicit conversion from <see cref="ShaderBytecode"/> to <see cref="System.Byte[][]"/>.
         /// </summary>
         /// <param name="shaderBytecode">The shader bytecode.</param>

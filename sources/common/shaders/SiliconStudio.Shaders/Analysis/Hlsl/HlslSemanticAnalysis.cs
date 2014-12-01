@@ -21,7 +21,7 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
     public class HlslSemanticAnalysis : SemanticAnalysis
     {
         private static readonly Object lockInit = new Object();
-        private static bool isInitialized = false;
+        private static bool builtinsInitialized = false;
         protected readonly static List<IDeclaration> defaultDeclarations = new List<IDeclaration>();
         private readonly static Dictionary<string, TypeBase> BuiltinObjects = new Dictionary<string, TypeBase>();
         private readonly static Dictionary<GenericInstanceKey, TypeBase> InstanciatedTypes = new Dictionary<GenericInstanceKey, TypeBase>();
@@ -452,7 +452,7 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
             defaultDeclarations.Add(GenericMethod("GroupMemoryBarrier", TypeBase.Void));
         }
 
-        public static List<IDeclaration> ParseBuiltin(string builtins, string fileName)
+        private static List<IDeclaration> ParseBuiltin(string builtins, string fileName)
         {
             var builtinDeclarations = new List<IDeclaration>();
 
@@ -491,16 +491,7 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
         /// <param name="builtinDeclarations">the list of declarations</param>
         protected void SetupHlslAnalyzer(List<IDeclaration> builtinDeclarations = null)
         {
-            lock (lockInit)
-            {
-                if (!isInitialized)
-                {
-                    // Add builtins
-                    defaultDeclarations.AddRange(ParseBuiltin(Resources.HlslDeclarations, "internal_hlsl_declarations.hlsl"));
-                    InitializeBuiltins();
-                    isInitialized = true;
-                }
-            }
+            StaticInitializeBuiltins();
 
             // Add all default declarations
             ScopeStack.Peek().AddDeclarations(defaultDeclarations);
@@ -525,13 +516,7 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
         /// <param name="cloneContext">the CloneContext</param>
         public static void FillCloneContext(CloneContext cloneContext)
         {
-            if (!isInitialized)
-            {
-                // Add builtins
-                defaultDeclarations.AddRange(ParseBuiltin(Resources.HlslDeclarations, "internal_hlsl_declarations.hlsl"));
-                InitializeBuiltins();
-                isInitialized = true;
-            }
+            StaticInitializeBuiltins();
 
             foreach (var decl in defaultDeclarations)
                 DeepCloner.DeepCollect(decl, cloneContext);
@@ -561,6 +546,20 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
             var analysis = new HlslSemanticAnalysis(toParse);
             analysis.SetupHlslAnalyzer(builtinDeclarations);
             analysis.Run();
+        }
+
+        private static void StaticInitializeBuiltins()
+        {
+            lock (lockInit)
+            {
+                if (!builtinsInitialized)
+                {
+                    // Add builtins
+                    defaultDeclarations.AddRange(ParseBuiltin(Resources.HlslDeclarations, "internal_hlsl_declarations.hlsl"));
+                    InitializeBuiltins();
+                    builtinsInitialized = true;
+                }
+            }
         }
 
         /// <inheritdoc/>

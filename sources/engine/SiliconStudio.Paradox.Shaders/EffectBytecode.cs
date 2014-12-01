@@ -7,6 +7,7 @@ using System.IO;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Paradox.Shaders
 {
@@ -39,6 +40,41 @@ namespace SiliconStudio.Paradox.Shaders
         /// The bytecode for each stage.
         /// </summary>
         public ShaderBytecode[] Stages;
+
+        /// <summary>
+        /// Computes a unique identifier for this bytecode instance.
+        /// </summary>
+        /// <returns>ObjectId.</returns>
+        public ObjectId ComputeId()
+        {
+            var effectBytecode = this;
+
+            // We should most of the time have stages, unless someone is calling this method on a new EffectBytecode
+            if (effectBytecode.Stages != null)
+            {
+                effectBytecode = (EffectBytecode)MemberwiseClone();
+
+                effectBytecode.Stages = (ShaderBytecode[])effectBytecode.Stages.Clone();
+
+                // Because ShaderBytecode.Data can vary, we are calculating the bytecodeId only with the ShaderBytecode.Id.
+                for (int i = 0; i < effectBytecode.Stages.Length; i++)
+                {
+                    var newStage = effectBytecode.Stages[i].Clone();
+                    effectBytecode.Stages[i] = newStage;
+                    newStage.Data = null;
+                }
+            }
+
+            // Not optimized: Pre-calculate bytecodeId in order to avoid writing to same storage
+            ObjectId newBytecodeId;
+            var memStream = new MemoryStream();
+            using (var stream = new DigestStream(memStream))
+            {
+                effectBytecode.WriteTo(stream);
+                newBytecodeId = stream.CurrentHash;
+            }
+            return newBytecodeId;
+        }
 
         /// <summary>
         /// Loads an <see cref="EffectBytecode" /> from a buffer.
