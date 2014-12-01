@@ -597,6 +597,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Images\ImageReadback\ImageReadback.cs" />
     <Compile Include="Images\ImageScaler\ImageScalerEffect.cs">
       <DependentUpon>ImageScalerEffect.pdxfx</DependentUpon>
       <AutoGen>True</AutoGen>
