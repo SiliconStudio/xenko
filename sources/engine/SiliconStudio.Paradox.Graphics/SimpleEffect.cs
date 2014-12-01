@@ -12,10 +12,10 @@ namespace SiliconStudio.Paradox.Graphics
         public SimpleEffect(GraphicsDevice graphicsDevice)
             : base(graphicsDevice, SpriteEffect.Bytecode)
         {
+            parameters = new ParameterCollection();
             Color = new Color4(1.0f);
             Sampler = graphicsDevice.SamplerStates.LinearClamp;
             Transform = Matrix.Identity;
-            parameters = new ParameterCollection();
         }
 
         /// <summary>
