@@ -62,6 +62,8 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
         // rectangles to blur for each shadow map
         private HashSet<ShadowMapTexture> shadowMapTexturesToBlur = new HashSet<ShadowMapTexture>();
 
+        private readonly ParameterCollection blurParameters;
+
         #endregion
 
         #region Constructor
@@ -71,6 +73,7 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
             // Build blur effects for VSM
             vsmHorizontalBlur = EffectSystem.LoadEffect("HorizontalVsmBlur");
             vsmVerticalBlur = EffectSystem.LoadEffect("VerticalVsmBlur");
+            blurParameters = new ParameterCollection();
         }
 
         #endregion
@@ -196,15 +199,15 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
 
                 // TODO: use next post effect instead
                 graphicsDevice.SetRenderTarget(shadowMap.ShadowMapDepthBuffer, shadowMap.IntermediateBlurRenderTarget);
-                vsmHorizontalBlur.Parameters.Set(TexturingKeys.Texture0, shadowMap.ShadowMapTargetTexture);
-                vsmHorizontalBlur.Parameters.Set(TexturingKeys.Sampler, GraphicsDevice.SamplerStates.LinearClamp);
-                graphicsDevice.DrawQuad(vsmHorizontalBlur);
+                blurParameters.Set(TexturingKeys.Texture0, shadowMap.ShadowMapTargetTexture);
+                blurParameters.Set(TexturingKeys.Sampler, GraphicsDevice.SamplerStates.LinearClamp);
+                graphicsDevice.DrawQuad(vsmHorizontalBlur, blurParameters);
 
                 // TODO: use next post effect instead
                 graphicsDevice.SetRenderTarget(shadowMap.ShadowMapDepthBuffer, shadowMap.ShadowMapRenderTarget);
-                vsmVerticalBlur.Parameters.Set(TexturingKeys.Texture0, shadowMap.IntermediateBlurTexture);
-                vsmVerticalBlur.Parameters.Set(TexturingKeys.Sampler, GraphicsDevice.SamplerStates.LinearClamp);
-                graphicsDevice.DrawQuad(vsmVerticalBlur);
+                blurParameters.Set(TexturingKeys.Texture0, shadowMap.IntermediateBlurTexture);
+                blurParameters.Set(TexturingKeys.Sampler, GraphicsDevice.SamplerStates.LinearClamp);
+                graphicsDevice.DrawQuad(vsmVerticalBlur, blurParameters);
             }
 
             shadowMapTexturesToBlur.Clear();

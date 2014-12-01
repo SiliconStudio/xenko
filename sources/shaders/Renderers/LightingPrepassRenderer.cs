@@ -1099,7 +1099,7 @@ namespace SiliconStudio.Paradox.Effects.Renderers
 
         private bool SearchLightingGroup(Effect effect, int index, string groupName, List<LightingDeferredParameters> finalList)
         {
-            var constantBuffers = effect.ConstantBuffers;
+            var constantBuffers = effect.Bytecode.Reflection.ConstantBuffers;
             var info = new LightingDeferredParameters();
 
             LightingDeferredSemantic foundParameterSemantic;

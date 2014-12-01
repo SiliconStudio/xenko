@@ -1,10 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Paradox.Shaders
 {
@@ -15,21 +12,6 @@ namespace SiliconStudio.Paradox.Shaders
     [ContentSerializer(typeof(DataContentSerializer<EffectBytecode>))]
     public sealed class EffectBytecode
     {
-        /// <summary>
-        /// The name of this effect.
-        /// </summary>
-        public string Name;
-
-        /// <summary>
-        /// The time this bytecode was compiled.
-        /// </summary>
-        public DateTime Time;
-
-        /// <summary>
-        /// The shader source.
-        /// </summary>
-        public ShaderSource Source;
-
         /// <summary>
         /// The reflection from the bytecode.
         /// </summary>

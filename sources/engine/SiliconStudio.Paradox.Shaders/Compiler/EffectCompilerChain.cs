@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Paradox.Shaders.Compiler
 {
@@ -26,9 +26,19 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             get { return compiler; }
         }
 
-        public override EffectBytecode Compile(ShaderMixinSource mixin, string fullEffectName, ShaderMixinParameters compilerParameters, HashSet<string> modifiedShaders, HashSet<string> recentlyModifiedShaders, LoggerResult log)
+        public override ObjectId GetShaderSourceHash(string type)
         {
-            return compiler.Compile(mixin, fullEffectName, compilerParameters, modifiedShaders, recentlyModifiedShaders, log);
+            return compiler.GetShaderSourceHash(type);
+        }
+
+        public override void ResetCache(HashSet<string> modifiedShaders)
+        {
+            compiler.ResetCache(modifiedShaders);
+        }
+
+        public override EffectBytecode Compile(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters, LoggerResult log)
+        {
+            return compiler.Compile(mixinTree, compilerParameters, log);
         }
     }
 }

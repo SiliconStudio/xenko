@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -23,6 +24,11 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         private RenderTarget[] outputRenderTargetViews;
 
+        private bool isInDrawCore;
+
+        private List<RenderTarget> scopedRenderTargets;
+
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageEffectBase" /> class.
         /// </summary>
@@ -38,6 +44,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             Assets = context.Services.GetSafeServiceAs<AssetManager>();
             Enabled = true;
             inputTextures = new Texture[128];
+            scopedRenderTargets = new List<RenderTarget>();
             maxInputTextureIndex = -1;
         }
 
@@ -142,7 +149,15 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
 
             PreDrawCore(name);
+
+            // Allow scoped allocation RenderTargets
+            isInDrawCore = true;
             DrawCore();
+            isInDrawCore = false;
+
+            // Release scoped RenderTargets
+            ReleaseAllScopedRenderTarget2D();
+
             PostDrawCore();
         }
 
@@ -284,6 +299,77 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
 
             return output;
+        }
+
+        /// <summary>
+        /// Gets a <see cref="RenderTarget" /> with the specified description, scoped for the duration of the <see cref="DrawCore"/>.
+        /// </summary>
+        /// <returns>A new instance of <see cref="RenderTarget" /> class.</returns>
+        protected RenderTarget NewScopedRenderTarget2D(TextureDescription description)
+        {
+            // TODO: Check if we should introduce an enum for the kind of scope (per DrawCore, per Frame...etc.)
+            CheckIsInDrawCore();
+            return PushScopedRenderTarget2D(Context.GetTemporaryRenderTarget2D(description));
+        }
+
+        /// <summary>
+        /// Gets a <see cref="RenderTarget" /> output for the specified description with a single mipmap, scoped for the duration of the <see cref="DrawCore"/>.
+        /// </summary>
+        /// <param name="width">The width.</param>
+        /// <param name="height">The height.</param>
+        /// <param name="format">Describes the format to use.</param>
+        /// <param name="flags">Sets the texture flags (for unordered access...etc.)</param>
+        /// <param name="arraySize">Size of the texture 2D array, default to 1.</param>
+        /// <returns>A new instance of <see cref="RenderTarget" /> class.</returns>
+        /// <msdn-id>ff476521</msdn-id>
+        ///   <unmanaged>HRESULT ID3D11Device::CreateTexture2D([In] const D3D11_TEXTURE2D_DESC* pDesc,[In, Buffer, Optional] const D3D11_SUBRESOURCE_DATA* pInitialData,[Out, Fast] ID3D11Texture2D** ppTexture2D)</unmanaged>
+        ///   <unmanaged-short>ID3D11Device::CreateTexture2D</unmanaged-short>
+        protected RenderTarget NewScopedRenderTarget2D(int width, int height, PixelFormat format, TextureFlags flags = TextureFlags.RenderTarget | TextureFlags.ShaderResource, int arraySize = 1)
+        {
+            CheckIsInDrawCore();
+            return PushScopedRenderTarget2D(Context.GetTemporaryRenderTarget2D(width, height, format, flags, arraySize));
+        }
+
+        /// <summary>
+        /// Gets a <see cref="RenderTarget" /> output for the specified description, scoped for the duration of the <see cref="DrawCore"/>.
+        /// </summary>
+        /// <param name="width">The width.</param>
+        /// <param name="height">The height.</param>
+        /// <param name="format">Describes the format to use.</param>
+        /// <param name="mipCount">Number of mipmaps, set to true to have all mipmaps, set to an int &gt;=1 for a particular mipmap count.</param>
+        /// <param name="flags">Sets the texture flags (for unordered access...etc.)</param>
+        /// <param name="arraySize">Size of the texture 2D array, default to 1.</param>
+        /// <returns>A new instance of <see cref="RenderTarget" /> class.</returns>
+        /// <msdn-id>ff476521</msdn-id>
+        ///   <unmanaged>HRESULT ID3D11Device::CreateTexture2D([In] const D3D11_TEXTURE2D_DESC* pDesc,[In, Buffer, Optional] const D3D11_SUBRESOURCE_DATA* pInitialData,[Out, Fast] ID3D11Texture2D** ppTexture2D)</unmanaged>
+        ///   <unmanaged-short>ID3D11Device::CreateTexture2D</unmanaged-short>
+        protected RenderTarget NewScopedRenderTarget2D(int width, int height, PixelFormat format, MipMapCount mipCount, TextureFlags flags = TextureFlags.RenderTarget | TextureFlags.ShaderResource, int arraySize = 1)
+        {
+            CheckIsInDrawCore();
+            return PushScopedRenderTarget2D(Context.GetTemporaryRenderTarget2D(width, height, format, mipCount, flags, arraySize));
+        }
+
+        private void CheckIsInDrawCore()
+        {
+            if (!isInDrawCore)
+            {
+                throw new InvalidOperationException("The method NewScopedRenderTarget2D can only be called within a DrawCore operation");
+            }
+        }
+
+        private RenderTarget PushScopedRenderTarget2D(RenderTarget renderTarget)
+        {
+            scopedRenderTargets.Add(renderTarget);
+            return renderTarget;
+        }
+
+        private void ReleaseAllScopedRenderTarget2D()
+        {
+            foreach (var scopedRenderTarget2D in scopedRenderTargets)
+            {
+                Context.ReleaseTemporaryTexture(scopedRenderTarget2D);
+            }
+            scopedRenderTargets.Clear();
         }
 
         private void SetOutputInternal(RenderTarget view, DepthStencilBuffer depthStencilBuffer)

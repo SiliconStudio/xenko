@@ -620,7 +620,7 @@ namespace SiliconStudio.Paradox.Graphics
 
             // Setup effect states and parameters: SamplerState and MatrixTransform
             // Sets the sampler state
-            Effect.Parameters.Set(SpriteBaseKeys.MatrixTransform, viewProjection);
+            Parameters.Set(SpriteBaseKeys.MatrixTransform, viewProjection);
 
             base.PrepareForRendering();
         }

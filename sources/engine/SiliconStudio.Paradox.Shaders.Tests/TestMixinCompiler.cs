@@ -35,7 +35,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
 
             var compilerParameters = new CompilerParameters {Platform = GraphicsPlatform.Direct3D11};
 
-            var results = compiler.Compile(new ShaderMixinGeneratorSource("SimpleEffect"), compilerParameters, null, null);
+            var results = compiler.Compile(new ShaderMixinGeneratorSource("SimpleEffect"), compilerParameters);
         }
 
         private void CopyStream(DatabaseFileProvider database, string fromFilePath)
@@ -103,8 +103,8 @@ namespace SiliconStudio.Paradox.Shaders.Tests
 
                 var compilerParameters = new CompilerParameters {Platform = GraphicsPlatform.Direct3D11};
 
-                left = compilerCache.Compile(new ShaderMixinGeneratorSource("SimpleEffect"), compilerParameters, null, null);
-                right = compilerCache.Compile(new ShaderMixinGeneratorSource("SimpleEffect"), compilerParameters, null, null);
+                left = compilerCache.Compile(new ShaderMixinGeneratorSource("SimpleEffect"), compilerParameters);
+                right = compilerCache.Compile(new ShaderMixinGeneratorSource("SimpleEffect"), compilerParameters);
             }
         }
 
@@ -124,7 +124,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
 
             var compilerParameters = new CompilerParameters { Platform = GraphicsPlatform.OpenGL };
 
-            var results = compiler.Compile(new ShaderMixinGeneratorSource("ToGlslEffect"), compilerParameters, null, null);
+            var results = compiler.Compile(new ShaderMixinGeneratorSource("ToGlslEffect"), compilerParameters);
         }
 
         [Test]
@@ -142,7 +142,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
 
             var compilerParameters = new CompilerParameters { Platform = GraphicsPlatform.OpenGLES };
 
-            var results = compiler.Compile(new ShaderMixinGeneratorSource("ToGlslEffect"), compilerParameters, null, null);
+            var results = compiler.Compile(new ShaderMixinGeneratorSource("ToGlslEffect"), compilerParameters);
         }
     }
 }

@@ -114,12 +114,13 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Flattener
                     var finalShader = new ShaderMixinSource();
                     finalShader.Mixins.Add(new ShaderClassSource("FlattenLayers"));
                     finalShader.Compositions.Add("outColor", computeColorShader);
-                    var results = compiler.Compile(finalShader, compilerParameters, null, null);
+                    var results = compiler.Compile(finalShader, compilerParameters);
 
                     if (results.HasErrors)
                         continue;
 
                     command.TreeEffect = new Graphics.Effect(graphicsDevice, results.MainBytecode, results.MainUsedParameters);
+                    command.Parameters = new ParameterCollection();
                     var maxWidth = 0;
                     var maxHeight = 0;
                     var allTextures = textureVisitor.GetAllTextureValues(command.OldNode);
@@ -136,7 +137,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Flattener
                         if (tex == null)
                             throw new FileNotFoundException("Texture " + texSlot.TextureName + " not found");
 
-                        command.TreeEffect.Parameters.Set(texSlot.UsedParameterKey, tex);
+                        command.Parameters.Set(texSlot.UsedParameterKey, tex);
                         maxWidth = Math.Max(maxWidth, tex.Width);
                         maxHeight = Math.Max(maxHeight, tex.Height);
                         // can take min, a user-defined size, or clamp the min/max
@@ -162,7 +163,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Flattener
                         graphicsDevice.SetRasterizerState(graphicsDevice.RasterizerStates.CullNone);
                         graphicsDevice.SetDepthStencilState(graphicsDevice.DepthStencilStates.None);
 
-                        command.TreeEffect.Apply();
+                        command.TreeEffect.Apply(command.Parameters);
                         plane.Draw();
 
                         // save texture
@@ -286,6 +287,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Flattener
             public RenderTarget RenderTarget;
             public bool ToExecute;
             public Graphics.Effect TreeEffect;
+            public ParameterCollection Parameters;
             public TextureCoordinate TexcoordIndex;
             public UFile TextureUrl;
             public IMaterialNode OldNode;

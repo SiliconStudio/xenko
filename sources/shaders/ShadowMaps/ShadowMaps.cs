@@ -14,79 +14,24 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-
-#line 3 "D:\Code\Paradox\sources\shaders\ShadowMaps\ShadowMaps.pdxfx"
 using SiliconStudio.Paradox.Engine;
-
-#line 5
 namespace SiliconStudio.Paradox.Effects.ShadowMaps
 {
-
-    #line 8
     internal static partial class ShaderMixins
     {
-        internal partial class ShadowMapReceiverEffect  : IShaderMixinBuilderExtended
+        internal partial class ShadowMapReceiverEffect  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-
-                #line 12
                 context.Mixin(mixin, "ShadowMapCascadeBase");
-
-                #line 14
                 mixin.Mixin.AddMacro("SHADOWMAP_COUNT", context.GetParam(ShadowMapParameters.ShadowMapCount));
-
-                #line 15
                 mixin.Mixin.AddMacro("SHADOWMAP_CASCADE_COUNT", context.GetParam(ShadowMapParameters.ShadowMapCascadeCount));
-
-                #line 17
                 if (context.GetParam(ShadowMapParameters.FilterType) == ShadowMapFilterType.Nearest)
-
-                    #line 18
                     context.Mixin(mixin, "ShadowMapFilterDefault");
-
-                #line 19
-                else 
-#line 19
-                if (context.GetParam(ShadowMapParameters.FilterType) == ShadowMapFilterType.PercentageCloserFiltering)
-
-                    #line 20
+                else if (context.GetParam(ShadowMapParameters.FilterType) == ShadowMapFilterType.PercentageCloserFiltering)
                     context.Mixin(mixin, "ShadowMapFilterPcf");
-
-                #line 21
-                else 
-#line 21
-                if (context.GetParam(ShadowMapParameters.FilterType) == ShadowMapFilterType.Variance)
-
-                    #line 22
+                else if (context.GetParam(ShadowMapParameters.FilterType) == ShadowMapFilterType.Variance)
                     context.Mixin(mixin, "ShadowMapFilterVsm");
-            }
-            private readonly ParameterKey[] __keys__ = new ParameterKey[]
-            {
-                ShadowMapParameters.FilterType,
-                ShadowMapParameters.ShadowMapCascadeCount,
-                ShadowMapParameters.ShadowMapCount,
-            };
-            public ParameterKey[] Keys
-            {
-                get
-                {
-                    return __keys__;
-                }
-            }
-            private readonly string[] __mixins__ = new string[]
-            {
-                "ShadowMapCascadeBase",
-                "ShadowMapFilterDefault",
-                "ShadowMapFilterPcf",
-                "ShadowMapFilterVsm",
-            };
-            public string[] Mixins
-            {
-                get
-                {
-                    return __mixins__;
-                }
             }
 
             [ModuleInitializer]
@@ -97,52 +42,16 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
             }
         }
     }
-
-    #line 26
     internal static partial class ShaderMixins
     {
-        internal partial class ShadowMapCaster  : IShaderMixinBuilderExtended
+        internal partial class ShadowMapCaster  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-
-                #line 31
-                context.CloneProperties();
-
-                #line 31
-                mixin.Mixin.CloneFrom(mixin.Parent.Mixin);
-
-                #line 32
+                context.CloneParentMixinToCurrent();
                 context.Mixin(mixin, "ShadowMapCasterBase");
-
-                #line 34
                 if (context.GetParam(ShadowMapParameters.FilterType) == ShadowMapFilterType.Variance)
-
-                    #line 35
                     context.Mixin(mixin, "ShadowMapCasterVsm");
-            }
-            private readonly ParameterKey[] __keys__ = new ParameterKey[]
-            {
-                ShadowMapParameters.FilterType,
-            };
-            public ParameterKey[] Keys
-            {
-                get
-                {
-                    return __keys__;
-                }
-            }
-            private readonly string[] __mixins__ = new string[]
-            {
-                "ShadowMapCasterBase",
-                "ShadowMapCasterVsm",
-            };
-            public string[] Mixins
-            {
-                get
-                {
-                    return __mixins__;
-                }
             }
 
             [ModuleInitializer]
@@ -153,84 +62,33 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
             }
         }
     }
-
-    #line 39
     internal static partial class ShaderMixins
     {
-        internal partial class ShadowMapEffect  : IShaderMixinBuilderExtended
+        internal partial class ShadowMapEffect  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
 
                 {
-
-                    #line 43
-                    var __subMixin = new ShaderMixinSourceTree() { Name = "ShadowMapCaster", Parent = mixin };
-                    mixin.Children.Add(__subMixin);
-
-                    #line 43
+                    var __subMixin = new ShaderMixinSourceTree() { Name = "ShadowMapCaster" };
                     context.BeginChild(__subMixin);
-
-                    #line 43
                     context.Mixin(__subMixin, "ShadowMapCaster");
-
-                    #line 43
                     context.EndChild();
                 }
-
-                #line 45
                 if (context.GetParam(ShadowMapParameters.ShadowMaps) == null || context.GetParam(ShadowMapParameters.ShadowMaps).Length == 0)
-
-                    #line 46
                     return;
-
-                #line 48
                 context.Mixin(mixin, "ShadowMapReceiver");
-
-                #line 53
                 foreach(var ____1 in context.GetParam(ShadowMapParameters.ShadowMaps))
 
                 {
-
-                    #line 53
                     context.PushParameters(____1);
 
                     {
-
-                        #line 55
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-
-                        #line 55
                         context.Mixin(__subMixin, "ShadowMapReceiverEffect");
                         mixin.Mixin.AddCompositionToArray("shadows", __subMixin.Mixin);
                     }
-
-                    #line 53
                     context.PopParameters();
-                }
-            }
-            private readonly ParameterKey[] __keys__ = new ParameterKey[]
-            {
-                ShadowMapParameters.ShadowMaps,
-            };
-            public ParameterKey[] Keys
-            {
-                get
-                {
-                    return __keys__;
-                }
-            }
-            private readonly string[] __mixins__ = new string[]
-            {
-                "ShadowMapCaster",
-                "ShadowMapReceiver",
-                "ShadowMapReceiverEffect",
-            };
-            public string[] Mixins
-            {
-                get
-                {
-                    return __mixins__;
                 }
             }
 

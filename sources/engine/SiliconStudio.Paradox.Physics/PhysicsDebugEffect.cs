@@ -12,12 +12,23 @@ namespace SiliconStudio.Paradox.Physics
     {
         private static EffectBytecode bytecode;
 
+        private readonly ParameterCollection parameters;
+
         public PhysicsDebugEffect(GraphicsDevice graphicsDevice)
             : base(graphicsDevice, bytecode ?? (bytecode = BinarySerialization.Read<EffectBytecode>(binaryBytecode)))
         {
             Color = new Color4(1.0f);
             WorldViewProj = Matrix.Identity;
             UseUv = true;
+            parameters = new ParameterCollection();
+        }
+
+        public ParameterCollection Parameters
+        {
+            get
+            {
+                return parameters;
+            }
         }
 
         public Color4 Color

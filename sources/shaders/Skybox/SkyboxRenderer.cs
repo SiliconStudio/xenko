@@ -15,6 +15,8 @@ namespace SiliconStudio.Paradox.Effects.Skybox
 
         private Effect skyboxEffect;
 
+        private readonly ParameterCollection parameters;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SkyboxRenderer"/> class.
         /// </summary>
@@ -24,6 +26,7 @@ namespace SiliconStudio.Paradox.Effects.Skybox
             : base(services)
         {
             skybox = skyboxTexture;
+            parameters = new ParameterCollection();
         }
 
         public override void Load()
@@ -31,7 +34,7 @@ namespace SiliconStudio.Paradox.Effects.Skybox
             base.Load();
 
             skyboxEffect = EffectSystem.LoadEffect("SkyboxShader");
-            skyboxEffect.Parameters.Set(TexturingKeys.TextureCube0, skybox);
+            parameters.Set(TexturingKeys.TextureCube0, skybox);
         }
 
         public override void Unload()
@@ -44,7 +47,7 @@ namespace SiliconStudio.Paradox.Effects.Skybox
         protected override void OnRendering(RenderContext context)
         {
             GraphicsDevice.SetDepthStencilState(GraphicsDevice.DepthStencilStates.DepthRead);
-            skyboxEffect.Apply(context.CurrentPass.Parameters);
+            skyboxEffect.Apply(context.CurrentPass.Parameters, parameters);
             GraphicsDevice.DrawQuad();
         }
     }

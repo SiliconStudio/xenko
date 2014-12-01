@@ -1,10 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Configuration;
 using System.Text;
 
+using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
@@ -49,10 +50,13 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <param name="modifiedShaders">The modified shaders.</param>
         public void DeleteObsoleteCache(HashSet<string> modifiedShaders)
         {
-            foreach (var shaderName in modifiedShaders)
+            lock (locker)
             {
-                loadedShaderSources.Remove(shaderName);
-                //classNameToPath.Remove(shaderName); // is it really useful?
+                foreach (var shaderName in modifiedShaders)
+                {
+                    loadedShaderSources.Remove(shaderName);
+                    classNameToPath.Remove(shaderName);
+                }
             }
         }
 
@@ -65,10 +69,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// Loads the shader source with the specified type name.
         /// </summary>
         /// <param name="type">The typeName.</param>
-        /// <param name="modifiedShaders">The list of modified shaders.</param>
         /// <returns>ShaderSourceWithHash.</returns>
         /// <exception cref="System.IO.FileNotFoundException">If the file was not found</exception>
-        public ShaderSourceWithHash LoadShaderSource(string type, HashSet<string> modifiedShaders = null)
+        public ShaderSourceWithHash LoadShaderSource(string type)
         {
             lock (locker)
             {
@@ -81,29 +84,32 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     {
                         shaderSource = new ShaderSourceWithHash();
 
-                        if (modifiedShaders != null && modifiedShaders.Contains(sourceUrl))
+                        // On Windows, Always try to load first from the original URL in order to get the latest version
+                        if (Platform.IsWindowsDesktop)
                         {
-                            using (var fileStream = AssetManager.FileProvider.OpenStream(sourceUrl + "/path", VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read))
+                            // TODO: the "/path" is hardcoded, used in ImportStreamCommand and EffectSystem. Find a place to share this correctly.
+                            var pathUrl = sourceUrl + "/path";
+                            if (AssetManager.FileProvider.FileExists(pathUrl))
                             {
-                                string shaderSourcePath;
-                                using (var sr = new StreamReader(fileStream, Encoding.UTF8))
-                                    shaderSourcePath = sr.ReadToEnd();
+                                using (var fileStream = AssetManager.FileProvider.OpenStream(pathUrl, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read))
+                                {
+                                    string shaderSourcePath;
+                                    using (var sr = new StreamReader(fileStream, Encoding.UTF8))
+                                        shaderSourcePath = sr.ReadToEnd();
 
-                                try
-                                {
-                                    using (var sourceStream = File.Open(shaderSourcePath, FileMode.Open, FileAccess.Read))
+                                    if (File.Exists(shaderSourcePath))
                                     {
-                                        using (var sr = new StreamReader(sourceStream))
-                                            shaderSource.Source = sr.ReadToEnd();
+                                        using (var sourceStream = File.Open(shaderSourcePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                                        {
+                                            using (var sr = new StreamReader(sourceStream))
+                                                shaderSource.Source = sr.ReadToEnd();
+                                        }
                                     }
-                                }
-                                catch (FileNotFoundException)
-                                {
-                                    throw new FileNotFoundException(string.Format("Unable to find shader [{0}] on disk", type), string.Format("{0}.pdxsl", type));
                                 }
                             }
                         }
-                        else
+
+                        if (shaderSource.Source == null)
                         {
                             using (var fileStream = AssetManager.FileProvider.OpenStream(sourceUrl, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read))
                             {
@@ -161,7 +167,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 if (LookupDirectoryList == null)
                     return null;
 
-                string path;
+                string path = null;
                 if (classNameToPath.TryGetValue(type, out path))
                     return path;
 
@@ -176,7 +182,10 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     }
                 }
 
-                classNameToPath.Add(type, path);
+                if (path != null)
+                {
+                    classNameToPath.Add(type, path);
+                }
 
                 return path;
             }

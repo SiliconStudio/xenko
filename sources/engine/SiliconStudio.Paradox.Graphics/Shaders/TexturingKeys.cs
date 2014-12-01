@@ -63,7 +63,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <param name="output">The output.</param>
         private static void UpdateTexelSize(ref Texture param1, ref Vector2 output)
         {
-            output = (param1 != null) ? new Vector2(param1.Width, param1.Height) : Vector2.Zero;
+            output = (param1 != null) ? new Vector2(1.0f/param1.Width, 1.0f/param1.Height) : Vector2.Zero;
         }
     }
 }

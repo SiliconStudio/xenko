@@ -23,10 +23,12 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
     /// </summary>
     public class EffectCompiler : EffectCompilerBase
     {
-        private bool d3dcompilerLoaded = false;
+        private bool d3dCompilerLoaded = false;
         private static readonly Object WriterLock = new Object();
 
         private ShaderMixinParser shaderMixinParser;
+
+        private readonly object shaderMixinParserLock = new object();
 
         public List<string> SourceDirectories { get; private set; }
 
@@ -39,26 +41,56 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             UrlToFilePath = new Dictionary<string, string>();
         }
 
-        #region Public methods
+        public override ObjectId GetShaderSourceHash(string type)
+        {
+            return GetMixinParser().SourceManager.GetShaderSourceHash(type);
+        }
 
-        public override EffectBytecode Compile(ShaderMixinSource shaderMixinSource, string fullEffectName, ShaderMixinParameters compilerParameters, HashSet<string> modifiedShaders, HashSet<string> recentlyModifiedShaders, LoggerResult log)
+        /// <summary>
+        /// Remove cached files for modified shaders
+        /// </summary>
+        /// <param name="modifiedShaders"></param>
+        public override void ResetCache(HashSet<string> modifiedShaders)
+        {
+            GetMixinParser().DeleteObsoleteCache(modifiedShaders);
+        }
+
+        private ShaderMixinParser GetMixinParser()
+        {
+            lock (shaderMixinParserLock)
+            {
+                // Generate the AST from the mixin description
+                if (shaderMixinParser == null)
+                {
+                    shaderMixinParser = new ShaderMixinParser();
+                    shaderMixinParser.SourceManager.LookupDirectoryList = SourceDirectories; // TODO: temp
+                    shaderMixinParser.SourceManager.UrlToFilePath = UrlToFilePath; // TODO: temp
+                }
+                return shaderMixinParser;
+            }
+        }
+
+        public override EffectBytecode Compile(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters, LoggerResult log)
         {
             // Load D3D compiler dll
             // Note: No lock, it's probably fine if it gets called from multiple threads at the same time.
-            if (Platform.IsWindowsDesktop && !d3dcompilerLoaded)
+            if (Platform.IsWindowsDesktop && !d3dCompilerLoaded)
             {
                 NativeLibrary.PreloadLibrary("d3dcompiler_47.dll");
-                d3dcompilerLoaded = true;
+                d3dCompilerLoaded = true;
             }
+
+            var shaderMixinSource = mixinTree.Mixin;
+            var fullEffectName = mixinTree.GetFullName();
+            var usedParameters = mixinTree.UsedParameters;
 
             // Make a copy of shaderMixinSource. Use deep clone since shaderMixinSource can be altered during compilation (e.g. macros)
             var shaderMixinSourceCopy = new ShaderMixinSource();
             shaderMixinSourceCopy.DeepCloneFrom(shaderMixinSource);
-
             shaderMixinSource = shaderMixinSourceCopy;
 
             // Generate platform-specific macros
-            var platform = compilerParameters.Get(CompilerParameters.GraphicsPlatformKey);
+            var platform = usedParameters.Get(CompilerParameters.GraphicsPlatformKey);
             switch (platform)
             {
                 case GraphicsPlatform.Direct3D11:
@@ -77,20 +109,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     throw new NotSupportedException();
             }
 
-            // Generate the AST from the mixin description
-            if (shaderMixinParser == null)
-            {
-                shaderMixinParser = new ShaderMixinParser();
-                shaderMixinParser.SourceManager.LookupDirectoryList = SourceDirectories; // TODO: temp
-                shaderMixinParser.SourceManager.UrlToFilePath = UrlToFilePath; // TODO: temp
-            }
-
-            if (recentlyModifiedShaders != null && recentlyModifiedShaders.Count > 0)
-            {
-                shaderMixinParser.DeleteObsoleteCache(GetShaderNames(recentlyModifiedShaders));
-                recentlyModifiedShaders.Clear();
-            }
-            var parsingResult = shaderMixinParser.Parse(shaderMixinSource, shaderMixinSource.Macros.ToArray(), modifiedShaders);
+            var parsingResult = GetMixinParser().Parse(shaderMixinSource, shaderMixinSource.Macros.ToArray());
 
             // Copy log from parser results to output
             CopyLogs(parsingResult, log);
@@ -123,7 +142,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             {
                 Directory.CreateDirectory(logDir);
             }
-            var shaderSourceFilename = Path.Combine(logDir, "shader_" + shaderId);
+            var shaderSourceFilename = Path.Combine(logDir, "shader_" +  fullEffectName.Replace('.', '_') + "_" + shaderId + ".hlsl");
             lock (WriterLock) // protect write in case the same shader is created twice
             {
                 if (!File.Exists(shaderSourceFilename))
@@ -132,7 +151,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     builder.AppendLine("/***** Used Parameters *****");
                     builder.Append(" * EffectName: ");
                     builder.AppendLine(fullEffectName ?? "");
-                    WriteParameters(builder, compilerParameters, 0, false);
+                    WriteParameters(builder, usedParameters, 0, false);
                     builder.AppendLine(" ***************************/");
                     builder.Append(shaderSourceText);
                     File.WriteAllText(shaderSourceFilename, builder.ToString());
@@ -163,7 +182,8 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             foreach (var stageBinding in parsingResult.EntryPoints)
             {
                 // Compile
-                var result = compiler.Compile(shaderSourceText, stageBinding.Value, stageBinding.Key, compilerParameters, bytecode.Reflection, shaderSourceFilename);
+                // TODO: We could compile stages in different threads to improve compiler throughput?
+                var result = compiler.Compile(shaderSourceText, stageBinding.Value, stageBinding.Key, usedParameters, bytecode.Reflection, shaderSourceFilename);
                 result.CopyTo(log);
 
                 if (result.HasErrors)
@@ -192,9 +212,6 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     break;
             }
 
-            // Get the current time of compilation
-            bytecode.Time = DateTime.Now;
-
             // In case of Direct3D, we can safely remove reflection data as it is entirely resolved at compile time.
             if (platform == GraphicsPlatform.Direct3D11)
             {
@@ -204,10 +221,6 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             bytecode.Stages = shaderStageBytecodes.ToArray();
             return bytecode;
         }
-
-        #endregion
-
-        #region Private static methods
 
         private static void CopyLogs(SiliconStudio.Shaders.Utility.LoggerResult inputLog, LoggerResult outputLog)
         {
@@ -259,16 +272,24 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     builder.AppendLine("NullValue");
                 else
                 {
-                    builder.AppendLine(usedParam.Value.ToString());
                     if (usedParam.Value is ParameterCollection)
-                        WriteParameters(builder, usedParam.Value as ParameterCollection, indent+1, false);
+                    {
+                        WriteParameters(builder, usedParam.Value as ParameterCollection, indent + 1, false);
+                    }
                     else if (usedParam.Value is ParameterCollection[])
                     {
                         var collectionArray = (ParameterCollection[])usedParam.Value;
                         foreach (var collection in collectionArray)
                             WriteParameters(builder, collection, indent + 1, true);
                     }
-                        
+                    else if (usedParam.Value is Array)
+                    {
+                        builder.AppendLine(string.Join(", ", (Array)usedParam.Value));
+                    }
+                    else
+                    {
+                        builder.AppendLine(usedParam.Value.ToString());
+                    }
                 }
             }
         }
@@ -293,29 +314,5 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 }
             }
         }
-
-        private static HashSet<string> GetShaderNames(HashSet<string> shaderPaths)
-        {
-            var shaderNames = new HashSet<string>();
-
-            foreach (var shader in shaderPaths)
-            {
-                if (String.IsNullOrEmpty(shader))
-                    continue;
-
-                var shaderNameWithExtensionParts = shader.Split('/');
-                var shaderNameWithExtension = shaderNameWithExtensionParts[shaderNameWithExtensionParts.Length - 1];
-                var shaderNameParts = shaderNameWithExtension.Split('.');
-                var shaderName = shaderNameParts[0];
-
-                shaderNames.Add(shaderName);
-            }
-            if (shaderNames.Count == 0)
-                return null;
-
-            return shaderNames;
-        }
-
-        #endregion
     }
 }

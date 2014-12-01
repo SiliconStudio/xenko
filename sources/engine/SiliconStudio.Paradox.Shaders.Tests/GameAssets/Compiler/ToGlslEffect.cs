@@ -14,42 +14,15 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-
-#line 3 "D:\Code\Paradox\sources\engine\SiliconStudio.Paradox.Shaders.Tests\GameAssets\Compiler\ToGlslEffect.pdxfx"
 namespace Test
 {
-
-    #line 5
     internal static partial class ShaderMixins
     {
-        internal partial class ToGlslEffect  : IShaderMixinBuilderExtended
+        internal partial class ToGlslEffect  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-
-                #line 7
                 context.Mixin(mixin, "ToGlslShader");
-            }
-            private readonly ParameterKey[] __keys__ = new ParameterKey[]
-            {
-            };
-            public ParameterKey[] Keys
-            {
-                get
-                {
-                    return __keys__;
-                }
-            }
-            private readonly string[] __mixins__ = new string[]
-            {
-                "ToGlslShader",
-            };
-            public string[] Mixins
-            {
-                get
-                {
-                    return __mixins__;
-                }
             }
 
             [ModuleInitializer]

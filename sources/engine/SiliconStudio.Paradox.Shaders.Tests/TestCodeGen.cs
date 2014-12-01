@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
     [TestFixture]
     public class TestCodeGen
     {
-        [Test] // Decomment this line to regenerate all files (sources and samples)
+        //[Test] // Decomment this line to regenerate all files (sources and samples)
         public void RebuildAllPdxfxPdxsl()
         {
             RegenerateDirectory(Path.Combine(Environment.CurrentDirectory, @"..\..\sources"));
@@ -51,6 +51,5 @@ namespace SiliconStudio.Paradox.Shaders.Tests
                 Console.WriteLine("Unexpected error {0}: {1}", filePath, ex);
             }
         }
-         
     }
 }

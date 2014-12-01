@@ -24,7 +24,9 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         private static ShaderMixinSourceTree GenerateMixin(string mixinName, ParameterCollection properties, out ShaderMixinParameters usedProperties)
         {
             var allUsedProperties = new List<ShaderMixinParameters>();
-            var mixin = ShaderMixinManager.Generate(mixinName, properties, out usedProperties, out allUsedProperties);
+            var mixin = ShaderMixinManager.Generate(mixinName, properties);
+
+            usedProperties = mixin.UsedParameters;
 
             // Verify that output used properties are a subset of input properties
             Assert.That(usedProperties.IsSubsetOf(properties), Is.True);

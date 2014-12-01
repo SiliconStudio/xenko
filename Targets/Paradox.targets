@@ -140,7 +140,7 @@
   Compile Asset 
   *****************************************************************************************************************************
   -->
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(SiliconStudioCurrentPackagePath)' != ''">
     <PrepareForRunDependsOn>
       $(PrepareForRunDependsOn);
       SiliconStudioCompileAsset;

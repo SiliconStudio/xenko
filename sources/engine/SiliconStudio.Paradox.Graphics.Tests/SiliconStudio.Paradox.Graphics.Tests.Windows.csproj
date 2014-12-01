@@ -151,6 +151,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>CustomEffect.pdxfx</DependentUpon>
     </Compile>
+    <Compile Include="Assets\CustomShader2.cs">
+      <DependentUpon>CustomShader2.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Assets\CustomShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -242,6 +248,10 @@
     <None Include="Assets\CustomEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CustomEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Assets\CustomShader2.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CustomShader2.cs</LastGenOutput>
     </None>
     <None Include="Assets\CustomShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

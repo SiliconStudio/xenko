@@ -14,94 +14,36 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-
-#line 3 "D:\Code\Paradox\sources\engine\SiliconStudio.Paradox.Engine\Effects\MaterialParameters.pdxfx"
 namespace SiliconStudio.Paradox.Effects
 {
-    [DataContract]
-#line 5
-    public partial class MaterialParameters : ShaderMixinParameters
+    [DataContract]public partial class MaterialParameters : ShaderMixinParameters
     {
-
-        #line 8
         public static readonly ParameterKey<bool> HasSkinningPosition = ParameterKeys.New<bool>();
-
-        #line 9
         public static readonly ParameterKey<bool> HasSkinningNormal = ParameterKeys.New<bool>();
-
-        #line 10
         public static readonly ParameterKey<bool> HasSkinningTangent = ParameterKeys.New<bool>();
-
-        #line 11
         public static readonly ParameterKey<int> SkinningMaxBones = ParameterKeys.New<int>(56);
-
-        #line 12
         public static readonly ParameterKey<int> SkinningBones = ParameterKeys.New<int>(0);
-
-        #line 14
         public static readonly ParameterKey<ShaderMixinSource> AlbedoMaterial = ParameterKeys.New<ShaderMixinSource>();
-
-        #line 17
         public static readonly ParameterKey<bool> UseTransparent = ParameterKeys.New<bool>();
-
-        #line 18
         public static readonly ParameterKey<bool> UseTransparentMask = ParameterKeys.New<bool>();
-
-        #line 19
         public static readonly ParameterKey<float> AlphaDiscardThreshold = ParameterKeys.New<float>();
-
-        #line 22
         public static readonly ParameterKey<bool> UseSpecularEnvironmentMapping = ParameterKeys.New<bool>();
-
-        #line 23
         public static readonly ParameterKey<bool> UseDiffuseEnvironmentMapping = ParameterKeys.New<bool>();
-
-        #line 25
         public static readonly ParameterKey<ShaderMixinSource> DiffuseShader = ParameterKeys.New<ShaderMixinSource>();
-
-        #line 26
         public static readonly ParameterKey<ShaderMixinSource> SpecularShader = ParameterKeys.New<ShaderMixinSource>();
-
-        #line 27
         public static readonly ParameterKey<ShaderMixinSource> BumpMap = ParameterKeys.New<ShaderMixinSource>();
-
-        #line 28
         public static readonly ParameterKey<ShaderMixinSource> NormalMap = ParameterKeys.New<ShaderMixinSource>();
-
-        #line 29
         public static readonly ParameterKey<ShaderMixinSource> DisplacementMap = ParameterKeys.New<ShaderMixinSource>();
-
-        #line 30
         public static readonly ParameterKey<ShaderMixinSource> TransparencyMap = ParameterKeys.New<ShaderMixinSource>();
-
-        #line 31
         public static readonly ParameterKey<ShaderMixinSource> EmissiveMap = ParameterKeys.New<ShaderMixinSource>();
-
-        #line 32
         public static readonly ParameterKey<ShaderMixinSource> ReflectionMap = ParameterKeys.New<ShaderMixinSource>();
-
-        #line 33
         public static readonly ParameterKey<ShaderMixinSource> AmbientMap = ParameterKeys.New<ShaderMixinSource>();
-
-        #line 34
         public static readonly ParameterKey<ShaderMixinSource> AlbedoDiffuse = ParameterKeys.New<ShaderMixinSource>();
-
-        #line 35
         public static readonly ParameterKey<ShaderMixinSource> AlbedoSpecular = ParameterKeys.New<ShaderMixinSource>();
-
-        #line 36
         public static readonly ParameterKey<ShaderMixinSource> SpecularPowerMap = ParameterKeys.New<ShaderMixinSource>();
-
-        #line 37
         public static readonly ParameterKey<ShaderMixinSource> SpecularIntensityMap = ParameterKeys.New<ShaderMixinSource>();
-
-        #line 38
         public static readonly ParameterKey<ShaderMixinSource> RoughnessMap = ParameterKeys.New<ShaderMixinSource>();
-
-        #line 39
         public static readonly ParameterKey<ShaderMixinSource> ReflectanceMap = ParameterKeys.New<ShaderMixinSource>();
-
-        #line 40
         public static readonly ParameterKey<ShaderMixinSource> LightMap = ParameterKeys.New<ShaderMixinSource>();
     };
 }

@@ -8,8 +8,6 @@ using NUnit.Framework;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Effects;
 
-using Test;
-
 namespace SiliconStudio.Paradox.Shaders.Tests
 {
     /// <summary>

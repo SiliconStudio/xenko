@@ -41,9 +41,11 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.Direct3D
                 // Log compilation errors
                 byteCodeResult.Error(compilationResult.Message);
             }
-            else 
+            else
             {
-                var bytecodeId = ObjectId.FromBytes(compilationResult.Bytecode.Data);
+                // As effect bytecode binary can changed when having debug infos (with d3dcompiler_47), we are calculating a bytecodeId on the stripped version
+                var rawData = compilationResult.Bytecode.Strip(StripFlags.CompilerStripDebugInformation | StripFlags.CompilerStripReflectionData);
+                var bytecodeId = ObjectId.FromBytes(rawData);
                 byteCodeResult.Bytecode = new ShaderBytecode(bytecodeId, compilationResult.Bytecode.Data) { Stage = stage };
 
                 // If compilation succeed, then we can update reflection.

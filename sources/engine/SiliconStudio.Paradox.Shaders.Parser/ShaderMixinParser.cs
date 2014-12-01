@@ -92,16 +92,13 @@ namespace SiliconStudio.Paradox.Shaders.Parser
         /// <param name="macros">The shader perprocessor macros.</param>
         /// <param name="modifiedShaders">The list of modified shaders.</param>
         /// <returns>The combined shader in AST form.</returns>
-        public ShaderMixinParsingResult Parse(ShaderMixinSource shaderMixinSource, Paradox.Shaders.ShaderMacro[] macros = null, HashSet<string> modifiedShaders = null)
+        public ShaderMixinParsingResult Parse(ShaderMixinSource shaderMixinSource, Paradox.Shaders.ShaderMacro[] macros = null)
         {
             //SemanticPerformance.Reset();
             //PerformanceLogger.Reset();
             //MixPerformance.Reset();
             //GenerateShaderPerformance.Reset();
             //StreamCreatorPerformance.Reset();
-
-            // updates the list of modified shaders.
-            shaderLibrary.ModifiedShaders = modifiedShaders;
 
             // Creates a parsing result
             var parsingResult = new ShaderMixinParsingResult();
@@ -144,10 +141,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
                 var shaderClassSource = moduleMixinInfo.ShaderSource as ShaderClassSource;
                 if (ast != null && shaderClassSource != null)
                 {
-                    var sourcePath = SourceManager.FindFilePath(shaderClassSource.ClassName);
-                    if (sourcePath == null)
-                        throw new InvalidOperationException(string.Format("Can't find source path for class {0}", shaderClassSource.ClassName));
-                    parsingResult.HashSources[sourcePath] = ast.SourceHash;
+                    parsingResult.HashSources[shaderClassSource.ClassName] = ast.SourceHash;
                 }
             }
 

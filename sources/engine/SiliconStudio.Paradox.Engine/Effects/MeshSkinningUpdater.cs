@@ -45,7 +45,7 @@ namespace SiliconStudio.Paradox.Effects
                     }
 
                     // Upload bones
-                    renderMesh.Mesh.Parameters.Set(TransformationSkinningKeys.BlendMatrixArray, boneMatrices, 0, bones.Length);
+                    renderMesh.Parameters.Set(TransformationSkinningKeys.BlendMatrixArray, boneMatrices, 0, bones.Length);
                 }
             }
         }

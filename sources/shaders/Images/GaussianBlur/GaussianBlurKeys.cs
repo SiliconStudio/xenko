@@ -10,10 +10,8 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// </summary>
     internal static class GaussianBlurKeys
     {
-        public static readonly ParameterKey<int> Radius = ParameterKeys.New<int>();
+        public static readonly ParameterKey<int> Count = ParameterKeys.New<int>();
 
         public static readonly ParameterKey<bool> VerticalBlur = ParameterKeys.New<bool>();
-
-        public static readonly ParameterKey<float> SigmaRatio = ParameterKeys.New<float>();
     }
 }

@@ -6,4 +6,18 @@
 // and re-save the associated .pdxfx.
 // </auto-generated>
 
-// Nothing to generate
+using System;
+using SiliconStudio.Core;
+using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Core.Mathematics;
+using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
+
+namespace SiliconStudio.Paradox.Effects.Images
+{
+    internal static partial class GaussianBlurShaderKeys
+    {
+        public static readonly ParameterKey<Vector2[]> OffsetsWeights = ParameterKeys.New<Vector2[]>();
+    }
+}
