@@ -17,10 +17,10 @@ namespace SiliconStudio.Paradox.Physics
         public PhysicsDebugEffect(GraphicsDevice graphicsDevice)
             : base(graphicsDevice, bytecode ?? (bytecode = EffectBytecode.FromBytesSafe(binaryBytecode)))
         {
+            parameters = new ParameterCollection();
             Color = new Color4(1.0f);
             WorldViewProj = Matrix.Identity;
             UseUv = true;
-            parameters = new ParameterCollection();
         }
 
         public ParameterCollection Parameters
