@@ -46,6 +46,7 @@ namespace SiliconStudio.Assets.Compiler
             if (SaveSourcePath)
             {
                 // store absolute path to source
+                // TODO: the "/path" is hardcoded, used in EffectSystem and ShaderSourceManager. Find a place to share this correctly.
                 var pathLocation = new UFile(Location.FullPath + "/path");
                 using (var outputStreamPath = AssetManager.FileProvider.OpenStream(pathLocation, VirtualFileMode.Create, VirtualFileAccess.Write))
                 {

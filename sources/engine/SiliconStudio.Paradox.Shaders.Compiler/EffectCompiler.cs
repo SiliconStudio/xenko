@@ -182,6 +182,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             foreach (var stageBinding in parsingResult.EntryPoints)
             {
                 // Compile
+                // TODO: We could compile stages in different threads to improve compiler throughput?
                 var result = compiler.Compile(shaderSourceText, stageBinding.Value, stageBinding.Key, usedParameters, bytecode.Reflection, shaderSourceFilename);
                 result.CopyTo(log);
 
