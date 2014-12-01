@@ -87,6 +87,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                         // On Windows, Always try to load first from the original URL in order to get the latest version
                         if (Platform.IsWindowsDesktop)
                         {
+                            // TODO: the "/path" is hardcoded, used in ImportStreamCommand and EffectSystem. Find a place to share this correctly.
                             var pathUrl = sourceUrl + "/path";
                             if (AssetManager.FileProvider.FileExists(pathUrl))
                             {
@@ -98,7 +99,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
                                     if (File.Exists(shaderSourcePath))
                                     {
-                                        using (var sourceStream = File.Open(shaderSourcePath, FileMode.Open, FileAccess.Read))
+                                        using (var sourceStream = File.Open(shaderSourcePath, FileMode.Open, FileAccess.Read, FileShare.Read))
                                         {
                                             using (var sr = new StreamReader(sourceStream))
                                                 shaderSource.Source = sr.ReadToEnd();
