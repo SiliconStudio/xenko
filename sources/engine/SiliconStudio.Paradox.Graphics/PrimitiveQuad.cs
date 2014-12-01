@@ -47,6 +47,18 @@ namespace SiliconStudio.Paradox.Graphics
         public GraphicsDevice GraphicsDevice { get; private set; }
 
         /// <summary>
+        /// Gets the parameters used.
+        /// </summary>
+        /// <value>The parameters.</value>
+        public ParameterCollection Parameters
+        {
+            get
+            {
+                return parameters;
+            }
+        }
+
+        /// <summary>
         /// Draws a quad. The effect must have been applied before calling this method with pixel shader having the signature float2:TEXCOORD.
         /// </summary>
         public void Draw()
