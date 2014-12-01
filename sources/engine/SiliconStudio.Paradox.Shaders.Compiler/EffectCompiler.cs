@@ -28,6 +28,8 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
         private ShaderMixinParser shaderMixinParser;
 
+        private readonly object shaderMixinParserLock = new object();
+
         public List<string> SourceDirectories { get; private set; }
 
         public Dictionary<string, string> UrlToFilePath { get; private set; }
@@ -55,14 +57,17 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
         private ShaderMixinParser GetMixinParser()
         {
-            // Generate the AST from the mixin description
-            if (shaderMixinParser == null)
+            lock (shaderMixinParserLock)
             {
-                shaderMixinParser = new ShaderMixinParser();
-                shaderMixinParser.SourceManager.LookupDirectoryList = SourceDirectories; // TODO: temp
-                shaderMixinParser.SourceManager.UrlToFilePath = UrlToFilePath; // TODO: temp
+                // Generate the AST from the mixin description
+                if (shaderMixinParser == null)
+                {
+                    shaderMixinParser = new ShaderMixinParser();
+                    shaderMixinParser.SourceManager.LookupDirectoryList = SourceDirectories; // TODO: temp
+                    shaderMixinParser.SourceManager.UrlToFilePath = UrlToFilePath; // TODO: temp
+                }
+                return shaderMixinParser;
             }
-            return shaderMixinParser;
         }
 
         public override EffectBytecode Compile(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters, LoggerResult log)

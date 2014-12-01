@@ -53,12 +53,12 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
             var mixinObjectId = ShaderMixinObjectId.Compute(mixin, usedParameters);
 
+            // Final url of the compiled bytecode
+            var compiledUrl = string.Format("{0}/{1}", CompiledShadersKey, mixinObjectId);
+
             EffectBytecode bytecode = null;
             lock (bytecodes)
             {                
-                // Final url of the compiled bytecode
-                var compiledUrl = string.Format("{0}/{1}", CompiledShadersKey, mixinObjectId);
-
                 // ------------------------------------------------------------------------------------------------------------
                 // 1) Try to load latest bytecode
                 // ------------------------------------------------------------------------------------------------------------
@@ -75,52 +75,69 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 {
                     bytecode = null;
                 }
+            }
 
-                // ------------------------------------------------------------------------------------------------------------
-                // 2) Try to load from intermediate results
-                // ------------------------------------------------------------------------------------------------------------
-                if (bytecode == null)
+            // ------------------------------------------------------------------------------------------------------------
+            // 2) Try to load from intermediate results
+            // ------------------------------------------------------------------------------------------------------------
+            if (bytecode == null)
+            {
+                // Open the database for writing
+                var localLogger = new LoggerResult();
+
+                // Compile the mixin
+                bytecode = base.Compile(mixinTree, compilerParameters, localLogger);
+                localLogger.CopyTo(log);
+
+                // If there are any errors, return immediately
+                if (localLogger.HasErrors)
                 {
-                    // Open the database for writing
-                    var localLogger = new LoggerResult();
+                    return null;
+                }
 
-                    // Compile the mixin
-                    bytecode = base.Compile(mixinTree, compilerParameters, localLogger);
-                    localLogger.CopyTo(log);
+                // Because ShaderBytecode.Data can vary, we are calculating the bytecodeId without it (but with the ShaderBytecode.Id)
+                var previousStages = new byte[bytecode.Stages.Length][];
+                for (int i = 0; i < bytecode.Stages.Length; i++)
+                {
+                    previousStages[i] = bytecode.Stages[i].Data;
+                    bytecode.Stages[i].Data = null;
+                }
 
-                    // If there are any errors, return immediately
-                    if (localLogger.HasErrors)
+                // Not optimized: Pre-calculate bytecodeId in order to avoid writing to same storage
+                ObjectId newBytecodeId;
+                var memStream = new MemoryStream();
+                using (var stream = new DigestStream(memStream))
+                {
+                    BinarySerialization.Write(stream, bytecode);
+                    newBytecodeId = stream.CurrentHash;
+                }
+
+                // Revert back
+                for (int i = 0; i < bytecode.Stages.Length; i++)
+                {
+                    bytecode.Stages[i].Data = previousStages[i];
+                }
+
+                ObjectId previousBytecodeId;
+                if (!database.AssetIndexMap.TryGetValue(compiledUrl, out previousBytecodeId) || previousBytecodeId != newBytecodeId)
+                {
+                    localLogger.Info("New effect compiled [{0}] (db: {1})\r\n{1}", mixinObjectId, newBytecodeId, usedParameters.ToStringDetailed());
+
+                    // Using custom serialization to the database to store an object with a custom id
+                    var memoryStream = new MemoryStream();
+                    BinarySerialization.Write(memoryStream, bytecode);
+                    memoryStream.Position = 0;
+                    database.ObjectDatabase.Write(memoryStream, newBytecodeId);
+                    database.AssetIndexMap[compiledUrl] = newBytecodeId;
+
+                    lock (bytecodes)
                     {
-                        return null;
-                    }
-
-                    // Not optimized: Pre-calculate bytecodeId in order to avoid writing to same storage
-                    ObjectId newBytecodeId;
-                    var memStream = new MemoryStream();
-                    using (var stream = new DigestStream(memStream))
-                    {
-                        BinarySerialization.Write(stream, bytecode);
-                        newBytecodeId = stream.CurrentHash;
-                    }
-
-                    ObjectId previousBytecodeId;
-                    if (!database.AssetIndexMap.TryGetValue(compiledUrl, out previousBytecodeId) || previousBytecodeId != newBytecodeId)
-                    {
-                        Console.WriteLine("Writing {0}, previousId {1}, newId: {2}", compiledUrl, previousBytecodeId, newBytecodeId);
-
-                        localLogger.Info("New effect compiled [{0}]\r\n{1}", mixinObjectId, usedParameters.ToStringDetailed());
-
-                        // Save latest bytecode into the storage
-                        using (var stream = database.OpenStream(compiledUrl, VirtualFileMode.Create, VirtualFileAccess.Write, VirtualFileShare.Write))
-                        {
-                            BinarySerialization.Write(stream, bytecode);
-                        }
-
                         // Replace or add new bytecode
                         bytecodes[newBytecodeId] = bytecode;
                     }
                 }
             }
+
 
             return bytecode;
         }
