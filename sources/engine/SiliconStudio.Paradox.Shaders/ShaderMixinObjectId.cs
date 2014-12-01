@@ -65,6 +65,7 @@ namespace SiliconStudio.Paradox.Shaders
         {
             // Write to memory stream
             memStream.Position = 0;
+            writer.Write(EffectBytecode.MagicHeader); // Write the effect bytecode magic header
             writer.Write(mixin);
 
             parameters.Clear();

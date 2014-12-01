@@ -52,6 +52,8 @@ namespace SiliconStudio.Paradox.Assets.Effect
         protected override void ComputeParameterHash(BinarySerializationWriter writer)
         {
             base.ComputeParameterHash(writer);
+            uint effectbyteCodeMagicNumber = EffectBytecode.MagicHeader;
+            writer.Serialize(ref effectbyteCodeMagicNumber, ArchiveMode.Serialize);
             writer.Serialize(ref effectName, ArchiveMode.Serialize);
             writer.Serialize(ref compilerParameters, ArchiveMode.Serialize);
         }
