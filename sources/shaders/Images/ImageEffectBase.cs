@@ -28,6 +28,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         private List<RenderTarget> scopedRenderTargets;
 
+        private ImageCopier copier;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageEffectBase" /> class.
@@ -71,6 +72,17 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         /// <value>The graphics device.</value>
         protected GraphicsDevice GraphicsDevice { get; private set; }
+
+        /// <summary>
+        /// Gets a shared <see cref="ImageCopier"/>.
+        /// </summary>
+        protected ImageCopier Copier
+        {
+            get
+            {
+                return copier ?? (copier = Context.GetSharedEffect<ImageCopier>());
+            }
+        }
 
         /// <summary>
         /// Sets an input texture
