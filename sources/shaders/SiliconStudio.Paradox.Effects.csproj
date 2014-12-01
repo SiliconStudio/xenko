@@ -621,6 +621,30 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Images\LuminanceEffect\LuminanceEffect.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Images\LuminanceEffect\LuminanceLogEffect.cs">
+      <DependentUpon>LuminanceLogEffect.pdxfx</DependentUpon>
+      <SubType>Code</SubType>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Images\LuminanceEffect\LuminanceLogShader.cs">
+      <DependentUpon>LuminanceLogShader.pdxsl</DependentUpon>
+      <SubType>Code</SubType>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Images\LuminanceEffect\LuminanceUtils.cs">
+      <DependentUpon>LuminanceUtils.pdxsl</DependentUpon>
+      <SubType>Code</SubType>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+    </Compile>
     <Compile Include="Renderers\DirectLightData.cs" />
     <Compile Include="Renderers\LightForwardModelRendererExtensions.cs" />
     <Compile Include="Renderers\LightingGroupInfo.cs" />
@@ -1982,6 +2006,18 @@
     <None Include="Images\ImageScaler\ImageScalerShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ImageScalerShader.cs</LastGenOutput>
+    </None>
+    <None Include="Images\LuminanceEffect\LuminanceLogEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>LuminanceLogEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Images\LuminanceEffect\LuminanceLogShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>LuminanceLogShader.cs</LastGenOutput>
+    </None>
+    <None Include="Images\LuminanceEffect\LuminanceUtils.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>LuminanceUtils.cs</LastGenOutput>
     </None>
     <None Include="LightPrepass\DeferredSpotShadowLighting.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

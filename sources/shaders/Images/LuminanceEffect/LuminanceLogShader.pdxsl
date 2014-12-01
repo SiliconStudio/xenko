@@ -1,0 +1,19 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Paradox.Effects.Images
+{
+    /// <summary>
+    /// A log luminance shader
+    /// </summary>
+    internal class LuminanceLogShader : ImageEffectShader
+    {
+        stage override float4 Shading()
+        {
+            float3 color = Texture0.Sample(PointSampler, streams.TexCoord).rgb;
+
+            // TODO: Make the Luma configurable from the LuminanceLogEffect
+            return float4(log2(LuminanceUtils.Luma(color)), 1.0, 1.0, 1.0);
+        }
+    };
+}
