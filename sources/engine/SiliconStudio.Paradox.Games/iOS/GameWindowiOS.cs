@@ -2,13 +2,12 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_PLATFORM_IOS
 using System;
-using System.Linq;
 using System.Diagnostics;
 using System.Drawing;
-using System.Collections.Generic;
 using OpenTK.Platform.iPhoneOS;
 using MonoTouch.OpenGLES;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Games.OpenGL;
 using Rectangle = SiliconStudio.Core.Mathematics.Rectangle;
 
 namespace SiliconStudio.Paradox.Games
@@ -63,9 +62,9 @@ namespace SiliconStudio.Paradox.Games
             
             // get the OpenGL ES version
             var contextAvailable = false;
-            foreach (var version in GetGLVersions(gameContext.RequestedGraphicsProfile))
+            foreach (var version in GameUtils.GetGLVersions(gameContext.RequestedGraphicsProfile))
             {
-                var contextRenderingApi = version;
+                var contextRenderingApi = MajorVersionTOEAGLRenderingAPI(version);
                 EAGLContext contextTest = null;
                 try
                 {
@@ -262,21 +261,12 @@ namespace SiliconStudio.Paradox.Games
             base.Destroy();
         }
 
-        private static IEnumerable<EAGLRenderingAPI> GetGLVersions(GraphicsProfile[] graphicsProfiles)
+        private static EAGLRenderingAPI MajorVersionTOEAGLRenderingAPI(int major)
         {
-            // Note: do not care about the order the profiles are set. Take the higher first.
-            if (graphicsProfiles != null && graphicsProfiles.Length > 0)
-            {
-                if (graphicsProfiles.Any(x => x >= GraphicsProfile.Level_10_0))
-                    yield return EAGLRenderingAPI.OpenGLES3;
-                if (graphicsProfiles.Any(x => x < GraphicsProfile.Level_10_0))
-                    yield return EAGLRenderingAPI.OpenGLES2;
-            }
+            if (major >= 3)
+                return EAGLRenderingAPI.OpenGLES3;
             else
-            {
-                yield return EAGLRenderingAPI.OpenGLES3;
-                yield return EAGLRenderingAPI.OpenGLES2;
-            }
+                return EAGLRenderingAPI.OpenGLES2;
         }
     }
 }

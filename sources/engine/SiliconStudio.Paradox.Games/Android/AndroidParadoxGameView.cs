@@ -2,8 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_PLATFORM_ANDROID
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using SiliconStudio.Paradox.Games.OpenGL;
 using SiliconStudio.Paradox.Graphics;
 using Android.Content;
 using OpenTK.Graphics;
@@ -104,10 +103,10 @@ namespace SiliconStudio.Paradox.Games.Android
             // D24 and D32 are supported on OpenGL ES 3 devices
             var requestedDepthFallback = requestedDepth > 16 ? 16 : requestedDepth;
 
-            foreach (var version in GetGLVersions(RequestedGraphicsProfile))
+            foreach (var version in GameUtils.GetGLVersions(RequestedGraphicsProfile))
             {
-                if (TryCreateFrameBuffer(version, requestedColorFormat, requestedDepth, requestedStencil)
-                    || TryCreateFrameBuffer(version, requestedColorFormat, requestedDepthFallback, requestedStencil))
+                if (TryCreateFrameBuffer(MajorVersionTOGLVersion(version), requestedColorFormat, requestedDepth, requestedStencil)
+                    || TryCreateFrameBuffer(MajorVersionTOGLVersion(version), requestedColorFormat, requestedDepthFallback, requestedStencil))
                     return;
             }
 
@@ -131,21 +130,12 @@ namespace SiliconStudio.Paradox.Games.Android
             }
         }
 
-        private static IEnumerable<GLVersion> GetGLVersions(GraphicsProfile[] graphicsProfiles)
+        private static GLVersion MajorVersionTOGLVersion(int major)
         {
-            // Note: do not care about the order the profiles are set. Take the higher first.
-            if (graphicsProfiles != null && graphicsProfiles.Length > 0)
-            {
-                if (graphicsProfiles.Any(x => x >= GraphicsProfile.Level_10_0))
-                    yield return GLVersion.ES3;
-                if (graphicsProfiles.Any(x => x < GraphicsProfile.Level_10_0))
-                    yield return GLVersion.ES2;
-            }
+            if (major >= 3)
+                return GLVersion.ES3;
             else
-            {
-                yield return GLVersion.ES3;
-                yield return GLVersion.ES2;
-            }
+                return GLVersion.ES2;
         }
     }
 }

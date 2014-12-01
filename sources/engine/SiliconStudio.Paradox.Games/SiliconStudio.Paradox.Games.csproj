@@ -62,6 +62,7 @@
     <Compile Include="iOS\IAnimatedGameView.cs" />
     <Compile Include="IVirtualResolution.cs" />
     <Compile Include="ListBoundExtensions.cs" />
+    <Compile Include="OpenGL\GameUtils.cs" />
     <Compile Include="OpenTK\GamePlatformOpenTK.cs" />
     <Compile Include="OpenTK\GameWindowOpenTK.cs" />
     <Compile Include="GameBase.cs" />
