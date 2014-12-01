@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.ReferenceCounting;
 
 namespace SiliconStudio.Paradox.Graphics
@@ -20,13 +22,13 @@ namespace SiliconStudio.Paradox.Graphics
         /// Gets the width in texel.
         /// </summary>
         /// <value>The width.</value>
-        public int Width;
+        public int Width { get; internal set; }
 
         /// <summary>
         /// Gets the height in texel.
         /// </summary>
         /// <value>The height.</value>
-        public int Height;
+        public int Height { get; internal set; }
 
         /// <summary>
         /// The format of this texture view.
@@ -47,6 +49,18 @@ namespace SiliconStudio.Paradox.Graphics
         /// The array index of this texture view.
         /// </summary>
         public readonly int ArraySlice;
+
+        /// <summary>
+        /// Gets the size.
+        /// </summary>
+        /// <value>The size.</value>
+        public Size3 Size
+        {
+            get
+            {
+                return new Size3(Width, Height, 1);
+            }
+        }
 
         protected override void Destroy()
         {

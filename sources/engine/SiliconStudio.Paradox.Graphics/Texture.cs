@@ -24,6 +24,7 @@
 using System;
 using System.IO;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.ReferenceCounting;
 using SiliconStudio.Core.Serialization.Contents;
 using Utilities = SiliconStudio.Core.Utilities;
@@ -45,12 +46,12 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// The width of this texture view.
         /// </summary>
-        public int Width;
+        public int Width { get; internal set; }
 
         /// <summary>
         /// The height of this texture view.
         /// </summary>
-        public int Height;
+        public int Height { get; internal set; }
 
         /// <summary>
         /// The depth of this texture view.
@@ -81,6 +82,14 @@ namespace SiliconStudio.Paradox.Graphics
         /// Gets a boolean indicating whether this <see cref="Texture"/> is a using a block compress format (BC1, BC2, BC3, BC4, BC5, BC6H, BC7).
         /// </summary>
         public readonly bool IsBlockCompressed;
+
+        public Size3 Size
+        {
+            get
+            {
+                return new Size3(Width, Height, Depth);
+            }
+        }
 
         /// <summary>
         /// The width stride in bytes (number of bytes per row).
@@ -185,6 +194,100 @@ namespace SiliconStudio.Paradox.Graphics
             mipLevel = Math.Min(mipLevel, Image.CountMips(width));
             width = width >> mipLevel;
             return width > 0 ? width : 1;
+        }
+
+        /// <summary>
+        /// Calculates the next mip-level (/2) of a texture.
+        /// </summary>
+        /// <param name="size">The size.</param>
+        /// <returns>A next mip-level Size3.</returns>
+        public static Size3 NextMip(Size3 size)
+        {
+            return new Size3(Math.Max(1, size.Width >> 1), Math.Max(1, size.Height >> 1), Math.Max(1, size.Depth >> 1));            
+        }
+
+        /// <summary>
+        /// Calculates the number of miplevels for a Texture 1D.
+        /// </summary>
+        /// <param name="width">The width of the texture.</param>
+        /// <param name="mipLevels">A <see cref="MipMapCount"/>, set to true to calculates all mipmaps, to false to calculate only 1 miplevel, or > 1 to calculate a specific amount of levels.</param>
+        /// <returns>The number of miplevels.</returns>
+        public static int CalculateMipLevels(int width, MipMapCount mipLevels)
+        {
+            if (mipLevels > 1)
+            {
+                int maxMips = CountMips(width);
+                if (mipLevels > maxMips)
+                    throw new InvalidOperationException(String.Format("MipLevels must be <= {0}", maxMips));
+            }
+            else if (mipLevels == 0)
+            {
+                mipLevels = CountMips(width);
+            }
+            else
+            {
+                mipLevels = 1;
+            }
+            return mipLevels;
+        }
+
+        /// <summary>
+        /// Calculates the number of miplevels for a Texture 2D.
+        /// </summary>
+        /// <param name="width">The width of the texture.</param>
+        /// <param name="height">The height of the texture.</param>
+        /// <param name="mipLevels">A <see cref="MipMapCount"/>, set to true to calculates all mipmaps, to false to calculate only 1 miplevel, or > 1 to calculate a specific amount of levels.</param>
+        /// <returns>The number of miplevels.</returns>
+        public static int CalculateMipLevels(int width, int height, MipMapCount mipLevels)
+        {
+            if (mipLevels > 1)
+            {
+                int maxMips = CountMips(width, height);
+                if (mipLevels > maxMips)
+                    throw new InvalidOperationException(String.Format("MipLevels must be <= {0}", maxMips));
+            }
+            else if (mipLevels == 0)
+            {
+                mipLevels = CountMips(width, height);
+            }
+            else
+            {
+                mipLevels = 1;
+            }
+            return mipLevels;
+        }
+
+        /// <summary>
+        /// Calculates the number of miplevels for a Texture 2D.
+        /// </summary>
+        /// <param name="width">The width of the texture.</param>
+        /// <param name="height">The height of the texture.</param>
+        /// <param name="depth">The depth of the texture.</param>
+        /// <param name="mipLevels">A <see cref="MipMapCount"/>, set to true to calculates all mipmaps, to false to calculate only 1 miplevel, or > 1 to calculate a specific amount of levels.</param>
+        /// <returns>The number of miplevels.</returns>
+        public static int CalculateMipLevels(int width, int height, int depth, MipMapCount mipLevels)
+        {
+            if (mipLevels > 1)
+            {
+                if (!IsPow2(width) || !IsPow2(height) || !IsPow2(depth))
+                    throw new InvalidOperationException("Width/Height/Depth must be power of 2");
+
+                int maxMips = CountMips(width, height, depth);
+                if (mipLevels > maxMips)
+                    throw new InvalidOperationException(String.Format("MipLevels must be <= {0}", maxMips));
+            }
+            else if (mipLevels == 0)
+            {
+                if (!IsPow2(width) || !IsPow2(height) || !IsPow2(depth))
+                    throw new InvalidOperationException("Width/Height/Depth must be power of 2");
+
+                mipLevels = CountMips(width, height, depth);
+            }
+            else
+            {
+                mipLevels = 1;
+            }
+            return mipLevels;
         }
 
         /// <summary>
@@ -842,6 +945,68 @@ namespace SiliconStudio.Paradox.Graphics
             if ((flags & TextureFlags.RenderTarget) != 0 || (flags & TextureFlags.UnorderedAccess) != 0)
                 return GraphicsResourceUsage.Default;
             return usage;
+        }
+
+        private static bool IsPow2(int x)
+        {
+            return ((x != 0) && (x & (x - 1)) == 0);
+        }
+
+        private static int CountMips(int width)
+        {
+            int mipLevels = 1;
+
+            // TODO: Use Math.Log2 or a loop?
+            while (width > 1)
+            {
+                ++mipLevels;
+
+                if (width > 1)
+                    width >>= 1;
+            }
+
+            return mipLevels;
+        }
+
+        private static int CountMips(int width, int height)
+        {
+            int mipLevels = 1;
+
+            // TODO: Use Math.Log2 or a loop?
+            while (height > 1 || width > 1)
+            {
+                ++mipLevels;
+
+                if (height > 1)
+                    height >>= 1;
+
+                if (width > 1)
+                    width >>= 1;
+            }
+
+            return mipLevels;
+        }
+
+        private static int CountMips(int width, int height, int depth)
+        {
+            int mipLevels = 1;
+
+            // TODO: Use Math.Log2 or a loop?
+            while (height > 1 || width > 1 || depth > 1)
+            {
+                ++mipLevels;
+
+                if (height > 1)
+                    height >>= 1;
+
+                if (width > 1)
+                    width >>= 1;
+
+                if (depth > 1)
+                    depth >>= 1;
+            }
+
+            return mipLevels;
         }
     }
 }
