@@ -670,7 +670,7 @@ namespace SiliconStudio.Paradox.Effects.Renderers
         private bool SearchShadingGroup(RenderMesh renderMesh, int index, string groupName, int typeOffset, List<LightingUpdateInfo> finalList)
         {
             var mesh = renderMesh.Mesh;
-            var constantBuffers = renderMesh.Effect.ConstantBuffers;
+            var constantBuffers = renderMesh.Effect.Bytecode.Reflection.ConstantBuffers;
             var info = new LightingUpdateInfo();
 
             LightParamSemantic foundParameterSemantic;

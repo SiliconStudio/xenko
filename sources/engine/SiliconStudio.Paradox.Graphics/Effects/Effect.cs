@@ -87,15 +87,6 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
-        // TODO: REMOVE THIS
-        public List<ShaderConstantBufferDescription> ConstantBuffers
-        {
-            get
-            {
-                return reflection.ConstantBuffers;
-            }
-        }
-
         public void Apply(bool applyEffectStates = false)
         {
             Apply(graphicsDeviceDefault, applyEffectStates);
