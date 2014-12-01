@@ -7,7 +7,7 @@ using SiliconStudio.Paradox.Graphics;
 namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
-    /// Copies from an input texture to an output texture.
+    /// Scales an input texture to an output texture (down or up, depending on the relative size between input and output)
     /// </summary>
     /// <remarks>This effect can be used for downscaling or upscaling if the output rendertarget is smaller/larger than
     /// the input texture</remarks>
