@@ -35,6 +35,8 @@ namespace SiliconStudio.Paradox.Games
         /// </summary>
         public readonly AppContextType ContextType;
 
+        // TODO: remove these requested values.
+
         /// <summary>
         /// The requested width.
         /// </summary>
@@ -54,6 +56,11 @@ namespace SiliconStudio.Paradox.Games
         /// The requested depth stencil format.
         /// </summary>
         public PixelFormat RequestedDepthStencilFormat;
+
+        /// <summary>
+        /// THe requested graphics profiles.
+        /// </summary>
+        public GraphicsProfile[] RequestedGraphicsProfile;
 
         /// <summary>
         /// Indicate whether the game must initialize the default database when it starts running.

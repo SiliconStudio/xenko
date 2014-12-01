@@ -7,7 +7,6 @@ using MonoTouch.CoreAnimation;
 using MonoTouch.Foundation;
 using MonoTouch.ObjCRuntime;
 using MonoTouch.UIKit;
-using MonoTouch.OpenGLES;
 using OpenTK.Graphics.ES30;
 using OpenTK.Platform.iPhoneOS;
 using SiliconStudio.Paradox.Games;
@@ -80,22 +79,6 @@ namespace SiliconStudio.Paradox.Starter
 
             protected override void CreateFrameBuffer()
             {
-                // test Opengl ES 3 availability
-                this.ContextRenderingApi = EAGLRenderingAPI.OpenGLES3;
-                EAGLContext contextTest = null;
-                try
-                {
-                    contextTest = new EAGLContext(ContextRenderingApi);
-                }
-                catch (Exception)
-                {
-                    ContextRenderingApi = EAGLRenderingAPI.OpenGLES2;
-                }
-                
-                // delete extra context
-                if (contextTest != null)
-                    contextTest.Dispose();
-
                 base.CreateFrameBuffer();
 
                 // TODO: PDX-364: depth format is currently hard coded (need to investigate how it can be transmitted)

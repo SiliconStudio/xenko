@@ -463,6 +463,7 @@ namespace SiliconStudio.Paradox.Games
                 Context.RequestedHeight = graphicsDeviceManagerImpl.PreferredBackBufferHeight;
                 Context.RequestedBackBufferFormat = graphicsDeviceManagerImpl.PreferredBackBufferFormat;
                 Context.RequestedDepthStencilFormat = graphicsDeviceManagerImpl.PreferredDepthStencilFormat;
+                Context.RequestedGraphicsProfile = graphicsDeviceManagerImpl.PreferredGraphicsProfile;
 
                 gamePlatform.Run(Context);
 

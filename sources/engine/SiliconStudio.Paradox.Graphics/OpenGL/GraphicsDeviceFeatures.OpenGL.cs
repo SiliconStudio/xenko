@@ -45,9 +45,9 @@ namespace SiliconStudio.Paradox.Graphics
         internal GraphicsDeviceFeatures(GraphicsDevice deviceRoot)
         {
             // Find shader model based on OpenGL version (might need to check extensions more carefully)
-            if (deviceRoot.versionMajor > 4)
+            if (deviceRoot.versionMajor >= 4)
                 Profile = GraphicsProfile.Level_11_0;
-            else if (deviceRoot.versionMajor > 3 && deviceRoot.versionMinor > 3)
+            else if (deviceRoot.versionMajor >= 3 && deviceRoot.versionMinor >= 3)
                 Profile = GraphicsProfile.Level_10_0;
             else
                 Profile = GraphicsProfile.Level_9_1;

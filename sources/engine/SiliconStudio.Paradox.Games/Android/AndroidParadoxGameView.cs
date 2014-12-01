@@ -2,6 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_PLATFORM_ANDROID
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Paradox.Graphics;
 using Android.Content;
 using OpenTK.Graphics;
@@ -17,6 +19,7 @@ namespace SiliconStudio.Paradox.Games.Android
         {
             RequestedBackBufferFormat = PixelFormat.R8G8B8A8_UNorm;
             RequestedDepthStencilFormat = PixelFormat.D24_UNorm_S8_UInt;
+            RequestedGraphicsProfile =  new [] { GraphicsProfile.Level_10_0, GraphicsProfile.Level_9_1 };
         }
 
         /// <summary>
@@ -34,6 +37,14 @@ namespace SiliconStudio.Paradox.Games.Android
         /// The requested depth stencil format.
         /// </value>
         public PixelFormat RequestedDepthStencilFormat { get; set; }
+
+        /// <summary>
+        /// Gets or Sets the requested graphics profiles.
+        /// </summary>
+        /// <value>
+        /// The requested graphics profiles.
+        /// </value>
+        public GraphicsProfile[] RequestedGraphicsProfile { get; set; }
         
         public override void Pause()
         {
@@ -92,27 +103,23 @@ namespace SiliconStudio.Paradox.Games.Android
             // Some devices only allow D16_S8, let's try it as well
             // D24 and D32 are supported on OpenGL ES 3 devices
             var requestedDepthFallback = requestedDepth > 16 ? 16 : requestedDepth;
-            var configs = new ContextCreationOptions[]
+
+            foreach (var version in GetGLVersions(RequestedGraphicsProfile))
             {
-                new ContextCreationOptions(GLVersion.ES3, requestedColorFormat, requestedDepth, requestedStencil),
-                new ContextCreationOptions(GLVersion.ES2, requestedColorFormat, requestedDepth, requestedStencil),
-                new ContextCreationOptions(GLVersion.ES2, requestedColorFormat, requestedDepthFallback, requestedStencil)
-            };
-            for (var i = 0; i < configs.Length; ++i)
-            {
-                if (TryCreateFrameBuffer(configs[i]))
+                if (TryCreateFrameBuffer(version, requestedColorFormat, requestedDepth, requestedStencil)
+                    || TryCreateFrameBuffer(version, requestedColorFormat, requestedDepthFallback, requestedStencil))
                     return;
             }
 
-            throw new Exception("Unable to create a graphics context on the device.");
+            throw new Exception("Unable to create a graphics context on the device. Maybe you should lower the preferred GraphicsProfile.");
         }
 
-        private bool TryCreateFrameBuffer(ContextCreationOptions contextCreationOptions)
+        private bool TryCreateFrameBuffer(GLVersion version, ColorFormat requestedColorFormat, int requestedDepth, int requestedStencil)
         {
             try
             {
-                ContextRenderingApi = contextCreationOptions.Version;
-                GraphicsMode = new GraphicsMode(contextCreationOptions.RequestedColorFormat, contextCreationOptions.RequestedDepth, contextCreationOptions.RequestedStencil);
+                ContextRenderingApi = version;
+                GraphicsMode = new GraphicsMode(requestedColorFormat, requestedDepth, requestedStencil);
                 base.CreateFrameBuffer();
                 return true;
             }
@@ -124,19 +131,20 @@ namespace SiliconStudio.Paradox.Games.Android
             }
         }
 
-        private struct ContextCreationOptions
+        private static IEnumerable<GLVersion> GetGLVersions(GraphicsProfile[] graphicsProfiles)
         {
-            public GLVersion Version;
-            public ColorFormat RequestedColorFormat;
-            public int RequestedDepth;
-            public int RequestedStencil;
-
-            public ContextCreationOptions(GLVersion version, ColorFormat requestedColorFormat, int requestedDepth, int requestedStencil)
+            // Note: do not care about the order the profiles are set. Take the higher first.
+            if (graphicsProfiles != null && graphicsProfiles.Length > 0)
             {
-                Version = version;
-                RequestedColorFormat = requestedColorFormat;
-                RequestedDepth = requestedDepth;
-                RequestedStencil = requestedStencil;
+                if (graphicsProfiles.Any(x => x >= GraphicsProfile.Level_10_0))
+                    yield return GLVersion.ES3;
+                if (graphicsProfiles.Any(x => x < GraphicsProfile.Level_10_0))
+                    yield return GLVersion.ES2;
+            }
+            else
+            {
+                yield return GLVersion.ES3;
+                yield return GLVersion.ES2;
             }
         }
     }

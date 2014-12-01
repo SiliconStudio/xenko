@@ -2,9 +2,12 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_PLATFORM_IOS
 using System;
+using System.Linq;
 using System.Diagnostics;
 using System.Drawing;
+using System.Collections.Generic;
 using OpenTK.Platform.iPhoneOS;
+using MonoTouch.OpenGLES;
 using SiliconStudio.Paradox.Graphics;
 using Rectangle = SiliconStudio.Core.Mathematics.Rectangle;
 
@@ -57,8 +60,33 @@ namespace SiliconStudio.Paradox.Games
             gameForm.Load += gameForm_Load;
             gameForm.Unload += gameForm_Unload;
             gameForm.RenderFrame += gameForm_RenderFrame;
+            
+            // get the OpenGL ES version
+            var contextAvailable = false;
+            foreach (var version in GetGLVersions(gameContext.RequestedGraphicsProfile))
+            {
+                var contextRenderingApi = version;
+                EAGLContext contextTest = null;
+                try
+                {
+                    contextTest = new EAGLContext(contextRenderingApi);
 
-            gameForm.ContextRenderingApi = MonoTouch.OpenGLES.EAGLRenderingAPI.OpenGLES2;
+                    // delete extra context
+                    if (contextTest != null)
+                        contextTest.Dispose();
+
+                    gameForm.ContextRenderingApi = contextRenderingApi;
+                    contextAvailable = true;
+                }
+                catch (Exception)
+                {
+                    // TODO: log message
+                }
+            }
+
+            if (!contextAvailable)
+                throw new Exception("Graphics context could not be created.");
+
             gameForm.LayerColorFormat = MonoTouch.OpenGLES.EAGLColorFormat.RGBA8;
             //gameForm.LayerRetainsBacking = false;
 
@@ -232,6 +260,23 @@ namespace SiliconStudio.Paradox.Games
             }
 
             base.Destroy();
+        }
+
+        private static IEnumerable<EAGLRenderingAPI> GetGLVersions(GraphicsProfile[] graphicsProfiles)
+        {
+            // Note: do not care about the order the profiles are set. Take the higher first.
+            if (graphicsProfiles != null && graphicsProfiles.Length > 0)
+            {
+                if (graphicsProfiles.Any(x => x >= GraphicsProfile.Level_10_0))
+                    yield return EAGLRenderingAPI.OpenGLES3;
+                if (graphicsProfiles.Any(x => x < GraphicsProfile.Level_10_0))
+                    yield return EAGLRenderingAPI.OpenGLES2;
+            }
+            else
+            {
+                yield return EAGLRenderingAPI.OpenGLES3;
+                yield return EAGLRenderingAPI.OpenGLES2;
+            }
         }
     }
 }
