@@ -14,11 +14,9 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-
-#line 4 "D:\Code\Paradox\sources\shaders\Images\ImageCopier\ImageCopierShader.pdxsl"
 namespace SiliconStudio.Paradox.Effects.Images
 {
-    internal static partial class ImageCopierShaderKeys
+    internal static partial class ImageScalerShaderKeys
     {
         public static readonly ParameterKey<Color4> Color = ParameterKeys.New<Color4>();
         public static readonly ParameterKey<float> IsOnlyChannelRed = ParameterKeys.New<float>();

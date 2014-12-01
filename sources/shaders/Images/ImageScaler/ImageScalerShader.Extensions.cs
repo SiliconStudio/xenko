@@ -8,9 +8,9 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// Defines default values.
     /// </summary>
-    internal partial class ImageCopierShaderKeys
+    internal partial class ImageScalerShaderKeys
     {
-        static ImageCopierShaderKeys()
+        static ImageScalerShaderKeys()
         {
             // Default value of 1.0f
             Color = ParameterKeys.New(Color4.White);

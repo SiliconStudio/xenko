@@ -28,7 +28,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         private List<RenderTarget> scopedRenderTargets;
 
-        private ImageCopier copier;
+        private ImageScaler scaler;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageEffectBase" /> class.
@@ -74,13 +74,13 @@ namespace SiliconStudio.Paradox.Effects.Images
         protected GraphicsDevice GraphicsDevice { get; private set; }
 
         /// <summary>
-        /// Gets a shared <see cref="ImageCopier"/>.
+        /// Gets a shared <see cref="ImageScaler"/>.
         /// </summary>
-        protected ImageCopier Copier
+        protected ImageScaler Scaler
         {
             get
             {
-                return copier ?? (copier = Context.GetSharedEffect<ImageCopier>());
+                return scaler ?? (scaler = Context.GetSharedEffect<ImageScaler>());
             }
         }
 
