@@ -113,7 +113,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 var memStream = new MemoryStream();
                 using (var stream = new DigestStream(memStream))
                 {
-                    BinarySerialization.Write(stream, bytecode);
+                    bytecode.WriteTo(stream);
                     newBytecodeId = stream.CurrentHash;
                 }
 
