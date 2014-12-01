@@ -13,11 +13,9 @@ namespace SiliconStudio.Paradox.Graphics
 {
     public partial class SamplerState
     {
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-        private TextureWrapMode textureWrapR;
-#endif
         private TextureWrapMode textureWrapS;
         private TextureWrapMode textureWrapT;
+        private TextureWrapMode textureWrapR;
 
         private TextureMinFilter minFilter;
         private TextureMagFilter magFilter;
@@ -35,9 +33,8 @@ namespace SiliconStudio.Paradox.Graphics
 
             textureWrapS = samplerStateDescription.AddressU.ToOpenGL();
             textureWrapT = samplerStateDescription.AddressV.ToOpenGL();
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
             textureWrapR = samplerStateDescription.AddressW.ToOpenGL();
-#endif
+      
             compareFunc = samplerStateDescription.CompareFunction.ToOpenGLDepthFunction();
             borderColor = samplerStateDescription.BorderColor.ToArray();
             // TODO: How to do MipLinear vs MipPoint?
@@ -85,20 +82,24 @@ namespace SiliconStudio.Paradox.Graphics
 
         internal void Apply(bool hasMipmap, SamplerState oldSamplerState)
         {
+            // TODO: support texture array, 3d and cube
+            if (!GraphicsDevice.IsOpenGLES2)
+            {
+                if (Description.MinMipLevel != oldSamplerState.Description.MinMipLevel)
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinLod, Description.MinMipLevel);
+                if (Description.MaxMipLevel != oldSamplerState.Description.MaxMipLevel)
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLod, Description.MaxMipLevel);
+                if (textureWrapR != oldSamplerState.textureWrapR)
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapR, (int)textureWrapR);
+                if (compareFunc != oldSamplerState.compareFunc)
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareFunc, (int)compareFunc);
+            }
+
 #if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-            if (Description.MinMipLevel != oldSamplerState.Description.MinMipLevel)
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinLod, Description.MinMipLevel);
-            if (Description.MaxMipLevel != oldSamplerState.Description.MaxMipLevel)
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLod, Description.MaxMipLevel);
-            if (textureWrapR != oldSamplerState.textureWrapR)
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapR, (int)textureWrapR);
             if (borderColor != oldSamplerState.borderColor)
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, borderColor);
-            if (compareFunc != oldSamplerState.compareFunc)
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareFunc, (int)compareFunc);
             if (Description.MipMapLevelOfDetailBias != oldSamplerState.Description.MipMapLevelOfDetailBias)
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureLodBias, Description.MipMapLevelOfDetailBias);
-
             if (minFilter != oldSamplerState.minFilter)
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
 #else

@@ -1997,7 +1997,7 @@ namespace SiliconStudio.Paradox.Graphics
 
             graphicsContextEglPtr = EglGetCurrentContext();
 #elif SILICONSTUDIO_PLATFORM_IOS
-            var asyncContext = new MonoTouch.OpenGLES.EAGLContext(versionMajor < 3 ? MonoTouch.OpenGLES.EAGLRenderingAPI.OpenGLES2 : MonoTouch.OpenGLES.EAGLRenderingAPI.OpenGLES3, gameWindow.EAGLContext.ShareGroup);
+            var asyncContext = new MonoTouch.OpenGLES.EAGLContext(IsOpenGLES2 ? MonoTouch.OpenGLES.EAGLRenderingAPI.OpenGLES2 : MonoTouch.OpenGLES.EAGLRenderingAPI.OpenGLES3, gameWindow.EAGLContext.ShareGroup);
             MonoTouch.OpenGLES.EAGLContext.SetCurrentContext(asyncContext);
             deviceCreationContext = new OpenTK.Graphics.GraphicsContext(new OpenTK.ContextHandle(asyncContext.Handle), null, graphicsContext, versionMajor, versionMinor, creationFlags);
             deviceCreationWindowInfo = windowInfo;
