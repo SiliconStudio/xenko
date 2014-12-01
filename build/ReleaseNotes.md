@@ -1,10 +1,27 @@
+### Version 1.0.0-beta07
+
+Release date: 2014/12/??
+
+TODO
+ 
+### Version 1.0.0-beta06
+
+Release date: 2014/11/26
+
+#### Issues fixed
+- Build: Fixed build issues due to Asset Compiler ([#116](https://github.com/SiliconStudio/paradox/issues/116)).
+- Samples: Fixed various samples that didn't build since recent changes in SpriteBatch.MeasureString ([#117](https://github.com/SiliconStudio/paradox/issues/117)).
+- Studio: Fixed high CPU usage due to improper WPF refreshes ([#115](https://github.com/SiliconStudio/paradox/issues/115)).
+
 ### Version 1.0.0-beta04
 
-Release date: 2014/11/21
+Release date: 2014/11/25
 
 #### New Features
-- Build: We now use OSS (OpenSource Signing) so that you can fake-sign assemblies with the same keys as ours, and use your own compiled Paradox with the official editor.
-- Graphics: Spot light shadow maps in deferred rendering.
+- Build: We now use OSS (OpenSource Signing) so that you can fake-sign assemblies with the same keys as ours, and use your own compiled Paradox with the official editor ([#88](https://github.com/SiliconStudio/paradox/issues/88)).
+- Engine: Unified 2D and 3D rendering: `SpriteRenderer` now works with custom matrices or camera.
+- Graphics: Spot light shadow maps in deferred rendering ([#96](https://github.com/SiliconStudio/paradox/issues/96)).
+- Studio: Added documentation on properties of the property grid.
 
 #### Enhancements
 - Core: Add support for `ModuleInitializer` in nested types
@@ -12,12 +29,12 @@ Release date: 2014/11/21
 - Graphics: Add geometric primitive for Cone.
 - Engine: Several internal improvements and factorization to support upcoming `PostEffects` framework.
 - Engine: Add support for filtering model selection and rendering in `ModelRenderer`.  
-- Engine: `SpriteRenderer` now uses the Projection and View matrices set in the pipeline.
+- Engine: `SpriteRenderer` now uses the Projection and View matrices set in the pipeline ([#96](https://github.com/SiliconStudio/paradox/issues/96)).
 - Samples: Spot light shadows in DeferredLighting sample.
 - Shaders: Add support for naming a child in a `pdxfx` to allow child override.
 - Shaders: `cs` files generated from `pfxfx` are now using internal and nested types instead of putting everything in the root namespace.
 - Shaders: Add support for declaring a namespace in a `pdxsl`, only valid and used for `ParameterKey` declarations.
-- Studio: Added documentation on properties of the property grid.
+- Studio: Custom enhanced title bar for all windows.
 
 #### Issues fixed
 - Assets: Textures with arbitrary size (non square and non power-of-two) are now correctly loaded.
