@@ -528,5 +528,15 @@ namespace SiliconStudio.Core.Mathematics
                     Math.Pow(y - (radY / 2), 2) / (2 * Math.Pow(sigmaY, 2))
                 );
         }
+
+        /// <summary>
+        /// Determines whether the specified x is pow2.
+        /// </summary>
+        /// <param name="x">The x.</param>
+        /// <returns><c>true</c> if the specified x is pow2; otherwise, <c>false</c>.</returns>
+        public static bool IsPow2(int x)
+        {
+            return ((x != 0) && (x & (x - 1)) == 0);
+        }
     }
 }
