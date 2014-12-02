@@ -2,8 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_PLATFORM_ANDROID
 using System;
-using SiliconStudio.Paradox.Games.OpenGL;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Graphics.OpenGL;
 using Android.Content;
 using OpenTK.Graphics;
 using OpenTK.Platform.Android;
@@ -103,7 +103,7 @@ namespace SiliconStudio.Paradox.Games.Android
             // D24 and D32 are supported on OpenGL ES 3 devices
             var requestedDepthFallback = requestedDepth > 16 ? 16 : requestedDepth;
 
-            foreach (var version in GameUtils.GetGLVersions(RequestedGraphicsProfile))
+            foreach (var version in OpenGLUtils.GetGLVersions(RequestedGraphicsProfile))
             {
                 if (TryCreateFrameBuffer(MajorVersionTOGLVersion(version), requestedColorFormat, requestedDepth, requestedStencil)
                     || TryCreateFrameBuffer(MajorVersionTOGLVersion(version), requestedColorFormat, requestedDepthFallback, requestedStencil))

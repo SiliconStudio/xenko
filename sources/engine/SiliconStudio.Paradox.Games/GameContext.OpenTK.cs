@@ -20,6 +20,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
+using System;
+using SiliconStudio.Paradox.Graphics.OpenGL;
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
 using System.Windows.Forms;
 using OpenTK;
@@ -51,13 +54,8 @@ namespace SiliconStudio.Paradox.Games
             int versionMajor, versionMinor;
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-            versionMajor = 2;
-            versionMinor = 0;
             OpenTK.Platform.Utilities.ForceEmbedded = true;
             creationFlags |= GraphicsContextFlags.Embedded;
-#else
-            versionMajor = 4;
-            versionMinor = 2;
 #endif
 
             if (requestedWidth == 0 || requestedHeight == 0)
@@ -71,7 +69,42 @@ namespace SiliconStudio.Paradox.Games
             var graphicMode = new GraphicsMode(defaultMode.ColorFormat, defaultMode.Depth, 8, defaultMode.Samples, defaultMode.AccumulatorFormat, defaultMode.Buffers, defaultMode.Stereo);
             
             GraphicsContext.ShareContexts = true;
-            Control = control ?? new OpenTK.GameWindow(requestedWidth, requestedHeight, graphicMode, "Paradox Game", GameWindowFlags.Default, DisplayDevice.Default, versionMajor, versionMinor, creationFlags);
+
+            if (control == null)
+            {
+                if (RequestedGraphicsProfile == null || RequestedGraphicsProfile.Length == 0)
+                {
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                    versionMajor = 2;
+                    versionMinor = 0;
+#else
+                    // PC: 4.3 is commonly available (= compute shaders)
+                    // MacOS X: 4.1 maximum
+                    versionMajor = 4;
+                    versionMinor = 1;
+#endif
+                    Control = TryGameWindow(requestedWidth, requestedHeight, graphicMode, versionMajor, versionMinor, creationFlags);
+                }
+                else
+                {
+                    foreach (var profile in RequestedGraphicsProfile)
+                    {
+                        OpenGLUtils.GetGLVersion(profile, out versionMajor, out versionMinor);
+                        var gameWindow = TryGameWindow(requestedWidth, requestedHeight, graphicMode, versionMajor, versionMinor, creationFlags);
+                        if (gameWindow != null)
+                        {
+                            Control = gameWindow;
+                            break;
+                        }
+                    }
+                }
+            }
+            else
+                Control = control;
+
+            if (Control == null)
+                throw new Exception("Unable to initialize graphics context.");
+
             RequestedWidth = requestedWidth;
             RequestedHeight = requestedHeight;
             ContextType = AppContextType.DesktopOpenTK;
@@ -90,6 +123,31 @@ namespace SiliconStudio.Paradox.Games
         public static implicit operator GameContext(OpenTK.GameWindow gameWindow)
         {
             return new GameContext(gameWindow);
+        }
+
+        /// <summary>
+        /// Try to create the graphics context.
+        /// </summary>
+        /// <param name="requestedWidth">The requested width.</param>
+        /// <param name="requestedHeight">The requested height.</param>
+        /// <param name="graphicMode">The graphics mode.</param>
+        /// <param name="versionMajor">The major version of OpenGL.</param>
+        /// <param name="versionMinor">The minor version of OpenGL.</param>
+        /// <param name="creationFlags">The creation flags.</param>
+        /// <returns>The created GameWindow.</returns>
+        private static OpenTK.GameWindow TryGameWindow(int requestedWidth, int requestedHeight, GraphicsMode graphicMode, int versionMajor, int versionMinor, GraphicsContextFlags creationFlags)
+        {
+            try
+            {
+                var gameWindow = new OpenTK.GameWindow(requestedWidth, requestedHeight, graphicMode, "Paradox Game", GameWindowFlags.Default, DisplayDevice.Default, versionMajor, versionMinor,
+                    creationFlags);
+                return gameWindow;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+
         }
     }
 }

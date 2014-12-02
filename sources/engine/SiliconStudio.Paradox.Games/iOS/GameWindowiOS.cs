@@ -7,7 +7,7 @@ using System.Drawing;
 using OpenTK.Platform.iPhoneOS;
 using MonoTouch.OpenGLES;
 using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Games.OpenGL;
+using SiliconStudio.Paradox.Graphics.OpenGL;
 using Rectangle = SiliconStudio.Core.Mathematics.Rectangle;
 
 namespace SiliconStudio.Paradox.Games
@@ -62,7 +62,7 @@ namespace SiliconStudio.Paradox.Games
             
             // get the OpenGL ES version
             var contextAvailable = false;
-            foreach (var version in GameUtils.GetGLVersions(gameContext.RequestedGraphicsProfile))
+            foreach (var version in OpenGLUtils.GetGLVersions(gameContext.RequestedGraphicsProfile))
             {
                 var contextRenderingApi = MajorVersionTOEAGLRenderingAPI(version);
                 EAGLContext contextTest = null;
