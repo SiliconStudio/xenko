@@ -582,6 +582,13 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>MaterialReflectanceGBuffer.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Images\BrightFilter\BrightFilter.cs" />
+    <Compile Include="Images\BrightFilter\BrightFilterShader.cs">
+      <DependentUpon>BrightFilterShader.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Images\GaussianBlur\GaussianBlur.cs" />
     <Compile Include="Images\GaussianBlur\GaussianBlurKeys.cs" />
     <Compile Include="Images\GaussianBlur\GaussianBlurShader.cs">
@@ -2063,6 +2070,10 @@
     <None Include="Deferred\MaterialReflectanceGBuffer.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialReflectanceGBuffer.cs</LastGenOutput>
+    </None>
+    <None Include="Images\BrightFilter\BrightFilterShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>BrightFilterShader.cs</LastGenOutput>
     </None>
     <None Include="Images\GaussianBlur\GaussianBlurShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
