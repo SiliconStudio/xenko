@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Diff;
+using SiliconStudio.Core.IO;
 using SiliconStudio.Paradox.Assets.Model.Analysis;
 using SiliconStudio.Paradox.Data;
 using SiliconStudio.Paradox.Engine;
@@ -150,10 +151,9 @@ namespace SiliconStudio.Paradox.Assets.Model
             public MergeResult MergeResult;
         }
 
-        public static void ImportScene(EntityAsset source, Guid sourceRootEntity, EntityAsset dest, Guid destRootEntityId)
+        public static EntityData ImportScene(UFile sourceUrl, EntityAsset source, Guid sourceRootEntity, out EntityBase entityBase)
         {
             if (source == null) throw new ArgumentNullException("source");
-            if (dest == null) throw new ArgumentNullException("dest");
 
             // Extract the scene starting from given root
             // Note: only extracting root is supported as of now
@@ -181,25 +181,13 @@ namespace SiliconStudio.Paradox.Assets.Model
             // Should we nullify invalid references?
             EntityAnalysis.RemapEntitiesId(newAsset.Hierarchy, reverseEntityMapping);
 
-            // Insert those entities
-            foreach (var entity in newAsset.Hierarchy.Entities)
-            {
-                dest.Hierarchy.Entities.Add(entity);
-            }
-
             // Find new root
             var newClonedRoot = newAsset.Hierarchy.Entities[reverseEntityMapping[sourceRootEntity]];
 
-            // Find destination target parent
-            var destRootEntity = dest.Hierarchy.Entities[destRootEntityId];
-            var destRootTransformation = (TransformationComponentData)destRootEntity.Components[TransformationComponent.Key];
-
-            // Attach new root to target parent
-            destRootTransformation.Children.Add(EntityComponentReference.New<TransformationComponent>(newClonedRoot.Components[TransformationComponent.Key]));
-
             // Add asset base
-            // TODO: Use real import asset location?
-            dest.AssetBases.Add(newClonedRoot.Id, new EntityBase { Base = new AssetBase(clonedSource), IdMapping = entityMapping });
+            entityBase = new EntityBase { Base = new AssetBase(sourceUrl, clonedSource), SourceRoot = sourceRootEntity, IdMapping = entityMapping };
+
+            return newClonedRoot;
         }
     }
 }
