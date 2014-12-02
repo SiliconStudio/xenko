@@ -185,32 +185,35 @@ namespace SiliconStudio.Assets.Diff
             // If it's a collection, clear it and reconstruct it from DiffCollection result (stored in Diff3Node.Items)
             // TODO: Various optimizations to avoid removing and reinserting items that were already here before (would need to diff Asset1 and Diff3Node...)
             var collectionDescriptor = diff3Node.Asset1Node.InstanceDescriptor as CollectionDescriptor;
-            if (collectionDescriptor != null && diff3Node.Type == Diff3NodeType.Collection && diff3Node.Items != null)
+            if (collectionDescriptor != null && diff3Node.Type == Diff3NodeType.Collection)
             {
                 collectionDescriptor.Clear(dataInstance);
-                foreach (var item in diff3Node.Items)
+                if (diff3Node.Items != null)
                 {
-                    object itemInstance;
-                    switch (item.ChangeType)
+                    foreach (var item in diff3Node.Items)
                     {
-                        case Diff3ChangeType.Children:
-                        case Diff3ChangeType.Conflict:
-                        case Diff3ChangeType.ConflictType:
-                            // Use any valid object, it will be replaced later
-                            itemInstance = SafeNodeInstance(item.Asset1Node) ?? SafeNodeInstance(item.Asset2Node) ?? SafeNodeInstance(item.BaseNode);
-                            break;
-                        case Diff3ChangeType.None:
-                        case Diff3ChangeType.MergeFromAsset1:
-                        case Diff3ChangeType.MergeFromAsset1And2:
-                            itemInstance = item.Asset1Node.Instance;
-                            break;
-                        case Diff3ChangeType.MergeFromAsset2:
-                            itemInstance = item.Asset2Node.Instance;
-                            break;
-                        default:
-                            throw new InvalidOperationException();
+                        object itemInstance;
+                        switch (item.ChangeType)
+                        {
+                            case Diff3ChangeType.Children:
+                            case Diff3ChangeType.Conflict:
+                            case Diff3ChangeType.ConflictType:
+                                // Use any valid object, it will be replaced later
+                                itemInstance = SafeNodeInstance(item.Asset1Node) ?? SafeNodeInstance(item.Asset2Node) ?? SafeNodeInstance(item.BaseNode);
+                                break;
+                            case Diff3ChangeType.None:
+                            case Diff3ChangeType.MergeFromAsset1:
+                            case Diff3ChangeType.MergeFromAsset1And2:
+                                itemInstance = item.Asset1Node.Instance;
+                                break;
+                            case Diff3ChangeType.MergeFromAsset2:
+                                itemInstance = item.Asset2Node.Instance;
+                                break;
+                            default:
+                                throw new InvalidOperationException();
+                        }
+                        collectionDescriptor.Add(dataInstance, itemInstance);
                     }
-                    collectionDescriptor.Add(dataInstance, itemInstance);
                 }
             }
         }
