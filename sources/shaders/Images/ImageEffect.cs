@@ -20,19 +20,16 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         private readonly ParameterCollection[] parameterCollections;
 
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageEffect" /> class.
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="effectName">Name of the shader.</param>
-        /// <param name="sharedParameters">The shared parameters.</param>
         /// <exception cref="System.ArgumentNullException">effectName</exception>
         public ImageEffect(ImageEffectContext context, string effectName)
             : this(context, effectName, (ParameterCollection[])null)
         {
         }
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageEffect" /> class.
