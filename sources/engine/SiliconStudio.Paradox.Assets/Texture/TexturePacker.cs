@@ -78,7 +78,6 @@ namespace SiliconStudio.Paradox.Assets.Texture
             AtlasSizeContraint = atlasSizeConstraint;
         }
 
-
         /// <summary>
         /// Packs textureElement into textureAtlases
         /// </summary>
@@ -86,21 +85,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// <returns></returns>
         public bool PackTextures(Dictionary<string, IntermediateTexture> textureElements)
         {
-            var subSizeArray = CreateSubSizeArray(MaxWidth, MaxHeight, 512, 512);
-            var canPackAll = false;
-            List<TextureAtlas> bestAtlasList = null;
-
-            for (var i = 0; i < subSizeArray.Count; ++i)
-            {
-                if (!TryPackTextures(textureElements, subSizeArray[i].Width, subSizeArray[i].Height)) continue;
-
-                canPackAll = true;
-
-                if (bestAtlasList == null || CompareTextureAtlasLists(textureAtlases, bestAtlasList) > 0)
-                    bestAtlasList = new List<TextureAtlas>(textureAtlases);
-            }
-
-            return canPackAll;
+            return TryPackTextures(textureElements, MaxWidth, MaxHeight);
         }
 
         private static List<Size2> CreateSubSizeArray(int maxWidth, int maxHeight, int startWidth, int startHeight)
@@ -227,6 +212,8 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// </summary>
         /// <param name="textureElements">Input texture elements</param>
         /// <param name="algorithm">Packing algorithm</param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
         /// <returns>True indicates all textures could be packed; False otherwise</returns>
         public bool PackTextures(Dictionary<string, IntermediateTexture> textureElements, TexturePackingMethod algorithm, int width, int height)
         {
@@ -246,11 +233,54 @@ namespace SiliconStudio.Paradox.Assets.Texture
 
             do
             {
+                var sizeBeforePack = textureRegions.Count;
+
+                var currentAtlas = TryCreateAtlas(textureElements, ref textureRegions, algorithm, binWidth, binHeight);
+
+                if (textureRegions.Count == sizeBeforePack)
+                    return false;
+
+                if (textureRegions.Count > 0)
+                {
+                    foreach (var remainingTexture in textureRegions)
+                    {
+                        if (remainingTexture.Value.Width > width || remainingTexture.Value.Height > height)
+                            return false;
+                    }
+                }
+
+                textureAtlases.Add(currentAtlas);
+            }
+            while (UseMultipack && textureRegions.Count > 0);
+
+            return textureRegions.Count == 0;
+        }
+
+        /// <summary>
+        /// Try to pack as much as possible images in the given size.
+        /// </summary>
+        /// <returns>False if</returns>
+        private TextureAtlas TryCreateAtlas(Dictionary<string, IntermediateTexture> textureElements, ref List<RotatableRectangle> textureRegions, TexturePackingMethod algorithm,
+            int maxWidth, int maxHeight)
+        {
+            // Generate sub size array
+            var subSizeArray = CreateSubSizeArray(maxWidth, maxHeight, 512, 512);
+
+            var textureAtlas = new TextureAtlas { BorderSize = BorderSize };
+
+            var bestPackNumber = int.MaxValue;
+
+            var bestPackTextureRegions = textureRegions;
+
+            foreach (var subArray in subSizeArray)
+            {
+                var currTextureRegions = new List<RotatableRectangle>(textureRegions);
+
                 // Reset packer state
-                maxRectPacker.Initialize(binWidth, binHeight, UseRotation);
+                maxRectPacker.Initialize(subArray.Width, subArray.Height, UseRotation);
 
                 // Pack
-                maxRectPacker.PackRectangles(textureRegions, algorithm);
+                maxRectPacker.PackRectangles(currTextureRegions, algorithm);
 
                 // Find true size from packed regions
                 var packedSize = CalculatePackedRectanglesBound(maxRectPacker.PackedRectangles);
@@ -261,40 +291,35 @@ namespace SiliconStudio.Paradox.Assets.Texture
                     packedSize.Width = TextureCommandHelper.CeilingToNearestPowerOfTwo(packedSize.Width);
                     packedSize.Height = TextureCommandHelper.CeilingToNearestPowerOfTwo(packedSize.Height);
 
-                    if (packedSize.Width > width || packedSize.Height > height)
-                        return false;
+                    if (packedSize.Width > subArray.Width || packedSize.Height > subArray.Height)
+                        continue;
                 }
 
-                // PackRectangles the atlas to store packed regions
-                var currentAtlas = new TextureAtlas
-                {
-                    Width = packedSize.Width,
-                    Height = packedSize.Height,
-                    BorderSize = BorderSize
-                };
+                if (currTextureRegions.Count >= bestPackNumber)
+                    continue;
 
-                // PackRectangles all packed regions into Atlas
+                // Found new best pack, cache it
+                bestPackNumber = currTextureRegions.Count;
+
+                // Resize texture atlas
+                textureAtlas.Width = packedSize.Width;
+                textureAtlas.Height = packedSize.Height;
+
+                textureAtlas.Textures.Clear();
+
+                // Store all packed regions into Atlas
                 foreach (var usedRectangle in maxRectPacker.PackedRectangles)
                 {
                     textureElements[usedRectangle.Key].PackingRegion = usedRectangle;
 
-                    currentAtlas.Textures.Add(textureElements[usedRectangle.Key]);
+                    textureAtlas.Textures.Add(textureElements[usedRectangle.Key]);
                 }
 
-                textureAtlases.Add(currentAtlas);
-
-                if (textureRegions.Count > 0)
-                {
-                    foreach (var remainingTexture in textureRegions)
-                    {
-                        if (remainingTexture.Value.Width > width || remainingTexture.Value.Height > height)
-                            return false;
-                    }
-                }
+                bestPackTextureRegions = currTextureRegions;
             }
-            while (UseMultipack && textureRegions.Count > 0);
 
-            return textureRegions.Count == 0;
+            textureRegions = bestPackTextureRegions;
+            return textureAtlas;
         }
 
         /// <summary>
