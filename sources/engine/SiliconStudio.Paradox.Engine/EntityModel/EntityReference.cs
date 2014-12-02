@@ -35,7 +35,7 @@ namespace SiliconStudio.Paradox.EntityModel
 
         public static implicit operator EntityReference(EntityData value)
         {
-            return new EntityReference() { Value = value };
+            return new EntityReference { Value = value, Id = value.Id };
         }
 
         public override string ToString()
