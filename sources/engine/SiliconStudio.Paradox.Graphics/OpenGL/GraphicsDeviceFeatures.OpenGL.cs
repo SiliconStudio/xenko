@@ -1,7 +1,5 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-
-using SiliconStudio.Paradox.Graphics.OpenGL;
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
 // Copyright (c) 2010-2012 SharpDX - Alexandre Mutel
 // 
@@ -23,6 +21,7 @@ using SiliconStudio.Paradox.Graphics.OpenGL;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System.Collections.Generic;
+using SiliconStudio.Paradox.Graphics.OpenGL;
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
 #else

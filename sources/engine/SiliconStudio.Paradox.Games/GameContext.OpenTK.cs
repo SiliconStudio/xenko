@@ -20,13 +20,11 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-using System;
-using SiliconStudio.Paradox.Graphics.OpenGL;
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
-using System.Windows.Forms;
+using System;
 using OpenTK;
 using OpenTK.Graphics;
+using SiliconStudio.Paradox.Graphics.OpenGL;
 
 namespace SiliconStudio.Paradox.Games
 {
