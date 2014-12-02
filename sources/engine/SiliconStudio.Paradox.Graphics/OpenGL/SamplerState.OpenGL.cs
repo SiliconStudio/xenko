@@ -82,8 +82,10 @@ namespace SiliconStudio.Paradox.Graphics
 
         internal void Apply(bool hasMipmap, SamplerState oldSamplerState)
         {
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
             // TODO: support texture array, 3d and cube
             if (!GraphicsDevice.IsOpenGLES2)
+#endif
             {
                 if (Description.MinMipLevel != oldSamplerState.Description.MinMipLevel)
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinLod, Description.MinMipLevel);
