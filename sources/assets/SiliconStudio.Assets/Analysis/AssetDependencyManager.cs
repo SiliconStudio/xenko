@@ -3,13 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using SiliconStudio.Assets.Visitors;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
@@ -236,7 +233,7 @@ namespace SiliconStudio.Assets.Analysis
         }
 
         /// <summary>
-        /// Finds the changed events that have occured, only valid if <see cref="EnableTracking"/> is set to <c>true</c>.
+        /// Finds the changed events that have occurred, only valid if <see cref="EnableTracking"/> is set to <c>true</c>.
         /// </summary>
         /// <returns>List of events.</returns>
         public IEnumerable<AssetFileChangedEvent> FindAssetFileChangedEvents()
@@ -333,6 +330,7 @@ namespace SiliconStudio.Assets.Analysis
         /// </summary>
         /// <param name="assetItem">The asset item.</param>
         /// <param name="dependenciesOptions">The dependencies options.</param>
+        /// <param name="visited">The list of element already visited.</param>
         /// <returns>The dependencies.</returns>
         public AssetDependencySet ComputeDependencies(AssetItem assetItem, AssetDependencySearchOptions dependenciesOptions = AssetDependencySearchOptions.All, HashSet<Guid> visited = null)
         {
@@ -457,6 +455,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <param name="result">The result.</param>
         /// <param name="packageSession">The package session.</param>
         /// <param name="isRecursive">if set to <c>true</c> [is recursive].</param>
+        /// <param name="keepParents">Indicate if the parent of the provided <paramref name="result"/> should be kept or not</param>
         /// <exception cref="System.ArgumentNullException">packageSession</exception>
         private static void CollectDynamicOutReferences(AssetDependencySet result, PackageSession packageSession, bool isRecursive, bool keepParents)
         {
@@ -470,6 +469,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <param name="result">The result.</param>
         /// <param name="assetResolver">The asset resolver.</param>
         /// <param name="isRecursive">if set to <c>true</c> collects references recursively.</param>
+        /// <param name="keepParents">Indicate if the parent of the provided <paramref name="result"/> should be kept or not</param>
         /// <exception cref="System.ArgumentNullException">
         /// result
         /// or
@@ -793,7 +793,7 @@ namespace SiliconStudio.Assets.Analysis
                     }
                 }
 
-                // Recalculate [Out] depedencies
+                // Recalculate [Out] dependencies
                 CollectDynamicOutReferences(dependencySet, FindAssetFromDependencyOrSession, false, true);
 
                 // Add [In] dependencies to new children
@@ -1082,7 +1082,7 @@ namespace SiliconStudio.Assets.Analysis
 
         private void directoryWatcher_Modified(object sender, FileEvent e)
         {
-            // If trakcing is not enabled, don't bother to track files on disk
+            // If tracking is not enabled, don't bother to track files on disk
             if (!EnableTracking)
                 return;
 
