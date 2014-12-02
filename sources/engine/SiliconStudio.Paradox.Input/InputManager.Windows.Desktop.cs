@@ -11,16 +11,19 @@ using SiliconStudio.Core;
 using SiliconStudio.Paradox.Games;
 using Vector2 = SiliconStudio.Core.Mathematics.Vector2;
 
+using WinFormsKeys = System.Windows.Forms.Keys;
+
 namespace SiliconStudio.Paradox.Input
 {
     public partial class InputManager
     {
         private Control uiControl;
-        private Stopwatch pointerClock;
+        private readonly Stopwatch pointerClock;
 
         public static bool UseRawInput = true;
 
-        public InputManager(IServiceRegistry registry) : base(registry)
+        public InputManager(IServiceRegistry registry)
+            : base(registry)
         {
             HasKeyboard = true;
             HasMouse = true;
@@ -96,9 +99,8 @@ namespace SiliconStudio.Paradox.Input
                 uiControl.KeyDown += (_, e) => OnKeyEvent(e.KeyCode, false);
                 uiControl.KeyUp += (_, e) => OnKeyEvent(e.KeyCode, true);
             }
-            uiControl.MouseEnter += (_, e) => uiControl.Focus();
             uiControl.MouseMove += (_, e) => OnMouseMoveEvent(new Vector2(e.X, e.Y));
-            uiControl.MouseDown += (_, e) => OnMouseInputEvent(new Vector2(e.X, e.Y), ConvertMouseButton(e.Button), InputEventType.Down);
+            uiControl.MouseDown += (_, e) => { uiControl.Focus(); OnMouseInputEvent(new Vector2(e.X, e.Y), ConvertMouseButton(e.Button), InputEventType.Down); };
             uiControl.MouseUp += (_, e) => OnMouseInputEvent(new Vector2(e.X, e.Y), ConvertMouseButton(e.Button), InputEventType.Up);
             uiControl.MouseWheel += (_, e) => OnMouseInputEvent(new Vector2(e.X, e.Y), MouseButton.Middle, InputEventType.Wheel, e.Delta);
             uiControl.MouseLeave += (_, e) => OnMouseLeaveEvent();
@@ -223,7 +225,7 @@ namespace SiliconStudio.Paradox.Input
             LostFocus = true;
         }
 
-        private MouseButton ConvertMouseButton(MouseButtons mouseButton)
+        private static MouseButton ConvertMouseButton(MouseButtons mouseButton)
         {
             switch (mouseButton)
             {
@@ -241,7 +243,7 @@ namespace SiliconStudio.Paradox.Input
             return (MouseButton)(-1);
         }
 
-        private MouseButton ConvertMouseButton(System.Windows.Input.MouseButton mouseButton)
+        private static MouseButton ConvertMouseButton(System.Windows.Input.MouseButton mouseButton)
         {
             switch (mouseButton)
             {
@@ -259,7 +261,7 @@ namespace SiliconStudio.Paradox.Input
             return (MouseButton)(-1);
         }
 
-        private PointerState InputEventTypeToPointerState(InputEventType type)
+        private static PointerState InputEventTypeToPointerState(InputEventType type)
         {
             switch (type)
             {
@@ -272,7 +274,7 @@ namespace SiliconStudio.Paradox.Input
             }
         }
         
-        private Vector2 PointToVector2(Point point)
+        private static Vector2 PointToVector2(Point point)
         {
             return new Vector2((float)point.X, (float)point.Y);
         }

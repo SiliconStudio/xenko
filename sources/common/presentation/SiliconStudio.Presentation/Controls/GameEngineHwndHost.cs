@@ -8,15 +8,23 @@ using SiliconStudio.Presentation.Extensions;
 
 namespace SiliconStudio.Presentation.Controls
 {
+    /// <summary>
+    /// An implementation of the <see cref="HwndHost"/> class adapted to embed a game engine viewport in a WPF application.
+    /// </summary>
     public class GameEngineHwndHost : HwndHost
     {
         private readonly IntPtr childHandle;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GameEngineHwndHost"/> class.
+        /// </summary>
+        /// <param name="childHandle">The hwnd of the child (hosted) window.</param>
         public GameEngineHwndHost(IntPtr childHandle)
         {
             this.childHandle = childHandle;
         }
 
+        /// <inheritdoc/>
         protected override HandleRef BuildWindowCore(HandleRef hwndParent)
         {
             int style = NativeHelper.GetWindowLong(childHandle, NativeHelper.GWL_STYLE);
@@ -33,15 +41,24 @@ namespace SiliconStudio.Presentation.Controls
             return hwnd;
         }
 
+        /// <inheritdoc/>
         protected override void DestroyWindowCore(HandleRef hwnd)
         {
             NativeHelper.SetParent(childHandle, IntPtr.Zero);
             NativeHelper.DestroyWindow(hwnd.Handle);
         }
 
-        protected override void OnKeyDown(System.Windows.Input.KeyEventArgs e)
+        /// <summary>
+        /// Forwards a message that comes from the hosted window to the WPF window. This method can be used for example to forward keyboard events.
+        /// </summary>
+        /// <param name="hwnd">The hwnd of the hosted window.</param>
+        /// <param name="msg">The message identifier.</param>
+        /// <param name="wParam">The word parameter of the message.</param>
+        /// <param name="lParam">The long parameter of the message.</param>
+        public void ForwardMessage(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam)
         {
-            base.OnKeyDown(e);
+            var parent = NativeHelper.GetParent(hwnd);
+            NativeHelper.PostMessage(parent, msg, wParam, lParam);
         }
     }
 }
