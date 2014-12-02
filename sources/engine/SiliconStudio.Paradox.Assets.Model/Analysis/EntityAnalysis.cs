@@ -84,7 +84,6 @@ namespace SiliconStudio.Paradox.Assets.Model.Analysis
                 if (entityReference.Value != null)
                 {
                     entityReference.Id = entityReference.Value.Id;
-                    entityReference.Name = entityReference.Value.Name;
                 }
             }
         }
@@ -106,11 +105,6 @@ namespace SiliconStudio.Paradox.Assets.Model.Analysis
                 {
                     // Invalid Id, let's clear it
                     entityReference.Id = Guid.Empty;
-                    entityReference.Name = null;
-                }
-                else
-                {
-                    entityReference.Name = entityData.Name;
                 }
 
                 // Update EntityReference.Value.

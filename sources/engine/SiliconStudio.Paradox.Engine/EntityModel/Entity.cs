@@ -30,6 +30,8 @@ namespace SiliconStudio.Paradox.EntityModel
         protected TransformationComponent transformation;
         internal List<Task> prepareTasks;
 
+        public new Guid Id;
+
         static Entity()
         {
             PropertyContainer.AddAccessorProperty(typeof(Entity), TransformationComponent.Key);
