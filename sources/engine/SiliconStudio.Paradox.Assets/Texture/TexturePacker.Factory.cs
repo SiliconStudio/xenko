@@ -45,30 +45,52 @@ namespace SiliconStudio.Paradox.Assets.Texture
                     var isRotated = intemediateTexture.PackingRegion.IsRotated;
                     var sourceTexture = intemediateTexture.Texture;
                     var sourceTextureWidth = sourceTexture.Description.Width;
-                    var sourceTextureHeight = sourceTexture.Description.Height;
 
                     var addressModeU = intemediateTexture.AddressModeU;
                     var addressModeV = intemediateTexture.AddressModeV;
                     var borderColor = intemediateTexture.BorderColor;
 
+                    var targetRegionWidth = isRotated ? intemediateTexture.Region.Height : intemediateTexture.Region.Width;
+                    var targetRegionHeight = isRotated ? intemediateTexture.Region.Width : intemediateTexture.Region.Height;
+
                     unsafe
                     {
-                        var atlasData = (Color*)atlasTexture.DataPointer;
-                        var textureData = (Color*)sourceTexture.DataPointer;
+                        var atlasData = (Color *)atlasTexture.DataPointer;
+                        var textureData = (Color *)sourceTexture.DataPointer;
 
                         for (var y = 0; y < intemediateTexture.PackingRegion.Value.Height; ++y)
                             for (var x = 0; x < intemediateTexture.PackingRegion.Value.Width; ++x)
                             {
+                                // Get index of source image, if it's the border at this point sourceIndexX and sourceIndexY will be -1
+                                var sourceIndexX = GetSourceTextureIndex(x - textureAtlas.BorderSize, targetRegionWidth, addressModeU);
+                                var sourceIndexY = GetSourceTextureIndex(y - textureAtlas.BorderSize, targetRegionHeight, addressModeV);
+
+                                // Check if this image uses border mode, and is in the border area
+                                var isBorderMode = sourceIndexX < 0 || sourceIndexY < 0;
+
+                                if (isRotated)
+                                {
+                                    // Modify index for rotating
+                                    var tmp = sourceIndexY;
+
+                                    // Since intemediateTexture.PackingRegion contains the border, we need to delete the border out
+                                    sourceIndexY = (intemediateTexture.PackingRegion.Value.Width - textureAtlas.BorderSize * 2) - 1 - sourceIndexX; 
+                                    sourceIndexX = tmp;
+                                }
+
+                                // Add offset from the region
+                                sourceIndexX += intemediateTexture.Region.X;
+                                sourceIndexY += intemediateTexture.Region.Y;
+
+                                var readFromIndex = sourceIndexY * sourceTextureWidth + sourceIndexX; // read index from source image
+
+                                // Prepare writeToIndex
                                 var targetIndexX = intemediateTexture.PackingRegion.Value.X + x;
                                 var targetIndexY = intemediateTexture.PackingRegion.Value.Y + y;
 
-                                var sourceIndexX = GetSourceTextureIndex(x - textureAtlas.BorderSize, isRotated ? sourceTextureHeight : sourceTextureWidth, addressModeU);
-                                var sourceIndexY = GetSourceTextureIndex(y - textureAtlas.BorderSize, isRotated ? sourceTextureWidth : sourceTextureHeight, addressModeV);
+                                var writeToIndex = targetIndexY * textureAtlas.Width + targetIndexX; // write index to atlas buffer
 
-                                atlasData[targetIndexY * textureAtlas.Width + targetIndexX] = (sourceIndexX < 0 || sourceIndexY < 0)
-                                    ? borderColor ?? Color.Transparent :
-                                        textureData[isRotated ? (sourceTextureHeight - 1 - sourceIndexX + intemediateTexture.Region.Y) * sourceTextureWidth + sourceIndexY + intemediateTexture.Region.X
-                                                        : ((intemediateTexture.Region.Y + sourceIndexY) * sourceTextureWidth + sourceIndexX + intemediateTexture.Region.X)];
+                                atlasData[writeToIndex] = isBorderMode ? (borderColor ?? Color.Transparent) : textureData[readFromIndex];
                             }
                     }
                 }
