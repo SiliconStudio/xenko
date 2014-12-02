@@ -24,7 +24,7 @@ using OpenTK.Platform.iPhoneOS;
 #endif
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
-#if !(SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS)
+#if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
 using BeginMode = OpenTK.Graphics.ES30.PrimitiveType;
 using ProgramParameter = OpenTK.Graphics.ES30.GetProgramParameterName;
 #else
@@ -928,7 +928,7 @@ namespace SiliconStudio.Paradox.Graphics
                         if (renderTargets[i] != null)
                         {
                             firstRenderTargets = i;
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !(SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS)
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
                             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0 + i, TextureTarget2d.Texture2D, renderTargets[i].ResourceId, 0);
 #else
                             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0 + i, TextureTarget.Texture2D, renderTargets[i].ResourceId, 0);
@@ -1775,7 +1775,7 @@ namespace SiliconStudio.Paradox.Graphics
                     var desc = texture.Description;
                     GL.BindTexture(TextureTarget.Texture2D, texture.ResourceId);
                     boundTextures[0] = null;
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !(SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS)
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
                     GL.TexImage2D(TextureTarget2d.Texture2D, subResourceIndex, texture.InternalFormat.ToOpenGL(), desc.Width, desc.Height, 0, texture.FormatGl, texture.Type, databox.DataPointer);
 #else
                     GL.TexImage2D(TextureTarget.Texture2D, subResourceIndex, texture.InternalFormat, desc.Width, desc.Height, 0, texture.FormatGl, texture.Type, databox.DataPointer);

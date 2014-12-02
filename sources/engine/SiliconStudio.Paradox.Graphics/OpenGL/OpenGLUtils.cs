@@ -96,10 +96,13 @@ namespace SiliconStudio.Paradox.Graphics.OpenGL
 
         public static GraphicsProfile GetFeatureLevel(int major, int minor)
         {
-            if (major >= 4 && minor >= 4)
-                return GraphicsProfile.Level_11_0;
-            if (major >= 4 && minor >= 3)
-                return GraphicsProfile.Level_10_0;
+            if (major >= 4)
+            {
+                if (minor >= 4)
+                    return GraphicsProfile.Level_11_0;
+                if (minor >= 3)
+                    return GraphicsProfile.Level_10_0;
+            }
             return GraphicsProfile.Level_9_1;
         }
 #endif

@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
         }
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !(SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS)
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
         public static TextureComponentCount ToOpenGL(this PixelInternalFormat format)
         {
             switch (format)
@@ -132,7 +132,7 @@ namespace SiliconStudio.Paradox.Graphics
                 case TextureAddressMode.Clamp:
                     return TextureWrapMode.ClampToEdge;
                 case TextureAddressMode.Mirror:
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !(SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS)
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
                     return TextureWrapMode.Repeat;
 #else
                     return TextureWrapMode.MirroredRepeat;

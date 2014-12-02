@@ -165,7 +165,7 @@ namespace SiliconStudio.Paradox.Graphics
                         }
                         if (compressed)
                         {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !(SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS)
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
                             throw new NotSupportedException("Can't use compressed textures on desktop OpenGL ES.");
 #else
                             GL.CompressedTexImage2D(TextureTarget.Texture2D, i, internalFormat,
@@ -174,7 +174,7 @@ namespace SiliconStudio.Paradox.Graphics
                         }
                         else
                         {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !(SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS)
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
                             GL.TexImage2D(TextureTarget2d.Texture2D, i, internalFormat.ToOpenGL(),
                                             width, height, 0, format, type, data);
 #else

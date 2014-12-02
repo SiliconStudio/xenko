@@ -73,7 +73,6 @@ namespace SiliconStudio.Paradox.Games
                 if (RequestedGraphicsProfile == null || RequestedGraphicsProfile.Length == 0)
                 {
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                    // TODO: ES3 on desktop?
                     versionMajor = 3;
                     versionMinor = 0;
 #else
@@ -138,6 +137,12 @@ namespace SiliconStudio.Paradox.Games
         {
             try
             {
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                // Preload proper SDL native library (depending on CPU type)
+                // This is for OpenGL ES on desktop
+                Core.NativeLibrary.PreloadLibrary("SDL2.dll");
+#endif
+
                 var gameWindow = new OpenTK.GameWindow(requestedWidth, requestedHeight, graphicMode, "Paradox Game", GameWindowFlags.Default, DisplayDevice.Default, versionMajor, versionMinor,
                     creationFlags);
                 return gameWindow;
