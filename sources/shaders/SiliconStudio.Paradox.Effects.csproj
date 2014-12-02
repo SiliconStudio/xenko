@@ -641,6 +641,31 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
     </Compile>
+    <Compile Include="Images\ToneMap\ToneMapU2FilmicOperator.cs">
+      <DependentUpon>ToneMapU2FilmicOperator.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Images\ToneMap\ToneMapReinhardOperator.cs">
+      <DependentUpon>ToneMapReinhardOperator.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Images\ToneMap\ToneMapOperatorShader.cs">
+      <DependentUpon>ToneMapOperatorShader.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Images\ToneMap\ToneMapShader.cs">
+      <DependentUpon>ToneMapShader.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Images\ToneMap\ToneMap.cs" />
     <Compile Include="Renderers\DirectLightData.cs" />
     <Compile Include="Renderers\LightForwardModelRendererExtensions.cs" />
     <Compile Include="Renderers\LightingGroupInfo.cs" />
@@ -2010,6 +2035,22 @@
     <None Include="Images\LuminanceEffect\LuminanceUtils.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LuminanceUtils.cs</LastGenOutput>
+    </None>
+    <None Include="Images\ToneMap\ToneMapU2FilmicOperator.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ToneMapU2FilmicOperator.cs</LastGenOutput>
+    </None>
+    <None Include="Images\ToneMap\ToneMapReinhardOperator.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ToneMapReinhardOperator.cs</LastGenOutput>
+    </None>
+    <None Include="Images\ToneMap\ToneMapOperatorShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ToneMapOperatorShader.cs</LastGenOutput>
+    </None>
+    <None Include="Images\ToneMap\ToneMapShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ToneMapShader.cs</LastGenOutput>
     </None>
     <None Include="LightPrepass\DeferredSpotShadowLighting.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
