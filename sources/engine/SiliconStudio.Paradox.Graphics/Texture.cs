@@ -189,21 +189,16 @@ namespace SiliconStudio.Paradox.Graphics
             return mipmapDescriptions[mipmap];
         }
 
-        public static int CalculateMipSize(int width, int mipLevel)
-        {
-            mipLevel = Math.Min(mipLevel, Image.CountMips(width));
-            width = width >> mipLevel;
-            return width > 0 ? width : 1;
-        }
-
         /// <summary>
-        /// Calculates the next mip-level (/2) of a texture.
+        /// Calculates the size of a particular mip.
         /// </summary>
         /// <param name="size">The size.</param>
-        /// <returns>A next mip-level Size3.</returns>
-        public static Size3 NextMip(Size3 size)
+        /// <param name="mipLevel">The mip level.</param>
+        /// <returns>System.Int32.</returns>
+        public static int CalculateMipSize(int size, int mipLevel)
         {
-            return new Size3(Math.Max(1, size.Width >> 1), Math.Max(1, size.Height >> 1), Math.Max(1, size.Depth >> 1));            
+            mipLevel = Math.Min(mipLevel, Image.CountMips(size));
+            return Math.Max(1, size >> mipLevel);
         }
 
         /// <summary>
@@ -269,7 +264,7 @@ namespace SiliconStudio.Paradox.Graphics
         {
             if (mipLevels > 1)
             {
-                if (!IsPow2(width) || !IsPow2(height) || !IsPow2(depth))
+                if (!MathUtil.IsPow2(width) || !MathUtil.IsPow2(height) || !MathUtil.IsPow2(depth))
                     throw new InvalidOperationException("Width/Height/Depth must be power of 2");
 
                 int maxMips = CountMips(width, height, depth);
@@ -278,7 +273,7 @@ namespace SiliconStudio.Paradox.Graphics
             }
             else if (mipLevels == 0)
             {
-                if (!IsPow2(width) || !IsPow2(height) || !IsPow2(depth))
+                if (!MathUtil.IsPow2(width) || !MathUtil.IsPow2(height) || !MathUtil.IsPow2(depth))
                     throw new InvalidOperationException("Width/Height/Depth must be power of 2");
 
                 mipLevels = CountMips(width, height, depth);
@@ -945,11 +940,6 @@ namespace SiliconStudio.Paradox.Graphics
             if ((flags & TextureFlags.RenderTarget) != 0 || (flags & TextureFlags.UnorderedAccess) != 0)
                 return GraphicsResourceUsage.Default;
             return usage;
-        }
-
-        private static bool IsPow2(int x)
-        {
-            return ((x != 0) && (x & (x - 1)) == 0);
         }
 
         private static int CountMips(int width)
