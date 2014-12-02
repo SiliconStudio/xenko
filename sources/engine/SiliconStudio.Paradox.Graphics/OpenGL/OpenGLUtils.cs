@@ -31,6 +31,32 @@ namespace SiliconStudio.Paradox.Graphics.OpenGL
             }
         }
 
+        public static void GetGLVersion(GraphicsProfile graphicsProfile, out int major, out int minor)
+        {
+            switch (graphicsProfile)
+            {
+                case GraphicsProfile.Level_9_1:
+                case GraphicsProfile.Level_9_2:
+                case GraphicsProfile.Level_9_3:
+                    major = 2;
+                    minor = 0;
+                    return;
+                case GraphicsProfile.Level_10_0:
+                    major = 3;
+                    minor = 0;
+                    return;
+                case GraphicsProfile.Level_10_1:
+                case GraphicsProfile.Level_11_0:
+                case GraphicsProfile.Level_11_1:
+                case GraphicsProfile.Level_11_2:
+                    major = 3;
+                    minor = 1;
+                    return;
+                default:
+                    throw new ArgumentOutOfRangeException("graphicsProfile");
+            }
+        }
+
         public static GraphicsProfile GetFeatureLevel(int major, int minor)
         {
             if (major >= 3)

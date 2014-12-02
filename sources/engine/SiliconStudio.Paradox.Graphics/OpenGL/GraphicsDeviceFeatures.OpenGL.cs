@@ -80,7 +80,7 @@ namespace SiliconStudio.Paradox.Graphics
             HasDoublePrecision = false;
             
             // TODO: from 3.1: draw indirect, separate shader object
-            // TODO: check tessellation
+            // TODO: check tessellation & geometry shaders: GL_ANDROID_extension_pack_es31a
 #else
             deviceRoot.HasVAO = true;
 

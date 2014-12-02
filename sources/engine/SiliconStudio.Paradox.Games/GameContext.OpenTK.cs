@@ -51,10 +51,7 @@ namespace SiliconStudio.Paradox.Games
         public GameContext(OpenTK.GameWindow control, int requestedWidth = 0, int requestedHeight = 0)
         {
             var creationFlags = GraphicsContextFlags.Default;
-            int versionMajor, versionMinor;
-
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-            OpenTK.Platform.Utilities.ForceEmbedded = true;
             creationFlags |= GraphicsContextFlags.Embedded;
 #endif
 
@@ -72,10 +69,12 @@ namespace SiliconStudio.Paradox.Games
 
             if (control == null)
             {
+                int versionMajor, versionMinor;
                 if (RequestedGraphicsProfile == null || RequestedGraphicsProfile.Length == 0)
                 {
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                    versionMajor = 2;
+                    // TODO: ES3 on desktop?
+                    versionMajor = 3;
                     versionMinor = 0;
 #else
                     // PC: 4.3 is commonly available (= compute shaders)
@@ -116,9 +115,9 @@ namespace SiliconStudio.Paradox.Games
         public readonly object Control;
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Control"/> to <see cref="GameContext"/>.
+        /// Performs an implicit conversion from OpenTK.GameWindow to <see cref="GameContext"/>.
         /// </summary>
-        /// <param name="control">The control.</param>
+        /// <param name="gameWindow">The GameWindow.</param>
         /// <returns>The result of the conversion.</returns>
         public static implicit operator GameContext(OpenTK.GameWindow gameWindow)
         {

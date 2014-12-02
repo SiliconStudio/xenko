@@ -1958,9 +1958,6 @@ namespace SiliconStudio.Paradox.Graphics
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
             IsOpenGLES2 = (versionMajor < 3);
-#if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
-            OpenTK.Platform.Utilities.ForceEmbedded = true;
-#endif
             creationFlags |= GraphicsContextFlags.Embedded;
 #endif
 
