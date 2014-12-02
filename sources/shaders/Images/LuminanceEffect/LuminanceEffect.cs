@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -15,44 +14,54 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// </summary>
     public class LuminanceEffect : ImageEffectBase
     {
+        private readonly PixelFormat luminanceFormat;
         private readonly ImageEffect luminanceLogEffect;
         private readonly RenderTarget luminance1x1;
         private readonly GaussianBlur blur;
-        private readonly Texture2D[] luminancesStaging;
-        private readonly bool[] luminanceStagingUsed;
-        private int currentLuminanceIndex;
-        private readonly Half[] mapValue = new Half[1];
-        private readonly List<RenderTarget> tempMipmaps;
+
+        private readonly ImageMultiScaler multiScaler;
+        private readonly ImageReadback<Half> readback;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LuminanceEffect"/> class.
+        /// Initializes a new instance of the <see cref="LuminanceEffect" /> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        public LuminanceEffect(ImageEffectContext context) : base(context)
+        /// <param name="luminanceFormat">The luminance format.</param>
+        /// <param name="luminanceLogEffect">The luminance log effect.</param>
+        /// <exception cref="System.ArgumentNullException">lunkinanceLogShader</exception>
+        public LuminanceEffect(ImageEffectContext context, PixelFormat luminanceFormat = PixelFormat.R16_Float, ImageEffect luminanceLogEffect = null) : base(context)
         {
-            luminanceLogEffect = new ImageEffect(Context, "LuminanceLogEffect");
-
-            luminance1x1 = Texture2D.New(GraphicsDevice, 1, 1, 1, PixelFormat.R16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget).DisposeBy(this).ToRenderTarget().DisposeBy(this);
-
-            // Create 1x1 luminances tempMipmaps to receive the average luminance
-            luminancesStaging = new Texture2D[16];
-            luminanceStagingUsed = new bool[luminancesStaging.Length];
-            for (int i = 0; i < luminancesStaging.Length; i++)
+            // Check luminance format
+            if (luminanceFormat.IsCompressed() || luminanceFormat.IsPacked() || luminanceFormat.IsTypeless() || luminanceFormat == PixelFormat.None)
             {
-                luminancesStaging[i] = (Texture2D)luminance1x1.Texture.ToStaging();
-                luminanceStagingUsed[i] = false;
+                throw new ArgumentOutOfRangeException("luminanceFormat", "Unsupported format [{0}] (must be not none, compressed, packed or typeless)".ToFormat(luminanceFormat));
             }
+            this.luminanceFormat = luminanceFormat;
+            
+            // Use or create a default luminance log effect
+            this.luminanceLogEffect = luminanceLogEffect ?? new LuminanceLogEffect(context).DisposeBy(this);
 
-            tempMipmaps =  new List<RenderTarget>();
+            // Create 1x1 texture
+            luminance1x1 = Texture2D.New(GraphicsDevice, 1, 1, 1, luminanceFormat, TextureFlags.ShaderResource | TextureFlags.RenderTarget).DisposeBy(this).ToRenderTarget().DisposeBy(this);
 
+            // Use a multiscaler
+            multiScaler = new ImageMultiScaler(context).DisposeBy(this);
+
+            // Readback is always going to be done on the 1x1 texture
+            readback = new ImageReadback<Half>(context).DisposeBy(this);
+            readback.SetInput(luminance1x1);
+
+            // Blur used before upscaling 
             blur = new GaussianBlur(context).DisposeBy(this);
             blur.Radius = 4;
+
+            EnableAverageLuminanceReadback = true;
         }
 
         public int UpscaleCount { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to enable calculation of <see cref="AverageLuminance"/> (default is false).
+        /// Gets or sets a value indicating whether to enable calculation of <see cref="AverageLuminance"/> (default is true).
         /// </summary>
         /// <value><c>true</c> if to enable calculation of <see cref="AverageLuminance"/>; otherwise, <c>false</c>.</value>
         public bool EnableAverageLuminanceReadback { get; set; }
@@ -81,101 +90,50 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         protected override void DrawCore()
         {
-            var inputTexture = GetSafeInput(0);
-            var outputRenderTexture = GetOutput(0);
+            var input = GetSafeInput(0);
+            var output = GetOutput(0);
 
             // If no output, we are only calculating the average luminance.
-            var lastSize = new Size3(1, 1, 1);
-            if (outputRenderTexture != null)
+            RenderTarget outputTextureDown = null;
+            if (output != null)
             {
-                lastSize = outputRenderTexture.Size;
-                for (int i = 0; i < UpscaleCount; i++)
-                    lastSize = Texture.NextMip(lastSize);
+                var blurTextureSize = output.Size.Down2(UpscaleCount);
+                outputTextureDown = NewScopedRenderTarget2D(blurTextureSize.Width, blurTextureSize.Height, luminanceFormat, 1);
             }
 
-            tempMipmaps.Clear();
-            var luminanceMap = NewScopedRenderTarget2D(inputTexture.Width, inputTexture.Height, PixelFormat.R16_Float, 1);
-            tempMipmaps.Add(luminanceMap);
+            var luminanceMap = NewScopedRenderTarget2D(input.Width, input.Height, luminanceFormat, 1);
 
             // Calculate the first luminance map
-            luminanceLogEffect.SetInput(inputTexture);
+            luminanceLogEffect.SetInput(input);
             luminanceLogEffect.SetOutput(luminanceMap);
             luminanceLogEffect.Draw();
 
-            var mipCount = Texture.CalculateMipLevels(inputTexture.Width, inputTexture.Height, 0) - 1;
+            // Downscales luminance up to BlurTexture (optional) and 1x1
+            multiScaler.SetInput(luminanceMap);
+            multiScaler.SetOutput(outputTextureDown, luminance1x1);
+            multiScaler.Draw();
 
-            var nextSize = inputTexture.Size;
-            int upscaleBaseIndex = 0;
-            for (int i = 0; i < mipCount; i++)
+            // If we have an output texture
+            if (outputTextureDown != null)
             {
-                nextSize = Texture.NextMip(nextSize);
-                RenderTarget mipmap;
+                // Blur x2 the intermediate output texture 
+                blur.SetInput(outputTextureDown);
+                blur.SetOutput(outputTextureDown);
+                blur.Draw();
+                blur.Draw();
 
-                if (i == (mipCount - 1))
-                {
-                    mipmap = luminance1x1;
-                }
-                else
-                {
-                    if (upscaleBaseIndex <= 1 && nextSize.Width <= lastSize.Width && nextSize.Height <= lastSize.Height)
-                    {
-                        upscaleBaseIndex = i + 1;
-                    }
-
-                    var renderTarget2D = NewScopedRenderTarget2D(nextSize.Width, nextSize.Height, PixelFormat.R16_Float, 1);
-                    tempMipmaps.Add(renderTarget2D);
-                    mipmap = renderTarget2D;
-                }
-
-                // Downscale/2
-                Scaler.SetInput(tempMipmaps[i]);
-                Scaler.SetOutput(mipmap);
-                Scaler.Draw("Down/2");
+                // Upscale from intermediate to output
+                multiScaler.SetInput(outputTextureDown);
+                multiScaler.SetOutput(output);
+                multiScaler.Draw();
             }
 
             // Calculate average luminance only if needed
             if (EnableAverageLuminanceReadback)
             {
-                // TODO: This code could be moved to a general readback Effect utility.
-
-                // Copy to staging resource
-                GraphicsDevice.Copy(luminance1x1, luminancesStaging[currentLuminanceIndex]);
-                luminanceStagingUsed[currentLuminanceIndex] = true;
-
-                // Read-back to CPU using a ring of staging buffers
-                for (int i = luminancesStaging.Length - 1; i >= 1; i--)
-                {
-                    var oldStagingIndex = (currentLuminanceIndex + i) % luminancesStaging.Length;
-                    var oldLuminanceStaging = luminancesStaging[oldStagingIndex];
-                    if (luminanceStagingUsed[oldStagingIndex] && oldLuminanceStaging.GetData(mapValue, 0, 0, true))
-                    {
-                        AverageLuminance = (float)Math.Pow(2.0, mapValue[0]);
-                        //Debug.WriteLine(string.Format("Buffer {0}:{1} Lum: {2}", currentLuminanceIndex, oldStagingIndex, AverageLuminance));
-                        break;
-                    }
-                }
-                currentLuminanceIndex = (currentLuminanceIndex + 1) % luminancesStaging.Length;
-            }
-
-            // Upscale only if output is larger
-            if (upscaleBaseIndex > 1 && UpscaleCount > 0)
-            {
-                var lastRenderTarget = tempMipmaps[upscaleBaseIndex];
-                blur.SetInput(lastRenderTarget);
-                blur.SetOutput(lastRenderTarget);
-                blur.Draw();
-                blur.Draw();
-
-                for (int j = 1; j < UpscaleCount; j++)
-                {
-                    Scaler.SetInput(lastRenderTarget);
-                    lastRenderTarget = tempMipmaps[upscaleBaseIndex - j];
-                    Scaler.SetOutput(lastRenderTarget);
-                    Scaler.Draw("Upx2");
-                }
-                Scaler.SetInput(lastRenderTarget);
-                Scaler.SetOutput(outputRenderTexture);
-                Scaler.Draw("Upx2Last");
+                readback.Draw();
+                var rawLogValue = readback.Result[0];
+                AverageLuminance = (float)Math.Pow(2.0, rawLogValue);
             }
         }
     }

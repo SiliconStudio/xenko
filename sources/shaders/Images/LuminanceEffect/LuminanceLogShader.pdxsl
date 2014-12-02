@@ -4,16 +4,21 @@
 namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
-    /// A log luminance shader
+    /// A log luminance shader (by default using luma/Perceptive luminance Y'601)
     /// </summary>
-    internal class LuminanceLogShader : ImageEffectShader
+    class LuminanceLogShader : ImageEffectShader
     {
+        float GetLuminance(float3 color)
+        {
+            return LuminanceUtils.Luma(color);
+        }
+
         stage override float4 Shading()
         {
             float3 color = Texture0.Sample(PointSampler, streams.TexCoord).rgb;
 
             // TODO: Make the Luma configurable from the LuminanceLogEffect
-            return float4(log2(LuminanceUtils.Luma(color)), 1.0, 1.0, 1.0);
+            return float4(log2(GetLuminance(color)), 1.0, 1.0, 1.0);
         }
     };
 }

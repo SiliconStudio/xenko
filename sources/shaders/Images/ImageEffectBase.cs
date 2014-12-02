@@ -47,6 +47,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             inputTextures = new Texture[128];
             scopedRenderTargets = new List<RenderTarget>();
             maxInputTextureIndex = -1;
+            EnableSetRenderTargets = true;
         }
 
         /// <summary>
@@ -72,6 +73,12 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         /// <value>The graphics device.</value>
         protected GraphicsDevice GraphicsDevice { get; private set; }
+
+        /// <summary>
+        /// Gets or sets a boolean to enable GraphicsDevice.SetRenderTargets from output. Default is <c>true</c>.
+        /// </summary>
+        /// <value>A boolean to enable GraphicsDevice.SetRenderTargets from output. Default is <c>true</c></value>
+        protected bool EnableSetRenderTargets { get; set; }
 
         /// <summary>
         /// Gets a shared <see cref="ImageScaler"/>.
@@ -199,13 +206,16 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             GraphicsDevice.BeginProfile(Color.Green, name ?? Name);
 
-            if (outputRenderTargetView != null)
+            if (EnableSetRenderTargets)
             {
-                GraphicsDevice.SetRenderTarget(outputDepthStencilBuffer, outputRenderTargetView);
-            }
-            else if (outputRenderTargetViews != null)
-            {
-                GraphicsDevice.SetRenderTargets(outputDepthStencilBuffer, outputRenderTargetViews);
+                if (outputRenderTargetView != null)
+                {
+                    GraphicsDevice.SetRenderTarget(outputDepthStencilBuffer, outputRenderTargetView);
+                }
+                else if (outputRenderTargetViews != null)
+                {
+                    GraphicsDevice.SetRenderTargets(outputDepthStencilBuffer, outputRenderTargetViews);
+                }
             }
         }
 
