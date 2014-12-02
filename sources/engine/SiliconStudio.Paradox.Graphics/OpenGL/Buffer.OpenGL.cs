@@ -6,7 +6,9 @@ using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
+#if SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS
 using BufferUsageHint = OpenTK.Graphics.ES30.BufferUsage;
+#endif
 #else
 using OpenTK.Graphics.OpenGL;
 #endif

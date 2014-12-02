@@ -22,9 +22,62 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
         }
 
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !(SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS)
+        public static TextureComponentCount ToOpenGL(this PixelInternalFormat format)
+        {
+            switch (format)
+            {
+                case PixelInternalFormat.Alpha:
+                    return TextureComponentCount.Alpha;
+                case PixelInternalFormat.Rgb:
+                    return TextureComponentCount.Rgb;
+                case PixelInternalFormat.Rgba:
+                    return TextureComponentCount.Rgba;
+                case PixelInternalFormat.Luminance:
+                    return TextureComponentCount.Luminance;
+                case PixelInternalFormat.LuminanceAlpha:
+                    return TextureComponentCount.LuminanceAlpha;
+                default:
+                    throw new ArgumentOutOfRangeException("format");
+            }
+        }
+
+        public static TextureTarget2d ToOpenGL(this TextureTarget target)
+        {
+            switch (target)
+            {
+                case TextureTarget.Texture2D:
+                    return TextureTarget2d.Texture2D;
+                case TextureTarget.TextureCubeMapPositiveX:
+                    return TextureTarget2d.TextureCubeMapPositiveX;
+                case TextureTarget.TextureCubeMapNegativeX:
+                    return TextureTarget2d.TextureCubeMapNegativeX;
+                case TextureTarget.TextureCubeMapPositiveY:
+                    return TextureTarget2d.TextureCubeMapPositiveY;
+                case TextureTarget.TextureCubeMapNegativeY:
+                    return TextureTarget2d.TextureCubeMapNegativeY;
+                case TextureTarget.TextureCubeMapPositiveZ:
+                    return TextureTarget2d.TextureCubeMapPositiveZ;
+                case TextureTarget.TextureCubeMapNegativeZ:
+                    return TextureTarget2d.TextureCubeMapNegativeZ;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        public static ES30.PrimitiveType ToOpenGL(this PrimitiveType primitiveType)
+        {
+            return primitiveType.ToOpenGLES();
+        }
+#else
         public static PixelInternalFormat ToOpenGL(this PixelInternalFormat format)
         {
             return format;
+        }
+
+        public static TextureTarget ToOpenGL(this TextureTarget target)
+        {
+            return target;
         }
 
         public static BeginMode ToOpenGL(this PrimitiveType primitiveType)
@@ -45,6 +98,7 @@ namespace SiliconStudio.Paradox.Graphics
                     throw new NotImplementedException();
             }
         }
+#endif
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
         public static ES30.PrimitiveType ToOpenGLES(this PrimitiveType primitiveType)
@@ -78,7 +132,11 @@ namespace SiliconStudio.Paradox.Graphics
                 case TextureAddressMode.Clamp:
                     return TextureWrapMode.ClampToEdge;
                 case TextureAddressMode.Mirror:
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !(SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS)
+                    return TextureWrapMode.Repeat;
+#else
                     return TextureWrapMode.MirroredRepeat;
+#endif
                 case TextureAddressMode.Wrap:
                     return TextureWrapMode.Repeat;
                 default:

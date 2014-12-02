@@ -12,6 +12,9 @@ using SiliconStudio.Core.Extensions;
 using SiliconStudio.Paradox.Shaders;
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
+#if !(SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS)
+using ProgramParameter = OpenTK.Graphics.ES30.GetProgramParameterName;
+#endif
 #else
 using OpenTK.Graphics.OpenGL;
 #endif

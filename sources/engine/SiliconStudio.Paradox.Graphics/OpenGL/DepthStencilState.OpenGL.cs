@@ -4,6 +4,9 @@
 using System;
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
+#if !(SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS)
+using CullFaceMode = OpenTK.Graphics.ES30.StencilFace;
+#endif
 #else
 using OpenTK.Graphics.OpenGL;
 #endif

@@ -95,7 +95,11 @@ namespace SiliconStudio.Paradox.Graphics
                         data = textureDatas[i].DataPointer;
                     }
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if (SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS)
                     GL.TexImage2D(TextureTarget1D, i, internalFormat, width, 1, 0, format, type, data);
+#else
+                    GL.TexImage2D(TextureTarget2d.Texture2D, i, internalFormat.ToOpenGL(), width, 1, 0, format, type, data);
+#endif
 #else
                     GL.TexImage1D(TextureTarget1D, i, internalFormat, width, 0, format, type, data);
 #endif

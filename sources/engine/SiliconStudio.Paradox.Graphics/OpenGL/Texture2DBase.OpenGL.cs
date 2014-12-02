@@ -165,13 +165,22 @@ namespace SiliconStudio.Paradox.Graphics
                         }
                         if (compressed)
                         {
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !(SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS)
+                            throw new NotSupportedException("Can't use compressed textures on desktop OpenGL ES.");
+#else
                             GL.CompressedTexImage2D(TextureTarget.Texture2D, i, internalFormat,
                                 width, height, 0, textureDatas[i].SlicePitch, data);
+#endif
                         }
                         else
                         {
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !(SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS)
+                            GL.TexImage2D(TextureTarget2d.Texture2D, i, internalFormat.ToOpenGL(),
+                                            width, height, 0, format, type, data);
+#else
                             GL.TexImage2D(TextureTarget.Texture2D, i, internalFormat,
                                             width, height, 0, format, type, data);
+#endif
                         }
                     }
                     GL.BindTexture(TextureTarget.Texture2D, 0);

@@ -24,7 +24,12 @@ using OpenTK.Platform.iPhoneOS;
 #endif
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
+#if !(SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS)
+using BeginMode = OpenTK.Graphics.ES30.PrimitiveType;
+using ProgramParameter = OpenTK.Graphics.ES30.GetProgramParameterName;
+#else
 using FramebufferAttachment = OpenTK.Graphics.ES30.FramebufferSlot;
+#endif
 #else
 using OpenTK.Graphics.OpenGL;
 #endif
@@ -923,7 +928,11 @@ namespace SiliconStudio.Paradox.Graphics
                         if (renderTargets[i] != null)
                         {
                             firstRenderTargets = i;
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !(SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS)
+                            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0 + i, TextureTarget2d.Texture2D, renderTargets[i].ResourceId, 0);
+#else
                             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0 + i, TextureTarget.Texture2D, renderTargets[i].ResourceId, 0);
+#endif
                         }
                     }
                 }
@@ -950,11 +959,11 @@ namespace SiliconStudio.Paradox.Graphics
                         GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, attachmentType, TextureTarget.Texture2D, depthStencilBuffer.ResourceId, 0);
 #else
                     if (depthStencilBuffer.IsDepthBuffer)
-                        GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferSlot.DepthAttachment, RenderbufferTarget.Renderbuffer, depthStencilBuffer.ResourceId);
+                        GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, depthStencilBuffer.ResourceId);
 
                     // If stencil buffer is separate, it's resource id might be stored in depthStencilBuffer.Texture.ResouceIdStencil
                     if(depthStencilBuffer.IsStencilBuffer)
-                        GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferSlot.StencilAttachment, RenderbufferTarget.Renderbuffer, depthStencilBuffer.Texture.ResouceIdStencil != 0 ? depthStencilBuffer.Texture.ResouceIdStencil : depthStencilBuffer.ResourceId);
+                        GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.StencilAttachment, RenderbufferTarget.Renderbuffer, depthStencilBuffer.Texture.ResouceIdStencil != 0 ? depthStencilBuffer.Texture.ResouceIdStencil : depthStencilBuffer.ResourceId);
 #endif
                 }
 
@@ -1766,7 +1775,11 @@ namespace SiliconStudio.Paradox.Graphics
                     var desc = texture.Description;
                     GL.BindTexture(TextureTarget.Texture2D, texture.ResourceId);
                     boundTextures[0] = null;
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !(SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS)
+                    GL.TexImage2D(TextureTarget2d.Texture2D, subResourceIndex, texture.InternalFormat.ToOpenGL(), desc.Width, desc.Height, 0, texture.FormatGl, texture.Type, databox.DataPointer);
+#else
                     GL.TexImage2D(TextureTarget.Texture2D, subResourceIndex, texture.InternalFormat, desc.Width, desc.Height, 0, texture.FormatGl, texture.Type, databox.DataPointer);
+#endif
                 }
                 else
                 {
@@ -1832,7 +1845,7 @@ namespace SiliconStudio.Paradox.Graphics
                 
                 // Update the texture region
                 GL.BindTexture(texture.Target, texture.resourceId);
-                GL.TexSubImage2D(texture.Target, subResourceIndex, region.Left, region.Top, width, height, texture.FormatGl, texture.Type, databox.DataPointer);
+                GL.TexSubImage2D(texture.Target.ToOpenGL(), subResourceIndex, region.Left, region.Top, width, height, texture.FormatGl, texture.Type, databox.DataPointer);
                 boundTextures[0] = null;
 
                 // reset the Unpack Alignment

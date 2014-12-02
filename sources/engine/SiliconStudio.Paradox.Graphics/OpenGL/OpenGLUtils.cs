@@ -42,10 +42,10 @@ namespace SiliconStudio.Paradox.Graphics.OpenGL
                     minor = 0;
                     return;
                 case GraphicsProfile.Level_10_0:
+                case GraphicsProfile.Level_10_1:
                     major = 3;
                     minor = 0;
                     return;
-                case GraphicsProfile.Level_10_1:
                 case GraphicsProfile.Level_11_0:
                 case GraphicsProfile.Level_11_1:
                 case GraphicsProfile.Level_11_2:
@@ -62,7 +62,7 @@ namespace SiliconStudio.Paradox.Graphics.OpenGL
             if (major >= 3)
             {
                 if (minor >= 1)
-                    return GraphicsProfile.Level_10_1; // missing tessellation and geometry shaders
+                    return GraphicsProfile.Level_11_0; // missing tessellation and geometry shaders
                 return GraphicsProfile.Level_10_0;
             }
             return GraphicsProfile.Level_9_1;
