@@ -582,6 +582,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>MaterialReflectanceGBuffer.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Images\Bloom\Bloom.cs" />
     <Compile Include="Images\BrightFilter\BrightFilter.cs" />
     <Compile Include="Images\BrightFilter\BrightFilterShader.cs">
       <DependentUpon>BrightFilterShader.pdxsl</DependentUpon>
@@ -2628,6 +2629,7 @@
       <LastGenOutput>NormalWSStream.cs</LastGenOutput>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
