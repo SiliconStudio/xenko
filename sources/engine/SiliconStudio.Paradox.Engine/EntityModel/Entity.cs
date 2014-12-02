@@ -30,6 +30,14 @@ namespace SiliconStudio.Paradox.EntityModel
         protected TransformationComponent transformation;
         internal List<Task> prepareTasks;
 
+        /// <summary>
+        /// The identifier, loaded from <see cref="Data.EntityData.Id"/>.
+        /// </summary>
+        /// <remarks>
+        /// This might be removed later if we have a better tracking/mapping of Data/non-Data objects.
+        /// </remarks>
+        public new Guid Id;
+
         static Entity()
         {
             PropertyContainer.AddAccessorProperty(typeof(Entity), TransformationComponent.Key);

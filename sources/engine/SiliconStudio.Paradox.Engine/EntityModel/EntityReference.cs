@@ -16,18 +16,11 @@ namespace SiliconStudio.Paradox.EntityModel
     public sealed class EntityReference
     {
         private Guid id;
-        private string name;
 
         public Guid Id
         {
             get { return id; }
             set { id = value; }
-        }
-
-        public string Name
-        {
-            get { return name; }
-            set { name = value; }
         }
 
         [DataMemberIgnore]
@@ -47,7 +40,7 @@ namespace SiliconStudio.Paradox.EntityModel
 
         public override string ToString()
         {
-            return string.Format("{0}:{1}", Id, Name);
+            return string.Format("{0}:{1}", Id, Value);
         }
 
         public static readonly PropertyKey<EntityAnalysisResult> EntityAnalysisResultKey = new PropertyKey<EntityAnalysisResult>("EntityAnalysisResult", typeof(EntityReference));
@@ -68,7 +61,6 @@ namespace SiliconStudio.Paradox.EntityModel
                     }
                 }
 
-                stream.SerializeExtended(ref obj.name, mode);
                 stream.Serialize(ref obj.id, mode);
             }
         }

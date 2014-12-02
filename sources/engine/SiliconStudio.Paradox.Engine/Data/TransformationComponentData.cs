@@ -13,6 +13,7 @@ namespace SiliconStudio.Paradox.Engine.Data
         {
             UseTRS = true;
             Scaling = Vector3.One;
+            Rotation = Quaternion.Identity;
             Children = new FastCollection<EntityComponentReference<TransformationComponent>>();
         }
     }

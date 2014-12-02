@@ -6,10 +6,12 @@ using System.Collections.Generic;
 using SharpYaml.Serialization;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
+using SiliconStudio.Assets.Diff;
 using SiliconStudio.Assets.Visitors;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.Paradox.Assets.Model.Analysis;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.EntityModel.Data;
 
@@ -22,7 +24,7 @@ namespace SiliconStudio.Paradox.Assets.Model
     [AssetFactory(typeof(EntityFactory))]
     [AssetDescription("Entity", "An entity", true)]
     [AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
-    public class EntityAsset : AssetImportTracked
+    public class EntityAsset : AssetImportTracked, IDiffResolver
     {
         public const int AssetFormatVersion = 1;
 
@@ -46,11 +48,68 @@ namespace SiliconStudio.Paradox.Assets.Model
         [DataMember(20)]
         public EntityHierarchyData Hierarchy { get; set; }
 
+        /// <summary>
+        /// The various <see cref="EntityAsset"/> that are instantiated in this one.
+        /// </summary>
+        public Dictionary<Guid, EntityBase> AssetBases = new Dictionary<Guid, EntityBase>();
+
         private class EntityFactory : IAssetFactory
         {
             public Asset New()
             {
                 return new EntityAsset();
+            }
+        }
+
+        void IDiffResolver.BeforeDiff(Asset baseAsset, Asset asset1, Asset asset2)
+        {
+            Guid newId;
+            var baseEntityAsset = (EntityAsset)baseAsset;
+            var entityAsset1 = (EntityAsset)asset1;
+            var entityAsset2 = (EntityAsset)asset2;
+
+            // Let's remap IDs in asset2 (if it comes from a FBX or such, we need to do that)
+            var oldBaseTree = new EntityTreeAsset(baseEntityAsset.Hierarchy);
+            var newBaseTree = new EntityTreeAsset(entityAsset2.Hierarchy);
+
+            var idRemapping = new Dictionary<Guid, Guid>();
+
+            // Try to transfer ID from old base to new base
+            var mergeResult = AssetMerge.Merge(oldBaseTree, newBaseTree, oldBaseTree, node =>
+            {
+                if (typeof(Guid).IsAssignableFrom(node.InstanceType) && node.BaseNode != null && node.Asset1Node != null)
+                {
+                    idRemapping.Add((Guid)node.Asset1Node.Instance, (Guid)node.BaseNode.Instance);
+                }
+
+                return AssetMergePolicies.MergePolicyAsset2AsNewBaseOfAsset1(node);
+            });
+
+            if (mergeResult.HasErrors)
+            {
+                //mergeResult.CopyTo();
+            }
+
+            // Remap entities in asset2 with new Id
+            {
+                if (idRemapping.TryGetValue(entityAsset2.Hierarchy.RootEntity, out newId))
+                    entityAsset2.Hierarchy.RootEntity = newId;
+            }
+            foreach (var entity in entityAsset2.Hierarchy.Entities)
+            {
+                if (idRemapping.TryGetValue(entity.Id, out newId))
+                    entity.Id = newId;
+            }
+
+            // Sort again the EntityCollection (since ID changed)
+            entityAsset2.Hierarchy.Entities.Sort();
+
+            // Remap entity references with new Id
+            var entityAnalysisResult = EntityAnalysis.Visit(entityAsset2.Hierarchy);
+            foreach (var entity in entityAnalysisResult.EntityReferences)
+            {
+                if (idRemapping.TryGetValue(entity.Id, out newId))
+                    entity.Id = newId;
             }
         }
 
@@ -79,5 +138,21 @@ namespace SiliconStudio.Paradox.Assets.Model
                 throw new NotImplementedException();
             }
         }
+    }
+
+    [DataContract("EntityBase")]
+    public struct EntityBase
+    {
+        /// <summary>
+        /// The <see cref="EntityAsset"/> base.
+        /// </summary>
+        public AssetBase Base;
+
+        public Guid SourceRoot;
+
+        /// <summary>
+        /// Maps <see cref="EntityData.Id"/> from this asset to base asset one.
+        /// </summary>
+        public Dictionary<Guid, Guid> IdMapping;
     }
 }

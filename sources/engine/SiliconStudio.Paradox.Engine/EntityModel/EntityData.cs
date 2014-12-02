@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 
@@ -41,6 +42,11 @@ namespace SiliconStudio.Paradox.EntityModel.Data
             {
                 ((EntityComponentData)e.Item).Entity = this;
             }
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0} {1} ({2})", Id, Name, string.Join(", ", Components.Values.Select(x => x.GetType().Name)));
         }
     }
 }

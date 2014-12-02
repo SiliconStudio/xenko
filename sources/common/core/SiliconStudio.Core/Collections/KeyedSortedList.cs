@@ -57,6 +57,14 @@ namespace SiliconStudio.Core.Collections
             items.RemoveAt(index);
         }
 
+        /// <summary>
+        /// Sorts again this list (in case keys were mutated).
+        /// </summary>
+        public void Sort()
+        {
+            Array.Sort(items.Items, 0, items.Count, new Comparer(this));
+        }
+
         /// <inheritdoc/>
         public void Add(T item)
         {
@@ -69,7 +77,7 @@ namespace SiliconStudio.Core.Collections
             InsertItem(~index, item);
         }
 
-        public bool Contains(TKey key)
+        public bool ContainsKey(TKey key)
         {
             return BinarySearch(key) >= 0;
         }
@@ -271,6 +279,21 @@ namespace SiliconStudio.Core.Collections
                 }
             }
             return ~start;
+        }
+
+        struct Comparer : IComparer<T>
+        {
+            private KeyedSortedList<TKey, T> list;
+
+            internal Comparer(KeyedSortedList<TKey, T> list)
+            {
+                this.list = list;
+            }
+
+            public int Compare(T x, T y)
+            {
+                return list.comparer.Compare(list.GetKeyForItem(x), list.GetKeyForItem(y));
+            }
         }
  
         #region Nested type: Enumerator

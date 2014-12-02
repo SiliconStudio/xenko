@@ -13,6 +13,7 @@ namespace SiliconStudio.Paradox.EntityModel.Data
         public override void ConstructFromData(ConverterContext converterContext, EntityData entityData, ref Entity entity)
         {
             entity = new Entity(entityData.Name);
+            entity.Id = entityData.Id;
             foreach (var component in entityData.Components)
             {
                 entity.Tags.SetObject(component.Key, converterContext.ConvertFromData<EntityComponent>(component.Value, ConvertFromDataFlags.Construct));

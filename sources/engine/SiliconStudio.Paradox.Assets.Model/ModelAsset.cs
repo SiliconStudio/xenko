@@ -51,7 +51,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <userdoc>
         /// The nodes of the model.
         /// </userdoc>
-        [DataMember(20), DiffUseAsset1]
+        [DataMember(20), DiffUseAsset2]
         public List<NodeInformation> Nodes { get; private set; }
         
             /// <summary>

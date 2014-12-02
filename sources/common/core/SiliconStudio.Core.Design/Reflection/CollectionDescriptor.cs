@@ -12,6 +12,7 @@ namespace SiliconStudio.Core.Reflection
     /// </summary>
     public class CollectionDescriptor : ObjectDescriptor
     {
+        private static readonly object[] EmptyObjects = new object[0];
         private static readonly List<string> ListOfMembersToRemove = new List<string> { "Capacity", "Count", "IsReadOnly", "IsFixedSize", "IsSynchronized", "SyncRoot" };
 
         private readonly Func<object, bool> IsReadOnlyFunction;
@@ -19,6 +20,7 @@ namespace SiliconStudio.Core.Reflection
         private readonly Action<object, object> CollectionAddFunction;
         private readonly Action<object, int, object> CollectionInsertFunction;
         private readonly Action<object, int> CollectionRemoveAtFunction;
+        private readonly Action<object> CollectionClearFunction;
         private readonly bool hasIndexerSetter;
 
         /// <summary>
@@ -44,6 +46,8 @@ namespace SiliconStudio.Core.Reflection
             {
                 var add = itype.GetMethod("Add", new[] {ElementType});
                 CollectionAddFunction = (obj, value) => add.Invoke(obj, new[] {value});
+                var clear = itype.GetMethod("Clear", Type.EmptyTypes);
+                CollectionClearFunction = (obj) => clear.Invoke(obj, EmptyObjects);
                 var countMethod = itype.GetProperty("Count").GetGetMethod();
                 GetCollectionCountFunction = o => (int)countMethod.Invoke(o, null);
                 var isReadOnly = itype.GetProperty("IsReadOnly").GetGetMethod();
@@ -63,6 +67,7 @@ namespace SiliconStudio.Core.Reflection
             if (!typeSupported && typeof(IList).IsAssignableFrom(type))
             {
                 CollectionAddFunction = (obj, value) => ((IList)obj).Add(value);
+                CollectionClearFunction = (obj) => ((IList)obj).Clear();
                 CollectionInsertFunction = (obj, index, value) => ((IList)obj).Insert(index, value);
                 CollectionRemoveAtFunction = (obj, index) => ((IList)obj).RemoveAt(index);
                 GetCollectionCountFunction = o => ((IList)o).Count;
@@ -167,6 +172,15 @@ namespace SiliconStudio.Core.Reflection
             if (list == null) throw new ArgumentNullException("list");
             var iList = (IList)list;
             iList[index] = value;
+        }
+
+        /// <summary>
+        /// Clears the specified collection.
+        /// </summary>
+        /// <param name="collection">The collection.</param>
+        public void Clear(object collection)
+        {
+            CollectionClearFunction(collection);
         }
 
         /// <summary>

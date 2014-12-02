@@ -76,6 +76,7 @@ namespace SiliconStudio.Paradox.Engine
 
             UseTRS = true;
             Scaling = Vector3.One;
+            Rotation = Quaternion.Identity;
         }
 
         [DataMemberConvert]
