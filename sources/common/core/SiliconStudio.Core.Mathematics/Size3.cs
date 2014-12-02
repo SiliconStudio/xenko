@@ -32,12 +32,17 @@ namespace SiliconStudio.Core.Mathematics
     [DataContract("!Size3")]
     [DataStyle(DataStyle.Compact)]
     [StructLayout(LayoutKind.Sequential)]
-    public struct Size3 : IEquatable<Size3>
+    public struct Size3 : IEquatable<Size3>, IComparable<Size3>
     {
         /// <summary>
         /// A zero size with (width, height, depth) = (0,0,0)
         /// </summary>
         public static readonly Size3 Zero = new Size3(0, 0, 0);
+
+        /// <summary>
+        /// A one size with (width, height, depth) = (1,1,1)
+        /// </summary>
+        public static readonly Size3 One = new Size3(1, 1, 1);
 
         /// <summary>
         /// A zero size with (width, height, depth) = (0,0,0)
@@ -75,6 +80,17 @@ namespace SiliconStudio.Core.Mathematics
         [DataMember(2)]
         public int Depth;
 
+        /// <summary>
+        /// Gets a volume size.
+        /// </summary>
+        private long VolumeSize
+        {
+            get
+            {
+                return (long)Width * Height * Depth;
+            }
+        }
+
         public bool Equals(Size3 other)
         {
             return Width == other.Width && Height == other.Height && Depth == other.Depth;
@@ -97,9 +113,119 @@ namespace SiliconStudio.Core.Mathematics
             }
         }
 
+        public int CompareTo(Size3 other)
+        {
+            return Math.Sign(this.VolumeSize - other.VolumeSize);
+        }
+
         public override string ToString()
         {
             return string.Format("({0},{1},{2})", Width, Height, Depth);
+        }
+
+        /// <summary>
+        /// Implements the &lt;.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator <(Size3 left, Size3 right)
+        {
+            return left.CompareTo(right) < 0;
+        }
+
+        /// <summary>
+        /// Implements the &lt;.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator <=(Size3 left, Size3 right)
+        {
+            return left.CompareTo(right) <= 0;
+        }
+
+        /// <summary>
+        /// Implements the &lt; or ==.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator >(Size3 left, Size3 right)
+        {
+            return left.CompareTo(right) > 0;
+        }
+
+        /// <summary>
+        /// Implements the &gt; or ==.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator >=(Size3 left, Size3 right)
+        {
+            return left.CompareTo(right) >= 0;
+        }
+
+        /// <summary>
+        /// Implements the ==.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator ==(Size3 left, Size3 right)
+        {
+            return left.Equals(right);
+        }
+
+        /// <summary>
+        /// Implements the !=.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator !=(Size3 left, Size3 right)
+        {
+            return !left.Equals(right);
+        }
+
+        /// <summary>
+        /// Calculates the next up mip-level (*2) of this size.
+        /// </summary>
+        /// <returns>A next up mip-level Size3.</returns>
+        public Size3 Up2(int count = 1)
+        {
+            if (count < 0)
+            {
+                throw new ArgumentOutOfRangeException("count", "Must be >= 0");
+            }
+
+            return new Size3(Math.Max(1, Width << count), Math.Max(1, Height << count), Math.Max(1, Depth << count));
+        }
+
+        /// <summary>
+        /// Calculates the next down mip-level (/2) of this size.
+        /// </summary>
+        /// <param name="count">The count.</param>
+        /// <returns>A next down mip-level Size3.</returns>
+        public Size3 Down2(int count = 1)
+        {
+            if (count < 0)
+            {
+                throw new ArgumentOutOfRangeException("count", "Must be >= 0");
+            }
+
+            return new Size3(Math.Max(1, Width >> count), Math.Max(1, Height >> count), Math.Max(1, Depth >> count));
+        }
+
+        /// <summary>
+        /// Calculates the mip size based on a direction.
+        /// </summary>
+        /// <param name="direction">The direction &lt; 0 then <see cref="Down2"/>, &gt; 0  then <see cref="Up2"/>, else this unchanged.</param>
+        /// <returns>Size3.</returns>
+        public Size3 Mip(int direction)
+        {
+            return direction == 0 ? this : direction < 0 ? Down2() : Up2();
         }
     }
 }
