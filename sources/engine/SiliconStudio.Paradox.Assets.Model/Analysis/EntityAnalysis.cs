@@ -129,6 +129,37 @@ namespace SiliconStudio.Paradox.Assets.Model.Analysis
             }
         }
 
+        /// <summary>
+        /// Remaps the entities identifier.
+        /// </summary>
+        /// <param name="entityHierarchy">The entity hierarchy.</param>
+        /// <param name="idRemapping">The identifier remapping.</param>
+        public static void RemapEntitiesId(EntityHierarchyData entityHierarchy, Dictionary<Guid, Guid> idRemapping)
+        {
+            Guid newId;
+
+            // Remap entities in asset2 with new Id
+            if (idRemapping.TryGetValue(entityHierarchy.RootEntity, out newId))
+                entityHierarchy.RootEntity = newId;
+
+            foreach (var entity in entityHierarchy.Entities)
+            {
+                if (idRemapping.TryGetValue(entity.Id, out newId))
+                    entity.Id = newId;
+            }
+
+            // Sort again the EntityCollection (since ID changed)
+            entityHierarchy.Entities.Sort();
+
+            // Remap entity references with new Id
+            var entityAnalysisResult = EntityAnalysis.Visit(entityHierarchy);
+            foreach (var entity in entityAnalysisResult.EntityReferences)
+            {
+                if (idRemapping.TryGetValue(entity.Id, out newId))
+                    entity.Id = newId;
+            }
+        }
+
         private class EntityReferenceAnalysis : AssetVisitorBase
         {
             public EntityReferenceAnalysis()

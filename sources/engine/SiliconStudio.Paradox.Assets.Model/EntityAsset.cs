@@ -90,27 +90,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                 //mergeResult.CopyTo();
             }
 
-            // Remap entities in asset2 with new Id
-            {
-                if (idRemapping.TryGetValue(entityAsset2.Hierarchy.RootEntity, out newId))
-                    entityAsset2.Hierarchy.RootEntity = newId;
-            }
-            foreach (var entity in entityAsset2.Hierarchy.Entities)
-            {
-                if (idRemapping.TryGetValue(entity.Id, out newId))
-                    entity.Id = newId;
-            }
-
-            // Sort again the EntityCollection (since ID changed)
-            entityAsset2.Hierarchy.Entities.Sort();
-
-            // Remap entity references with new Id
-            var entityAnalysisResult = EntityAnalysis.Visit(entityAsset2.Hierarchy);
-            foreach (var entity in entityAnalysisResult.EntityReferences)
-            {
-                if (idRemapping.TryGetValue(entity.Id, out newId))
-                    entity.Id = newId;
-            }
+            EntityAnalysis.RemapEntitiesId(entityAsset2.Hierarchy, idRemapping);
         }
 
         class Upgrader : IAssetUpgrader

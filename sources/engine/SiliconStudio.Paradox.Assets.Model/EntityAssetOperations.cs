@@ -179,13 +179,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 
             // Rewrite entity references
             // Should we nullify invalid references?
-            var entityAnalysisResult = EntityAnalysis.Visit(newAsset.Hierarchy);
-            foreach (var entityReference in entityAnalysisResult.EntityReferences)
-            {
-                Guid newEntityId;
-                reverseEntityMapping.TryGetValue(entityReference.Id, out newEntityId);
-                entityReference.Id = newEntityId;
-            }
+            EntityAnalysis.RemapEntitiesId(newAsset.Hierarchy, reverseEntityMapping);
 
             // Insert those entities
             foreach (var entity in newAsset.Hierarchy.Entities)
