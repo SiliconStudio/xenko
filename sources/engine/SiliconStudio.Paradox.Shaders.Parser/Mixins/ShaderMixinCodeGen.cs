@@ -515,12 +515,12 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                         return;
                     }
 
-                    var addCompositionFunction = "AddComposition";
+                    var addCompositionFunction = "PushComposition";
 
                     // If it's a +=, let's create or complete a ShaderArraySource
                     if (assignExpression.Operator == AssignmentOperator.Addition)
                     {
-                        addCompositionFunction = "AddCompositionToArray";
+                        addCompositionFunction = "PushCompositionArray";
                     }
 
                     ExtractGenericParameters(assignExpression.Value, out mixinName, genericParameters);
@@ -531,17 +531,18 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                         WriteLine("var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };");
 
                         WriteLinkLine(mixinStatement);
+                        Write("context.").Write(addCompositionFunction).Write("(mixin, ");
+                        WriteStringOrExpression(assignExpression.Target);
+                        WriteLine(", __subMixin);");
+
+                        WriteLinkLine(mixinStatement);
                         Write("context.Mixin(__subMixin, ");
                         WriteMixinName(mixinName);
                         WriteGenericParameters(genericParameters);
                         WriteLine(");");
 
-                        Write("mixin.Mixin.");
-                        Write(addCompositionFunction);
-                        Write("(");
-                        WriteStringOrExpression(assignExpression.Target);
-                        Write(", __subMixin.Mixin");
-                        WriteLine(");");
+                        WriteLinkLine(mixinStatement);
+                        WriteLine("context.PopComposition();");
                         CloseBrace();
                     }
                     break;

@@ -158,8 +158,9 @@ namespace SiliconStudio.Paradox.Effects
                         subKeyNameIndex = name.Length;
 
                     // Ignore digits at ending
-                    while (subKeyNameIndex > 0 && char.IsDigit(name, subKeyNameIndex - 1))
-                        subKeyNameIndex--;
+                    // TODO: Check with Virgile why this code?
+                    //while (subKeyNameIndex > 0 && char.IsDigit(name, subKeyNameIndex - 1))
+                    //    subKeyNameIndex--;
 
                     if (subKeyNameIndex != name.Length)
                     {

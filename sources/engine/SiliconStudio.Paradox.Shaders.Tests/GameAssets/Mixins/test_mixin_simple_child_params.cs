@@ -19,6 +19,7 @@ namespace Test4
     [DataContract]public partial class TestParameters : ShaderMixinParameters
     {
         public static readonly ParameterKey<int> TestCount = ParameterKeys.New<int>();
+        public static readonly ParameterKey<bool> UseComputeColorEffect = ParameterKeys.New<bool>();
     };
     internal static partial class ShaderMixins
     {

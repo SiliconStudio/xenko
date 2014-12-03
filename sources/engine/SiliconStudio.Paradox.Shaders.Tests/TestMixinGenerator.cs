@@ -95,6 +95,24 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             mixin.Children.Values.First().Mixin.CheckMixin("A", "B", "C", "C1", "C2");
         }
 
+
+        /// <summary>
+        /// Test parameters
+        /// </summary>
+        [Test]
+        public void TestABCEffect()
+        {
+            var properties = new ShaderMixinParameters();
+            properties.Set(TestABC.TestParameters.UseComputeColor2.AppendKey(".SubCompute1"), true);
+            properties.Set(TestABC.TestParameters.UseComputeColor2.AppendKey(".SubCompute2"), false);
+            properties.Set(TestABC.TestParameters.UseComputeColor2.AppendKey(".SubComputes[0]"), true);
+            ShaderMixinParameters usedProperties;
+
+            var mixin = GenerateMixin("ABCEffect", properties, out usedProperties);
+
+            // TODO: Add more tests here 
+        }
+
         /// <summary>
         /// Test parameters
         /// </summary>
@@ -108,7 +126,10 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             var mixin = GenerateMixin("DefaultSimpleChildParams", properties, out usedProperties);
             mixin.Mixin.CheckMixin("A", "B", "C");
             Assert.That(mixin.Children.Count, Is.EqualTo(1), "Expecting one children mixin");
-            mixin.Children.Values.First().Mixin.CheckMixin("A", "B", "C1");
+            var childMixin = mixin.Children.Values.First();
+            childMixin.Mixin.CheckMixin("A", "B", "C1");
+            Assert.IsTrue(childMixin.UsedParameters.ContainsKey(Test4.TestParameters.TestCount));
+            Assert.AreEqual(0, childMixin.UsedParameters.Get(Test4.TestParameters.TestCount));
         }
 
         /// <summary>

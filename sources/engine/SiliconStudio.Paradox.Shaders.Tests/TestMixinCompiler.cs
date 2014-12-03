@@ -9,6 +9,7 @@ using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders.Compiler;
+using SiliconStudio.Paradox.Shaders.Parser.Mixins;
 
 namespace SiliconStudio.Paradox.Shaders.Tests
 {
@@ -24,18 +25,19 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         [Test]
         public void TestSimple()
         {
-            VirtualFileSystem.RemountFileSystem("/shaders", "../../../../shaders");
-            VirtualFileSystem.RemountFileSystem("/compiler", "Compiler");
-
+            ShaderSourceManager.UseFileSystem = true;
 
             var compiler = new EffectCompiler();
-
-            compiler.SourceDirectories.Add("shaders");
-            compiler.SourceDirectories.Add("compiler");
+            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Paradox.Graphics\Shaders");
+            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Paradox.Shaders.Tests\GameAssets\Mixins");
 
             var compilerParameters = new CompilerParameters {Platform = GraphicsPlatform.Direct3D11};
 
-            var results = compiler.Compile(new ShaderMixinGeneratorSource("SimpleEffect"), compilerParameters);
+            var results = compiler.Compile(new ShaderMixinGeneratorSource("DefaultSimpleChildParams"), compilerParameters);
+
+
+
+
         }
 
         private void CopyStream(DatabaseFileProvider database, string fromFilePath)

@@ -63,7 +63,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 if (shaderMixinParser == null)
                 {
                     shaderMixinParser = new ShaderMixinParser();
-                    shaderMixinParser.SourceManager.LookupDirectoryList = SourceDirectories; // TODO: temp
+                    shaderMixinParser.SourceManager.LookupDirectoryList.AddRange(SourceDirectories); // TODO: temp
                     shaderMixinParser.SourceManager.UrlToFilePath = UrlToFilePath; // TODO: temp
                 }
                 return shaderMixinParser;
