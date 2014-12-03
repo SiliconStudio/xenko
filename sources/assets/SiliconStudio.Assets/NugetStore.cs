@@ -21,6 +21,10 @@ namespace SiliconStudio.Assets
     /// </summary>
     internal class NugetStore
     {
+        private const string RepositoryPathKey = "repositorypath";
+
+        private const string MainPackageKey = "mainPackage";
+
         private const string DefaultTargets = @"Targets\SiliconStudio.Common.targets";
 
         public const string DefaultGamePackagesDirectory = "GamePackages";
@@ -53,9 +57,6 @@ namespace SiliconStudio.Assets
                 throw new ArgumentException(String.Format("Invalid installation. Configuration file [{0}] not found", configFile), "configFile");
             }
 
-            // Setup NugetCachePath in the cache folder
-            Environment.SetEnvironmentVariable("NuGetCachePath", Path.Combine(rootDirectory, "Cache"));
-
             rootFileSystem = new PhysicalFileSystem(rootDirectory);
             settings = NuGet.Settings.LoadDefaultSettings(rootFileSystem, configFile, null);
 
@@ -69,6 +70,21 @@ namespace SiliconStudio.Assets
             pathResolver = new DefaultPackagePathResolver(packagesFileSystem);
 
             manager = new PackageManager(aggregateRepository, pathResolver, packagesFileSystem);
+
+            MainPackageId = Settings.GetConfigValue(MainPackageKey);
+            if (string.IsNullOrWhiteSpace(MainPackageId))
+            {
+                throw new InvalidOperationException(string.Format("Invalid configuration. Expecting [{0}] in config", MainPackageKey));
+            }
+
+            RepositoryPath = Settings.GetConfigValue(RepositoryPathKey);
+            if (string.IsNullOrWhiteSpace(RepositoryPath))
+            {
+                RepositoryPath = DefaultGamePackagesDirectory;
+            }
+
+            // Setup NugetCachePath in the cache folder
+            Environment.SetEnvironmentVariable("NuGetCachePath", Path.Combine(rootDirectory, "Cache", RepositoryPath));
         }
 
         public string RootDirectory
@@ -79,7 +95,9 @@ namespace SiliconStudio.Assets
             }
         }
 
-        public string DefaultPackageId { get; set; }
+        public string MainPackageId { get; private set; }
+
+        public string RepositoryPath { get; private set; }
 
         public ILogger Logger
         {
@@ -224,7 +242,7 @@ namespace SiliconStudio.Assets
             foreach (var package in packages)
             {
                 var packageVar = GetPackageVersionVariable(package.Id);
-                var packageTarget = String.Format(@"$(MSBuildThisFileDirectory)..\{0}\{1}.{2}\Targets\{1}.targets", DefaultGamePackagesDirectory, package.Id, "$(" + packageVar + ")");
+                var packageTarget = String.Format(@"$(MSBuildThisFileDirectory)..\{0}\{1}.{2}\Targets\{1}.targets", RepositoryPath, package.Id, "$(" + packageVar + ")");
 
                 // Add import
                 // <Import Project="..\Packages\Paradox$(SiliconStudioPackageParadoxVersion)\Targets\Paradox.targets" Condition="Exists('..\Packages\Paradox.$(SiliconStudioPackageParadoxVersion)\Targets\Paradox.targets')" />
@@ -479,14 +497,7 @@ namespace SiliconStudio.Assets
         {
             if (directory == null) throw new ArgumentNullException("directory");
             var storeConfig = Path.Combine(directory, DefaultConfig);
-            return File.Exists(storeConfig) && HasPackages(directory);
-        }
-
-        private static bool HasPackages(string directory)
-        {
-            if (directory == null) throw new ArgumentNullException("directory");
-            var commonTargets = Path.Combine(directory, DefaultGamePackagesDirectory);
-            return Directory.Exists(commonTargets);
+            return File.Exists(storeConfig);
         }
     }
 }
