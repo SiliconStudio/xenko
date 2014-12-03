@@ -225,8 +225,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Effects\InheritanceDefinition.cs" />
-    <Compile Include="Effects\InheritanceIndexer.cs" />
     <Compile Include="Effects\TessellationPermutation.cs" />
     <Compile Include="Effects\ParameterPath.cs" />
     <Compile Include="Engine\CameraComponent.cs" />

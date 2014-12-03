@@ -103,13 +103,23 @@ namespace SiliconStudio.Paradox.Shaders
             // Else try using global key
             if (sourceParameters == null)
             {
-                sourceParameters = FindKeyValue(globalKey) ?? compilerParameters;
-                selectedKey = globalKey;
+                sourceParameters = FindKeyValue(globalKey);
+                if (sourceParameters != null)
+                {
+                    selectedKey = globalKey;
+                }
+            }
+
+            // If nothing found, use composeKey and global compiler parameters
+            if (sourceParameters == null)
+            {
+                selectedKey = composeKey;
+                sourceParameters = compilerParameters;
             }
 
             var value = sourceParameters.Get(selectedKey);
 
-            // Onlt stored used parameters if we are 
+            // Sore only used parameters when they are taken from compilerParameters
             if (sourceParameters == compilerParameters)
             {
                 currentMixinSourceTree.UsedParameters.Set(selectedKey, value);
@@ -137,7 +147,7 @@ namespace SiliconStudio.Paradox.Shaders
             {
                 return key;
             }
-            key = key.AppendKey(currentComposition);
+            key = key.ComposeWith(currentComposition);
             return key;
         }
 
@@ -216,8 +226,14 @@ namespace SiliconStudio.Paradox.Shaders
         {
             mixin.Mixin.AddComposition(compositionName, composition.Mixin);
 
+            if (compositions.Count > 0)
+            {
+                currentCompositionBuilder.Append('.');
+            }
+
+            currentCompositionBuilder.Append(compositionName);
             compositions.Push(compositionName);
-            currentCompositionBuilder.Append('.').Append(compositionName);
+
             currentComposition = currentCompositionBuilder.ToString();
         }
 
@@ -226,8 +242,14 @@ namespace SiliconStudio.Paradox.Shaders
             int arrayIndex = mixin.Mixin.AddCompositionToArray(compositionName, composition.Mixin);
             var arrayCompositionName = string.Format("{0}[{1}]", compositionName, arrayIndex);
 
+            if (compositions.Count > 0)
+            {
+                currentCompositionBuilder.Append('.');
+            }
+
             compositions.Push(arrayCompositionName);
-            currentCompositionBuilder.Append('.').Append(arrayCompositionName);
+            currentCompositionBuilder.Append(arrayCompositionName);
+
             currentComposition = currentCompositionBuilder.ToString();
         }
 
@@ -235,7 +257,7 @@ namespace SiliconStudio.Paradox.Shaders
         {
             var compositionName = compositions.Pop();
             currentCompositionBuilder.Length = currentCompositionBuilder.Length - compositionName.Length - 1;
-            currentComposition = currentCompositionBuilder.Length != 0 ? currentCompositionBuilder.ToString() : null;
+            currentComposition = compositions.Count > 0 ? currentCompositionBuilder.ToString() : null;
         }
 
         /// <summary>

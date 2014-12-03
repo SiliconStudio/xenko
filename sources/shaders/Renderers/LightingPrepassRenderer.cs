@@ -1149,10 +1149,11 @@ namespace SiliconStudio.Paradox.Effects.Renderers
         private void UpdateLightingParameterSemantics(int index, string compositionName)
         {
             lightingParameterSemantics.Clear();
+            // TODO: use StringBuilder instead
             var lightGroupSubKey = string.Format("." + compositionName + "[{0}]", index);
             foreach (var param in LightParametersDict)
             {
-                lightingParameterSemantics.Add(param.Key.AppendKey(lightGroupSubKey), param.Value);
+                lightingParameterSemantics.Add(param.Key.ComposeWith(lightGroupSubKey), param.Value);
             }
         }
 

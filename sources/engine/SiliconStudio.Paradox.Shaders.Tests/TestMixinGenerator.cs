@@ -103,9 +103,8 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         public void TestABCEffect()
         {
             var properties = new ShaderMixinParameters();
-            properties.Set(TestABC.TestParameters.UseComputeColor2.AppendKey(".SubCompute1"), true);
-            properties.Set(TestABC.TestParameters.UseComputeColor2.AppendKey(".SubCompute2"), false);
-            properties.Set(TestABC.TestParameters.UseComputeColor2.AppendKey(".SubComputes[0]"), true);
+            properties.Set(TestABC.TestParameters.UseComputeColor2.ComposeWith("SubCompute1"), true);
+            properties.Set(TestABC.TestParameters.UseComputeColor2.ComposeWith("SubComputes[0]"), true);
             ShaderMixinParameters usedProperties;
 
             var mixin = GenerateMixin("ABCEffect", properties, out usedProperties);

@@ -782,10 +782,11 @@ namespace SiliconStudio.Paradox.Effects.Renderers
         private void UpdateLightingParameterSemantics(int index, string compositionName)
         {
             lightingParameterSemantics.Clear();
-            var lightGroupSubKey = string.Format("." + compositionName + "[{0}]", index);
+            // TODO: use StringBuilder instead
+            var lightGroupSubKey = string.Format("{0}[{1}]", compositionName, index);
             foreach (var param in LightParametersDict)
             {
-                lightingParameterSemantics.Add(ParameterKeys.AppendKey(param.Key, lightGroupSubKey), param.Value);
+                lightingParameterSemantics.Add(param.Key.ComposeWith(lightGroupSubKey), param.Value);
             }
         }
 
@@ -867,10 +868,11 @@ namespace SiliconStudio.Paradox.Effects.Renderers
         public LightGroup(int index, string compositionName)
         {
             LightingParameterSemantics = new Dictionary<ParameterKey, LightParamSemantic>();
-            var lightGroupSubKey = string.Format("." + compositionName + "[{0}]", index);
+            // TODO: use StringBuilder instead
+            var lightGroupSubKey = string.Format("{0}[{1}]", compositionName, index);
             foreach (var param in LightForwardModelRenderer.LightParametersDict)
             {
-                LightingParameterSemantics.Add(ParameterKeys.AppendKey(param.Key, lightGroupSubKey), param.Value);
+                LightingParameterSemantics.Add(param.Key.ComposeWith(lightGroupSubKey), param.Value);
             }
         }
     }
