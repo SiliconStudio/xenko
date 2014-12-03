@@ -11,7 +11,7 @@ namespace SiliconStudio.Assets.Analysis
     /// </summary>
     public static class AssetDependencyManagerExtensions
     {
-        public static AssetDependencySet Find(this AssetDependencyManager manager, AssetItem item)
+        public static AssetDependencies Find(this AssetDependencyManager manager, AssetItem item)
         {
             if (item == null) throw new ArgumentNullException("item");
             return manager.FindDependencySet(item.Id);

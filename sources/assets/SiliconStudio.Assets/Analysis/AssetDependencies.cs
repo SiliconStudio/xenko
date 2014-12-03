@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -14,40 +13,37 @@ namespace SiliconStudio.Assets.Analysis
     /// </summary>
     /// <remarks>There are 3 types of dependencies:
     /// <ul>
-    /// <li><c>in</c> dependencies: through the <see cref="Parents"/> property, contains assets                                 
+    /// <li><c>in</c> dependencies: through the <see cref="LinksIn"/> property, contains assets                                 
     /// that are referencing this asset.</li>
-    /// <li><c>out</c> dependencies: directly from the instance of this object, contains assets 
-    /// that are referenced this asset.</li>
+    /// <li><c>out</c> dependencies: through the <see cref="LinksOut"/> property, contains assets 
+    /// that are referenced by this asset.</li>
     /// <li><c>missing</c> dependencies: through the <see cref="MissingReferences"/> property, 
     /// contains assets referenced by this asset and that are missing.</li>
     /// </ul>
     /// </remarks>
-    [DebuggerDisplay("In [{Parents.Count}] / Out [{Count}] Miss [{MissingReferenceCount}]")]
-    public class AssetDependencySet : HashSet<AssetItem>
+    [DebuggerDisplay("In [{LinksIn.Count}] / Out [{LinksOut}] Miss [{MissingReferenceCount}]")]
+    public class AssetDependencies
     {
         private readonly AssetItem item;
-        private readonly HashSet<AssetItem> parents;
+        private readonly HashSet<AssetItem> parents = new HashSet<AssetItem>(AssetItem.DefaultComparerById);
+        private readonly HashSet<AssetItem> children = new HashSet<AssetItem>(AssetItem.DefaultComparerById);
         private List<IContentReference> missingReferences;
 
-        public AssetDependencySet(AssetItem assetItem)
-            : base(AssetItem.DefaultComparerById)
+        public AssetDependencies(AssetItem assetItem)
         {
             if (assetItem == null) throw new ArgumentNullException("assetItem");
             item = assetItem;
-            parents = new HashSet<AssetItem>(AssetItem.DefaultComparerById);
         }
 
-        public AssetDependencySet(AssetDependencySet set)
-            : base(AssetItem.DefaultComparerById)
+        public AssetDependencies(AssetDependencies set)
         {
             if (set == null) throw new ArgumentNullException("set");
             item = set.Item;
-            parents = new HashSet<AssetItem>(AssetItem.DefaultComparerById);
 
             // Copy Output refs
-            foreach (var child in set)
+            foreach (var child in set.children)
             {
-                Add(child.Clone(true));
+                children.Add(child.Clone(true));
             }
 
             // Copy missing refs
@@ -86,11 +82,25 @@ namespace SiliconStudio.Assets.Analysis
             }
         }
 
-        public HashSet<AssetItem> Parents
+        /// <summary>
+        /// Gets the set of reference links coming into the element.
+        /// </summary>
+        public HashSet<AssetItem> LinksIn
         {
             get
             {
                 return parents;
+            }
+        }
+
+        /// <summary>
+        /// Gets the set of reference links going out of the element.
+        /// </summary>
+        public HashSet<AssetItem> LinksOut
+        {
+            get
+            {
+                return children;
             }
         }
 
@@ -100,7 +110,7 @@ namespace SiliconStudio.Assets.Analysis
         public void Reset(bool keepParents)
         {
             missingReferences = null;
-            Clear();
+            children.Clear();
             if (!keepParents)
             {
                 parents.Clear();

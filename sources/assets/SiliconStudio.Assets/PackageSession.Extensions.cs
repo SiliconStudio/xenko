@@ -66,7 +66,7 @@ namespace SiliconStudio.Assets
             assetPackageCloned.Assets.Add(assetItemRootCloned);
 
             // For each asset item dependency, clone it in the new package
-            foreach (var item in dependencies)
+            foreach (var item in dependencies.LinksOut)
             {
                 // Only add assets not already added (in case of circular dependencies)
                 if (assetPackageCloned.Assets.Find(item.Id) == null)

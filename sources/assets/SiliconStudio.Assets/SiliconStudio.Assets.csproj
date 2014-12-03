@@ -45,7 +45,7 @@
     <Compile Include="Analysis\AssetBaseAnalysis.cs" />
     <Compile Include="Analysis\AssetDependencyManager.cs" />
     <Compile Include="Analysis\AssetDependencyManagerExtensions.cs" />
-    <Compile Include="Analysis\AssetDependencySet.cs" />
+    <Compile Include="Analysis\AssetDependencies.cs" />
     <Compile Include="Analysis\AssetDependencySearchOptions.cs" />
     <Compile Include="Analysis\AssetFileChangedEvent.cs" />
     <Compile Include="Analysis\AssetFileChangedEventSquasher.cs" />
