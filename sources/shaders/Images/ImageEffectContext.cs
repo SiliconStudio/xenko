@@ -35,6 +35,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             Services = serviceRegistry;
             Effects = serviceRegistry.GetSafeServiceAs<EffectSystem>();
             GraphicsDevice = serviceRegistry.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
+            Parameters = new ParameterCollection();
         }
 
         /// <summary>
@@ -54,6 +55,12 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         /// <value>The services registry.</value>
         public IServiceRegistry Services { get; private set; }
+
+        /// <summary>
+        /// Gets the parameters shared with all <see cref="ImageEffectBase"/> instance.
+        /// </summary>
+        /// <value>The parameters.</value>
+        public ParameterCollection Parameters { get; private set; }
 
         /// <summary>
         /// Gets a <see cref="RenderTarget" /> output for the specified description.

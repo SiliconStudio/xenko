@@ -33,6 +33,7 @@ namespace SiliconStudio.Paradox.Effects
             if (parametersTo == null) throw new ArgumentNullException("parametersTo");
             foreach (var parameter in parameters)
             {
+                // TODO: avoid GC a method like Parameters.CopyTo(ParameterKey from, ParameterKey to, ParameterCollection toCollection)
                 parametersTo.SetObject(parameter.Key, parameter.Value);
             }
         }

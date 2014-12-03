@@ -2,6 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 using SiliconStudio.Paradox.Effects;
 
@@ -47,7 +49,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="effect">The effect.</param>
         /// <param name="parameterCollections">The parameter collections.</param>
         /// <exception cref="System.ArgumentNullException">effect</exception>
-        public static void DrawQuad(this GraphicsDevice device, Effect effect, params ParameterCollection[] parameterCollections)
+        public static void DrawQuad<TList>(this GraphicsDevice device, Effect effect, TList parameterCollections) where TList : class, IEnumerable<ParameterCollection>
         {
             if (effect == null) throw new ArgumentNullException("effect");
 

@@ -1,0 +1,19 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Paradox.Effects.Images
+{
+    /// <summary>
+    /// A Color transform group effect
+    /// </summary>
+    shader ColorTransformGroupEffect
+    {
+        using params ColorTransformGroupKeys;
+
+        // Mixin 
+        mixin ColorTransformGroupShader;
+        foreach (var colorTransform in ColorTransformGroupKeys.Transforms)
+        {
+            mixin compose Transforms += colorTransform.Shader;
+        }
+    };
+}

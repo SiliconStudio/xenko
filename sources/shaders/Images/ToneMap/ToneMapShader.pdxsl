@@ -6,29 +6,32 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// A tonemap shader
     /// </summary>
-    internal class ToneMapShader : ImageEffectShader
+    internal class ToneMapShader : ColorTransformShader
     {
+        // Luminance texture
+        Texture2D LuminanceTexture;
+
         // Exposure
-        stage float KeyValue = 0.18f;
-        stage bool  AutoKeyValue = true;
-        stage float LuminanceLocalFactor = 0.5f;
-        stage float LuminanceAverageGlobal;
+        float KeyValue = 0.18f;
+        bool  AutoKeyValue = true;
+        float LuminanceLocalFactor = 0.5f;
+        float LuminanceAverageGlobal;
 
         // Color/Gamma correction
-        stage float Gamma = 2.2f;
-        stage float Contrast = 0.0f;
-        stage float Brightness = 0.0f;
+        float Gamma = 2.2f;
+        float Contrast = 0.0f;
+        float Brightness = 0.0f;
 
         // ToneMap Operator
         compose ToneMapOperatorShader ToneMapOperator;
 
-        stage override float4 Shading()
+        stage override float4 Compute(float4 inputColor)
         {
             // Get the input color to tonemap
-	        float3 color = Texture0.Sample(PointSampler, streams.TexCoord).rgb;
+	        float3 color = inputColor.rgb;
 
 	        // Gets the local luminance
-	        float luminanceAverageLocal = Texture1.Sample(LinearSampler, streams.TexCoord).r;
+	        float luminanceAverageLocal = LuminanceTexture.Sample(Texturing.LinearSampler, streams.TexCoord).r;
 
             // Calculate average geometric mean for luminance using local and global average luminances
 	        float avgLuminance = lerp(LuminanceAverageGlobal, luminanceAverageLocal, LuminanceLocalFactor);

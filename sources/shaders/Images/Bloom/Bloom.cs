@@ -141,7 +141,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                 var level = !ShowOnlyMip || i == MipIndex ? (float)Math.Pow(2.0f, exponent) : 0.0f;
                 level *= Amount;
                 // TODO: Setup parameters
-                // blurCombine.Parameters.Set(, new Vector4(level));
+                // blurCombine.SharedParameters.Set(, new Vector4(level));
             }
 
             // Copy the input texture to the output

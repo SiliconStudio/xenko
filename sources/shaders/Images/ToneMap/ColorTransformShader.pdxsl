@@ -4,9 +4,13 @@
 namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
-    /// A generic interface for computing a tonemap operator.
+    /// A generic interface for processing/filtering a color.
     /// </summary>
-    class ToneMapOperatorShader : Color3TransformShader
+    class ColorTransformShader
     {
+        float4 Compute(float4 color)
+        {
+            return color;
+        }
     };
 }

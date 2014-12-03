@@ -11,9 +11,9 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// </remarks>
     internal class ToneMapMikeDayOperatorShader : ToneMapOperatorShader
     {
-        stage float4 ToeCoeffs;
-        stage float4 ShoulderCoeffs;
-        stage float  MiddleCrossOver;
+        float4 ToeCoeffs;
+        float4 ShoulderCoeffs;
+        float  MiddleCrossOver;
 
         override float3 Compute(float3 color)
         {

@@ -4,27 +4,16 @@
 using System;
 using System.Diagnostics;
 
-using SiliconStudio.Core;
-using SiliconStudio.Paradox.Graphics;
-
 namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
     /// A tonemap effect.
     /// </summary>
-    public class ToneMap : ImageEffectBase
+    public class ToneMap : ColorTransform
     {
-        private ParameterCollection[] sharedParameters;
-        private readonly LuminanceEffect luminanceEffect;
-        private readonly ImageEffect toneMap;
-
         private readonly float[] weightedLuminances = new float[16];
         private int currentWeightedLuminanceIndex = 0;
         private float previousLuminance;
-
-
-        private readonly ParameterCollection parameters;
-
         private readonly ToneMapU2FilmicOperator defaultOperator;
 
         private readonly Stopwatch timer;
@@ -32,21 +21,11 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <summary>
         /// Initializes a new instance of the <see cref="ToneMap" /> class.
         /// </summary>
-        /// <param name="context">The context.</param>
         /// <param name="toneMapEffect">The tone map shader effect (default is <c>ToneMapEffect)</c>.</param>
         /// <exception cref="System.ArgumentNullException">toneMapEffect</exception>
-        public ToneMap(ImageEffectContext context, string toneMapEffect = "ToneMapEffect") : base(context)
+        public ToneMap(string toneMapEffect = "ToneMapEffect") : base(toneMapEffect)
         {
-            if (toneMapEffect == null) throw new ArgumentNullException("toneMapEffect");
-            parameters = new ParameterCollection();
-            sharedParameters = new []
-            {
-                parameters, 
-                null // Placeholder for Operator.Parameters
-            };
             timer = new Stopwatch();
-            luminanceEffect = new LuminanceEffect(context).DisposeBy(this);
-            toneMap = new ImageEffect(context, toneMapEffect, sharedParameters).DisposeBy(this);
             defaultOperator = new ToneMapU2FilmicOperator();
             AdaptationRate = 1.25f;
         }
@@ -56,18 +35,6 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         /// <value>The operator.</value>
         public ToneMapOperator Operator { get; set; }
-
-        /// <summary>
-        /// Gets the parameters.
-        /// </summary>
-        /// <value>The parameters.</value>
-        public ParameterCollection Parameters
-        {
-            get
-            {
-                return parameters;
-            }
-        }
 
         /// <summary>
         /// Gets or sets the key value.
@@ -171,80 +138,58 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
-        protected override void DrawCore()
+        public override void UpdateParameters(ColorTransformContext context)
         {
-            var inputTexture = GetSafeInput(0);
-            var outputTexture = GetSafeOutput(0);
-
-            // ----------------------------
-            // Luminance Pass
-            // ----------------------------
-            var lumSize = inputTexture.Size.Down2(2);
-            var luminanceMap = NewScopedRenderTarget2D(lumSize.Width, lumSize.Height, PixelFormat.R16_Float);
-
-            const int minSize = 8;
-            var nextSize = lumSize;
-            var upscaleCount = 0;
-            while (nextSize.Width > minSize && nextSize.Height > minSize)
-            {
-                nextSize = nextSize.Down2();
-                upscaleCount++;
-            }
-
-            // Perform a luminance pass
-            luminanceEffect.UpscaleCount = upscaleCount;
-            luminanceEffect.SetInput(inputTexture);
-            luminanceEffect.SetOutput(luminanceMap);
-            luminanceEffect.Draw("Luminance");
+            base.UpdateParameters(context);
 
             // Update the luminance
-            UpdateAverageLuminanceLog();
-
-            // Update operator parameters
-            var currentOperator = Operator ?? defaultOperator;
-            currentOperator.UpdateParameters();
-
-            // Use operator parameters for shared parameters
-            sharedParameters[1] = currentOperator.Parameters;
-
-            // Run the tonemap
-            toneMap.SetInput(inputTexture, luminanceMap);
-            toneMap.SetOutput(outputTexture);
-            toneMap.Draw();
-        }
-
-        private void UpdateAverageLuminanceLog()
-        {
             var elapsedTime = timer.Elapsed;
             timer.Restart();
 
-            // Adapt the luminance using Pattanaik's technique    
-            var currentAvgLuminance = (float)Math.Max(luminanceEffect.AverageLuminance, 0.0001);
-            weightedLuminances[currentWeightedLuminanceIndex] = currentAvgLuminance;
-            currentWeightedLuminanceIndex = (currentWeightedLuminanceIndex + 1) % weightedLuminances.Length;
+            var luminanceResult = context.SharedParameters.Get(ToneMapKeys.LuminanceResult);
 
-            float avgLuminannce = 0.0f;
-            for (int i = 0; i < weightedLuminances.Length; i++)
+            var avgLuminanceLog = 0.18f;
+            if (luminanceResult.Texture != null)
             {
-                avgLuminannce += weightedLuminances[i];
-            }
-            avgLuminannce /= weightedLuminances.Length;
+                // Adapt the luminance using Pattanaik's technique    
+                var currentAvgLuminance = (float)Math.Max(luminanceResult.AverageLuminance, 0.0001);
+                weightedLuminances[currentWeightedLuminanceIndex] = currentAvgLuminance;
+                currentWeightedLuminanceIndex = (currentWeightedLuminanceIndex + 1) % weightedLuminances.Length;
 
-            // Get current avg luminance
+                float avgLuminannce = 0.0f;
+                for (int i = 0; i < weightedLuminances.Length; i++)
+                {
+                    avgLuminannce += weightedLuminances[i];
+                }
+                avgLuminannce /= weightedLuminances.Length;
 
-            // Get adapted luminance
-            var adaptedLum = (float)(previousLuminance + (avgLuminannce - previousLuminance) * (1.0 - Math.Exp(-elapsedTime.TotalSeconds * AdaptationRate)));
-            var avgLuminanceLog = (float)Math.Log(adaptedLum, 2);
-            previousLuminance = adaptedLum;
-            //Trace.WriteLine(string.Format("Adapted: {0} Luminance: {1}", adaptedLum, currentAvgLuminance));
+                // Get current avg luminance
 
-            if (AutoKeyValue)
-            {
-                KeyValue = 1.03f - (2.0f / (2.0f + (float)Math.Log10(adaptedLum + 1)));
+                // Get adapted luminance
+                var adaptedLum = (float)(previousLuminance + (avgLuminannce - previousLuminance) * (1.0 - Math.Exp(-elapsedTime.TotalSeconds * AdaptationRate)));
+                avgLuminanceLog = (float)Math.Log(adaptedLum, 2);
+                previousLuminance = adaptedLum;
+                //Trace.WriteLine(string.Format("Adapted: {0} Luminance: {1}", adaptedLum, currentAvgLuminance));
+
+                if (AutoKeyValue)
+                {
+                    KeyValue = 1.03f - (2.0f / (2.0f + (float)Math.Log10(adaptedLum + 1)));
+                }
             }
 
             // Setup parameters
-            Parameters.Set(ToneMapShaderKeys.LuminanceAverageGlobal, avgLuminanceLog);
+            context.TransformParameters.Set(ToneMapShaderKeys.LuminanceTexture, luminanceResult.Texture);
+            context.TransformParameters.Set(ToneMapShaderKeys.LuminanceAverageGlobal, avgLuminanceLog);
+
+            // Update operator parameters
+            var currentOperator = Operator ?? defaultOperator;
+            currentOperator.UpdateParameters(context);
+
+            context.TransformParameters.Set(ToneMapKeys.Operator, currentOperator.Shader);
+
+            // TODO: avoid GC a method like Parameters.CopyTo(ParameterKey from, ParameterKey to, ParameterCollection toCollection)
+            currentOperator.Parameters.CopyTo(context.TransformParameters);
+
         }
     }
 }

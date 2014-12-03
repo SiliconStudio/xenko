@@ -9,5 +9,6 @@ namespace SiliconStudio.Paradox.Effects.Images
     internal static class ToneMapKeys
     {
         public static readonly ParameterKey<string> Operator = ParameterKeys.New<string>();
+        public static readonly ParameterKey<LuminanceResult> LuminanceResult = ParameterKeys.New<LuminanceResult>();
     }
 }

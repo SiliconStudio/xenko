@@ -325,7 +325,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             else
             {
                 Write("foreach(");
+                IsVisitingVariableInlines = true;
                 VisitDynamic(forEachStatement.Variable);
+                IsVisitingVariableInlines = false;
                 Write(" in ");
                 VisitDynamic(forEachStatement.Collection);
                 Write(")");

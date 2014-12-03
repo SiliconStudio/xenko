@@ -8,7 +8,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// </summary>
     internal class ToneMapCommonOperatorShader : ToneMapOperatorShader
     {
-        stage float LuminanceSaturation = 1.0f;
-        stage float WhiteLevel = 5.0f;
+        float LuminanceSaturation = 1.0f;
+        float WhiteLevel = 5.0f;
     };
 }

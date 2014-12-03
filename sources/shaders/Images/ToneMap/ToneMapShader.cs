@@ -18,6 +18,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 {
     internal static partial class ToneMapShaderKeys
     {
+        public static readonly ParameterKey<Texture> LuminanceTexture = ParameterKeys.New<Texture>();
         public static readonly ParameterKey<float> KeyValue = ParameterKeys.New<float>(0.18f);
         public static readonly ParameterKey<bool> AutoKeyValue = ParameterKeys.New<bool>(true);
         public static readonly ParameterKey<float> LuminanceLocalFactor = ParameterKeys.New<float>(0.5f);

@@ -8,13 +8,13 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// </summary>
     internal class ToneMapU2FilmicOperatorShader : ToneMapOperatorShader
     {
-        stage float ShoulderStrength = 0.22f;
-        stage float LinearStrength = 0.25f;
-        stage float LinearAngle = 0.1f;
-        stage float ToeStrength = 0.2f;
-        stage float ToeNumerator = 0.01f;
-        stage float ToeDenominator = 0.3f;
-        stage float LinearWhite = 11.2f;
+        float ShoulderStrength = 0.22f;
+        float LinearStrength = 0.25f;
+        float LinearAngle = 0.1f;
+        float ToeStrength = 0.2f;
+        float ToeNumerator = 0.01f;
+        float ToeDenominator = 0.3f;
+        float LinearWhite = 11.2f;
 
         // Function used by the Uncharted2 tone mapping curve
         float3 U2Func(float3 x)

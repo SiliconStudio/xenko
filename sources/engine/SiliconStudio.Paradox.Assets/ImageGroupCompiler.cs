@@ -173,7 +173,7 @@ namespace SiliconStudio.Paradox.Assets
     }
     
     /// <summary>
-    /// Parameters used for converting/processing the texture in the storage.
+    /// SharedParameters used for converting/processing the texture in the storage.
     /// </summary>
     [DataContract]
     public class ImageGroupParameters<T>

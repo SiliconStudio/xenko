@@ -48,6 +48,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             scopedRenderTargets = new List<RenderTarget>();
             maxInputTextureIndex = -1;
             EnableSetRenderTargets = true;
+            Parameters = new ParameterCollection();
         }
 
         /// <summary>
@@ -61,6 +62,12 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         /// <value>The context.</value>
         public ImageEffectContext Context { get; private set; }
+
+        /// <summary>
+        /// Gets the parameters.
+        /// </summary>
+        /// <value>The parameters.</value>
+        public ParameterCollection Parameters { get; private set; }
 
         /// <summary>
         /// Gets the <see cref="AssetManager"/>.
@@ -117,6 +124,14 @@ namespace SiliconStudio.Paradox.Effects.Images
             Array.Clear(inputTextures, 0, inputTextures.Length);
             outputRenderTargetView = null;
             outputRenderTargetViews = null;
+            SetDefaultParameters();
+        }
+
+        /// <summary>
+        /// Sets the default parameters (called at constructor time and if <see cref="Reset"/> is called)
+        /// </summary>
+        protected virtual void SetDefaultParameters()
+        {
         }
 
         /// <summary>

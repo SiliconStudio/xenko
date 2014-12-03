@@ -53,7 +53,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <value>The shoulder.</value>
         public float Shoulder { get; set; }
 
-        public override void UpdateParameters()
+        public override void UpdateParameters(ColorTransformContext context)
         {
             double b = BlackPoint;
             double c = CrossOver;
@@ -75,9 +75,10 @@ namespace SiliconStudio.Paradox.Effects.Images
                 (float)((1 - k) * (-c) + k * ((1 - s) * w - c)),
                 (float)((1 - s) * w - c));
 
-            Parameters.Set(ToneMapMikeDayOperatorShaderKeys.ToeCoeffs, toe);
-            Parameters.Set(ToneMapMikeDayOperatorShaderKeys.ShoulderCoeffs, shoulder);
-            Parameters.Set(ToneMapMikeDayOperatorShaderKeys.MiddleCrossOver, CrossOver);
+            // Don't call base, as we are rewriting all parameters for the shader
+            context.TransformParameters.Set(ToneMapMikeDayOperatorShaderKeys.ToeCoeffs, toe);
+            context.TransformParameters.Set(ToneMapMikeDayOperatorShaderKeys.ShoulderCoeffs, shoulder);
+            context.TransformParameters.Set(ToneMapMikeDayOperatorShaderKeys.MiddleCrossOver, CrossOver);
         }
     }
 }

@@ -852,9 +852,9 @@ namespace SiliconStudio.Paradox.Effects.Renderers
             else
                 parameters.Remove(ShadowMapParameters.ShadowMaps);
             
-            //mesh.Parameters.Set(LightingKeys.UnrollDirectionalLightLoop, foundConfiguration.UnrollDirectionalLightLoop);
-            //mesh.Parameters.Set(LightingKeys.UnrollPointLightLoop, foundConfiguration.UnrollPointLightLoop);
-            //mesh.Parameters.Set(LightingKeys.UnrollSpotLightLoop, foundConfiguration.UnrollSpotLightLoop);
+            //mesh.SharedParameters.Set(LightingKeys.UnrollDirectionalLightLoop, foundConfiguration.UnrollDirectionalLightLoop);
+            //mesh.SharedParameters.Set(LightingKeys.UnrollPointLightLoop, foundConfiguration.UnrollPointLightLoop);
+            //mesh.SharedParameters.Set(LightingKeys.UnrollSpotLightLoop, foundConfiguration.UnrollSpotLightLoop);
         }
         
         #endregion
