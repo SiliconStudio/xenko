@@ -49,12 +49,12 @@ namespace SiliconStudio.Presentation.Extensions
             return method.DynamicInvoke(instance);
         }
 
-        public static T MemberwiseClone<T>(this T instance)
+        public static T MemberwiseClone<T>(this T instance) where T : class
         {
             if (instance == null)
                 throw new ArgumentNullException("instance");
 
-            Delegate method = null;
+            Delegate method;
 
             Type instanceType = typeof(T);
 

@@ -43,10 +43,10 @@ namespace SiliconStudio.Presentation.Collections
                 {
                     DefaultCompareFunc = (item1, item2) =>
                     {
-                        // ReSharper disable RedundantCast - If we don't cast, we get a possible compare of a value type with null, which is not the case here
-                        if ((object)item1 == null && (object)item2 == null)
-                            // ReSharper restore RedundantCast
+						// ReSharper disable CompareNonConstrainedGenericWithNull
+                        if (item1 == null && item2 == null)
                             return 0;
+						// ReSharper restore CompareNonConstrainedGenericWithNull
 
                         return (object)item1 != null ? ((IComparable<T>)item1).CompareTo(item2) : -((IComparable<T>)item2).CompareTo(item1);
                     };
