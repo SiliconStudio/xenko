@@ -133,7 +133,7 @@ namespace SiliconStudio.Assets
             if (NugetStore.IsStoreDirectory(globalInstallationPath))
             {
                 packagesDirectory = UPath.Combine(globalInstallationPath, (UDirectory)NugetStore.DefaultGamePackagesDirectory);
-                store = new NugetStore(globalInstallationPath) { DefaultPackageId = DefaultPackageName };
+                store = new NugetStore(globalInstallationPath);
             }
         }
 
