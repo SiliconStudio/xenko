@@ -133,7 +133,7 @@ namespace SiliconStudio.Paradox.Assets.Model
     }
 
     [DataContract("EntityBase")]
-    public struct EntityBase
+    public class EntityBase
     {
         /// <summary>
         /// The <see cref="EntityAsset"/> base.
