@@ -17,6 +17,14 @@ namespace SiliconStudio.Paradox.Shaders.Tests
     [TestFixture]
     public class TestCodeGen
     {
+        //[Test]
+        public void Test()
+        {
+            var filePath = @"D:\Code\Paradox\sources\engine\SiliconStudio.Paradox.Shaders.Tests\GameAssets\Mixins\A.pdxsl";
+            var source = File.ReadAllText(filePath);
+            var content = ShaderMixinCodeGen.GenerateCsharp(source, filePath.Replace("C:", "D:"));
+        }
+
         //[Test] // Decomment this line to regenerate all files (sources and samples)
         public void RebuildAllPdxfxPdxsl()
         {

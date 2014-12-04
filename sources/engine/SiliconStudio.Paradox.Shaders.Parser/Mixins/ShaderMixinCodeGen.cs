@@ -259,9 +259,18 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         [Visit]
         protected virtual void Visit(GenericType<ObjectType> type)
         {
-            if (IsStringInList(type.Name, "StructuredBuffer", "RWStructuredBuffer", "ConsumeStructuredBuffer", "AppendStructuredBuffer"))
+            var typeName = type.Name.Text;
+            if (typeName.Contains("Texture"))
+            {
+                Write("Texture");
+            }
+            else if (typeName.Contains("Buffer"))
             {
                 Write("Buffer");
+            }
+            else
+            {
+                Visit((GenericType)type);
             }
             ProcessInitialValueStatus = false;
         }
