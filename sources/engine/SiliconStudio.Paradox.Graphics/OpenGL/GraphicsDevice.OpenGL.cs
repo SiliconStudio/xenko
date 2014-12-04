@@ -1729,6 +1729,10 @@ namespace SiliconStudio.Paradox.Graphics
 
                     GL.BindBuffer(BufferTarget.PixelUnpackBuffer, 0);
                 }
+                else
+                {
+                    throw new NotSupportedException("Not supported mapper operation for Usage: " + texture.Description.Usage);
+                }
             }
             else
             {
