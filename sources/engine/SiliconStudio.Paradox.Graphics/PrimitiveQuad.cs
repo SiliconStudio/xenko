@@ -95,11 +95,11 @@ namespace SiliconStudio.Paradox.Graphics
             /// </summary>
             public readonly VertexArrayObject VertexBuffer;
             
-            private static readonly VertexPositionTexture[] QuadsVertices = new []
+            private static readonly VertexPositionNormalTexture[] QuadsVertices =
             {
-                new VertexPositionTexture(new Vector3(-1, 1, 0), new Vector2(0, 0)),
-                new VertexPositionTexture(new Vector3( 3, 1, 0), new Vector2(2, 0)),
-                new VertexPositionTexture(new Vector3(-1,-3, 0), new Vector2(0, 2)),
+                new VertexPositionNormalTexture(new Vector3(-1, 1, 0), new Vector3(0, 0, 1), new Vector2(0, 0)),
+                new VertexPositionNormalTexture(new Vector3( 3, 1, 0), new Vector3(0, 0, 1), new Vector2(2, 0)),
+                new VertexPositionNormalTexture(new Vector3(-1,-3, 0), new Vector3(0, 0, 1), new Vector2(0, 2)),
             };
 
             public SharedData(GraphicsDevice device, EffectInputSignature defaultSignature)
@@ -109,7 +109,7 @@ namespace SiliconStudio.Paradox.Graphics
                 // Register reload
                 vertexBuffer.Reload = (graphicsResource) => ((Buffer)graphicsResource).Recreate(QuadsVertices);
 
-                VertexBuffer = VertexArrayObject.New(device, defaultSignature, new VertexBufferBinding(vertexBuffer, VertexPositionTexture.Layout, QuadsVertices.Length, VertexPositionTexture.Size)).DisposeBy(this);
+                VertexBuffer = VertexArrayObject.New(device, defaultSignature, new VertexBufferBinding(vertexBuffer, VertexPositionNormalTexture.Layout, QuadsVertices.Length, VertexPositionNormalTexture.Size)).DisposeBy(this);
             }
         }
     }
