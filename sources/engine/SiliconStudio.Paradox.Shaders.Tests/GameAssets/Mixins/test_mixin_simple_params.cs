@@ -37,8 +37,9 @@ namespace Test7
 
                     {
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushComposition(mixin, "x", __subMixin);
                         context.Mixin(__subMixin, "X");
-                        mixin.Mixin.AddComposition("x", __subMixin.Mixin);
+                        context.PopComposition();
                     }
                 }
                 else
@@ -48,8 +49,9 @@ namespace Test7
 
                     {
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushComposition(mixin, "y", __subMixin);
                         context.Mixin(__subMixin, "Y");
-                        mixin.Mixin.AddComposition("y", __subMixin.Mixin);
+                        context.PopComposition();
                     }
                 }
             }

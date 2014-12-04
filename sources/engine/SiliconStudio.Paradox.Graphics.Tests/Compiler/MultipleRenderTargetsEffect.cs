@@ -33,20 +33,23 @@ namespace Test
 
                     {
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushComposition(mixin, "ShadingColor0", __subMixin);
                         context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoDiffuse));
-                        mixin.Mixin.AddComposition("ShadingColor0", __subMixin.Mixin);
+                        context.PopComposition();
                     }
 
                 {
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                    context.PushComposition(mixin, "ShadingColor1", __subMixin);
                     context.Mixin(__subMixin, "LinearDepth");
-                    mixin.Mixin.AddComposition("ShadingColor1", __subMixin.Mixin);
+                    context.PopComposition();
                 }
 
                 {
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                    context.PushComposition(mixin, "ShadingColor2", __subMixin);
                     context.Mixin(__subMixin, "NormalColor");
-                    mixin.Mixin.AddComposition("ShadingColor2", __subMixin.Mixin);
+                    context.PopComposition();
                 }
             }
 

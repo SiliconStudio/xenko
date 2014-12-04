@@ -27,13 +27,19 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// Gets the directory list.
         /// </summary>
         /// <value>The directory list.</value>
-        public List<string> LookupDirectoryList { get; set; }
+        public List<string> LookupDirectoryList { get; private set; }
 
         /// <summary>
         /// Gets or sets the URL mapping to file path.
         /// </summary>
         /// <value>The URL automatic file path.</value>
         public Dictionary<string, string> UrlToFilePath { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether [use file system]. (Currently used only by tests, made static)
+        /// </summary>
+        /// <value><c>true</c> if [use file system]; otherwise, <c>false</c>.</value>
+        public static bool UseFileSystem { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderSourceManager"/> class.
@@ -89,9 +95,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                         {
                             // TODO: the "/path" is hardcoded, used in ImportStreamCommand and EffectSystem. Find a place to share this correctly.
                             var pathUrl = sourceUrl + "/path";
-                            if (AssetManager.FileProvider.FileExists(pathUrl))
+                            if (FileExists(pathUrl))
                             {
-                                using (var fileStream = AssetManager.FileProvider.OpenStream(pathUrl, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read))
+                                using (var fileStream = OpenStream(pathUrl))
                                 {
                                     string shaderSourcePath;
                                     using (var sr = new StreamReader(fileStream, Encoding.UTF8))
@@ -111,7 +117,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
                         if (shaderSource.Source == null)
                         {
-                            using (var fileStream = AssetManager.FileProvider.OpenStream(sourceUrl, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read))
+                            using (var fileStream = OpenStream(sourceUrl))
                             {
                                 using (var sr = new StreamReader(fileStream))
                                     shaderSource.Source = sr.ReadToEnd();
@@ -174,8 +180,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 foreach (var directory in LookupDirectoryList)
                 {
                     var fileName = Path.ChangeExtension(type, DefaultEffectFileExtension);
-                    var testPath = string.IsNullOrEmpty(directory) || directory == "/" || directory == "\\" ? string.Format("/{0}", fileName) : string.Format("{0}/{1}", directory.TrimEnd('/'), fileName);
-                    if (AssetManager.FileProvider.FileExists(testPath))
+                    var testPath = Path.Combine(directory, fileName).Replace('\\', '/'); // use / for directory separation to allow to work with both Storage and FileSystem.
+                    if (FileExists(testPath))
                     {
                         path = testPath;
                         break;
@@ -189,6 +195,16 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
                 return path;
             }
+        }
+
+        private bool FileExists(string path)
+        {
+            return UseFileSystem ? File.Exists(path) : AssetManager.FileProvider.FileExists(path);
+        }
+
+        private Stream OpenStream(string path)
+        {
+            return UseFileSystem ? File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read) : AssetManager.FileProvider.OpenStream(path, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read);
         }
 
         public struct ShaderSourceWithHash

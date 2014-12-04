@@ -31,15 +31,17 @@ namespace Test
 
                     {
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushComposition(mixin, "albedoDiffuse", __subMixin);
                         context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoDiffuse));
-                        mixin.Mixin.AddComposition("albedoDiffuse", __subMixin.Mixin);
+                        context.PopComposition();
                     }
                 else
 
                     {
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushComposition(mixin, "albedoDiffuse", __subMixin);
                         context.Mixin(__subMixin, "ComputeColorTextureCubeReflect", TexturingKeys.TextureCube0);
-                        mixin.Mixin.AddComposition("albedoDiffuse", __subMixin.Mixin);
+                        context.PopComposition();
                     }
             }
 
@@ -66,8 +68,9 @@ namespace Test
 
                     {
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushComposition(mixin, "albedoDiffuse", __subMixin);
                         context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoDiffuse));
-                        mixin.Mixin.AddComposition("albedoDiffuse", __subMixin.Mixin);
+                        context.PopComposition();
                     }
             }
 

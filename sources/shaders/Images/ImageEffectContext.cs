@@ -14,8 +14,8 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// </summary>
     public class ImageEffectContext : ComponentBase
     {
-        public TextureDescription DefaultTextureDescription;
         private readonly Dictionary<TextureDescription, List<TextureLink>> textureCache = new Dictionary<TextureDescription, List<TextureLink>>();
+        private readonly Dictionary<Type, ImageEffectBase> sharedEffects = new Dictionary<Type, ImageEffectBase>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageEffectContext" /> class.
@@ -35,6 +35,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             Services = serviceRegistry;
             Effects = serviceRegistry.GetSafeServiceAs<EffectSystem>();
             GraphicsDevice = serviceRegistry.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
+            Parameters = new ParameterCollection();
         }
 
         /// <summary>
@@ -54,6 +55,12 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         /// <value>The services registry.</value>
         public IServiceRegistry Services { get; private set; }
+
+        /// <summary>
+        /// Gets the parameters shared with all <see cref="ImageEffectBase"/> instance.
+        /// </summary>
+        /// <value>The parameters.</value>
+        public ParameterCollection Parameters { get; private set; }
 
         /// <summary>
         /// Gets a <see cref="RenderTarget" /> output for the specified description.
@@ -98,6 +105,27 @@ namespace SiliconStudio.Paradox.Effects.Images
         public RenderTarget GetTemporaryRenderTarget2D(int width, int height, PixelFormat format, MipMapCount mipCount, TextureFlags flags = TextureFlags.RenderTarget | TextureFlags.ShaderResource, int arraySize = 1)
         {
             return GetTemporaryTexture(Texture2DBase.NewDescription(width, height, format, flags, mipCount, arraySize, GraphicsResourceUsage.Default)).ToRenderTarget();
+        }
+
+        /// <summary>
+        /// Gets or creates a shared effect.
+        /// </summary>
+        /// <typeparam name="T">Type of the shared effect (mush have a constructor taking a <see cref="ImageEffectContext"/></typeparam>
+        /// <returns>A singleton instance of <typeparamref name="T"/></returns>
+        public T GetSharedEffect<T>() where T : ImageEffectBase
+        {
+            // TODO: Add a way to support custom constructor
+            lock (sharedEffects)
+            {
+                ImageEffectBase effect;
+                if (!sharedEffects.TryGetValue(typeof(T), out effect))
+                {
+                    effect = (ImageEffectBase)Activator.CreateInstance(typeof(T), this);
+                    sharedEffects.Add(typeof(T), effect);
+                }
+
+                return (T)effect;
+            }
         }
 
         /// <summary>
@@ -220,6 +248,12 @@ namespace SiliconStudio.Paradox.Effects.Images
                 textureLinks.Clear();
             }
             textureCache.Clear();
+
+            foreach (var effectPair in sharedEffects)
+            {
+                effectPair.Value.Dispose();
+            }
+            sharedEffects.Clear();
 
             base.Destroy();
         }

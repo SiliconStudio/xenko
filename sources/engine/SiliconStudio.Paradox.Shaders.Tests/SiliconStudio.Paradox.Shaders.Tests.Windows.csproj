@@ -136,6 +136,54 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ToGlslShader.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="GameAssets\Mixins\ComputeColorRedirect.cs">
+      <DependentUpon>ComputeColorRedirect.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="GameAssets\Mixins\test_mixin_compose_keys.cs">
+      <DependentUpon>test_mixin_compose_keys.pdxfx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="GameAssets\Mixins\ComputeColor2.cs">
+      <DependentUpon>ComputeColor2.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="GameAssets\Mixins\ComputeColor.cs">
+      <DependentUpon>ComputeColor.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="GameAssets\Mixins\C1.cs">
+      <DependentUpon>C1.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="GameAssets\Mixins\C.cs">
+      <DependentUpon>C.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="GameAssets\Mixins\B.cs">
+      <DependentUpon>B.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="GameAssets\Mixins\A.cs">
+      <DependentUpon>A.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="GameAssets\Mixins\test_mixin_complex_params.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -627,6 +675,38 @@
     <None Include="GameAssets\Compiler\ToGlslShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ToGlslShader.cs</LastGenOutput>
+    </None>
+    <Content Include="GameAssets\Mixins\A.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>A.cs</LastGenOutput>
+    </Content>
+    <Content Include="GameAssets\Mixins\B.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>B.cs</LastGenOutput>
+    </Content>
+    <Content Include="GameAssets\Mixins\C.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>C.cs</LastGenOutput>
+    </Content>
+    <Content Include="GameAssets\Mixins\C1.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>C1.cs</LastGenOutput>
+    </Content>
+    <Content Include="GameAssets\Mixins\ComputeColor.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColor.cs</LastGenOutput>
+    </Content>
+    <Content Include="GameAssets\Mixins\ComputeColor2.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColor2.cs</LastGenOutput>
+    </Content>
+    <Content Include="GameAssets\Mixins\ComputeColorRedirect.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorRedirect.cs</LastGenOutput>
+    </Content>
+    <None Include="GameAssets\Mixins\test_mixin_compose_keys.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>test_mixin_compose_keys.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Mixins\test_mixin_complex_params.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>

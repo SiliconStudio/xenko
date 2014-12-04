@@ -3,10 +3,14 @@
 namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
-    /// A copier effect
+    /// A Tonemap effect
     /// </summary>
-    shader ImageCopierEffect
+    shader ToneMapEffect
     {
-        mixin ImageCopierShader;
+        using params ToneMapKeys;
+
+        // Mixin 
+        mixin ToneMapShader;
+        mixin compose ToneMapOperator = ToneMapKeys.Operator;
     };
 }

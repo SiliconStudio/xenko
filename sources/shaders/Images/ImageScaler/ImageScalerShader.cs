@@ -16,21 +16,9 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
-    internal static partial class ShaderMixins
+    internal static partial class ImageScalerShaderKeys
     {
-        internal partial class ImageCopierEffect  : IShaderMixinBuilder
-        {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
-            {
-                context.Mixin(mixin, "ImageCopierShader");
-            }
-
-            [ModuleInitializer]
-            internal static void __Initialize__()
-
-            {
-                ShaderMixinManager.Register("ImageCopierEffect", new ImageCopierEffect());
-            }
-        }
+        public static readonly ParameterKey<Color4> Color = ParameterKeys.New<Color4>();
+        public static readonly ParameterKey<float> IsOnlyChannelRed = ParameterKeys.New<float>();
     }
 }

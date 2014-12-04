@@ -36,7 +36,10 @@ namespace SiliconStudio.Paradox.Effects
         {
             foreach (var parameter in this.localParameterCollections)
             {
-                parameterCollections.Add(parameter);
+                if (parameter != null)
+                {
+                    parameterCollections.Add(parameter);
+                }
             }
         }
     }

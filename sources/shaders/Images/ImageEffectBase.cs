@@ -28,6 +28,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         private List<RenderTarget> scopedRenderTargets;
 
+        private ImageScaler scaler;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageEffectBase" /> class.
@@ -46,6 +47,8 @@ namespace SiliconStudio.Paradox.Effects.Images
             inputTextures = new Texture[128];
             scopedRenderTargets = new List<RenderTarget>();
             maxInputTextureIndex = -1;
+            EnableSetRenderTargets = true;
+            Parameters = new ParameterCollection();
         }
 
         /// <summary>
@@ -61,6 +64,12 @@ namespace SiliconStudio.Paradox.Effects.Images
         public ImageEffectContext Context { get; private set; }
 
         /// <summary>
+        /// Gets the parameters.
+        /// </summary>
+        /// <value>The parameters.</value>
+        public ParameterCollection Parameters { get; private set; }
+
+        /// <summary>
         /// Gets the <see cref="AssetManager"/>.
         /// </summary>
         /// <value>The content.</value>
@@ -71,6 +80,23 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         /// <value>The graphics device.</value>
         protected GraphicsDevice GraphicsDevice { get; private set; }
+
+        /// <summary>
+        /// Gets or sets a boolean to enable GraphicsDevice.SetRenderTargets from output. Default is <c>true</c>.
+        /// </summary>
+        /// <value>A boolean to enable GraphicsDevice.SetRenderTargets from output. Default is <c>true</c></value>
+        protected bool EnableSetRenderTargets { get; set; }
+
+        /// <summary>
+        /// Gets a shared <see cref="ImageScaler"/>.
+        /// </summary>
+        protected ImageScaler Scaler
+        {
+            get
+            {
+                return scaler ?? (scaler = Context.GetSharedEffect<ImageScaler>());
+            }
+        }
 
         /// <summary>
         /// Sets an input texture
@@ -98,6 +124,14 @@ namespace SiliconStudio.Paradox.Effects.Images
             Array.Clear(inputTextures, 0, inputTextures.Length);
             outputRenderTargetView = null;
             outputRenderTargetViews = null;
+            SetDefaultParameters();
+        }
+
+        /// <summary>
+        /// Sets the default parameters (called at constructor time and if <see cref="Reset"/> is called)
+        /// </summary>
+        protected virtual void SetDefaultParameters()
+        {
         }
 
         /// <summary>
@@ -187,13 +221,16 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             GraphicsDevice.BeginProfile(Color.Green, name ?? Name);
 
-            if (outputRenderTargetView != null)
+            if (EnableSetRenderTargets)
             {
-                GraphicsDevice.SetRenderTarget(outputDepthStencilBuffer, outputRenderTargetView);
-            }
-            else if (outputRenderTargetViews != null)
-            {
-                GraphicsDevice.SetRenderTargets(outputDepthStencilBuffer, outputRenderTargetViews);
+                if (outputRenderTargetView != null)
+                {
+                    GraphicsDevice.SetRenderTarget(outputDepthStencilBuffer, outputRenderTargetView);
+                }
+                else if (outputRenderTargetViews != null)
+                {
+                    GraphicsDevice.SetRenderTargets(outputDepthStencilBuffer, outputRenderTargetViews);
+                }
             }
         }
 

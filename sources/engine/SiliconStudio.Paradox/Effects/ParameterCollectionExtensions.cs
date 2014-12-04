@@ -37,6 +37,22 @@ namespace SiliconStudio.Paradox.Effects
             }
         }
 
+
+        /// <summary>
+        /// Copies the automatic.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="parametersTo">The parameters automatic.</param>
+        public static void CopySharedTo<T>(this T parameters, ParameterCollection parametersTo) where T : ParameterCollection
+        {
+            if (parametersTo == null) throw new ArgumentNullException("parametersTo");
+            foreach (var parameter in parameters.valueList)
+            {
+                parameters.CopySharedTo(parameter.Key, null, parametersTo);
+            }
+        }
+
         /// <summary>
         /// Determines whether this instance container is the subset of another container.
         /// </summary>

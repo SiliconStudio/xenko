@@ -109,8 +109,9 @@ namespace SiliconStudio.Paradox.Effects.Core
 
                     {
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushComposition(mixin, "normalMap", __subMixin);
                         context.Mixin(__subMixin, context.GetParam(MaterialParameters.NormalMap));
-                        mixin.Mixin.AddComposition("normalMap", __subMixin.Mixin);
+                        context.PopComposition();
                     }
                 }
                 else

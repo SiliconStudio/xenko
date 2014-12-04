@@ -1,19 +1,16 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using SiliconStudio.Core.Mathematics;
-
 namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
-    /// Defines default values.
+    /// A generic interface for processing/filtering a color.
     /// </summary>
-    internal partial class ImageCopierShaderKeys
+    class ColorTransformShader
     {
-        static ImageCopierShaderKeys()
+        float4 Compute(float4 color)
         {
-            // Default value of 1.0f
-            Color = ParameterKeys.New(Color4.White);
+            return color;
         }
-    }
+    };
 }

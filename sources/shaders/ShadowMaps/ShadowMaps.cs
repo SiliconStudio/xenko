@@ -85,8 +85,9 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
 
                     {
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushCompositionArray(mixin, "shadows", __subMixin);
                         context.Mixin(__subMixin, "ShadowMapReceiverEffect");
-                        mixin.Mixin.AddCompositionToArray("shadows", __subMixin.Mixin);
+                        context.PopComposition();
                     }
                     context.PopParameters();
                 }

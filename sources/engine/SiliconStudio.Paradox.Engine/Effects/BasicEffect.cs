@@ -34,8 +34,9 @@ namespace SiliconStudio.Paradox.Effects
 
                     {
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushComposition(mixin, "normalMap", __subMixin);
                         context.Mixin(__subMixin, context.GetParam(MaterialParameters.NormalMap));
-                        mixin.Mixin.AddComposition("normalMap", __subMixin.Mixin);
+                        context.PopComposition();
                     }
                 }
                 else
@@ -52,14 +53,16 @@ namespace SiliconStudio.Paradox.Effects
 
                     {
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushComposition(mixin, "DiffuseLighting", __subMixin);
                         context.Mixin(__subMixin, "ComputeBRDFDiffuseLambert");
-                        mixin.Mixin.AddComposition("DiffuseLighting", __subMixin.Mixin);
+                        context.PopComposition();
                     }
 
                     {
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushComposition(mixin, "albedoDiffuse", __subMixin);
                         context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoDiffuse));
-                        mixin.Mixin.AddComposition("albedoDiffuse", __subMixin.Mixin);
+                        context.PopComposition();
                     }
                 }
                 if (context.GetParam(MaterialParameters.AlbedoSpecular) != null)
@@ -67,14 +70,16 @@ namespace SiliconStudio.Paradox.Effects
 
                     {
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushComposition(mixin, "SpecularLighting", __subMixin);
                         context.Mixin(__subMixin, "ComputeBRDFColorSpecularBlinnPhong");
-                        mixin.Mixin.AddComposition("SpecularLighting", __subMixin.Mixin);
+                        context.PopComposition();
                     }
 
                     {
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushComposition(mixin, "albedoSpecular", __subMixin);
                         context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoSpecular));
-                        mixin.Mixin.AddComposition("albedoSpecular", __subMixin.Mixin);
+                        context.PopComposition();
                     }
                     if (context.GetParam(MaterialParameters.SpecularPowerMap) != null)
                     {
@@ -82,8 +87,9 @@ namespace SiliconStudio.Paradox.Effects
 
                         {
                             var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                            context.PushComposition(mixin, "SpecularPowerMap", __subMixin);
                             context.Mixin(__subMixin, context.GetParam(MaterialParameters.SpecularPowerMap));
-                            mixin.Mixin.AddComposition("SpecularPowerMap", __subMixin.Mixin);
+                            context.PopComposition();
                         }
                     }
                     if (context.GetParam(MaterialParameters.SpecularIntensityMap) != null)
@@ -91,8 +97,9 @@ namespace SiliconStudio.Paradox.Effects
 
                         {
                             var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                            context.PushComposition(mixin, "SpecularIntensityMap", __subMixin);
                             context.Mixin(__subMixin, context.GetParam(MaterialParameters.SpecularIntensityMap));
-                            mixin.Mixin.AddComposition("SpecularIntensityMap", __subMixin.Mixin);
+                            context.PopComposition();
                         }
                     }
                 }

@@ -12,27 +12,22 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// </summary>
     public class ImageEffect : ImageEffectBase
     {
-        private readonly ParameterCollection parameters;
-
         private readonly DefaultEffectInstance effectInstance;
 
         private readonly DynamicEffectCompiler effectCompiler;
 
-        private readonly ParameterCollection[] parameterCollections;
-
+        private readonly List<ParameterCollection> parameterCollections;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageEffect" /> class.
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="effectName">Name of the shader.</param>
-        /// <param name="sharedParameters">The shared parameters.</param>
         /// <exception cref="System.ArgumentNullException">effectName</exception>
         public ImageEffect(ImageEffectContext context, string effectName)
             : this(context, effectName, (ParameterCollection[])null)
         {
         }
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageEffect" /> class.
@@ -46,50 +41,36 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             if (effectName == null) throw new ArgumentNullException("effectName");
 
-            // Setup this instance parameters
-            parameters = new ParameterCollection();
-
+            parameterCollections = new List<ParameterCollection> { context.Parameters };
             if (sharedParameterCollections != null)
             {
-                parameterCollections = new ParameterCollection[sharedParameterCollections.Length + 1];
-                sharedParameterCollections.CopyTo(parameterCollections, 0);
-                parameterCollections[parameterCollections.Length - 1] = parameters;
+                parameterCollections.AddRange(sharedParameterCollections);
             }
-            else
-            {
-                parameterCollections = new[] { parameters };
-            }
+            parameterCollections.Add(Parameters);
 
             // Setup the effect compiler
             effectInstance = new DefaultEffectInstance(parameterCollections);
             effectCompiler = new DynamicEffectCompiler(context.Services, effectName);
 
-            // Setup default parameters
             SetDefaultParameters();
         }
 
         /// <summary>
-        /// Gets the effect parameters.
+        /// Gets the parameter collections used by this effect.
         /// </summary>
-        /// <value>The parameters.</value>
-        public ParameterCollection Parameters
+        /// <value>The parameter collections.</value>
+        public List<ParameterCollection> ParameterCollections
         {
             get
             {
-                return parameters;
+                return parameterCollections;
             }
-        }
-
-        public override void Reset()
-        {
-            base.Reset();
-            SetDefaultParameters();
         }
 
         /// <summary>
         /// Sets the default parameters (called at constructor time and if <see cref="Reset"/> is called)
         /// </summary>
-        protected virtual void SetDefaultParameters()
+        protected override void SetDefaultParameters()
         {
             Parameters.Set(TexturingKeys.Sampler, GraphicsDevice.SamplerStates.LinearClamp);
         }
@@ -103,12 +84,10 @@ namespace SiliconStudio.Paradox.Effects.Images
         }
 
         /// <summary>
-        /// Updates the effect <see cref="Parameters"/> from properties defined in this instance. See remarks.
+        /// Updates the effect <see cref="Parameters" /> from properties defined in this instance. See remarks.
         /// </summary>
         /// <exception cref="System.InvalidOperationException">Expecting less than 10 textures in input</exception>
-        /// <remarks>
-        /// By default, all the input textures will be remapped to <see cref="TexturingKeys.Texture0"/>...etc.
-        /// </remarks>
+        /// <remarks>By default, all the input textures will be remapped to <see cref="TexturingKeys.Texture0" />...etc.</remarks>
         protected virtual void UpdateParameters()
         {
             // By default, we are copying all input textures to TexturingKeys.Texture#

@@ -7,17 +7,17 @@ using SiliconStudio.Paradox.Graphics;
 namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
-    /// Copies from an input texture to an output texture.
+    /// Scales an input texture to an output texture (down or up, depending on the relative size between input and output)
     /// </summary>
     /// <remarks>This effect can be used for downscaling or upscaling if the output rendertarget is smaller/larger than
     /// the input texture</remarks>
-    public class ImageCopier : ImageEffect
+    public sealed class ImageScaler : ImageEffect
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImageCopier"/> class.
+        /// Initializes a new instance of the <see cref="ImageScaler"/> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        public ImageCopier(ImageEffectContext context) : base(context, "ImageCopierEffect")
+        public ImageScaler(ImageEffectContext context) : base(context, "ImageScalerEffect")
         {
         }
 
@@ -29,11 +29,11 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             get
             {
-                return Parameters.Get(ImageCopierShaderKeys.Color);
+                return Parameters.Get(ImageScalerShaderKeys.Color);
             }
             set
             {
-                Parameters.Set(ImageCopierShaderKeys.Color, value);
+                Parameters.Set(ImageScalerShaderKeys.Color, value);
             }
         }
 
@@ -45,11 +45,11 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             get
             {
-                return !MathUtil.IsZero(Parameters.Get(ImageCopierShaderKeys.IsOnlyChannelRed));
+                return !MathUtil.IsZero(Parameters.Get(ImageScalerShaderKeys.IsOnlyChannelRed));
             }
             set
             {
-                Parameters.Set(ImageCopierShaderKeys.IsOnlyChannelRed, value ? 1.0f : 0.0f);
+                Parameters.Set(ImageScalerShaderKeys.IsOnlyChannelRed, value ? 1.0f : 0.0f);
             }
         }
 

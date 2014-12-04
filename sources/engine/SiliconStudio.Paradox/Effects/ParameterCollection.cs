@@ -803,6 +803,41 @@ namespace SiliconStudio.Paradox.Effects
         }
 
         /// <summary>
+        /// Copy a shared value from this instance to another instance.
+        /// </summary>
+        /// <param name="fromKey">From key.</param>
+        /// <param name="toKey">To key.</param>
+        /// <param name="toCollection">To collection.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// fromKey
+        /// or
+        /// toCollection
+        /// </exception>
+        /// <exception cref="System.InvalidOperationException">CopyingReadOnly is not supporting Sources from origin</exception>
+        public void CopySharedTo(ParameterKey fromKey, ParameterKey toKey, ParameterCollection toCollection)
+        {
+            if (fromKey == null) throw new ArgumentNullException("fromKey");
+            if (toCollection == null) throw new ArgumentNullException("toCollection");
+            if (sources.Count > 0)
+            {
+                throw new InvalidOperationException("CopyingReadOnly is not supporting Sources from origin");
+            }
+
+            toKey = toKey ?? fromKey;
+
+            var index = GetKeyIndex(fromKey);
+            if (index == -1)
+            {
+                return;
+            }
+
+            var internalValue = valueList.Items[index];
+
+            var toIndex = toCollection.GetOrCreateKeyIndex(toKey);
+            toCollection.valueList.Items[toIndex] = new KeyValuePair<ParameterKey, InternalValue>(toKey, internalValue.Value); ;
+        }
+
+        /// <summary>
         /// Removes the value locally and try to get a value from a source.
         /// </summary>
         /// <param name="key">The key.</param>

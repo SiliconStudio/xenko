@@ -16,17 +16,12 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// - a separable 1D horizontal and vertical blur
     /// - linear filtering to reduce the number of taps
     /// </remarks>
-    public class GaussianBlur : ImageEffectBase
+    public sealed class GaussianBlur : ImageEffectBase
     {
         private readonly ImageEffect blurH;
         private readonly ImageEffect blurV;
 
         private Vector2[] offsetsWeights;
-
-        /// <summary>
-        /// Shared parameters used by both by the Horizontal and Vertical pass.
-        /// </summary>
-        private readonly ParameterCollection sharedParameters;
 
         private int radius;
 
@@ -39,14 +34,12 @@ namespace SiliconStudio.Paradox.Effects.Images
         public GaussianBlur(ImageEffectContext context)
             : base(context)
         {
-            sharedParameters = new ParameterCollection();
-
-            // Use shared Parameters for blurH and blurV
-            blurH = new ImageEffect(context, "GaussianBlurEffect", sharedParameters).DisposeBy(this);
+            // Use shared SharedParameters for blurH and blurV
+            blurH = new ImageEffect(context, "GaussianBlurEffect", Parameters).DisposeBy(this);
             // Setup specific Horizontal parameter for blurH
             blurH.Parameters.Set(GaussianBlurKeys.VerticalBlur, false);
 
-            blurV = new ImageEffect(context, "GaussianBlurEffect", sharedParameters).DisposeBy(this);
+            blurV = new ImageEffect(context, "GaussianBlurEffect", Parameters).DisposeBy(this);
             // Setup specific Vertical parameter for blurV
             blurV.Parameters.Set(GaussianBlurKeys.VerticalBlur, true);
 
@@ -121,8 +114,8 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
 
             // Update shared parameters
-            sharedParameters.Set(GaussianBlurKeys.Count, offsetsWeights.Length);
-            sharedParameters.Set(GaussianBlurShaderKeys.OffsetsWeights, offsetsWeights);
+            Parameters.Set(GaussianBlurKeys.Count, offsetsWeights.Length);
+            Parameters.Set(GaussianBlurShaderKeys.OffsetsWeights, offsetsWeights);
 
             // Horizontal pass
             blurH.SetInput(inputTexture);

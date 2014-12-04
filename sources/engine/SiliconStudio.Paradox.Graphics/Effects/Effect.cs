@@ -243,25 +243,26 @@ namespace SiliconStudio.Paradox.Graphics
             stageStatus.Apply(graphicsDevice, resourceBindings, ref effectStateBindings, applyEffectStates);
         }
 
-        public void Apply(GraphicsDevice graphicsDevice, ParameterCollection[] parameterCollections, bool applyEffectStates)
+        public void Apply<TList>(GraphicsDevice graphicsDevice, TList parameterCollections, bool applyEffectStates) where TList : class, IEnumerable<ParameterCollection>
         {
             if (parameterCollections == null) throw new ArgumentNullException("parameterCollections");
 
             PrepareApply(graphicsDevice);
             var stageStatus = graphicsDevice.StageStatus;
 
-            if ((parameterCollections.Length + DefaultParameterCollectionCount) > stageStatus.ParameterCollections.Length)
-            {
-                throw new ArgumentException(string.Format("Exceeding limit of number of parameter collections [{0}]", stageStatus.ParameterCollections.Length - DefaultParameterCollectionCount));
-            }
-
             stageStatus.ParameterCollections[0] = defaultParameters; // Default Parameters contains all registered Parameters used effectively by the effect
-            for (int i = 0; i < parameterCollections.Length; i++ )
+            int i = DefaultParameterCollectionCount - 1;
+            foreach (var parameterCollection in parameterCollections)
             {
-                stageStatus.ParameterCollections[i + DefaultParameterCollectionCount - 1] = parameterCollections[i];
+                if (i >= stageStatus.ParameterCollections.Length)
+                {
+                    throw new ArgumentException(string.Format("Exceeding limit of number of parameter collections [{0}]", stageStatus.ParameterCollections.Length - DefaultParameterCollectionCount));
+                }
+                stageStatus.ParameterCollections[i] = parameterCollection;
+                i++;
             }
-            stageStatus.ParameterCollections[parameterCollections.Length + DefaultParameterCollectionCount - 1] = graphicsDevice.Parameters; // GraphicsDevice.Parameters is overriding all parameters
-            stageStatus.UpdateParameters(graphicsDevice, updaterDefinition, parameterCollections.Length + DefaultParameterCollectionCount);
+            stageStatus.ParameterCollections[i] = graphicsDevice.Parameters; // GraphicsDevice.Parameters is overriding all parameters
+            stageStatus.UpdateParameters(graphicsDevice, updaterDefinition, i + 1);
             stageStatus.Apply(graphicsDevice, resourceBindings, ref effectStateBindings, applyEffectStates);
         }
 

@@ -63,7 +63,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 if (shaderMixinParser == null)
                 {
                     shaderMixinParser = new ShaderMixinParser();
-                    shaderMixinParser.SourceManager.LookupDirectoryList = SourceDirectories; // TODO: temp
+                    shaderMixinParser.SourceManager.LookupDirectoryList.AddRange(SourceDirectories); // TODO: temp
                     shaderMixinParser.SourceManager.UrlToFilePath = UrlToFilePath; // TODO: temp
                 }
                 return shaderMixinParser;
@@ -145,16 +145,10 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             var shaderSourceFilename = Path.Combine(logDir, "shader_" +  fullEffectName.Replace('.', '_') + "_" + shaderId + ".hlsl");
             lock (WriterLock) // protect write in case the same shader is created twice
             {
+                // Write shader before generating to make sure that we are having a trace before compiling it (compiler may crash...etc.)
                 if (!File.Exists(shaderSourceFilename))
                 {
-                    var builder = new StringBuilder();
-                    builder.AppendLine("/***** Used Parameters *****");
-                    builder.Append(" * EffectName: ");
-                    builder.AppendLine(fullEffectName ?? "");
-                    WriteParameters(builder, usedParameters, 0, false);
-                    builder.AppendLine(" ***************************/");
-                    builder.Append(shaderSourceText);
-                    File.WriteAllText(shaderSourceFilename, builder.ToString());
+                    File.WriteAllText(shaderSourceFilename, shaderSourceText);
                 }
             }
 #endif
@@ -179,6 +173,10 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
             var shaderStageBytecodes = new List<ShaderBytecode>();
 
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+            var stageStringBuilder = new StringBuilder();
+#endif
+
             foreach (var stageBinding in parsingResult.EntryPoints)
             {
                 // Compile
@@ -194,14 +192,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 // -------------------------------------------------------
                 // Append bytecode id to shader log
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-                lock (WriterLock) // protect write in case the same shader is created twice
-                {
-                    if (File.Exists(shaderSourceFilename))
-                    {
-                        // Append at the end of the shader the bytecodes Id
-                        File.AppendAllText(shaderSourceFilename, "\n// {0} {1}".ToFormat(stageBinding.Key, result.Bytecode.Id));
-                    }
-                }
+                stageStringBuilder.AppendLine("    {0} => {1}".ToFormat(stageBinding.Key, result.Bytecode.Id));
 #endif
                 // -------------------------------------------------------
 
@@ -217,8 +208,59 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             {
                 CleanupReflection(bytecode.Reflection);
             }
-
             bytecode.Stages = shaderStageBytecodes.ToArray();
+
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+            lock (WriterLock) // protect write in case the same shader is created twice
+            {
+                var fileInfo = new FileInfo(shaderSourceFilename);
+                if (fileInfo.Exists && fileInfo.Length <= (shaderSourceText.Length + 10)) // beark
+                {
+                    var builder = new StringBuilder();
+                    builder.AppendLine("/**************************");
+                    builder.AppendLine("***** Used Parameters *****");
+                    builder.Append("@ EffectName: ");
+                    builder.AppendLine(fullEffectName ?? "");
+                    WriteParameters(builder, usedParameters, 0, false);
+                    builder.AppendLine("***************************");
+
+                    if (bytecode.Reflection.ConstantBuffers.Count > 0)
+                    {
+                        builder.AppendLine("****  ConstantBuffers  ****");
+                        foreach (var cBuffer in bytecode.Reflection.ConstantBuffers)
+                        {
+                            builder.AppendFormat("cbuffer {0}", cBuffer.Name).AppendLine();
+                            foreach (var parameter in cBuffer.Members)
+                            {
+                                builder.AppendFormat("@C  {0} => {1}", parameter.Param.RawName, parameter.Param.KeyName).AppendLine();
+                            }
+                        }
+                        builder.AppendLine("***************************");
+                    }
+
+                    if (bytecode.Reflection.ResourceBindings.Count > 0)
+                    {
+                        builder.AppendLine("******  Resources    ******");
+                        foreach (var resource in bytecode.Reflection.ResourceBindings)
+                        {
+                            var parameter = resource.Param;
+                            builder.AppendFormat("@R  {0} => {1}", parameter.RawName, parameter.KeyName).AppendLine();
+                        }
+                        builder.AppendLine("***************************");
+                    }
+
+                    if (bytecode.Stages.Length > 0)
+                    {
+                        builder.AppendLine("*****     Stages      *****");
+                        builder.AppendLine(stageStringBuilder.ToString());
+                        builder.AppendLine("***************************");
+                    }
+
+                    File.AppendAllText(shaderSourceFilename, builder.ToString());
+                }
+            }
+#endif
+
             return bytecode;
         }
 
@@ -253,7 +295,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             var first = true;
             foreach (var usedParam in parameters)
             {
-                builder.Append(" * ");
+                builder.Append("@P ");
                 builder.Append(indentation);
                 if (isArray && first)
                 {
