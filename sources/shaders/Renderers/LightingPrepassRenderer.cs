@@ -309,12 +309,12 @@ namespace SiliconStudio.Paradox.Effects.Renderers
 
         private void AddShadowEffect(int cascadeCount, ShadowMapFilterType filterType, CompilerParameters  parameters)
         {
-            parameters.Set(ShadowMapParameters.ShadowMapCascadeCount, cascadeCount);
-            parameters.Set(ShadowMapParameters.FilterType, filterType);
+            parameters.Set(ShadowMapParameters.ShadowMapCascadeCount.ComposeWith("shadows[0]"), cascadeCount);
+            parameters.Set(ShadowMapParameters.FilterType.ComposeWith("shadows[0]"), filterType);
 
             //////////////////////////////////////////////
             // DIRECTIONAL LIGHT
-            parameters.Set(ShadowMapParameters.LightType, LightType.Directional);
+            parameters.Set(ShadowMapParameters.LightType.ComposeWith("shadows[0]"), LightType.Directional);
 
             ShadowEffectInfo seiDirect;
             seiDirect.LightType = LightType.Directional;
@@ -324,7 +324,7 @@ namespace SiliconStudio.Paradox.Effects.Renderers
 
             //////////////////////////////////////////////
             // SPOT LIGHT
-            parameters.Set(ShadowMapParameters.LightType, LightType.Spot);
+            parameters.Set(ShadowMapParameters.LightType.ComposeWith("shadows[0]"), LightType.Spot);
 
             ShadowEffectInfo seiSpot;
             seiSpot.LightType = LightType.Spot;
@@ -1150,7 +1150,7 @@ namespace SiliconStudio.Paradox.Effects.Renderers
         {
             lightingParameterSemantics.Clear();
             // TODO: use StringBuilder instead
-            var lightGroupSubKey = string.Format("." + compositionName + "[{0}]", index);
+            var lightGroupSubKey = string.Format(compositionName + "[{0}]", index);
             foreach (var param in LightParametersDict)
             {
                 lightingParameterSemantics.Add(param.Key.ComposeWith(lightGroupSubKey), param.Value);
