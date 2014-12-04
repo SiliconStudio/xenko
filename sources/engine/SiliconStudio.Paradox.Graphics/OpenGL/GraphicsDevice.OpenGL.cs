@@ -1085,6 +1085,17 @@ namespace SiliconStudio.Paradox.Graphics
                     return new MappedResource(resource, subResourceIndex, new DataBox { DataPointer = mapResult, SlicePitch = texture.DepthPitch, RowPitch = texture.RowPitch });
 #endif
                 }
+                else if (mapMode == MapMode.WriteDiscard)
+                {
+                    if (texture.Description.Usage != GraphicsResourceUsage.Dynamic)
+                        throw new NotSupportedException("Only dynamic texture can be mapped.");
+
+                    GL.BindBuffer(BufferTarget.PixelUnpackBuffer, texture.PixelBufferObjectId);
+                    var mapResult = GL.MapBuffer(BufferTarget.PixelUnpackBuffer, bufferAccess);
+                    GL.BindBuffer(BufferTarget.PixelUnpackBuffer, 0);
+
+                    return new MappedResource(resource, subResourceIndex, new DataBox { DataPointer = mapResult, SlicePitch = texture.DepthPitch, RowPitch = texture.RowPitch });
+                }
             }
 
             throw new NotImplementedException();
@@ -1681,14 +1692,43 @@ namespace SiliconStudio.Paradox.Graphics
             var texture = unmapped.Resource as Texture;
             if (texture != null)
             {
-                if (texture.Description.Usage != GraphicsResourceUsage.Staging)
-                    throw new NotSupportedException("Only staging textures can be mapped.");
+                if (texture.Description.Usage == GraphicsResourceUsage.Staging)
+                {
 
 #if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                GL.BindBuffer(BufferTarget.PixelPackBuffer, texture.ResourceId);
-                GL.UnmapBuffer(BufferTarget.PixelPackBuffer);
-                GL.BindBuffer(BufferTarget.PixelPackBuffer, 0);
+                    GL.BindBuffer(BufferTarget.PixelPackBuffer, texture.ResourceId);
+                    GL.UnmapBuffer(BufferTarget.PixelPackBuffer);
+                    GL.BindBuffer(BufferTarget.PixelPackBuffer, 0);
 #endif
+                }
+                else if (texture.Description.Usage == GraphicsResourceUsage.Dynamic)
+                {
+                    GL.BindBuffer(BufferTarget.PixelUnpackBuffer, texture.PixelBufferObjectId);
+                    GL.UnmapBuffer(BufferTarget.PixelUnpackBuffer);
+
+                    GL.BindTexture(texture.Target, texture.ResourceId);
+
+                    // Bind buffer to texture
+                    switch (texture.Target)
+                    {
+                        case TextureTarget.Texture1D:
+                            GL.TexSubImage1D(TextureTarget.Texture1D, 0, 0, texture.Width, texture.FormatGl, texture.Type, IntPtr.Zero);
+                            GL.BindTexture(TextureTarget.Texture1D, 0);
+                            break;
+                        case TextureTarget.Texture2D:
+                            GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, texture.Width, texture.Height, texture.FormatGl, texture.Type, IntPtr.Zero);
+                            GL.BindTexture(TextureTarget.Texture2D, 0);
+                            break;
+                        case TextureTarget.Texture3D:
+                            GL.TexSubImage3D(TextureTarget.Texture3D, 0, 0, 0, 0, texture.Width, texture.Height, texture.Depth, texture.FormatGl, texture.Type, IntPtr.Zero);
+                            GL.BindTexture(TextureTarget.Texture3D, 0);
+                            break;
+                        default:
+                            throw new NotSupportedException("Invalid texture target: " + texture.Target);
+                    }
+
+                    GL.BindBuffer(BufferTarget.PixelUnpackBuffer, 0);
+                }
             }
             else
             {

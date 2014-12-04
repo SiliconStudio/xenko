@@ -39,6 +39,7 @@ namespace SiliconStudio.Paradox.Graphics
         public TextureTarget Target { get; set; }
         public int DepthPitch { get; set; }
         public int RowPitch { get; set; }
+        internal int PixelBufferObjectId { get; set; }
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
         public IntPtr StagingData { get; set; }
@@ -285,6 +286,21 @@ namespace SiliconStudio.Paradox.Graphics
         private bool IsFlippedTexture()
         {
             return GraphicsDevice.BackBuffer.Texture == this || GraphicsDevice.DepthStencilBuffer.Texture == this;
+        }
+
+        protected void InitializePixelBufferObject()
+        {
+            if (Description.Usage != GraphicsResourceUsage.Dynamic)
+                throw new InvalidOperationException("Only Dynamic texture usage could initialize PBO");
+
+            PixelBufferObjectId = GL.GenBuffer();
+
+            GL.BindBuffer(BufferTarget.PixelUnpackBuffer, PixelBufferObjectId);
+
+            GL.BufferData(BufferTarget.PixelUnpackBuffer, (IntPtr)DepthPitch, IntPtr.Zero,
+                BufferUsageHint.DynamicDraw);
+
+            GL.BindBuffer(BufferTarget.PixelUnpackBuffer, 0);
         }
     }
 }

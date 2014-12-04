@@ -107,6 +107,9 @@ namespace SiliconStudio.Paradox.Graphics
                 GL.BindTexture(TextureTarget1D, 0);
 
                 resourceId = textureId;
+
+                if (Description.Usage == GraphicsResourceUsage.Dynamic)
+                    InitializePixelBufferObject();
             }
         }
 
