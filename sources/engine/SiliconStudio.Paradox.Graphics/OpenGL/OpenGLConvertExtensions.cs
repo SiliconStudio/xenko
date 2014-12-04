@@ -133,6 +133,7 @@ namespace SiliconStudio.Paradox.Graphics
                     return TextureWrapMode.ClampToEdge;
                 case TextureAddressMode.Mirror:
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
+                    // TextureWrapMode.MirroredRepeat enum not available in OpenTK.Graphics.ES30
                     return TextureWrapMode.Repeat;
 #else
                     return TextureWrapMode.MirroredRepeat;

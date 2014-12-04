@@ -173,6 +173,13 @@ namespace SiliconStudio.Paradox.UI
                         StencilPass = StencilOperation.Keep,
                         StencilFunction = CompareFunction.Equal
                     },
+                    BackFace = new DepthStencilStencilOpDescription
+                    {
+                        StencilDepthBufferFail = StencilOperation.Keep,
+                        StencilFail = StencilOperation.Keep,
+                        StencilPass = StencilOperation.Keep,
+                        StencilFunction = CompareFunction.Equal
+                    },
                 };
             KeepStencilValueState = DepthStencilState.New(GraphicsDevice, depthStencilDescription);
 
