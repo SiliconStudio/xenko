@@ -32,7 +32,7 @@ Build file used to build Paradox and package it from the command line
     </ItemGroup>    
     
     <Delete Files="@(FilesToDelete)"/>
-    <PackageArchiveTask File="$(ParadoxPackage)"/>
+    <PackageArchiveTask File="$(ParadoxPackage)" SpecialVersion="$(ParadoxPackageSpecialVersion)"/>
   </Target>
 
   <!--
