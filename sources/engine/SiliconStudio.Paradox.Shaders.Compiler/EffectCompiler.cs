@@ -219,7 +219,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     var builder = new StringBuilder();
                     builder.AppendLine("/**************************");
                     builder.AppendLine("***** Used Parameters *****");
-                    builder.Append(" * EffectName: ");
+                    builder.Append("@ EffectName: ");
                     builder.AppendLine(fullEffectName ?? "");
                     WriteParameters(builder, usedParameters, 0, false);
                     builder.AppendLine("***************************");
@@ -232,7 +232,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                             builder.AppendFormat("cbuffer {0}", cBuffer.Name).AppendLine();
                             foreach (var parameter in cBuffer.Members)
                             {
-                                builder.AppendFormat("    {0} => {1}", parameter.Param.RawName, parameter.Param.KeyName).AppendLine();
+                                builder.AppendFormat("@C  {0} => {1}", parameter.Param.RawName, parameter.Param.KeyName).AppendLine();
                             }
                         }
                         builder.AppendLine("***************************");
@@ -244,7 +244,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                         foreach (var resource in bytecode.Reflection.ResourceBindings)
                         {
                             var parameter = resource.Param;
-                            builder.AppendFormat("    {0} => {1}", parameter.RawName, parameter.KeyName).AppendLine();
+                            builder.AppendFormat("@R  {0} => {1}", parameter.RawName, parameter.KeyName).AppendLine();
                         }
                         builder.AppendLine("***************************");
                     }
@@ -295,7 +295,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             var first = true;
             foreach (var usedParam in parameters)
             {
-                builder.Append(" * ");
+                builder.Append("@P ");
                 builder.Append(indentation);
                 if (isArray && first)
                 {
