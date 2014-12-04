@@ -180,7 +180,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 foreach (var directory in LookupDirectoryList)
                 {
                     var fileName = Path.ChangeExtension(type, DefaultEffectFileExtension);
-                    var testPath = Path.Combine(directory, fileName);
+                    var testPath = Path.Combine(directory, fileName).Replace('\\', '/'); // use / for directory separation to allow to work with both Storage and FileSystem.
                     if (FileExists(testPath))
                     {
                         path = testPath;
