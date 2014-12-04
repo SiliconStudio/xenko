@@ -29,8 +29,9 @@ namespace SiliconStudio.Paradox.Effects.Images
 
                     {
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushCompositionArray(mixin, "Transforms", __subMixin);
                         context.Mixin(__subMixin, colorTransform.Shader);
-                        mixin.Mixin.AddCompositionToArray("Transforms", __subMixin.Mixin);
+                        context.PopComposition();
                     }
                 }
             }

@@ -39,8 +39,9 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
 
                     {
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushCompositionArray(mixin, "Cubemaps", __subMixin);
                         context.Mixin(__subMixin, "CubemapFace", context.GetParam(CubemapBlendRenderer.CubemapKey));
-                        mixin.Mixin.AddCompositionToArray("Cubemaps", __subMixin.Mixin);
+                        context.PopComposition();
                     }
                     context.PopParameters();
                 }

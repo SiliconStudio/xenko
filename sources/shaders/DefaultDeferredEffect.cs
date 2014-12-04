@@ -41,8 +41,9 @@ namespace DefaultEffects
 
                     {
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushComposition(mixin, "SpecularPowerMap", __subMixin);
                         context.Mixin(__subMixin, context.GetParam(MaterialParameters.SpecularPowerMap));
-                        mixin.Mixin.AddComposition("SpecularPowerMap", __subMixin.Mixin);
+                        context.PopComposition();
                     }
                 }
                 if (context.GetParam(MaterialParameters.SpecularIntensityMap) != null)
@@ -50,8 +51,9 @@ namespace DefaultEffects
 
                     {
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushComposition(mixin, "SpecularIntensityMap", __subMixin);
                         context.Mixin(__subMixin, context.GetParam(MaterialParameters.SpecularIntensityMap));
-                        mixin.Mixin.AddComposition("SpecularIntensityMap", __subMixin.Mixin);
+                        context.PopComposition();
                     }
                 }
             }
@@ -242,22 +244,25 @@ namespace DefaultEffects
 
                     {
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushCompositionArray(mixin, "shadows", __subMixin);
                         context.Mixin(__subMixin, "NearestFilterGroup");
-                        mixin.Mixin.AddCompositionToArray("shadows", __subMixin.Mixin);
+                        context.PopComposition();
                     }
                 else if (context.GetParam(ShadowMapParameters.FilterType) == ShadowMapFilterType.PercentageCloserFiltering)
 
                     {
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushCompositionArray(mixin, "shadows", __subMixin);
                         context.Mixin(__subMixin, "PcfGroup");
-                        mixin.Mixin.AddCompositionToArray("shadows", __subMixin.Mixin);
+                        context.PopComposition();
                     }
                 else if (context.GetParam(ShadowMapParameters.FilterType) == ShadowMapFilterType.Variance)
 
                     {
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushCompositionArray(mixin, "shadows", __subMixin);
                         context.Mixin(__subMixin, "VsmGroup");
-                        mixin.Mixin.AddCompositionToArray("shadows", __subMixin.Mixin);
+                        context.PopComposition();
                     }
             }
 
@@ -313,8 +318,9 @@ namespace DefaultEffects
 
                 {
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                    context.PushCompositionArray(mixin, "lightingGroups", __subMixin);
                     context.Mixin(__subMixin, "ParadoxDeferredLightingDirectGroup");
-                    mixin.Mixin.AddCompositionToArray("lightingGroups", __subMixin.Mixin);
+                    context.PopComposition();
                 }
             }
 
@@ -337,8 +343,9 @@ namespace DefaultEffects
 
                     {
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushCompositionArray(mixin, "lightingGroups", __subMixin);
                         context.Mixin(__subMixin, "ParadoxDeferredLightingPointGroup");
-                        mixin.Mixin.AddCompositionToArray("lightingGroups", __subMixin.Mixin);
+                        context.PopComposition();
                     }
             }
 
@@ -360,8 +367,9 @@ namespace DefaultEffects
 
                 {
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                    context.PushCompositionArray(mixin, "lightingGroups", __subMixin);
                     context.Mixin(__subMixin, "ParadoxDeferredLightingSpotGroup");
-                    mixin.Mixin.AddCompositionToArray("lightingGroups", __subMixin.Mixin);
+                    context.PopComposition();
                 }
             }
 
@@ -384,8 +392,9 @@ namespace DefaultEffects
 
                 {
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                    context.PushComposition(mixin, "SpecularIntensityMap", __subMixin);
                     context.Mixin(__subMixin, "ComputeColorOne");
-                    mixin.Mixin.AddComposition("SpecularIntensityMap", __subMixin.Mixin);
+                    context.PopComposition();
                 }
             }
 
@@ -410,26 +419,30 @@ namespace DefaultEffects
 
                 {
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                    context.PushComposition(mixin, "DiffuseColor", __subMixin);
                     context.Mixin(__subMixin, "ComputeBRDFColorFresnel");
-                    mixin.Mixin.AddComposition("DiffuseColor", __subMixin.Mixin);
+                    context.PopComposition();
                 }
 
                 {
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                    context.PushComposition(mixin, "DiffuseLighting", __subMixin);
                     context.Mixin(__subMixin, "ComputeBRDFDiffuseLambert");
-                    mixin.Mixin.AddComposition("DiffuseLighting", __subMixin.Mixin);
+                    context.PopComposition();
                 }
 
                 {
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                    context.PushComposition(mixin, "SpecularColor", __subMixin);
                     context.Mixin(__subMixin, "ComputeBRDFColor");
-                    mixin.Mixin.AddComposition("SpecularColor", __subMixin.Mixin);
+                    context.PopComposition();
                 }
 
                 {
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                    context.PushComposition(mixin, "SpecularLighting", __subMixin);
                     context.Mixin(__subMixin, "ParadoxDeferredSpecular");
-                    mixin.Mixin.AddComposition("SpecularLighting", __subMixin.Mixin);
+                    context.PopComposition();
                 }
 
                 {
@@ -518,8 +531,9 @@ namespace DefaultEffects
 
                     {
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushComposition(mixin, "albedoDiffuse", __subMixin);
                         context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoDiffuse));
-                        mixin.Mixin.AddComposition("albedoDiffuse", __subMixin.Mixin);
+                        context.PopComposition();
                     }
                 }
             }
@@ -543,8 +557,9 @@ namespace DefaultEffects
 
                     {
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushComposition(mixin, "albedoSpecular", __subMixin);
                         context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoSpecular));
-                        mixin.Mixin.AddComposition("albedoSpecular", __subMixin.Mixin);
+                        context.PopComposition();
                     }
                 }
             }
@@ -578,8 +593,9 @@ namespace DefaultEffects
 
                         {
                             var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                            context.PushComposition(mixin, "AmbientMap", __subMixin);
                             context.Mixin(__subMixin, context.GetParam(MaterialParameters.AmbientMap));
-                            mixin.Mixin.AddComposition("AmbientMap", __subMixin.Mixin);
+                            context.PopComposition();
                         }
                     }
                 }
@@ -593,8 +609,9 @@ namespace DefaultEffects
 
                         {
                             var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                            context.PushComposition(mixin, "AmbientMap", __subMixin);
                             context.Mixin(__subMixin, context.GetParam(MaterialParameters.AmbientMap));
-                            mixin.Mixin.AddComposition("AmbientMap", __subMixin.Mixin);
+                            context.PopComposition();
                         }
                     }
                     if (context.GetParam(MaterialParameters.UseTransparent))

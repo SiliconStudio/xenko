@@ -78,26 +78,30 @@ namespace Test
 
                 {
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                    context.PushComposition(mixin, "DiffuseColor", __subMixin);
                     context.Mixin(__subMixin, "ComputeBRDFColorFresnel");
-                    mixin.Mixin.AddComposition("DiffuseColor", __subMixin.Mixin);
+                    context.PopComposition();
                 }
 
                 {
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                    context.PushComposition(mixin, "DiffuseLighting", __subMixin);
                     context.Mixin(__subMixin, "ComputeBRDFDiffuseLambert");
-                    mixin.Mixin.AddComposition("DiffuseLighting", __subMixin.Mixin);
+                    context.PopComposition();
                 }
 
                 {
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                    context.PushComposition(mixin, "SpecularColor", __subMixin);
                     context.Mixin(__subMixin, "ComputeBRDFColor");
-                    mixin.Mixin.AddComposition("SpecularColor", __subMixin.Mixin);
+                    context.PopComposition();
                 }
 
                 {
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                    context.PushComposition(mixin, "SpecularLighting", __subMixin);
                     context.Mixin(__subMixin, "ComputeBRDFColorSpecularBlinnPhong");
-                    mixin.Mixin.AddComposition("SpecularLighting", __subMixin.Mixin);
+                    context.PopComposition();
                 }
             }
 
@@ -125,14 +129,16 @@ namespace Test
 
                     {
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushComposition(mixin, "DiffuseColor", __subMixin);
                         context.Mixin(__subMixin, "ComputeBRDFDiffuseLambert");
-                        mixin.Mixin.AddComposition("DiffuseColor", __subMixin.Mixin);
+                        context.PopComposition();
                     }
 
                     {
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushComposition(mixin, "albedoDiffuse", __subMixin);
                         context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoDiffuse));
-                        mixin.Mixin.AddComposition("albedoDiffuse", __subMixin.Mixin);
+                        context.PopComposition();
                     }
                 }
                 if (context.GetParam(MaterialParameters.AlbedoSpecular) != null)
@@ -140,14 +146,16 @@ namespace Test
 
                     {
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushComposition(mixin, "SpecularColor", __subMixin);
                         context.Mixin(__subMixin, "ComputeBRDFColorSpecularBlinnPhong");
-                        mixin.Mixin.AddComposition("SpecularColor", __subMixin.Mixin);
+                        context.PopComposition();
                     }
 
                     {
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushComposition(mixin, "albedoSpecular", __subMixin);
                         context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoSpecular));
-                        mixin.Mixin.AddComposition("albedoSpecular", __subMixin.Mixin);
+                        context.PopComposition();
                     }
                 }
                 if (context.GetParam(MaterialParameters.HasSkinningPosition))

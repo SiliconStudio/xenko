@@ -27,8 +27,9 @@ namespace SiliconStudio.Paradox.Effects.Skybox
 
                 {
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                    context.PushComposition(mixin, "albedoDiffuse", __subMixin);
                     context.Mixin(__subMixin, "CubemapSkybox", TexturingKeys.TextureCube0);
-                    mixin.Mixin.AddComposition("albedoDiffuse", __subMixin.Mixin);
+                    context.PopComposition();
                 }
             }
 
