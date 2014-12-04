@@ -1,15 +1,15 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using SiliconStudio.Paradox.Effects.Data;
 
 namespace SiliconStudio.Paradox.Engine.Data
 {
-    public partial class ModelComponentData
+    public partial class LightComponentData
     {
-        public ModelComponentData()
+        public LightComponentData()
         {
-            Parameters = new ParameterCollectionData();
             Enabled = true;
+            // Default light color is white (better than black)
+            Color = new Core.Mathematics.Color3(1.0f);
         }
     }
 }

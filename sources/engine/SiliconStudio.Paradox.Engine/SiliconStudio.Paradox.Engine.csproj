@@ -82,6 +82,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>EngineData.pdxdata</DependentUpon>
     </Compile>
+    <Compile Include="Data\LightComponentData.cs" />
     <Compile Include="EntityModel\EntityComponentReference.cs" />
     <Compile Include="EntityModel\EntityComponentReferenceDataConverter.cs" />
     <Compile Include="EntityModel\EntityDataConverter.cs" />
