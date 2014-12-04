@@ -5,8 +5,8 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// A copier effect
     /// </summary>
-    shader ImageCopierEffect
+    shader ImageScalerEffect
     {
-        mixin ImageCopierShader;
+        mixin ImageScalerShader;
     };
 }

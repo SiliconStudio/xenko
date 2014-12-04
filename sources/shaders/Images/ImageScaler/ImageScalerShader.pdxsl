@@ -6,7 +6,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// A copier shader
     /// </summary>
-    internal class ImageCopierShader : ImageEffectShader
+    internal class ImageScalerShader : ImageEffectShader
     {
         // TODO: Color and IsOnlyChannelRed could be part of a color filter that we can pre-prend automatically
         [Color]

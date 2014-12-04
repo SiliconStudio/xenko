@@ -18,18 +18,18 @@ namespace SiliconStudio.Paradox.Effects.Images
 {
     internal static partial class ShaderMixins
     {
-        internal partial class ImageCopierEffect  : IShaderMixinBuilder
+        internal partial class ImageScalerEffect  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-                context.Mixin(mixin, "ImageCopierShader");
+                context.Mixin(mixin, "ImageScalerShader");
             }
 
             [ModuleInitializer]
             internal static void __Initialize__()
 
             {
-                ShaderMixinManager.Register("ImageCopierEffect", new ImageCopierEffect());
+                ShaderMixinManager.Register("ImageScalerEffect", new ImageScalerEffect());
             }
         }
     }
