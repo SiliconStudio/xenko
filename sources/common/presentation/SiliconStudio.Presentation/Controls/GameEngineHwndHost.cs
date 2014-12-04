@@ -1,8 +1,13 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Windows;
+using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media;
 
 using SiliconStudio.Presentation.Extensions;
 
@@ -14,6 +19,9 @@ namespace SiliconStudio.Presentation.Controls
     public class GameEngineHwndHost : HwndHost
     {
         private readonly IntPtr childHandle;
+        private readonly List<HwndSource> contextMenuSources = new List<HwndSource>();
+        private int mouseMoveCount;
+        private Point contextMenuPosition;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GameEngineHwndHost"/> class.
@@ -57,8 +65,73 @@ namespace SiliconStudio.Presentation.Controls
         /// <param name="lParam">The long parameter of the message.</param>
         public void ForwardMessage(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam)
         {
-            var parent = NativeHelper.GetParent(hwnd);
-            NativeHelper.PostMessage(parent, msg, wParam, lParam);
+            switch (msg)
+            {
+                case NativeHelper.WM_RBUTTONDOWN:
+                    mouseMoveCount = 0;
+                    break;
+                case NativeHelper.WM_MOUSEMOVE:
+                    ++mouseMoveCount;
+                    break;
+                case NativeHelper.WM_CONTEXTMENU:
+                    // TODO: Tracking drag offset would be better, but might be difficult since we replace the mouse to its initial position each time it is moved.
+                    if (mouseMoveCount < 3)
+                    {
+                        Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            DependencyObject dependencyObject = this;
+                            while (dependencyObject != null)
+                            {
+                                var element = dependencyObject as FrameworkElement;
+                                if (element != null && element.ContextMenu != null)
+                                {
+                                    element.Focus();
+                                    element.ContextMenu.IsOpen = true;
+                                    var source = (HwndSource)PresentationSource.FromVisual(element.ContextMenu);
+                                    if (source != null)
+                                    {
+                                        source.AddHook(ContextMenuWndProc);
+                                        contextMenuPosition = Mouse.GetPosition(this);
+                                        lock (contextMenuSources)
+                                        {
+                                            contextMenuSources.Add(source);
+                                        }
+                                    }
+                                    break;
+                                }
+                                dependencyObject = VisualTreeHelper.GetParent(dependencyObject);
+                            }
+                        }));
+                    }
+                    break;
+                default:
+                    var parent = NativeHelper.GetParent(hwnd);
+                    NativeHelper.PostMessage(parent, msg, wParam, lParam);
+                    break;
+            }
+        }
+
+        private IntPtr ContextMenuWndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            switch (msg)
+            {
+                case NativeHelper.WM_LBUTTONDOWN:
+                case NativeHelper.WM_RBUTTONDOWN:
+                    // We need to change from the context menu coordinates to the HwndHost coordinates and re-encode lParam
+                    var position = new Point(-(short)(lParam.ToInt32() & 0xFFFF), -(lParam.ToInt32() >> 16));
+                    var offset = contextMenuPosition - position;
+                    lParam = new IntPtr((short)offset.X + (((short)offset.Y) << 16));
+                    NativeHelper.PostMessage(childHandle, msg, wParam, lParam);
+                    break;
+                case NativeHelper.WM_DESTROY:
+                    lock (contextMenuSources)
+                    {
+                        var source = contextMenuSources.First(x => x.Handle == hwnd);
+                        source.RemoveHook(ContextMenuWndProc);
+                    }
+                    break;
+            }
+            return IntPtr.Zero;
         }
     }
 }
