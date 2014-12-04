@@ -26,6 +26,10 @@ namespace SiliconStudio.Paradox.Effects.Images
                 {
                     context.Mixin(mixin, context.GetParam(ColorTransformKeys.Shader));
                 }
+                else
+                {
+                    context.Mixin(mixin, "ColorTransformShader");
+                }
             }
 
             [ModuleInitializer]

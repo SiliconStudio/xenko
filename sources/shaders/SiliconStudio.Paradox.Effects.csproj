@@ -653,12 +653,6 @@
     <Compile Include="Images\ToneMap\ColorTransform.cs" />
     <Compile Include="Images\ToneMap\ColorTransformContext.cs" />
     <Compile Include="Images\ToneMap\ColorTransformGroup.cs" />
-    <Compile Include="Images\ToneMap\Color3TransformShader.cs">
-      <DependentUpon>Color3TransformShader.pdxsl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Images\ToneMap\ColorTransformGroupKeys.cs" />
     <Compile Include="Images\ToneMap\ColorTransformGroupEffect.cs">
       <DependentUpon>ColorTransformGroupEffect.pdxfx</DependentUpon>
@@ -2136,10 +2130,6 @@
     <None Include="Images\LuminanceEffect\LuminanceUtils.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LuminanceUtils.cs</LastGenOutput>
-    </None>
-    <None Include="Images\ToneMap\Color3TransformShader.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>Color3TransformShader.cs</LastGenOutput>
     </None>
     <None Include="Images\ToneMap\ColorTransformGroupEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>

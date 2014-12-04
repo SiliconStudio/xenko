@@ -42,7 +42,6 @@ namespace SiliconStudio.Paradox.Effects.Images
             gammaTransform = new GammaTransform();
 
             transformGroupEffect = new ImageEffect(context, colorTransformGroupEffect, Parameters);
-            Parameters.Set(ColorTransformGroupKeys.Transforms, enabledTransforms);
 
             // we are adding parameter collections after as transform parameters should override previous parameters
             transformGroupEffect.ParameterCollections.Add(transformsParameters);
@@ -93,14 +92,21 @@ namespace SiliconStudio.Paradox.Effects.Images
             transformGroupEffect.Draw(Name);
         }
 
-        protected virtual void AddPreTransforms(List<ColorTransform> tempTransforms)
+        protected virtual void CollectPreTransforms()
         {
         }
 
 
-        protected virtual void AddPostTransforms(List<ColorTransform> tempTransforms)
+        protected virtual void CollectPostTransforms()
         {
-            tempTransforms.Add(gammaTransform);
+            AddTemporaryTransform(gammaTransform);
+        }
+
+        protected void AddTemporaryTransform(ColorTransform transform)
+        {
+            if (transform == null) throw new ArgumentNullException("transform");
+            if (transform.Shader == null) throw new ArgumentOutOfRangeException("transform", "Transform parameter must have a Shader not null");
+            collectTransforms.Add(transform);
         }
 
         private void CollectTransformsParameters()
@@ -113,40 +119,36 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             // Grab all color transforms
             collectTransforms.Clear();
-            AddPreTransforms(collectTransforms);
+            CollectPreTransforms();
             collectTransforms.AddRange(transforms);
-            AddPostTransforms(collectTransforms);
-            enabledTransforms.Clear();
+            CollectPostTransforms();
 
             // Copy all parameters from ColorTransform to effect parameters
-            foreach (var transform in collectTransforms)
-            {
-                // Skip unused transform
-                if (transform == null || !transform.Enabled || transform.Shader == null)
-                {
-                    continue;
-                }
-
-                enabledTransforms.Add(transform);
-            }
+            enabledTransforms.Clear();
+            enabledTransforms.AddRange(collectTransforms);
 
             transformsParameters.Clear();
             for (int i = 0; i < enabledTransforms.Count; i++)
             {
                 var transform = enabledTransforms[i];
-                context.TransformParameters.Clear();
-                transform.UpdateParameters(context);
-
-                // Copy transform parameters back to the composition with the current index
-                foreach (var parameterValue in context.TransformParameters)
+                // Update parameters only if transform is active
+                //if (transform.Enabled)
                 {
-                    var key = GetComposedKey(parameterValue.Key, i);
-                    var value = parameterValue.Value;
+                    transform.UpdateParameters(context);
 
-                    // TODO: values are boxed/unboxed here generating GC
-                    transformsParameters.SetObject(key, value);
+                    // Copy transform parameters back to the composition with the current index
+                    var sourceParameters = transform.Parameters;
+                    foreach (var parameterValue in sourceParameters )
+                    {
+                        var key = GetComposedKey(parameterValue.Key, i);
+                        sourceParameters.CopySharedTo(parameterValue.Key, key, transformsParameters);
+                    }
                 }
             }
+
+            // NOTE: This is very important to reset the transforms here, as pre-caching by DynamicEffectCompiler is done on parameters changes
+            // and as we have a list here, modifying a list doesn't trigger a change for the specified key
+            Parameters.Set(ColorTransformGroupKeys.Transforms, enabledTransforms);
         }
 
         private ParameterKey GetComposedKey(ParameterKey key, int transformIndex)

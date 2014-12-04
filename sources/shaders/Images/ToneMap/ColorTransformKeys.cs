@@ -10,11 +10,11 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <summary>
         /// A boolean indicating wheter a <see cref="ColorTransform"/> is active or not.
         /// </summary>
-        public static readonly ParameterKey<bool> Enabled = ParameterKeys.New<bool>();
+        public static readonly ParameterKey<bool> Enabled = ParameterKeys.New(true);
 
         /// <summary>
         /// The shader used by <see cref="ColorTransform"/>.
         /// </summary>
-        public static readonly ParameterKey<string> Shader = ParameterKeys.New<string>();
+        public static readonly ParameterKey<string> Shader = ParameterKeys.New("ColorTransformShader");
     }
 }

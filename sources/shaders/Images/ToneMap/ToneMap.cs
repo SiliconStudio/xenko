@@ -18,6 +18,8 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         private readonly Stopwatch timer;
 
+        private string previousShader;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ToneMap" /> class.
         /// </summary>
@@ -178,18 +180,19 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
 
             // Setup parameters
-            context.TransformParameters.Set(ToneMapShaderKeys.LuminanceTexture, luminanceResult.Texture);
-            context.TransformParameters.Set(ToneMapShaderKeys.LuminanceAverageGlobal, avgLuminanceLog);
+            Parameters.Set(ToneMapShaderKeys.LuminanceTexture, luminanceResult.Texture);
+            Parameters.Set(ToneMapShaderKeys.LuminanceAverageGlobal, avgLuminanceLog);
 
             // Update operator parameters
             var currentOperator = Operator ?? defaultOperator;
             currentOperator.UpdateParameters(context);
 
-            context.TransformParameters.Set(ToneMapKeys.Operator, currentOperator.Shader);
-
-            // TODO: avoid GC a method like Parameters.CopyTo(ParameterKey from, ParameterKey to, ParameterCollection toCollection)
-            currentOperator.Parameters.CopyTo(context.TransformParameters);
-
+            // Only change shader when actually changing (to allow compilation checks based on parameters counters not changing)
+            var newShader = currentOperator != null ? currentOperator.Shader : null;
+            if (previousShader != newShader)
+            {
+                Parameters.Set(ToneMapKeys.Operator, currentOperator.Shader);
+            }
         }
     }
 }

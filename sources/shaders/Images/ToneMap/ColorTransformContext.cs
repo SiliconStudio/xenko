@@ -48,13 +48,5 @@ namespace SiliconStudio.Paradox.Effects.Images
                 return sharedParameters;
             }
         }
-
-        public ParameterCollection TransformParameters
-        {
-            get
-            {
-                return transformParameters;
-            }
-        }
     }
 }

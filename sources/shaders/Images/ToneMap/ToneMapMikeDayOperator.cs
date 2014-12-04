@@ -55,6 +55,8 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         public override void UpdateParameters(ColorTransformContext context)
         {
+            // TODO This could be put as part 
+
             double b = BlackPoint;
             double c = CrossOver;
             double w = WhitePoint;
@@ -76,9 +78,9 @@ namespace SiliconStudio.Paradox.Effects.Images
                 (float)((1 - s) * w - c));
 
             // Don't call base, as we are rewriting all parameters for the shader
-            context.TransformParameters.Set(ToneMapMikeDayOperatorShaderKeys.ToeCoeffs, toe);
-            context.TransformParameters.Set(ToneMapMikeDayOperatorShaderKeys.ShoulderCoeffs, shoulder);
-            context.TransformParameters.Set(ToneMapMikeDayOperatorShaderKeys.MiddleCrossOver, CrossOver);
+            Parameters.Set(ToneMapMikeDayOperatorShaderKeys.ToeCoeffs, toe);
+            Parameters.Set(ToneMapMikeDayOperatorShaderKeys.ShoulderCoeffs, shoulder);
+            Parameters.Set(ToneMapMikeDayOperatorShaderKeys.MiddleCrossOver, CrossOver);
         }
     }
 }

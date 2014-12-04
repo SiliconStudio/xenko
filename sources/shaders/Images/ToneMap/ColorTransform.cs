@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Reflection;
 
 using SiliconStudio.Core;
 
@@ -22,8 +23,10 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             if (colorTransformShader == null) throw new ArgumentNullException("colorTransformShader");
             Parameters = new ParameterCollection();
+
+            // Initialize all Parameters with values coming from each ParameterKey
+            InitializeProperties();
             Shader = colorTransformShader;
-            Enabled = true;
         }
 
         /// <summary>
@@ -39,6 +42,11 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
             set
             {
+                if (value == null)
+                {
+                    throw new ArgumentNullException("value");
+                }
+
                 Parameters.Set(ColorTransformKeys.Shader, value);
             }
         }
@@ -74,11 +82,16 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <remarks>This method is called just before rendering the ColorTransformGroup that is holding this ColorTransform</remarks>
         public virtual void UpdateParameters(ColorTransformContext context)
         {
-            // By default copy parameters 
-            var transformParameters = context.TransformParameters;
-            foreach (var parameterKeyValue in Parameters)
+        }
+
+        private void InitializeProperties()
+        {
+            foreach (var property in GetType().GetTypeInfo().DeclaredProperties)
             {
-                transformParameters.SetObject(parameterKeyValue.Key, parameterKeyValue.Value);
+                if (property.CanRead && property.CanWrite)
+                {
+                    property.SetValue(this, property.GetValue(this));
+                }
             }
         }
     }

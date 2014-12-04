@@ -13,6 +13,11 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             mixin ColorTransformKeys.Shader;
         }
+        else
+        {
+            // Always mix a default ColorTransformShader
+            mixin ColorTransformShader;
+        }
     };
 
     shader ColorTransformGroupEffect
