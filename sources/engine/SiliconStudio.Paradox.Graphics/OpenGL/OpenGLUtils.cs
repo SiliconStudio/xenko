@@ -26,7 +26,6 @@ namespace SiliconStudio.Paradox.Graphics.OpenGL
             }
             else
             {
-                yield return 3;
                 yield return 2;
             }
         }

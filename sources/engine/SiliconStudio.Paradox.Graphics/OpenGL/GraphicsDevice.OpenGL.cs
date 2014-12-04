@@ -1607,7 +1607,9 @@ namespace SiliconStudio.Paradox.Graphics
                     OpenTK.Graphics.ES20.GL.Oes.BindVertexArray(0);
                 else
 #endif
+                {
                     GL.BindVertexArray(0);
+                }
             }
 
             // Disable all vertex attribs

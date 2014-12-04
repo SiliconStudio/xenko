@@ -63,8 +63,10 @@ namespace SiliconStudio.Paradox.Graphics
                 }
                 else
 #endif
+                {
                     GL.DeleteVertexArrays(1, ref vaoId);
-                
+                }
+
                 vaoId = 0;
             }
         }
@@ -132,7 +134,9 @@ namespace SiliconStudio.Paradox.Graphics
                             OpenTK.Graphics.ES20.GL.Oes.BindVertexArray(vaoId);
                         else
 #endif
+                        {
                             GL.BindVertexArray(vaoId);
+                        }
 
 #if SILICONSTUDIO_PLATFORM_ANDROID
                         // Not sure why, but it seems PowerVR doesn't work well when changing VAO.
