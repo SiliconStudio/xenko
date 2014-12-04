@@ -6,7 +6,7 @@ class A : ShaderBase
     compose ComputeColor SubCompute2;
     compose ComputeColor SubComputes[];
 
-    override void PSMain()
+    override stage void PSMain()
     {
         streams.ColorTarget = SubCompute1.Compute(float4(1,1,1,1)) + SubCompute2.Compute(float4(1,1,1,1));
 

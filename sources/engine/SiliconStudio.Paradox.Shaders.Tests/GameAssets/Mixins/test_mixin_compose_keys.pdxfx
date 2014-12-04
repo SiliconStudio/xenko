@@ -5,6 +5,7 @@ namespace TestABC
     params TestParameters
     {
         bool UseComputeColor2;
+        bool UseComputeColorRedirect;
     };
 
     partial shader ABCSubEffect
@@ -15,13 +16,18 @@ namespace TestABC
         {
             mixin ComputeColor2;
         }
+        else if (TestParameters.UseComputeColorRedirect)
+        {
+            mixin ComputeColorRedirect;
+            mixin compose ColorRedirect = ComputeColor2;
+        } 
         else
         {
             mixin ComputeColor;
         }
     };
 
-    shader ABCEffect
+    shader test_mixin_compose_keys
     {
         mixin A;
         mixin compose SubCompute1 = ABCSubEffect;

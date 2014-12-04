@@ -173,9 +173,11 @@ namespace SiliconStudio.Paradox.Shaders
         {
             var result = new StringBuilder();
 
+            result.Append("mixin");
+
             if (Mixins != null && Mixins.Count > 0)
             {
-                result.Append(" : ");
+                result.Append(" ");
                 for (int i = 0; i < Mixins.Count; i++)
                 {
                     if (i > 0)

@@ -19,10 +19,11 @@ namespace SiliconStudio.Paradox.Shaders
         private readonly ParameterCollection compilerParameters;
         private readonly Stack<ParameterCollection> parameterCollections = new Stack<ParameterCollection>();
         private readonly Dictionary<string, IShaderMixinBuilder> registeredBuilders;
-        private readonly Stack<string> compositions = new Stack<string>();
-        private readonly StringBuilder currentCompositionBuilder = new StringBuilder();
+        private readonly Stack<int> compositionIndices = new Stack<int>();
+        private readonly StringBuilder compositionStringBuilder = new StringBuilder();
 
-        private string currentComposition = null;
+        private string compositionString = null;
+
         private ShaderMixinSourceTree currentMixinSourceTree;
 
         /// <summary>
@@ -93,21 +94,13 @@ namespace SiliconStudio.Paradox.Shaders
             // Try first if a composite key with a value is available for the key
             if (composeKey != globalKey)
             {
-                sourceParameters = FindKeyValue(composeKey);
-                if (sourceParameters != null)
-                {
-                    selectedKey = composeKey;
-                }
+                sourceParameters = FindKeyValue(composeKey, out selectedKey);
             }
 
             // Else try using global key
             if (sourceParameters == null)
             {
-                sourceParameters = FindKeyValue(globalKey);
-                if (sourceParameters != null)
-                {
-                    selectedKey = globalKey;
-                }
+                sourceParameters = FindKeyValue(globalKey, out selectedKey);
             }
 
             // If nothing found, use composeKey and global compiler parameters
@@ -117,6 +110,7 @@ namespace SiliconStudio.Paradox.Shaders
                 sourceParameters = compilerParameters;
             }
 
+            // Gets the value from a source parameters
             var value = sourceParameters.Get(selectedKey);
 
             // Sore only used parameters when they are taken from compilerParameters
@@ -128,26 +122,34 @@ namespace SiliconStudio.Paradox.Shaders
             return value;
         }
 
-        private ParameterCollection FindKeyValue<T>(ParameterKey<T> key)
+        private ParameterCollection FindKeyValue<T>(ParameterKey<T> key, out ParameterKey<T> selectedKey)
         {
             // Try to get a value from registered containers
+            selectedKey = null;
             foreach (var parameterCollection in parameterCollections)
             {
                 if (parameterCollection.ContainsKey(key))
                 {
+                    selectedKey = key;
                     return parameterCollection;
                 }
             }
-            return compilerParameters.ContainsKey(key) ? compilerParameters : null;
+            if (compilerParameters.ContainsKey(key))
+            {
+                selectedKey = key;
+                return compilerParameters;
+            }
+            
+            return null;
         }
 
         private ParameterKey<T> GetComposeKey<T>(ParameterKey<T> key)
         {
-            if (currentComposition == null)
+            if (compositionString == null)
             {
                 return key;
             }
-            key = key.ComposeWith(currentComposition);
+            key = key.ComposeWith(compositionString);
             return key;
         }
 
@@ -226,38 +228,40 @@ namespace SiliconStudio.Paradox.Shaders
         {
             mixin.Mixin.AddComposition(compositionName, composition.Mixin);
 
-            if (compositions.Count > 0)
+            compositionIndices.Push(compositionStringBuilder.Length);
+            if (compositionString != null)
             {
-                currentCompositionBuilder.Append('.');
+                compositionStringBuilder.Append('.');
             }
 
-            currentCompositionBuilder.Append(compositionName);
-            compositions.Push(compositionName);
+            compositionStringBuilder.Append(compositionName);
 
-            currentComposition = currentCompositionBuilder.ToString();
+            compositionString = compositionStringBuilder.ToString();
         }
 
         public void PushCompositionArray(ShaderMixinSourceTree mixin, string compositionName, ShaderMixinSourceTree composition)
         {
             int arrayIndex = mixin.Mixin.AddCompositionToArray(compositionName, composition.Mixin);
-            var arrayCompositionName = string.Format("{0}[{1}]", compositionName, arrayIndex);
 
-            if (compositions.Count > 0)
+            compositionIndices.Push(compositionStringBuilder.Length);
+            if (compositionString != null)
             {
-                currentCompositionBuilder.Append('.');
+                compositionStringBuilder.Append('.');
             }
 
-            compositions.Push(arrayCompositionName);
-            currentCompositionBuilder.Append(arrayCompositionName);
+            compositionStringBuilder.Append(compositionName);
+            compositionStringBuilder.Append('[');
+            compositionStringBuilder.Append(arrayIndex);
+            compositionStringBuilder.Append(']');
 
-            currentComposition = currentCompositionBuilder.ToString();
+            compositionString = compositionStringBuilder.ToString();
         }
 
         public void PopComposition()
         {
-            var compositionName = compositions.Pop();
-            currentCompositionBuilder.Length = currentCompositionBuilder.Length - compositionName.Length - 1;
-            currentComposition = compositions.Count > 0 ? currentCompositionBuilder.ToString() : null;
+            var compositionIndex = compositionIndices.Pop();
+            compositionStringBuilder.Length = compositionIndex;
+            compositionString = compositionIndex == 0 ? null : compositionStringBuilder.ToString();
         }
 
         /// <summary>

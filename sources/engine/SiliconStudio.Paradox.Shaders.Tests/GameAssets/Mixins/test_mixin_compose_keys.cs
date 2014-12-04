@@ -19,6 +19,7 @@ namespace TestABC
     [DataContract]public partial class TestParameters : ShaderMixinParameters
     {
         public static readonly ParameterKey<bool> UseComputeColor2 = ParameterKeys.New<bool>();
+        public static readonly ParameterKey<bool> UseComputeColorRedirect = ParameterKeys.New<bool>();
     };
     internal static partial class ShaderMixins
     {
@@ -29,6 +30,17 @@ namespace TestABC
                 if (context.GetParam(TestParameters.UseComputeColor2))
                 {
                     context.Mixin(mixin, "ComputeColor2");
+                }
+                else if (context.GetParam(TestParameters.UseComputeColorRedirect))
+                {
+                    context.Mixin(mixin, "ComputeColorRedirect");
+
+                    {
+                        var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushComposition(mixin, "ColorRedirect", __subMixin);
+                        context.Mixin(__subMixin, "ComputeColor2");
+                        context.PopComposition();
+                    }
                 }
                 else
                 {
@@ -46,7 +58,7 @@ namespace TestABC
     }
     internal static partial class ShaderMixins
     {
-        internal partial class ABCEffect  : IShaderMixinBuilder
+        internal partial class test_mixin_compose_keys  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -78,7 +90,7 @@ namespace TestABC
             internal static void __Initialize__()
 
             {
-                ShaderMixinManager.Register("ABCEffect", new ABCEffect());
+                ShaderMixinManager.Register("test_mixin_compose_keys", new test_mixin_compose_keys());
             }
         }
     }

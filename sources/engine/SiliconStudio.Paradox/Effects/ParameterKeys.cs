@@ -166,17 +166,16 @@ namespace SiliconStudio.Paradox.Effects
             return ComposeWith(key, builder.ToString());
         }
 
-        public static T ComposeWith<T>(this T key, StringBuilder composeName) where T : ParameterKey
+        private static T ComposeWith<T>(this T key, StringBuilder builder) where T : ParameterKey
         {
-            if (composeName == null) throw new ArgumentNullException("composeName");
-            var newKey = (T)FindByName(composeName.ToString());
+            if (builder == null) throw new ArgumentNullException("builder");
+            var newKey = (T)FindByName(builder.ToString());
             if (newKey == null)
             {
                 throw new ArgumentException("Key [{0}] must be a registered key".ToFormat(key));
             }
             return newKey;
         }
-
 
         public static ParameterKey FindByName(string name)
         {

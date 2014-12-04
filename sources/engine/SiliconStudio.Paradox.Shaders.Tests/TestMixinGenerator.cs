@@ -100,16 +100,38 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         /// Test parameters
         /// </summary>
         [Test]
-        public void TestABCEffect()
+        public void TestMixinAndComposeKeys()
         {
             var properties = new ShaderMixinParameters();
-            properties.Set(TestABC.TestParameters.UseComputeColor2.ComposeWith("SubCompute1"), true);
-            properties.Set(TestABC.TestParameters.UseComputeColor2.ComposeWith("SubComputes[0]"), true);
+
+            var subCompute1Key = TestABC.TestParameters.UseComputeColor2.ComposeWith("SubCompute1");
+            var subCompute2Key = TestABC.TestParameters.UseComputeColor2.ComposeWith("SubCompute2");
+            var subComputesKey = TestABC.TestParameters.UseComputeColorRedirect.ComposeWith("SubComputes[0]");
+
+            properties.Set(subCompute1Key, true);
+            properties.Set(subComputesKey, true);
             ShaderMixinParameters usedProperties;
 
-            var mixin = GenerateMixin("ABCEffect", properties, out usedProperties);
+            var mixin = GenerateMixin("test_mixin_compose_keys", properties, out usedProperties);
+            mixin.Mixin.CheckMixin("A");
 
-            // TODO: Add more tests here 
+            Assert.AreEqual(3, mixin.Mixin.Compositions.Count);
+
+            Assert.IsTrue(mixin.Mixin.Compositions.ContainsKey("SubCompute1"));
+            Assert.IsTrue(mixin.Mixin.Compositions.ContainsKey("SubCompute2"));
+            Assert.IsTrue(mixin.Mixin.Compositions.ContainsKey("SubComputes"));
+
+            Assert.AreEqual("mixin ComputeColor2", mixin.Mixin.Compositions["SubCompute1"].ToString());
+            Assert.AreEqual("mixin ComputeColor", mixin.Mixin.Compositions["SubCompute2"].ToString());
+            Assert.AreEqual("[mixin ComputeColorRedirect [{ColorRedirect = mixin ComputeColor2}]]", mixin.Mixin.Compositions["SubComputes"].ToString());
+
+            Assert.IsTrue(mixin.UsedParameters.ContainsKey(subCompute1Key));
+            Assert.IsTrue(mixin.UsedParameters.ContainsKey(subCompute2Key));
+            Assert.IsTrue(mixin.UsedParameters.ContainsKey(subComputesKey));
+
+            Assert.IsTrue(mixin.UsedParameters.Get(subCompute1Key));
+            Assert.IsFalse(mixin.UsedParameters.Get(subCompute2Key));
+            Assert.IsTrue(mixin.UsedParameters.Get(subComputesKey));
         }
 
         /// <summary>
