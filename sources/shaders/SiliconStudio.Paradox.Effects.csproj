@@ -672,6 +672,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Images\ToneMap\ColorTransformKeys.cs" />
     <Compile Include="Images\ToneMap\GammaTransform.cs" />
     <Compile Include="Images\ToneMap\ToneMapKeys.cs" />
     <Compile Include="Images\ToneMap\ToneMapEffect.cs">

@@ -5,6 +5,16 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// A Color transform group effect
     /// </summary>
+    shader ColorTransformCompose
+    {
+        using params ColorTransformKeys;
+
+        if (ColorTransformKeys.Enabled)
+        {
+            mixin ColorTransformKeys.Shader;
+        }
+    };
+
     shader ColorTransformGroupEffect
     {
         using params ColorTransformGroupKeys;
@@ -13,7 +23,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         mixin ColorTransformGroupShader;
         foreach (var colorTransform in ColorTransformGroupKeys.Transforms)
         {
-            mixin compose Transforms += colorTransform.Shader;
+            mixin compose Transforms += ColorTransformCompose;
         }
     };
 }

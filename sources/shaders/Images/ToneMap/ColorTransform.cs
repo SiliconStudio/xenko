@@ -31,7 +31,18 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         /// <value>The name of the shader.</value>
         [DataMemberIgnore]
-        public string Shader { get; set; }
+        public string Shader
+        {
+            get
+            {
+                return Parameters.Get(ColorTransformKeys.Shader);
+            }
+            set
+            {
+                Parameters.Set(ColorTransformKeys.Shader, value);
+            }
+        }
+
 
         /// <summary>
         /// Gets the parameters.
@@ -44,7 +55,17 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Gets or sets a value indicating whether this <see cref="ColorTransform"/> is enabled.
         /// </summary>
         /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
-        public bool Enabled { get; set; }
+        public bool Enabled
+        {
+            get
+            {
+                return Parameters.Get(ColorTransformKeys.Enabled);
+            }
+            set
+            {
+                Parameters.Set(ColorTransformKeys.Enabled, value);
+            }
+        }
 
         /// <summary>
         /// Updates the parameters for this transformation.
