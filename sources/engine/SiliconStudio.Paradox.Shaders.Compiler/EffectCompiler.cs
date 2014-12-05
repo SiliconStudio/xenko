@@ -121,7 +121,10 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             }
 
             // Convert the AST to HLSL
-            var writer = new SiliconStudio.Shaders.Writer.Hlsl.HlslWriter {EnablePreprocessorLine = true};
+            var writer = new SiliconStudio.Shaders.Writer.Hlsl.HlslWriter
+            {
+                EnablePreprocessorLine = true // Allow to output links to original pdxsl via #line pragmas
+            };
             writer.Visit(parsingResult.Shader);
             var shaderSourceText = writer.Text;
 
@@ -213,66 +216,66 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             lock (WriterLock) // protect write in case the same shader is created twice
             {
-                var fileInfo = new FileInfo(shaderSourceFilename);
-                if (fileInfo.Exists && fileInfo.Length <= (shaderSourceText.Length + 10)) // beark
+                var builder = new StringBuilder();
+                builder.AppendLine("/**************************");
+                builder.AppendLine("***** Used Parameters *****");
+                builder.AppendLine("***************************");
+                builder.Append("@P EffectName: ");
+                builder.AppendLine(fullEffectName ?? "");
+                WriteParameters(builder, usedParameters, 0, false);
+                builder.AppendLine("***************************");
+
+                if (bytecode.Reflection.ConstantBuffers.Count > 0)
                 {
-                    var builder = new StringBuilder();
-                    builder.AppendLine("/**************************");
-                    builder.AppendLine("***** Used Parameters *****");
+                    builder.AppendLine("****  ConstantBuffers  ****");
                     builder.AppendLine("***************************");
-                    builder.Append("@P EffectName: ");
-                    builder.AppendLine(fullEffectName ?? "");
-                    WriteParameters(builder, usedParameters, 0, false);
+                    foreach (var cBuffer in bytecode.Reflection.ConstantBuffers)
+                    {
+                        builder.AppendFormat("cbuffer {0} [Stage: {1}, Size: {2}]", cBuffer.Name, cBuffer.Stage, cBuffer.Size).AppendLine();
+                        foreach (var parameter in cBuffer.Members)
+                        {
+                            builder.AppendFormat("@C    {0} => {1}", parameter.Param.RawName, parameter.Param.KeyName).AppendLine();
+                        }
+                    }
                     builder.AppendLine("***************************");
-
-                    if (bytecode.Reflection.ConstantBuffers.Count > 0)
-                    {
-                        builder.AppendLine("****  ConstantBuffers  ****");
-                        builder.AppendLine("***************************");
-                        foreach (var cBuffer in bytecode.Reflection.ConstantBuffers)
-                        {
-                            builder.AppendFormat("cbuffer {0} [Stage {1}]", cBuffer.Name, cBuffer.Stage).AppendLine();
-                            foreach (var parameter in cBuffer.Members)
-                            {
-                                builder.AppendFormat("@C    {0} => {1}", parameter.Param.RawName, parameter.Param.KeyName).AppendLine();
-                            }
-                        }
-                        builder.AppendLine("***************************");
-                    }
-
-                    if (bytecode.Reflection.ResourceBindings.Count > 0)
-                    {
-                        builder.AppendLine("******  Resources    ******");
-                        builder.AppendLine("***************************");
-                        foreach (var resource in bytecode.Reflection.ResourceBindings)
-                        {
-                            var parameter = resource.Param;
-                            builder.AppendFormat("@R    {0} => {1} [Stage: {2}, Slot: ({3}-{4})]", parameter.RawName, parameter.KeyName, resource.Stage, resource.SlotStart, resource.SlotStart + resource.SlotCount - 1).AppendLine();
-                        }
-                        builder.AppendLine("***************************");
-                    }
-
-                    if (bytecode.HashSources.Count > 0)
-                    {
-                        builder.AppendLine("*****     Sources     *****");
-                        builder.AppendLine("***************************");
-                        foreach (var hashSource in bytecode.HashSources)
-                        {
-                            builder.AppendFormat("@S    {0} => {1}", hashSource.Key, hashSource.Value).AppendLine();
-                        }
-                        builder.AppendLine("***************************");
-                    }
-
-                    if (bytecode.Stages.Length > 0)
-                    {
-                        builder.AppendLine("*****     Stages      *****");
-                        builder.AppendLine("***************************");
-                        builder.Append(stageStringBuilder);
-                        builder.AppendLine("***************************");
-                    }
-
-                    File.AppendAllText(shaderSourceFilename, builder.ToString());
                 }
+
+                if (bytecode.Reflection.ResourceBindings.Count > 0)
+                {
+                    builder.AppendLine("******  Resources    ******");
+                    builder.AppendLine("***************************");
+                    foreach (var resource in bytecode.Reflection.ResourceBindings)
+                    {
+                        var parameter = resource.Param;
+                        builder.AppendFormat("@R    {0} => {1} [Stage: {2}, Slot: ({3}-{4})]", parameter.RawName, parameter.KeyName, resource.Stage, resource.SlotStart, resource.SlotStart + resource.SlotCount - 1).AppendLine();
+                    }
+                    builder.AppendLine("***************************");
+                }
+
+                if (bytecode.HashSources.Count > 0)
+                {
+                    builder.AppendLine("*****     Sources     *****");
+                    builder.AppendLine("***************************");
+                    foreach (var hashSource in bytecode.HashSources)
+                    {
+                        builder.AppendFormat("@S    {0} => {1}", hashSource.Key, hashSource.Value).AppendLine();
+                    }
+                    builder.AppendLine("***************************");
+                }
+
+                if (bytecode.Stages.Length > 0)
+                {
+                    builder.AppendLine("*****     Stages      *****");
+                    builder.AppendLine("***************************");
+                    builder.Append(stageStringBuilder);
+                    builder.AppendLine("***************************");
+                }
+                builder.AppendLine("*************************/");
+
+                // Re-append the shader with all informations
+                builder.Append(shaderSourceText);
+
+                File.WriteAllText(shaderSourceFilename, builder.ToString());
             }
 #endif
 
