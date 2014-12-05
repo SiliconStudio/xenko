@@ -1705,6 +1705,7 @@ namespace SiliconStudio.Paradox.Graphics
                     GL.BindBuffer(BufferTarget.PixelPackBuffer, 0);
 #endif
                 }
+#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 else if (texture.Description.Usage == GraphicsResourceUsage.Dynamic)
                 {
                     GL.BindBuffer(BufferTarget.PixelUnpackBuffer, texture.PixelBufferObjectId);
@@ -1743,6 +1744,7 @@ namespace SiliconStudio.Paradox.Graphics
                 {
                     throw new NotSupportedException("Not supported mapper operation for Usage: " + texture.Description.Usage);
                 }
+#endif
             }
             else
             {
