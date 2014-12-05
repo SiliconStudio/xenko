@@ -8,7 +8,9 @@ using System.Runtime.InteropServices;
 using OpenTK.Graphics.ES30;
 using RenderbufferStorage = OpenTK.Graphics.ES30.RenderbufferInternalFormat;
 using PixelFormatGl = OpenTK.Graphics.ES30.PixelFormat;
+#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
 using BufferUsageHint = OpenTK.Graphics.ES30.BufferUsage;
+#endif
 #if SILICONSTUDIO_PLATFORM_IOS
 using ExtTextureFormatBgra8888 = OpenTK.Graphics.ES30.All;
 using ImgTextureCompressionPvrtc = OpenTK.Graphics.ES30.All;

@@ -184,9 +184,11 @@ namespace SiliconStudio.Paradox.UI
             KeepStencilValueState = DepthStencilState.New(GraphicsDevice, depthStencilDescription);
 
             depthStencilDescription.FrontFace.StencilPass = StencilOperation.Increment;
+            depthStencilDescription.BackFace.StencilPass = StencilOperation.Increment;
             IncreaseStencilValueState = DepthStencilState.New(GraphicsDevice, depthStencilDescription);
 
             depthStencilDescription.FrontFace.StencilPass = StencilOperation.Decrement;
+            depthStencilDescription.BackFace.StencilPass = StencilOperation.Decrement;
             DecreaseStencilValueState = DepthStencilState.New(GraphicsDevice, depthStencilDescription);
 
             // set the default design of the UI elements.
