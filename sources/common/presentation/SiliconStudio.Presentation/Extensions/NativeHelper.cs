@@ -12,6 +12,9 @@ namespace SiliconStudio.Presentation.Extensions
         #region Methods
 
         [DllImport("user32.dll")]
+        public static extern uint GetWindowThreadProcessId(IntPtr hWnd, IntPtr processId);
+
+        [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SetCursorPos(int x, int y);
 
@@ -26,6 +29,10 @@ namespace SiliconStudio.Presentation.Extensions
 
         [DllImport("user32.dll", EntryPoint = "PostMessage", CharSet = CharSet.Unicode)]
         public static extern int PostMessage(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam);
+
+        [return: MarshalAs(UnmanagedType.Bool)]
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool PostThreadMessage(uint threadId, int msg, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32.dll")]
         public static extern IntPtr SetParent(IntPtr hWnd, IntPtr hWndParent);

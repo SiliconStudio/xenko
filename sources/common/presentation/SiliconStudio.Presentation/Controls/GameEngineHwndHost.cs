@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -86,6 +87,8 @@ namespace SiliconStudio.Presentation.Controls
                                 if (element != null && element.ContextMenu != null)
                                 {
                                     element.Focus();
+                                    // Data context will not be properly set if the popup is open this way, so let's set it ourselves
+                                    element.ContextMenu.SetCurrentValue(DataContextProperty, element.DataContext);
                                     element.ContextMenu.IsOpen = true;
                                     var source = (HwndSource)PresentationSource.FromVisual(element.ContextMenu);
                                     if (source != null)
@@ -121,7 +124,8 @@ namespace SiliconStudio.Presentation.Controls
                     var position = new Point(-(short)(lParam.ToInt32() & 0xFFFF), -(lParam.ToInt32() >> 16));
                     var offset = contextMenuPosition - position;
                     lParam = new IntPtr((short)offset.X + (((short)offset.Y) << 16));
-                    NativeHelper.PostMessage(childHandle, msg, wParam, lParam);
+                    var threadId = NativeHelper.GetWindowThreadProcessId(childHandle, IntPtr.Zero);
+                    NativeHelper.PostThreadMessage(threadId, msg, wParam, lParam);
                     break;
                 case NativeHelper.WM_DESTROY:
                     lock (contextMenuSources)
