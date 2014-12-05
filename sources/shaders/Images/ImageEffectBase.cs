@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         private bool isInDrawCore;
 
-        private List<RenderTarget> scopedRenderTargets;
+        private readonly List<RenderTarget> scopedRenderTargets;
 
         private ImageScaler scaler;
 
