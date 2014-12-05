@@ -12,6 +12,7 @@ Nodes:
     - {Name: group1, Depth: 1, Preserve: false}
     - {Name: Factory_02, Depth: 2, Preserve: false}
 UpAxis: {X: 0, Y: 1, Z: 0}
+FrontAxis: {X: 0, Y: 0, Z: 1}
 MeshParameters:
     Factory_02:
         NodeName: Factory_02
@@ -38,6 +39,7 @@ MeshParameters:
             - {Name: group1, Depth: 1, Preserve: false}
             - {Name: Factory_02, Depth: 2, Preserve: false}
         UpAxis: {X: 0, Y: 1, Z: 0}
+        FrontAxis: {X: 0, Y: 0, Z: 1}
         MeshParameters:
             Factory_02:
                 NodeName: Factory_02

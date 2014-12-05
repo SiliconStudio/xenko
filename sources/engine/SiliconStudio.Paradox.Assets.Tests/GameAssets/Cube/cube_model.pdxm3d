@@ -10,6 +10,7 @@ Nodes:
     - {Name: RootNode, Depth: 0, Preserve: false}
     - {Name: pCube1, Depth: 1, Preserve: false}
 UpAxis: {X: 0, Y: 1, Z: 0}
+FrontAxis: {X: 0, Y: 0, Z: 1}
 MeshParameters:
     pCube1:
         NodeName: pCube1
@@ -28,6 +29,7 @@ MeshParameters:
             - {Name: RootNode, Depth: 0, Preserve: false}
             - {Name: pCube1, Depth: 1, Preserve: false}
         UpAxis: {X: 0, Y: 1, Z: 0}
+        FrontAxis: {X: 0, Y: 0, Z: 1}
         MeshParameters:
             pCube1:
                 NodeName: pCube1
