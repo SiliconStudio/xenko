@@ -124,6 +124,7 @@
     <Compile Include="GraphicsDeviceExtensions.cs" />
     <Compile Include="GraphicsOutput.cs" />
     <Compile Include="GraphicsResourceAllocator.cs" />
+    <Compile Include="GraphicsResourceAllocatorExtensions.cs" />
     <Compile Include="GraphicsResourceLink.cs" />
     <Compile Include="GraphicsResourceRecyclePolicyDelegate.cs" />
     <Compile Include="ImageFragment.cs" />

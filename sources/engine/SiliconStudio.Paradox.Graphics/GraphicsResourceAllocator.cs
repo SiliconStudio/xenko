@@ -16,6 +16,7 @@ namespace SiliconStudio.Paradox.Graphics
     /// </remarks>
     public class GraphicsResourceAllocator : ComponentBase
     {
+        // TODO: Check if we should introduce an enum for the kind of scope (per DrawCore, per Frame...etc.)
         // TODO: Add statistics method (number of objects allocated...etc.)
 
         private readonly object thisLock = new object();
