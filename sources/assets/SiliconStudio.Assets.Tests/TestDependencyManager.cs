@@ -213,7 +213,7 @@ namespace SiliconStudio.Assets.Tests
                     Assert.AreEqual(assetItem3.Id, assetItemWithMissingReferences[0]);
 
                     // Check missing reference
-                    var missingReferences = dependencyManager.FindBrokenDependencies(assetItem3).ToList();
+                    var missingReferences = dependencyManager.FindMissingReferences(assetItem3).ToList();
                     Assert.AreEqual(1, missingReferences.Count);
                     Assert.AreEqual(asset4.Id, missingReferences[0].Id);
 
