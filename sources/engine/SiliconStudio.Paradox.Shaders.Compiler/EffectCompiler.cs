@@ -121,7 +121,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             }
 
             // Convert the AST to HLSL
-            var writer = new SiliconStudio.Shaders.Writer.Hlsl.HlslWriter {EnablePreprocessorLine = false};
+            var writer = new SiliconStudio.Shaders.Writer.Hlsl.HlslWriter {EnablePreprocessorLine = true};
             writer.Visit(parsingResult.Shader);
             var shaderSourceText = writer.Text;
 
