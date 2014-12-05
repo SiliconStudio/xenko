@@ -192,7 +192,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 // -------------------------------------------------------
                 // Append bytecode id to shader log
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-                stageStringBuilder.AppendLine("    {0} => {1}".ToFormat(stageBinding.Key, result.Bytecode.Id));
+                stageStringBuilder.AppendLine("@G    {0} => {1}".ToFormat(stageBinding.Key, result.Bytecode.Id));
 #endif
                 // -------------------------------------------------------
 
@@ -219,7 +219,8 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     var builder = new StringBuilder();
                     builder.AppendLine("/**************************");
                     builder.AppendLine("***** Used Parameters *****");
-                    builder.Append("@ EffectName: ");
+                    builder.AppendLine("***************************");
+                    builder.Append("@P EffectName: ");
                     builder.AppendLine(fullEffectName ?? "");
                     WriteParameters(builder, usedParameters, 0, false);
                     builder.AppendLine("***************************");
@@ -227,12 +228,13 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     if (bytecode.Reflection.ConstantBuffers.Count > 0)
                     {
                         builder.AppendLine("****  ConstantBuffers  ****");
+                        builder.AppendLine("***************************");
                         foreach (var cBuffer in bytecode.Reflection.ConstantBuffers)
                         {
-                            builder.AppendFormat("cbuffer {0}", cBuffer.Name).AppendLine();
+                            builder.AppendFormat("cbuffer {0} [Stage {1}]", cBuffer.Name, cBuffer.Stage).AppendLine();
                             foreach (var parameter in cBuffer.Members)
                             {
-                                builder.AppendFormat("@C  {0} => {1}", parameter.Param.RawName, parameter.Param.KeyName).AppendLine();
+                                builder.AppendFormat("@C    {0} => {1}", parameter.Param.RawName, parameter.Param.KeyName).AppendLine();
                             }
                         }
                         builder.AppendLine("***************************");
@@ -241,10 +243,22 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     if (bytecode.Reflection.ResourceBindings.Count > 0)
                     {
                         builder.AppendLine("******  Resources    ******");
+                        builder.AppendLine("***************************");
                         foreach (var resource in bytecode.Reflection.ResourceBindings)
                         {
                             var parameter = resource.Param;
-                            builder.AppendFormat("@R  {0} => {1}", parameter.RawName, parameter.KeyName).AppendLine();
+                            builder.AppendFormat("@R    {0} => {1} [Stage: {2}, Slot: ({3}-{4})]", parameter.RawName, parameter.KeyName, resource.Stage, resource.SlotStart, resource.SlotStart + resource.SlotCount - 1).AppendLine();
+                        }
+                        builder.AppendLine("***************************");
+                    }
+
+                    if (bytecode.HashSources.Count > 0)
+                    {
+                        builder.AppendLine("*****     Sources     *****");
+                        builder.AppendLine("***************************");
+                        foreach (var hashSource in bytecode.HashSources)
+                        {
+                            builder.AppendFormat("@S    {0} => {1}", hashSource.Key, hashSource.Value).AppendLine();
                         }
                         builder.AppendLine("***************************");
                     }
@@ -252,7 +266,8 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     if (bytecode.Stages.Length > 0)
                     {
                         builder.AppendLine("*****     Stages      *****");
-                        builder.AppendLine(stageStringBuilder.ToString());
+                        builder.AppendLine("***************************");
+                        builder.Append(stageStringBuilder);
                         builder.AppendLine("***************************");
                     }
 
