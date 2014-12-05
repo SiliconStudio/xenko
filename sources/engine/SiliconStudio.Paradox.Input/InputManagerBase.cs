@@ -557,6 +557,8 @@ namespace SiliconStudio.Paradox.Input
             UpdatePointerEvents();
             UpdateVirtualButtonValues();
             UpdateGestureEvents(gameTime.Elapsed);
+            
+            LostFocus = false;
         }
         
         private void UpdateGestureEvents(TimeSpan elapsedGameTime)
@@ -677,8 +679,6 @@ namespace SiliconStudio.Paradox.Input
                 for (int i = 0; i < mouseButtons.Length; ++i)
                     mouseButtons[i] = false;
             }
-
-            LostFocus = false;
         }
 
         private void UpdateKeyboard()

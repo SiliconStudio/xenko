@@ -99,11 +99,13 @@ namespace SiliconStudio.Paradox.Input
                 uiControl.KeyDown += (_, e) => OnKeyEvent(e.KeyCode, false);
                 uiControl.KeyUp += (_, e) => OnKeyEvent(e.KeyCode, true);
             }
+            uiControl.LostFocus += (_, e) => OnUiControlLostFocus();
             uiControl.MouseMove += (_, e) => OnMouseMoveEvent(new Vector2(e.X, e.Y));
             uiControl.MouseDown += (_, e) => { uiControl.Focus(); OnMouseInputEvent(new Vector2(e.X, e.Y), ConvertMouseButton(e.Button), InputEventType.Down); };
             uiControl.MouseUp += (_, e) => OnMouseInputEvent(new Vector2(e.X, e.Y), ConvertMouseButton(e.Button), InputEventType.Up);
             uiControl.MouseWheel += (_, e) => OnMouseInputEvent(new Vector2(e.X, e.Y), MouseButton.Middle, InputEventType.Wheel, e.Delta);
             uiControl.MouseLeave += (_, e) => OnMouseLeaveEvent();
+            uiControl.MouseCaptureChanged += (_, e) => OnLostMouseCapture();
             uiControl.SizeChanged += UiControlOnSizeChanged;
 
             ControlWidth = uiControl.ClientSize.Width;
@@ -130,12 +132,14 @@ namespace SiliconStudio.Paradox.Input
             var inputElement = uiControlWpf;
 
             BindRawInputKeyboard(uiControl);
-            uiControlWpf.Deactivated += OnUiControlLostFocus;
+            uiControlWpf.LostFocus += (_, e) => OnUiControlLostFocus();
+            uiControlWpf.Deactivated += (_, e) => OnUiControlLostFocus();
             uiControlWpf.MouseMove += (_, e) => OnMouseMoveEvent(PointToVector2(e.GetPosition(inputElement)));
             uiControlWpf.MouseDown += (_, e) => OnMouseInputEvent(PointToVector2(e.GetPosition(inputElement)), ConvertMouseButton(e.ChangedButton), InputEventType.Down);
             uiControlWpf.MouseUp += (_, e) => OnMouseInputEvent(PointToVector2(e.GetPosition(inputElement)), ConvertMouseButton(e.ChangedButton), InputEventType.Up);
             uiControlWpf.MouseWheel += (_, e) => OnMouseInputEvent(PointToVector2(e.GetPosition(inputElement)), MouseButton.Middle, InputEventType.Wheel, e.Delta);
             uiControlWpf.MouseLeave += (_, e) => OnMouseLeaveEvent();
+            uiControlWpf.LostMouseCapture += (_, e) => OnLostMouseCapture();
             uiControlWpf.SizeChanged += OnWpfSizeChanged;
 
             ControlWidth = (float)uiControlWpf.ActualWidth;
@@ -204,23 +208,37 @@ namespace SiliconStudio.Paradox.Input
 
         private void OnMouseLeaveEvent()
         {
-            if (HasDownMouseButtons())
-                LostFocus = true;
+            // trigger touch out events on all keys that are down
+            TriggerMouseAndPointersEndEvents(PointerState.Out);
+        }
 
-            // trigger touch leave events
+        private void OnLostMouseCapture()
+        {
+            // trigger touch cancel events on all keys that are still down
+            TriggerMouseAndPointersEndEvents(PointerState.Cancel);
+        }
+
+        private void TriggerMouseAndPointersEndEvents(PointerState endState)
+        {
             foreach (MouseButton button in Enum.GetValues(typeof(MouseButton)))
             {
                 var buttonId = (int)button;
                 if (MouseButtonCurrentlyDown[buttonId])
                 {
-                    HandlePointerEvents(buttonId, PointerInfos[buttonId].LastPosition, PointerState.Out, PointerType.Mouse);
+                    HandlePointerEvents(buttonId, PointerInfos[buttonId].LastPosition, endState, PointerType.Mouse);
+
+                    var mouseInputEvent = new MouseInputEvent { Type = InputEventType.Up, MouseButton = button };
+                    lock (MouseInputEvents)
+                    {
+                        MouseInputEvents.Add(mouseInputEvent);
+                    }
 
                     MouseButtonCurrentlyDown[buttonId] = false;
                 }
             }
         }
         
-        private void OnUiControlLostFocus(object sender, EventArgs e)
+        private void OnUiControlLostFocus()
         {
             LostFocus = true;
         }
