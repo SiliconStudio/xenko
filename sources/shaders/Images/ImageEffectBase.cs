@@ -346,7 +346,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             // TODO: Check if we should introduce an enum for the kind of scope (per DrawCore, per Frame...etc.)
             CheckIsInDrawCore();
-            return PushScopedRenderTarget2D(Context.GetTemporaryRenderTarget2D(description));
+            return PushScopedRenderTarget2D(Context.Allocator.GetTemporaryRenderTarget2D(description));
         }
 
         /// <summary>
@@ -364,7 +364,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         protected RenderTarget NewScopedRenderTarget2D(int width, int height, PixelFormat format, TextureFlags flags = TextureFlags.RenderTarget | TextureFlags.ShaderResource, int arraySize = 1)
         {
             CheckIsInDrawCore();
-            return PushScopedRenderTarget2D(Context.GetTemporaryRenderTarget2D(width, height, format, flags, arraySize));
+            return PushScopedRenderTarget2D(Context.Allocator.GetTemporaryRenderTarget2D(width, height, format, flags, arraySize));
         }
 
         /// <summary>
@@ -383,7 +383,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         protected RenderTarget NewScopedRenderTarget2D(int width, int height, PixelFormat format, MipMapCount mipCount, TextureFlags flags = TextureFlags.RenderTarget | TextureFlags.ShaderResource, int arraySize = 1)
         {
             CheckIsInDrawCore();
-            return PushScopedRenderTarget2D(Context.GetTemporaryRenderTarget2D(width, height, format, mipCount, flags, arraySize));
+            return PushScopedRenderTarget2D(Context.Allocator.GetTemporaryRenderTarget2D(width, height, format, mipCount, flags, arraySize));
         }
 
         private void CheckIsInDrawCore()
@@ -404,7 +404,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             foreach (var scopedRenderTarget2D in scopedRenderTargets)
             {
-                Context.ReleaseTemporaryTexture(scopedRenderTarget2D);
+                Context.Allocator.ReleaseReference(scopedRenderTarget2D);
             }
             scopedRenderTargets.Clear();
         }
