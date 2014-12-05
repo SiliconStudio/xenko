@@ -1085,17 +1085,21 @@ namespace SiliconStudio.Paradox.Graphics
                     return new MappedResource(resource, subResourceIndex, new DataBox { DataPointer = mapResult, SlicePitch = texture.DepthPitch, RowPitch = texture.RowPitch });
 #endif
                 }
+#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 else if (mapMode == MapMode.WriteDiscard)
                 {
                     if (texture.Description.Usage != GraphicsResourceUsage.Dynamic)
                         throw new NotSupportedException("Only dynamic texture can be mapped.");
 
                     GL.BindBuffer(BufferTarget.PixelUnpackBuffer, texture.PixelBufferObjectId);
+
                     var mapResult = GL.MapBuffer(BufferTarget.PixelUnpackBuffer, bufferAccess);
+
                     GL.BindBuffer(BufferTarget.PixelUnpackBuffer, 0);
 
                     return new MappedResource(resource, subResourceIndex, new DataBox { DataPointer = mapResult, SlicePitch = texture.DepthPitch, RowPitch = texture.RowPitch });
                 }
+#endif
             }
 
             throw new NotImplementedException();
@@ -1711,16 +1715,22 @@ namespace SiliconStudio.Paradox.Graphics
                     // Bind buffer to texture
                     switch (texture.Target)
                     {
+#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                         case TextureTarget.Texture1D:
                             GL.TexSubImage1D(TextureTarget.Texture1D, 0, 0, texture.Width, texture.FormatGl, texture.Type, IntPtr.Zero);
                             GL.BindTexture(TextureTarget.Texture1D, 0);
                             break;
+#endif
                         case TextureTarget.Texture2D:
                             GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, texture.Width, texture.Height, texture.FormatGl, texture.Type, IntPtr.Zero);
                             GL.BindTexture(TextureTarget.Texture2D, 0);
                             break;
                         case TextureTarget.Texture3D:
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                            GL.TexSubImage3D(TextureTarget3D.Texture3D, 0, 0, 0, 0, texture.Width, texture.Height, texture.Depth, texture.FormatGl, texture.Type, IntPtr.Zero);
+#else
                             GL.TexSubImage3D(TextureTarget.Texture3D, 0, 0, 0, 0, texture.Width, texture.Height, texture.Depth, texture.FormatGl, texture.Type, IntPtr.Zero);
+#endif
                             GL.BindTexture(TextureTarget.Texture3D, 0);
                             break;
                         default:

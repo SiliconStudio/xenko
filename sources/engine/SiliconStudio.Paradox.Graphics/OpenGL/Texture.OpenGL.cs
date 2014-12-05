@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using OpenTK.Graphics.ES30;
 using RenderbufferStorage = OpenTK.Graphics.ES30.RenderbufferInternalFormat;
 using PixelFormatGl = OpenTK.Graphics.ES30.PixelFormat;
+using BufferUsageHint = OpenTK.Graphics.ES30.BufferUsage;
 #if SILICONSTUDIO_PLATFORM_IOS
 using ExtTextureFormatBgra8888 = OpenTK.Graphics.ES30.All;
 using ImgTextureCompressionPvrtc = OpenTK.Graphics.ES30.All;
@@ -293,7 +294,9 @@ namespace SiliconStudio.Paradox.Graphics
             if (Description.Usage != GraphicsResourceUsage.Dynamic)
                 throw new InvalidOperationException("Only Dynamic texture usage could initialize PBO");
 
-            PixelBufferObjectId = GL.GenBuffer();
+            int bufferId;
+            GL.GenBuffers(1, out bufferId);
+            PixelBufferObjectId = bufferId;
 
             GL.BindBuffer(BufferTarget.PixelUnpackBuffer, PixelBufferObjectId);
 
