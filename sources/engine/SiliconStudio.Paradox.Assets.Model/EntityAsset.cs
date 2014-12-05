@@ -3,13 +3,16 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using SharpYaml.Serialization;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Assets.Diff;
-using SiliconStudio.Assets.Visitors;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Paradox.Assets.Model.Analysis;
 using SiliconStudio.Paradox.EntityModel;
@@ -24,7 +27,7 @@ namespace SiliconStudio.Paradox.Assets.Model
     [AssetFactory(typeof(EntityFactory))]
     [AssetDescription("Entity", "An entity", true)]
     [AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
-    public class EntityAsset : AssetImportTracked, IDiffResolver
+    public class EntityAsset : AssetImportTracked, IDiffResolver, IAssetComposer
     {
         public const int AssetFormatVersion = 1;
 
@@ -129,6 +132,11 @@ namespace SiliconStudio.Paradox.Assets.Model
                 // Currently not final, so enable at your own risk
                 throw new NotImplementedException();
             }
+        }
+
+        public IEnumerable<IContentReference> GetCompositionBases()
+        {
+            return AssetBases.Values.Select(assetBase => assetBase.Base);
         }
     }
 

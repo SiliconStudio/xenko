@@ -1,15 +1,17 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
+
+using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Assets.Analysis
 {
     /// <summary>
-    /// Describes dependencies (in/out/miss) for a specific asset.
+    /// Describes dependencies (in/out/broken) for a specific asset.
     /// </summary>
     /// <remarks>There are 3 types of dependencies:
     /// <ul>
@@ -17,17 +19,16 @@ namespace SiliconStudio.Assets.Analysis
     /// that are referencing this asset.</li>
     /// <li><c>out</c> dependencies: through the <see cref="LinksOut"/> property, contains assets 
     /// that are referenced by this asset.</li>
-    /// <li><c>missing</c> dependencies: through the <see cref="MissingReferences"/> property, 
-    /// contains assets referenced by this asset and that are missing.</li>
+    /// <li><c>broken</c> dependencies: through the <see cref="BrokenLinksOut"/> property, 
+    /// contains output links to assets that are missing.</li>
     /// </ul>
     /// </remarks>
-    [DebuggerDisplay("In [{LinksIn.Count}] / Out [{LinksOut}] Miss [{MissingReferenceCount}]")]
     public class AssetDependencies
     {
         private readonly AssetItem item;
-        private readonly HashSet<AssetItem> parents = new HashSet<AssetItem>(AssetItem.DefaultComparerById);
-        private readonly HashSet<AssetItem> children = new HashSet<AssetItem>(AssetItem.DefaultComparerById);
-        private List<IContentReference> missingReferences;
+        private Dictionary<Guid, AssetLink> parents;
+        private Dictionary<Guid, AssetLink> children;
+        private Dictionary<Guid, AssetLink> missingChildren;
 
         public AssetDependencies(AssetItem assetItem)
         {
@@ -41,25 +42,16 @@ namespace SiliconStudio.Assets.Analysis
             item = set.Item;
 
             // Copy Output refs
-            foreach (var child in set.children)
-            {
-                children.Add(child.Clone(true));
-            }
-
-            // Copy missing refs
-            if (set.missingReferences != null)
-            {
-                foreach (var missingRef in set.missingReferences)
-                {
-                    AddMissingReference(missingRef);
-                }
-            }
+            foreach (var child in set.LinksOut)
+                AddLinkOut(child);
 
             // Copy Input refs
-            foreach (var parent in set.parents)
-            {
-                parents.Add(parent.Clone(true));
-            }
+            foreach (var child in set.LinksIn)
+                AddLinkIn(child);
+
+            // Copy missing refs
+            foreach (var child in set.BrokenLinksOut)
+                AddBrokenLinkOut(child.Element, child.Type);
         }
 
         public Guid Id
@@ -83,24 +75,40 @@ namespace SiliconStudio.Assets.Analysis
         }
 
         /// <summary>
-        /// Gets the set of reference links coming into the element.
+        /// Gets the links coming into the element.
         /// </summary>
-        public HashSet<AssetItem> LinksIn
+        public IEnumerable<AssetLink> LinksIn
         {
             get
             {
-                return parents;
+                return parents != null? parents.Values: Enumerable.Empty<AssetLink>();
             }
         }
 
         /// <summary>
-        /// Gets the set of reference links going out of the element.
+        /// Gets the links going out of the element.
         /// </summary>
-        public HashSet<AssetItem> LinksOut
+        public IEnumerable<AssetLink> LinksOut
         {
             get
             {
-                return children;
+                return children != null ? children.Values : Enumerable.Empty<AssetLink>();
+            }
+        }
+
+        /// <summary>
+        /// Gets the links out.
+        /// </summary>
+        /// <value>The missing references.</value>
+        public IEnumerable<IContentLink> BrokenLinksOut
+        {
+            get
+            {
+                if (missingChildren == null)
+                    yield break;
+
+                foreach (var reference in missingChildren.Values)
+                    yield return reference;
             }
         }
 
@@ -109,12 +117,11 @@ namespace SiliconStudio.Assets.Analysis
         /// </summary>
         public void Reset(bool keepParents)
         {
-            missingReferences = null;
-            children.Clear();
-            if (!keepParents)
-            {
-                parents.Clear();
-            }
+            missingChildren = null;
+            children = null;
+
+            if (!keepParents) 
+                parents = null;
         }
 
         /// <summary>
@@ -122,68 +129,207 @@ namespace SiliconStudio.Assets.Analysis
         /// </summary>
         /// <value><c>true</c> if this instance has missing references; otherwise, 
         /// <c>false</c>.</value>
-        public bool HasMissingReferences
+        public bool HasMissingDependencies
         {
             get
             {
-                return missingReferences != null && missingReferences.Count > 0;
-            }
-        }
-
-        public int MissingReferenceCount
-        {
-            get
-            {
-                return missingReferences != null ? missingReferences.Count : 0;
+                return missingChildren != null && missingChildren.Count > 0;
             }
         }
 
         /// <summary>
-        /// Gets the missing references.
+        /// Gets the number of missing dependencies of the asset.
         /// </summary>
-        /// <value>The missing references.</value>
-        public IEnumerable<IContentReference> MissingReferences
+        public int MissingDependencyCount
         {
             get
             {
-                return missingReferences ?? Enumerable.Empty<IContentReference>();
+                return missingChildren != null ? missingChildren.Count : 0;
             }
         }
 
         /// <summary>
-        /// Adds a missing reference.
+        /// Adds a link going into the element.
         /// </summary>
-        /// <param name="contentReference">The content reference.</param>
-        /// <exception cref="System.ArgumentNullException">contentReference</exception>
-        public void AddMissingReference(IContentReference contentReference)
+        /// <param name="fromItem">The element the link is coming from</param>
+        /// <param name="contentLinkType">The type of link</param>
+        /// <param name="cloneAssetItem">Indicate if the <see cref="AssetItem"/> should be cloned or not</param>
+        /// <exception cref="ArgumentException">A link from this element already exists</exception>
+        public void AddLinkIn(AssetItem fromItem, ContentLinkType contentLinkType, bool cloneAssetItem = true)
         {
-            if (contentReference == null) throw new ArgumentNullException("contentReference");
-            if (missingReferences == null)
-                missingReferences = new List<IContentReference>();
-            missingReferences.Add(contentReference);
+            AddLink(ref parents, new AssetLink(fromItem, contentLinkType), cloneAssetItem);
         }
 
         /// <summary>
-        /// Removes a missing reference
+        /// Adds a link coming from the provided element.
         /// </summary>
-        /// <param name="guid">The unique identifier.</param>
-        public void RemoveMissingReference(Guid guid)
+        /// <param name="contentLink">The link in</param>
+        /// <param name="cloneAssetItem">Indicate if the <see cref="AssetItem"/> should be cloned or not</param>
+        /// <exception cref="ArgumentException">A link from this element already exists</exception>
+        public void AddLinkIn(AssetLink contentLink, bool cloneAssetItem = true)
         {
-            if (missingReferences == null) return;
-            for (int i = missingReferences.Count - 1; i >= 0; i--)
-            {
-                if (missingReferences[i].Id == guid)
-                {
-                    missingReferences.RemoveAt(i);
-                    break;
-                }
-            }
+            AddLink(ref parents, contentLink, cloneAssetItem);
+        }
 
-            // Remove list if no longer used
-            if (missingReferences.Count == 0)
-            {
-                missingReferences = null;
-            }
+        /// <summary>
+        /// Gets the link coming from the provided element.
+        /// </summary>
+        /// <param name="fromItem">The element the link is coming from</param>
+        /// <returns>The link</returns>
+        /// <exception cref="ArgumentException">There is not link to the provided element</exception>
+        /// <exception cref="ArgumentNullException">fromItem</exception>
+        public AssetLink GetLinkIn(AssetItem fromItem)
+        {
+            if (fromItem == null) throw new ArgumentNullException("fromItem");
+
+            return GetLink(ref parents, fromItem.Id);
+        }
+
+        /// <summary>
+        /// Removes the link coming from the provided element.
+        /// </summary>
+        /// <param name="fromItem">The element the link is coming from</param>
+        /// <exception cref="ArgumentNullException">fromItem</exception>
+        /// <returns>The removed link</returns>
+        public AssetLink RemoveLinkIn(AssetItem fromItem)
+        {
+            if (fromItem == null) throw new ArgumentNullException("fromItem");
+
+            return RemoveLink(ref parents, fromItem.Id, ContentLinkType.All);
+        }
+
+        /// <summary>
+        /// Adds a link going to the provided element.
+        /// </summary>
+        /// <param name="toItem">The element the link is going to</param>
+        /// <param name="contentLinkType">The type of link</param>
+        /// <param name="cloneAssetItem">Indicate if the <see cref="AssetItem"/> should be cloned or not</param>
+        /// <exception cref="ArgumentException">A link to this element already exists</exception>
+        public void AddLinkOut(AssetItem toItem, ContentLinkType contentLinkType, bool cloneAssetItem = true)
+        {
+            AddLink(ref children, new AssetLink(toItem, contentLinkType), cloneAssetItem);
+        }
+
+        /// <summary>
+        /// Adds a link going to the provided element.
+        /// </summary>
+        /// <param name="contentLink">The link out</param>
+        /// <param name="cloneAssetItem">Indicate if the <see cref="AssetItem"/> should be cloned or not</param>
+        /// <exception cref="ArgumentException">A link to this element already exists</exception>
+        public void AddLinkOut(AssetLink contentLink, bool cloneAssetItem = true)
+        {
+            AddLink(ref children, contentLink, cloneAssetItem);
+        }
+
+        /// <summary>
+        /// Gets the link going to the provided element.
+        /// </summary>
+        /// <param name="toItem">The element the link is going to</param>
+        /// <returns>The link</returns>
+        /// <exception cref="ArgumentException">There is not link to the provided element</exception>
+        /// <exception cref="ArgumentNullException">toItem</exception>
+        public AssetLink GetLinkOut(AssetItem toItem)
+        {
+            if (toItem == null) throw new ArgumentNullException("toItem");
+
+            return GetLink(ref children, toItem.Id);
+        }
+
+        /// <summary>
+        /// Removes the link going to the provided element.
+        /// </summary>
+        /// <param name="toItem">The element the link is going to</param>
+        /// <exception cref="ArgumentNullException">toItem</exception>
+        /// <returns>The removed link</returns>
+        public AssetLink RemoveLinkOut(AssetItem toItem)
+        {
+            if (toItem  == null) throw new ArgumentNullException("toItem");
+
+            return RemoveLink(ref children, toItem.Id, ContentLinkType.All);
+        }
+
+        /// <summary>
+        /// Adds a broken link out.
+        /// </summary>
+        /// <param name="reference">the reference to the missing element</param>
+        /// <param name="contentLinkType">The type of link</param>
+        /// <exception cref="ArgumentException">A broken link to this element already exists</exception>
+        public void AddBrokenLinkOut(IContentReference reference, ContentLinkType contentLinkType)
+        {
+            AddLink(ref missingChildren, new AssetLink(reference, contentLinkType), false);
+        }
+
+        /// <summary>
+        /// Adds a broken link out.
+        /// </summary>
+        /// <param name="contentLink">The broken link</param>
+        /// <exception cref="ArgumentException">A broken link to this element already exists</exception>
+        public void AddBrokenLinkOut(IContentLink contentLink)
+        {
+            AddLink(ref missingChildren, new AssetLink(contentLink.Element, contentLink.Type), false);
+        }
+
+        /// <summary>
+        /// Gets the broken link out to the provided element.
+        /// </summary>
+        /// <param name="id">The id of the element the link is going to</param>
+        /// <returns>The link</returns>
+        /// <exception cref="ArgumentException">There is not link to the provided element</exception>
+        /// <exception cref="ArgumentNullException">toItem</exception>
+        public IContentLink GetBrokenLinkOut(Guid id)
+        {
+            return GetLink(ref missingChildren, id);
+        }
+
+        /// <summary>
+        /// Removes the broken link to the provided element.
+        /// </summary>
+        /// <param name="id">The id to the missing element</param>
+        /// <exception cref="ArgumentNullException">toItem</exception>
+        /// <returns>The removed link</returns>
+        public IContentLink RemoveBrokenLinkOut(Guid id)
+        {
+            return RemoveLink(ref missingChildren, id, ContentLinkType.All);
+        }
+
+        private void AddLink(ref Dictionary<Guid, AssetLink> dictionary, AssetLink contentLink, bool cloneAssetItem)
+        {
+            if(dictionary == null)
+                dictionary = new Dictionary<Guid, AssetLink>();
+
+            var id = contentLink.Element.Id;
+            if (dictionary.ContainsKey(id))
+                contentLink.Type |= dictionary[id].Type;
+
+            dictionary[id] = cloneAssetItem? contentLink.Clone(): contentLink;
+        }
+
+        private AssetLink GetLink(ref Dictionary<Guid, AssetLink> dictionary, Guid id)
+        {
+            if(dictionary == null || !dictionary.ContainsKey(id))
+                throw new ArgumentException("There is currently no link between elements '{0}' and '{1}'".ToFormat(item.Id, id));
+
+            return dictionary[id];
+        }
+
+        private AssetLink RemoveLink(ref Dictionary<Guid, AssetLink> dictionary, Guid id, ContentLinkType type)
+        {
+            if (dictionary == null || !dictionary.ContainsKey(id))
+                throw new ArgumentException("There is currently no link between elements '{0}' and '{1}'".ToFormat(item.Id, id));
+
+            var oldLink = dictionary[id];
+            var newLink = oldLink;
+
+            newLink.Type &= ~type;
+            oldLink.Type &= type;
+
+            if(newLink.Type == 0)
+                dictionary.Remove(id);
+
+            if (dictionary.Count == 0)
+                dictionary = null;
+
+            return oldLink;
         }
     }
 }

@@ -34,7 +34,7 @@ namespace SiliconStudio.Assets.Compiler
         {
             var dependencies = AssetsSession.DependencyManager.ComputeDependencies(AssetItem, AssetDependencySearchOptions.Out);
             foreach (var assetReference in dependencies.LinksOut)
-                yield return new ObjectUrl(UrlType.Internal, assetReference.Location);
+                yield return new ObjectUrl(UrlType.Internal, assetReference.Item.Location);
 
             foreach (var inputFile in base.GetInputFiles())
                 yield return inputFile;
