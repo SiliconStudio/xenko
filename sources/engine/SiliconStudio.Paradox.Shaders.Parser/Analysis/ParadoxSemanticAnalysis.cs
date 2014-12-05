@@ -672,9 +672,6 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
                                 {
                                     expression.TypeInference.TargetType = topMethod.ReturnType.ResolveType();
                                     expression.Target.TypeInference.Declaration = topMethod;
-
-                                    if (!(topMethod is MethodDefinition))
-                                        Warning(ParadoxMessageCode.WarningDeclarationCall, memberReferenceExpression.Span, expression, topMethod, analyzedModuleMixin.MixinName);
                                 }
                                 else
                                     Error(ParadoxMessageCode.ErrorImpossibleVirtualCall, memberReferenceExpression.Span, expression, analyzedModuleMixin.MixinName, analyzedModuleMixin.MixinName);
@@ -740,9 +737,6 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
                         parsingInfo.StageMethodCalls.Add(expression);
                 }
             }
-
-            if (!(isBuiltIn || methodDecl == null || expression.Target.TypeInference.Declaration is MethodDefinition || methodDecl.Qualifiers.Contains(ParadoxStorageQualifier.Stage)))
-                Warning(ParadoxMessageCode.WarningDeclarationCall, expression.Span, expression, expression.Target.TypeInference.Declaration, analyzedModuleMixin.MixinName);
         }
 
         /// <summary>
