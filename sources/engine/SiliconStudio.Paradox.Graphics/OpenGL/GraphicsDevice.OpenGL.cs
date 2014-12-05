@@ -1000,26 +1000,6 @@ namespace SiliconStudio.Paradox.Graphics
             EnsureContextActive();
 #endif
 
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-            BufferAccess bufferAccess;
-            switch (mapMode)
-            {
-                case MapMode.Read:
-                    bufferAccess = BufferAccess.ReadOnly;
-                    break;
-                case MapMode.Write:
-                case MapMode.WriteDiscard:
-                case MapMode.WriteNoOverwrite:
-                    bufferAccess = BufferAccess.WriteOnly;
-                    break;
-                case MapMode.ReadWrite:
-                    bufferAccess = BufferAccess.ReadWrite;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException("mapMode");
-            }
-#endif
-
             var buffer = resource as Buffer;
             if (buffer != null)
             {
@@ -1041,29 +1021,31 @@ namespace SiliconStudio.Paradox.Graphics
                     //}
 
                     // Specific case for constant buffers
-                    return new MappedResource(resource, subResourceIndex, new DataBox { DataPointer = buffer.StagingData + offsetInBytes, SlicePitch = 0, RowPitch = 0 }, offsetInBytes, lengthInBytes);
+                    return new MappedResource(resource, subResourceIndex, new DataBox { DataPointer = buffer.StagingData + offsetInBytes, SlicePitch = 0, RowPitch = 0 }, offsetInBytes,
+                        lengthInBytes);
                 }
+                
+                if (IsOpenGLES2)
+                    throw new NotImplementedException();
 #endif
-
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                throw new NotImplementedException();
-#else
+                
                 IntPtr mapResult = IntPtr.Zero;
 
                 UnbindVertexArrayObject();
                 GL.BindBuffer(buffer.bufferTarget, buffer.ResourceId);
-
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                mapResult = GL.MapBufferRange(buffer.bufferTarget, (IntPtr)offsetInBytes, (IntPtr)lengthInBytes, mapMode.ToOpenGL());
+#else
                 if (mapMode == MapMode.WriteDiscard)
                     mapResult = GL.MapBufferRange(buffer.bufferTarget, (IntPtr)offsetInBytes, (IntPtr)lengthInBytes, BufferAccessMask.MapWriteBit | BufferAccessMask.MapInvalidateBufferBit);
                 else if (mapMode == MapMode.WriteNoOverwrite)
                     mapResult = GL.MapBufferRange(buffer.bufferTarget, (IntPtr)offsetInBytes, (IntPtr)lengthInBytes, BufferAccessMask.MapWriteBit | BufferAccessMask.MapUnsynchronizedBit);
                 else
-                    mapResult = GL.MapBuffer(buffer.bufferTarget, bufferAccess);
-                
+                    mapResult = GL.MapBuffer(buffer.bufferTarget, mapMode.ToOpenGL());
+#endif
                 GL.BindBuffer(buffer.bufferTarget, 0);
 
                 return new MappedResource(resource, subResourceIndex, new DataBox { DataPointer = mapResult, SlicePitch = 0, RowPitch = 0 });
-#endif
             }
 
             var texture = resource as Texture;
@@ -1075,34 +1057,48 @@ namespace SiliconStudio.Paradox.Graphics
                         throw new NotSupportedException("Only staging textures can be mapped.");
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                    if (lengthInBytes == 0)
-                        lengthInBytes = texture.DepthPitch;
-                    return new MappedResource(resource, subResourceIndex, new DataBox { DataPointer = texture.StagingData + offsetInBytes, SlicePitch = texture.DepthPitch, RowPitch = texture.RowPitch }, offsetInBytes, lengthInBytes);
-#else
-                    GL.BindBuffer(BufferTarget.PixelPackBuffer, texture.ResourceId);
-                    var mapResult = GL.MapBuffer(BufferTarget.PixelPackBuffer, bufferAccess);
-                    GL.BindBuffer(BufferTarget.PixelPackBuffer, 0);
-                    return new MappedResource(resource, subResourceIndex, new DataBox { DataPointer = mapResult, SlicePitch = texture.DepthPitch, RowPitch = texture.RowPitch });
+                    if (IsOpenGLES2 || texture.StagingData != IntPtr.Zero)
+                    {
+                        if (lengthInBytes == 0)
+                            lengthInBytes = texture.DepthPitch;
+                        return new MappedResource(resource, subResourceIndex,
+                            new DataBox { DataPointer = texture.StagingData + offsetInBytes, SlicePitch = texture.DepthPitch, RowPitch = texture.RowPitch }, offsetInBytes, lengthInBytes);
+                    }
+                    else
 #endif
+                    {
+                        return MapTexture(texture, BufferTarget.PixelPackBuffer, mapMode, subResourceIndex, offsetInBytes, lengthInBytes);
+                    }
                 }
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 else if (mapMode == MapMode.WriteDiscard)
                 {
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                    if (IsOpenGLES2)
+                        throw new NotImplementedException();
+#endif
                     if (texture.Description.Usage != GraphicsResourceUsage.Dynamic)
                         throw new NotSupportedException("Only dynamic texture can be mapped.");
 
-                    GL.BindBuffer(BufferTarget.PixelUnpackBuffer, texture.PixelBufferObjectId);
-
-                    var mapResult = GL.MapBuffer(BufferTarget.PixelUnpackBuffer, bufferAccess);
-
-                    GL.BindBuffer(BufferTarget.PixelUnpackBuffer, 0);
-
-                    return new MappedResource(resource, subResourceIndex, new DataBox { DataPointer = mapResult, SlicePitch = texture.DepthPitch, RowPitch = texture.RowPitch });
+                    return MapTexture(texture, BufferTarget.PixelUnpackBuffer, mapMode, subResourceIndex, offsetInBytes, lengthInBytes);
                 }
-#endif
             }
 
             throw new NotImplementedException();
+        }
+
+        private MappedResource MapTexture(Texture texture, BufferTarget pixelPackUnPack, MapMode mapMode, int subResourceIndex, int offsetInBytes, int lengthInBytes)
+        {
+            GL.BindBuffer(pixelPackUnPack, texture.ResourceId);
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+            var mapResult = GL.MapBufferRange(BufferTarget.PixelPackBuffer, (IntPtr)offsetInBytes, (IntPtr)lengthInBytes, mapMode.ToOpenGL());
+            GL.BindBuffer(pixelPackUnPack, 0);
+#else
+            offsetInBytes = 0;
+            lengthInBytes = -1;
+            var mapResult = GL.MapBuffer(BufferTarget.PixelPackBuffer, mapMode.ToOpenGL());
+            GL.BindBuffer(pixelPackUnPack, 0);
+#endif
+            return new MappedResource(texture, subResourceIndex, new DataBox { DataPointer = mapResult, SlicePitch = texture.DepthPitch, RowPitch = texture.RowPitch }, offsetInBytes, lengthInBytes);
         }
 
         public GraphicsDevice NewDeferred()
@@ -1333,7 +1329,7 @@ namespace SiliconStudio.Paradox.Graphics
             
             constantBuffer = buffer;
 #else
-            GL.BindBufferBase(BufferTarget.UniformBuffer, slot, buffer != null ? buffer.resourceId : 0);
+            GL.BindBufferBase(BufferRangeTarget.UniformBuffer, slot, buffer != null ? buffer.resourceId : 0);
 #endif
         }
 
@@ -1698,53 +1694,60 @@ namespace SiliconStudio.Paradox.Graphics
             {
                 if (texture.Description.Usage == GraphicsResourceUsage.Staging)
                 {
-
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                    GL.BindBuffer(BufferTarget.PixelPackBuffer, texture.ResourceId);
-                    GL.UnmapBuffer(BufferTarget.PixelPackBuffer);
-                    GL.BindBuffer(BufferTarget.PixelPackBuffer, 0);
-#endif
-                }
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                else if (texture.Description.Usage == GraphicsResourceUsage.Dynamic)
-                {
-                    GL.BindBuffer(BufferTarget.PixelUnpackBuffer, texture.PixelBufferObjectId);
-                    GL.UnmapBuffer(BufferTarget.PixelUnpackBuffer);
-
-                    GL.BindTexture(texture.Target, texture.ResourceId);
-
-                    // Bind buffer to texture
-                    switch (texture.Target)
-                    {
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                        case TextureTarget.Texture1D:
-                            GL.TexSubImage1D(TextureTarget.Texture1D, 0, 0, texture.Width, texture.FormatGl, texture.Type, IntPtr.Zero);
-                            GL.BindTexture(TextureTarget.Texture1D, 0);
-                            break;
-#endif
-                        case TextureTarget.Texture2D:
-                            GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, texture.Width, texture.Height, texture.FormatGl, texture.Type, IntPtr.Zero);
-                            GL.BindTexture(TextureTarget.Texture2D, 0);
-                            break;
-                        case TextureTarget.Texture3D:
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                            GL.TexSubImage3D(TextureTarget3D.Texture3D, 0, 0, 0, 0, texture.Width, texture.Height, texture.Depth, texture.FormatGl, texture.Type, IntPtr.Zero);
-#else
-                            GL.TexSubImage3D(TextureTarget.Texture3D, 0, 0, 0, 0, texture.Width, texture.Height, texture.Depth, texture.FormatGl, texture.Type, IntPtr.Zero);
+                    if (!IsOpenGLES2)
 #endif
-                            GL.BindTexture(TextureTarget.Texture3D, 0);
-                            break;
-                        default:
-                            throw new NotSupportedException("Invalid texture target: " + texture.Target);
+                    {
+                        GL.BindBuffer(BufferTarget.PixelPackBuffer, texture.ResourceId);
+                        GL.UnmapBuffer(BufferTarget.PixelPackBuffer);
+                        GL.BindBuffer(BufferTarget.PixelPackBuffer, 0);
                     }
+                }
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                else if (!IsOpenGLES2 && texture.Description.Usage == GraphicsResourceUsage.Dynamic)
+#else
+                else if (texture.Description.Usage == GraphicsResourceUsage.Dynamic)
+#endif
+                {
+                    
+                    {
+                        GL.BindBuffer(BufferTarget.PixelUnpackBuffer, texture.PixelBufferObjectId);
+                        GL.UnmapBuffer(BufferTarget.PixelUnpackBuffer);
 
-                    GL.BindBuffer(BufferTarget.PixelUnpackBuffer, 0);
+                        GL.BindTexture(texture.Target, texture.ResourceId);
+
+                        // Bind buffer to texture
+                        switch (texture.Target)
+                        {
+#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                            case TextureTarget.Texture1D:
+                                GL.TexSubImage1D(TextureTarget.Texture1D, 0, 0, texture.Width, texture.FormatGl, texture.Type, IntPtr.Zero);
+                                GL.BindTexture(TextureTarget.Texture1D, 0);
+                                break;
+#endif
+                            case TextureTarget.Texture2D:
+                                GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, texture.Width, texture.Height, texture.FormatGl, texture.Type, IntPtr.Zero);
+                                GL.BindTexture(TextureTarget.Texture2D, 0);
+                                break;
+                            case TextureTarget.Texture3D:
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                                GL.TexSubImage3D(TextureTarget3D.Texture3D, 0, 0, 0, 0, texture.Width, texture.Height, texture.Depth, texture.FormatGl, texture.Type, IntPtr.Zero);
+#else
+                                GL.TexSubImage3D(TextureTarget.Texture3D, 0, 0, 0, 0, texture.Width, texture.Height, texture.Depth, texture.FormatGl, texture.Type, IntPtr.Zero);
+#endif
+                                GL.BindTexture(TextureTarget.Texture3D, 0);
+                                break;
+                            default:
+                                throw new NotSupportedException("Invalid texture target: " + texture.Target);
+                        }
+
+                        GL.BindBuffer(BufferTarget.PixelUnpackBuffer, 0);
+                    }
                 }
                 else
                 {
                     throw new NotSupportedException("Not supported mapper operation for Usage: " + texture.Description.Usage);
                 }
-#endif
             }
             else
             {
@@ -1752,24 +1755,29 @@ namespace SiliconStudio.Paradox.Graphics
                 if (buffer != null)
                 {
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                    // Only buffer with StagingData (fake cbuffer) could be mapped
-                    if (buffer.StagingData == null)
-                        throw new InvalidOperationException();
+                    if (IsOpenGLES2)
+                    {
+                        // Only buffer with StagingData (fake cbuffer) could be mapped
+                        if (buffer.StagingData == null)
+                            throw new InvalidOperationException();
 
-                    // Is it a real buffer? (fake cbuffer have no real GPU counter-part in OpenGL ES 2.0
-                    if (buffer.ResourceId != 0)
+                        // Is it a real buffer? (fake cbuffer have no real GPU counter-part in OpenGL ES 2.0
+                        if (buffer.ResourceId != 0)
+                        {
+                            UnbindVertexArrayObject();
+                            GL.BindBuffer(buffer.bufferTarget, buffer.ResourceId);
+                            GL.BufferSubData(buffer.bufferTarget, (IntPtr)unmapped.OffsetInBytes, (IntPtr)unmapped.SizeInBytes, unmapped.DataBox.DataPointer);
+                            GL.BindBuffer(buffer.bufferTarget, 0);
+                        }
+                    }
+                    else
+#endif
                     {
                         UnbindVertexArrayObject();
                         GL.BindBuffer(buffer.bufferTarget, buffer.ResourceId);
-                        GL.BufferSubData(buffer.bufferTarget, (IntPtr)unmapped.OffsetInBytes, (IntPtr)unmapped.SizeInBytes, unmapped.DataBox.DataPointer);
+                        GL.UnmapBuffer(buffer.bufferTarget);
                         GL.BindBuffer(buffer.bufferTarget, 0);
                     }
-#else
-                    UnbindVertexArrayObject();
-                    GL.BindBuffer(buffer.bufferTarget, buffer.ResourceId);
-                    GL.UnmapBuffer(buffer.bufferTarget);
-                    GL.BindBuffer(buffer.bufferTarget, 0);
-#endif
                 }
                 else
                 {
@@ -1803,7 +1811,8 @@ namespace SiliconStudio.Paradox.Graphics
             if (buffer != null)
             {
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                if (buffer.StagingData != IntPtr.Zero)
+                // TODO: Maybe the second test is enough
+                if (IsOpenGLES2 || buffer.StagingData != IntPtr.Zero)
                 {
                     // Specific case for constant buffers
                     SiliconStudio.Core.Utilities.CopyMemory(buffer.StagingData, databox.DataPointer, buffer.Description.SizeInBytes);
@@ -1814,7 +1823,7 @@ namespace SiliconStudio.Paradox.Graphics
                 UnbindVertexArrayObject();
 
                 GL.BindBuffer(buffer.bufferTarget, buffer.ResourceId);
-                GL.BufferData(buffer.bufferTarget, (IntPtr) buffer.Description.SizeInBytes, databox.DataPointer,
+                GL.BufferData(buffer.bufferTarget, (IntPtr)buffer.Description.SizeInBytes, databox.DataPointer,
                     buffer.bufferUsageHint);
                 GL.BindBuffer(buffer.bufferTarget, 0);
             }

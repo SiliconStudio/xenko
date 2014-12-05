@@ -108,10 +108,13 @@ namespace SiliconStudio.Paradox.Graphics
 
                 resourceId = textureId;
 
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                if (Description.Usage == GraphicsResourceUsage.Dynamic)
-                    InitializePixelBufferObject();
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                if (!GraphicsDevice.IsOpenGLES2)
 #endif
+                {
+                    if (Description.Usage == GraphicsResourceUsage.Dynamic)
+                        InitializePixelBufferObject();
+                }
             }
         }
 

@@ -119,6 +119,42 @@ namespace SiliconStudio.Paradox.Graphics
                     throw new NotImplementedException();
             }
         }
+
+        public static BufferAccessMask ToOpenGL(this MapMode mapMode)
+        {
+            switch (mapMode)
+            {
+                case MapMode.Read:
+                    return BufferAccessMask.MapReadBit;
+                case MapMode.Write:
+                    return BufferAccessMask.MapWriteBit;
+                case MapMode.ReadWrite:
+                    return BufferAccessMask.MapReadBit | BufferAccessMask.MapWriteBit;
+                case MapMode.WriteDiscard:
+                    return BufferAccessMask.MapWriteBit | BufferAccessMask.MapInvalidateBufferBit;
+                case MapMode.WriteNoOverwrite:
+                    return BufferAccessMask.MapWriteBit | BufferAccessMask.MapUnsynchronizedBit;
+                default:
+                    throw new ArgumentOutOfRangeException("mapMode");
+            }
+        }
+#else
+        public static BufferAccess ToOpenGL(this MapMode mapMode)
+        {
+            switch (mapMode)
+            {
+                case MapMode.Read:
+                    return BufferAccess.ReadOnly;
+                case MapMode.Write:
+                case MapMode.WriteDiscard:
+                case MapMode.WriteNoOverwrite:
+                    return BufferAccess.WriteOnly;
+                case MapMode.ReadWrite:
+                    return BufferAccess.ReadWrite;
+                default:
+                    throw new ArgumentOutOfRangeException("mapMode");
+            }
+        }
 #endif
 
         public static TextureWrapMode ToOpenGL(this TextureAddressMode addressMode)

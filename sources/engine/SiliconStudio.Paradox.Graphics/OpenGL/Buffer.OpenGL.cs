@@ -66,8 +66,11 @@ namespace SiliconStudio.Paradox.Graphics
             else if (Description.Usage == GraphicsResourceUsage.Dynamic)
             {
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                // OpenGL ES might not always support MapBuffer (TODO: Use MapBufferOES if available)
-                StagingData = Marshal.AllocHGlobal(Description.SizeInBytes);
+                if (GraphicsDevice.IsOpenGLES2)
+                {
+                    // OpenGL ES might not always support MapBuffer (TODO: Use MapBufferOES if available)
+                    StagingData = Marshal.AllocHGlobal(Description.SizeInBytes);
+                }
 #endif
             }
 
@@ -113,7 +116,7 @@ namespace SiliconStudio.Paradox.Graphics
         {
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
             if ((Description.BufferFlags & BufferFlags.ConstantBuffer) == BufferFlags.ConstantBuffer
-                || Description.Usage == GraphicsResourceUsage.Dynamic)
+                || (GraphicsDevice.IsOpenGLES2 && Description.Usage == GraphicsResourceUsage.Dynamic))
             {
                 if (dataPointer != IntPtr.Zero)
                 {
