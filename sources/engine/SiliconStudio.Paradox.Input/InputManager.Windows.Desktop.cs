@@ -60,26 +60,27 @@ namespace SiliconStudio.Paradox.Input
             Scan();
         }
 
-        private bool isCapturing;
         private System.Drawing.Point capturedPosition;
+        private bool wasMouseVisibleBeforeCapture;
 
-        public void CaptureMouse()
+        public override void LockMousePosition()
         {
-            if (!isCapturing)
+            if (!IsMousePositionLocked)
             {
+                wasMouseVisibleBeforeCapture = Game.IsMouseVisible;
                 Game.IsMouseVisible = false;
                 capturedPosition = Cursor.Position;
-                isCapturing = true;
+                IsMousePositionLocked = true;
             }
         }
 
-        public void ReleaseMouse()
+        public override void UnlockMousePosition()
         {
-            if (isCapturing)
+            if (IsMousePositionLocked)
             {
-                isCapturing = false;
+                IsMousePositionLocked = false;
                 capturedPosition = System.Drawing.Point.Empty;
-                Game.IsMouseVisible = true;
+                Game.IsMouseVisible = wasMouseVisibleBeforeCapture;
             }
         }
 
@@ -187,7 +188,7 @@ namespace SiliconStudio.Paradox.Input
             var previousMousePosition = CurrentMousePosition;
             CurrentMousePosition = NormalizeScreenPosition(pixelPosition);
             // Discard this event if it has been triggered by the replacing the cursor to its capture initial position
-            if (isCapturing && Cursor.Position == capturedPosition)
+            if (IsMousePositionLocked && Cursor.Position == capturedPosition)
                 return;
 
             CurrentMouseDelta = CurrentMousePosition - previousMousePosition;
@@ -200,7 +201,7 @@ namespace SiliconStudio.Paradox.Input
                     HandlePointerEvents(buttonId, CurrentMousePosition, PointerState.Move, PointerType.Mouse);
             }
 
-            if (isCapturing)
+            if (IsMousePositionLocked)
             {
                 Cursor.Position = capturedPosition;
             }

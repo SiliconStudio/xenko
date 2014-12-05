@@ -163,6 +163,27 @@ namespace SiliconStudio.Paradox.Input
             Services.AddService(typeof(InputManager), this);
         }
 
+        /// <summary>
+        /// Lock the mouse's position and hides it until the next call to <see cref="UnlockMousePosition"/>.
+        /// </summary>
+        /// <remarks>This function has no effects on devices that does not have mouse</remarks>
+        public virtual void LockMousePosition()
+        {
+        }
+
+        /// <summary>
+        /// Unlock the mouse's position previously locked by calling <see cref="LockMousePosition"/> and restore the mouse visibility.
+        /// </summary>
+        /// <remarks>This function has no effects on devices that does not have mouse</remarks>
+        public virtual void UnlockMousePosition()
+        {
+        }
+
+        /// <summary>
+        /// Gets the value indicating if the mouse position is currently locked or not.
+        /// </summary>
+        public bool IsMousePositionLocked { get; protected set; }
+
         private void ActivatedGesturesChanged(object sender, TrackingCollectionChangedEventArgs trackingCollectionChangedEventArgs)
         {
             switch (trackingCollectionChangedEventArgs.Action)
