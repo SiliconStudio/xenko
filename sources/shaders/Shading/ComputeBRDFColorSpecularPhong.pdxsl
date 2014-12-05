@@ -24,7 +24,7 @@ class ComputeBRDFColorSpecularPhong : ComputeBRDFColorSpecularBase, SpecularPowe
         return lightColor * specularIntensity * normalizedFactor * pow(NH, specularPower + 0.0001) * saturate(dot(normal, lightDir));
     }
 
-    float3 GetNH(float3 lightDir, float3 normal, float3 eye)
+    float GetNH(float3 lightDir, float3 normal, float3 eye)
     {
         float3 refl = normalize(reflect(-lightDir, normal));
         return saturate(dot(eye, refl));

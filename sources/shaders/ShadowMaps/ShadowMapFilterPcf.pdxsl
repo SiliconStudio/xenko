@@ -12,8 +12,10 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
             float shadow = 0.0f;
             // small bias
             shadowMapDistance -= 0.0005;
+            [unroll]
             for(int x = -2; x <= 2; ++x)
             {
+                [unroll]
                 for(int y = -2; y <= 2; ++y)
                 {
                     shadow += shadowMapTextureArg.SampleLevel(shadowMapSamplerArg, position, 0.0, int2(x,y)).x > shadowMapDistance - 0.002f;
