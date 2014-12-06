@@ -34,6 +34,8 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
         public Dictionary<string, string> UrlToFilePath { get; private set; }
 
+        public bool UseFileSystem { get; set; }
+
         public EffectCompiler()
         {
             NativeLibrary.PreloadLibrary("d3dcompiler_47.dll");
@@ -64,6 +66,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 {
                     shaderMixinParser = new ShaderMixinParser();
                     shaderMixinParser.SourceManager.LookupDirectoryList.AddRange(SourceDirectories); // TODO: temp
+                    shaderMixinParser.SourceManager.UseFileSystem = UseFileSystem;
                     shaderMixinParser.SourceManager.UrlToFilePath = UrlToFilePath; // TODO: temp
                 }
                 return shaderMixinParser;

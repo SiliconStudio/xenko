@@ -40,7 +40,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// Gets or sets a value indicating whether [use file system]. (Currently used only by tests, made static)
         /// </summary>
         /// <value><c>true</c> if [use file system]; otherwise, <c>false</c>.</value>
-        public static bool UseFileSystem { get; set; }
+        public bool UseFileSystem { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderSourceManager"/> class.
@@ -50,6 +50,23 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             LookupDirectoryList = new List<string>();
             UrlToFilePath = new Dictionary<string, string>();
         }
+
+        /// <summary>
+        /// Adds the shader source registered manually.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="sourceCode">The source code.</param>
+        /// <param name="sourcePath">The source path.</param>
+        public void AddShaderSource(string type, string sourceCode, string sourcePath)
+        {
+            lock (locker)
+            {
+                var shaderSource = new ShaderSourceWithHash() { Source = sourceCode, Path = sourcePath };
+                shaderSource.Hash = ObjectId.FromBytes(Encoding.UTF8.GetBytes(shaderSource.Source));
+                loadedShaderSources[type] = shaderSource;
+            }
+        }
+
 
         /// <summary>
         /// Deletes the shader cache for the specified shaders.
