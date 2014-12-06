@@ -161,11 +161,12 @@ namespace SiliconStudio.Paradox.VisualStudio
                 generalOutputPane.Activate();
             }
 
+            /*
             // Start PackageBuildMonitorRemote in a separate app domain
-            buildMonitorDomain = ParadoxCommandsProxy.CreateAppDomain();
+            buildMonitorDomain = new ParadoxAppDomain();
             try
             {
-                var remoteCommands = ParadoxCommandsProxy.CreateProxy(buildMonitorDomain);
+                var remoteCommands = buildMonitorDomain.GetProxy();
                 remoteCommands.StartRemoteBuildLogServer(new BuildMonitorCallback(dte2), buildLogPipeGenerator.LogPipeUrl);
             }
             catch (Exception e)
@@ -174,10 +175,13 @@ namespace SiliconStudio.Paradox.VisualStudio
                 generalOutputPane.Activate();
 
                 // Unload domain right away
-                AppDomain.Unload(buildMonitorDomain);
+                buildMonitorDomain.Dispose();
                 buildMonitorDomain = null;
             }
+             */
         }
+
+        
 
         private void solutionEventsListener_AfterSolutionBackgroundLoadComplete()
         {

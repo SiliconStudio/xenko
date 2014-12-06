@@ -1,4 +1,4 @@
-#region Header Licence
+﻿#region Header Licence
 //  ---------------------------------------------------------------------
 // 
 //  Copyright (c) 2009 Alexandre Mutel and Microsoft Corporation.  
@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Drawing;
@@ -32,6 +33,7 @@ using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.TextManager.Interop;
 using SiliconStudio.Paradox.VisualStudio.Classifiers;
 using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
+using VsShell = Microsoft.VisualStudio.Shell.VsShellUtilities;
 
 namespace NShader
 {
@@ -54,6 +56,8 @@ namespace NShader
             // Check if already initialized
             if (m_colorableItems != null)
                 return;
+
+            
 
             // Initialize theme engine
             themeEngine = new VisualStudioThemeEngine(Site);
@@ -80,6 +84,11 @@ namespace NShader
             themeEngine.Dispose();
 
             base.Dispose();
+        }
+
+        public override ViewFilter CreateViewFilter(CodeWindowManager mgr, IVsTextView newView)
+        {
+            return new NShaderViewFilter(this, mgr, newView);
         }
 
         void themeEngine_OnThemeChanged(object sender, EventArgs e)
@@ -231,7 +240,60 @@ namespace NShader
         {
             get { return "Paradox Shader Language"; }
         }
-        
+
+        public void GotoLocation(SourceLocation loc)
+        {
+            GotoLocation(loc, null, false);
+        }
+
+        public void GotoLocation(SourceLocation loc, string caption, bool asReadonly)
+        {
+            if (loc.File == null)
+                return;
+
+            // Opens the document
+            var span = new TextSpan { iStartLine = loc.Line - 1, iStartIndex = loc.Column - 1, iEndLine = loc.EndLine - 1, iEndIndex = loc.EndColumn - 1 };
+            uint itemID;
+            IVsUIHierarchy hierarchy;
+            IVsWindowFrame docFrame;
+            IVsTextView textView;
+            VsShell.OpenDocument(Site, loc.File, VSConstants.LOGVIEWID_Code, out hierarchy, out itemID, out docFrame, out textView);
+
+            // If we need readonly, set the buffer to read-only
+            if (asReadonly)
+            {
+                IVsTextLines buffer;
+                ErrorHandler.ThrowOnFailure(textView.GetBuffer(out buffer));
+                var stream = (IVsTextStream)buffer;
+                stream.SetStateFlags((uint)BUFFERSTATEFLAGS.BSF_USER_READONLY);
+            }
+
+            // Need to use a different caption?
+            if (caption != null)
+            {
+                ErrorHandler.ThrowOnFailure(docFrame.SetProperty((int)__VSFPROPID.VSFPROPID_OwnerCaption, caption));
+            }
+
+            // Show the frame
+            ErrorHandler.ThrowOnFailure(docFrame.Show());
+
+            // Go to the specific location
+            if (textView != null && loc.Line != 0)
+            {
+                try
+                {
+                    ErrorHandler.ThrowOnFailure(textView.SetCaretPos(span.iStartLine, span.iStartIndex));
+                    TextSpanHelper.MakePositive(ref span);
+                    //ErrorHandler.ThrowOnFailure(textView.SetSelection(span.iStartLine, span.iStartIndex, span.iEndLine, span.iEndIndex));
+                    ErrorHandler.ThrowOnFailure(textView.EnsureSpanVisible(span));
+                }
+                catch (Exception ex)
+                {
+                    Trace.WriteLine(ex.Message);
+                }
+            }
+        }
+
         internal class TestAuthoringScope : AuthoringScope
         {
             public override string GetDataTipText(int line, int col, out TextSpan span)

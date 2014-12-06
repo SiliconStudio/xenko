@@ -1,11 +1,15 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using EnvDTE;
-using EnvDTE80;
+using System.Windows.Forms;
+
+using NShader;
+
 using SiliconStudio.Assets;
 
 namespace SiliconStudio.Paradox.VisualStudio.Commands
@@ -18,14 +22,22 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
         private static object computedParadoxSdkDirLock = new object();
         private static string computedParadoxSdkDir = null;
         private IParadoxCommands remote;
+        private List<Tuple<string, DateTime>> assembliesLoaded = new List<Tuple<string, DateTime>>();
+
+        private static readonly object paradoxCommandProxyLock = new object();
+        private static ParadoxCommandsProxy currentInstance;
+        private static AppDomain currentAppDomain;
 
         static ParadoxCommandsProxy()
         {
-            AppDomain.CurrentDomain.AssemblyResolve += domain_AssemblyResolve;
+            // This assembly resolve is only used to resolve the GetExecutingAssembly on the Default Domain
+            // when casting to ParadoxCommandsProxy in the ParadoxCommandsProxy.GetProxy method
+            AppDomain.CurrentDomain.AssemblyResolve += DefaultDomainAssemblyResolve;
         }
 
         public ParadoxCommandsProxy()
         {
+            AppDomain.CurrentDomain.AssemblyResolve += ParadoxDomainAssemblyResolve;
             var assembly = Assembly.Load("SiliconStudio.Paradox.VisualStudio.Commands");
             remote = (IParadoxCommands)assembly.CreateInstance("SiliconStudio.Paradox.VisualStudio.Commands.ParadoxCommands");
         }
@@ -44,68 +56,75 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
             }
         }
 
-        public static AppDomain CreateAppDomain()
+        /// <summary>
+        /// Gets the current proxy.
+        /// </summary>
+        /// <returns>ParadoxCommandsProxy.</returns>
+        public static ParadoxCommandsProxy GetProxy()
         {
-            return AppDomain.CreateDomain("paradox-domain");
-        }
-
-        public static ParadoxCommandsProxy CreateProxy(AppDomain domain)
-        {
-            bool createDomain = domain == null;
-            if (createDomain)
-                domain = CreateAppDomain();
-
             try
             {
-                return (ParadoxCommandsProxy)domain.CreateInstanceFromAndUnwrap(typeof(ParadoxCommandsProxy).Assembly.Location, typeof(ParadoxCommandsProxy).FullName);
+                lock (paradoxCommandProxyLock)
+                {
+                    // New instance?
+                    bool shouldReload = currentInstance == null;
+                    if (!shouldReload)
+                    {
+                        // Assemblies changed?
+                        shouldReload = currentInstance.ShouldReload();
+                    }
+
+                    // If new instance or assemblies changed, reload
+                    if (shouldReload)
+                    {
+                        currentInstance = null;
+                        if (currentAppDomain != null)
+                        {
+                            try
+                            {
+                                AppDomain.Unload(currentAppDomain);
+                            }
+                            catch (Exception ex)
+                            {
+                                Trace.WriteLine(string.Format("Unexpected exception when unloading AppDomain for ParadoxCommandsProxy: {0}", ex));
+                            }
+                        }
+
+                        currentAppDomain = AppDomain.CreateDomain("paradox-domain");
+                        currentInstance = (ParadoxCommandsProxy)currentAppDomain.CreateInstanceFromAndUnwrap(typeof(ParadoxCommandsProxy).Assembly.Location, typeof(ParadoxCommandsProxy).FullName);
+                    }
+
+                    return currentInstance;
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                if (createDomain)
-                    AppDomain.Unload(domain);
+                MessageBox.Show(string.Format("Unexpected error while trying to Paradox VisualStudio Commands: {0}", ex), "Paradox VisualStudio Plugin", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 throw;
             }
         }
 
-        static Assembly LoadAssembly(string assemblyFile, bool shadowMemoryCopy)
+        public bool ShouldReload()
         {
-            if (shadowMemoryCopy)
+            lock (assembliesLoaded)
             {
-                // Check if .pdb exists as well
-                var pdbFile = Path.ChangeExtension(assemblyFile, "pdb");
-                if (File.Exists(pdbFile))
-                    return Assembly.Load(File.ReadAllBytes(assemblyFile), File.ReadAllBytes(pdbFile));
+                // Check if any assemblies have changed since loaded
+                foreach (var assemblyItem in assembliesLoaded)
+                {
+                    var assemblyPath = assemblyItem.Item1;
+                    var lastAssemblyTime = assemblyItem.Item2;
 
-                // Otherwise load assembly without PDB
-                return Assembly.Load(File.ReadAllBytes(assemblyFile));
+                    if (File.Exists(assemblyPath))
+                    {
+                        var fileDateTime = File.GetLastWriteTime(assemblyPath);
+                        if (fileDateTime != lastAssemblyTime)
+                        {
+                            return true;
+                        }
+                    }
+                }
             }
-
-            // Load from HDD directly
-            return Assembly.Load(assemblyFile);
-        }
-
-        static Assembly domain_AssemblyResolve(object sender, ResolveEventArgs args)
-        {
-            if (args.Name == Assembly.GetExecutingAssembly().FullName)
-                return Assembly.GetExecutingAssembly();
-
-            var paradoxSdkDir = ParadoxSdkDir;
-            if (paradoxSdkDir == null)
-                return null;
-
-            var paradoxSdkBinDir = Path.Combine(paradoxSdkDir, @"Bin\Windows-Direct3D11");
-
-            // Try to load .dll/.exe from Paradox SDK directory
-            var assemblyName = new AssemblyName(args.Name);
-            var assemblyFile = Path.Combine(paradoxSdkBinDir, assemblyName.Name + ".dll");
-            if (File.Exists(assemblyFile))
-                return LoadAssembly(assemblyFile, true);
-
-            assemblyFile = Path.Combine(paradoxSdkBinDir, assemblyName.Name + ".exe");
-            if (File.Exists(assemblyFile))
-                return LoadAssembly(assemblyFile, true);
-
-            return null;
+            return false;
         }
 
         public void StartRemoteBuildLogServer(IBuildMonitorCallback buildMonitorCallback, string logPipeUrl)
@@ -123,12 +142,76 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
             return remote.GenerateDataClasses(assemblyOutput, projectFullName, intermediateAssembly);
         }
 
+        public SourceLocation GoToDefinition(string sourceCode, SourceLocation location)
+        {
+            // TODO: We need to know which package is currently selected in order to query all valid shaders
+            return remote.GoToDefinition(sourceCode, location);
+        }
+
+        private static Assembly DefaultDomainAssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            // This assembly resolve is only used to resolve the GetExecutingAssembly on the Default Domain
+            // when casting to ParadoxCommandsProxy in the ParadoxCommandsProxy.GetProxy method
+            var executingAssembly = Assembly.GetExecutingAssembly();
+            if (args.Name == executingAssembly.FullName)
+                return executingAssembly;
+
+            return null;
+        }
+
+        private Assembly ParadoxDomainAssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            var paradoxSdkDir = ParadoxSdkDir;
+            if (paradoxSdkDir == null)
+                return null;
+
+            var paradoxSdkBinDir = Path.Combine(paradoxSdkDir, @"Bin\Windows-Direct3D11");
+
+            // Try to load .dll/.exe from Paradox SDK directory
+            var assemblyName = new AssemblyName(args.Name);
+            var assemblyFile = Path.Combine(paradoxSdkBinDir, assemblyName.Name + ".dll");
+            if (File.Exists(assemblyFile))
+                return LoadAssembly(assemblyFile);
+
+            assemblyFile = Path.Combine(paradoxSdkBinDir, assemblyName.Name + ".exe");
+            if (File.Exists(assemblyFile))
+                return LoadAssembly(assemblyFile);
+
+            // PCL System assemblies are using version 2.0.5.0 while we have a 4.0
+            // Redirect the PCL to use the 4.0 from the current app domain.
+            if (assemblyName.Name.StartsWith("System"))
+            {
+                var systemCoreAssembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(assembly => assembly.GetName().Name == assemblyName.Name);
+                return systemCoreAssembly;
+            }
+
+            return null;
+        }
+
+        private Assembly LoadAssembly(string assemblyFile)
+        {
+            lock (assembliesLoaded)
+            {
+                assembliesLoaded.Add(new Tuple<string, DateTime>(assemblyFile, File.GetLastWriteTime(assemblyFile)));
+            }
+
+            // Check if .pdb exists as well
+            var pdbFile = Path.ChangeExtension(assemblyFile, "pdb");
+            if (File.Exists(pdbFile))
+                return Assembly.Load(File.ReadAllBytes(assemblyFile), File.ReadAllBytes(pdbFile));
+
+            // Otherwise load assembly without PDB
+            return Assembly.Load(File.ReadAllBytes(assemblyFile));
+        }
+
         /// <summary>
         /// Gets the paradox SDK dir.
         /// </summary>
         /// <returns></returns>
         private static string FindParadoxSdkDir()
         {
+            // TODO: Get the Paradox SDK from the current selected package
+
             // TODO: Maybe move it in some common class somewhere? (in this case it would be included with "Add as link" in VSPackage)
             var paradoxSdkDir = Environment.GetEnvironmentVariable("SiliconStudioParadoxDir");
 
