@@ -217,7 +217,8 @@ namespace SiliconStudio.Core
 
         private static string GetApplicationBinaryDirectory()
         {
-            var result = Path.GetDirectoryName(GetApplicationExecutablePath());
+            var directoryName = GetApplicationExecutablePath();
+            var result = string.IsNullOrWhiteSpace(directoryName) ? string.Empty : Path.GetDirectoryName(GetApplicationExecutablePath());
             if (result == string.Empty)
                 result = ".";
 
