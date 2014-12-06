@@ -248,6 +248,8 @@ namespace NShader
 
         public void GotoLocation(SourceLocation loc, string caption, bool asReadonly)
         {
+            // Code taken from Nemerle https://github.com/rsdn/nemerle/blob/master/snippets/VS2010/Nemerle.VisualStudio/LanguageService/NemerleLanguageService.cs#L565
+            // TODO: Add licensing
             if (loc.File == null)
                 return;
 
