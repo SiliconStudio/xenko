@@ -15,7 +15,7 @@ using SiliconStudio.Shaders.Utility;
 
 namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 {
-    internal class ParadoxShaderLibrary
+    public class ParadoxShaderLibrary
     {
         #region Delegate
 

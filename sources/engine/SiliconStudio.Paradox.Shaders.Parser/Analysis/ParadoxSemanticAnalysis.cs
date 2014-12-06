@@ -15,7 +15,7 @@ using StorageQualifier = SiliconStudio.Shaders.Ast.Hlsl.StorageQualifier;
 
 namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
 {
-    internal class ParadoxSemanticAnalysis : ParadoxTypeAnalysis
+    public class ParadoxSemanticAnalysis : ParadoxTypeAnalysis
     {
         #region Static members
 

@@ -7,7 +7,7 @@ using SiliconStudio.Shaders.Parser;
 
 namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
 {
-    internal class ParadoxTypeAnalysis : HlslSemanticAnalysis
+    public class ParadoxTypeAnalysis : HlslSemanticAnalysis
     {
         #region Contructor
 

@@ -5,7 +5,7 @@ using SiliconStudio.Shaders.Ast;
 
 namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 {
-    internal class MethodDeclarationShaderCouple
+    public class MethodDeclarationShaderCouple
     {
         public MethodDeclaration Method;
         public ShaderClassType Shader;

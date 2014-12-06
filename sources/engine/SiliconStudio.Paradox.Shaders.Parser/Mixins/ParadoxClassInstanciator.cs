@@ -15,7 +15,7 @@ using StorageQualifier = SiliconStudio.Shaders.Ast.StorageQualifier;
 
 namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 {
-    internal class ParadoxClassInstanciator : ShaderVisitor
+    public class ParadoxClassInstanciator : ShaderVisitor
     {
         private ShaderClassType shaderClassType;
 

@@ -5,7 +5,7 @@ using SiliconStudio.Shaders.Visitor;
 
 namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 {
-    internal class ParadoxReplaceExtern : ShaderVisitor
+    public class ParadoxReplaceExtern : ShaderVisitor
     {
         #region Private members
 

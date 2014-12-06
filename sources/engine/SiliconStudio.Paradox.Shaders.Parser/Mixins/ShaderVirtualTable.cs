@@ -10,7 +10,7 @@ using SiliconStudio.Shaders.Utility;
 
 namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 {
-    internal class ShaderVirtualTable
+    public class ShaderVirtualTable
     {
         #region Public member
 

@@ -13,7 +13,7 @@ using SiliconStudio.Shaders.Visitor;
 
 namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 {
-    internal class ParadoxStreamAnalyzer : ShaderVisitor
+    public class ParadoxStreamAnalyzer : ShaderVisitor
     {
         #region Private members
 

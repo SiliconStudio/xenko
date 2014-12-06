@@ -15,7 +15,7 @@ using StorageQualifier = SiliconStudio.Shaders.Ast.StorageQualifier;
 
 namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 {
-    internal class ParadoxShaderMixer
+    public class ParadoxShaderMixer
     {
         private readonly static string FlipRendertargetVariableName = "ParadoxFlipRendertarget";
         

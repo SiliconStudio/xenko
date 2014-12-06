@@ -14,7 +14,7 @@ using SiliconStudio.Shaders.Utility;
 
 namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 {
-    internal class ShaderCompilationContext
+    public class ShaderCompilationContext
     {
         #region Private static members
 

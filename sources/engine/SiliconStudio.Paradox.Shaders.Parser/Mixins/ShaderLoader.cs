@@ -212,7 +212,6 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         private ShaderClassType LoadShaderClass(string type, string generics, LoggerResult log, SiliconStudio.Shaders.Parser.ShaderMacro[] macros = null)
         {
             if (type == null) throw new ArgumentNullException("type");
-
             var shaderSourceKey = new ShaderSourceKey(type, generics, macros);
 
             lock (loadedShaders)
@@ -249,7 +248,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 var shaderClassTypes = ParadoxShaderParser.GetShaderClassTypes(shader.Declarations).ToList();
                 if (shaderClassTypes.Count != 1)
                 {
-                    throw new InvalidOperationException(string.Format("Shader [{0}] must contain only a single Shader class type intead of [{1}]", type, shaderClassTypes.Count));
+                    log.Error(ParadoxMessageCode.ShaderMustContainSingleClassDeclaration, new SourceSpan(new SourceLocation(shaderSource.Path, 0, 0, 0), 10), type);
+                    return null;
                 }
 
                 shaderClass = shaderClassTypes.First();
@@ -259,14 +259,15 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 shaderClass.IsInstanciated = false;
 
                 // TODO: We should not use Console. Change the way we log things here
-                Console.WriteLine("Loading Shader {0}{1}", type, macros != null && macros.Length > 0 ? String.Format("<{0}>", string.Join(", ", macros)) : string.Empty);
+                // Console.WriteLine("Loading Shader {0}{1}", type, macros != null && macros.Length > 0 ? String.Format("<{0}>", string.Join(", ", macros)) : string.Empty);
 
+                // If the file name is not matching the class name, provide an error
                 if (shaderClass.Name.Text != type)
                 {
-                    throw new InvalidOperationException(string.Format("Unable to load shader [{0}] not maching class name [{1}]", type, shaderClass.Name.Text));
+                    log.Error(ParadoxMessageCode.FileNameNotMatchingClassName, shaderClass.Name.Span, type, shaderClass.Name.Text);
+                    return null;
                 }
 
-                // Only full version are stored
                 loadedShaders.Add(shaderSourceKey, shaderClass);
 
                 return shaderClass;

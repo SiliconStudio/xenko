@@ -14,7 +14,7 @@ using ParameterQualifier = SiliconStudio.Shaders.Ast.ParameterQualifier;
 
 namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 {
-    internal class ParadoxStreamCreator
+    public class ParadoxStreamCreator
     {
         #region private static members
 

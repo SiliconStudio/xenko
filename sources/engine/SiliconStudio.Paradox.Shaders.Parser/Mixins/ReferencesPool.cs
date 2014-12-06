@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 using SiliconStudio.Paradox.Shaders.Parser.Analysis;
@@ -8,7 +9,8 @@ using SiliconStudio.Shaders.Ast;
 
 namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 {
-    internal class ReferencesPool
+    [DebuggerDisplay("Variables[{VariablesReferences.Count}] Methods[{MethodsReferences.Count}]")]
+    public class ReferencesPool
     {
         /// <summary>
         /// List of all the variable references

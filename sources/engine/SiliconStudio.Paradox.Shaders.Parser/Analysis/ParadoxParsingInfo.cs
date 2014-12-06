@@ -9,7 +9,7 @@ using SiliconStudio.Shaders.Parser;
 
 namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
 {
-    internal class ParadoxParsingInfo
+    public class ParadoxParsingInfo
     {
         #region Public properties
 

@@ -11,7 +11,7 @@ using SiliconStudio.Shaders.Utility;
 
 namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 {
-    internal class MixinVirtualTable : ShaderVirtualTable
+    public class MixinVirtualTable : ShaderVirtualTable
     {
         #region Public properties
 
