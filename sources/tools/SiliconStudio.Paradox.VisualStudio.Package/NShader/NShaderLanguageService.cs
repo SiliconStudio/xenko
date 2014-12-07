@@ -32,6 +32,8 @@ using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.TextManager.Interop;
 using SiliconStudio.Paradox.VisualStudio.Classifiers;
+using SiliconStudio.Paradox.VisualStudio.Commands;
+
 using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 using VsShell = Microsoft.VisualStudio.Shell.VsShellUtilities;
 
@@ -45,10 +47,15 @@ namespace NShader
         private readonly ErrorListProvider errorListProvider;
 
         private LanguagePreferences m_preferences;
+        private int lastChangeCount = -1;
+        private readonly Stopwatch clock;
+
+        private const int ParseAfterInactivityInMs = 1000; // Parse after 1s of inactivity and a change in source code
 
         public NShaderLanguageService(ErrorListProvider errorListProvider)
         {
             this.errorListProvider = errorListProvider;
+            clock = new Stopwatch();
         }
 
         public override void Initialize()
@@ -232,6 +239,55 @@ namespace NShader
             return base.GetColorizer(buffer);
         }
 
+        public override void OnIdle(bool periodic)
+        {
+            var source = GetCurrentSource();
+            if (source != null)
+            {
+                if (lastChangeCount != source.ChangeCount || clock.IsRunning)
+                {
+                    if (clock.IsRunning)
+                    {
+                        if (clock.ElapsedMilliseconds > ParseAfterInactivityInMs)
+                        {
+                            clock.Stop();
+                            clock.Reset();
+
+                            var text = source.GetText();
+                            var sourcePath = source.GetFilePath();
+
+                            var sink = source.CreateAuthoringSink(ParseReason.Check, 1, 1);
+
+                            Trace.WriteLine(string.Format("Parsing Change: {0} Time: {1}", source.ChangeCount, DateTime.Now));
+                            var thread = new System.Threading.Thread(
+                                () =>
+                                {
+                                    var result = ParadoxCommandsProxy.GetProxy().AnalyzeAndGoToDefinition(text, new RawSourceSpan(sourcePath, 1, 1));
+                                    OutputAnalysisMessages(result, source);
+                                });
+                            thread.Start();
+                            lastChangeCount = source.ChangeCount;
+                        }
+                    }
+                    else
+                    {
+                        clock.Restart();
+                    }
+                }
+            }
+
+            base.OnIdle(periodic);
+        }
+
+        private NShaderSource GetCurrentSource()
+        {
+            IVsTextView vsTextView = this.LastActiveTextView;
+            if (vsTextView == null)
+                return null;
+            var source = this.GetSource(vsTextView) as NShaderSource;
+            return source;
+        }
+
         public override AuthoringScope ParseSource(ParseRequest req)
         {
             // req.FileName
@@ -254,37 +310,70 @@ namespace NShader
             GoToLocation(result.DefinitionSpan, null, false);
         }
 
-        private void OutputAnalysisMessages(RawShaderNavigationResult result)
+        private void OutputAnalysisMessages(RawShaderNavigationResult result, NShaderSource source = null)
         {
-            errorListProvider.Tasks.Clear(); // clear previously created
-            foreach (var message in result.Messages)
+            lock (errorListProvider)
             {
-                var errorCategory = TaskErrorCategory.Message;
-                if (message.Type == "warning")
+                var taskProvider = source != null ? source.GetTaskProvider() : null;
+                if (taskProvider != null)
                 {
-                    errorCategory = TaskErrorCategory.Warning;
-                }
-                else if (message.Type == "error")
-                {
-                    errorCategory = TaskErrorCategory.Error;
+                    taskProvider.Tasks.Clear();
                 }
 
-                var newError = new ErrorTask()
+                errorListProvider.Tasks.Clear(); // clear previously created
+                foreach (var message in result.Messages)
                 {
-                    ErrorCategory = errorCategory,
-                    Category = TaskCategory.BuildCompile,
-                    Text = message.Text,
-                    Document = message.Span.File,
-                    Line = message.Span.Line - 1,
-                    Column = message.Span.Column - 1,
-                    // HierarchyItem = hierarchyItem // TODO Add hierarchy the file is associated to
-                };
+                    var errorCategory = TaskErrorCategory.Message;
+                    if (message.Type == "warning")
+                    {
+                        errorCategory = TaskErrorCategory.Warning;
+                    }
+                    else if (message.Type == "error")
+                    {
+                        errorCategory = TaskErrorCategory.Error;
+                    }
 
-                // Install our navigate to source 
-                newError.Navigate += NavigateToSourceError;
-                errorListProvider.Tasks.Add(newError); // add item
+                    if (taskProvider != null && errorCategory == TaskErrorCategory.Error)
+                    {
+                        var task = source.CreateErrorTaskItem(ConvertToTextSpan(message.Span), message.Span.File, message.Text, TaskPriority.High, TaskCategory.CodeSense, MARKERTYPE.MARKER_CODESENSE_ERROR, TaskErrorCategory.Error);
+                        taskProvider.Tasks.Add(task);
+                    }
+                    else
+                    {
+                        var newError = new ErrorTask()
+                        {
+                            ErrorCategory = errorCategory,
+                            Category = source != null ? TaskCategory.CodeSense : TaskCategory.BuildCompile,
+                            Text = message.Text,
+                            Document = message.Span.File,
+                            Line = message.Span.Line - 1,
+                            Column = message.Span.Column - 1,
+                            // HierarchyItem = hierarchyItem // TODO Add hierarchy the file is associated to
+                        };
+
+                        // Install our navigate to source 
+                        newError.Navigate += NavigateToSourceError;
+                        errorListProvider.Tasks.Add(newError); // add item
+                    }
+                }
+                errorListProvider.Show(); // make sure it is visible 
+
+                if (taskProvider != null)
+                {
+                    taskProvider.Refresh();
+                }
             }
-            errorListProvider.Show(); // make sure it is visible 
+        }
+
+        private static TextSpan ConvertToTextSpan(RawSourceSpan span)
+        {
+            return new TextSpan()
+            {
+                iStartIndex = span.Column-1,
+                iStartLine = span.Line-1,
+                iEndIndex = span.EndColumn-1,
+                iEndLine = span.EndLine-1
+            };
         }
 
         private void NavigateToSourceError(object sender, EventArgs e)
@@ -348,6 +437,7 @@ namespace NShader
 
         internal class TestAuthoringScope : AuthoringScope
         {
+
             public override string GetDataTipText(int line, int col, out TextSpan span)
             {
                 span = new TextSpan();

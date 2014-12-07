@@ -25,6 +25,11 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
 {
     public class ParadoxCommands : IParadoxCommands
     {
+        public void Initialize()
+        {
+            ParadoxShaderParser.Initialize();
+        }
+
         public bool ShouldReload()
         {
             // This is implemented in the proxy only

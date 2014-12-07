@@ -16,6 +16,8 @@ using EnvDTE80;
 using Microsoft.Build.Evaluation;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.CommandBars;
+using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Package;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using NShader;
@@ -57,7 +59,8 @@ namespace SiliconStudio.Paradox.VisualStudio
                              EnableCommenting = true,
                              EnableFormatSelection = true,
                              EnableLineNumbers = true,
-                             DefaultToInsertSpaces = true
+                             DefaultToInsertSpaces = true,
+                             CodeSense = true
                              )]
     [ProvideLanguageExtensionAttribute(typeof(NShaderLanguageService), NShaderSupportedExtensions.Paradox_Shader)]
     [ProvideLanguageExtensionAttribute(typeof(NShaderLanguageService), NShaderSupportedExtensions.Paradox_Effect)]
@@ -71,7 +74,7 @@ namespace SiliconStudio.Paradox.VisualStudio
     // Temporarily force load for easier debugging
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
-    public sealed class ParadoxPackage : Package
+    public sealed class ParadoxPackage : Package, IOleComponent
     {
         public const string Version = "1.149";
 
@@ -79,6 +82,7 @@ namespace SiliconStudio.Paradox.VisualStudio
         private AppDomain buildMonitorDomain;
         private BuildLogPipeGenerator buildLogPipeGenerator;
         private SolutionEventsListener solutionEventsListener;
+        private uint m_componentID;
 
         /// <summary>
         ///     Default constructor of the package.
@@ -141,7 +145,7 @@ namespace SiliconStudio.Paradox.VisualStudio
             var serviceContainer = this as IServiceContainer;
             var errorListProvider = new ErrorListProvider(this)
             {
-                ProviderGuid = new Guid("ad1083c5-32ad-403d-af3d-32fee7abbdf1"), 
+                ProviderGuid = new Guid("ad1083c5-32ad-403d-af3d-32fee7abbdf1"),
                 ProviderName = "Paradox Shading Language"
             };
             var langService = new NShaderLanguageService(errorListProvider);
@@ -166,12 +170,11 @@ namespace SiliconStudio.Paradox.VisualStudio
                 generalOutputPane.Activate();
             }
 
-            /*
             // Start PackageBuildMonitorRemote in a separate app domain
-            buildMonitorDomain = new ParadoxAppDomain();
+            buildMonitorDomain = ParadoxCommandsProxy.CreateParadoxDomain();
             try
             {
-                var remoteCommands = buildMonitorDomain.GetProxy();
+                var remoteCommands = ParadoxCommandsProxy.CreateProxy(buildMonitorDomain);
                 remoteCommands.StartRemoteBuildLogServer(new BuildMonitorCallback(dte2), buildLogPipeGenerator.LogPipeUrl);
             }
             catch (Exception e)
@@ -180,13 +183,31 @@ namespace SiliconStudio.Paradox.VisualStudio
                 generalOutputPane.Activate();
 
                 // Unload domain right away
-                buildMonitorDomain.Dispose();
+                AppDomain.Unload(buildMonitorDomain);
                 buildMonitorDomain = null;
             }
-             */
-        }
 
-        
+            // Preinitialize the parser in a separate thread
+            var thread = new System.Threading.Thread(() => ParadoxCommandsProxy.GetProxy().Initialize());
+            thread.Start();
+
+            // Register a timer to call our language service during
+            // idle periods.
+            var mgr = GetService(typeof(SOleComponentManager))
+                                       as IOleComponentManager;
+            if (m_componentID == 0 && mgr != null)
+            {
+                OLECRINFO[] crinfo = new OLECRINFO[1];
+                crinfo[0].cbSize = (uint)Marshal.SizeOf(typeof(OLECRINFO));
+                crinfo[0].grfcrf = (uint)_OLECRF.olecrfNeedIdleTime |
+                                              (uint)_OLECRF.olecrfNeedPeriodicIdleTime;
+                crinfo[0].grfcadvf = (uint)_OLECADVF.olecadvfModal |
+                                              (uint)_OLECADVF.olecadvfRedrawOff |
+                                              (uint)_OLECADVF.olecadvfWarningsOff;
+                crinfo[0].uIdleTimeInterval = 1000;
+                int hr = mgr.FRegisterComponent(this, crinfo, out m_componentID);
+            }
+        }
 
         private void solutionEventsListener_AfterSolutionBackgroundLoadComplete()
         {
@@ -240,6 +261,19 @@ namespace SiliconStudio.Paradox.VisualStudio
             // Unload build monitor pipe domain
             if (buildMonitorDomain != null)
                 AppDomain.Unload(buildMonitorDomain);
+
+            if (m_componentID != 0)
+            {
+                IOleComponentManager mgr = GetService(typeof(SOleComponentManager))
+                                           as IOleComponentManager;
+                if (mgr != null)
+                {
+                    int hr = mgr.FRevokeComponent(m_componentID);
+                }
+                m_componentID = 0;
+            }
+
+            base.Dispose(disposing);
         }
 
         private IVsOutputWindowPane GetGeneralOutputPane()
@@ -255,5 +289,79 @@ namespace SiliconStudio.Paradox.VisualStudio
         }
 
         #endregion
+
+
+        #region IOleComponent Members
+
+        public int FDoIdle(uint grfidlef)
+        {
+            bool bPeriodic = (grfidlef & (uint)_OLEIDLEF.oleidlefPeriodic) != 0;
+            // Use typeof(TestLanguageService) because we need to
+            // reference the GUID for our language service.
+            var service = GetService(typeof(NShaderLanguageService)) as LanguageService;
+            if (service != null)
+            {
+                service.OnIdle(bPeriodic);
+            }
+            return 0;
+        }
+
+        public int FContinueMessageLoop(uint uReason,
+                                        IntPtr pvLoopData,
+                                        MSG[] pMsgPeeked)
+        {
+            return 1;
+        }
+
+        public int FPreTranslateMessage(MSG[] pMsg)
+        {
+            return 0;
+        }
+
+        public int FQueryTerminate(int fPromptUser)
+        {
+            return 1;
+        }
+
+        public int FReserved1(uint dwReserved,
+                              uint message,
+                              IntPtr wParam,
+                              IntPtr lParam)
+        {
+            return 1;
+        }
+
+        public IntPtr HwndGetWindow(uint dwWhich, uint dwReserved)
+        {
+            return IntPtr.Zero;
+        }
+
+        public void OnActivationChange(IOleComponent pic,
+                                       int fSameComponent,
+                                       OLECRINFO[] pcrinfo,
+                                       int fHostIsActivating,
+                                       OLECHOSTINFO[] pchostinfo,
+                                       uint dwReserved)
+        {
+        }
+
+        public void OnAppActivate(int fActive, uint dwOtherThreadID)
+        {
+        }
+
+        public void OnEnterState(uint uStateID, int fEnter)
+        {
+        }
+
+        public void OnLoseActivation()
+        {
+        }
+
+        public void Terminate()
+        {
+        }
+
+        #endregion
+
     }
 }

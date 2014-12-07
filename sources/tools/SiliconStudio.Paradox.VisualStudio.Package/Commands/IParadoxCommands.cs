@@ -13,6 +13,11 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
     public interface IParadoxCommands
     {
         /// <summary>
+        /// Initialize parsing (this method can be called from a separate thread).
+        /// </summary>
+        void Initialize();
+
+        /// <summary>
         /// Test whether we should reload these commands (assemblies changed)
         /// </summary>
         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>

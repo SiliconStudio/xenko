@@ -8,6 +8,8 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 
+using EnvDTE;
+
 using NShader;
 
 using SiliconStudio.Assets;
@@ -90,8 +92,8 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
                             }
                         }
 
-                        currentAppDomain = AppDomain.CreateDomain("paradox-domain");
-                        currentInstance = (ParadoxCommandsProxy)currentAppDomain.CreateInstanceFromAndUnwrap(typeof(ParadoxCommandsProxy).Assembly.Location, typeof(ParadoxCommandsProxy).FullName);
+                        currentAppDomain = CreateParadoxDomain();
+                        currentInstance = CreateProxy(currentAppDomain);
                     }
 
                     return currentInstance;
@@ -99,9 +101,33 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("Unexpected error while trying to Paradox VisualStudio Commands: {0}", ex), "Paradox VisualStudio Plugin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(string.Format("Unexpected error while trying to initialize Paradox VisualStudio Commands: {0}", ex), "Paradox VisualStudio Plugin", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Creates the paradox domain.
+        /// </summary>
+        /// <returns>AppDomain.</returns>
+        public static AppDomain CreateParadoxDomain()
+        {
+            return AppDomain.CreateDomain("paradox-domain");
+        }
+
+        /// <summary>
+        /// Gets the current proxy.
+        /// </summary>
+        /// <returns>ParadoxCommandsProxy.</returns>
+        public static ParadoxCommandsProxy CreateProxy(AppDomain domain)
+        {
+            if (domain == null) throw new ArgumentNullException("domain");
+            return (ParadoxCommandsProxy)currentAppDomain.CreateInstanceFromAndUnwrap(typeof(ParadoxCommandsProxy).Assembly.Location, typeof(ParadoxCommandsProxy).FullName);
+        }
+
+        public void Initialize()
+        {
+            remote.Initialize();
         }
 
         public bool ShouldReload()
