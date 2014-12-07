@@ -6,9 +6,12 @@ using System;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Package;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 using SiliconStudio.Paradox.VisualStudio.Commands;
+
+using Constants = Microsoft.VisualStudio.OLE.Interop.Constants;
 
 namespace NShader
 {
@@ -41,11 +44,11 @@ namespace NShader
             {
                 if (IsGoToDefinition(nCmdId))
                 {
-                    GoToDefinition();
+                    AnalyzeAndGoToDefinition();
                     return 0;
                 }
             }
-            unchecked { return (int)Constants.OLECMDERR_E_NOTSUPPORTED; }
+            return base.ExecCommand(ref guidCmdGroup, nCmdId, nCmdexecopt, pvaIn, pvaOut);
         }
 
         private bool IsGoToDefinition(uint nCmdId)
@@ -61,7 +64,7 @@ namespace NShader
             return false;
         }
 
-        private void GoToDefinition()
+        private void AnalyzeAndGoToDefinition()
         {
             int line;
             int column;
@@ -76,19 +79,18 @@ namespace NShader
             string text;
             buffer.GetLineText(span.iStartLine, span.iStartIndex, span.iEndLine, span.iEndIndex, out text);
 
-
             try
             {
                 var remoteCommands = ParadoxCommandsProxy.GetProxy();
-                var location = new SourceLocation()
+                var location = new RawSourceSpan()
                 {
                     File = this.Source.GetFilePath(),
                     Column = column + 1,
                     Line = line + 1
                 };
-                var spanFound = remoteCommands.GoToDefinition(text, location);
+                var result = remoteCommands.AnalyzeAndGoToDefinition(text, location);
 
-                langService.GotoLocation(spanFound);
+                langService.OutputAnalysisAndGotoLocation(result);
             }
             catch (Exception ex)
             {

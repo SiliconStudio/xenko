@@ -232,7 +232,9 @@
     <Compile Include="NShader\NShaderSupportedExtensions.cs" />
     <Compile Include="NShader\NShaderVersion.cs" />
     <Compile Include="NShader\NShaderViewFilter.cs" />
-    <Compile Include="NShader\SourceLocation.cs" />
+    <Compile Include="NShader\RawShaderAnalysisMessage.cs" />
+    <Compile Include="NShader\RawShaderNavigationResult.cs" />
+    <Compile Include="NShader\RawSourceSpan.cs" />
     <Compile Include="ParadoxCommands.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>

@@ -227,8 +227,16 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 // Load file
                 var shaderSource = SourceManager.LoadShaderSource(type);
 
-                // TODO USE ORIGINAL SOURCE PATH and not to object database path
-                var preprocessedSource = PreProcessor.Run(shaderSource.Source, shaderSource.Path, macros);
+                string preprocessedSource;
+                try
+                {
+                    preprocessedSource = PreProcessor.Run(shaderSource.Source, shaderSource.Path, macros);
+                }
+                catch (Exception ex)
+                {
+                    log.Error(MessageCode.ErrorUnexpectedException, new SourceSpan(new SourceLocation(shaderSource.Path, 0, 1, 1),1), ex);
+                    return null;
+                }
 
                 byte[] byteArray = Encoding.ASCII.GetBytes(preprocessedSource);
                 var hashPreprocessSource = ObjectId.FromBytes(byteArray);

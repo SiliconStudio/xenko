@@ -63,7 +63,6 @@
     <Compile Include="PackageBuildMonitorRemote.cs" />
     <Compile Include="ParadoxCommands.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Shaders\PreprocessorHelper.cs" />
     <Compile Include="Shaders\ShaderKeyClass.cs" />
     <Compile Include="Shaders\ShaderKeyFileHelper.cs" />
     <Compile Include="Shaders\ShaderKeySourceGenerator.cs">
@@ -157,10 +156,6 @@
       <Project>{c904d2c6-5a15-4e0b-8432-33967e1735aa}</Project>
       <Name>SiliconStudio.Paradox.Assets.Model</Name>
       <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Paradox.Shaders.Navigation\SiliconStudio.Paradox.Shaders.Navigation.csproj">
-      <Project>{46bcd57f-02c9-4e4d-9332-23e310dad470}</Project>
-      <Name>SiliconStudio.Paradox.Shaders.Navigation</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\engine\SiliconStudio.Paradox.Shaders.Parser\SiliconStudio.Paradox.Shaders.Parser.csproj">
       <Project>{14A47447-2A24-4ECD-B24D-6571499DCD4C}</Project>

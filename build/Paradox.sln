@@ -309,8 +309,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.GameS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.GameStudio.Automation.Tests", "..\sources\editor\SiliconStudio.Paradox.GameStudio.Automation.Tests\SiliconStudio.Paradox.GameStudio.Automation.Tests.csproj", "{A02CCE00-8BE5-49A6-B23C-756CA7DDFF1F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Shaders.Navigation", "..\sources\engine\SiliconStudio.Paradox.Shaders.Navigation\SiliconStudio.Paradox.Shaders.Navigation.csproj", "{46BCD57F-02C9-4E4D-9332-23E310DAD470}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1111,16 +1109,6 @@ Global
 		{A02CCE00-8BE5-49A6-B23C-756CA7DDFF1F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{A02CCE00-8BE5-49A6-B23C-756CA7DDFF1F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{A02CCE00-8BE5-49A6-B23C-756CA7DDFF1F}.Release|Win32.ActiveCfg = Release|Any CPU
-		{46BCD57F-02C9-4E4D-9332-23E310DAD470}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{46BCD57F-02C9-4E4D-9332-23E310DAD470}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{46BCD57F-02C9-4E4D-9332-23E310DAD470}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{46BCD57F-02C9-4E4D-9332-23E310DAD470}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{46BCD57F-02C9-4E4D-9332-23E310DAD470}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{46BCD57F-02C9-4E4D-9332-23E310DAD470}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{46BCD57F-02C9-4E4D-9332-23E310DAD470}.Release|Any CPU.Build.0 = Release|Any CPU
-		{46BCD57F-02C9-4E4D-9332-23E310DAD470}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{46BCD57F-02C9-4E4D-9332-23E310DAD470}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{46BCD57F-02C9-4E4D-9332-23E310DAD470}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1211,6 +1199,5 @@ Global
 		{4FAC003A-2532-42F3-AED7-A296D1A1615E} = {75A820AB-0F21-40F2-9448-5D7F495B97A0}
 		{E879AC9E-A483-4A57-ABA4-3E50EB362ADA} = {5D2D3BE8-9910-45CA-8E45-95660DA4C563}
 		{A02CCE00-8BE5-49A6-B23C-756CA7DDFF1F} = {5D2D3BE8-9910-45CA-8E45-95660DA4C563}
-		{46BCD57F-02C9-4E4D-9332-23E310DAD470} = {4C142567-C42B-40F5-B092-798882190209}
 	EndGlobalSection
 EndGlobal

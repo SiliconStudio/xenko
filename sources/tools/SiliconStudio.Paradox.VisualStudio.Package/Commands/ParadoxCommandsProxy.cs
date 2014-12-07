@@ -142,10 +142,10 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
             return remote.GenerateDataClasses(assemblyOutput, projectFullName, intermediateAssembly);
         }
 
-        public SourceLocation GoToDefinition(string sourceCode, SourceLocation location)
+        public RawShaderNavigationResult AnalyzeAndGoToDefinition(string sourceCode, RawSourceSpan span)
         {
             // TODO: We need to know which package is currently selected in order to query all valid shaders
-            return remote.GoToDefinition(sourceCode, location);
+            return remote.AnalyzeAndGoToDefinition(sourceCode, span);
         }
 
         private static Assembly DefaultDomainAssemblyResolve(object sender, ResolveEventArgs args)

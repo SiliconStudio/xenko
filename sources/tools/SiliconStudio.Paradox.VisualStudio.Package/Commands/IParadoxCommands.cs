@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
 
         byte[] GenerateDataClasses(string assemblyOutput, string projectFullName, string intermediateAssembly);
 
-        SourceLocation GoToDefinition(string sourceCode, SourceLocation location);
+        RawShaderNavigationResult AnalyzeAndGoToDefinition(string sourceCode, RawSourceSpan span);
     }
 
     public interface IBuildMonitorCallback
