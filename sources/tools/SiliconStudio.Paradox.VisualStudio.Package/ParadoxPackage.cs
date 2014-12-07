@@ -139,7 +139,12 @@ namespace SiliconStudio.Paradox.VisualStudio
 
             // Register the C# language service
             var serviceContainer = this as IServiceContainer;
-            var langService = new NShaderLanguageService();
+            var errorListProvider = new ErrorListProvider(this)
+            {
+                ProviderGuid = new Guid("ad1083c5-32ad-403d-af3d-32fee7abbdf1"), 
+                ProviderName = "Paradox Shading Language"
+            };
+            var langService = new NShaderLanguageService(errorListProvider);
             langService.SetSite(this);
             serviceContainer.AddService(typeof(NShaderLanguageService), langService, true);
 

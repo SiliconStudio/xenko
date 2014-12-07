@@ -42,7 +42,14 @@ namespace NShader
         private VisualStudioThemeEngine themeEngine;
         private NShaderColorableItem[] m_colorableItems;
 
+        private readonly ErrorListProvider errorListProvider;
+
         private LanguagePreferences m_preferences;
+
+        public NShaderLanguageService(ErrorListProvider errorListProvider)
+        {
+            this.errorListProvider = errorListProvider;
+        }
 
         public override void Initialize()
         {
@@ -249,34 +256,51 @@ namespace NShader
 
         private void OutputAnalysisMessages(RawShaderNavigationResult result)
         {
-            if (result.Messages.Count == 0)
-            {
-                return;
-            }
-
-            var outputWindow = GetService(
-typeof(SVsOutputWindow)) as IVsOutputWindow;
-            IVsOutputWindowPane pane;
-            Guid guidGeneralPane =
-                VSConstants.GUID_BuildOutputWindowPane;
-            outputWindow.GetPane(ref guidGeneralPane, out pane);
-
-            pane.Activate();
-            pane.Clear();
-
+            errorListProvider.Tasks.Clear(); // clear previously created
             foreach (var message in result.Messages)
             {
-                // TODO: Change this code as it doesn't support navigation to column. Try to use http://www.mztools.com/articles/2008/MZ2008022.aspx
-                pane.OutputTaskItemString(string.Format("{0}\n", message), VSTASKPRIORITY.TP_HIGH, VSTASKCATEGORY.CAT_BUILDCOMPILE, message.Type, (int)Microsoft.VisualStudio.Shell.Interop._vstaskbitmap.BMP_COMPILE, message.Span.File, (uint)message.Span.Line, string.Format("{0}: {1}", message.Type, message.Text));
+                var errorCategory = TaskErrorCategory.Message;
+                if (message.Type == "warning")
+                {
+                    errorCategory = TaskErrorCategory.Warning;
+                }
+                else if (message.Type == "error")
+                {
+                    errorCategory = TaskErrorCategory.Error;
+                }
+
+                var newError = new ErrorTask()
+                {
+                    ErrorCategory = errorCategory,
+                    Category = TaskCategory.BuildCompile,
+                    Text = message.Text,
+                    Document = message.Span.File,
+                    Line = message.Span.Line - 1,
+                    Column = message.Span.Column - 1,
+                    // HierarchyItem = hierarchyItem // TODO Add hierarchy the file is associated to
+                };
+
+                // Install our navigate to source 
+                newError.Navigate += NavigateToSourceError;
+                errorListProvider.Tasks.Add(newError); // add item
             }
-            pane.FlushToTaskList();
+            errorListProvider.Show(); // make sure it is visible 
         }
 
-        public void GoToLocation(RawSourceSpan loc, string caption, bool asReadonly)
+        private void NavigateToSourceError(object sender, EventArgs e)
+        {
+            var task = sender as Task;
+            if (task != null)
+            {
+                GoToLocation(new RawSourceSpan(task.Document, task.Line + 1, task.Column + 1), null, false);
+            }
+        }
+
+        private void GoToLocation(RawSourceSpan loc, string caption, bool asReadonly)
         {
             // Code taken from Nemerle https://github.com/rsdn/nemerle/blob/master/snippets/VS2010/Nemerle.VisualStudio/LanguageService/NemerleLanguageService.cs#L565
             // TODO: Add licensing
-            if (loc.File == null)
+            if (loc == null || loc.File == null)
                 return;
 
             // Opens the document

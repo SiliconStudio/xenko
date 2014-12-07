@@ -11,6 +11,19 @@ namespace NShader
     [Serializable]
     public class RawSourceSpan
     {
+        public RawSourceSpan()
+        {
+        }
+
+        public RawSourceSpan(string file, int line, int column)
+        {
+            File = file;
+            Line = line;
+            Column = column;
+            EndLine = line;
+            EndColumn = column;
+        }
+
         public string File { get; set; }
 
         public int Line { get; set; }
