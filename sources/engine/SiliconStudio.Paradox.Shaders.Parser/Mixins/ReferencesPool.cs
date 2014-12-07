@@ -10,7 +10,7 @@ using SiliconStudio.Shaders.Ast;
 namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 {
     [DebuggerDisplay("Variables[{VariablesReferences.Count}] Methods[{MethodsReferences.Count}]")]
-    public class ReferencesPool
+    internal class ReferencesPool
     {
         /// <summary>
         /// List of all the variable references

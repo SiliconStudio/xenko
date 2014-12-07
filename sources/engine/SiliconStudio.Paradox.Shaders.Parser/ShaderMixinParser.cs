@@ -86,7 +86,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
             shaderLibrary.DeleteObsoleteCache(modifiedShaders);
         }
 
-        public ShaderCompilationContext ParseAndAnalyze(ShaderMixinSource shaderMixinSource, Paradox.Shaders.ShaderMacro[] macros, out ShaderMixinParsingResult parsingResult, out HashSet<ModuleMixinInfo> mixinsToAnalyze)
+        internal ShaderCompilationContext ParseAndAnalyze(ShaderMixinSource shaderMixinSource, Paradox.Shaders.ShaderMacro[] macros, out ShaderMixinParsingResult parsingResult, out HashSet<ModuleMixinInfo> mixinsToAnalyze)
         {
             // Creates a parsing result
             parsingResult = new ShaderMixinParsingResult();

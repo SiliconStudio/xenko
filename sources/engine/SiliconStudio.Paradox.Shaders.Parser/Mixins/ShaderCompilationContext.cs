@@ -14,7 +14,7 @@ using SiliconStudio.Shaders.Utility;
 
 namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 {
-    public class ShaderCompilationContext
+    internal class ShaderCompilationContext
     {
         #region Private static members
 
@@ -514,7 +514,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         #endregion
     }
 
-    public class VTableReference
+    internal class VTableReference
     {
         public string Shader = "";
 

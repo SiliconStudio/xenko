@@ -8,7 +8,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
     /// <summary>
     /// Class to replace a node by another in an AST
     /// </summary>
-    public class ParadoxReplaceVisitor : ShaderVisitor
+    internal class ParadoxReplaceVisitor : ShaderVisitor
     {
         #region Private members
 

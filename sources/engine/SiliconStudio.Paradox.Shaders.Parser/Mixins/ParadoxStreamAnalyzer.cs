@@ -13,7 +13,7 @@ using SiliconStudio.Shaders.Visitor;
 
 namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 {
-    public class ParadoxStreamAnalyzer : ShaderVisitor
+    internal class ParadoxStreamAnalyzer : ShaderVisitor
     {
         #region Private members
 
@@ -251,14 +251,14 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
     }
 
     [Flags]
-    public enum StreamUsage
+    internal enum StreamUsage
     {
         Unknown = 0,
         Read = 1,
         Write = 2
     }
 
-    public enum StreamCallType
+    internal enum StreamCallType
     {
         Unknown = 0,
         Member = 1,
@@ -266,7 +266,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         Direct = 3
     }
 
-    public class StreamUsageInfo
+    internal class StreamUsageInfo
     {
         public StreamUsage Usage = StreamUsage.Unknown;
         public StreamCallType CallType = StreamCallType.Unknown;

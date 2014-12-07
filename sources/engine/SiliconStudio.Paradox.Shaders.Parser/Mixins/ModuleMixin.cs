@@ -12,7 +12,7 @@ using SiliconStudio.Shaders.Ast;
 namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 {
     [DebuggerDisplay("ModuleMixin {MixinName}")]
-    public class ModuleMixin
+    internal class ModuleMixin
     {
         #region Public members
 

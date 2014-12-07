@@ -4,7 +4,7 @@ using SiliconStudio.Shaders.Ast;
 
 namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
 {
-    public class ExpressionNodeCouple
+    internal class ExpressionNodeCouple
     {
         public Expression Expression;
         public Node Node;
