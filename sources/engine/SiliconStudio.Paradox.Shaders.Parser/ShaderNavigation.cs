@@ -90,6 +90,12 @@ namespace SiliconStudio.Paradox.Shaders.Parser
                 return;
             }
 
+            // If first line, first column, this is not a go to definition but only parsing request, so return directly
+            if (location.Line == 1 && location.Column == 1)
+            {
+                return;
+            }
+
             // var ast = mixin.MixinAst;
 
             var parsingInfo = mixin.Mixin.ParsingInfo;
