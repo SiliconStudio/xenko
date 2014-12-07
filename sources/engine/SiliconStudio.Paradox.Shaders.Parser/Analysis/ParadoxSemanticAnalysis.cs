@@ -942,6 +942,10 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
                 else
                     parsingInfo.ClassReferences.InsertVariable(variable, new ExpressionNodeCouple(expression, ParentNode));
             }
+            else
+            {
+                parsingInfo.NavigableNodes.Add(expression);
+            }
         }
 
         /// <summary>
@@ -961,6 +965,29 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
                     parsingInfo.StageInitReferences.InsertMethod(methodDecl, expression);
                 else
                     parsingInfo.ClassReferences.InsertMethod(methodDecl, expression);
+            }
+            else
+            {
+                parsingInfo.NavigableNodes.Add(expression);
+            }
+        }
+
+        [Visit]
+        private void Visit(ShaderClassType shaderClassType)
+        {
+            Visit((Node)shaderClassType);
+
+            // Allow to navigate to base classes
+            foreach (var baseClass in shaderClassType.BaseClasses)
+            {
+                var firstOrDefault = analyzedModuleMixin.InheritanceList.FirstOrDefault(moduleMixin => moduleMixin.Shader.Name.Text == baseClass.Name.Text);
+                if (firstOrDefault != null)
+                {
+                    var declaration = firstOrDefault.Shader;
+                    baseClass.TypeInference.Declaration = declaration;
+                }
+
+                parsingInfo.NavigableNodes.Add(baseClass);
             }
         }
 

@@ -108,7 +108,22 @@ namespace SiliconStudio.Paradox.Shaders.Parser
                 if (span.HasValue)
                 {
                     result.DefinitionLocation = span.Value;
-                    break;
+                    return;
+                }
+            }
+
+            // Else Try to find from remaining navigable nodes
+            foreach (var node in parsingInfo.NavigableNodes)
+            {
+                if (IsExpressionMatching(node, location))
+                {
+                    var typeReferencer = node as ITypeInferencer;
+                    if (typeReferencer != null && typeReferencer.TypeInference != null && typeReferencer.TypeInference.Declaration != null)
+                    {
+                        var declarationNode = (Node)typeReferencer.TypeInference.Declaration;
+                        result.DefinitionLocation = declarationNode.Span;
+                        break;
+                    }
                 }
             }
         }
@@ -139,12 +154,12 @@ namespace SiliconStudio.Paradox.Shaders.Parser
             return null;
         }
 
-        private bool IsExpressionMatching(Expression expression, SiliconStudio.Shaders.Ast.SourceLocation location)
+        private bool IsExpressionMatching(Node astNode, SiliconStudio.Shaders.Ast.SourceLocation location)
         {
-            var span = expression.Span;
+            var span = astNode.Span;
             var startColumn = span.Location.Column;
             var endColumn = startColumn + span.Length;
-            if (expression.Span.Location.Line == location.Line && location.Column >= startColumn)
+            if (astNode.Span.Location.Line == location.Line && location.Column >= startColumn)
             {
                 if (location.Column >= startColumn && location.Column <= endColumn)
                 {
