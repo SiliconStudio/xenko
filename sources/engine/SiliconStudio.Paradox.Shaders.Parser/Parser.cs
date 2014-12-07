@@ -21,6 +21,14 @@ namespace SiliconStudio.Paradox.Shaders.Parser
     public static class ParadoxShaderParser
     {
         /// <summary>
+        /// Preinitialize the parser.
+        /// </summary>
+        public static void Initialize()
+        {
+            ShaderParser.GetParser<ParadoxGrammar>();
+        }
+
+        /// <summary>
         /// Preprocesses and parses the specified source.
         /// </summary>
         /// <param name="source">The source.</param>
