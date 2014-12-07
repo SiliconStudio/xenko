@@ -529,6 +529,11 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
         /// <returns>a collection of all possible members</returns>
         protected override IEnumerable<IDeclaration> FindDeclarationsFromObject(TypeBase typeBase, string memberName)
         {
+            if (typeBase == null)
+            {
+                yield break;
+            }
+
             // look if it is a composition
             // the typebase is unique for each extern so there is no need to look for the right class
             //var mixin = compositionsVirtualTables.FirstOrDefault(x => ReferenceEquals(x.Key.ResolveType(), typeBase.ResolveType())).Value;
