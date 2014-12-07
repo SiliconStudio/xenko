@@ -50,7 +50,7 @@ namespace NShader
         private int lastChangeCount = -1;
         private readonly Stopwatch clock;
 
-        private const int ParseAfterInactivityInMs = 1000; // Parse after 1s of inactivity and a change in source code
+        private const int TriggerParsingDelayInMs = 1000; // Parse after 1s of inactivity and a change in source code
 
         public NShaderLanguageService(ErrorListProvider errorListProvider)
         {
@@ -244,34 +244,30 @@ namespace NShader
             var source = GetCurrentSource();
             if (source != null)
             {
-                if (lastChangeCount != source.ChangeCount || clock.IsRunning)
+                if (lastChangeCount != source.ChangeCount)
                 {
-                    if (clock.IsRunning)
+                    clock.Restart();
+                    lastChangeCount = source.ChangeCount;
+                }
+
+                if (clock.IsRunning)
+                {
+                    if (clock.ElapsedMilliseconds > TriggerParsingDelayInMs)
                     {
-                        if (clock.ElapsedMilliseconds > ParseAfterInactivityInMs)
-                        {
-                            clock.Stop();
-                            clock.Reset();
+                        clock.Stop();
+                        clock.Reset();
 
-                            var text = source.GetText();
-                            var sourcePath = source.GetFilePath();
+                        var text = source.GetText();
+                        var sourcePath = source.GetFilePath();
 
-                            var sink = source.CreateAuthoringSink(ParseReason.Check, 1, 1);
-
-                            Trace.WriteLine(string.Format("Parsing Change: {0} Time: {1}", source.ChangeCount, DateTime.Now));
-                            var thread = new System.Threading.Thread(
-                                () =>
-                                {
-                                    var result = ParadoxCommandsProxy.GetProxy().AnalyzeAndGoToDefinition(text, new RawSourceSpan(sourcePath, 1, 1));
-                                    OutputAnalysisMessages(result, source);
-                                });
-                            thread.Start();
-                            lastChangeCount = source.ChangeCount;
-                        }
-                    }
-                    else
-                    {
-                        clock.Restart();
+                        Trace.WriteLine(string.Format("Parsing Change: {0} Time: {1}", source.ChangeCount, DateTime.Now));
+                        var thread = new System.Threading.Thread(
+                            () =>
+                            {
+                                var result = ParadoxCommandsProxy.GetProxy().AnalyzeAndGoToDefinition(text, new RawSourceSpan(sourcePath, 1, 1));
+                                OutputAnalysisMessages(result, source);
+                            });
+                        thread.Start();
                     }
                 }
             }
