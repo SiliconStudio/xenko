@@ -90,7 +90,7 @@ namespace NShader
                 };
                 var result = remoteCommands.AnalyzeAndGoToDefinition(text, location);
 
-                langService.OutputAnalysisAndGotoLocation(result);
+                langService.OutputAnalysisAndGotoLocation(result, TextView);
             }
             catch (Exception ex)
             {

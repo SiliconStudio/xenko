@@ -230,7 +230,7 @@ namespace NShader
 
         public override void OnIdle(bool periodic)
         {
-            var source = GetCurrentSource();
+            var source = GetCurrentNShaderSource();
             if (source != null)
             {
                 if (lastChangeCount != source.ChangeCount)
@@ -264,13 +264,17 @@ namespace NShader
             base.OnIdle(periodic);
         }
 
-        private NShaderSource GetCurrentSource()
+        private NShaderSource GetCurrentNShaderSource()
         {
             IVsTextView vsTextView = this.LastActiveTextView;
             if (vsTextView == null)
                 return null;
-            var source = this.GetSource(vsTextView) as NShaderSource;
-            return source;
+            return GetNShaderSource(vsTextView);
+        }
+
+        private NShaderSource GetNShaderSource(IVsTextView textView)
+        {
+            return this.GetSource(textView) as NShaderSource;
         }
 
         public override AuthoringScope ParseSource(ParseRequest req)
@@ -289,9 +293,13 @@ namespace NShader
             get { return "Paradox Shader Language"; }
         }
 
-        public void OutputAnalysisAndGotoLocation(RawShaderNavigationResult result)
+        public void OutputAnalysisAndGotoLocation(RawShaderNavigationResult result, IVsTextView textView)
         {
-            OutputAnalysisMessages(result);
+            if (result == null) throw new ArgumentNullException("result");
+            if (textView == null) throw new ArgumentNullException("textView");
+            var source = GetNShaderSource(textView);
+
+            OutputAnalysisMessages(result, source);
             GoToLocation(result.DefinitionSpan, null, false);
         }
 
@@ -328,7 +336,7 @@ namespace NShader
                         var newError = new ErrorTask()
                         {
                             ErrorCategory = errorCategory,
-                            Category = source != null ? TaskCategory.CodeSense : TaskCategory.BuildCompile,
+                            Category = TaskCategory.BuildCompile,
                             Text = message.Text,
                             Document = message.Span.File,
                             Line = message.Span.Line - 1,
@@ -341,7 +349,15 @@ namespace NShader
                         errorListProvider.Tasks.Add(newError); // add item
                     }
                 }
-                errorListProvider.Show(); // make sure it is visible 
+
+                if (result.Messages.Count > 0)
+                {
+                    errorListProvider.Show(); // make sure it is visible 
+                }
+                else
+                {
+                    errorListProvider.Refresh();
+                }
 
                 if (taskProvider != null)
                 {
