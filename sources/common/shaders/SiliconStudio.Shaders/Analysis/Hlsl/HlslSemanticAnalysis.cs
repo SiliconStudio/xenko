@@ -390,10 +390,13 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
             var key = new GenericInstanceKey(typename, genericType.Parameters);
 
             TypeBase instanciatedType;
-            if (!InstanciatedTypes.TryGetValue(key, out instanciatedType))
+            lock (InstanciatedTypes)
             {
-                instanciatedType = genericType.MakeGenericInstance(predefinedType);
-                InstanciatedTypes.Add(key, instanciatedType);
+                if (!InstanciatedTypes.TryGetValue(key, out instanciatedType))
+                {
+                    instanciatedType = genericType.MakeGenericInstance(predefinedType);
+                    InstanciatedTypes.Add(key, instanciatedType);
+                }
             }
             return instanciatedType;
         }
@@ -533,11 +536,14 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
         /// <param name="cloneContext">the CloneContext</param>
         public static void UpdateCloneContext(CloneContext cloneContext)
         {
-            foreach (var instType in InstanciatedTypes)
+            lock (InstanciatedTypes)
             {
-                if (instType.Key.GenericParameters.Any(x => x is TypeName))
-                    continue;
-                DeepCloner.DeepCollect(instType.Value, cloneContext);
+                foreach (var instType in InstanciatedTypes)
+                {
+                    if (instType.Key.GenericParameters.Any(x => x is TypeName))
+                        continue;
+                    DeepCloner.DeepCollect(instType.Value, cloneContext);
+                }
             }
         }
 
