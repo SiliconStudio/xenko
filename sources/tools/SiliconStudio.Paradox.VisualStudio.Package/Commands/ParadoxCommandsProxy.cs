@@ -122,7 +122,7 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
         public static ParadoxCommandsProxy CreateProxy(AppDomain domain)
         {
             if (domain == null) throw new ArgumentNullException("domain");
-            return (ParadoxCommandsProxy)currentAppDomain.CreateInstanceFromAndUnwrap(typeof(ParadoxCommandsProxy).Assembly.Location, typeof(ParadoxCommandsProxy).FullName);
+            return (ParadoxCommandsProxy)domain.CreateInstanceFromAndUnwrap(typeof(ParadoxCommandsProxy).Assembly.Location, typeof(ParadoxCommandsProxy).FullName);
         }
 
         public void Initialize()
