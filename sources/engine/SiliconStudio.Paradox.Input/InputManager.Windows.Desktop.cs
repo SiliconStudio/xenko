@@ -105,8 +105,7 @@ namespace SiliconStudio.Paradox.Input
             uiControl.MouseDown += (_, e) => { uiControl.Focus(); OnMouseInputEvent(new Vector2(e.X, e.Y), ConvertMouseButton(e.Button), InputEventType.Down); };
             uiControl.MouseUp += (_, e) => OnMouseInputEvent(new Vector2(e.X, e.Y), ConvertMouseButton(e.Button), InputEventType.Up);
             uiControl.MouseWheel += (_, e) => OnMouseInputEvent(new Vector2(e.X, e.Y), MouseButton.Middle, InputEventType.Wheel, e.Delta);
-            uiControl.MouseLeave += (_, e) => OnMouseLeaveEvent();
-            uiControl.MouseCaptureChanged += (_, e) => OnLostMouseCapture();
+            uiControl.MouseCaptureChanged += (_, e) => OnLostMouseCaptureWinForms();
             uiControl.SizeChanged += UiControlOnSizeChanged;
 
             ControlWidth = uiControl.ClientSize.Width;
@@ -139,8 +138,6 @@ namespace SiliconStudio.Paradox.Input
             uiControlWpf.MouseDown += (_, e) => OnMouseInputEvent(PointToVector2(e.GetPosition(inputElement)), ConvertMouseButton(e.ChangedButton), InputEventType.Down);
             uiControlWpf.MouseUp += (_, e) => OnMouseInputEvent(PointToVector2(e.GetPosition(inputElement)), ConvertMouseButton(e.ChangedButton), InputEventType.Up);
             uiControlWpf.MouseWheel += (_, e) => OnMouseInputEvent(PointToVector2(e.GetPosition(inputElement)), MouseButton.Middle, InputEventType.Wheel, e.Delta);
-            uiControlWpf.MouseLeave += (_, e) => OnMouseLeaveEvent();
-            uiControlWpf.LostMouseCapture += (_, e) => OnLostMouseCapture();
             uiControlWpf.SizeChanged += OnWpfSizeChanged;
 
             ControlWidth = (float)uiControlWpf.ActualWidth;
@@ -207,35 +204,17 @@ namespace SiliconStudio.Paradox.Input
             }
         }
 
-        private void OnMouseLeaveEvent()
+        private void OnLostMouseCaptureWinForms()
         {
-            // trigger touch out events on all keys that are down
-            TriggerMouseAndPointersEndEvents(PointerState.Out);
-        }
-
-        private void OnLostMouseCapture()
-        {
-            // trigger touch cancel events on all keys that are still down
-            TriggerMouseAndPointersEndEvents(PointerState.Cancel);
-        }
-
-        private void TriggerMouseAndPointersEndEvents(PointerState endState)
-        {
+            // On windows forms, the controls capture of the mouse button events at the first button pressed and release them at the first button released.
+            // This has for consequence that all up-events of button simultaneously pressed are lost after the release of first button (if outside of the window).
+            // This function fix the problem by forcing the mouse event capture if any mouse buttons are still down at the first button release.
+ 
             foreach (MouseButton button in Enum.GetValues(typeof(MouseButton)))
             {
                 var buttonId = (int)button;
                 if (MouseButtonCurrentlyDown[buttonId])
-                {
-                    HandlePointerEvents(buttonId, PointerInfos[buttonId].LastPosition, endState, PointerType.Mouse);
-
-                    var mouseInputEvent = new MouseInputEvent { Type = InputEventType.Up, MouseButton = button };
-                    lock (MouseInputEvents)
-                    {
-                        MouseInputEvents.Add(mouseInputEvent);
-                    }
-
-                    MouseButtonCurrentlyDown[buttonId] = false;
-                }
+                    uiControl.Capture = true;
             }
         }
         
