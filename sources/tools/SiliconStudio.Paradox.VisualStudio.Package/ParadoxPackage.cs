@@ -150,6 +150,7 @@ namespace SiliconStudio.Paradox.VisualStudio
             };
             var langService = new NShaderLanguageService(errorListProvider);
             langService.SetSite(this);
+            langService.InitializeColors(); // Make sure to initialize colors before registering!
             serviceContainer.AddService(typeof(NShaderLanguageService), langService, true);
 
             // Add our command handlers for menu (commands must exist in the .vsct file)

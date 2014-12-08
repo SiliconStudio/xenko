@@ -58,20 +58,11 @@ namespace NShader
             clock = new Stopwatch();
         }
 
-        public override void Initialize()
-        {
-            base.Initialize();
-
-            EnsureInitialized();
-        }
-
-        private void EnsureInitialized()
+        public void InitializeColors()
         {
             // Check if already initialized
             if (m_colorableItems != null)
                 return;
-
-            
 
             // Initialize theme engine
             themeEngine = new VisualStudioThemeEngine(Site);
@@ -178,8 +169,6 @@ namespace NShader
 
         public override Colorizer GetColorizer(IVsTextLines buffer)
         {
-            EnsureInitialized();
-
             // Clear font cache
             // http://social.msdn.microsoft.com/Forums/office/en-US/54064c52-727d-4015-af70-c72e44d116a7/vs2012-fontandcolors-text-editor-category-for-language-service-colors?forum=vsx
             IVsFontAndColorStorage storage;
