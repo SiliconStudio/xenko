@@ -2297,12 +2297,21 @@ namespace SiliconStudio.Paradox.Graphics
         {
             get
             {
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+                return gameWindow.WindowState == OpenTK.WindowState.Fullscreen;
+#else
                 throw new NotImplementedException();
+#endif
             }
 
             set
             {
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+                if (value ^ (gameWindow.WindowState == OpenTK.WindowState.Fullscreen))
+                    gameWindow.WindowState = value ? OpenTK.WindowState.Fullscreen : OpenTK.WindowState.Normal;
+#else
                 throw new NotImplementedException();
+#endif
             }
         }
 
