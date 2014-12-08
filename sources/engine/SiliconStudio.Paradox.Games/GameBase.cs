@@ -401,6 +401,9 @@ namespace SiliconStudio.Paradox.Games
                         throw new InvalidOperationException("No GraphicsDevice found");
                     }
 
+                    // Bind Graphics Context enabling initialize to use GL API eg. SetData to texture ...etc
+                    BeginDraw();
+
                     // Initialize this instance and all game systems
                     Initialize();
 
@@ -424,6 +427,9 @@ namespace SiliconStudio.Paradox.Games
 
                     // Reset PlayTime
                     playTimer.Reset();
+
+                    // Unbind Graphics Context without presenting
+                    EndDraw(false);
                 }
             }
             catch (Exception ex)
