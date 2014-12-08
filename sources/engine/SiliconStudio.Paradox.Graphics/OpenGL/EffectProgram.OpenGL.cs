@@ -24,6 +24,13 @@ namespace SiliconStudio.Paradox.Graphics
 {
     internal partial class EffectProgram
     {
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+        // The ProgramParameter.ActiveUniformBlocks enum is not defined in OpenTK for OpenGL ES
+        public const ProgramParameter PdxActiveUniformBlocks = (ProgramParameter)0x8A36;
+#else
+        public const ProgramParameter PdxActiveUniformBlocks = ProgramParameter.ActiveUniformBlocks;
+#endif
+
         private LoggerResult reflectionResult = new LoggerResult();
 
         private readonly EffectBytecode effectBytecode;
@@ -205,14 +212,21 @@ namespace SiliconStudio.Paradox.Graphics
             GL.GetInteger(GetPName.CurrentProgram, out currentProgram);
             GL.UseProgram(resourceId);
 
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
             int uniformBlockCount;
-            GL.GetProgram(resourceId, ProgramParameter.ActiveUniformBlocks, out uniformBlockCount);
+            GL.GetProgram(resourceId, PdxActiveUniformBlocks, out uniformBlockCount);
 
             for (int uniformBlockIndex = 0; uniformBlockIndex < uniformBlockCount; ++uniformBlockIndex)
             {
                 // TODO: get previous name to find te actual constant buffer in the reflexion
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                const int sbCapacity = 64;
+                int length;
+                var sb = new StringBuilder(sbCapacity);
+                GL.GetActiveUniformBlockName(resourceId, uniformBlockIndex, sbCapacity, out length, sb);
+                var constantBufferName = sb.ToString();
+#else
                 var constantBufferName = GL.GetActiveUniformBlockName(resourceId, uniformBlockIndex);
+#endif
 
                 var constantBufferDescriptionIndex = effectReflection.ConstantBuffers.FindIndex(x => x.Name == constantBufferName);
                 if (constantBufferDescriptionIndex == -1)
@@ -249,7 +263,13 @@ namespace SiliconStudio.Paradox.Graphics
                 
                 for (int uniformIndex = 0; uniformIndex < uniformIndices.Length; ++uniformIndex)
                 {
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                    int size;
+                    ActiveUniformType aut;
+                    GL.GetActiveUniform(resourceId, uniformIndices[uniformIndex], sbCapacity, out length, out size, out aut, sb);
+#else
                     uniformNames[uniformIndex] = GL.GetActiveUniformName(resourceId, uniformIndices[uniformIndex]);
+#endif
                 }
 
                 // Reoder by offset
@@ -325,7 +345,7 @@ namespace SiliconStudio.Paradox.Graphics
                 effectReflection.ConstantBuffers[constantBufferDescriptionIndex] = constantBufferDescription;
                 effectReflection.ResourceBindings[constantBufferIndex] = constantBuffer;
             }
-#endif
+//#endif
 
             // Register textures, samplers, etc...
             //TODO: (?) non texture/buffer uniform outside of a block

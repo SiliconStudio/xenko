@@ -1726,12 +1726,20 @@ namespace SiliconStudio.Paradox.Graphics
                                 break;
 #endif
                             case TextureTarget.Texture2D:
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
+                                GL.TexSubImage2D(TextureTarget2d.Texture2D, 0, 0, 0, texture.Width, texture.Height, texture.FormatGl, texture.Type, IntPtr.Zero);
+#else
                                 GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, texture.Width, texture.Height, texture.FormatGl, texture.Type, IntPtr.Zero);
+#endif
                                 GL.BindTexture(TextureTarget.Texture2D, 0);
                                 break;
                             case TextureTarget.Texture3D:
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
                                 GL.TexSubImage3D(TextureTarget3D.Texture3D, 0, 0, 0, 0, texture.Width, texture.Height, texture.Depth, texture.FormatGl, texture.Type, IntPtr.Zero);
+#else
+                                GL.TexSubImage3D(TextureTarget3d.Texture3D, 0, 0, 0, 0, texture.Width, texture.Height, texture.Depth, texture.FormatGl, texture.Type, IntPtr.Zero);
+#endif
 #else
                                 GL.TexSubImage3D(TextureTarget.Texture3D, 0, 0, 0, 0, texture.Width, texture.Height, texture.Depth, texture.FormatGl, texture.Type, IntPtr.Zero);
 #endif
