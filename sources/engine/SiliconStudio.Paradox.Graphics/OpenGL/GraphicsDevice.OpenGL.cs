@@ -1083,19 +1083,19 @@ namespace SiliconStudio.Paradox.Graphics
                 }
             }
 
-            throw new NotImplementedException();
+            throw new NotImplementedException("MapSubresource not implemented for type " + resource.GetType());
         }
 
         private MappedResource MapTexture(Texture texture, BufferTarget pixelPackUnPack, MapMode mapMode, int subResourceIndex, int offsetInBytes, int lengthInBytes)
         {
-            GL.BindBuffer(pixelPackUnPack, texture.ResourceId);
+            GL.BindBuffer(pixelPackUnPack, texture.PixelBufferObjectId);
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
             var mapResult = GL.MapBufferRange(BufferTarget.PixelPackBuffer, (IntPtr)offsetInBytes, (IntPtr)lengthInBytes, mapMode.ToOpenGL());
             GL.BindBuffer(pixelPackUnPack, 0);
 #else
             offsetInBytes = 0;
             lengthInBytes = -1;
-            var mapResult = GL.MapBuffer(BufferTarget.PixelPackBuffer, mapMode.ToOpenGL());
+            var mapResult = GL.MapBuffer(BufferTarget.PixelUnpackBuffer, mapMode.ToOpenGL());
             GL.BindBuffer(pixelPackUnPack, 0);
 #endif
             return new MappedResource(texture, subResourceIndex, new DataBox { DataPointer = mapResult, SlicePitch = texture.DepthPitch, RowPitch = texture.RowPitch }, offsetInBytes, lengthInBytes);
@@ -1787,9 +1787,9 @@ namespace SiliconStudio.Paradox.Graphics
                         GL.BindBuffer(buffer.bufferTarget, 0);
                     }
                 }
-                else
+                else // neither texture nor buffer
                 {
-                    throw new NotImplementedException();
+                    throw new NotImplementedException("UnmapSubresource not implemented for type " + unmapped.Resource.GetType());
                 }
             }
         }
@@ -1856,9 +1856,9 @@ namespace SiliconStudio.Paradox.Graphics
                     GL.TexImage2D(TextureTarget.Texture2D, subResourceIndex, texture.InternalFormat, desc.Width, desc.Height, 0, texture.FormatGl, texture.Type, databox.DataPointer);
 #endif
                 }
-                else
+                else // neither texture nor buffer
                 {
-                    throw new NotImplementedException();
+                    throw new NotImplementedException("UpdateSubresource not implemented for type " + resource.GetType());
                 }
             }
         }
