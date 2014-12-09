@@ -58,6 +58,14 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
             }
         }
 
+        public override object InitializeLifetimeService()
+        {
+            // See http://stackoverflow.com/questions/5275839/inter-appdomain-communication-problem
+            // If this proxy is not used for 6 minutes, it is disconnected and calls to this proxy will fail
+            // We return null to allow the service to run for the full live of the appdomain.
+            return null;
+        }
+
         /// <summary>
         /// Gets the current proxy.
         /// </summary>
