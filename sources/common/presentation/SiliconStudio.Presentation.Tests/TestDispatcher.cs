@@ -19,6 +19,7 @@ namespace SiliconStudio.Presentation.Tests
             int count = 1;
             dispatcher.Invoke(() => count = 2);
             Assert.AreEqual(2, count);
+            ShutdownDispatcher(dispatcher);
         }
 
         [Test]
@@ -28,6 +29,7 @@ namespace SiliconStudio.Presentation.Tests
             int count = 1;
             int result = dispatcher.Invoke(() => ++count);
             Assert.AreEqual(2, result);
+            ShutdownDispatcher(dispatcher);
         }
 
         [Test]
@@ -39,6 +41,7 @@ namespace SiliconStudio.Presentation.Tests
             Assert.AreEqual(1, count);
             Thread.Sleep(200);
             Assert.AreEqual(2, count);
+            ShutdownDispatcher(dispatcher);
         }
 
         [Test]
@@ -50,6 +53,7 @@ namespace SiliconStudio.Presentation.Tests
             Assert.AreEqual(1, count);
             task.Wait();
             Assert.AreEqual(2, count);
+            ShutdownDispatcher(dispatcher);
         }
 
         [Test]
@@ -62,6 +66,7 @@ namespace SiliconStudio.Presentation.Tests
             task.Wait();
             count += task.Result;
             Assert.AreEqual(3, count);
+            ShutdownDispatcher(dispatcher);
         }
         
         [Test]
@@ -73,6 +78,7 @@ namespace SiliconStudio.Presentation.Tests
             Assert.AreEqual(1, count);
             await task;
             Assert.AreEqual(2, count);
+            ShutdownDispatcher(dispatcher);
         }
 
         [Test]
@@ -84,6 +90,12 @@ namespace SiliconStudio.Presentation.Tests
             Assert.AreEqual(1, count);
             count += await task;
             Assert.AreEqual(3, count);
+            ShutdownDispatcher(dispatcher);
+        }
+
+        static void ShutdownDispatcher(IDispatcherService dispatcher)
+        {
+            dispatcher.Invoke(() => Dispatcher.CurrentDispatcher.InvokeShutdown());
         }
 
         static IDispatcherService CreateDispatcher()

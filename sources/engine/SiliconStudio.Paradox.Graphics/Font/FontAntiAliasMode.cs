@@ -34,21 +34,26 @@ namespace SiliconStudio.Paradox.Graphics.Font
         /// <summary>
         /// The default grayscale anti-aliasing
         /// </summary>
+        /// <userdoc>Equivalent to 'Grayscale'.</userdoc>
         Default,
 
         /// <summary>
         /// Use grayscale antialiasing
         /// </summary>
+        /// <userdoc>Uses several levels of gray smooth the character edges. 
+        /// 'ClearType' .</userdoc>
         Grayscale = Default,
 
         /// <summary>
         /// Use cleartype antialiasing.
         /// </summary>
+        /// <userdoc>Uses the display red/green/blue sub-pixels to smooth character edges</userdoc>
         ClearType,
 
         /// <summary>
         /// Don't use any antialiasing
         /// </summary>
+        /// <userdoc>Does not perform any anti-aliasing</userdoc>
         Aliased,
     }
 }

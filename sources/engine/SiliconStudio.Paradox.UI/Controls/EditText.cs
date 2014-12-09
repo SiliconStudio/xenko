@@ -453,7 +453,10 @@ namespace SiliconStudio.Paradox.UI.Controls
         /// </summary>
         public bool IsCaretVisible { get { return IsSelectionActive && !caretHided; } }
         
-        private void ResetCaretVisibility()
+        /// <summary>
+        /// Reset the caret blinking to initial state (visible).
+        /// </summary>
+        public void ResetCaretBlinking()
         {
             caretHided = false;
             accumulatedTime = 0f;
@@ -475,7 +478,7 @@ namespace SiliconStudio.Paradox.UI.Controls
             }
             else
             {
-                ResetCaretVisibility();
+                ResetCaretBlinking();
             }
         }
 
@@ -728,7 +731,7 @@ namespace SiliconStudio.Paradox.UI.Controls
             selectionStop = truncatedStop;
             caretAtStart = caretAtBeginning;
 
-            ResetCaretVisibility(); // force caret not to blink when modifying selection/caret position.
+            ResetCaretBlinking(); // force caret not to blink when modifying selection/caret position.
 
             UpdateSelectionToEditImpl();
         }

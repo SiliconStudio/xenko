@@ -38,6 +38,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
             edit1 = new EditText(Services)
             {
+                Name = "TestEdit1",
                 Font = Asset.Load<SpriteFont>("MSMincho10"),
                 MinimumWidth = 100,
                 Text = "Sample Text1",
@@ -51,6 +52,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
             edit2 = new EditText(Services)
             {
+                Name = "TestEdit2",
                 Font = Asset.Load<SpriteFont>("MicrosoftSansSerif15"),
                 MinimumWidth = 100,
                 Text = "Sample2 Text2",
@@ -64,6 +66,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
             edit3 = new EditText(Services)
             {
+                Name = "TestEdit3",
                 Font = Asset.Load<SpriteFont>("MSMincho10"),
                 MinimumWidth = 100,
                 Text = "secret",
@@ -77,6 +80,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
             edit4 = new EditText(Services)
             {
+                Name = "TestEdit4",
                 Font = Asset.Load<SpriteFont>("MicrosoftSansSerif15"),
                 MinimumWidth = 200,
                 Text = "aligned text",
@@ -230,6 +234,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public void DrawTest10()
         {
+            edit4.ResetCaretBlinking(); // ensure that caret is visible if time since last frame is more than caret flickering duration.
             edit4.TextAlignment = TextAlignment.Right;
         }
 
