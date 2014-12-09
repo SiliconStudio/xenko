@@ -8,32 +8,6 @@ using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
-    public delegate bool ImageEffectStepEnableDelegate(ImageEffects imageEffects, HashSet<ParameterKey> requiredKeys);
-
-    public class ImageEffectStep
-    {
-        public ImageEffectStep(ParameterKey<Texture> input, ImageEffect effect, ParameterKey<Texture> output, ImageEffectStepEnableDelegate checkEnable)
-        {
-            Input = input;
-            Effect = effect;
-            Output = output;
-            CheckEnable = checkEnable;
-        }
-
-        public readonly ParameterKey<Texture> Input;
-
-        public readonly ImageEffect Effect;
-
-        public readonly ParameterKey<Texture> Output;
-
-        public readonly ImageEffectStepEnableDelegate CheckEnable;
-
-        public override string ToString()
-        {
-            return string.Format("{0} => [{1}] => {2}", Input, Effect, Output);
-        }
-    }
-
     public class ImageEffects : ImageEffect
     {
         public static readonly ParameterKey<Texture> Input = ParameterKeys.New<Texture>();
@@ -42,9 +16,11 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         private readonly HashSet<ParameterKey> requestedKeys = new HashSet<ParameterKey>();
 
-        private readonly List<ImageEffectStep> effectSteps;
+        private readonly ImageEffectStepCollection effectSteps;
 
-        private readonly ColorTransformGroup colorTransformGroup;
+        private readonly List<bool> effectStepsEnabled;
+
+        private readonly ImageEffectStep colorTransformGroupStep;
 
         public ImageEffects(IServiceRegistry services)
             : this(ImageEffectContext.GetShared(services))
@@ -54,13 +30,17 @@ namespace SiliconStudio.Paradox.Effects.Images
         public ImageEffects(ImageEffectContext context)
             : base(context)
         {
-            effectSteps = new List<ImageEffectStep>();
+            effectSteps = new ImageEffectStepCollection();
             requestedKeys = new HashSet<ParameterKey>();
 
-            colorTransformGroup = CreateDefaultColorTransformGroup();
+            effectStepsEnabled = new List<bool>();
+
+            // TODO: Allow to customize the shader used by the various effects
+            colorTransformGroupStep = new ImageEffectStep(Input, new ColorTransformGroup(Context), null, null, true);
+            Steps.Add(colorTransformGroupStep);
         }
 
-        public List<ImageEffectStep> Effects
+        public ImageEffectStepCollection Steps
         {
             get
             {
@@ -72,13 +52,13 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             get
             {
-                return colorTransformGroup;
+                return (ColorTransformGroup)colorTransformGroupStep.Effect;
             }
         }
 
         protected override void DrawCore()
         {
-            // Prepare requested parameters
+            // Prepare required parameters
             foreach (var effectStep in effectSteps)
             {
                 var parameterKeyDependencies = effectStep.Effect as IImageEffectParameterKeyDependencies;
@@ -88,45 +68,49 @@ namespace SiliconStudio.Paradox.Effects.Images
                 }
             }
 
-            Context.Parameters.Set(ImageEffects.Input, GetInput(0));
-            Context.Parameters.Set(ImageEffects.Output, GetOutput(0));
-
+            // Check all enabled effects
+            effectStepsEnabled.Clear();
             foreach (var effectStep in effectSteps)
             {
+                if (effectStep.CheckEnable != null)
+                {
+                    effectStep.Effect.Enable = effectStep.CheckEnable(this, requestedKeys);
+                }
+                effectStepsEnabled.Add(effectStep.Effect.Enable);
+            }
+
+            // Iterate on all effect steps
+            Context.Parameters.Set(Input, GetInput(0));
+            Context.Parameters.Set(Output, GetOutput(0));
+
+            for (int i = 0; i < effectSteps.Count; i++)
+            {
+                var effectStep = effectSteps[i];
                 var effect = effectStep.Effect;
                 if (effectStep.CheckEnable != null)
                 {
                     effect.Enable = effectStep.CheckEnable(this, requestedKeys);
                 }
+
+                var input = Context.Parameters.Get(effectStep.Input);
+                var output = Context.Parameters.Get(effectStep.Output);
+
+                // TODO Handle when next steps are all disabled
+
                 if (effect.Enable)
                 {
-                    var input = Context.Parameters.Get(effectStep.Input);
-                    var output = Context.Parameters.Get(effectStep.Output ?? effectStep.Input);
-
                     effect.SetInput(input);
                     effect.SetOutput(output.ToRenderTarget());
-
-
-
+                    effect.Draw();
                 }
-
-
-
+                else if (input != output)
+                {
+                    // If input != output and effect is disabled, copy at least the input to the output
+                    Scaler.SetInput(input);
+                    Scaler.SetOutput(output.ToRenderTarget());
+                    Scaler.Draw();
+                }
             }
-
-
-
-
-        }
-
-        protected virtual ColorTransformGroup CreateDefaultColorTransformGroup()
-        {
-            // TODO: Add the following color transforms:
-            // TODO: Add tonemapping
-            // TODO: Add Color grading
-            // TODO: Add noise
-            var defaultTransformGroup = new ColorTransformGroup(Context);
-            return defaultTransformGroup;
         }
     }
 }
