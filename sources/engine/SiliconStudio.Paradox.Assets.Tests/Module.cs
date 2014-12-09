@@ -19,8 +19,8 @@ namespace SiliconStudio.Paradox.Assets.Tests
         [ModuleInitializer]
         internal static void Initialize()
         {
-            if (!Platform.IsVirtualFileSystemInitialized)
-                Platform.ApplicationDataSubDirectory = typeof(Module).Assembly.GetName().Name;
+            if (!PlatformFolders.IsVirtualFileSystemInitialized)
+                PlatformFolders.ApplicationDataSubDirectory = typeof(Module).Assembly.GetName().Name;
         }
     }
 }
