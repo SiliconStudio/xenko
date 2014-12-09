@@ -267,6 +267,7 @@ namespace SiliconStudio.Paradox.Graphics
                     int size;
                     ActiveUniformType aut;
                     GL.GetActiveUniform(resourceId, uniformIndices[uniformIndex], sbCapacity, out length, out size, out aut, sb);
+                    uniformNames[uniformIndex] = sb.ToString();
 #else
                     uniformNames[uniformIndex] = GL.GetActiveUniformName(resourceId, uniformIndices[uniformIndex]);
 #endif
@@ -358,99 +359,102 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                // Register global "fake" cbuffer
-                //var constantBuffer = new ShaderReflectionConstantBuffer
-                //    {
-                //        Name = "$Globals",
-                //        Variables = new List<ShaderReflectionVariable>(),
-                //        Type = ConstantBufferType.ConstantBuffer
-                //    };
-                //shaderReflection.ConstantBuffers.Add(constantBuffer);
-                //shaderReflection.BoundResources.Add(new InputBindingDescription { BindPoint = 0, BindCount = 1, Name = constantBuffer.Name, Type = ShaderInputType.ConstantBuffer });
-
-                // reset the size of the constant buffers
-                foreach (var constantBuffer in effectReflection.ConstantBuffers)
-                    constantBuffer.Size = 0;
-
-                // set the state of the constant buffers
-                foreach (var constantBuffer in effectReflection.ConstantBuffers)
-                    constantBuffer.Stage = stage;
-                for (int i = 0; i < effectReflection.ResourceBindings.Count; i++)
+                if (GraphicsDevice.IsOpenGLES2)
                 {
-                    if(effectReflection.ResourceBindings[i].Param.Class != EffectParameterClass.ConstantBuffer)
-                        continue;
-                    
-                    var globalConstantBufferCopy = effectReflection.ResourceBindings[i];
-                    globalConstantBufferCopy.Stage = stage;
-                    effectReflection.ResourceBindings[i] = globalConstantBufferCopy;
-                }
+                    // Register global "fake" cbuffer
+                    //var constantBuffer = new ShaderReflectionConstantBuffer
+                    //    {
+                    //        Name = "$Globals",
+                    //        Variables = new List<ShaderReflectionVariable>(),
+                    //        Type = ConstantBufferType.ConstantBuffer
+                    //    };
+                    //shaderReflection.ConstantBuffers.Add(constantBuffer);
+                    //shaderReflection.BoundResources.Add(new InputBindingDescription { BindPoint = 0, BindCount = 1, Name = constantBuffer.Name, Type = ShaderInputType.ConstantBuffer });
 
-                //Create a Globals constant buffer if necessary
-                var globalConstantBufferDescriptionIndex = effectReflection.ConstantBuffers.FindIndex(x => x.Name == "Globals");
-                var globalConstantBufferIndex = effectReflection.ResourceBindings.FindIndex(x => x.Param.RawName == "Globals");
-                if (globalConstantBufferDescriptionIndex == -1 && globalConstantBufferIndex == -1)
-                {
-                    var newConstantBufferDescription = new ShaderConstantBufferDescription
+                    // reset the size of the constant buffers
+                    foreach (var constantBuffer in effectReflection.ConstantBuffers)
+                        constantBuffer.Size = 0;
+
+                    // set the state of the constant buffers
+                    foreach (var constantBuffer in effectReflection.ConstantBuffers)
+                        constantBuffer.Stage = stage;
+                    for (int i = 0; i < effectReflection.ResourceBindings.Count; i++)
                     {
-                        Name = "Globals",
-                        Stage = stage,
-                        Type = ConstantBufferType.ConstantBuffer,
-                        Size = 0,
-                        Members = new EffectParameterValueData[0],
-                    };
-                    var newConstantBuffer = new EffectParameterResourceData
-                    {
-                        Stage = stage,
-                        SlotStart = 0,
-                        SlotCount = 1,
-                        Param = { RawName = "Globals", KeyName = "Globals", Type = EffectParameterType.ConstantBuffer, Class = EffectParameterClass.ConstantBuffer }
-                    };
-
-                    effectReflection.ConstantBuffers.Add(newConstantBufferDescription);
-                    effectReflection.ResourceBindings.Add(newConstantBuffer);
-
-                    globalConstantBufferDescriptionIndex = effectReflection.ConstantBuffers.Count - 1;
-                    globalConstantBufferIndex = effectReflection.ResourceBindings.Count - 1;
-                }
-
-                // Merge all the variables in the Globals constant buffer
-                if (globalConstantBufferDescriptionIndex != -1 && globalConstantBufferIndex != -1)
-                {
-                    var globalConstantBufferDescription = effectReflection.ConstantBuffers[globalConstantBufferDescriptionIndex];
-                    for (int cstDescrIndex = 0; cstDescrIndex < effectReflection.ConstantBuffers.Count; ++cstDescrIndex)
-                    {
-                        if (cstDescrIndex == globalConstantBufferDescriptionIndex)
+                        if (effectReflection.ResourceBindings[i].Param.Class != EffectParameterClass.ConstantBuffer)
                             continue;
-                        
-                        var currentConstantBufferDescription = effectReflection.ConstantBuffers[cstDescrIndex];
 
-                        globalConstantBufferDescription.Members = ArrayExtensions.Concat(
-                            globalConstantBufferDescription.Members, currentConstantBufferDescription.Members);
-
-                        effectReflection.ResourceBindings.RemoveAll(x => x.Param.RawName == currentConstantBufferDescription.Name);
+                        var globalConstantBufferCopy = effectReflection.ResourceBindings[i];
+                        globalConstantBufferCopy.Stage = stage;
+                        effectReflection.ResourceBindings[i] = globalConstantBufferCopy;
                     }
 
-                    // only keep the active uniforms
-                    globalConstantBufferDescription.Members =
-                        globalConstantBufferDescription.Members.Where(x => GL.GetUniformLocation(resourceId,
+                    //Create a Globals constant buffer if necessary
+                    var globalConstantBufferDescriptionIndex = effectReflection.ConstantBuffers.FindIndex(x => x.Name == "Globals");
+                    var globalConstantBufferIndex = effectReflection.ResourceBindings.FindIndex(x => x.Param.RawName == "Globals");
+                    if (globalConstantBufferDescriptionIndex == -1 && globalConstantBufferIndex == -1)
+                    {
+                        var newConstantBufferDescription = new ShaderConstantBufferDescription
+                        {
+                            Name = "Globals",
+                            Stage = stage,
+                            Type = ConstantBufferType.ConstantBuffer,
+                            Size = 0,
+                            Members = new EffectParameterValueData[0],
+                        };
+                        var newConstantBuffer = new EffectParameterResourceData
+                        {
+                            Stage = stage,
+                            SlotStart = 0,
+                            SlotCount = 1,
+                            Param = { RawName = "Globals", KeyName = "Globals", Type = EffectParameterType.ConstantBuffer, Class = EffectParameterClass.ConstantBuffer }
+                        };
+
+                        effectReflection.ConstantBuffers.Add(newConstantBufferDescription);
+                        effectReflection.ResourceBindings.Add(newConstantBuffer);
+
+                        globalConstantBufferDescriptionIndex = effectReflection.ConstantBuffers.Count - 1;
+                        globalConstantBufferIndex = effectReflection.ResourceBindings.Count - 1;
+                    }
+
+                    // Merge all the variables in the Globals constant buffer
+                    if (globalConstantBufferDescriptionIndex != -1 && globalConstantBufferIndex != -1)
+                    {
+                        var globalConstantBufferDescription = effectReflection.ConstantBuffers[globalConstantBufferDescriptionIndex];
+                        for (int cstDescrIndex = 0; cstDescrIndex < effectReflection.ConstantBuffers.Count; ++cstDescrIndex)
+                        {
+                            if (cstDescrIndex == globalConstantBufferDescriptionIndex)
+                                continue;
+
+                            var currentConstantBufferDescription = effectReflection.ConstantBuffers[cstDescrIndex];
+
+                            globalConstantBufferDescription.Members = ArrayExtensions.Concat(
+                                globalConstantBufferDescription.Members, currentConstantBufferDescription.Members);
+
+                            effectReflection.ResourceBindings.RemoveAll(x => x.Param.RawName == currentConstantBufferDescription.Name);
+                        }
+
+                        // only keep the active uniforms
+                        globalConstantBufferDescription.Members =
+                            globalConstantBufferDescription.Members.Where(x => GL.GetUniformLocation(resourceId,
 #if SILICONSTUDIO_PLATFORM_ANDROID
                             new StringBuilder(x.Param.RawName)
 #else
-                            x.Param.RawName
+                                x.Param.RawName
 #endif
-                            ) >= 0).ToArray();
+                                ) >= 0).ToArray();
 
-                    // remove all the constant buffers and their resource bindings except the Globals one
-                    effectReflection.ConstantBuffers.Clear();
-                    effectReflection.ConstantBuffers.Add(globalConstantBufferDescription);
-                }
-                else if (globalConstantBufferDescriptionIndex != -1 && globalConstantBufferIndex == -1)
-                {
-                    reflectionResult.Error("Globals constant buffer has a description and no resource binding");
-                }
-                else if (globalConstantBufferDescriptionIndex == -1 && globalConstantBufferIndex != -1)
-                {
-                    reflectionResult.Error("Globals constant buffer has a description and no resource binding");
+                        // remove all the constant buffers and their resource bindings except the Globals one
+                        effectReflection.ConstantBuffers.Clear();
+                        effectReflection.ConstantBuffers.Add(globalConstantBufferDescription);
+                    }
+                    else if (globalConstantBufferDescriptionIndex != -1 && globalConstantBufferIndex == -1)
+                    {
+                        reflectionResult.Error("Globals constant buffer has a description and no resource binding");
+                    }
+                    else if (globalConstantBufferDescriptionIndex == -1 && globalConstantBufferIndex != -1)
+                    {
+                        reflectionResult.Error("Globals constant buffer has a description and no resource binding");
+                    }
                 }
 #endif
 
@@ -582,71 +586,73 @@ namespace SiliconStudio.Paradox.Graphics
 
         private void AddUniform(EffectReflection effectReflection, int uniformSize, int uniformCount, string uniformName, ActiveUniformType uniformType)
         {
-            // clean the name
-            if (uniformName.Contains("."))
+            if (GraphicsDevice.IsOpenGLES2)
             {
-                uniformName = uniformName.Substring(0, uniformName.IndexOf('.'));
-            }
-            if (uniformName.Contains("["))
-            {
-                uniformName = uniformName.Substring(0, uniformName.IndexOf('['));
-            }
-
-            var indexOfConstantBufferDescription = effectReflection.ConstantBuffers.FindIndex(x => x.Name == "Globals");
-            var indexOfConstantBuffer = effectReflection.ResourceBindings.FindIndex(x => x.Param.RawName == "Globals");
-
-            if (indexOfConstantBufferDescription == -1 || indexOfConstantBuffer == -1)
-            {
-                reflectionResult.Error("Unable to find uniform [{0}] in any constant buffer", uniformName);
-                return;
-            }
-
-            var constantBufferDescription = effectReflection.ConstantBuffers[indexOfConstantBufferDescription];
-            var constantBuffer = effectReflection.ResourceBindings[indexOfConstantBuffer];
-
-            var elementSize = uniformSize;
-            
-            // For array, each element is rounded to register size
-            if (uniformSize % 16 != 0 && uniformCount > 1)
-            {
-                constantBufferDescription.Size = (constantBufferDescription.Size + 15) / 16 * 16;
-                uniformSize = (uniformSize + 15) / 16 * 16;
-            }
-
-            // Check if it can fits in the same register, otherwise starts at the next one
-            if (uniformCount == 1 && constantBufferDescription.Size / 16 != (constantBufferDescription.Size + uniformSize - 1) / 16)
-                constantBufferDescription.Size = (constantBufferDescription.Size + 15) / 16 * 16;
-
-            var indexOfUniform = -1;
-            for (var tentativeIndex = 0; tentativeIndex < constantBufferDescription.Members.Length; ++tentativeIndex)
-            {
-                if (constantBufferDescription.Members[tentativeIndex].Param.RawName == uniformName)
+                // clean the name
+                if (uniformName.Contains("."))
                 {
-                    indexOfUniform = tentativeIndex;
-                    break;
+                    uniformName = uniformName.Substring(0, uniformName.IndexOf('.'));
                 }
-            }
+                if (uniformName.Contains("["))
+                {
+                    uniformName = uniformName.Substring(0, uniformName.IndexOf('['));
+                }
 
-            var variable = constantBufferDescription.Members[indexOfUniform];
+                var indexOfConstantBufferDescription = effectReflection.ConstantBuffers.FindIndex(x => x.Name == "Globals");
+                var indexOfConstantBuffer = effectReflection.ResourceBindings.FindIndex(x => x.Param.RawName == "Globals");
 
-            variable.Param.Type = GetTypeFromActiveUniformType(uniformType);
-            //variable.SourceOffset = variableIndexGroup.Offset;
-            variable.Offset = constantBufferDescription.Size;
-            variable.Count = uniformCount;
-            variable.Size = uniformSize*uniformCount;
+                if (indexOfConstantBufferDescription == -1 || indexOfConstantBuffer == -1)
+                {
+                    reflectionResult.Error("Unable to find uniform [{0}] in any constant buffer", uniformName);
+                    return;
+                }
 
-            constantBufferDescription.Type = ConstantBufferType.ConstantBuffer;
+                var constantBufferDescription = effectReflection.ConstantBuffers[indexOfConstantBufferDescription];
+                var constantBuffer = effectReflection.ResourceBindings[indexOfConstantBuffer];
 
-            constantBuffer.SlotStart = 0;
+                var elementSize = uniformSize;
 
-            constantBufferDescription.Members[indexOfUniform] = variable;
-            effectReflection.ResourceBindings[indexOfConstantBuffer] = constantBuffer;
+                // For array, each element is rounded to register size
+                if (uniformSize%16 != 0 && uniformCount > 1)
+                {
+                    constantBufferDescription.Size = (constantBufferDescription.Size + 15)/16*16;
+                    uniformSize = (uniformSize + 15)/16*16;
+                }
 
-            // No need to compare last element padding.
-            // TODO: In case of float1/float2 arrays (rare) it is quite non-optimal to do a CompareMemory
-            var compareSize = uniformSize * (uniformCount - 1) + elementSize;
+                // Check if it can fits in the same register, otherwise starts at the next one
+                if (uniformCount == 1 && constantBufferDescription.Size/16 != (constantBufferDescription.Size + uniformSize - 1)/16)
+                    constantBufferDescription.Size = (constantBufferDescription.Size + 15)/16*16;
 
-            Uniforms.Add(new Uniform
+                var indexOfUniform = -1;
+                for (var tentativeIndex = 0; tentativeIndex < constantBufferDescription.Members.Length; ++tentativeIndex)
+                {
+                    if (constantBufferDescription.Members[tentativeIndex].Param.RawName == uniformName)
+                    {
+                        indexOfUniform = tentativeIndex;
+                        break;
+                    }
+                }
+
+                var variable = constantBufferDescription.Members[indexOfUniform];
+
+                variable.Param.Type = GetTypeFromActiveUniformType(uniformType);
+                //variable.SourceOffset = variableIndexGroup.Offset;
+                variable.Offset = constantBufferDescription.Size;
+                variable.Count = uniformCount;
+                variable.Size = uniformSize*uniformCount;
+
+                constantBufferDescription.Type = ConstantBufferType.ConstantBuffer;
+
+                constantBuffer.SlotStart = 0;
+
+                constantBufferDescription.Members[indexOfUniform] = variable;
+                effectReflection.ResourceBindings[indexOfConstantBuffer] = constantBuffer;
+
+                // No need to compare last element padding.
+                // TODO: In case of float1/float2 arrays (rare) it is quite non-optimal to do a CompareMemory
+                var compareSize = uniformSize*(uniformCount - 1) + elementSize;
+
+                Uniforms.Add(new Uniform
                 {
                     Type = uniformType,
                     Count = uniformCount,
@@ -658,7 +664,8 @@ namespace SiliconStudio.Paradox.Graphics
                     UniformIndex = GL.GetUniformLocation(resourceId, uniformName)
 #endif
                 });
-            constantBufferDescription.Size += uniformSize * uniformCount;
+                constantBufferDescription.Size += uniformSize*uniformCount;
+            }
         }
 #endif
 

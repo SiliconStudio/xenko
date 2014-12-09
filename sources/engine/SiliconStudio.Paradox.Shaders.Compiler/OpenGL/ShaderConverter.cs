@@ -19,12 +19,15 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
     {
         private bool isOpenGLES;
 
+        private bool isOpenGLES3;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderConverter"/> class.
         /// </summary>
-        public ShaderConverter(bool isOpenGLES)
+        public ShaderConverter(bool isOpenGLES, bool isOpenGLES3)
         {
             this.isOpenGLES = isOpenGLES;
+            this.isOpenGLES3 = isOpenGLES3;
             Log = Console.Out;
             IsVerboseLog = true;
             Macros = new List<ShaderMacro>();
@@ -128,7 +131,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
             {
                 var convertor = new HlslToGlslConvertor(hlslEntryPoint, stage, ShaderModel.Model40) // TODO HARDCODED VALUE to change
                 {
-                    KeepConstantBuffer = !isOpenGLES,
+                    KeepConstantBuffer = !isOpenGLES || isOpenGLES3,
                     TextureFunctionsCompatibilityProfile = isOpenGLES,
                     NoSwapForBinaryMatrixOperation = true,
                     UseBindingLayout = false,

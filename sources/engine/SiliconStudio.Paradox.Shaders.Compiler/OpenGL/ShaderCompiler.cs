@@ -38,6 +38,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
         public ShaderBytecodeResult Compile(string shaderSource, string entryPoint, ShaderStage stage, ShaderMixinParameters compilerParameters, EffectReflection reflection, string sourceFilename = null)
         {
             var isOpenGLES = compilerParameters.Get(CompilerParameters.GraphicsPlatformKey) == GraphicsPlatform.OpenGLES;
+            var isOpenGLES3 = compilerParameters.Get(CompilerParameters.GraphicsProfileKey) >= GraphicsProfile.Level_10_0;
             var shaderBytecodeResult = new ShaderBytecodeResult();
 
 
@@ -72,7 +73,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
             
             // Convert from HLSL to GLSL
             // Note that for now we parse from shader as a string, but we could simply clone effectPass.Shader to avoid multiple parsing.
-            var glslConvertor = new ShaderConverter(isOpenGLES);
+            var glslConvertor = new ShaderConverter(isOpenGLES, isOpenGLES3);
             var glslShader = glslConvertor.Convert(shaderSource, entryPoint, pipelineStage, sourceFilename, shaderBytecodeResult);
 
             // Add std140 layout
@@ -88,7 +89,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
             {
                 glslShaderWriter.TrimFloatSuffix = true;
 
-                if (compilerParameters.Get(CompilerParameters.GraphicsProfileKey) >= GraphicsProfile.Level_10_0)
+                if (isOpenGLES3)
                     glslShaderWriter.GenerateUniformBlocks = true;
                 else
                     glslShaderWriter.GenerateUniformBlocks = false;

@@ -58,10 +58,13 @@ namespace SiliconStudio.Paradox.Graphics
             {
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 // Special case: ConstantBuffer are faked with a byte array on OpenGL ES 2.0.
-                StagingData = Marshal.AllocHGlobal(Description.SizeInBytes);
-#else
-                bufferTarget = BufferTarget.UniformBuffer;
+                if (GraphicsDevice.IsOpenGLES2)
+                    StagingData = Marshal.AllocHGlobal(Description.SizeInBytes);
+                else
 #endif
+                {
+                    bufferTarget = BufferTarget.UniformBuffer;
+                }
             }
             else if (Description.Usage == GraphicsResourceUsage.Dynamic)
             {
@@ -115,8 +118,9 @@ namespace SiliconStudio.Paradox.Graphics
         protected void Init(IntPtr dataPointer)
         {
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-            if ((Description.BufferFlags & BufferFlags.ConstantBuffer) == BufferFlags.ConstantBuffer
-                || (GraphicsDevice.IsOpenGLES2 && Description.Usage == GraphicsResourceUsage.Dynamic))
+            if (GraphicsDevice.IsOpenGLES2 
+                && ((Description.BufferFlags & BufferFlags.ConstantBuffer) == BufferFlags.ConstantBuffer
+                    || Description.Usage == GraphicsResourceUsage.Dynamic))
             {
                 if (dataPointer != IntPtr.Zero)
                 {
