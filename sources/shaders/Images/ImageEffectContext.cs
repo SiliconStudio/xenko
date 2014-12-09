@@ -14,6 +14,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// </summary>
     public class ImageEffectContext : ComponentBase
     {
+        private const string SharedImageEffectContextKey = "__SharedImageEffectContext__";
         private readonly Dictionary<Type, ImageEffectBase> sharedEffects = new Dictionary<Type, ImageEffectBase>();
 
         private readonly GraphicsResourceAllocator allocator;
@@ -98,6 +99,20 @@ namespace SiliconStudio.Paradox.Effects.Images
 
                 return (T)effect;
             }
+        }
+
+        /// <summary>
+        /// Gets a global shared context.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        /// <returns>ImageEffectContext.</returns>
+        public static ImageEffectContext GetShared(IServiceRegistry services)
+        {
+            if (services == null) throw new ArgumentNullException("services");
+
+            // Store ImageEffectContext shared into the GraphicsDevice
+            var graphicsDevice = services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
+            return graphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, SharedImageEffectContextKey, () => new ImageEffectContext(services));
         }
 
         protected override void Destroy()
