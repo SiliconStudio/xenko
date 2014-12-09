@@ -32,7 +32,7 @@ namespace SiliconStudio.Assets.Compiler
 
         public override System.Collections.Generic.IEnumerable<ObjectUrl> GetInputFiles()
         {
-            var dependencies = AssetsSession.DependencyManager.ComputeDependencies(AssetItem, AssetDependencySearchOptions.Out);
+            var dependencies = AssetsSession.DependencyManager.ComputeDependencies(AssetItem, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive);
             foreach (var assetReference in dependencies.LinksOut)
                 yield return new ObjectUrl(UrlType.Internal, assetReference.Item.Location);
 
