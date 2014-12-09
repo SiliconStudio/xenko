@@ -1168,24 +1168,6 @@ namespace SiliconStudio.Paradox.Engine.Tests
         }
 
         [Test, Ignore]
-        public void TestCollections5()
-        {
-            var paramP = new ParameterKey<float>("Proj");
-            var paramV = new ParameterKey<float>("View");
-            var paramV2 = new ParameterKey<float>("View2");
-            var root1 = new ParameterCollection("Root1");
-            var root2 = new ParameterCollection("Root2");
-
-            root2.AddSources(new InheritanceDefinition(root1) { { paramV, paramV2 } });
-
-            root1.Set(paramP, 2.0f);
-            root1.Set(paramV, 3.0f);
-
-            Assert.AreEqual(3.0f, root2.Get(paramV2));
-            Assert.AreEqual(false, root2.ContainsKey(paramP));
-        }
-
-        [Test, Ignore]
         public void TestCollectionsEngine()
         {
             // RPP   <-  EP  <-  EMP
