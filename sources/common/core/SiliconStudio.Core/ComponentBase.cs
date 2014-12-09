@@ -93,6 +93,7 @@ namespace SiliconStudio.Core
             if (newCounter == 0)
             {
                 Destroy();
+                IsDisposed = true;
             }
             else if (newCounter < 0)
             {
@@ -103,11 +104,13 @@ namespace SiliconStudio.Core
 
         public void Dispose()
         {
-            int newcounter = Interlocked.Decrement(ref counter);
-            if (newcounter != 0)
-                throw new InvalidOperationException(FrameworkResources.ReleaseReferenceError);
-            Destroy();
-
+            if (!IsDisposed)
+            {
+                int newcounter = Interlocked.Decrement(ref counter);
+                if (newcounter != 0)
+                    throw new InvalidOperationException(FrameworkResources.ReleaseReferenceError);
+                Destroy();
+            }
             IsDisposed = true;
         }
 
