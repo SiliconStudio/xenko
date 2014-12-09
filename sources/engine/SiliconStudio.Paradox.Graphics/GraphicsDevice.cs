@@ -122,7 +122,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <remarks>
         ///     Because this method is being called from a lock region, this method should not be time consuming.
         /// </remarks>
-        internal delegate T CreateSharedData<out T>() where T : class, IDisposable;
+        public delegate T CreateSharedData<out T>() where T : class, IDisposable;
 
         /// <summary>
         ///     Gets the adapter this instance is attached to.
@@ -405,7 +405,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <returns>
         ///     An instance of the shared data. The shared data will be disposed by this <see cref="GraphicsDevice" /> instance.
         /// </returns>
-        internal T GetOrCreateSharedData<T>(GraphicsDeviceSharedDataType type, object key, CreateSharedData<T> sharedDataCreator) where T : class, IDisposable
+        public T GetOrCreateSharedData<T>(GraphicsDeviceSharedDataType type, object key, CreateSharedData<T> sharedDataCreator) where T : class, IDisposable
         {
             Dictionary<object, IDisposable> dictionary = (type == GraphicsDeviceSharedDataType.PerDevice) ? sharedDataPerDevice : sharedDataPerDeviceContext;
 
