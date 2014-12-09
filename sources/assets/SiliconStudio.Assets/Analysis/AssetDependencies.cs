@@ -43,11 +43,11 @@ namespace SiliconStudio.Assets.Analysis
 
             // Copy Output refs
             foreach (var child in set.LinksOut)
-                AddLinkOut(child);
+                AddLinkOut(child, true);
 
             // Copy Input refs
             foreach (var child in set.LinksIn)
-                AddLinkIn(child);
+                AddLinkIn(child, true);
 
             // Copy missing refs
             foreach (var child in set.BrokenLinksOut)
@@ -155,7 +155,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <param name="contentLinkType">The type of link</param>
         /// <param name="cloneAssetItem">Indicate if the <see cref="AssetItem"/> should be cloned or not</param>
         /// <exception cref="ArgumentException">A link from this element already exists</exception>
-        public void AddLinkIn(AssetItem fromItem, ContentLinkType contentLinkType, bool cloneAssetItem = true)
+        public void AddLinkIn(AssetItem fromItem, ContentLinkType contentLinkType, bool cloneAssetItem)
         {
             AddLink(ref parents, new AssetLink(fromItem, contentLinkType), cloneAssetItem);
         }
@@ -166,7 +166,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <param name="contentLink">The link in</param>
         /// <param name="cloneAssetItem">Indicate if the <see cref="AssetItem"/> should be cloned or not</param>
         /// <exception cref="ArgumentException">A link from this element already exists</exception>
-        public void AddLinkIn(AssetLink contentLink, bool cloneAssetItem = true)
+        public void AddLinkIn(AssetLink contentLink, bool cloneAssetItem)
         {
             AddLink(ref parents, contentLink, cloneAssetItem);
         }
@@ -205,7 +205,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <param name="contentLinkType">The type of link</param>
         /// <param name="cloneAssetItem">Indicate if the <see cref="AssetItem"/> should be cloned or not</param>
         /// <exception cref="ArgumentException">A link to this element already exists</exception>
-        public void AddLinkOut(AssetItem toItem, ContentLinkType contentLinkType, bool cloneAssetItem = true)
+        public void AddLinkOut(AssetItem toItem, ContentLinkType contentLinkType, bool cloneAssetItem)
         {
             AddLink(ref children, new AssetLink(toItem, contentLinkType), cloneAssetItem);
         }
@@ -216,7 +216,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <param name="contentLink">The link out</param>
         /// <param name="cloneAssetItem">Indicate if the <see cref="AssetItem"/> should be cloned or not</param>
         /// <exception cref="ArgumentException">A link to this element already exists</exception>
-        public void AddLinkOut(AssetLink contentLink, bool cloneAssetItem = true)
+        public void AddLinkOut(AssetLink contentLink, bool cloneAssetItem)
         {
             AddLink(ref children, contentLink, cloneAssetItem);
         }

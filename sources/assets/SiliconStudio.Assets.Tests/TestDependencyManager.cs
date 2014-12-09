@@ -816,6 +816,45 @@ namespace SiliconStudio.Assets.Tests
             }
         }
 
+        /// <summary>
+        /// Tests that the asset cached in the session's dependency manager are correctly updated when IsDirty is set to true.
+        /// </summary>
+        [Test]
+        public void TestCachedAssetUpdate()
+        {
+            // -----------------------------------------------------------
+            // Change a property of A0 and see if the version of A0 returned by dependency computation from A1 is valid.
+            // -----------------------------------------------------------
+            // 2 assets
+            // A1 -- inherit from --> A0
+            // 
+            // -----------------------------------------------------------
+            
+            var project = new Package();
+            var assets = new List<AssetObjectTest>();
+            var assetItems = new List<AssetItem>();
+            for (int i = 0; i < 2; ++i)
+            {
+                assets.Add(new AssetObjectTest());
+                assetItems.Add(new AssetItem("asset-" + i, assets[i]));
+                project.Assets.Add(assetItems[i]);
+            }
+
+            assets[1].Base = new AssetBase(assets[0]);
+
+            using (var session = new PackageSession(project))
+            {
+                var dependencyManager = session.DependencyManager;
+
+                assets[0].RawAsset = "tutu";
+                assetItems[0].IsDirty = true;
+
+                var dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
+                var asset0 = dependencies.GetLinkOut(assetItems[0]);
+                Assert.AreEqual(assets[0].RawAsset, ((AssetObjectTest)asset0.Item.Asset).RawAsset);
+            }
+        }
+
         [Test, Ignore]
         public void TestTrackingPackageWithAssetsAndSave()
         {
