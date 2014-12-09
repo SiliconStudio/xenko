@@ -70,10 +70,13 @@ namespace SiliconStudio.Shaders
                         isEndOfStream = true;
                         break;
                     case Token.CCOMMENT:
-                    case Token.CPPCOMMENT:
-                        if (!cpp.getFeature(Feature.KEEPCOMMENTS))
+                        var strComment = tok.getText() ?? string.Empty;
+                        foreach (var commentChar in strComment)
                         {
+                            textBuilder.Append(commentChar == '\n' ? '\n' : ' ');
                         }
+                        break;
+                    case Token.CPPCOMMENT:
                         break;
                     default:
                         var tokenText = tok.getText();
