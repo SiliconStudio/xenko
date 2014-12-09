@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         public readonly ParameterKey<Texture> Input;
 
-        public readonly ImageEffectBase Effect;
+        public readonly ImageEffect Effect;
 
         public readonly ParameterKey<Texture> Output;
 
@@ -29,7 +29,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         }
     }
 
-    public class ImageEffects : ImageEffectBase
+    public class ImageEffects : ImageEffect
     {
         public static readonly ParameterKey<Texture> Input = ParameterKeys.New<Texture>();
 
@@ -40,7 +40,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         private readonly ColorTransformGroup colorTransformGroup;
 
         public ImageEffects(IServiceRegistry services)
-            : this(ImageEffectContext.GetSharedContext(services))
+            : this(ImageEffectContext.GetShared(services))
         {
         }
 
@@ -66,6 +66,29 @@ namespace SiliconStudio.Paradox.Effects.Images
             {
                 return colorTransformGroup;
             }
+        }
+
+        protected override void DrawCore()
+        {
+            foreach (var effectStep in effectSteps)
+            {
+                
+
+
+
+
+
+
+
+
+
+            }
+
+
+
+
+
+
         }
 
         protected virtual ColorTransformGroup CreateDefaultColorTransformGroup()
