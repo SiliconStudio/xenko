@@ -28,9 +28,9 @@ namespace SiliconStudio.Paradox.Graphics
 {
     public abstract partial class Texture
     {
-        public RenderTarget ToRenderTarget(ViewType viewType, int arraySlize, int mipSlice)
+        internal RenderTarget ToRenderTarget(ViewType viewType, int arraySlize, int mipSlice)
         {
-            return new RenderTarget(GraphicsDevice, this, viewType, arraySlize, mipSlice);
+            return new RenderTarget(GraphicsDevice, this, viewType, arraySlize, mipSlice);            
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace SiliconStudio.Paradox.Graphics
 
             base.DestroyImpl();
         }
-
+        
         internal static SharpDX.Direct3D11.BindFlags GetBindFlagsFromTextureFlags(TextureFlags flags)
         {
             var result = BindFlags.None;

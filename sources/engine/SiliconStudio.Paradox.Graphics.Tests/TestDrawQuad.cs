@@ -31,7 +31,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             await base.LoadContent();
 
             // TODO DisposeBy is not working with device reset
-            offlineTarget = Texture2D.New(GraphicsDevice, 512, 512, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget).DisposeBy(this).ToRenderTarget().DisposeBy(this);
+            offlineTarget = Texture2D.New(GraphicsDevice, 512, 512, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget).DisposeBy(this).ToRenderTarget();
         }
 
         protected override void Draw(GameTime gameTime)

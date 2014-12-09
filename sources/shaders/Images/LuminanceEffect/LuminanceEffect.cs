@@ -42,7 +42,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             this.luminanceLogEffect = luminanceLogEffect ?? new LuminanceLogEffect(context).DisposeBy(this);
 
             // Create 1x1 texture
-            luminance1x1 = Texture2D.New(GraphicsDevice, 1, 1, 1, luminanceFormat, TextureFlags.ShaderResource | TextureFlags.RenderTarget).DisposeBy(this).ToRenderTarget().DisposeBy(this);
+            luminance1x1 = Texture2D.New(GraphicsDevice, 1, 1, 1, luminanceFormat, TextureFlags.ShaderResource | TextureFlags.RenderTarget).DisposeBy(this).ToRenderTarget();
 
             // Use a multiscaler
             multiScaler = new ImageMultiScaler(context).DisposeBy(this);

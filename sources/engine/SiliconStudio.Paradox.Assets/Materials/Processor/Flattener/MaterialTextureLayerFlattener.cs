@@ -181,7 +181,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Flattener
                 foreach (var command in commandList)
                 {
                     command.TreeEffect.Dispose();
-                    command.RenderTarget.Dispose();
+                    command.RenderTarget.Texture.Dispose();
                 }
 
                 foreach (var texture in textures)

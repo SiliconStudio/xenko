@@ -94,9 +94,7 @@ namespace SiliconStudio.Paradox.Effects.Processors
                     InternalShadowMapTextures.Remove(data.ShadowMap.Texture);
                     Utilities.Dispose(ref data.ShadowMap.Texture.ShadowMapDepthBuffer);
                     Utilities.Dispose(ref data.ShadowMap.Texture.ShadowMapDepthTexture);
-                    Utilities.Dispose(ref data.ShadowMap.Texture.ShadowMapRenderTarget);
                     Utilities.Dispose(ref data.ShadowMap.Texture.ShadowMapTargetTexture);
-                    Utilities.Dispose(ref data.ShadowMap.Texture.IntermediateBlurRenderTarget);
                     Utilities.Dispose(ref data.ShadowMap.Texture.IntermediateBlurTexture);
 
                     if (!texturesDefault.Remove(data.ShadowMap.Texture))

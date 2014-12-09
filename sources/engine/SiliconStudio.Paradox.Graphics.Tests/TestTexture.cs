@@ -58,7 +58,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             var data1 = texture.GetData<byte>(0, 1);
             Assert.That(data1.Length, Is.EqualTo(128));
             Assert.That(data1[0], Is.EqualTo(1));
-            renderTarget1.Dispose();
+            renderTarget1.Destroy();
 
             // Get a render target on the mipmap 2 (128) with value 2 and get back the data
             var renderTarget2 = texture.ToRenderTarget(ViewType.Single, 0, 2);
@@ -66,7 +66,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             var data2 = texture.GetData<byte>(0, 2);
             Assert.That(data2.Length, Is.EqualTo(64));
             Assert.That(data2[0], Is.EqualTo(2));
-            renderTarget2.Dispose();
+            renderTarget2.Destroy();
 
             // Get a render target on the mipmap 3 (128) with value 3 and get back the data
             var renderTarget3 = texture.ToRenderTarget(ViewType.Single, 0, 3);
@@ -74,7 +74,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             var data3 = texture.GetData<byte>(0, 3);
             Assert.That(data3.Length, Is.EqualTo(32));
             Assert.That(data3[0], Is.EqualTo(3));
-            renderTarget3.Dispose();
+            renderTarget3.Destroy();
 
             // Release the texture
             texture.Dispose();
@@ -125,7 +125,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             var data1 = texture.GetData<byte>(1, 0);
             Assert.That(data1.Length, Is.EqualTo(data.Length));
             Assert.That(data1[0], Is.EqualTo(1));
-            renderTarget1.Dispose();
+            renderTarget1.Destroy();
 
             // Get a render target on the array 2 (128) with value 2 and get back the data
             var renderTarget2 = texture.ToRenderTarget(ViewType.Single, 2, 0);
@@ -133,7 +133,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             var data2 = texture.GetData<byte>(2, 0);
             Assert.That(data2.Length, Is.EqualTo(data.Length));
             Assert.That(data2[0], Is.EqualTo(2));
-            renderTarget2.Dispose();
+            renderTarget2.Destroy();
 
             // Get a render target on the array 3 (128) with value 3 and get back the data
             var renderTarget3 = texture.ToRenderTarget(ViewType.Single, 3, 0);
@@ -141,7 +141,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             var data3 = texture.GetData<byte>(3, 0);
             Assert.That(data3.Length, Is.EqualTo(data.Length));
             Assert.That(data3[0], Is.EqualTo(3));
-            renderTarget3.Dispose();
+            renderTarget3.Destroy();
 
             // Release the texture
             texture.Dispose();
@@ -162,7 +162,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             var texture = Texture2D.New(device, 256, 256, 1, PixelFormat.R8_UNorm, TextureFlags.ShaderResource | TextureFlags.UnorderedAccess, 4);
 
             // Clear slice array[1] with value 1, read back data from texture and check validity
-            var texture1 = texture.ToTexture(ViewType.Single, 1, 0);
+            var texture1 = texture.CreateTextureView(ViewType.Single, 1, 0);
             Assert.That(texture1.Width, Is.EqualTo(256));
             Assert.That(texture1.Height, Is.EqualTo(256));
             Assert.That(texture1.Depth, Is.EqualTo(1));
@@ -174,7 +174,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             texture1.Dispose();
 
             // Clear slice array[2] with value 2, read back data from texture and check validity
-            var texture2 = texture.ToTexture(ViewType.Single, 2, 0);
+            var texture2 = texture.CreateTextureView(ViewType.Single, 2, 0);
             device.ClearReadWrite(texture2, new Int4(2));
             var data2 = texture.GetData<byte>(2);
             Assert.That(data2.Length, Is.EqualTo(data.Length));
@@ -220,7 +220,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             var data1 = texture.GetData<byte>(0, 0);
             Assert.That(data1.Length, Is.EqualTo(32*32*32));
             Assert.That(data1[0], Is.EqualTo(1));
-            renderTarget0.Dispose();
+            renderTarget0.Destroy();
 
             // Get a render target on the 2nd mipmap of this texture 3D
             var renderTarget1 = texture.ToRenderTarget(ViewType.Single, 0, 1);
@@ -233,7 +233,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             var data2 = texture.GetData<byte>(0, 1);
             Assert.That(data2.Length, Is.EqualTo(16*16*16));
             Assert.That(data2[0], Is.EqualTo(1));
-            renderTarget1.Dispose();
+            renderTarget1.Destroy();
 
             // Release the texture
             texture.Dispose();

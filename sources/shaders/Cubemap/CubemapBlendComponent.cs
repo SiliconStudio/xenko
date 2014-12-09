@@ -80,13 +80,15 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
                     MaxLod = textureCube.Description.MipLevels - 1;
                     RenderTargets = new RenderTarget[6]
                     {
-                        textureCube.ToRenderTarget(ViewType.Single, 0, 0),
-                        textureCube.ToRenderTarget(ViewType.Single, 1, 0),
-                        textureCube.ToRenderTarget(ViewType.Single, 2, 0),
-                        textureCube.ToRenderTarget(ViewType.Single, 3, 0),
-                        textureCube.ToRenderTarget(ViewType.Single, 4, 0),
-                        textureCube.ToRenderTarget(ViewType.Single, 5, 0)
+                        textureCube.CreateTextureView(ViewType.Single, 0, 0).ToRenderTarget(),
+                        textureCube.CreateTextureView(ViewType.Single, 1, 0).ToRenderTarget(),
+                        textureCube.CreateTextureView(ViewType.Single, 2, 0).ToRenderTarget(),
+                        textureCube.CreateTextureView(ViewType.Single, 3, 0).ToRenderTarget(),
+                        textureCube.CreateTextureView(ViewType.Single, 4, 0).ToRenderTarget(),
+                        textureCube.CreateTextureView(ViewType.Single, 5, 0).ToRenderTarget()
                     };
+
+                    FullRenderTarget = textureCube.CreateTextureView(ViewType.Full, 0, 0).ToRenderTarget();
                 }
             }
         }
@@ -103,6 +105,9 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
         /// </summary>
         [DataMemberIgnore]
         public RenderTarget[] RenderTargets { get; private set; }
+
+        [DataMemberIgnore]
+        public RenderTarget FullRenderTarget { get; private set; }
 
         public override PropertyKey DefaultKey
         {

@@ -83,7 +83,6 @@ namespace SiliconStudio.Paradox.Effects
             Pass.Parameters.Remove(GBufferBaseKeys.GBufferTexture);
 
             // Dispose GPU objects
-            Utilities.Dispose(ref gbufferTextureRenderTarget);
             Utilities.Dispose(ref gbufferTexture);
             Utilities.Dispose(ref gbufferRenormTexture);
         }

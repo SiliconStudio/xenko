@@ -4,7 +4,6 @@
 using System;
 using SharpDX;
 using SharpDX.Direct3D11;
-using SiliconStudio.Core.ReferenceCounting;
 using Utilities = SiliconStudio.Core.Utilities;
 
 namespace SiliconStudio.Paradox.Graphics
@@ -14,7 +13,8 @@ namespace SiliconStudio.Paradox.Graphics
     /// </summary>
     public partial class RenderTarget
     {
-        private SharpDX.Direct3D11.RenderTargetView _renderTargetView;
+        private readonly GraphicsDevice device;
+        private SharpDX.Direct3D11.RenderTargetView renderTargetView;
 
         /// <summary>
         /// Create a RenderTarget from a texture.
@@ -26,11 +26,11 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="mipSlice">The index of the mip slice.</param>
         /// <param name="viewFormat">The pixel format.</param>
         internal RenderTarget(GraphicsDevice device, Texture texture, ViewType viewType, int arraySlice, int mipSlice, PixelFormat viewFormat = PixelFormat.None)
-            : base(device)
         {
-            _nativeDeviceChild = texture.NativeDeviceChild;
+            this.device = device;
             Description = texture.Description;
 
+            Texture = texture;
             NativeRenderTargetView = texture.GetRenderTargetView(viewType, arraySlice, mipSlice);
 
             Width = Math.Max(1, Description.Width >> mipSlice);
@@ -40,9 +40,6 @@ namespace SiliconStudio.Paradox.Graphics
             ArraySlice = arraySlice;
             MipLevel = mipSlice;
             ViewFormat = viewFormat == PixelFormat.None ? Description.Format : viewFormat;
-
-            Texture = texture;
-            Texture.AddReferenceInternal();
         }
 
         /// <summary>
@@ -55,11 +52,11 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="mipSlice">The index of the mip slice.</param>
         /// <param name="view">The render target view.</param>
         internal RenderTarget(GraphicsDevice device, Texture texture, ViewType viewType, int arraySlice, int mipSlice, RenderTargetView view)
-            : base(device)
         {
-            _nativeDeviceChild = texture.NativeDeviceChild; //._nativeDeviceChild;
+            this.device = device;
             Description = texture.Description;
 
+            Texture = texture;
             NativeRenderTargetView = view;
 
             Width = Math.Max(1, Description.Width >> mipSlice);
@@ -71,38 +68,17 @@ namespace SiliconStudio.Paradox.Graphics
             ArraySlice = arraySlice;
             MipLevel = mipSlice;
             ViewFormat = (PixelFormat)viewFormat;
-
-            Texture = texture;
         }
 
-        protected override void DestroyImpl()
+        internal void Destroy()
         {
-            // Do not release _nativeDeviceChild, as it is owned by the texture.
-            // _renderTargetView should keep it alive anyway.
-            //base.DestroyImpl();
-            _nativeDeviceChild = null;
-            Utilities.Dispose(ref _renderTargetView);
+            Utilities.Dispose(ref renderTargetView);
         }
 
         /// <inheritdoc/>
-        protected internal override void OnDestroyed()
+        internal void OnRecreate()
         {
-            base.OnDestroyed();
-            DestroyImpl();
-        }
-
-        /// <inheritdoc/>
-        protected internal override bool OnRecreate()
-        {
-            // Dependency: wait for underlying texture to be recreated first
-            if (Texture.LifetimeState != GraphicsResourceLifetimeState.Active)
-                return false;
-
-            base.OnRecreate();
-            _nativeDeviceChild = Texture.NativeDeviceChild;
             NativeRenderTargetView = Texture.GetRenderTargetView(ViewType, ArraySlice, MipLevel);
-
-            return true;
         }
 
         /// <summary>
@@ -114,15 +90,15 @@ namespace SiliconStudio.Paradox.Graphics
         {
             get
             {
-                return _renderTargetView;
+                return renderTargetView;
             }
             set
             {
-                if (_renderTargetView != null) throw new ArgumentException(string.Format(FrameworkResources.GraphicsResourceAlreadySet, "RenderTargetView"), "value");
-                _renderTargetView = value;
+                if (renderTargetView != null) throw new ArgumentException(string.Format(FrameworkResources.GraphicsResourceAlreadySet, "RenderTargetView"), "value");
+                renderTargetView = value;
 
                 // Associate PrivateData to this DeviceResource
-                SetDebugName(GraphicsDevice, _renderTargetView, "View " + Name);
+                GraphicsResourceBase.SetDebugName(device, renderTargetView, "RenderTargetView " + (Texture.Name ?? string.Empty));
             }
         }
     }

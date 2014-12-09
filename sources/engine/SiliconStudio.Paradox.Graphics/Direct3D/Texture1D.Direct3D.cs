@@ -67,7 +67,7 @@ namespace SiliconStudio.Paradox.Graphics
             NativeUnorderedAccessView = GetUnorderedAccessView(ArraySlice, MipLevel);
         }
 
-        public override Texture ToTexture(ViewType viewType, int arraySlice, int mipMapSlice)
+        public override Texture CreateTextureView(ViewType viewType, int arraySlice, int mipMapSlice)
         {
             return new Texture1D(GraphicsDevice, this, viewType, arraySlice, mipMapSlice);
         }

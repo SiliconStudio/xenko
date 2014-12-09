@@ -119,7 +119,7 @@ namespace SiliconStudio.Paradox.Graphics
                 {
                     // Force render target destruction
                     // TODO: We should track all user created render targets that points to back buffer as well (or deny their creation?)
-                    backBuffer.OnDestroyed();
+                    backBuffer.Destroy();
 
                     OnDestroyed();
 
@@ -206,7 +206,7 @@ namespace SiliconStudio.Paradox.Graphics
 
             // Force render target destruction
             // TODO: We should track all user created render targets that points to back buffer as well (or deny their creation?)
-            backBuffer.OnDestroyed();
+            backBuffer.Destroy();
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
             var swapChainPanel = Description.DeviceWindowHandle.NativeHandle as Windows.UI.Xaml.Controls.SwapChainPanel;

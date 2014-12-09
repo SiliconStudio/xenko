@@ -2,15 +2,17 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.ReferenceCounting;
 
 namespace SiliconStudio.Paradox.Graphics
 {
     /// <summary>
     /// A renderable texture view.
     /// </summary>
-    public partial class RenderTarget : GraphicsResourceBase
+    public partial class RenderTarget
     {
+        /// <summary>
+        /// The description of this texture.
+        /// </summary>
         public readonly TextureDescription Description;
 
         /// <summary>
@@ -60,12 +62,6 @@ namespace SiliconStudio.Paradox.Graphics
             {
                 return new Size3(Width, Height, 1);
             }
-        }
-
-        protected override void Destroy()
-        {
-            base.Destroy();
-            Texture.ReleaseInternal();
         }
 
         /// <summary>

@@ -153,7 +153,7 @@ namespace SiliconStudio.Paradox.Effects.Renderers
             Utilities.Dispose(ref IBLBlendState);
             Utilities.Dispose(ref cubemapMesh);
             if (!externRenderTarget)
-                Utilities.Dispose(ref IBLRenderTarget);
+                IBLRenderTarget.Texture.Dispose();
         }
 
         #endregion

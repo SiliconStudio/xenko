@@ -65,7 +65,7 @@ namespace SiliconStudio.Paradox.Graphics
         {
         }
 
-        public override Texture ToTexture(ViewType viewType, int arraySlice, int mipMapSlice)
+        public override Texture CreateTextureView(ViewType viewType, int arraySlice, int mipMapSlice)
         {
             return new Texture2D(GraphicsDevice, this, viewType, arraySlice, mipMapSlice);
         }

@@ -106,6 +106,8 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         internal readonly Texture ParentTexture;
 
+        protected RenderTarget RenderTarget { get; private set; }
+
         private MipMapDescription[] mipmapDescriptions;
 
         protected Texture()
@@ -147,11 +149,32 @@ namespace SiliconStudio.Paradox.Graphics
         protected override void Destroy()
         {
             base.Destroy();
+            if (RenderTarget != null)
+            {
+                RenderTarget.Destroy();
+            }
             if (ParentTexture != null)
             {
                 ParentTexture.ReleaseInternal();
             }
         }
+
+        protected internal override bool OnRecreate()
+        {
+            base.OnRecreate();
+            OnRecreateImpl();
+            if (RenderTarget != null)
+            {
+                RenderTarget.OnRecreate();
+            }
+            return true;
+        }
+
+        protected internal virtual bool OnRecreateImpl()
+        {
+            return true;
+        }
+
 
         /// <summary>
         /// Gets a view on this texture for a particular <see cref="ViewType"/>, array index (or zIndex for Texture3D), and mipmap index.
@@ -160,9 +183,9 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="arrayOrDepthSlice"></param>
         /// <param name="mipMapSlice"></param>
         /// <returns>A new texture object that is bouded to the requested view.</returns>
-        public T ToTexture<T>(ViewType viewType, int arrayOrDepthSlice, int mipMapSlice) where T : Texture
+        public T CreateTextureView<T>(ViewType viewType, int arrayOrDepthSlice, int mipMapSlice) where T : Texture
         {
-            return (T)ToTexture(viewType, arrayOrDepthSlice, mipMapSlice);
+            return (T)CreateTextureView(viewType, arrayOrDepthSlice, mipMapSlice);
         }
 
         /// <summary>
@@ -172,11 +195,18 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="arraySlice"></param>
         /// <param name="mipMapSlice"></param>
         /// <returns>A new texture object that is bouded to the requested view.</returns>
-        public abstract Texture ToTexture(ViewType viewType, int arraySlice, int mipMapSlice);
+        public abstract Texture CreateTextureView(ViewType viewType, int arraySlice, int mipMapSlice);
 
+        /// <summary>
+        /// Gets or create the render target associated to this texture view.
+        /// </summary>
+        /// <returns>RenderTarget.</returns>
         public RenderTarget ToRenderTarget()
         {
-            return ToRenderTarget(ViewType.Single, 0, 0);
+            lock (this)
+            {
+                return RenderTarget ?? (RenderTarget = ToRenderTarget(ViewType.Single, ArraySlice, MipLevel));
+            }
         }
 
         /// <summary>

@@ -83,9 +83,7 @@ namespace SiliconStudio.Paradox.Effects.Processors
                 InternalShadowMapTextures.Remove(texture);
                 Utilities.Dispose(ref texture.ShadowMapDepthBuffer);
                 Utilities.Dispose(ref texture.ShadowMapDepthTexture);
-                Utilities.Dispose(ref texture.ShadowMapRenderTarget);
                 Utilities.Dispose(ref texture.ShadowMapTargetTexture);
-                Utilities.Dispose(ref texture.IntermediateBlurRenderTarget);
                 Utilities.Dispose(ref texture.IntermediateBlurTexture);
             }
             InternalShadowMapTextures.Clear();

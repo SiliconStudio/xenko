@@ -171,7 +171,7 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
 
                 // clear target
                 // TODO: custom clear color?
-                GraphicsDevice.Clear(cubemap.Value.Texture.ToRenderTarget(ViewType.Full, 0, 0), Color.Black);
+                GraphicsDevice.Clear(cubemap.Value.FullRenderTarget, Color.Black);
 
                 // set states
                 GraphicsDevice.SetDepthStencilState(GraphicsDevice.DepthStencilStates.None);

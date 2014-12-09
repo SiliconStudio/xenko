@@ -143,7 +143,7 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
             // TODO: check previous status to dispose the rendertarget?
             if (textureCube != null)
             {
-                RenderTarget = textureCube.ToRenderTarget(ViewType.Full, 0, 0);
+                RenderTarget = textureCube.CreateTextureView(ViewType.Full, 0, 0).ToRenderTarget();
                 DepthStencil = Texture2D.New(textureCube.GraphicsDevice, Size, Size, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil, 6).ToDepthStencilBuffer(false);
             }
         }
@@ -158,12 +158,12 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
             {
                 RenderTargets = new[]
                 {
-                    textureCube.ToRenderTarget(ViewType.Single, 0, 0),
-                    textureCube.ToRenderTarget(ViewType.Single, 1, 0),
-                    textureCube.ToRenderTarget(ViewType.Single, 2, 0),
-                    textureCube.ToRenderTarget(ViewType.Single, 3, 0),
-                    textureCube.ToRenderTarget(ViewType.Single, 4, 0),
-                    textureCube.ToRenderTarget(ViewType.Single, 5, 0)
+                    textureCube.CreateTextureView(ViewType.Single, 0, 0).ToRenderTarget(),
+                    textureCube.CreateTextureView(ViewType.Single, 1, 0).ToRenderTarget(),
+                    textureCube.CreateTextureView(ViewType.Single, 2, 0).ToRenderTarget(),
+                    textureCube.CreateTextureView(ViewType.Single, 3, 0).ToRenderTarget(),
+                    textureCube.CreateTextureView(ViewType.Single, 4, 0).ToRenderTarget(),
+                    textureCube.CreateTextureView(ViewType.Single, 5, 0).ToRenderTarget()
                 };
                 DepthStencil = Texture2D.New(textureCube.GraphicsDevice, Size, Size, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil).ToDepthStencilBuffer(false);
             }

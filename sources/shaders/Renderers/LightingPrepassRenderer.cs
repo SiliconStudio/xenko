@@ -298,7 +298,6 @@ namespace SiliconStudio.Paradox.Effects.Renderers
         {
             base.Unload();
 
-            lightRenderTarget.Dispose();
             lightRenderTarget.Texture.Dispose();
             lightRenderTarget = null;
         }

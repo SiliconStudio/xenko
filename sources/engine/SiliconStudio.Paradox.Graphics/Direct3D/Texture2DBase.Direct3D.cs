@@ -158,7 +158,7 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         /// <inheritdoc/>
-        protected internal override bool OnRecreate()
+        protected internal override bool OnRecreateImpl()
         {
             // Dependency: wait for underlying texture to be recreated
             if (ParentTexture != null && ParentTexture.LifetimeState != GraphicsResourceLifetimeState.Active)

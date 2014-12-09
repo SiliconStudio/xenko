@@ -47,7 +47,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            offlineTarget = Texture2D.New(GraphicsDevice, OfflineWidth, OfflineHeight, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget).DisposeBy(this).ToRenderTarget().DisposeBy(this);
+            offlineTarget = Texture2D.New(GraphicsDevice, OfflineWidth, OfflineHeight, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget).DisposeBy(this).ToRenderTarget();
             depthBuffer = Texture2D.New(GraphicsDevice, OfflineWidth, OfflineHeight, PixelFormat.D16_UNorm, TextureFlags.DepthStencil).DisposeBy(this).ToDepthStencilBuffer(false).DisposeBy(this);
 
             uv = Asset.Load<Texture2D>("uv");
