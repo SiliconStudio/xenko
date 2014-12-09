@@ -102,7 +102,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             AddTemporaryTransform(gammaTransform);
         }
 
-        void IImageEffectParameterKeyDependencies.FillParameterKeyDependencies(List<ParameterKey> dependencies)
+        void IImageEffectParameterKeyDependencies.FillParameterKeyDependencies(HashSet<ParameterKey> dependencies)
         {
             foreach (var transform in CollectTransforms())
             {
@@ -150,7 +150,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             {
                 var transform = enabledTransforms[i];
                 // Update parameters only if transform is active
-                //if (transform.Enabled)
+                //if (transform.Enable)
                 {
                     transform.UpdateParameters(context);
 

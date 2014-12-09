@@ -43,7 +43,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             Context = context;
             GraphicsDevice = Context.GraphicsDevice;
             Assets = context.Services.GetSafeServiceAs<AssetManager>();
-            Enabled = true;
+            Enable = true;
             inputTextures = new Texture[128];
             scopedRenderTargets = new List<RenderTarget>();
             maxInputTextureIndex = -1;
@@ -55,7 +55,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Gets or sets a value indicating whether this post effect is enabled.
         /// </summary>
         /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
-        public bool Enabled { get; set; }
+        public bool Enable { get; set; }
 
         /// <summary>
         /// Gets the context.
@@ -177,7 +177,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         public void Draw(string name = null)
         {
-            if (!Enabled)
+            if (!Enable)
             {
                 return;
             }

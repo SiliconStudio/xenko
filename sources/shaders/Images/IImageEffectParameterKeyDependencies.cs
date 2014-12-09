@@ -20,6 +20,6 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <see cref="ParameterKey"/> that are required indirectly by this effect.
         /// By default this methods does not fill any <see cref="ParameterKey"/> dependencies.
         /// </remarks>
-        void FillParameterKeyDependencies(List<ParameterKey> dependencies);
+        void FillParameterKeyDependencies(HashSet<ParameterKey> dependencies);
     }
 }
