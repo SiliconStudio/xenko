@@ -64,6 +64,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 var shaderSource = new ShaderSourceWithHash() { Source = sourceCode, Path = sourcePath };
                 shaderSource.Hash = ObjectId.FromBytes(Encoding.UTF8.GetBytes(shaderSource.Source));
                 loadedShaderSources[type] = shaderSource;
+                classNameToPath[type] = sourcePath;
             }
         }
 
