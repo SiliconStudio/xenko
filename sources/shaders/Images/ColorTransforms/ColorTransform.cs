@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 using SiliconStudio.Core;
@@ -82,6 +83,16 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <remarks>This method is called just before rendering the ColorTransformGroup that is holding this ColorTransform</remarks>
         public virtual void UpdateParameters(ColorTransformContext context)
         {
+        }
+
+        /// <summary>
+        /// Fills the parameter key dependencies if this effect is depending on a ParameterKey set on the
+        /// <see cref="ImageEffectContext.Parameters"/>. Default is no dependencies.
+        /// </summary>
+        /// <param name="dependencies">The dependencies.</param>
+        public virtual void FillParameterKeyDependencies(List<ParameterKey> dependencies)
+        {
+            // TODO: Should we extract an interface with ImageEffect.FillParameterKeyDependencies
         }
 
         private void InitializeProperties()

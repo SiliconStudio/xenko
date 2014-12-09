@@ -650,113 +650,113 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Include="Images\ToneMap\ColorTransform.cs" />
-    <Compile Include="Images\ToneMap\ColorTransformContext.cs" />
-    <Compile Include="Images\ToneMap\ColorTransformGroup.cs" />
-    <Compile Include="Images\ToneMap\ColorTransformGroupKeys.cs" />
-    <Compile Include="Images\ToneMap\ColorTransformGroupEffect.cs">
+    <Compile Include="Images\ColorTransforms\ColorTransform.cs" />
+    <Compile Include="Images\ColorTransforms\ColorTransformContext.cs" />
+    <Compile Include="Images\ColorTransforms\ColorTransformGroup.cs" />
+    <Compile Include="Images\ColorTransforms\ColorTransformGroupKeys.cs" />
+    <Compile Include="Images\ColorTransforms\ColorTransformGroupEffect.cs">
       <DependentUpon>ColorTransformGroupEffect.pdxfx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Images\ToneMap\ColorTransformGroupShader.cs">
+    <Compile Include="Images\ColorTransforms\ColorTransformGroupShader.cs">
       <DependentUpon>ColorTransformGroupShader.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Images\ToneMap\ColorTransformKeys.cs" />
-    <Compile Include="Images\ToneMap\GammaTransform.cs" />
-    <Compile Include="Images\ToneMap\ToneMapKeys.cs" />
-    <Compile Include="Images\ToneMap\ToneMapEffect.cs">
+    <Compile Include="Images\ColorTransforms\ColorTransformKeys.cs" />
+    <Compile Include="Images\ColorTransforms\GammaTransform.cs" />
+    <Compile Include="Images\ColorTransforms\ToneMap\ToneMapKeys.cs" />
+    <Compile Include="Images\ColorTransforms\ToneMap\ToneMapEffect.cs">
       <DependentUpon>ToneMapEffect.pdxfx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Images\ToneMap\ToneMapCommonOperator.cs" />
-    <Compile Include="Images\ToneMap\ToneMapDragoOperator.cs" />
-    <Compile Include="Images\ToneMap\ToneMapDragoOperatorShader.cs">
+    <Compile Include="Images\ColorTransforms\ToneMap\ToneMapCommonOperator.cs" />
+    <Compile Include="Images\ColorTransforms\ToneMap\ToneMapDragoOperator.cs" />
+    <Compile Include="Images\ColorTransforms\ToneMap\ToneMapDragoOperatorShader.cs">
       <DependentUpon>ToneMapDragoOperatorShader.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Images\ToneMap\ToneMapExponentialOperator.cs" />
-    <Compile Include="Images\ToneMap\ToneMapExponentialOperatorShader.cs">
+    <Compile Include="Images\ColorTransforms\ToneMap\ToneMapExponentialOperator.cs" />
+    <Compile Include="Images\ColorTransforms\ToneMap\ToneMapExponentialOperatorShader.cs">
       <DependentUpon>ToneMapExponentialOperatorShader.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Images\ToneMap\ToneMapHejlDawsonOperator.cs" />
-    <Compile Include="Images\ToneMap\ToneMapLogarithmicOperator.cs" />
-    <Compile Include="Images\ToneMap\ToneMapLogarithmicOperatorShader.cs">
+    <Compile Include="Images\ColorTransforms\ToneMap\ToneMapHejlDawsonOperator.cs" />
+    <Compile Include="Images\ColorTransforms\ToneMap\ToneMapLogarithmicOperator.cs" />
+    <Compile Include="Images\ColorTransforms\ToneMap\ToneMapLogarithmicOperatorShader.cs">
       <DependentUpon>ToneMapLogarithmicOperatorShader.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Images\ToneMap\ToneMapHejlDawsonOperatorShader.cs">
+    <Compile Include="Images\ColorTransforms\ToneMap\ToneMapHejlDawsonOperatorShader.cs">
       <DependentUpon>ToneMapHejlDawsonOperatorShader.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Images\ToneMap\ToneMapMikeDayOperator.cs" />
-    <Compile Include="Images\ToneMap\ToneMapMikeDayOperatorShader.cs">
+    <Compile Include="Images\ColorTransforms\ToneMap\ToneMapMikeDayOperator.cs" />
+    <Compile Include="Images\ColorTransforms\ToneMap\ToneMapMikeDayOperatorShader.cs">
       <DependentUpon>ToneMapMikeDayOperatorShader.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Images\ToneMap\ToneMapCommonOperatorShader.cs">
+    <Compile Include="Images\ColorTransforms\ToneMap\ToneMapCommonOperatorShader.cs">
       <DependentUpon>ToneMapCommonOperatorShader.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Images\ToneMap\ToneMapOperator.cs" />
-    <Compile Include="Images\ToneMap\ColorTransformShader.cs">
+    <Compile Include="Images\ColorTransforms\ToneMap\ToneMapOperator.cs" />
+    <Compile Include="Images\ColorTransforms\ColorTransformShader.cs">
       <DependentUpon>ColorTransformShader.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Images\ToneMap\ToneMapReinhardOperator.cs" />
-    <Compile Include="Images\ToneMap\GammaTransformShader.cs">
+    <Compile Include="Images\ColorTransforms\ToneMap\ToneMapReinhardOperator.cs" />
+    <Compile Include="Images\ColorTransforms\GammaTransformShader.cs">
       <DependentUpon>GammaTransformShader.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Images\ToneMap\ToneMapU2FilmicOperator.cs" />
-    <Compile Include="Images\ToneMap\ToneMapU2FilmicOperatorShader.cs">
+    <Compile Include="Images\ColorTransforms\ToneMap\ToneMapU2FilmicOperator.cs" />
+    <Compile Include="Images\ColorTransforms\ToneMap\ToneMapU2FilmicOperatorShader.cs">
       <DependentUpon>ToneMapU2FilmicOperatorShader.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Images\ToneMap\ToneMapReinhardOperatorShader.cs">
+    <Compile Include="Images\ColorTransforms\ToneMap\ToneMapReinhardOperatorShader.cs">
       <DependentUpon>ToneMapReinhardOperatorShader.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Images\ToneMap\ToneMapOperatorShader.cs">
+    <Compile Include="Images\ColorTransforms\ToneMap\ToneMapOperatorShader.cs">
       <DependentUpon>ToneMapOperatorShader.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Images\ToneMap\ToneMapShader.cs">
+    <Compile Include="Images\ColorTransforms\ToneMap\ToneMapShader.cs">
       <DependentUpon>ToneMapShader.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Images\ToneMap\ToneMap.cs" />
+    <Compile Include="Images\ColorTransforms\ToneMap\ToneMap.cs" />
     <Compile Include="Renderers\DirectLightData.cs" />
     <Compile Include="Renderers\LightForwardModelRendererExtensions.cs" />
     <Compile Include="Renderers\LightingGroupInfo.cs" />
@@ -2131,63 +2131,63 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LuminanceUtils.cs</LastGenOutput>
     </None>
-    <None Include="Images\ToneMap\ColorTransformGroupEffect.pdxfx">
+    <None Include="Images\ColorTransforms\ColorTransformGroupEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ColorTransformGroupEffect.cs</LastGenOutput>
     </None>
-    <None Include="Images\ToneMap\ColorTransformGroupShader.pdxsl">
+    <None Include="Images\ColorTransforms\ColorTransformGroupShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ColorTransformGroupShader.cs</LastGenOutput>
     </None>
-    <None Include="Images\ToneMap\ToneMapEffect.pdxfx">
+    <None Include="Images\ColorTransforms\ToneMap\ToneMapEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ToneMapEffect.cs</LastGenOutput>
     </None>
-    <None Include="Images\ToneMap\ToneMapDragoOperatorShader.pdxsl">
+    <None Include="Images\ColorTransforms\ToneMap\ToneMapDragoOperatorShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ToneMapDragoOperatorShader.cs</LastGenOutput>
     </None>
-    <None Include="Images\ToneMap\ToneMapExponentialOperatorShader.pdxsl">
+    <None Include="Images\ColorTransforms\ToneMap\ToneMapExponentialOperatorShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ToneMapExponentialOperatorShader.cs</LastGenOutput>
     </None>
-    <None Include="Images\ToneMap\ToneMapLogarithmicOperatorShader.pdxsl">
+    <None Include="Images\ColorTransforms\ToneMap\ToneMapLogarithmicOperatorShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ToneMapLogarithmicOperatorShader.cs</LastGenOutput>
     </None>
-    <None Include="Images\ToneMap\ToneMapHejlDawsonOperatorShader.pdxsl">
+    <None Include="Images\ColorTransforms\ToneMap\ToneMapHejlDawsonOperatorShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ToneMapHejlDawsonOperatorShader.cs</LastGenOutput>
     </None>
-    <None Include="Images\ToneMap\ToneMapMikeDayOperatorShader.pdxsl">
+    <None Include="Images\ColorTransforms\ToneMap\ToneMapMikeDayOperatorShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ToneMapMikeDayOperatorShader.cs</LastGenOutput>
     </None>
-    <None Include="Images\ToneMap\ToneMapCommonOperatorShader.pdxsl">
+    <None Include="Images\ColorTransforms\ToneMap\ToneMapCommonOperatorShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ToneMapCommonOperatorShader.cs</LastGenOutput>
     </None>
-    <None Include="Images\ToneMap\ColorTransformShader.pdxsl">
+    <None Include="Images\ColorTransforms\ColorTransformShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ColorTransformShader.cs</LastGenOutput>
     </None>
-    <None Include="Images\ToneMap\GammaTransformShader.pdxsl">
+    <None Include="Images\ColorTransforms\GammaTransformShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>GammaTransformShader.cs</LastGenOutput>
     </None>
-    <None Include="Images\ToneMap\ToneMapU2FilmicOperatorShader.pdxsl">
+    <None Include="Images\ColorTransforms\ToneMap\ToneMapU2FilmicOperatorShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ToneMapU2FilmicOperatorShader.cs</LastGenOutput>
     </None>
-    <None Include="Images\ToneMap\ToneMapReinhardOperatorShader.pdxsl">
+    <None Include="Images\ColorTransforms\ToneMap\ToneMapReinhardOperatorShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ToneMapReinhardOperatorShader.cs</LastGenOutput>
     </None>
-    <None Include="Images\ToneMap\ToneMapOperatorShader.pdxsl">
+    <None Include="Images\ColorTransforms\ToneMap\ToneMapOperatorShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ToneMapOperatorShader.cs</LastGenOutput>
     </None>
-    <None Include="Images\ToneMap\ToneMapShader.pdxsl">
+    <None Include="Images\ColorTransforms\ToneMap\ToneMapShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ToneMapShader.cs</LastGenOutput>
     </None>

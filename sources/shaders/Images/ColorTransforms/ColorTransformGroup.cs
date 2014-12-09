@@ -102,11 +102,32 @@ namespace SiliconStudio.Paradox.Effects.Images
             AddTemporaryTransform(gammaTransform);
         }
 
+        public override void FillParameterKeyDependencies(List<ParameterKey> dependencies)
+        {
+            foreach (var transform in CollectTransforms())
+            {
+                transform.FillParameterKeyDependencies(dependencies);
+            }
+        }
+
         protected void AddTemporaryTransform(ColorTransform transform)
         {
             if (transform == null) throw new ArgumentNullException("transform");
             if (transform.Shader == null) throw new ArgumentOutOfRangeException("transform", "Transform parameter must have a Shader not null");
             collectTransforms.Add(transform);
+        }
+
+        private List<ColorTransform> CollectTransforms()
+        {
+            collectTransforms.Clear();
+            CollectPreTransforms();
+            collectTransforms.AddRange(transforms);
+            CollectPostTransforms();
+
+            // Copy all parameters from ColorTransform to effect parameters
+            enabledTransforms.Clear();
+            enabledTransforms.AddRange(collectTransforms);
+            return enabledTransforms;
         }
 
         private void CollectTransformsParameters()
@@ -118,14 +139,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
 
             // Grab all color transforms
-            collectTransforms.Clear();
-            CollectPreTransforms();
-            collectTransforms.AddRange(transforms);
-            CollectPostTransforms();
-
-            // Copy all parameters from ColorTransform to effect parameters
-            enabledTransforms.Clear();
-            enabledTransforms.AddRange(collectTransforms);
+            CollectTransforms();
 
             transformsParameters.Clear();
             for (int i = 0; i < enabledTransforms.Count; i++)
