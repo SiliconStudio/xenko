@@ -135,15 +135,6 @@ namespace SiliconStudio.Paradox.Effects.Images
         }
 
         /// <summary>
-        /// Fills the parameter key dependencies if this effect is depending on a ParameterKey set on the
-        /// <see cref="ImageEffectContext.Parameters"/>. Default is no dependencies.
-        /// </summary>
-        /// <param name="dependencies">The dependencies.</param>
-        public virtual void FillParameterKeyDependencies(List<ParameterKey> dependencies)
-        {
-        }
-
-        /// <summary>
         /// Sets the render target output.
         /// </summary>
         /// <param name="view">The render target output view.</param>

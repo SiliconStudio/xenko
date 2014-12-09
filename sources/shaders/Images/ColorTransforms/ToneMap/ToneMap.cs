@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace SiliconStudio.Paradox.Effects.Images
@@ -9,7 +10,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// A tonemap effect.
     /// </summary>
-    public class ToneMap : ColorTransform
+    public class ToneMap : ColorTransform, IImageEffectParameterKeyDependencies
     {
         private readonly float[] weightedLuminances = new float[16];
         private int currentWeightedLuminanceIndex = 0;
@@ -138,6 +139,12 @@ namespace SiliconStudio.Paradox.Effects.Images
             {
                 Parameters.Set(ToneMapShaderKeys.Brightness, value);
             }
+        }
+
+
+        void IImageEffectParameterKeyDependencies.FillParameterKeyDependencies(List<ParameterKey> dependencies)
+        {
+            dependencies.Add(ToneMapKeys.LuminanceResult);
         }
 
         public override void UpdateParameters(ColorTransformContext context)

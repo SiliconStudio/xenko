@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
-    public class ColorTransformGroup : ImageEffect
+    public class ColorTransformGroup : ImageEffect, IImageEffectParameterKeyDependencies
     {
         private readonly ParameterCollection transformsParameters;
 
@@ -102,11 +102,15 @@ namespace SiliconStudio.Paradox.Effects.Images
             AddTemporaryTransform(gammaTransform);
         }
 
-        public override void FillParameterKeyDependencies(List<ParameterKey> dependencies)
+        void IImageEffectParameterKeyDependencies.FillParameterKeyDependencies(List<ParameterKey> dependencies)
         {
             foreach (var transform in CollectTransforms())
             {
-                transform.FillParameterKeyDependencies(dependencies);
+                var effectDepdencies = transform as IImageEffectParameterKeyDependencies;
+                if (effectDepdencies != null)
+                {
+                    effectDepdencies.FillParameterKeyDependencies(dependencies);
+                }
             }
         }
 

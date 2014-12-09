@@ -605,6 +605,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Images\IImageEffectParameterKeyDependencies.cs" />
     <Compile Include="Images\ImageEffects.cs">
       <SubType>Code</SubType>
     </Compile>

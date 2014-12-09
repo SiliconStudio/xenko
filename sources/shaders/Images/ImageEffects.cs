@@ -72,23 +72,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             foreach (var effectStep in effectSteps)
             {
-                
-
-
-
-
-
-
-
-
-
             }
-
-
-
-
-
-
         }
 
         protected virtual ColorTransformGroup CreateDefaultColorTransformGroup()
