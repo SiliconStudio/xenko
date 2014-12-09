@@ -326,9 +326,14 @@ namespace NShader
                         errorCategory = TaskErrorCategory.Error;
                     }
 
+                    // Make sure that we won't pass nay null to VS as it will crash it
+                    var filePath = message.Span.File ?? string.Empty;
+                    var messageText = message.Text ?? string.Empty;
+
+
                     if (taskProvider != null && errorCategory == TaskErrorCategory.Error)
                     {
-                        var task = source.CreateErrorTaskItem(ConvertToTextSpan(message.Span), message.Span.File, message.Text, TaskPriority.High, TaskCategory.CodeSense, MARKERTYPE.MARKER_CODESENSE_ERROR, TaskErrorCategory.Error);
+                        var task = source.CreateErrorTaskItem(ConvertToTextSpan(message.Span), filePath, messageText, TaskPriority.High, TaskCategory.CodeSense, MARKERTYPE.MARKER_CODESENSE_ERROR, TaskErrorCategory.Error);
                         taskProvider.Tasks.Add(task);
                     }
                     else
@@ -337,8 +342,8 @@ namespace NShader
                         {
                             ErrorCategory = errorCategory,
                             Category = TaskCategory.BuildCompile,
-                            Text = message.Text,
-                            Document = message.Span.File,
+                            Text = messageText,
+                            Document = filePath,
                             Line = message.Span.Line - 1,
                             Column = message.Span.Column - 1,
                             // HierarchyItem = hierarchyItem // TODO Add hierarchy the file is associated to
