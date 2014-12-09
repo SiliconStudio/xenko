@@ -36,6 +36,8 @@ namespace SiliconStudio.Paradox.Engine
         protected internal override void OnSystemAdd()
         {
             renderSystem = Services.GetSafeServiceAs<RenderSystem>();
+
+            renderSystem.Pipelines.CollectionChanged += Pipelines_CollectionChanged;
         }
 
         protected override AssociatedData GenerateAssociatedData(Entity entity)
@@ -48,32 +50,80 @@ namespace SiliconStudio.Paradox.Engine
             associatedData.RenderModels = new List<KeyValuePair<ModelRendererState, RenderModel>>();
 
             // Initialize a RenderModel for every pipeline
-            // TODO: Track added/removed pipelines?
-            var modelInstance = associatedData.ModelComponent;
-
             foreach (var pipeline in renderSystem.Pipelines)
             {
-                var modelRenderState = pipeline.GetOrCreateModelRendererState();
+                CreateRenderModel(associatedData, pipeline);
+            }
+        }
 
-                // If the model is not accepted
-                if (!modelRenderState.IsValid || !modelRenderState.AcceptModel(modelInstance))
-                {
-                    continue;
-                }
+        private static void CreateRenderModel(AssociatedData associatedData, RenderPipeline pipeline)
+        {
+            var modelInstance = associatedData.ModelComponent;
+            var modelRenderState = pipeline.GetOrCreateModelRendererState();
 
-                var renderModel = new RenderModel(pipeline, modelInstance);
-                if (renderModel.RenderMeshes == null)
+            // If the model is not accepted
+            if (!modelRenderState.IsValid || !modelRenderState.AcceptModel(modelInstance))
+            {
+                return;
+            }
+
+            var renderModel = new RenderModel(pipeline, modelInstance);
+            if (renderModel.RenderMeshes == null)
+            {
+                return;
+            }
+
+            // Register RenderModel
+            associatedData.RenderModels.Add(new KeyValuePair<ModelRendererState, RenderModel>(modelRenderState, renderModel));
+        }
+
+        private static void DestroyRenderModel(AssociatedData associatedData, RenderPipeline pipeline)
+        {
+            // Not sure if it's worth making RenderModels a Dictionary<RenderPipeline, List<X>>
+            // (rationale: reloading of pipeline is probably rare enough and we don't want to add so many objects and slow normal rendering)
+            // Probably need to worry only if it comes out in a VTune
+            for (int index = 0; index < associatedData.RenderModels.Count; index++)
+            {
+                var renderModel = associatedData.RenderModels[index];
+                if (renderModel.Value.Pipeline == pipeline)
                 {
-                    continue;
+                    DestroyRenderModel(renderModel.Value);
+                    associatedData.RenderModels.SwapRemoveAt(index--);
                 }
-                
-                // Register RenderModel
-                associatedData.RenderModels.Add(new KeyValuePair<ModelRendererState, RenderModel>(modelRenderState, renderModel));
+            }
+        }
+
+        private static void DestroyRenderModel(RenderModel renderModel)
+        {
+            // TODO: Unload resources (need opposite of ModelRenderer.PrepareModelForRendering)
+            // (not sure if we actually create anything non-managed?)
+        }
+
+        private void Pipelines_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        {
+            var pipeline = (RenderPipeline)e.Item;
+
+            // Instantiate/destroy render model for every tracked entity
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    foreach (var matchingEntity in enabledEntities)
+                        CreateRenderModel(matchingEntity.Value, pipeline);
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    foreach (var matchingEntity in enabledEntities)
+                        DestroyRenderModel(matchingEntity.Value, pipeline);
+                    break;
             }
         }
 
         protected override void OnEntityRemoved(Entity entity, AssociatedData data)
         {
+            foreach (var renderModel in data.RenderModels)
+            {
+                DestroyRenderModel(renderModel.Value);
+            }
+
             base.OnEntityRemoved(entity, data);
         }
 

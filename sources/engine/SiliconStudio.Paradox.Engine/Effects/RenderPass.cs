@@ -53,7 +53,7 @@ namespace SiliconStudio.Paradox.Effects
                         // Check consistency of Parent before setting it
                         if (processor.Pass != this)
                             throw new InvalidOperationException("Renderer.Pass is not attached to a this pass..");
-                        //processor.Pass = null;
+                        processor.Pass = null;
                         break;
                 }
             };
