@@ -150,7 +150,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
             var realShaderSource = glslShaderCode.ToString();
 
             // optimize shader
-            var optShaderSource = RunOptimizer(realShaderSource, isOpenGLES, false, pipelineStage == PipelineStage.Vertex);
+            var optShaderSource = RunOptimizer(realShaderSource, isOpenGLES, isOpenGLES3, pipelineStage == PipelineStage.Vertex);
             if (!String.IsNullOrEmpty(optShaderSource))
                 realShaderSource = optShaderSource;
 
