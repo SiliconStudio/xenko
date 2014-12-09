@@ -87,7 +87,12 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
             if (isOpenGLES)
             {
                 glslShaderWriter.TrimFloatSuffix = true;
-                glslShaderWriter.GenerateUniformBlocks = false;
+
+                if (compilerParameters.Get(CompilerParameters.GraphicsProfileKey) >= GraphicsProfile.Level_10_0)
+                    glslShaderWriter.GenerateUniformBlocks = true;
+                else
+                    glslShaderWriter.GenerateUniformBlocks = false;
+
                 foreach (var variable in glslShader.Declarations.OfType<Variable>())
                 {
                     if (variable.Qualifiers.Contains(ParameterQualifier.In))
@@ -128,6 +133,11 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
 
             if (isOpenGLES)
             {
+                if (glslShaderWriter.GenerateUniformBlocks)
+                    glslShaderCode
+                        .AppendLine("#extension GL_ARB_gpu_shader5 : enable")
+                        .AppendLine();
+
                 if (pipelineStage == PipelineStage.Pixel)
                     glslShaderCode
                         .AppendLine("precision highp float;")
