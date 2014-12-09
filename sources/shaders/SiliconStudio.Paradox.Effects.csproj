@@ -615,9 +615,9 @@
     <Compile Include="Images\ImageScaler\ImageScaler.cs" />
     <Compile Include="Images\ImageScaler\ImageScalerShader.Extensions.cs" />
     <Compile Include="Images\ImageEffectBase.cs" />
-    <Compile Include="Images\ImageEffectBaseExtensions.cs" />
+    <Compile Include="Images\ImageEffectBase.Extensions.cs" />
     <Compile Include="Images\ImageEffectContext.cs" />
-    <Compile Include="Images\ImageEffect.cs" />
+    <Compile Include="Images\ImageShaderEffect.Extensions.cs" />
     <Compile Include="Images\ImageScaler\ImageScalerShader.cs">
       <DependentUpon>ImageScalerShader.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>

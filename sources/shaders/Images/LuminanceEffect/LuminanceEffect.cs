@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     public class LuminanceEffect : ImageEffectBase
     {
         private readonly PixelFormat luminanceFormat;
-        private readonly ImageEffect luminanceLogEffect;
+        private readonly ImageEffectShader luminanceLogEffect;
         private readonly RenderTarget luminance1x1;
         private readonly GaussianBlur blur;
 
@@ -29,7 +29,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <param name="luminanceFormat">The luminance format.</param>
         /// <param name="luminanceLogEffect">The luminance log effect.</param>
         /// <exception cref="System.ArgumentNullException">lunkinanceLogShader</exception>
-        public LuminanceEffect(ImageEffectContext context, PixelFormat luminanceFormat = PixelFormat.R16_Float, ImageEffect luminanceLogEffect = null) : base(context)
+        public LuminanceEffect(ImageEffectContext context, PixelFormat luminanceFormat = PixelFormat.R16_Float, ImageEffectShader luminanceLogEffect = null) : base(context)
         {
             // Check luminance format
             if (luminanceFormat.IsCompressed() || luminanceFormat.IsPacked() || luminanceFormat.IsTypeless() || luminanceFormat == PixelFormat.None)

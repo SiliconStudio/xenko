@@ -10,7 +10,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// Post effect using an <see cref="Effect"/> (either pdxfx or pdxsl).
     /// </summary>
-    public class ImageEffect : ImageEffectBase
+    public class ImageEffectShader : ImageEffectBase
     {
         private readonly DefaultEffectInstance effectInstance;
 
@@ -19,24 +19,24 @@ namespace SiliconStudio.Paradox.Effects.Images
         private readonly List<ParameterCollection> parameterCollections;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImageEffect" /> class.
+        /// Initializes a new instance of the <see cref="ImageEffectShader" /> class.
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="effectName">Name of the shader.</param>
         /// <exception cref="System.ArgumentNullException">effectName</exception>
-        public ImageEffect(ImageEffectContext context, string effectName)
+        public ImageEffectShader(ImageEffectContext context, string effectName)
             : this(context, effectName, (ParameterCollection[])null)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImageEffect" /> class.
+        /// Initializes a new instance of the <see cref="ImageEffectShader" /> class.
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="effectName">Name of the shader.</param>
         /// <param name="sharedParameterCollections">The shared parameters.</param>
         /// <exception cref="System.ArgumentNullException">effectName</exception>
-        public ImageEffect(ImageEffectContext context, string effectName, params ParameterCollection[] sharedParameterCollections)
+        public ImageEffectShader(ImageEffectContext context, string effectName, params ParameterCollection[] sharedParameterCollections)
             : base(context)
         {
             if (effectName == null) throw new ArgumentNullException("effectName");

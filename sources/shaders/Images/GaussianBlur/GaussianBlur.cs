@@ -18,8 +18,8 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// </remarks>
     public sealed class GaussianBlur : ImageEffectBase
     {
-        private readonly ImageEffect blurH;
-        private readonly ImageEffect blurV;
+        private readonly ImageEffectShader blurH;
+        private readonly ImageEffectShader blurV;
 
         private Vector2[] offsetsWeights;
 
@@ -35,11 +35,11 @@ namespace SiliconStudio.Paradox.Effects.Images
             : base(context)
         {
             // Use shared SharedParameters for blurH and blurV
-            blurH = new ImageEffect(context, "GaussianBlurEffect", Parameters).DisposeBy(this);
+            blurH = new ImageEffectShader(context, "GaussianBlurEffect", Parameters).DisposeBy(this);
             // Setup specific Horizontal parameter for blurH
             blurH.Parameters.Set(GaussianBlurKeys.VerticalBlur, false);
 
-            blurV = new ImageEffect(context, "GaussianBlurEffect", Parameters).DisposeBy(this);
+            blurV = new ImageEffectShader(context, "GaussianBlurEffect", Parameters).DisposeBy(this);
             // Setup specific Vertical parameter for blurV
             blurV.Parameters.Set(GaussianBlurKeys.VerticalBlur, true);
 

@@ -10,7 +10,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     {
         private readonly ParameterCollection transformsParameters;
 
-        private readonly ImageEffect transformGroupEffect;
+        private readonly ImageEffectShader transformGroupEffect;
 
         private readonly Dictionary<ParameterCompositeKey, ParameterKey> compositeKeys;
 
@@ -41,7 +41,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             gammaTransform = new GammaTransform();
 
-            transformGroupEffect = new ImageEffect(context, colorTransformGroupEffect, Parameters);
+            transformGroupEffect = new ImageEffectShader(context, colorTransformGroupEffect, Parameters);
 
             // we are adding parameter collections after as transform parameters should override previous parameters
             transformGroupEffect.ParameterCollections.Add(transformsParameters);

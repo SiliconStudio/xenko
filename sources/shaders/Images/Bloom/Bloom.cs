@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     {
         private readonly GaussianBlur blur;
 
-        private readonly ImageEffect blurCombine = null; // TODO
+        private readonly ImageEffectShader blurCombine = null; // TODO
         private readonly List<RenderTarget> resultList = new List<RenderTarget>();
 
         /// <summary>

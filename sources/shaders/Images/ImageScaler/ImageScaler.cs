@@ -11,7 +11,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// </summary>
     /// <remarks>This effect can be used for downscaling or upscaling if the output rendertarget is smaller/larger than
     /// the input texture</remarks>
-    public sealed class ImageScaler : ImageEffect
+    public sealed class ImageScaler : ImageEffectShader
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageScaler"/> class.
