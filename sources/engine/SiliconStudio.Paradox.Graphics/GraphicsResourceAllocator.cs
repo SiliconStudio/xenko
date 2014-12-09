@@ -318,6 +318,11 @@ namespace SiliconStudio.Paradox.Graphics
 
         private void UpdateCounter(GraphicsResourceLink resourceLink, int deltaCount)
         {
+            if ((resourceLink.ReferenceCount + deltaCount) < 0)
+            {
+                throw new InvalidOperationException("Invalid decrement on reference count (must be >=0 after decrement). Current reference count: [{0}] Decrement: [{1}]".ToFormat(resourceLink.ReferenceCount, deltaCount));
+            }
+
             resourceLink.ReferenceCount += deltaCount;
             resourceLink.AccessTotalCount++;
             resourceLink.AccessCountSinceLastRecycle++;
