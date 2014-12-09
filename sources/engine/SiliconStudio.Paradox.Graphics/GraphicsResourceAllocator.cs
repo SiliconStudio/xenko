@@ -211,7 +211,7 @@ namespace SiliconStudio.Paradox.Graphics
             {
                 if (resourceLink.ReferenceCount == 0)
                 {
-                    UpdateCounter(resourceLink, 0);
+                    UpdateCounter(resourceLink, 1);
                     return (TResource)resourceLink.Resource;
                 }
             }
