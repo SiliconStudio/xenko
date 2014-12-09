@@ -120,11 +120,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
         /// Gets or sets the font anti-aliasing mode. By default, levels of grays are used.
         /// </summary>
         /// <userdoc>
-        /// The type of anti-aliasing to use when rendering the font.
-        /// 'Aliased' does not perform any anti-aliasing. 
-        /// 'Grayscale' uses several levels of gray smooth the character edges. 
-        /// 'ClearType' uses the display red/green/blue sub-pixels to smooth intensity the character.
-        /// 'Default' is equivalent to 'Grayscale'.
+        /// The type of anti-aliasing to use when rendering the font. 
         /// </userdoc>
         [DataMember(110)]
         public FontAntiAliasMode AntiAlias { get; set; }
