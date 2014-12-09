@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     public class ImageEffectContext : ComponentBase
     {
         private const string SharedImageEffectContextKey = "__SharedImageEffectContext__";
-        private readonly Dictionary<Type, ImageEffectBase> sharedEffects = new Dictionary<Type, ImageEffectBase>();
+        private readonly Dictionary<Type, ImageEffect> sharedEffects = new Dictionary<Type, ImageEffect>();
 
         private readonly GraphicsResourceAllocator allocator;
 
@@ -63,7 +63,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         public IServiceRegistry Services { get; private set; }
 
         /// <summary>
-        /// Gets the parameters shared with all <see cref="ImageEffectBase"/> instance.
+        /// Gets the parameters shared with all <see cref="ImageEffect"/> instance.
         /// </summary>
         /// <value>The parameters.</value>
         public ParameterCollection Parameters { get; private set; }
@@ -85,15 +85,15 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         /// <typeparam name="T">Type of the shared effect (mush have a constructor taking a <see cref="ImageEffectContext"/></typeparam>
         /// <returns>A singleton instance of <typeparamref name="T"/></returns>
-        public T GetSharedEffect<T>() where T : ImageEffectBase
+        public T GetSharedEffect<T>() where T : ImageEffect
         {
             // TODO: Add a way to support custom constructor
             lock (sharedEffects)
             {
-                ImageEffectBase effect;
+                ImageEffect effect;
                 if (!sharedEffects.TryGetValue(typeof(T), out effect))
                 {
-                    effect = (ImageEffectBase)Activator.CreateInstance(typeof(T), this);
+                    effect = (ImageEffect)Activator.CreateInstance(typeof(T), this);
                     sharedEffects.Add(typeof(T), effect);
                 }
 

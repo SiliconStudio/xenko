@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <li>They must scale to a single direction (either down or up scale, but not both).</li>
     /// </ul>
     /// </remarks>
-    public class ImageMultiScaler : ImageEffectBase
+    public class ImageMultiScaler : ImageEffect
     {
         private readonly List<RenderTarget> outputTextures = new List<RenderTarget>();
 

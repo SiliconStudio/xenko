@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// Luminance effect.
     /// </summary>
-    public class LuminanceEffect : ImageEffectBase
+    public class LuminanceEffect : ImageEffect
     {
         private readonly PixelFormat luminanceFormat;
         private readonly ImageEffectShader luminanceLogEffect;

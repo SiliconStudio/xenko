@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// - a separable 1D horizontal and vertical blur
     /// - linear filtering to reduce the number of taps
     /// </remarks>
-    public sealed class GaussianBlur : ImageEffectBase
+    public sealed class GaussianBlur : ImageEffect
     {
         private readonly ImageEffectShader blurH;
         private readonly ImageEffectShader blurV;

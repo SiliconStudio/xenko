@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// Post effect base class.
     /// </summary>
-    public abstract class ImageEffectBase : ComponentBase
+    public abstract class ImageEffect : ComponentBase
     {
         private readonly Texture[] inputTextures;
         private int maxInputTextureIndex;
@@ -31,12 +31,12 @@ namespace SiliconStudio.Paradox.Effects.Images
         private ImageScaler scaler;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImageEffectBase" /> class.
+        /// Initializes a new instance of the <see cref="ImageEffect" /> class.
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="name">The name.</param>
         /// <exception cref="System.ArgumentNullException">context</exception>
-        protected ImageEffectBase(ImageEffectContext context, string name = null) : base(name)
+        protected ImageEffect(ImageEffectContext context, string name = null) : base(name)
         {
             if (context == null) throw new ArgumentNullException("context");
 

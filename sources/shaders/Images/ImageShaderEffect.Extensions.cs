@@ -10,7 +10,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// Post effect using an <see cref="Effect"/> (either pdxfx or pdxsl).
     /// </summary>
-    public class ImageEffectShader : ImageEffectBase
+    public class ImageEffectShader : ImageEffect
     {
         private readonly DefaultEffectInstance effectInstance;
 

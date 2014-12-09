@@ -9,7 +9,7 @@ using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
-    public class Bloom : ImageEffectBase
+    public class Bloom : ImageEffect
     {
         private readonly GaussianBlur blur;
 

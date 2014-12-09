@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
-    public class ColorTransformGroup : ImageEffectBase
+    public class ColorTransformGroup : ImageEffect
     {
         private readonly ParameterCollection transformsParameters;
 
