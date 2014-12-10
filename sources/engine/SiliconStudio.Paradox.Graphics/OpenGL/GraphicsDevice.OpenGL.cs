@@ -919,7 +919,7 @@ namespace SiliconStudio.Paradox.Graphics
 
                 GL.GenFramebuffers(1, out framebufferId);
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, framebufferId);
-                int firstRenderTargets = -1;
+                int lastRenderTargetIndex = -1;
                 if (renderTargets != null)
                 {
                     for (int i = 0; i < renderTargets.Length; ++i)
@@ -927,7 +927,7 @@ namespace SiliconStudio.Paradox.Graphics
                         // TODO: Add support for render buffer
                         if (renderTargets[i] != null)
                         {
-                            firstRenderTargets = i;
+                            lastRenderTargetIndex = i;
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
                             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0 + i, TextureTarget2d.Texture2D, renderTargets[i].ResourceId, 0);
 #else
@@ -938,8 +938,17 @@ namespace SiliconStudio.Paradox.Graphics
                 }
 
 #if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                GL.DrawBuffer(firstRenderTargets != -1 ? DrawBufferMode.ColorAttachment0 : DrawBufferMode.None);
-                GL.ReadBuffer(firstRenderTargets != -1 ? ReadBufferMode.ColorAttachment0 : ReadBufferMode.None);
+                if (lastRenderTargetIndex > 0)
+                {
+                    var drawBuffers = new DrawBuffersEnum[lastRenderTargetIndex + 1];
+                    for (var i = 0; i <= lastRenderTargetIndex; ++i)
+                        drawBuffers[i] = DrawBuffersEnum.ColorAttachment0 + i;
+                    GL.DrawBuffers(lastRenderTargetIndex + 1, drawBuffers);
+                }
+                else
+                {
+                    GL.DrawBuffer(lastRenderTargetIndex != -1 ? DrawBufferMode.ColorAttachment0 : DrawBufferMode.None);
+                }
 #endif
 
                 if (depthStencilBuffer != null)
