@@ -12,6 +12,8 @@ namespace SiliconStudio.Presentation.Controls
     public class Vector4Editor : Control
     {
         private bool interlock;
+        private bool templateApplied;
+        private DependencyProperty initializingProperty;
 
         /// <summary>
         /// Identifies the <see cref="Vector"/> dependency property.
@@ -42,6 +44,14 @@ namespace SiliconStudio.Presentation.Controls
         /// Identifies the <see cref="Length"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty LengthProperty = DependencyProperty.Register("Length", typeof(float), typeof(Vector4Editor), new FrameworkPropertyMetadata(0.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnPolarPropertyChanged, CoerceLengthValue));
+
+        /// <inheritdoc/>
+        public override void OnApplyTemplate()
+        {
+            templateApplied = false;
+            base.OnApplyTemplate();
+            templateApplied = true;
+        }
 
         /// <summary>
         /// The <see cref="Vector4"/> associated to this control.
@@ -78,6 +88,10 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         private void OnVectorValueChanged()
         {
+            bool isInitializing = !templateApplied && initializingProperty == null;
+            if (isInitializing)
+                initializingProperty = VectorProperty;
+
             if (!interlock)
             {
                 interlock = true;
@@ -90,6 +104,8 @@ namespace SiliconStudio.Presentation.Controls
             }
 
             UpdateBinding(VectorProperty);
+            if (isInitializing)
+                initializingProperty = null;
         }
 
         /// <summary>
@@ -98,6 +114,10 @@ namespace SiliconStudio.Presentation.Controls
         /// <param name="e">The dependency property that has changed.</param>
         private void OnCartesianValueChanged(DependencyPropertyChangedEventArgs e)
         {
+            bool isInitializing = !templateApplied && initializingProperty == null;
+            if (isInitializing)
+                initializingProperty = e.Property;
+
             if (!interlock)
             {
                 interlock = true;
@@ -117,6 +137,8 @@ namespace SiliconStudio.Presentation.Controls
             }
 
             UpdateBinding(e.Property);
+            if (isInitializing)
+                initializingProperty = null;
         }
 
         /// <summary>
@@ -125,6 +147,10 @@ namespace SiliconStudio.Presentation.Controls
         /// <param name="e">The dependency property that has changed.</param>
         private void OnLengthValueChanged(DependencyPropertyChangedEventArgs e)
         {
+            bool isInitializing = !templateApplied && initializingProperty == null;
+            if (isInitializing)
+                initializingProperty = LengthProperty;
+            
             if (!interlock)
             {
                 interlock = true;
@@ -140,6 +166,8 @@ namespace SiliconStudio.Presentation.Controls
             }
 
             UpdateBinding(e.Property);
+            if (isInitializing)
+                initializingProperty = null;
         }
 
         /// <summary>
@@ -148,9 +176,12 @@ namespace SiliconStudio.Presentation.Controls
         /// <param name="dependencyProperty">The dependency property.</param>
         private void UpdateBinding(DependencyProperty dependencyProperty)
         {
-            BindingExpression expression = GetBindingExpression(dependencyProperty);
-            if (expression != null)
-                expression.UpdateSource();
+            if (dependencyProperty != initializingProperty)
+            {
+                BindingExpression expression = GetBindingExpression(dependencyProperty);
+                if (expression != null)
+                    expression.UpdateSource();
+            }
         }
 
         /// <summary>
