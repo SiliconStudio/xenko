@@ -24,6 +24,7 @@ using OpenTK.Platform.iPhoneOS;
 #endif
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
+using DrawBuffersEnum = OpenTK.Graphics.ES30.DrawBufferMode;
 #if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
 using BeginMode = OpenTK.Graphics.ES30.PrimitiveType;
 using ProgramParameter = OpenTK.Graphics.ES30.GetProgramParameterName;
@@ -937,14 +938,14 @@ namespace SiliconStudio.Paradox.Graphics
                     }
                 }
 
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                if (lastRenderTargetIndex > 0)
+                if (!IsOpenGLES2 && lastRenderTargetIndex > 0)
                 {
                     var drawBuffers = new DrawBuffersEnum[lastRenderTargetIndex + 1];
                     for (var i = 0; i <= lastRenderTargetIndex; ++i)
                         drawBuffers[i] = DrawBuffersEnum.ColorAttachment0 + i;
                     GL.DrawBuffers(lastRenderTargetIndex + 1, drawBuffers);
                 }
+#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 else
                 {
                     GL.DrawBuffer(lastRenderTargetIndex != -1 ? DrawBufferMode.ColorAttachment0 : DrawBufferMode.None);
