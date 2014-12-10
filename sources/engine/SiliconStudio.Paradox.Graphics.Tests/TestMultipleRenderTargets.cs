@@ -83,7 +83,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             textures = new Texture[3]
             {
                 Texture2D.New(GraphicsDevice, 800, 480, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource),
-                Texture2D.New(GraphicsDevice, 800, 480, PixelFormat.R32_Float, TextureFlags.RenderTarget | TextureFlags.ShaderResource),
+                Texture2D.New(GraphicsDevice, 800, 480, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource),
                 Texture2D.New(GraphicsDevice, 800, 480, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource),
             };
             renderTargets[0] = textures[0].ToRenderTarget();
