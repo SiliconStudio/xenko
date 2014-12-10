@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <value>
         /// The render target key.
         /// </value>
-        public RenderTarget[] RenderTargets { get; set; }
+        public Texture[] RenderTargets { get; set; }
 
         /// <summary>
         /// Gets or sets the color used to clear the render target.
@@ -72,7 +72,7 @@ namespace SiliconStudio.Paradox.Effects
             {
                 if (RenderTargets != null)
                 {
-                    graphicsDevice.SetRenderTargets(DepthStencil, RenderTargets);
+                    graphicsDevice.SetDepthAndRenderTargets(DepthStencil, RenderTargets);
                 }
                 
                 var viewPort = Viewport;

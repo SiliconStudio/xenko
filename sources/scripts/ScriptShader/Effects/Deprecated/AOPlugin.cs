@@ -112,7 +112,7 @@ namespace SiliconStudio.Paradox.Effects
                 tab[i] = sample;
             }
 
-            var randomTexture = Texture2D.New(GraphicsDevice, 64, 64, PixelFormat.R32G32B32_Float, tab);
+            var randomTexture = Texture.New2D(GraphicsDevice, 64, 64, PixelFormat.R32G32B32_Float, tab);
 
             var hbaoQuadMesh = new EffectMesh(hbaoEffect, name: "HBAO level").KeepAliveBy(ActiveObjects);
 
@@ -130,7 +130,7 @@ namespace SiliconStudio.Paradox.Effects
 
             if (!doBlur)
             {
-                var aoRenderTarget = Texture2D.New(GraphicsDevice, GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height, PixelFormat.R8_UNorm, TextureFlags.RenderTarget).ToRenderTarget().KeepAliveBy(ActiveObjects);
+                var aoRenderTarget = Texture.New2D(GraphicsDevice, GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height, PixelFormat.R8_UNorm, TextureFlags.RenderTarget).ToRenderTarget().KeepAliveBy(ActiveObjects);
                 aoRenderTarget.Name = "AOTexture"; 
                 hbaoQuadMesh.Parameters.Set(RenderTargetKeys.RenderTarget, aoRenderTarget);
             }

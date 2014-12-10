@@ -100,14 +100,14 @@ namespace SiliconStudio.Paradox.Effects.Images
                 if (effect.Enable)
                 {
                     effect.SetInput(input);
-                    effect.SetOutput(output.ToRenderTarget());
+                    effect.SetOutput(output);
                     effect.Draw();
                 }
                 else if (input != output)
                 {
                     // If input != output and effect is disabled, copy at least the input to the output
                     Scaler.SetInput(input);
-                    Scaler.SetOutput(output.ToRenderTarget());
+                    Scaler.SetOutput(output);
                     Scaler.Draw();
                 }
             }

@@ -83,15 +83,12 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="texture">The texture to draw.</param>
         /// <param name="samplerState">State of the sampler. If null, default sampler is <see cref="SamplerStateFactory.LinearClamp" />.</param>
         /// <param name="color">The color.</param>
-        /// <exception cref="System.ArgumentException">Expecting a Texture2D;texture</exception>
+        /// <exception cref="System.ArgumentException">Expecting a Texture;texture</exception>
         public void Draw(Texture texture, SamplerState samplerState, Color4 color)
         {
-            var texture2D = texture as Texture2D;
-            if (texture2D == null) throw new ArgumentException("Expecting a Texture2D", "texture");
-
             // Make sure that we are using our vertex shader
             parameters.Set(SpriteEffectKeys.Color, color);
-            parameters.Set(TexturingKeys.Texture0, texture as Texture2D);
+            parameters.Set(TexturingKeys.Texture0, texture);
             parameters.Set(TexturingKeys.Sampler, samplerState ?? GraphicsDevice.SamplerStates.LinearClamp);
             simpleEffect.Apply(parameters);
             Draw();

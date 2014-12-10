@@ -450,7 +450,7 @@ namespace SiliconStudio.Paradox.Games
             // By default, we setup the render target to the back buffer, and the viewport as well.
             if (GraphicsDevice.BackBuffer != null)
             {
-                GraphicsDevice.SetRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+                GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
             }
 
             beginDrawOk = true;

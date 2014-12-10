@@ -31,5 +31,10 @@ namespace SiliconStudio.Paradox.Graphics
         /// A texture usable as a depth stencil buffer.
         /// </summary>
         DepthStencil = 8,
+
+        /// <summary>
+        /// A texture usable as a readonly depth stencil buffer.
+        /// </summary>
+        DepthStencilReadOnly = 8 + Texture.DepthStencilReadOnlyFlags,
     }
 }

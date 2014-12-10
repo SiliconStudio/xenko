@@ -122,7 +122,7 @@ namespace SiliconStudio.Paradox.Effects.Renderers
 
         private DirectLightData[] currentDirectShadowLights = new DirectLightData[MaxDirectShadowLightsPerTileDrawCall];
 
-        private RenderTarget lightRenderTarget;
+        private Texture lightTexture;
 
         private BlendState accumulationBlendState;
 
@@ -149,10 +149,10 @@ namespace SiliconStudio.Paradox.Effects.Renderers
         private MeshDraw meshDraw;
 
         // External references
-        private Texture2D depthStencilTexture;
+        private Texture depthStencilTexture;
         
         // External references
-        private Texture2D gbufferTexture;
+        private Texture gbufferTexture;
 
         #endregion
 
@@ -165,7 +165,7 @@ namespace SiliconStudio.Paradox.Effects.Renderers
         /// <param name="effectName">The name of the effect used to compute lighting.</param>
         /// <param name="depthStencilTexture">The depth texture.</param>
         /// <param name="gbufferTexture">The gbuffer texture.</param>
-        public LightingPrepassRenderer(IServiceRegistry services, string effectName, Texture2D depthStencilTexture, Texture2D gbufferTexture)
+        public LightingPrepassRenderer(IServiceRegistry services, string effectName, Texture depthStencilTexture, Texture gbufferTexture)
             : base(services)
         {
             validLights = new List<EntityLightShadow>();
@@ -241,8 +241,7 @@ namespace SiliconStudio.Paradox.Effects.Renderers
             }
 
             // Create lighting accumulation texture
-            var lightTexture = Texture2D.New(GraphicsDevice, GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
-            lightRenderTarget = lightTexture.ToRenderTarget();
+            lightTexture = Texture.New2D(GraphicsDevice, GraphicsDevice.BackBuffer.ViewWidth, GraphicsDevice.BackBuffer.ViewHeight, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
 
             // Set GBuffer and depth stencil as input, as well as light texture
             Pass.Parameters.Set(RenderTargetKeys.DepthStencilSource, depthStencilTexture);
@@ -298,8 +297,8 @@ namespace SiliconStudio.Paradox.Effects.Renderers
         {
             base.Unload();
 
-            lightRenderTarget.Texture.Dispose();
-            lightRenderTarget = null;
+            lightTexture.Dispose();
+            lightTexture = null;
         }
 
         #endregion
@@ -518,13 +517,13 @@ namespace SiliconStudio.Paradox.Effects.Renderers
             // if there is no light, use albedo
             if (pointLights.Count == 0 && spotLights.Count == 0 && directionalLights.Count == 0 && directionalShadowLights.Count == 0 && spotShadowLights.Count == 0)
             {
-                GraphicsDevice.Clear(lightRenderTarget, new Color4(1.0f, 1.0f, 1.0f, 0.0f));
+                GraphicsDevice.Clear(lightTexture, new Color4(1.0f, 1.0f, 1.0f, 0.0f));
             }
             else
             {
                 // Clear and set light accumulation target
-                GraphicsDevice.Clear(lightRenderTarget, new Color4(0.0f, 0.0f, 0.0f, 0.0f));
-                GraphicsDevice.SetRenderTarget(lightRenderTarget); // no depth buffer
+                GraphicsDevice.Clear(lightTexture, new Color4(0.0f, 0.0f, 0.0f, 0.0f));
+                GraphicsDevice.SetRenderTarget(lightTexture); // no depth buffer
                 // TODO: make sure that the lightRenderTarget.Texture is not bound to any shader to prevent some warnings
 
                 // Set default blend state

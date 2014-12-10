@@ -230,7 +230,7 @@ namespace SiliconStudio.Paradox.Graphics
                     type = PixelType.Float;
                     pixelSize = 16;
                     break;
-                    // TODO: Temporary depth format (need to decide relation between RenderTarget1D and Texture1D)
+                    // TODO: Temporary depth format (need to decide relation between RenderTarget1D and Texture)
                 case (PixelFormat)40:
                     internalFormat = PixelInternalFormat.DepthComponent32f;
                     format = PixelFormatGl.DepthComponent;

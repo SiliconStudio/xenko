@@ -22,10 +22,7 @@ namespace SiliconStudio.Paradox.EntityModel
     [DataSerializerGlobal(typeof(CloneSerializer<RasterizerState>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(CloneSerializer<SamplerState>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(CloneSerializer<DepthStencilState>), Profile = "Clone")]
-    [DataSerializerGlobal(typeof(CloneSerializer<Texture1D>), Profile = "Clone")]
-    [DataSerializerGlobal(typeof(CloneSerializer<Texture2D>), Profile = "Clone")]
-    [DataSerializerGlobal(typeof(CloneSerializer<Texture3D>), Profile = "Clone")]
-    [DataSerializerGlobal(typeof(CloneSerializer<TextureCube>), Profile = "Clone")]
+    [DataSerializerGlobal(typeof(CloneSerializer<Texture>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(ContentReferenceCloneDataSerializer<>), typeof(ContentReference<>), DataSerializerGenericMode.GenericArguments, Profile = "Clone")]
     class EntityCloner
     {

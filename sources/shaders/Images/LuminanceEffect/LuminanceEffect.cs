@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     {
         private readonly PixelFormat luminanceFormat;
         private readonly ImageEffectShader luminanceLogEffect;
-        private readonly RenderTarget luminance1x1;
+        private readonly Texture luminance1x1;
         private readonly GaussianBlur blur;
 
         private readonly ImageMultiScaler multiScaler;
@@ -42,7 +42,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             this.luminanceLogEffect = luminanceLogEffect ?? new LuminanceLogEffect(context).DisposeBy(this);
 
             // Create 1x1 texture
-            luminance1x1 = Texture2D.New(GraphicsDevice, 1, 1, 1, luminanceFormat, TextureFlags.ShaderResource | TextureFlags.RenderTarget).DisposeBy(this).ToRenderTarget();
+            luminance1x1 = Texture.New2D(GraphicsDevice, 1, 1, 1, luminanceFormat, TextureFlags.ShaderResource | TextureFlags.RenderTarget).DisposeBy(this);
 
             // Use a multiscaler
             multiScaler = new ImageMultiScaler(context).DisposeBy(this);
@@ -94,14 +94,14 @@ namespace SiliconStudio.Paradox.Effects.Images
             var output = GetOutput(0);
 
             // If no output, we are only calculating the average luminance.
-            RenderTarget outputTextureDown = null;
+            Texture outputTextureDown = null;
             if (output != null)
             {
                 var blurTextureSize = output.Size.Down2(UpscaleCount);
                 outputTextureDown = NewScopedRenderTarget2D(blurTextureSize.Width, blurTextureSize.Height, luminanceFormat, 1);
             }
 
-            var luminanceMap = NewScopedRenderTarget2D(input.Width, input.Height, luminanceFormat, 1);
+            var luminanceMap = NewScopedRenderTarget2D(input.ViewWidth, input.ViewHeight, luminanceFormat, 1);
 
             // Calculate the first luminance map
             luminanceLogEffect.SetInput(input);

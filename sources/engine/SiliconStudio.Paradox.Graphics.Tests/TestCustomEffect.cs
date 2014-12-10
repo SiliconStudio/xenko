@@ -59,7 +59,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         {
             GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Black);
             GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsDevice.SetRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
 
             effectParameters.Set(MyCustomShaderKeys.ColorFactor2, (Vector4)Color.Red);
             effectParameters.Set(CustomShaderKeys.SwitchEffectLevel, switchEffectLevel);

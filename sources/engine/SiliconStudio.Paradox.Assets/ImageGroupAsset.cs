@@ -5,7 +5,7 @@ using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Assets.Texture;
+using SiliconStudio.Paradox.Assets.Textures;
 
 namespace SiliconStudio.Paradox.Assets
 {

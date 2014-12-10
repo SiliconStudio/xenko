@@ -46,8 +46,8 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             element2 = new Button { Name = "2", Width = 600, Height = 300 };
             element2.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, new Vector3(200, 100, 50));
             element2.DependencyProperties.Set(Panel.ZIndexPropertyKey, 0);
-            element2.PressedImage = new UIImage(Asset.Load<Texture2D>("ImageButtonPressed"));
-            element2.NotPressedImage = new UIImage(Asset.Load<Texture2D>("ImageButtonNotPressed"));
+            element2.PressedImage = new UIImage(Asset.Load<Texture>("ImageButtonPressed"));
+            element2.NotPressedImage = new UIImage(Asset.Load<Texture>("ImageButtonNotPressed"));
 
             var canvas = new Canvas();
             canvas.Children.Add(element1);

@@ -18,29 +18,23 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
 
             if (filterType == ShadowMapFilterType.Variance)
             {
-                ShadowMapDepthTexture = Texture2D.New(graphicsDevice, shadowMapSize, shadowMapSize, PixelFormat.D32_Float, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
-                ShadowMapTargetTexture = Texture2D.New(graphicsDevice, shadowMapSize, shadowMapSize, PixelFormat.R32G32_Float, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
-                ShadowMapRenderTarget = ShadowMapTargetTexture.ToRenderTarget();
+                ShadowMapDepthTexture = Texture.New2D(graphicsDevice, shadowMapSize, shadowMapSize, PixelFormat.D32_Float, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
+                ShadowMapTargetTexture = Texture.New2D(graphicsDevice, shadowMapSize, shadowMapSize, PixelFormat.R32G32_Float, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
 
-                IntermediateBlurTexture = Texture2D.New(graphicsDevice, shadowMapSize, shadowMapSize, PixelFormat.R32G32_Float, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
-                IntermediateBlurRenderTarget = IntermediateBlurTexture.ToRenderTarget();
+                IntermediateBlurTexture = Texture.New2D(graphicsDevice, shadowMapSize, shadowMapSize, PixelFormat.R32G32_Float, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
             }
             else
-                ShadowMapDepthTexture = Texture2D.New(graphicsDevice, shadowMapSize, shadowMapSize, PixelFormat.D32_Float, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
+                ShadowMapDepthTexture = Texture.New2D(graphicsDevice, shadowMapSize, shadowMapSize, PixelFormat.D32_Float, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
             
-            ShadowMapDepthBuffer = ShadowMapDepthTexture.ToDepthStencilBuffer(false);
             GuillotinePacker = new GuillotinePacker();
         }
 
-        internal Texture2D ShadowMapDepthTexture;
-        internal DepthStencilBuffer ShadowMapDepthBuffer;
+        internal Texture ShadowMapDepthTexture;
         internal GuillotinePacker GuillotinePacker;
         internal bool IsVarianceShadowMap;
 
         // VSM only
-        internal Texture2D ShadowMapTargetTexture;
-        internal RenderTarget ShadowMapRenderTarget;
-        internal Texture2D IntermediateBlurTexture;
-        internal RenderTarget IntermediateBlurRenderTarget;
+        internal Texture ShadowMapTargetTexture;
+        internal Texture IntermediateBlurTexture;
     }
 }

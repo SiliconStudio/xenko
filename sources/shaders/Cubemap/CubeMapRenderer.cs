@@ -125,14 +125,14 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
                 GraphicsDevice.Clear(component.DepthStencil, DepthStencilClearOptions.DepthBuffer);
                 GraphicsDevice.Clear(renderTarget, Color.Black);
 
-                GraphicsDevice.SetRenderTargets(component.DepthStencil, renderTarget);
+                GraphicsDevice.SetDepthAndRenderTargets(component.DepthStencil, renderTarget);
                 
                 // TODO: flip face culling
 
                 base.OnRendering(context);
             }
 
-            GraphicsDevice.SetRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
 
             GraphicsDevice.Parameters.Remove(TransformationKeys.View);
             GraphicsDevice.Parameters.Remove(TransformationKeys.Projection);
@@ -170,11 +170,11 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
             GraphicsDevice.Clear(component.DepthStencil, DepthStencilClearOptions.DepthBuffer);
             GraphicsDevice.Clear(component.RenderTarget, Color.Black);
             
-            GraphicsDevice.SetRenderTargets(component.DepthStencil, component.RenderTarget);
+            GraphicsDevice.SetDepthAndRenderTargets(component.DepthStencil, component.RenderTarget);
             
             base.OnRendering(context);
 
-            GraphicsDevice.SetRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
 
             GraphicsDevice.Parameters.Remove(CameraCubeKeys.CameraViewProjectionMatrices);
             GraphicsDevice.Parameters.Remove(CameraCubeKeys.CameraWorldPosition);

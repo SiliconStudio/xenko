@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
         public static PropertyKey<CubemapSourceComponent> Key = new PropertyKey<CubemapSourceComponent>("Key", typeof(CubemapSourceComponent));
 
         [DataMemberIgnore]
-        private TextureCube textureCube;
+        private Texture textureCube;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CubemapSourceComponent"/> class.
@@ -38,11 +38,11 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
             RenderTargets = null;
         }
 
-        public CubemapSourceComponent(TextureCube texture) : this()
+        public CubemapSourceComponent(Texture texture) : this()
         {
             textureCube = texture;
             if (texture != null)
-                Size = texture.Width;
+                Size = texture.ViewWidth;
             IsDynamic = false;
         }
 
@@ -97,7 +97,7 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
         /// </summary>
         [DataMemberConvert]
         [DataMemberCustomSerializer]
-        public TextureCube Texture
+        public Texture Texture
         {
             get
             {
@@ -107,7 +107,7 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
             {
                 textureCube = value;
                 if (textureCube != null)
-                    MaxLod = textureCube.Description.MipLevels - 1;
+                    MaxLod = textureCube.MipLevels - 1;
             }
         }
 
@@ -121,19 +121,19 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
         /// The render target of the cubemap.
         /// </summary>
         [DataMemberIgnore]
-        public RenderTarget RenderTarget { get; private set; }
+        public Texture RenderTarget { get; private set; }
 
         /// <summary>
         /// The render targets of the cubemap.
         /// </summary>
         [DataMemberIgnore]
-        public RenderTarget[] RenderTargets { get; private set; }
+        public Texture[] RenderTargets { get; private set; }
 
         /// <summary>
         /// The texture attached to this component.
         /// </summary>
         [DataMemberIgnore]
-        public DepthStencilBuffer DepthStencil { get; set; }
+        public Texture DepthStencil { get; set; }
 
         /// <summary>
         /// Creates full view render targets on demand.
@@ -143,8 +143,8 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
             // TODO: check previous status to dispose the rendertarget?
             if (textureCube != null)
             {
-                RenderTarget = textureCube.CreateTextureView(ViewType.Full, 0, 0).ToRenderTarget();
-                DepthStencil = Texture2D.New(textureCube.GraphicsDevice, Size, Size, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil, 6).ToDepthStencilBuffer(false);
+                RenderTarget = textureCube.ToTextureView(ViewType.Full, 0, 0);
+                DepthStencil = Texture.New2D(textureCube.GraphicsDevice, Size, Size, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil, 6);
             }
         }
 
@@ -158,14 +158,14 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
             {
                 RenderTargets = new[]
                 {
-                    textureCube.CreateTextureView(ViewType.Single, 0, 0).ToRenderTarget(),
-                    textureCube.CreateTextureView(ViewType.Single, 1, 0).ToRenderTarget(),
-                    textureCube.CreateTextureView(ViewType.Single, 2, 0).ToRenderTarget(),
-                    textureCube.CreateTextureView(ViewType.Single, 3, 0).ToRenderTarget(),
-                    textureCube.CreateTextureView(ViewType.Single, 4, 0).ToRenderTarget(),
-                    textureCube.CreateTextureView(ViewType.Single, 5, 0).ToRenderTarget()
+                    textureCube.ToTextureView(ViewType.Single, 0, 0),
+                    textureCube.ToTextureView(ViewType.Single, 1, 0),
+                    textureCube.ToTextureView(ViewType.Single, 2, 0),
+                    textureCube.ToTextureView(ViewType.Single, 3, 0),
+                    textureCube.ToTextureView(ViewType.Single, 4, 0),
+                    textureCube.ToTextureView(ViewType.Single, 5, 0)
                 };
-                DepthStencil = Texture2D.New(textureCube.GraphicsDevice, Size, Size, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil).ToDepthStencilBuffer(false);
+                DepthStencil = Texture.New2D(textureCube.GraphicsDevice, Size, Size, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil);
             }
         }
 

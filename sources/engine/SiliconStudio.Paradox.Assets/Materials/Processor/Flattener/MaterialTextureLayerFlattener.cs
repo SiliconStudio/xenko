@@ -98,9 +98,9 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Flattener
                     plane = GeometricPrimitive.Plane.New(graphicsDevice, 2.0f, 2.0f);
 
                 var assetManager = new AssetManager();
-                assetManager.Serializer.RegisterSerializer(new GpuTextureSerializer2<Graphics.Texture2D>(graphicsDevice));
+                assetManager.Serializer.RegisterSerializer(new GpuTextureSerializer2(graphicsDevice));
 
-                var textures = new Dictionary<string, Texture2D>();
+                var textures = new Dictionary<string, Graphics.Texture>();
                 var materialTreeShaderCreator = new MaterialTreeShaderCreator(Material);
                 var textureVisitor = new MaterialTextureVisitor(Material);
                 var compilerParameters = new CompilerParameters { Platform = GraphicsPlatform.Direct3D11, Profile = GraphicsProfile.Level_11_0 };
@@ -126,11 +126,11 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Flattener
                     var allTextures = textureVisitor.GetAllTextureValues(command.OldNode);
                     foreach (var texSlot in allTextures)
                     {
-                        Texture2D tex;
+                        Graphics.Texture tex;
                         if (!textures.TryGetValue(texSlot.TextureName, out tex))
                         {
                             //TODO: change load so that texture can be unloaded.
-                            tex = assetManager.Load<Texture2D>(texSlot.TextureName);
+                            tex = assetManager.Load<Graphics.Texture>(texSlot.TextureName);
                             textures.Add(texSlot.TextureName, tex);
                         }
 
@@ -138,13 +138,13 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Flattener
                             throw new FileNotFoundException("Texture " + texSlot.TextureName + " not found");
 
                         command.Parameters.Set(texSlot.UsedParameterKey, tex);
-                        maxWidth = Math.Max(maxWidth, tex.Width);
-                        maxHeight = Math.Max(maxHeight, tex.Height);
+                        maxWidth = Math.Max(maxWidth, tex.ViewWidth);
+                        maxHeight = Math.Max(maxHeight, tex.ViewHeight);
                         // can take min, a user-defined size, or clamp the min/max
                         // exclude mask?
                     }
 
-                    command.RenderTarget = Texture2D.New(graphicsDevice, maxWidth, maxHeight, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget).ToRenderTarget();
+                    command.RenderTarget = Graphics.Texture.New2D(graphicsDevice, maxWidth, maxHeight, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
                     command.ToExecute = true;
                 }
 
@@ -167,7 +167,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Flattener
                         plane.Draw();
 
                         // save texture
-                        SaveTexture(command.RenderTarget.Texture, command.TextureUrl, assetManager);
+                        SaveTexture(command.RenderTarget, command.TextureUrl, assetManager);
                     }
                     // make new tree
                     var newNode = new MaterialTextureNode(command.TextureUrl.FullPath, command.TexcoordIndex, Vector2.One, Vector2.Zero);
@@ -181,7 +181,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Flattener
                 foreach (var command in commandList)
                 {
                     command.TreeEffect.Dispose();
-                    command.RenderTarget.Texture.Dispose();
+                    command.RenderTarget.Dispose();
                 }
 
                 foreach (var texture in textures)
@@ -284,7 +284,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Flattener
         /// </summary>
         private class MaterialReductionInfo
         {
-            public RenderTarget RenderTarget;
+            public Graphics.Texture RenderTarget;
             public bool ToExecute;
             public Graphics.Effect TreeEffect;
             public ParameterCollection Parameters;

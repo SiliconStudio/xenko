@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         private SpriteFont arial16Bold;
         private SpriteFont courrierNew10;
         private SpriteFont calibri64;
-        private Texture2D colorTexture;
+        private Texture colorTexture;
 
         private float rotationAngle;
 
@@ -58,7 +58,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             
             // Instantiate a SpriteBatch
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            colorTexture = Texture2D.New(GraphicsDevice, 1, 1, PixelFormat.R8G8B8A8_UNorm, new[] { Color.White });
+            colorTexture = Texture.New2D(GraphicsDevice, 1, 1, PixelFormat.R8G8B8A8_UNorm, new[] { Color.White });
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
         }
@@ -163,7 +163,7 @@ ABCDEFGHIJ - ABCDEFGHIJ - A1C3E5G7I9
             base.Update(gameTime);
 
             if(Input.IsKeyReleased(Keys.S))
-                SaveTexture(GraphicsDevice.BackBuffer.Texture, "sprite-font-" + saveImageSuffix + ".png");
+                SaveTexture(GraphicsDevice.BackBuffer, "sprite-font-" + saveImageSuffix + ".png");
         }
     }
 }

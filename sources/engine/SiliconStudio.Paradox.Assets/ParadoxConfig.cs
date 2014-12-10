@@ -7,6 +7,7 @@ using SharpDX.Text;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.VisualStudio;
+using SiliconStudio.Paradox.Assets.Textures;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Assets

@@ -102,7 +102,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
                 }
                 else
                 {
-                    Parameters.Set(texture.UsedParameterKey, new ContentReference<Texture2D>(texture.TextureReference.Id, texture.TextureReference.Location));
+                    Parameters.Set(texture.UsedParameterKey, new ContentReference<Graphics.Texture>(texture.TextureReference.Id, texture.TextureReference.Location));
                     AddSampler(texture.Sampler);
                 }
             }
@@ -128,7 +128,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
                             hasErrors = true;
                         }
                         else
-                            Parameters.Set(keyValue.Key, new ContentReference<Texture2D>(textureNode.TextureReference.Id, textureNode.TextureReference.Location));
+                            Parameters.Set(keyValue.Key, new ContentReference<Graphics.Texture>(textureNode.TextureReference.Id, textureNode.TextureReference.Location));
                     }
                 }
                 else if (keyValue.Value is NodeParameterSampler)

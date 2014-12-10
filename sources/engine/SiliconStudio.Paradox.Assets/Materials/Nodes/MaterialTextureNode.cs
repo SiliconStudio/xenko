@@ -7,7 +7,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Paradox.Assets.Texture;
+using SiliconStudio.Paradox.Assets.Textures;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
 

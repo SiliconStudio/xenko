@@ -31,7 +31,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            var imgElt = new ImageElement { Source = new UIImage(Asset.Load<Texture2D>("uv")), StretchType = StretchType.Fill };
+            var imgElt = new ImageElement { Source = new UIImage(Asset.Load<Texture>("uv")), StretchType = StretchType.Fill };
             imgElt.DependencyProperties.Set(GridBase.RowSpanPropertyKey, 2);
             imgElt.DependencyProperties.Set(GridBase.ColumnSpanPropertyKey, 2);
             imgElt.DependencyProperties.Set(GridBase.RowPropertyKey, 1);

@@ -1,12 +1,14 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System.ComponentModel;
+
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Assets.Texture
+namespace SiliconStudio.Paradox.Assets.Textures
 {
     /// <summary>
     /// Describes a texture asset.
@@ -40,7 +42,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// </userdoc>
         [DataMember(20)]
         [DefaultValue(100.0f)]
-        [StepRangeAttribute(0, 10000, 1, 10)]
+        [StepRange(0, 10000, 1, 10)]
         public float Width { get; set; }
 
         /// <summary>
@@ -52,7 +54,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// </userdoc>
         [DataMember(30)]
         [DefaultValue(100.0f)]
-        [StepRangeAttribute(0, 10000, 1, 10)]
+        [StepRange(0, 10000, 1, 10)]
         public float Height { get; set; }
 
         /// <summary>

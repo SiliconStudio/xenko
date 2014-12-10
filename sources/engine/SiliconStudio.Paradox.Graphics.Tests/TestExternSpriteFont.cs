@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
     {
         private SpriteBatch spriteBatch;
         private SpriteFont testFont;
-        private Texture2D colorTexture;
+        private Texture colorTexture;
 
         public TestExternSpriteFont()
         {
@@ -40,7 +40,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             // Instantiate a SpriteBatch
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            colorTexture = Texture2D.New(GraphicsDevice, 1, 1, PixelFormat.R8G8B8A8_UNorm, new[] { Color.White });
+            colorTexture = Texture.New2D(GraphicsDevice, 1, 1, PixelFormat.R8G8B8A8_UNorm, new[] { Color.White });
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
         }
@@ -78,7 +78,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             base.Update(gameTime);
 
             if (Input.IsKeyReleased(Keys.S))
-                SaveTexture(GraphicsDevice.BackBuffer.Texture, "sprite-font-extern-test.png");
+                SaveTexture(GraphicsDevice.BackBuffer, "sprite-font-extern-test.png");
         }
 
         public static void Main()

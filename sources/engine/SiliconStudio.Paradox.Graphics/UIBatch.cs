@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Graphics
         private readonly Vector4[] shiftVectorX = new Vector4[4];
         private readonly Vector4[] shiftVectorY = new Vector4[4];
 
-        private readonly Texture2D whiteTexture;
+        private readonly Texture whiteTexture;
 
         static UIBatch()
         {
@@ -143,7 +143,7 @@ namespace SiliconStudio.Paradox.Graphics
             uiSeparateAlphaEffect = new Effect(GraphicsDevice, UIEffectSeparateAlpha.Bytecode) {Name = "SeparatedAlphaBatchEffect"};
             
             // Create a 1x1 pixel white texture
-            whiteTexture = Texture2D.New(GraphicsDevice, 1, 1, PixelFormat.R8G8B8A8_UNorm, new Byte[] { 255, 255, 255, 255 });
+            whiteTexture = Texture.New2D(GraphicsDevice, 1, 1, PixelFormat.R8G8B8A8_UNorm, new Byte[] { 255, 255, 255, 255 });
         }
 
         /// <summary>
@@ -295,7 +295,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="imageOrientation">The rotation to apply on the image uv</param>
         /// <param name="swizzle">Swizzle mode indicating the swizzle use when sampling the texture in the shader</param>
         /// <param name="snapImage">Indicate if the image needs to be snapped or not</param>
-        public void DrawImage(Texture2D texture, Texture2D texture1, ref Matrix worldMatrix, ref RectangleF sourceRectangle, ref Vector3 elementSize, ref Vector4 borderSize, 
+        public void DrawImage(Texture texture, Texture texture1, ref Matrix worldMatrix, ref RectangleF sourceRectangle, ref Vector3 elementSize, ref Vector4 borderSize, 
             ref Color color, int depthBias, ImageOrientation imageOrientation = ImageOrientation.AsIs, SwizzleMode swizzle = SwizzleMode.None, bool snapImage = false)
         {
             // Check that texture is not null
@@ -319,10 +319,10 @@ namespace SiliconStudio.Paradox.Graphics
             {
                 Source =
                 {
-                    X = sourceRectangle.X / texture.Width, 
-                    Y = sourceRectangle.Y / texture.Height, 
-                    Width = sourceRectangle.Width / texture.Width, 
-                    Height = sourceRectangle.Height / texture.Height
+                    X = sourceRectangle.X / texture.ViewWidth, 
+                    Y = sourceRectangle.Y / texture.ViewHeight, 
+                    Width = sourceRectangle.Width / texture.ViewWidth, 
+                    Height = sourceRectangle.Height / texture.ViewHeight
                 },
                 DepthBias = depthBias,
                 Color = color,
@@ -548,8 +548,8 @@ namespace SiliconStudio.Paradox.Graphics
 
         private unsafe void CalculateRectangleVertices(UIImageDrawInfo* drawInfo, VertexPositionColorTextureSwizzle* vertex)
         {
-            var backBufferHalfWidth = GraphicsDevice.BackBuffer.Width / 2;
-            var backBufferHalfHeight = GraphicsDevice.BackBuffer.Height / 2;
+            var backBufferHalfWidth = GraphicsDevice.BackBuffer.ViewWidth / 2;
+            var backBufferHalfHeight = GraphicsDevice.BackBuffer.ViewHeight / 2;
 
             var currentPosition = drawInfo->LeftTopCornerWorld;
 

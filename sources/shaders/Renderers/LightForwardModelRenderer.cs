@@ -422,7 +422,7 @@ namespace SiliconStudio.Paradox.Effects.Renderers
 
             //TODO change hardcoded 16
             var groupCounts = new int[16];
-            var groupTextures = new Texture2D[16];
+            var groupTextures = new Texture[16];
 
             // TODO: optimize OR consider that this will always be relatively small
             foreach (var light in directionalLightsWithShadowForMesh)
@@ -803,7 +803,7 @@ namespace SiliconStudio.Paradox.Effects.Renderers
             Spot = Directional | Point // angle falloff is needed
         }
 
-        private static bool BelongToGroup(LightComponent light, ShadowMap shadow, ShadowConfiguration config, int groupCount, Texture2D groupTexture)
+        private static bool BelongToGroup(LightComponent light, ShadowMap shadow, ShadowConfiguration config, int groupCount, Texture groupTexture)
         {
             return light.ShadowMapCascadeCount == config.CascadeCount
                 && light.ShadowMapFilterType == config.FilterType

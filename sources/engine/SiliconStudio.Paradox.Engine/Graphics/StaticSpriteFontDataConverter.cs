@@ -25,8 +25,8 @@ namespace SiliconStudio.Paradox.Graphics
 
                 // Convert to texture ref so that Converter system doesn't get lost
                 // TODO: Support that directly in converter?
-                var textureRef = new ContentReference<Texture2D> { Location = bitmap.Location };
-                Texture2D texture = null;
+                var textureRef = new ContentReference<Texture> { Location = bitmap.Location };
+                Texture texture = null;
                 converterContext.ConvertFromData(textureRef, ref texture);
                 staticSpriteFont.StaticTextures[index] = texture;
             }

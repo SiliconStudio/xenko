@@ -99,13 +99,13 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
             foreach (var shadowMapTexture in lightProcessor.ActiveShadowMapTextures)
             {
                 // Clear and set render target
-                graphicsDevice.Clear(shadowMapTexture.ShadowMapDepthBuffer, DepthStencilClearOptions.DepthBuffer);
+                graphicsDevice.Clear(shadowMapTexture.ShadowMapDepthTexture, DepthStencilClearOptions.DepthBuffer);
 
                 if (shadowMapTexture.IsVarianceShadowMap)
-                    graphicsDevice.Clear(shadowMapTexture.ShadowMapRenderTarget, Color4.White);
+                    graphicsDevice.Clear(shadowMapTexture.ShadowMapTargetTexture, Color4.White);
 
                 // Reset shadow map allocator
-                shadowMapTexture.GuillotinePacker.Clear(shadowMapTexture.ShadowMapDepthTexture.Width, shadowMapTexture.ShadowMapDepthTexture.Height);
+                shadowMapTexture.GuillotinePacker.Clear(shadowMapTexture.ShadowMapDepthTexture.ViewWidth, shadowMapTexture.ShadowMapDepthTexture.ViewHeight);
             }
 
             ShadowMapFilterType filterBackup;
@@ -136,9 +136,9 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
                     ComputeShadowMap(shadowMap, ref inverseView);
 
                     if (shadowMap.Filter == ShadowMapFilterType.Variance)
-                        graphicsDevice.SetRenderTarget(shadowMap.Texture.ShadowMapDepthBuffer, shadowMap.Texture.ShadowMapRenderTarget);
+                        graphicsDevice.SetDepthAndRenderTarget(shadowMap.Texture.ShadowMapDepthTexture, shadowMap.Texture.ShadowMapTargetTexture);
                     else
-                        graphicsDevice.SetRenderTarget(shadowMap.Texture.ShadowMapDepthBuffer);
+                        graphicsDevice.SetDepthTarget(shadowMap.Texture.ShadowMapDepthTexture);
 
                     // set layers
                     context.Parameters.Set(RenderingParameters.ActiveRenderLayer, shadowMap.Layers);
@@ -161,10 +161,10 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
                         // Prepare viewport
                         var cascadeTextureCoord = cascade.CascadeTextureCoords;
                         var viewPortCoord = new Vector4(
-                            cascadeTextureCoord.X * shadowMap.Texture.ShadowMapDepthTexture.Width,
-                            cascadeTextureCoord.Y * shadowMap.Texture.ShadowMapDepthTexture.Height,
-                            cascadeTextureCoord.Z * shadowMap.Texture.ShadowMapDepthTexture.Width,
-                            cascadeTextureCoord.W * shadowMap.Texture.ShadowMapDepthTexture.Height);
+                            cascadeTextureCoord.X * shadowMap.Texture.ShadowMapDepthTexture.ViewWidth,
+                            cascadeTextureCoord.Y * shadowMap.Texture.ShadowMapDepthTexture.ViewHeight,
+                            cascadeTextureCoord.Z * shadowMap.Texture.ShadowMapDepthTexture.ViewWidth,
+                            cascadeTextureCoord.W * shadowMap.Texture.ShadowMapDepthTexture.ViewHeight);
 
                         // Set viewport
                         graphicsDevice.SetViewport(new Viewport((int)viewPortCoord.X, (int)viewPortCoord.Y, (int)(viewPortCoord.Z - viewPortCoord.X), (int)(viewPortCoord.W - viewPortCoord.Y)));
@@ -198,13 +198,13 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
                 graphicsDevice.SetRasterizerState(graphicsDevice.RasterizerStates.CullNone);
 
                 // TODO: use next post effect instead
-                graphicsDevice.SetRenderTarget(shadowMap.ShadowMapDepthBuffer, shadowMap.IntermediateBlurRenderTarget);
+                graphicsDevice.SetDepthAndRenderTarget(shadowMap.ShadowMapDepthTexture, shadowMap.IntermediateBlurTexture);
                 blurParameters.Set(TexturingKeys.Texture0, shadowMap.ShadowMapTargetTexture);
                 blurParameters.Set(TexturingKeys.Sampler, GraphicsDevice.SamplerStates.LinearClamp);
                 graphicsDevice.DrawQuad(vsmHorizontalBlur, blurParameters);
 
                 // TODO: use next post effect instead
-                graphicsDevice.SetRenderTarget(shadowMap.ShadowMapDepthBuffer, shadowMap.ShadowMapRenderTarget);
+                graphicsDevice.SetDepthAndRenderTarget(shadowMap.ShadowMapDepthTexture, shadowMap.ShadowMapTargetTexture);
                 blurParameters.Set(TexturingKeys.Texture0, shadowMap.IntermediateBlurTexture);
                 blurParameters.Set(TexturingKeys.Sampler, GraphicsDevice.SamplerStates.LinearClamp);
                 graphicsDevice.DrawQuad(vsmVerticalBlur, blurParameters);
@@ -304,24 +304,24 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
                     throw new InvalidOperationException("Not enough space to allocate all shadow maps.");
 
                 var cascadeTextureCoords = new Vector4(
-                    (float)shadowMapRectangle.Left / (float)shadowMap.Texture.ShadowMapDepthTexture.Width,
-                    (float)shadowMapRectangle.Top / (float)shadowMap.Texture.ShadowMapDepthTexture.Height,
-                    (float)shadowMapRectangle.Right / (float)shadowMap.Texture.ShadowMapDepthTexture.Width,
-                    (float)shadowMapRectangle.Bottom / (float)shadowMap.Texture.ShadowMapDepthTexture.Height);
+                    (float)shadowMapRectangle.Left / (float)shadowMap.Texture.ShadowMapDepthTexture.ViewWidth,
+                    (float)shadowMapRectangle.Top / (float)shadowMap.Texture.ShadowMapDepthTexture.ViewHeight,
+                    (float)shadowMapRectangle.Right / (float)shadowMap.Texture.ShadowMapDepthTexture.ViewWidth,
+                    (float)shadowMapRectangle.Bottom / (float)shadowMap.Texture.ShadowMapDepthTexture.ViewHeight);
 
                 // Copy texture coords without border
                 cascades[cascadeLevel].CascadeTextureCoords = cascadeTextureCoords;
 
                 // Add border (avoid using edges due to bilinear filtering and blur)
-                var boderSizeU = VsmBlurSize / shadowMap.Texture.ShadowMapDepthTexture.Width;
-                var boderSizeV = VsmBlurSize / shadowMap.Texture.ShadowMapDepthTexture.Height;
+                var boderSizeU = VsmBlurSize / shadowMap.Texture.ShadowMapDepthTexture.ViewWidth;
+                var boderSizeV = VsmBlurSize / shadowMap.Texture.ShadowMapDepthTexture.ViewHeight;
                 cascadeTextureCoords.X += boderSizeU;
                 cascadeTextureCoords.Y += boderSizeV;
                 cascadeTextureCoords.Z -= boderSizeU;
                 cascadeTextureCoords.W -= boderSizeV;
 
-                float leftX = (float)shadowMap.ShadowMapSize / (float)shadowMap.Texture.ShadowMapDepthTexture.Width * 0.5f;
-                float leftY = (float)shadowMap.ShadowMapSize / (float)shadowMap.Texture.ShadowMapDepthTexture.Height * 0.5f;
+                float leftX = (float)shadowMap.ShadowMapSize / (float)shadowMap.Texture.ShadowMapDepthTexture.ViewWidth * 0.5f;
+                float leftY = (float)shadowMap.ShadowMapSize / (float)shadowMap.Texture.ShadowMapDepthTexture.ViewHeight * 0.5f;
                 float centerX = 0.5f * (cascadeTextureCoords.X + cascadeTextureCoords.Z);
                 float centerY = 0.5f * (cascadeTextureCoords.Y + cascadeTextureCoords.W);
 
