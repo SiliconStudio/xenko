@@ -88,7 +88,7 @@ namespace SiliconStudio.Paradox.Engine
                 foreach (var transformation in transformationComponents)
                 {
                     if (skipSpecialRoots && transformation.isSpecialRoot)
-                        return;
+                        continue;
 
                     UpdateTransformation(transformation);
 
