@@ -25,7 +25,7 @@ namespace SiliconStudio.Presentation.ValueConverters
             {
                 var color = (Color)value;
                 if (targetType == typeof(System.Windows.Media.Color))
-                    return System.Windows.Media.Color.FromArgb(color.A, color.R, color.G, color.B);
+                    return ToMediaColor(color);
                 if (targetType == typeof(Color))
                     return color;
                 if (targetType == typeof(Color3))
@@ -33,7 +33,7 @@ namespace SiliconStudio.Presentation.ValueConverters
                 if (targetType == typeof(Color4))
                     return color.ToColor4();
                 if (targetType.IsAssignableFrom(typeof(SolidColorBrush)))
-                    return new SolidColorBrush(System.Windows.Media.Color.FromArgb(color.A, color.R, color.G, color.B));
+                    return new SolidColorBrush(ToMediaColor(color));
                 if (targetType == typeof(string))
                     return '#' + color.ToRgba().ToString("X8");
             }
@@ -41,7 +41,7 @@ namespace SiliconStudio.Presentation.ValueConverters
             {
                 var color = (Color3)value;
                 if (targetType == typeof(System.Windows.Media.Color))
-                    return System.Windows.Media.Color.FromScRgb(1.0f, color.R, color.G, color.B);
+                    return ToMediaColor(color);
                 if (targetType == typeof(Color))
                     return new Color(color.R, color.G, color.B);
                 if (targetType == typeof(Color3))
@@ -49,7 +49,7 @@ namespace SiliconStudio.Presentation.ValueConverters
                 if (targetType == typeof(Color4))
                     return new Color4(color.R, color.G, color.B, 1.0f);
                 if (targetType.IsAssignableFrom(typeof(SolidColorBrush)))
-                    return new SolidColorBrush(System.Windows.Media.Color.FromScRgb(1.0f, color.R, color.G, color.B));
+                    return new SolidColorBrush(ToMediaColor(color));
                 if (targetType == typeof(string))
                     return '#' + color.ToRgb().ToString("X6");
             }
@@ -57,7 +57,7 @@ namespace SiliconStudio.Presentation.ValueConverters
             {
                 var color = (Color4)value;
                 if (targetType == typeof(System.Windows.Media.Color))
-                    return System.Windows.Media.Color.FromScRgb(color.A, color.R, color.G, color.B);
+                    return ToMediaColor(color);
                 if (targetType == typeof(Color))
                     return new Color(color.R, color.G, color.B, color.A);
                 if (targetType == typeof(Color3))
@@ -65,7 +65,7 @@ namespace SiliconStudio.Presentation.ValueConverters
                 if (targetType == typeof(Color4))
                     return color;
                 if (targetType.IsAssignableFrom(typeof(SolidColorBrush)))
-                    return new SolidColorBrush(System.Windows.Media.Color.FromScRgb(color.A, color.R, color.G, color.B));
+                    return new SolidColorBrush(ToMediaColor(color));
                 if (targetType == typeof(string))
                     return '#' + color.ToRgba().ToString("X8");
             }
@@ -134,12 +134,13 @@ namespace SiliconStudio.Presentation.ValueConverters
             if (value is System.Windows.Media.Color)
             {
                 var wpfColor = (System.Windows.Media.Color)value;
+                var color = new Color(wpfColor.R, wpfColor.G, wpfColor.B, wpfColor.A);
                 if (targetType == typeof(Color))
-                    return new Color(wpfColor.R, wpfColor.G, wpfColor.B, wpfColor.A);
+                    return color;
                 if (targetType == typeof(Color3))
-                    return new Color3(wpfColor.ScR, wpfColor.ScG, wpfColor.ScB);
+                    return color.ToColor3();
                 if (targetType == typeof(Color4))
-                    return new Color4(wpfColor.ScR, wpfColor.ScG, wpfColor.ScB, wpfColor.ScA);
+                    return color.ToColor4();
             }
             if (value is Color)
             {
@@ -172,6 +173,18 @@ namespace SiliconStudio.Presentation.ValueConverters
                     return color;
             }
             throw new NotSupportedException("Requested conversion is not supported.");
+        }
+
+        private System.Windows.Media.Color ToMediaColor(Color4 color4)
+        {
+            var color = (Color)color4;
+            return System.Windows.Media.Color.FromArgb(color.A, color.R, color.G, color.B);
+        }
+
+        private System.Windows.Media.Color ToMediaColor(Color3 color3)
+        {
+            var color = (Color)color3;
+            return System.Windows.Media.Color.FromArgb(255, color.R, color.G, color.B);
         }
     }
 }
