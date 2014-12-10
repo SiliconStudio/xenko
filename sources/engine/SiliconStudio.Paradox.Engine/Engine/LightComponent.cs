@@ -31,10 +31,11 @@ namespace SiliconStudio.Paradox.Engine
 
         public LightComponent()
         {
+            Color = new Color3(1.0f);
             Intensity = 1.0f;
             ShadowMapFilterType = ShadowMapFilterType.Nearest;
             Enabled = true;
-            Deferred = false;
+            Deferred = true;
             Layers = RenderLayers.RenderLayerAll;
             SpotBeamAngle = 0;
             SpotFieldAngle = 0;
@@ -44,6 +45,7 @@ namespace SiliconStudio.Paradox.Engine
             ShadowMapCascadeCount = 1;
             ShadowNearDistance = 1.0f;
             ShadowFarDistance = 100000.0f;
+            DecayStart = 100.0f;
             BleedingFactor = 0.0f;
             MinVariance = 0.0f;
         }
@@ -58,6 +60,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <summary>Gets or sets a value indicating whether the light is deferred (if available).</summary>
         /// <value>true if light is deferred, false if not.</value>
         [DataMemberConvert]
+        [DefaultValue(true)]
         public bool Deferred { get; set; }
 
         /// <summary>
@@ -95,6 +98,7 @@ namespace SiliconStudio.Paradox.Engine
         /// The decay start.
         /// </value>
         [DataMemberConvert]
+        [DefaultValue(100.0f)]
         public float DecayStart { get; set; }
 
         /// <summary>Gets or sets the light direction.</summary>
