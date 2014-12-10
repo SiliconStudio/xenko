@@ -44,6 +44,15 @@ namespace SiliconStudio.Paradox.Shaders.Parser
                 {
                     AnalyzeAndGoToDefinition(shaderSource, location, shaderDirectories, navigationResult);
                 }
+
+                // If any of the messages have empty filesource, add a default filesource
+                foreach (var message in navigationResult.Messages.Messages)
+                {
+                    if (string.IsNullOrWhiteSpace(message.Span.Location.FileSource))
+                    {
+                        message.Span.Location.FileSource = location.FileSource;
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -62,6 +71,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
         {
             var mixer = new ShaderMixinParser();
             mixer.SourceManager.UseFileSystem = true;
+            mixer.AllowNonInstantiatedGenerics = true;
             mixer.SourceManager.LookupDirectoryList.AddRange(shaderDirectories);
 
             var shaderSourceName = Path.GetFileNameWithoutExtension(location.FileSource);

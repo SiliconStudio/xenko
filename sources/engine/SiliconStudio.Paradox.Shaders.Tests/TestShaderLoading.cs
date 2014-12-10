@@ -55,11 +55,11 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         {
             var log = new LoggerResult();
 
-            var simple = shaderLoader.LoadClassSource(new ShaderClassSource("Simple"), new SiliconStudio.Shaders.Parser.ShaderMacro[0], log);
+            var simple = shaderLoader.LoadClassSource(new ShaderClassSource("Simple"), new SiliconStudio.Shaders.Parser.ShaderMacro[0], log, false);
 
             Assert.That(simple.Members.Count, Is.EqualTo(1));
 
-            var simple2 = shaderLoader.LoadClassSource(new ShaderClassSource("Simple"), new SiliconStudio.Shaders.Parser.ShaderMacro[0], log);
+            var simple2 = shaderLoader.LoadClassSource(new ShaderClassSource("Simple"), new SiliconStudio.Shaders.Parser.ShaderMacro[0], log, false);
 
             // Make sure that a class is not duplicated in memory
             Assert.That(ReferenceEquals(simple, simple2), Is.True);

@@ -85,6 +85,17 @@ namespace SiliconStudio.Paradox.Shaders.Parser
         {
             shaderLibrary.DeleteObsoleteCache(modifiedShaders);
         }
+        public bool AllowNonInstantiatedGenerics
+        {
+            get
+            {
+                return shaderLibrary.AllowNonInstantiatedGenerics;
+            }
+            set
+            {
+                shaderLibrary.AllowNonInstantiatedGenerics = value;
+            }
+        }
 
         internal ShaderCompilationContext ParseAndAnalyze(ShaderMixinSource shaderMixinSource, Paradox.Shaders.ShaderMacro[] macros, out ShaderMixinParsingResult parsingResult, out HashSet<ModuleMixinInfo> mixinsToAnalyze)
         {
