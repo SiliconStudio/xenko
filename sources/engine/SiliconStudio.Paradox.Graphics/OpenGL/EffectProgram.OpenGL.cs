@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using SiliconStudio.Core.Serialization;
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
 using System;
 using System.Collections.Generic;
@@ -11,6 +10,7 @@ using OpenTK.Graphics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Shaders;
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
@@ -592,18 +592,18 @@ namespace SiliconStudio.Paradox.Graphics
 
         private void AddUniform(EffectReflection effectReflection, int uniformSize, int uniformCount, string uniformName, ActiveUniformType uniformType)
         {
+            // clean the name
+            if (uniformName.Contains("."))
+            {
+                uniformName = uniformName.Substring(0, uniformName.IndexOf('.'));
+            }
+            if (uniformName.Contains("["))
+            {
+                uniformName = uniformName.Substring(0, uniformName.IndexOf('['));
+            }
+
             if (GraphicsDevice.IsOpenGLES2)
             {
-                // clean the name
-                if (uniformName.Contains("."))
-                {
-                    uniformName = uniformName.Substring(0, uniformName.IndexOf('.'));
-                }
-                if (uniformName.Contains("["))
-                {
-                    uniformName = uniformName.Substring(0, uniformName.IndexOf('['));
-                }
-
                 var indexOfConstantBufferDescription = effectReflection.ConstantBuffers.FindIndex(x => x.Name == "Globals");
                 var indexOfConstantBuffer = effectReflection.ResourceBindings.FindIndex(x => x.Param.RawName == "Globals");
 
@@ -671,6 +671,19 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
                 });
                 constantBufferDescription.Size += uniformSize*uniformCount;
+            }
+            else
+            {
+                // check that this uniform is in a constant buffer
+                foreach (var constantBuffer in effectReflection.ConstantBuffers)
+                {
+                    foreach (var member in constantBuffer.Members)
+                    {
+                        if (member.Param.RawName.Equals(uniformName))
+                            return;
+                    }
+                }
+                throw new Exception("The uniform value " + uniformName + " is defined outside of a uniform block in OpenGL ES 3, which is not supported by the engine.");
             }
         }
 #endif
