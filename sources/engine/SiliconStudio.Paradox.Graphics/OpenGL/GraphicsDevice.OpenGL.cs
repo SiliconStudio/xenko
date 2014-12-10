@@ -938,19 +938,24 @@ namespace SiliconStudio.Paradox.Graphics
                     }
                 }
 
-                if (!IsOpenGLES2 && lastRenderTargetIndex > 0)
-                {
-                    var drawBuffers = new DrawBuffersEnum[lastRenderTargetIndex + 1];
-                    for (var i = 0; i <= lastRenderTargetIndex; ++i)
-                        drawBuffers[i] = DrawBuffersEnum.ColorAttachment0 + i;
-                    GL.DrawBuffers(lastRenderTargetIndex + 1, drawBuffers);
-                }
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                else
-                {
-                    GL.DrawBuffer(lastRenderTargetIndex != -1 ? DrawBufferMode.ColorAttachment0 : DrawBufferMode.None);
-                }
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                if (!IsOpenGLES2)
 #endif
+                {
+                    if (lastRenderTargetIndex > 0)
+                    {
+                        var drawBuffers = new DrawBuffersEnum[lastRenderTargetIndex + 1];
+                        for (var i = 0; i <= lastRenderTargetIndex; ++i)
+                            drawBuffers[i] = DrawBuffersEnum.ColorAttachment0 + i;
+                        GL.DrawBuffers(lastRenderTargetIndex + 1, drawBuffers);
+                    }
+#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                    else
+                    {
+                        GL.DrawBuffer(lastRenderTargetIndex != -1 ? DrawBufferMode.ColorAttachment0 : DrawBufferMode.None);
+                    }
+#endif
+                }
 
                 if (depthStencilBuffer != null)
                 {
