@@ -1,10 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Shaders.Ast;
@@ -40,8 +42,50 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
             var isOpenGLES = compilerParameters.Get(CompilerParameters.GraphicsPlatformKey) == GraphicsPlatform.OpenGLES;
             var isOpenGLES3 = compilerParameters.Get(CompilerParameters.GraphicsProfileKey) >= GraphicsProfile.Level_10_0;
             var shaderBytecodeResult = new ShaderBytecodeResult();
+            byte[] rawData;
 
+            var shader = Compile(shaderSource, entryPoint, stage, isOpenGLES, isOpenGLES3, shaderBytecodeResult, sourceFilename);
 
+            if (shader == null)
+                return shaderBytecodeResult;
+
+            if (isOpenGLES)
+            {
+                // store both ES 2 and ES 3 on OpenGL ES platforms
+                var shaderBytecodes = new ShaderLevelBytecode();
+                if (isOpenGLES3)
+                {
+                    shaderBytecodes.DataES3 = shader;
+                    shaderBytecodes.DataES2 = null;
+                }
+                else
+                {
+                    shaderBytecodes.DataES2 = shader;
+                    shaderBytecodes.DataES3 = Compile(shaderSource, entryPoint, stage, true, true, shaderBytecodeResult, sourceFilename);
+                }
+                using (var stream = new MemoryStream())
+                {
+                    BinarySerialization.Write(stream, shaderBytecodes);
+                    rawData = stream.GetBuffer();
+                }
+            }
+            else
+            {
+                // store string on OpenGL platforms
+                rawData = Encoding.ASCII.GetBytes(shader);
+            }
+            
+            var bytecodeId = ObjectId.FromBytes(rawData);
+            var bytecode = new ShaderBytecode(bytecodeId, rawData);
+            bytecode.Stage = stage;
+
+            shaderBytecodeResult.Bytecode = bytecode;
+            
+            return shaderBytecodeResult;
+        }
+
+        private string Compile(string shaderSource, string entryPoint, ShaderStage stage, bool isOpenGLES, bool isOpenGLES3, ShaderBytecodeResult shaderBytecodeResult, string sourceFilename = null)
+        {
             PipelineStage pipelineStage = PipelineStage.None;
             switch (stage)
             {
@@ -69,8 +113,8 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
             }
 
             if (shaderBytecodeResult.HasErrors)
-                return shaderBytecodeResult;
-            
+                return null;
+
             // Convert from HLSL to GLSL
             // Note that for now we parse from shader as a string, but we could simply clone effectPass.Shader to avoid multiple parsing.
             var glslConvertor = new ShaderConverter(isOpenGLES, isOpenGLES3);
@@ -154,13 +198,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
             if (!String.IsNullOrEmpty(optShaderSource))
                 realShaderSource = optShaderSource;
 
-            var rawData = Encoding.ASCII.GetBytes(realShaderSource);
-            var bytecodeId = ObjectId.FromBytes(rawData);
-            var bytecode = new ShaderBytecode(bytecodeId, rawData);
-            bytecode.Stage = stage;
-
-            shaderBytecodeResult.Bytecode = bytecode;
-            return shaderBytecodeResult;
+            return realShaderSource;
         }
 
         private string RunOptimizer(string baseShader, bool openGLES, bool es30, bool vertex)

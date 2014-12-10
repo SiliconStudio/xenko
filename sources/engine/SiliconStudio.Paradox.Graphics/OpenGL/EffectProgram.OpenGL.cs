@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using SiliconStudio.Core.Serialization;
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
 using System;
 using System.Collections.Generic;
@@ -95,8 +97,12 @@ namespace SiliconStudio.Paradox.Graphics
                             break;
                     }
 
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                    var shaderSources = BinarySerialization.Read<ShaderLevelBytecode>(shader.Data);
+                    var shaderSource = GraphicsDevice.IsOpenGLES2 ? shaderSources.DataES2 : shaderSources.DataES3;
+#else
                     var shaderSource = shader.GetDataAsString();
-
+#endif
                     var shaderId = GL.CreateShader(shaderStage);
                     GL.ShaderSource(shaderId, shaderSource);
                     GL.CompileShader(shaderId);
