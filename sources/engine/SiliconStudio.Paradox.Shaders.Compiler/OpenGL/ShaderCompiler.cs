@@ -120,6 +120,9 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
             var glslConvertor = new ShaderConverter(isOpenGLES, isOpenGLES3);
             var glslShader = glslConvertor.Convert(shaderSource, entryPoint, pipelineStage, sourceFilename, shaderBytecodeResult);
 
+            if (glslShader == null || shaderBytecodeResult.HasErrors)
+                return null;
+
             // Add std140 layout
             foreach (var constantBuffer in glslShader.Declarations.OfType<ConstantBuffer>())
             {
