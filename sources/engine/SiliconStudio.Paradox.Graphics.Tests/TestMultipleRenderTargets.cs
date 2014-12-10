@@ -90,12 +90,15 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             renderTargets[1] = textures[1].ToRenderTarget();
             renderTargets[2] = textures[2].ToRenderTarget();
 
+            var depthBuffer = Texture2D.New(GraphicsDevice, 800, 480, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil).ToDepthStencilBuffer(false);
+
             // Setup the default rendering pipeline
             RenderSystem.Pipeline.Renderers.Add(new CameraSetter(Services));
             RenderSystem.Pipeline.Renderers.Add(new MultipleRenderTargetsSetter(Services)
             {
                 ClearColor = Color.CornflowerBlue,
                 RenderTargets = renderTargets,
+                DepthStencil = depthBuffer,
                 ClearColors = new Color[] { Color.Black, Color.White, Color.Black }
             });
             RenderSystem.Pipeline.Renderers.Add(new ModelRenderer(Services, "MultipleRenderTargetsEffect"));
