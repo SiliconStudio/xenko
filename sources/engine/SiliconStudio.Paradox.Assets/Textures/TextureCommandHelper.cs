@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Threading;
 
@@ -13,7 +14,7 @@ using SiliconStudio.Paradox.Assets.Materials;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.TextureConverter;
 
-namespace SiliconStudio.Paradox.Assets.Texture
+namespace SiliconStudio.Paradox.Assets.Textures
 {
     /// <summary>
     /// An helper for the compile commands that needs to process textures.

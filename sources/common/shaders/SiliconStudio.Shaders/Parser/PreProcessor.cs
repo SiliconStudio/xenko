@@ -35,7 +35,7 @@ namespace SiliconStudio.Shaders
             
             // TODO: Handle warning and errors properly instead of relying only on exception
             // Don't setup a listener and get any errors via exceptions
-            //cpp.setListener(new PreprocessorListener());
+            cpp.setListener(new ErrorListener());
 
             // Pass defines
             if (defines != null)
@@ -89,6 +89,15 @@ namespace SiliconStudio.Shaders
             }
 
             return textBuilder.ToString();
+        }
+
+        private class ErrorListener : CppNet.PreprocessorListenerBase
+        {
+            public override void handleError(Source source, int line, int column, string msg)
+            {
+                base.handleError(source, line, column, msg);
+                throw new LexerException("Error at " + line + ":" + column + ": " + msg);
+            }
         }
     }
 }

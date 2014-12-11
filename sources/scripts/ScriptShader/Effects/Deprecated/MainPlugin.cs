@@ -70,7 +70,7 @@ namespace SiliconStudio.Paradox.Effects
             }
             else
             {
-                var depthStencil = Texture2D.New(GraphicsDevice, RenderTarget.Width, RenderTarget.Height, depthStencilFormat, TextureFlags.DepthStencil | (isDepthStencilAsShaderResourceRequired ? TextureFlags.ShaderResource : TextureFlags.None));
+                var depthStencil = Texture.New2D(GraphicsDevice, RenderTarget.Width, RenderTarget.Height, depthStencilFormat, TextureFlags.DepthStencil | (isDepthStencilAsShaderResourceRequired ? TextureFlags.ShaderResource : TextureFlags.None));
                 DepthStencil = depthStencil.ToDepthStencilBuffer(false);
             }
 

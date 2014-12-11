@@ -423,7 +423,7 @@ namespace SiliconStudio.Paradox.Graphics
             SetDepthStencilState(null);
 
             // Set default render targets
-            SetRenderTarget(DepthStencilBuffer, BackBuffer);
+            SetDepthAndRenderTarget(DepthStencilBuffer, BackBuffer);
         }
 
         /// <summary>
@@ -1399,9 +1399,9 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         /// <param name="depthStencilBuffer">The depth stencil buffer.</param>
         /// <param name="renderTarget">The render target.</param>
-        public void SetRenderTarget(DepthStencilBuffer depthStencilBuffer, RenderTarget renderTarget)
+        public void SetDepthAndRenderTarget(DepthStencilBuffer depthStencilBuffer, RenderTarget renderTarget)
         {
-            SetRenderTargets(depthStencilBuffer, (renderTarget == null) ? null : new[] { renderTarget });
+            SetDepthAndRenderTargets(depthStencilBuffer, (renderTarget == null) ? null : new[] { renderTarget });
 
             if (renderTarget != null)
             {
@@ -1413,7 +1413,7 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
-        public void SetRenderTargets(DepthStencilBuffer depthStencilBuffer, params RenderTarget[] renderTargets)
+        public void SetDepthAndRenderTargets(DepthStencilBuffer depthStencilBuffer, params RenderTarget[] renderTargets)
         {
             if (renderTargets == null)
             {
@@ -1834,7 +1834,7 @@ namespace SiliconStudio.Paradox.Graphics
             EnsureContextActive();
 #endif
 
-            SetRenderTargets((DepthStencilBuffer)null, null);
+            SetDepthAndRenderTargets((DepthStencilBuffer)null, null);
         }
 
         internal void UpdateSubresource(GraphicsResource resource, int subResourceIndex, DataBox databox)
@@ -2245,7 +2245,7 @@ namespace SiliconStudio.Paradox.Graphics
             // - Auto-Blitting while allowing default RenderTarget to be associable with any DepthStencil
             // - No blitting, but default RenderTarget won't work with a custom FBO
             // - Later we should be able to detect that automatically?
-            //defaultRenderTarget = Texture2D.New(this, presentationParameters.BackBufferWidth, presentationParameters.BackBufferHeight, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget).ToRenderTarget();
+            //defaultRenderTarget = Texture.New2D(this, presentationParameters.BackBufferWidth, presentationParameters.BackBufferHeight, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget).ToRenderTarget();
             defaultRenderTarget = windowProvidedRenderTarget;
         }
 

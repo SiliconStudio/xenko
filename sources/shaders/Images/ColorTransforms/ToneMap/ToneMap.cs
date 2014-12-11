@@ -142,7 +142,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         }
 
 
-        void IImageEffectParameterKeyDependencies.FillParameterKeyDependencies(List<ParameterKey> dependencies)
+        void IImageEffectParameterKeyDependencies.FillParameterKeyDependencies(HashSet<ParameterKey> dependencies)
         {
             dependencies.Add(ToneMapKeys.LuminanceResult);
         }

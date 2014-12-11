@@ -54,7 +54,7 @@ namespace SiliconStudio.Paradox.Graphics
         protected float DefaultLineSpacing;
         protected readonly Dictionary<int, float> KerningMap = new Dictionary<int, float>();
 
-        public IReadOnlyList<Texture2D> Textures { get; protected set; }
+        public IReadOnlyList<Texture> Textures { get; protected set; }
 
         /// <summary>
         /// Gets the font size (resp. the default font size) for static fonts (resp. for dynamic fonts) in pixels.

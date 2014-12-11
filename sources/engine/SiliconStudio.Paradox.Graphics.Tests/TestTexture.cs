@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             var data = new byte[256];
             data[0] = 255;
             data[31] = 1;
-            var texture = Texture1D.New(device, 256, PixelFormat.R8_UNorm, data, usage: GraphicsResourceUsage.Default);
+            var texture = Texture.New1D(device, 256, PixelFormat.R8_UNorm, data, usage: GraphicsResourceUsage.Default);
 
             // Perform texture op
             CheckTexture(texture, data);
@@ -47,13 +47,13 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             var data = new byte[256];
             data[0] = 255;
             data[31] = 1;
-            var texture = Texture1D.New(device, 256, true, PixelFormat.R8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
+            var texture = Texture.New1D(device, 256, true, PixelFormat.R8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
 
             // Verify the number of mipmap levels
-            Assert.That(texture.Description.MipLevels, Is.EqualTo(Math.Log(data.Length, 2) + 1));
+            Assert.That(texture.MipLevels, Is.EqualTo(Math.Log(data.Length, 2) + 1));
             
             // Get a render target on the mipmap 1 (128) with value 1 and get back the data
-            var renderTarget1 = texture.ToRenderTarget(ViewType.Single, 0, 1);
+            var renderTarget1 = texture.ToTextureView(ViewType.Single, 0, 1);
             device.Clear(renderTarget1, new Color4(0xFF000001));
             var data1 = texture.GetData<byte>(0, 1);
             Assert.That(data1.Length, Is.EqualTo(128));
@@ -61,7 +61,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             renderTarget1.Dispose();
 
             // Get a render target on the mipmap 2 (128) with value 2 and get back the data
-            var renderTarget2 = texture.ToRenderTarget(ViewType.Single, 0, 2);
+            var renderTarget2 = texture.ToTextureView(ViewType.Single, 0, 2);
             device.Clear(renderTarget2, new Color4(0xFF000002));
             var data2 = texture.GetData<byte>(0, 2);
             Assert.That(data2.Length, Is.EqualTo(64));
@@ -69,7 +69,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             renderTarget2.Dispose();
 
             // Get a render target on the mipmap 3 (128) with value 3 and get back the data
-            var renderTarget3 = texture.ToRenderTarget(ViewType.Single, 0, 3);
+            var renderTarget3 = texture.ToTextureView(ViewType.Single, 0, 3);
             device.Clear(renderTarget3, new Color4(0xFF000003));
             var data3 = texture.GetData<byte>(0, 3);
             Assert.That(data3.Length, Is.EqualTo(32));
@@ -91,7 +91,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             var data = new byte[256 * 256];
             data[0] = 255;
             data[31] = 1;
-            var texture = Texture2D.New(device, 256, 256, PixelFormat.R8_UNorm, data, usage: GraphicsResourceUsage.Default);
+            var texture = Texture.New2D(device, 256, 256, PixelFormat.R8_UNorm, data, usage: GraphicsResourceUsage.Default);
 
             // Perform texture op
             CheckTexture(texture, data);
@@ -111,15 +111,15 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             var data = new byte[256 * 256];
             data[0] = 255;
             data[31] = 1;
-            var texture = Texture2D.New(device, 256, 256, 1, PixelFormat.R8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget, 4);
+            var texture = Texture.New2D(device, 256, 256, 1, PixelFormat.R8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget, 4);
 
             // Verify the number of mipmap levels
-            Assert.That(texture.Description.MipLevels, Is.EqualTo(1));
+            Assert.That(texture.MipLevels, Is.EqualTo(1));
 
             // Get a render target on the array 1 (128) with value 1 and get back the data
-            var renderTarget1 = texture.ToRenderTarget(ViewType.Single, 1, 0);
-            Assert.That(renderTarget1.Width, Is.EqualTo(256));
-            Assert.That(renderTarget1.Height, Is.EqualTo(256));
+            var renderTarget1 = texture.ToTextureView(ViewType.Single, 1, 0);
+            Assert.That(renderTarget1.ViewWidth, Is.EqualTo(256));
+            Assert.That(renderTarget1.ViewHeight, Is.EqualTo(256));
 
             device.Clear(renderTarget1, new Color4(0xFF000001));
             var data1 = texture.GetData<byte>(1, 0);
@@ -128,7 +128,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             renderTarget1.Dispose();
 
             // Get a render target on the array 2 (128) with value 2 and get back the data
-            var renderTarget2 = texture.ToRenderTarget(ViewType.Single, 2, 0);
+            var renderTarget2 = texture.ToTextureView(ViewType.Single, 2, 0);
             device.Clear(renderTarget2, new Color4(0xFF000002));
             var data2 = texture.GetData<byte>(2, 0);
             Assert.That(data2.Length, Is.EqualTo(data.Length));
@@ -136,7 +136,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             renderTarget2.Dispose();
 
             // Get a render target on the array 3 (128) with value 3 and get back the data
-            var renderTarget3 = texture.ToRenderTarget(ViewType.Single, 3, 0);
+            var renderTarget3 = texture.ToTextureView(ViewType.Single, 3, 0);
             device.Clear(renderTarget3, new Color4(0xFF000003));
             var data3 = texture.GetData<byte>(3, 0);
             Assert.That(data3.Length, Is.EqualTo(data.Length));
@@ -159,13 +159,13 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             var data = new byte[256 * 256];
             data[0] = 255;
             data[31] = 1;
-            var texture = Texture2D.New(device, 256, 256, 1, PixelFormat.R8_UNorm, TextureFlags.ShaderResource | TextureFlags.UnorderedAccess, 4);
+            var texture = Texture.New2D(device, 256, 256, 1, PixelFormat.R8_UNorm, TextureFlags.ShaderResource | TextureFlags.UnorderedAccess, 4);
 
             // Clear slice array[1] with value 1, read back data from texture and check validity
-            var texture1 = texture.ToTexture(ViewType.Single, 1, 0);
-            Assert.That(texture1.Width, Is.EqualTo(256));
-            Assert.That(texture1.Height, Is.EqualTo(256));
-            Assert.That(texture1.Depth, Is.EqualTo(1));
+            var texture1 = texture.ToTextureView(ViewType.Single, 1, 0);
+            Assert.That(texture1.ViewWidth, Is.EqualTo(256));
+            Assert.That(texture1.ViewHeight, Is.EqualTo(256));
+            Assert.That(texture1.ViewDepth, Is.EqualTo(1));
 
             device.ClearReadWrite(texture1, new Int4(1));
             var data1 = texture.GetData<byte>(1);
@@ -174,7 +174,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             texture1.Dispose();
 
             // Clear slice array[2] with value 2, read back data from texture and check validity
-            var texture2 = texture.ToTexture(ViewType.Single, 2, 0);
+            var texture2 = texture.ToTextureView(ViewType.Single, 2, 0);
             device.ClearReadWrite(texture2, new Int4(2));
             var data2 = texture.GetData<byte>(2);
             Assert.That(data2.Length, Is.EqualTo(data.Length));
@@ -195,7 +195,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             var data = new byte[32 * 32 * 32];
             data[0] = 255;
             data[31] = 1;
-            var texture = Texture3D.New(device, 32, 32, 32, PixelFormat.R8_UNorm, data, usage: GraphicsResourceUsage.Default);
+            var texture = Texture.New3D(device, 32, 32, 32, PixelFormat.R8_UNorm, data, usage: GraphicsResourceUsage.Default);
 
             // Perform generate texture checking
             CheckTexture(texture, data);
@@ -209,13 +209,13 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         [Test]
         public void TestTexture3DRenderTarget()
         {
-            var device = GraphicsDevice.New();
+            var device = GraphicsDevice.New(DeviceCreationFlags.Debug);
 
             // Check texture creation with an array of data, with usage default to later allow SetData
-            var texture = Texture3D.New(device, 32, 32, 32, true, PixelFormat.R8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
+            var texture = Texture.New3D(device, 32, 32, 32, true, PixelFormat.R8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
 
             // Get a render target on the 1st mipmap of this texture 3D
-            var renderTarget0 = texture.ToRenderTarget(ViewType.Single, 0, 0);
+            var renderTarget0 = texture.ToTextureView(ViewType.Single, 0, 0);
             device.Clear(renderTarget0, new Color4(0xFF000001));
             var data1 = texture.GetData<byte>(0, 0);
             Assert.That(data1.Length, Is.EqualTo(32*32*32));
@@ -223,11 +223,11 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             renderTarget0.Dispose();
 
             // Get a render target on the 2nd mipmap of this texture 3D
-            var renderTarget1 = texture.ToRenderTarget(ViewType.Single, 0, 1);
+            var renderTarget1 = texture.ToTextureView(ViewType.Single, 0, 1);
 
             // Check that width/height is correctly calculated 
-            Assert.That(renderTarget1.Width, Is.EqualTo(32 >> 1));
-            Assert.That(renderTarget1.Height, Is.EqualTo(32 >> 1));
+            Assert.That(renderTarget1.ViewWidth, Is.EqualTo(32 >> 1));
+            Assert.That(renderTarget1.ViewHeight, Is.EqualTo(32 >> 1));
 
             device.Clear(renderTarget1, new Color4(0xFF000001));
             var data2 = texture.GetData<byte>(0, 1);
@@ -245,26 +245,23 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         public void TestDepthStencilBuffer()
         {
             // Force to create a device
-            var device = GraphicsDevice.New(DeviceCreationFlags.None, GraphicsProfile.Level_10_0);
+            var device = GraphicsDevice.New(DeviceCreationFlags.Debug, GraphicsProfile.Level_10_0);
 
             // Check that reaonly is not supported for depth stencil buffer
-            Assert.That(DepthStencilBuffer.IsReadOnlySupported(device), Is.False);
+            Assert.That(Texture.IsDepthStencilReadOnlySupported(device), Is.False);
 
             // Check texture creation with an array of data, with usage default to later allow SetData
-            var texture = Texture2D.New(device, 256, 256, PixelFormat.D32_Float, TextureFlags.DepthStencil);
-
-            // Creates a new depth stencil buffer
-            var depthStencilBuffer = texture.ToDepthStencilBuffer(false);
+            var texture = Texture.New2D(device, 256, 256, PixelFormat.D32_Float, TextureFlags.DepthStencil);
 
             // Clear the depth stencil buffer with a value of 0.5f
-            device.Clear(depthStencilBuffer, DepthStencilClearOptions.DepthBuffer, 0.5f);
+            device.Clear(texture, DepthStencilClearOptions.DepthBuffer, 0.5f);
 
             var values = texture.GetData<float>();
             Assert.That(values.Length, Is.EqualTo(256*256));
             Assert.That(values[0], Is.EqualTo(0.5f));
 
             // Create a new copy of the depth stencil buffer
-            var textureCopy = texture.ToDepthTextureCompatible();
+            var textureCopy = texture.CreateDepthTextureCompatible();
 
             device.Copy(texture, textureCopy);
 
@@ -273,7 +270,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             Assert.That(values[0], Is.EqualTo(0.5f));
 
             // Dispose the depth stencil buffer
-            depthStencilBuffer.Dispose();
+            textureCopy.Dispose();
 
             device.Dispose();
         }
@@ -286,23 +283,20 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             var device = GraphicsDevice.New(DeviceCreationFlags.None, GraphicsProfile.Level_11_0);
 
             // Check that reaonly is not supported for depth stencil buffer
-            Assert.That(DepthStencilBuffer.IsReadOnlySupported(device), Is.True);
+            Assert.That(Texture.IsDepthStencilReadOnlySupported(device), Is.True);
 
             // Check texture creation with an array of data, with usage default to later allow SetData
-            var texture = Texture2D.New(device, 256, 256, PixelFormat.D32_Float, TextureFlags.ShaderResource | TextureFlags.DepthStencil);
-
-            // Creates a new depth stencil buffer
-            var depthStencilBuffer = texture.ToDepthStencilBuffer(true);
+            var texture = Texture.New2D(device, 256, 256, PixelFormat.D32_Float, TextureFlags.ShaderResource | TextureFlags.DepthStencilReadOnly);
 
             // Clear the depth stencil buffer with a value of 0.5f, but the depth buffer is readonly
-            device.Clear(depthStencilBuffer, DepthStencilClearOptions.DepthBuffer, 0.5f);
+            device.Clear(texture, DepthStencilClearOptions.DepthBuffer, 0.5f);
 
             var values = texture.GetData<float>();
             Assert.That(values.Length, Is.EqualTo(256 * 256));
             Assert.That(values[0], Is.EqualTo(0.0f));
 
             // Dispose the depth stencil buffer
-            depthStencilBuffer.Dispose();
+            texture.Dispose();
 
             device.Dispose();
         }

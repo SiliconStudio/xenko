@@ -36,21 +36,21 @@ namespace SiliconStudio.Paradox.UI
         }
 
         /// <summary>
-        /// Create an instance of <see cref="UIImage"/> having a unique name from a single <see cref="Texture2D"/> and initialize the <see cref="Region"/> to the size of the texture.
+        /// Create an instance of <see cref="UIImage"/> having a unique name from a single <see cref="Texture"/> and initialize the <see cref="Region"/> to the size of the texture.
         /// </summary>
         /// <param name="texture">The texture to use as color</param>
-        public UIImage(Texture2D texture)
+        public UIImage(Texture texture)
             : this(Guid.NewGuid().ToString(), texture, null)
         {
         }
 
         /// <summary>
-        /// Create an instance of <see cref="UIImage"/> from a single color/alpha <see cref="Texture2D"/> and 
+        /// Create an instance of <see cref="UIImage"/> from a single color/alpha <see cref="Texture"/> and 
         /// initialize the <see cref="Region"/> to the size of the texture.
         /// </summary>
         /// <param name="imageName">The name of the UI image</param>
         /// <param name="texture">The texture to use as color</param>
-        public UIImage(string imageName, Texture2D texture)
+        public UIImage(string imageName, Texture texture)
             : this(imageName, texture, null)
         {
         }
@@ -65,7 +65,7 @@ namespace SiliconStudio.Paradox.UI
         /// <param name="alpha">The texture to use as alpha</param>
         /// <exception cref="ArgumentNullException">The provided textures cannot be null</exception>
         /// <exception cref="ArgumentException">The provided textures must have the same size</exception>
-        public UIImage(string imageName, Texture2D color, Texture2D alpha)
+        public UIImage(string imageName, Texture color, Texture alpha)
             : base(imageName, color, alpha)
         {
             UpdateIdealSize();

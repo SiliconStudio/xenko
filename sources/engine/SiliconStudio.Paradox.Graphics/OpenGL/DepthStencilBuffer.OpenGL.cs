@@ -83,7 +83,7 @@ namespace SiliconStudio.Paradox.Graphics
             base.DestroyImpl();
         }
 
-        public static bool IsReadOnlySupported(GraphicsDevice device)
+        public static bool IsDepthStencilReadOnlySupported(GraphicsDevice device)
         {
             // Since OpenGL 4.0? (need to double-check)
             return (device.versionMajor >= 4);

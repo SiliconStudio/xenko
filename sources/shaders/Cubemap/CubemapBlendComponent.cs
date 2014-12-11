@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
         public static PropertyKey<CubemapBlendComponent> Key = new PropertyKey<CubemapBlendComponent>("Key", typeof(CubemapBlendComponent));
 
         [DataMemberIgnore]
-        private TextureCube textureCube;
+        private Texture textureCube;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CubemapBlendComponent"/> class.
@@ -65,7 +65,7 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
         /// The texture attached to this component.
         /// </summary>
         [DataMemberIgnore]
-        public TextureCube Texture
+        public Texture Texture
         {
             get
             {
@@ -77,16 +77,18 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
                 // TODO: check previous status to dispose the rendertarget?
                 if (textureCube != null)
                 {
-                    MaxLod = textureCube.Description.MipLevels - 1;
-                    RenderTargets = new RenderTarget[6]
+                    MaxLod = textureCube.MipLevels - 1;
+                    RenderTargets = new Texture[6]
                     {
-                        textureCube.ToRenderTarget(ViewType.Single, 0, 0),
-                        textureCube.ToRenderTarget(ViewType.Single, 1, 0),
-                        textureCube.ToRenderTarget(ViewType.Single, 2, 0),
-                        textureCube.ToRenderTarget(ViewType.Single, 3, 0),
-                        textureCube.ToRenderTarget(ViewType.Single, 4, 0),
-                        textureCube.ToRenderTarget(ViewType.Single, 5, 0)
+                        textureCube.ToTextureView(ViewType.Single, 0, 0),
+                        textureCube.ToTextureView(ViewType.Single, 1, 0),
+                        textureCube.ToTextureView(ViewType.Single, 2, 0),
+                        textureCube.ToTextureView(ViewType.Single, 3, 0),
+                        textureCube.ToTextureView(ViewType.Single, 4, 0),
+                        textureCube.ToTextureView(ViewType.Single, 5, 0)
                     };
+
+                    FullRenderTarget = textureCube.ToTextureView(ViewType.Full, 0, 0);
                 }
             }
         }
@@ -102,7 +104,10 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
         /// The render targets of the cubemap.
         /// </summary>
         [DataMemberIgnore]
-        public RenderTarget[] RenderTargets { get; private set; }
+        public Texture[] RenderTargets { get; private set; }
+
+        [DataMemberIgnore]
+        public Texture FullRenderTarget { get; private set; }
 
         public override PropertyKey DefaultKey
         {

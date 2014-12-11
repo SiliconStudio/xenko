@@ -55,7 +55,7 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
             if (data.IsDynamic)
             {
                 // TODO: move texture creation when it is actually needed (first time use)?
-                data.Texture = TextureCube.New(graphicsDevice, data.Size, 1, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
+                data.Texture = Texture.NewCube(graphicsDevice, data.Size, 1, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
             }
         }
 

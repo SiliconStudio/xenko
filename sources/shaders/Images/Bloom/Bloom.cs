@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         private readonly GaussianBlur blur;
 
         private readonly ImageEffectShader blurCombine = null; // TODO
-        private readonly List<RenderTarget> resultList = new List<RenderTarget>();
+        private readonly List<Texture> resultList = new List<Texture>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Bloom"/> class.
@@ -71,8 +71,8 @@ namespace SiliconStudio.Paradox.Effects.Images
             var previousRenderTarget = startRenderTarget;
             // Create other rendertargets upto lastMinSize max
             resultList.Clear();
-            var tempList = new List<RenderTarget>();
-            var blurList = new List<RenderTarget>();
+            var tempList = new List<Texture>();
+            var blurList = new List<Texture>();
             var sizeDown4 = nextSize.Down2();
 
             //var radius = (float)power;
@@ -151,7 +151,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
             else
             {
-                if (inputTexture != GetSafeOutput(0).Texture)
+                if (inputTexture != GetSafeOutput(0))
                 {
                     Scaler.SetInput(inputTexture);
                     Scaler.SetOutput(GetSafeOutput(0));
@@ -162,7 +162,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             GraphicsDevice.SetBlendState(GraphicsDevice.BlendStates.Additive);
             if (resultList.Count == 1)
             {
-                GraphicsDevice.SetRenderTargets(GetSafeOutput(0));
+                GraphicsDevice.SetDepthAndRenderTargets(GetSafeOutput(0));
                 GraphicsDevice.DrawTexture(resultList[0]);
             }
             else if (resultList.Count > 1)

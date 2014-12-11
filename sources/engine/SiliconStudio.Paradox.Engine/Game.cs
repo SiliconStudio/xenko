@@ -245,11 +245,7 @@ namespace SiliconStudio.Paradox
             }
 
             // TODO: data-driven?
-            Asset.Serializer.RegisterSerializer(new GpuTextureSerializer2<Graphics.Texture>(GraphicsDevice));
-            Asset.Serializer.RegisterSerializer(new GpuTextureSerializer2<Graphics.Texture1D>(GraphicsDevice));
-            Asset.Serializer.RegisterSerializer(new GpuTextureSerializer2<Graphics.Texture2D>(GraphicsDevice));
-            Asset.Serializer.RegisterSerializer(new GpuTextureSerializer2<Graphics.Texture3D>(GraphicsDevice));
-            Asset.Serializer.RegisterSerializer(new GpuTextureSerializer2<Graphics.TextureCube>(GraphicsDevice));
+            Asset.Serializer.RegisterSerializer(new GpuTextureSerializer2(GraphicsDevice));
             Asset.Serializer.RegisterSerializer(new GpuSamplerStateSerializer2(GraphicsDevice));
             Asset.Serializer.RegisterSerializer(new GpuBlendStateSerializer(GraphicsDevice));
             Asset.Serializer.RegisterSerializer(new GpuRasterizerStateSerializer(GraphicsDevice));
@@ -260,7 +256,7 @@ namespace SiliconStudio.Paradox
 
             // determine the virtual resolution so that ratio is maintained
             const int screenDesiredHeight = 1080;
-            var screenRatio = GraphicsDevice.BackBuffer.Width / (float)GraphicsDevice.BackBuffer.Height;
+            var screenRatio = GraphicsDevice.BackBuffer.ViewWidth / (float)GraphicsDevice.BackBuffer.ViewHeight;
             VirtualResolution = new Vector3((int)(screenRatio * screenDesiredHeight), screenDesiredHeight, screenDesiredHeight);
 
             // enable multi-touch by default
@@ -302,7 +298,7 @@ namespace SiliconStudio.Paradox
 
                     using (var stream = System.IO.File.Create(newFileName))
                     {
-                        GraphicsDevice.BackBuffer.Texture.Save(stream, ImageFileType.Png);
+                        GraphicsDevice.BackBuffer.Save(stream, ImageFileType.Png);
                     }
                 }
             }

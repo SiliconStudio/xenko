@@ -33,31 +33,31 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
             var image1 = new ImageElement
             {
-                Source = new UIImage(Asset.Load<Texture2D>("BorderButtonCentered")) { Region = new Rectangle(256, 128, 512, 256), Borders = new Vector4(0.125f, 0.125f, 0.25f, 0.25f) },
+                Source = new UIImage(Asset.Load<Texture>("BorderButtonCentered")) { Region = new Rectangle(256, 128, 512, 256), Borders = new Vector4(0.125f, 0.125f, 0.25f, 0.25f) },
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center
             };
             var image2 = new ImageElement
             {
-                Source = new UIImage(Asset.Load<Texture2D>("uv")) { Region = new Rectangle(0, 0, 512, 512) },
+                Source = new UIImage(Asset.Load<Texture>("uv")) { Region = new Rectangle(0, 0, 512, 512) },
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center
             };
             var image3 = new ImageElement
             {
-                Source = new UIImage(Asset.Load<Texture2D>("uv")) { Region = new Rectangle(512, 0, 512, 512) },
+                Source = new UIImage(Asset.Load<Texture>("uv")) { Region = new Rectangle(512, 0, 512, 512) },
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center
             };
             var image4 = new ImageElement
             {
-                Source = new UIImage(Asset.Load<Texture2D>("uv")) { Region = new Rectangle(0, 512, 512, 512) },
+                Source = new UIImage(Asset.Load<Texture>("uv")) { Region = new Rectangle(0, 512, 512, 512) },
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center
             };
             var image5 = new ImageElement
             {
-                Source = new UIImage(Asset.Load<Texture2D>("uv")) { Region = new Rectangle(512, 512, 512, 512) },
+                Source = new UIImage(Asset.Load<Texture>("uv")) { Region = new Rectangle(512, 512, 512, 512) },
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center
             };

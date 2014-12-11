@@ -18,15 +18,13 @@ namespace SiliconStudio.Paradox.Effects.Images
         private readonly Texture[] inputTextures;
         private int maxInputTextureIndex;
 
-        private DepthStencilBuffer outputDepthStencilBuffer;
+        private Texture outputRenderTargetView;
 
-        private RenderTarget outputRenderTargetView;
-
-        private RenderTarget[] outputRenderTargetViews;
+        private Texture[] outputRenderTargetViews;
 
         private bool isInDrawCore;
 
-        private readonly List<RenderTarget> scopedRenderTargets;
+        private readonly List<Texture> scopedRenderTargets;
 
         private ImageScaler scaler;
 
@@ -43,9 +41,9 @@ namespace SiliconStudio.Paradox.Effects.Images
             Context = context;
             GraphicsDevice = Context.GraphicsDevice;
             Assets = context.Services.GetSafeServiceAs<AssetManager>();
-            Enabled = true;
+            Enable = true;
             inputTextures = new Texture[128];
-            scopedRenderTargets = new List<RenderTarget>();
+            scopedRenderTargets = new List<Texture>();
             maxInputTextureIndex = -1;
             EnableSetRenderTargets = true;
             Parameters = new ParameterCollection();
@@ -55,7 +53,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Gets or sets a value indicating whether this post effect is enabled.
         /// </summary>
         /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
-        public bool Enabled { get; set; }
+        public bool Enable { get; set; }
 
         /// <summary>
         /// Gets the context.
@@ -82,9 +80,9 @@ namespace SiliconStudio.Paradox.Effects.Images
         protected GraphicsDevice GraphicsDevice { get; private set; }
 
         /// <summary>
-        /// Gets or sets a boolean to enable GraphicsDevice.SetRenderTargets from output. Default is <c>true</c>.
+        /// Gets or sets a boolean to enable GraphicsDevice.SetDepthAndRenderTargets from output. Default is <c>true</c>.
         /// </summary>
-        /// <value>A boolean to enable GraphicsDevice.SetRenderTargets from output. Default is <c>true</c></value>
+        /// <value>A boolean to enable GraphicsDevice.SetDepthAndRenderTargets from output. Default is <c>true</c></value>
         protected bool EnableSetRenderTargets { get; set; }
 
         /// <summary>
@@ -140,36 +138,22 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <param name="view">The render target output view.</param>
         /// <param name="depthStencilBuffer">The depth stencil buffer.</param>
         /// <exception cref="System.ArgumentNullException">view</exception>
-        public void SetOutput(RenderTarget view, DepthStencilBuffer depthStencilBuffer = null)
+        public void SetOutput(Texture view)
         {
             if (view == null) throw new ArgumentNullException("view");
 
-            SetOutputInternal(view, depthStencilBuffer);
+            SetOutputInternal(view);
         }
 
         /// <summary>
         /// Sets the render target outputs.
         /// </summary>
         /// <param name="views">The render target output views.</param>
-        public void SetOutput(params RenderTarget[] views)
+        public void SetOutput(params Texture[] views)
         {
             if (views == null) throw new ArgumentNullException("views");
 
-            SetOutputInternal(null, views);
-        }
-
-        /// <summary>
-        /// Sets the render target outputs.
-        /// </summary>
-        /// <param name="depthStencilBuffer">The depth stencil buffer.</param>
-        /// <param name="views">The render target output views.</param>
-        /// <returns>PostEffectBase.</returns>
-        /// <exception cref="System.ArgumentNullException">views</exception>
-        public void SetOutput(DepthStencilBuffer depthStencilBuffer, params RenderTarget[] views)
-        {
-            if (views == null) throw new ArgumentNullException("views");
-
-            SetOutputInternal(depthStencilBuffer, views);
+            SetOutputInternal(views);
         }
 
         /// <summary>
@@ -177,7 +161,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         public void Draw(string name = null)
         {
-            if (!Enabled)
+            if (!Enable)
             {
                 return;
             }
@@ -225,11 +209,11 @@ namespace SiliconStudio.Paradox.Effects.Images
             {
                 if (outputRenderTargetView != null)
                 {
-                    GraphicsDevice.SetRenderTarget(outputDepthStencilBuffer, outputRenderTargetView);
+                    GraphicsDevice.SetRenderTarget(outputRenderTargetView);
                 }
                 else if (outputRenderTargetViews != null)
                 {
-                    GraphicsDevice.SetRenderTargets(outputDepthStencilBuffer, outputRenderTargetViews);
+                    GraphicsDevice.SetRenderTargets(outputRenderTargetViews);
                 }
             }
         }
@@ -311,7 +295,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <param name="index">The index.</param>
         /// <returns>RenderTarget.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">index</exception>
-        protected RenderTarget GetOutput(int index)
+        protected Texture GetOutput(int index)
         {
             if (index < 0)
             {
@@ -327,7 +311,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <param name="index">The index.</param>
         /// <returns>RenderTarget.</returns>
         /// <exception cref="System.InvalidOperationException"></exception>
-        protected RenderTarget GetSafeOutput(int index)
+        protected Texture GetSafeOutput(int index)
         {
             var output = GetOutput(index);
             if (output == null)
@@ -342,11 +326,11 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Gets a <see cref="RenderTarget" /> with the specified description, scoped for the duration of the <see cref="DrawCore"/>.
         /// </summary>
         /// <returns>A new instance of <see cref="RenderTarget" /> class.</returns>
-        protected RenderTarget NewScopedRenderTarget2D(TextureDescription description)
+        protected Texture NewScopedRenderTarget2D(TextureDescription description)
         {
             // TODO: Check if we should introduce an enum for the kind of scope (per DrawCore, per Frame...etc.)
             CheckIsInDrawCore();
-            return PushScopedRenderTarget2D(Context.Allocator.GetTemporaryRenderTarget2D(description));
+            return PushScopedRenderTarget2D(Context.Allocator.GetTemporaryTexture2D(description));
         }
 
         /// <summary>
@@ -361,10 +345,10 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <msdn-id>ff476521</msdn-id>
         ///   <unmanaged>HRESULT ID3D11Device::CreateTexture2D([In] const D3D11_TEXTURE2D_DESC* pDesc,[In, Buffer, Optional] const D3D11_SUBRESOURCE_DATA* pInitialData,[Out, Fast] ID3D11Texture2D** ppTexture2D)</unmanaged>
         ///   <unmanaged-short>ID3D11Device::CreateTexture2D</unmanaged-short>
-        protected RenderTarget NewScopedRenderTarget2D(int width, int height, PixelFormat format, TextureFlags flags = TextureFlags.RenderTarget | TextureFlags.ShaderResource, int arraySize = 1)
+        protected Texture NewScopedRenderTarget2D(int width, int height, PixelFormat format, TextureFlags flags = TextureFlags.RenderTarget | TextureFlags.ShaderResource, int arraySize = 1)
         {
             CheckIsInDrawCore();
-            return PushScopedRenderTarget2D(Context.Allocator.GetTemporaryRenderTarget2D(width, height, format, flags, arraySize));
+            return PushScopedRenderTarget2D(Context.Allocator.GetTemporaryTexture2D(width, height, format, flags, arraySize));
         }
 
         /// <summary>
@@ -380,10 +364,10 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <msdn-id>ff476521</msdn-id>
         ///   <unmanaged>HRESULT ID3D11Device::CreateTexture2D([In] const D3D11_TEXTURE2D_DESC* pDesc,[In, Buffer, Optional] const D3D11_SUBRESOURCE_DATA* pInitialData,[Out, Fast] ID3D11Texture2D** ppTexture2D)</unmanaged>
         ///   <unmanaged-short>ID3D11Device::CreateTexture2D</unmanaged-short>
-        protected RenderTarget NewScopedRenderTarget2D(int width, int height, PixelFormat format, MipMapCount mipCount, TextureFlags flags = TextureFlags.RenderTarget | TextureFlags.ShaderResource, int arraySize = 1)
+        protected Texture NewScopedRenderTarget2D(int width, int height, PixelFormat format, MipMapCount mipCount, TextureFlags flags = TextureFlags.RenderTarget | TextureFlags.ShaderResource, int arraySize = 1)
         {
             CheckIsInDrawCore();
-            return PushScopedRenderTarget2D(Context.Allocator.GetTemporaryRenderTarget2D(width, height, format, mipCount, flags, arraySize));
+            return PushScopedRenderTarget2D(Context.Allocator.GetTemporaryTexture2D(width, height, format, mipCount, flags, arraySize));
         }
 
         private void CheckIsInDrawCore()
@@ -394,7 +378,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
-        private RenderTarget PushScopedRenderTarget2D(RenderTarget renderTarget)
+        private Texture PushScopedRenderTarget2D(Texture renderTarget)
         {
             scopedRenderTargets.Add(renderTarget);
             return renderTarget;
@@ -409,18 +393,16 @@ namespace SiliconStudio.Paradox.Effects.Images
             scopedRenderTargets.Clear();
         }
 
-        private void SetOutputInternal(RenderTarget view, DepthStencilBuffer depthStencilBuffer)
+        private void SetOutputInternal(Texture view)
         {
             // TODO: Do we want to handle the output the same way we handle the input textures?
-            outputDepthStencilBuffer = depthStencilBuffer;
             outputRenderTargetView = view;
             outputRenderTargetViews = null;
         }
 
-        private void SetOutputInternal(DepthStencilBuffer depthStencilBuffer, params RenderTarget[] views)
+        private void SetOutputInternal(params Texture[] views)
         {
             // TODO: Do we want to handle the output the same way we handle the input textures?
-            outputDepthStencilBuffer = depthStencilBuffer;
             outputRenderTargetView = null;
             outputRenderTargetViews = views;
         }

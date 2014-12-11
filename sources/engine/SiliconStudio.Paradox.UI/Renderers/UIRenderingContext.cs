@@ -21,12 +21,12 @@ namespace SiliconStudio.Paradox.UI.Renderers
         /// <summary>
         /// The final render target to draw to.
         /// </summary>
-        public RenderTarget RenderTarget { get; set; }
+        public Texture RenderTarget { get; set; }
 
         /// <summary>
         /// The final depth stencil buffer to draw to.
         /// </summary>
-        public DepthStencilBuffer DepthStencilBuffer { get; set; }
+        public Texture DepthStencilBuffer { get; set; }
 
         /// <summary>
         /// The current reference value for the stencil test.

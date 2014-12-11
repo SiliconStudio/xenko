@@ -61,9 +61,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
         protected override void ComputeAssemblyHash(BinarySerializationWriter writer)
         {
             writer.Write(DataSerializer.BinaryFormatVersion);
-
-            // Since EffectBytecode format is quite stable, we want to manually control it's assembly hash here
-            writer.Write(1);
+            writer.Write(EffectBytecode.MagicHeader);
         }
 
         protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)

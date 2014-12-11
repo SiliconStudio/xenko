@@ -32,7 +32,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="fragmentName">Name of the fragment</param>
         /// <param name="color">The texture to use as color</param>
         /// <param name="alpha">the texture to use as alpha</param>
-        public ImageFragment(string fragmentName, Texture2D color, Texture2D alpha)
+        public ImageFragment(string fragmentName, Texture color, Texture alpha)
         {
             Name = fragmentName;
             IsTransparent = true;
@@ -42,7 +42,7 @@ namespace SiliconStudio.Paradox.Graphics
 
             var referenceTexture = color ?? alpha;
             if(referenceTexture != null)
-                RegionInternal = new Rectangle(0, 0, referenceTexture.Width, referenceTexture.Height);
+                RegionInternal = new Rectangle(0, 0, referenceTexture.ViewWidth, referenceTexture.ViewHeight);
         }
 
         /// <summary>
@@ -55,13 +55,13 @@ namespace SiliconStudio.Paradox.Graphics
         /// The texture in which the image is contained
         /// </summary>
         [DataMemberConvert]
-        public Texture2D Texture { get; set; }
+        public Texture Texture { get; set; }
 
         /// <summary>
         /// The texture in which the image alpha is contained
         /// </summary>
         [DataMemberConvert]
-        public Texture2D TextureAlpha { get; set; }
+        public Texture TextureAlpha { get; set; }
 
         /// <summary>
         /// Gets a value indicating if the alpha component of the <see cref="ImageFragment"/> should be taken from the color of the <see cref="TextureAlpha"/> texture or not.

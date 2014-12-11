@@ -96,7 +96,7 @@ namespace SiliconStudio.Paradox.Effects
 
             // Create lighting accumulation texture (that LightPlugin will use)
             var mainBackBuffer = graphicsDeviceService.GraphicsDevice.BackBuffer;
-            var lightTexture = Texture2D.New(GraphicsDevice, mainBackBuffer.Width, mainBackBuffer.Height, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
+            var lightTexture = Texture.New2D(GraphicsDevice, mainBackBuffer.Width, mainBackBuffer.Height, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
             lightTexture.Name = "LightTexture";
             LightTexture = lightTexture.ToRenderTarget();
 

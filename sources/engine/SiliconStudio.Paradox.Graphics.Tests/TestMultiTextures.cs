@@ -88,7 +88,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             base.Draw(gameTime);
 
             // Clears the screen with the Color.CornflowerBlue
-            GraphicsDevice.SetRenderTarget(GraphicsDevice.BackBuffer);
+            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.BackBuffer);
             MultiTexturesEffect.SharedParameters.Set(TexturingKeys.Texture0, UVTexture);
             MultiTexturesEffect.SharedParameters.Set(TexturingKeys.Texture1, UV2Texture);
             MultiTexturesEffect.Apply();

@@ -121,7 +121,7 @@ namespace SiliconStudio.Paradox.UI
 
             input = Services.GetSafeServiceAs<InputManager>();
 
-            VirtualResolution = new Vector3(GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height, 1000);
+            VirtualResolution = new Vector3(GraphicsDevice.BackBuffer.ViewWidth, GraphicsDevice.BackBuffer.ViewHeight, 1000);
 
             Enabled = true;
             Visible = true;
@@ -152,7 +152,7 @@ namespace SiliconStudio.Paradox.UI
 
         private Vector2 CalculateBackBufferVirtualResolutionRatio()
         {
-            return new Vector2(GraphicsDevice.BackBuffer.Width / virtualResolution.X, GraphicsDevice.BackBuffer.Height / virtualResolution.Y);
+            return new Vector2(GraphicsDevice.BackBuffer.ViewWidth / virtualResolution.X, GraphicsDevice.BackBuffer.ViewHeight / virtualResolution.Y);
         }
 
         protected override void LoadContent()

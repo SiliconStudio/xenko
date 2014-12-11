@@ -11,7 +11,7 @@ namespace SiliconStudio.Paradox.Effects.Skybox
     /// </summary>
     public class SkyboxRenderer : Renderer
     {
-        private readonly TextureCube skybox;
+        private readonly Texture skybox;
 
         private Effect skyboxEffect;
 
@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Effects.Skybox
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="skyboxTexture">The skybox texture.</param>
-        public SkyboxRenderer(IServiceRegistry services, TextureCube skyboxTexture)
+        public SkyboxRenderer(IServiceRegistry services, Texture skyboxTexture)
             : base(services)
         {
             skybox = skyboxTexture;

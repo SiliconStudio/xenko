@@ -97,7 +97,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
         public void SaveBackBuffer()
         {
             TestGameLogger.Info(@"Saving the backbuffer");
-            SaveImage(GraphicsDevice.BackBuffer.Texture);
+            SaveImage(GraphicsDevice.BackBuffer);
         }
 
         /// <summary>

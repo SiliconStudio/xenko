@@ -11,7 +11,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 {
     public class TestGameBase : GraphicsTestBase
     {
-        public Texture2D UVTexture { get; private set; }
+        public Texture UVTexture { get; private set; }
 
         public TestGameBase()
         {
@@ -29,7 +29,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         {
             await base.LoadContent();
 
-            UVTexture = Asset.Load<Texture2D>("uv");
+            UVTexture = Asset.Load<Texture>("uv");
         }
 
         protected override void Update(GameTime gameTime)

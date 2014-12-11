@@ -25,7 +25,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// </remarks>
     public class ImageMultiScaler : ImageEffect
     {
-        private readonly List<RenderTarget> outputTextures = new List<RenderTarget>();
+        private readonly List<Texture> outputTextures = new List<Texture>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageMultiScaler"/> class.
@@ -159,7 +159,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             return outputTextures.Count > 0;
         }
 
-        private RenderTarget FindOutputMatchingSize(Size3 targetSize, int scalingDirection)
+        private Texture FindOutputMatchingSize(Size3 targetSize, int scalingDirection)
         {
             for (int i = 0; i < outputTextures.Count; i++)
             {

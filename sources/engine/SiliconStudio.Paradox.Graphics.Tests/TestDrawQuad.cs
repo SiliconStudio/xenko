@@ -11,7 +11,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
     [TestFixture]
     public class TestDrawQuad : TestGameBase
     {
-        private RenderTarget offlineTarget;
+        private Texture offlineTarget;
         private bool firstSave;
 
         public TestDrawQuad()
@@ -31,7 +31,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             await base.LoadContent();
 
             // TODO DisposeBy is not working with device reset
-            offlineTarget = Texture2D.New(GraphicsDevice, 512, 512, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget).DisposeBy(this).ToRenderTarget().DisposeBy(this);
+            offlineTarget = Texture.New2D(GraphicsDevice, 512, 512, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget).DisposeBy(this);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -43,8 +43,8 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             if (firstSave)
             {
-                SaveTexture(offlineTarget.Texture, "offlineTarget.png");
-                SaveTexture(GraphicsDevice.BackBuffer.Texture, "backBuffer.png");
+                SaveTexture(offlineTarget, "offlineTarget.png");
+                SaveTexture(GraphicsDevice.BackBuffer, "backBuffer.png");
                 firstSave = false;
             }
         }
@@ -56,15 +56,15 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
 
             // Render to the backbuffer
-            GraphicsDevice.SetRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
             GraphicsDevice.DrawTexture(UVTexture);
 
             // -> Render to back by using intermediate texture
-            //GraphicsDevice.SetRenderTarget(offlineTarget);
+            //GraphicsDevice.SetDepthAndRenderTarget(offlineTarget);
             //GraphicsDevice.DrawTexture(UVTexture);
             //
             //// Render to the backbuffer using offline texture
-            //GraphicsDevice.SetRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            //GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
             //GraphicsDevice.DrawTexture(offlineTarget.Texture);
         }
 

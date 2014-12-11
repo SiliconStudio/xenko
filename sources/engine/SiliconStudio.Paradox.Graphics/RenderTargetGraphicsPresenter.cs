@@ -28,24 +28,23 @@ namespace SiliconStudio.Paradox.Graphics
     /// </summary>
     public class RenderTargetGraphicsPresenter : GraphicsPresenter
     {
-        private RenderTarget backBuffer;
+        private Texture backBuffer;
 
-        public RenderTargetGraphicsPresenter(GraphicsDevice device, RenderTarget renderTarget, PixelFormat depthFormat = PixelFormat.None)
+        public RenderTargetGraphicsPresenter(GraphicsDevice device, Texture renderTarget, PixelFormat depthFormat = PixelFormat.None)
             : base(device, CreatePresentationParameters(renderTarget, depthFormat))
         {
             PresentInterval = Description.PresentationInterval;
-
             // Initialize the swap chain
-            backBuffer = renderTarget;
+            SetBackBuffer(renderTarget);
         }
 
-        private static PresentationParameters CreatePresentationParameters(RenderTarget renderTarget2D, PixelFormat depthFormat)
+        private static PresentationParameters CreatePresentationParameters(Texture renderTarget2D, PixelFormat depthFormat)
         {
             return new PresentationParameters()
                 {
-                    BackBufferWidth = renderTarget2D.Description.Width,
-                    BackBufferHeight = renderTarget2D.Description.Height,
-                    BackBufferFormat = renderTarget2D.Description.Format,
+                    BackBufferWidth = renderTarget2D.Width,
+                    BackBufferHeight = renderTarget2D.Height,
+                    BackBufferFormat = renderTarget2D.ViewFormat,
                     DepthStencilFormat = depthFormat,
                     DeviceWindowHandle = null,
                     IsFullScreen = true,
@@ -55,7 +54,7 @@ namespace SiliconStudio.Paradox.Graphics
                 };
         }
 
-        public override RenderTarget BackBuffer
+        public override Texture BackBuffer
         {
             get
             {
@@ -63,9 +62,13 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
-        public void SetBackBuffer(RenderTarget backBuffer)
+        /// <summary>
+        /// Sets the back buffer.
+        /// </summary>
+        /// <param name="backBuffer">The back buffer.</param>
+        public void SetBackBuffer(Texture backBuffer)
         {
-            this.backBuffer = backBuffer;
+            this.backBuffer = backBuffer.EnsureRenderTarget();
         }
 
         public override object NativePresenter

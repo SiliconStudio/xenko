@@ -101,7 +101,7 @@ namespace SiliconStudio.Paradox.Effects.Cubemap.Data
         /// <summary>
         /// Data field for <see cref="SiliconStudio.Paradox.Effects.Cubemap.CubemapSourceComponent.Texture"/>.
         /// </summary>
-        public SiliconStudio.Core.Serialization.ContentReference<SiliconStudio.Paradox.Graphics.TextureCube> Texture;
+        public SiliconStudio.Core.Serialization.ContentReference<SiliconStudio.Paradox.Graphics.Texture> Texture;
     }
 
 

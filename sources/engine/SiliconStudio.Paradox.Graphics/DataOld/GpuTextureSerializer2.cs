@@ -7,7 +7,7 @@ using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Paradox.Graphics.Data
 {
-    public class GpuTextureSerializer2<T> : ContentSerializerBase<T> where T : Texture
+    public class GpuTextureSerializer2 : ContentSerializerBase<Texture>
     {
         private readonly GraphicsDevice graphicsDevice;
 
@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Graphics.Data
             this.graphicsDevice = graphicsDevice;
         }
 
-        public override void Serialize(ContentSerializerContext context, SerializationStream stream, ref T texture)
+        public override void Serialize(ContentSerializerContext context, SerializationStream stream, ref Texture texture)
         {
             if (context.Mode == ArchiveMode.Serialize)
                 throw new NotImplementedException();
@@ -36,7 +36,7 @@ namespace SiliconStudio.Paradox.Graphics.Data
             {
                 try
                 {
-                    texture = (T)Texture.New(graphicsDevice, textureData);
+                    texture = Texture.New(graphicsDevice, textureData);
 
                     // Setup reload callback (reload from asset manager)
                     texture.Reload = (graphicsResource) =>

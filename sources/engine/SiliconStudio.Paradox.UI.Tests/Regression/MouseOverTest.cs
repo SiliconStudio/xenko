@@ -78,7 +78,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
         protected override void CreatePipeline()
         {
             RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services));
-            RenderSystem.Pipeline.Renderers.Add(new BackgroundRenderer(Services) { BackgroundTexture = Asset.Load<Texture2D>("ParadoxBackground")});
+            RenderSystem.Pipeline.Renderers.Add(new BackgroundRenderer(Services) { BackgroundTexture = Asset.Load<Texture>("ParadoxBackground")});
             RenderSystem.Pipeline.Renderers.Add(UIRenderer = new UIRenderer(Services));
         }
 

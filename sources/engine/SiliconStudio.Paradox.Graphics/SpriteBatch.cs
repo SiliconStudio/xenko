@@ -528,8 +528,8 @@ namespace SiliconStudio.Paradox.Graphics
                 // Else, use directly the size of the texture
                 spriteInfo->Source.X = 0.0f;
                 spriteInfo->Source.Y = 0.0f;
-                width = texture.Width;
-                height = texture.Height;
+                width = texture.ViewWidth;
+                height = texture.ViewHeight;
             }
 
             // Sets the width and height
@@ -562,8 +562,8 @@ namespace SiliconStudio.Paradox.Graphics
             spriteInfo->SpriteEffects = effects;
             spriteInfo->Color = color;
             spriteInfo->Swizzle = swizzle;
-            spriteInfo->TextureSize.X = texture.Width;
-            spriteInfo->TextureSize.Y = texture.Height;
+            spriteInfo->TextureSize.X = texture.ViewWidth;
+            spriteInfo->TextureSize.Y = texture.ViewHeight;
             spriteInfo->Orientation = orientation;
 
             elementInfo.VertexCount = StaticQuadBufferInfo.VertexByElement;
