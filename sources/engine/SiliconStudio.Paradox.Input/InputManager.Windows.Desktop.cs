@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Runtime.InteropServices;
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
 using System.Diagnostics;
@@ -112,9 +113,36 @@ namespace SiliconStudio.Paradox.Input
             ControlHeight = uiControl.ClientSize.Height;
         }
 
-        private void OnKeyEvent(System.Windows.Forms.Keys keyCode, bool isKeyUp)
+        [DllImport("user32.dll")]
+        private static extern short GetAsyncKeyState(WinFormsKeys vKey);
+
+        private WinFormsKeys GetCorrectModifierKey(WinFormsKeys key)
+        {
+            switch (key)
+            {
+                // TODO: if both lshift and rshift are down, lshift will always be preemptive on rshift...
+                case WinFormsKeys.ShiftKey:
+                    if (GetAsyncKeyState(WinFormsKeys.LShiftKey) != 0)
+                        return WinFormsKeys.LShiftKey;
+                    if (GetAsyncKeyState(WinFormsKeys.RShiftKey) != 0)
+                        return WinFormsKeys.RShiftKey;
+                    return key;
+                case WinFormsKeys.ControlKey:
+                    if (GetAsyncKeyState(WinFormsKeys.LControlKey) != 0)
+                        return WinFormsKeys.LControlKey;
+                    if (GetAsyncKeyState(WinFormsKeys.RControlKey) != 0)
+                        return WinFormsKeys.RControlKey;
+                    return key;
+                default:
+                    return key;
+            }
+        }
+
+        private void OnKeyEvent(WinFormsKeys keyCode, bool isKeyUp)
         {
             Keys key;
+            keyCode = GetCorrectModifierKey(keyCode);
+
             if (mapKeys.TryGetValue(keyCode, out key) && key != Keys.None)
             {
                 var type = isKeyUp ? InputEventType.Up : InputEventType.Down;
