@@ -10,21 +10,11 @@ namespace SiliconStudio.Paradox.Effects.Images
     public class ImageEffectStep
     {
         public ImageEffectStep(ImageEffect effect)
-            : this(ImageEffects.Input, effect)
+            : this(ImageEffectStepKeys.InputTexture, effect)
         {
         }
 
-        public ImageEffectStep(ParameterKey<Texture> input, ImageEffect effect)
-            : this(input, effect, null, null, false)
-        {
-        }
-
-        public ImageEffectStep(ParameterKey<Texture> input, ImageEffect effect, ParameterKey<Texture> output, ImageEffectStepEnableDelegate checkEnable = null)
-            : this(input, effect, output ,checkEnable, false)
-        {
-        }
-
-        internal ImageEffectStep(ParameterKey<Texture> input, ImageEffect effect, ParameterKey<Texture> output, ImageEffectStepEnableDelegate checkEnable, bool isBuiltin)
+        public ImageEffectStep(ParameterKey<Texture> input, ImageEffect effect, ParameterKey<Texture> output = null, ImageEffectStepEnableDelegate checkEnable = null, bool isBuiltin = false)
         {
             if (input == null) throw new ArgumentNullException("input");
             if (effect == null) throw new ArgumentNullException("effect");
@@ -33,7 +23,10 @@ namespace SiliconStudio.Paradox.Effects.Images
             Output = output ?? input;
             CheckEnable = checkEnable;
             IsBuiltin = isBuiltin;
+            PassThrough = true;
         }
+
+        public bool Enable { get; set; }
 
         public readonly ParameterKey<Texture> Input;
 
@@ -43,11 +36,13 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         public readonly ImageEffectStepEnableDelegate CheckEnable;
 
+        public bool PassThrough;
+
         internal readonly bool IsBuiltin;
 
         public override string ToString()
         {
-            return string.Format("{0} => [{1}] => {2}", Input, Effect, Output);
+            return String.Format("{0} => [{1}] => {2}", Input, Effect, Output);
         }
     }
 }

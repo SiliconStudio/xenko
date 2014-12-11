@@ -27,13 +27,10 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             Radius = 3;
             Amount = 1.0f;
-            Threshold = 2.0f;
             DownScale = 5;
         }
 
         public int Radius { get; set; }
-
-        public float Threshold { get; set; }
 
         public float Amount { get; set; }
 
@@ -54,7 +51,12 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         protected override void DrawCore()
         {
-            var inputTexture = GetSafeInput(0);
+            var inputTexture = GetInput(0);
+
+            if (inputTexture == null)
+            {
+                return;
+            }
 
             // ----------------------------------------
             // Downscale / 2

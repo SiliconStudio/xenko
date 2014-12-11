@@ -14,6 +14,8 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// </summary>
     public class LuminanceEffect : ImageEffect
     {
+        public static readonly ParameterKey<LuminanceResult> LuminanceResult = ParameterKeys.New<LuminanceResult>();
+
         private readonly PixelFormat luminanceFormat;
         private readonly ImageEffectShader luminanceLogEffect;
         private readonly Texture luminance1x1;
@@ -21,6 +23,8 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         private readonly ImageMultiScaler multiScaler;
         private readonly ImageReadback<Half> readback;
+
+        private Texture autoOutputTexture;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LuminanceEffect" /> class.
@@ -55,9 +59,24 @@ namespace SiliconStudio.Paradox.Effects.Images
             blur = new GaussianBlur(context).DisposeBy(this);
             blur.Radius = 4;
 
+            DownscaleCount = 6;
+            UpscaleCount = 4;
+
             EnableAverageLuminanceReadback = true;
         }
 
+        /// <summary>
+        /// Gets or sets down scale count used to downscale the input intermediate texture used for local luminance (if no 
+        /// output is given). By default 1/64 of the input texture size.
+        /// </summary>
+        /// <value>Down scale count.</value>
+        public int DownscaleCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the upscale count used to upscale the downscaled input local luminance texture. By default x16 of the 
+        /// input texture size.
+        /// </summary>
+        /// <value>The upscale count.</value>
         public int UpscaleCount { get; set; }
 
         /// <summary>
@@ -88,17 +107,39 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
+        /// <summary>
+        /// Gets the local luminance texture.
+        /// </summary>
+        /// <value>The local luminance texture.</value>
+        public Texture LocalLuminanceTexture
+        {
+            get
+            {
+                return autoOutputTexture;
+            }
+        }
+
         protected override void DrawCore()
         {
             var input = GetSafeInput(0);
             var output = GetOutput(0);
 
-            // If no output, we are only calculating the average luminance.
             Texture outputTextureDown = null;
-            if (output != null)
+            var blurTextureSize = (output != null) ? output.Size.Down2(UpscaleCount) : input.Size.Down2(DownscaleCount);
+            outputTextureDown = NewScopedRenderTarget2D(blurTextureSize.Width, blurTextureSize.Height, luminanceFormat, 1);
+
+            // If no output, we are only calculating the average luminance.
+            if (output == null)
             {
-                var blurTextureSize = output.Size.Down2(UpscaleCount);
-                outputTextureDown = NewScopedRenderTarget2D(blurTextureSize.Width, blurTextureSize.Height, luminanceFormat, 1);
+                var autoOutputTextureSize = blurTextureSize.Up2(UpscaleCount);
+                autoOutputTexture = Context.Allocator.GetTemporaryTexture2D(autoOutputTextureSize.Width, autoOutputTextureSize.Height, luminanceFormat, 1);
+                output = autoOutputTexture;
+            }
+            else if (autoOutputTexture != null )
+            {
+                // If we have an output, release the previous auto output texture
+                Context.Allocator.ReleaseReference(autoOutputTexture);
+                autoOutputTexture = null;
             }
 
             var luminanceMap = NewScopedRenderTarget2D(input.ViewWidth, input.ViewHeight, luminanceFormat, 1);
@@ -135,6 +176,14 @@ namespace SiliconStudio.Paradox.Effects.Images
                 var rawLogValue = readback.Result[0];
                 AverageLuminance = (float)Math.Pow(2.0, rawLogValue);
             }
+
+            // Set the result back in the context
+            var luminanceResult = new LuminanceResult()
+            {
+                AverageLuminance = AverageLuminance,
+                LocalTexture = LocalLuminanceTexture
+            };
+            Context.Parameters.Set(LuminanceResult, luminanceResult);
         }
     }
 }

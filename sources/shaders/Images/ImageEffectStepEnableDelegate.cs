@@ -5,5 +5,5 @@ using System.Collections.Generic;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
-    public delegate bool ImageEffectStepEnableDelegate(ImageEffects imageEffects, HashSet<ParameterKey> requiredKeys);
+    public delegate bool ImageEffectStepEnableDelegate(ImageEffectGroup imageEffectGroup, HashSet<ParameterKey> requiredKeys);
 }

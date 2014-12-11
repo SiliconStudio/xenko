@@ -9,7 +9,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     {
         public static void Add(this ImageEffectStepCollection stepCollection, ImageEffect effect)
         {
-            stepCollection.Add(ImageEffects.Input, effect);
+            stepCollection.Add(ImageEffectStepKeys.InputTexture, effect);
         }
 
         public static void Add(this ImageEffectStepCollection stepCollection, ParameterKey<Texture> input, ImageEffect effect)

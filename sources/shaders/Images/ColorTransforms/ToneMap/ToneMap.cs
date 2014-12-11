@@ -10,7 +10,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// A tonemap effect.
     /// </summary>
-    public class ToneMap : ColorTransform, IImageEffectParameterKeyDependencies
+    public class ToneMap : ColorTransform, IImageEffectRequiredParameterKeys
     {
         private readonly float[] weightedLuminances = new float[16];
         private int currentWeightedLuminanceIndex = 0;
@@ -142,7 +142,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         }
 
 
-        void IImageEffectParameterKeyDependencies.FillParameterKeyDependencies(HashSet<ParameterKey> dependencies)
+        void IImageEffectRequiredParameterKeys.FillRequired(HashSet<ParameterKey> dependencies)
         {
             dependencies.Add(ToneMapKeys.LuminanceResult);
         }
@@ -155,10 +155,10 @@ namespace SiliconStudio.Paradox.Effects.Images
             var elapsedTime = timer.Elapsed;
             timer.Restart();
 
-            var luminanceResult = context.SharedParameters.Get(ToneMapKeys.LuminanceResult);
+            var luminanceResult = context.SharedParameters.Get(LuminanceEffect.LuminanceResult);
 
-            var avgLuminanceLog = 0.18f;
-            if (luminanceResult.Texture != null)
+            var avgLuminanceLog = 0.18f; // TODO: Add a parmetrized average luminance
+            if (luminanceResult.LocalTexture != null)
             {
                 // Adapt the luminance using Pattanaik's technique    
                 var currentAvgLuminance = (float)Math.Max(luminanceResult.AverageLuminance, 0.0001);
@@ -187,7 +187,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
 
             // Setup parameters
-            Parameters.Set(ToneMapShaderKeys.LuminanceTexture, luminanceResult.Texture);
+            Parameters.Set(ToneMapShaderKeys.LuminanceTexture, luminanceResult.LocalTexture);
             Parameters.Set(ToneMapShaderKeys.LuminanceAverageGlobal, avgLuminanceLog);
 
             // Update operator parameters
