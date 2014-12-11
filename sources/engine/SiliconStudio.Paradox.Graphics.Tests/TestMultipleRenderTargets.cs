@@ -87,7 +87,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 Texture.New2D(GraphicsDevice, 800, 480, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource),
             };
 
-            var depthBuffer = Texture2D.New(GraphicsDevice, 800, 480, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil).ToDepthStencilBuffer(false);
+            var depthBuffer = Texture.New2D(GraphicsDevice, 800, 480, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil);
 
             // Setup the default rendering pipeline
             RenderSystem.Pipeline.Renderers.Add(new CameraSetter(Services));
