@@ -139,7 +139,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     memoryStream.SetLength(0);
                     memoryStream.Write((byte[])newBytecodeId, 0, ObjectId.HashSize);
                     memoryStream.Position = 0;
-                    database.ObjectDatabase.Write(memoryStream, mixinObjectId);
+                    database.ObjectDatabase.Write(memoryStream, mixinObjectId, true);
 
                     if (!bytecodes.ContainsKey(newBytecodeId))
                     {
@@ -177,6 +177,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             // Always check that the bytecode is in sync with hash sources on all platforms
             if (bytecode != null && IsBytecodeObsolete(bytecode))
             {
+                bytecodes.Remove(bytecodeId);
                 bytecode = null;
             }
 
