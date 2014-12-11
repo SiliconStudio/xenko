@@ -67,12 +67,10 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 // ------------------------------------------------------------------------------------------------------------
                 // 1) Try to load latest bytecode
                 // ------------------------------------------------------------------------------------------------------------
-                bytecode = LoadEffectBytecode(compiledUrl);
-
-                // Always check that the bytecode is in sync with hash sources on all platforms
-                if (bytecode != null && IsBytecodeObsolete(bytecode))
+                ObjectId bytecodeId;
+                if (database.AssetIndexMap.TryGetValue(compiledUrl, out bytecodeId))
                 {
-                    bytecode = null;
+                    bytecode = LoadEffectBytecode(bytecodeId);
                 }
 
                 // On non Windows platform, we are expecting to have the bytecode stored directly
@@ -83,10 +81,33 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     Log.Error(stringBuilder.ToString());
                     throw new InvalidOperationException(stringBuilder.ToString());
                 }
+
+                // ------------------------------------------------------------------------------------------------------------
+                // 2) Try to load from database cache
+                // ------------------------------------------------------------------------------------------------------------
+                if (bytecode == null && database.ObjectDatabase.Exists(mixinObjectId))
+                {
+                    using (var stream = database.ObjectDatabase.OpenStream(mixinObjectId))
+                    {
+                        // We have an existing stream, make sure the shader is compiled
+                        var objectIdBuffer = new byte[ObjectId.HashSize];
+                        if (stream.Read(objectIdBuffer, 0, ObjectId.HashSize) == ObjectId.HashSize)
+                        {
+                            var newBytecodeId = new ObjectId(objectIdBuffer);
+                            bytecode = LoadEffectBytecode(newBytecodeId);
+
+                            if (bytecode != null)
+                            {
+                                // If we successfully retrieved it from cache, add it to index map so that it won't be collected and available for faster lookup 
+                                database.AssetIndexMap[compiledUrl] = newBytecodeId;
+                            }
+                        }
+                    }
+                }
             }
 
             // ------------------------------------------------------------------------------------------------------------
-            // 2) Try to load from intermediate results
+            // 3) Compile the shader
             // ------------------------------------------------------------------------------------------------------------
             if (bytecode == null)
             {
@@ -117,6 +138,12 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     database.ObjectDatabase.Write(memoryStream, newBytecodeId);
                     database.AssetIndexMap[compiledUrl] = newBytecodeId;
 
+                    // Save bytecode Id to the database cache as well
+                    memoryStream.SetLength(0);
+                    memoryStream.Write((byte[])newBytecodeId, 0, ObjectId.HashSize);
+                    memoryStream.Position = 0;
+                    database.ObjectDatabase.Write(memoryStream, mixinObjectId);
+
                     if (!bytecodes.ContainsKey(newBytecodeId))
                     {
                         log.Info("New effect compiled #{0} [{1}] (db: {2})\r\n{3}", effectCompileCount, mixinObjectId, newBytecodeId, usedParameters.ToStringDetailed());
@@ -131,28 +158,32 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             return bytecode;
         }
 
-        private EffectBytecode LoadEffectBytecode(string url)
+        private EffectBytecode LoadEffectBytecode(ObjectId bytecodeId)
         {
             var database = AssetManager.FileProvider;
-            ObjectId bytecodeId;
             EffectBytecode bytecode = null;
-            if (database.AssetIndexMap.TryGetValue(url, out bytecodeId))
+
+            if (!bytecodes.TryGetValue(bytecodeId, out bytecode))
             {
-                if (!bytecodes.TryGetValue(bytecodeId, out bytecode))
+                if (!bytecodesByPassingStorage.Contains(bytecodeId) && database.ObjectDatabase.Exists(bytecodeId))
                 {
-                    if (!bytecodesByPassingStorage.Contains(bytecodeId))
+                    using (var stream = database.ObjectDatabase.OpenStream(bytecodeId))
                     {
-                        using (var stream = database.ObjectDatabase.OpenStream(bytecodeId))
-                        {
-                            bytecode = EffectBytecode.FromStream(stream);
-                        }
-                    }
-                    if (bytecode != null)
-                    {
-                        bytecodes.Add(bytecodeId, bytecode);
+                        bytecode = EffectBytecode.FromStream(stream);
                     }
                 }
+                if (bytecode != null)
+                {
+                    bytecodes.Add(bytecodeId, bytecode);
+                }
             }
+
+            // Always check that the bytecode is in sync with hash sources on all platforms
+            if (bytecode != null && IsBytecodeObsolete(bytecode))
+            {
+                bytecode = null;
+            }
+
             return bytecode;
         }
 
