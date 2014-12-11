@@ -151,9 +151,9 @@ namespace SiliconStudio.Paradox.Graphics
                     pixelSize = 4;
                     break;
                 case PixelFormat.D16_UNorm:
-                    internalFormat = PixelInternalFormat.Rgba;
-                    format = PixelFormatGl.Rgba;
-                    type = PixelType.UnsignedByte;
+                    internalFormat = PixelInternalFormat.DepthComponent16;
+                    format = PixelFormatGl.DepthComponent;
+                    type = PixelType.UnsignedShort;
                     pixelSize = 2;
                     break;
                 case PixelFormat.A8_UNorm:
@@ -235,7 +235,7 @@ namespace SiliconStudio.Paradox.Graphics
                     pixelSize = 16;
                     break;
                     // TODO: Temporary depth format (need to decide relation between RenderTarget1D and Texture1D)
-                case (PixelFormat)40:
+                case PixelFormat.D32_Float:
                     internalFormat = PixelInternalFormat.DepthComponent32f;
                     format = PixelFormatGl.DepthComponent;
                     type = PixelType.Float;
