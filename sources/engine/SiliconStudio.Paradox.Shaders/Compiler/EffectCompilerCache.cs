@@ -69,7 +69,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 ObjectId bytecodeId;
                 if (database.AssetIndexMap.TryGetValue(compiledUrl, out bytecodeId))
                 {
-                    bytecode = LoadEffectBytecode(bytecodeId);
+                    bytecode = LoadEffectBytecode(database, bytecodeId);
                 }
 
                 // On non Windows platform, we are expecting to have the bytecode stored directly
@@ -91,7 +91,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                         if (stream.Read(objectIdBuffer, 0, ObjectId.HashSize) == ObjectId.HashSize)
                         {
                             var newBytecodeId = new ObjectId(objectIdBuffer);
-                            bytecode = LoadEffectBytecode(newBytecodeId);
+                            bytecode = LoadEffectBytecode(database, newBytecodeId);
 
                             if (bytecode != null)
                             {
@@ -155,9 +155,8 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             return bytecode;
         }
 
-        private EffectBytecode LoadEffectBytecode(ObjectId bytecodeId)
+        private EffectBytecode LoadEffectBytecode(DatabaseFileProvider database, ObjectId bytecodeId)
         {
-            var database = AssetManager.FileProvider;
             EffectBytecode bytecode = null;
 
             if (!bytecodes.TryGetValue(bytecodeId, out bytecode))
