@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Effects
     /// </summary>
     public class ModelRenderer : Renderer
     {
-        private int meshPassSlot;
+        private ModelRendererSlot modelRenderSlot;
 
         private readonly FastList<RenderMesh> meshesToRender;
 
@@ -178,12 +178,13 @@ namespace SiliconStudio.Paradox.Effects
 
             var pipelineModelState = Pass.GetOrCreateModelRendererState();
 
-            // Get the slot for the pass of this processor
-            meshPassSlot = pipelineModelState.GetModelSlot(Pass, EffectName);
+            // Allocate (or reuse) a slot for the pass of this processor
+            // Note: The slot is passed as out, so that when ModelRendererState.ModelSlotAdded callback is fired,
+            // ModelRenderer.modelRenderSlot is valid (it might call PrepareModelForRendering recursively).
+            pipelineModelState.AllocateModelSlot(Pass, EffectName, PrepareModelForRendering, out modelRenderSlot);
 
-            // Register callbacks used by the MeshProcessor
+            // Register callback used by the MeshProcessor
             pipelineModelState.AcceptModel += OnAcceptModel;
-            pipelineModelState.PrepareRenderModel += PrepareModelForRendering;
         }
 
         public override void Unload()
@@ -192,9 +193,12 @@ namespace SiliconStudio.Paradox.Effects
 
             var pipelineModelState = Pass.GetOrCreateModelRendererState();
 
-            // Unregister callbacks
+            // Release the slot (note: if shared, it will wait for all its usage to be released)
+            pipelineModelState.ReleaseModelSlot(modelRenderSlot);
+            modelRenderSlot = null;
+
+            // Unregister callback
             pipelineModelState.AcceptModel -= OnAcceptModel;
-            pipelineModelState.PrepareRenderModel -= PrepareModelForRendering;
         }
 
         protected override void OnRendering(RenderContext context)
@@ -210,7 +214,7 @@ namespace SiliconStudio.Paradox.Effects
                     continue;
                 }
 
-                var meshes = renderModel.RenderMeshes[meshPassSlot];
+                var meshes = renderModel.RenderMeshes[modelRenderSlot.Slot];
                 if (meshes != null)
                     meshesToRender.AddRange(meshes);
             }
@@ -263,8 +267,10 @@ namespace SiliconStudio.Paradox.Effects
 
         private void PrepareModelForRendering(RenderModel renderModel)
         {
+            var slot = modelRenderSlot.Slot;
+
             // Register mesh for rendering
-            if (renderModel.RenderMeshes[meshPassSlot] == null)
+            if (slot >= renderModel.RenderMeshes.Count || renderModel.RenderMeshes[slot] == null)
             {
                 foreach (var mesh in renderModel.Model.Meshes)
                 {
@@ -277,11 +283,11 @@ namespace SiliconStudio.Paradox.Effects
                     UpdateEffect(renderMesh);
 
                     // Register mesh for rendering
-                    if (renderModel.RenderMeshes[meshPassSlot] == null)
+                    if (renderModel.RenderMeshes[slot] == null)
                     {
-                        renderModel.RenderMeshes[meshPassSlot] = new List<RenderMesh>();
+                        renderModel.RenderMeshes[slot] = new List<RenderMesh>();
                     }
-                    renderModel.RenderMeshes[meshPassSlot].Add(renderMesh);
+                    renderModel.RenderMeshes[slot].Add(renderMesh);
                 }
             }
         }

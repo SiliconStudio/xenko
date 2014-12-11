@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Paradox.Effects
 {
@@ -26,11 +27,14 @@ namespace SiliconStudio.Paradox.Effects
             Parameters = modelInstance.Parameters;
 
             var modelRendererState = Pipeline.GetOrCreateModelRendererState();
-            var slotCount = modelRendererState.ModelSlotCount;
-            RenderMeshes = new List<RenderMesh>[slotCount];
+            RenderMeshes = new List<RenderMesh>[modelRendererState.ModelSlotMapping.Count];
+
             if (Model != null)
             {
-                modelRendererState.PrepareRenderModel(this);
+                foreach (var modelSlot in modelRendererState.ModelSlotMapping)
+                {
+                    modelSlot.Value.PrepareRenderModel(this);
+                }
             }
         }
 
@@ -46,7 +50,7 @@ namespace SiliconStudio.Paradox.Effects
             if (pipeline == null) throw new ArgumentNullException("pipeline");
             Pipeline = pipeline;
             Model = model;
-            var slotCount = Pipeline.GetOrCreateModelRendererState().ModelSlotCount;
+            var slotCount = Pipeline.GetOrCreateModelRendererState().ModelSlotMapping.Count;
             RenderMeshes = new List<RenderMesh>[slotCount];
         }
 
@@ -56,7 +60,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <value>
         /// The meshes instantiated for this view.
         /// </value>
-        public readonly List<RenderMesh>[] RenderMeshes;
+        public FastListStruct<List<RenderMesh>> RenderMeshes;
 
         /// <summary>
         /// The model instance

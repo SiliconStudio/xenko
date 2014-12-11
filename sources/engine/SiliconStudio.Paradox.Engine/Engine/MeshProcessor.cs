@@ -37,7 +37,18 @@ namespace SiliconStudio.Paradox.Engine
         {
             renderSystem = Services.GetSafeServiceAs<RenderSystem>();
 
+            foreach (var pipeline in renderSystem.Pipelines)
+                RegisterPipelineForEvents(pipeline);
+
             renderSystem.Pipelines.CollectionChanged += Pipelines_CollectionChanged;
+        }
+
+        protected internal override void OnSystemRemove()
+        {
+            renderSystem.Pipelines.CollectionChanged -= Pipelines_CollectionChanged;
+
+            foreach (var pipeline in renderSystem.Pipelines)
+                UnregisterPipelineForEvents(pipeline);
         }
 
         protected override AssociatedData GenerateAssociatedData(Entity entity)
@@ -62,16 +73,12 @@ namespace SiliconStudio.Paradox.Engine
             var modelRenderState = pipeline.GetOrCreateModelRendererState();
 
             // If the model is not accepted
-            if (!modelRenderState.IsValid || !modelRenderState.AcceptModel(modelInstance))
+            if (modelRenderState.AcceptModel == null || !modelRenderState.AcceptModel(modelInstance))
             {
                 return;
             }
 
             var renderModel = new RenderModel(pipeline, modelInstance);
-            if (renderModel.RenderMeshes == null)
-            {
-                return;
-            }
 
             // Register RenderModel
             associatedData.RenderModels.Add(new KeyValuePair<ModelRendererState, RenderModel>(modelRenderState, renderModel));
@@ -109,11 +116,77 @@ namespace SiliconStudio.Paradox.Engine
                 case NotifyCollectionChangedAction.Add:
                     foreach (var matchingEntity in enabledEntities)
                         CreateRenderModel(matchingEntity.Value, pipeline);
+                    RegisterPipelineForEvents(pipeline);
                     break;
                 case NotifyCollectionChangedAction.Remove:
+                    UnregisterPipelineForEvents(pipeline);
                     foreach (var matchingEntity in enabledEntities)
                         DestroyRenderModel(matchingEntity.Value, pipeline);
                     break;
+            }
+        }
+
+        private void RegisterPipelineForEvents(RenderPipeline pipeline)
+        {
+            pipeline.GetOrCreateModelRendererState().ModelSlotAdded += MeshProcessor_ModelSlotAdded;
+            pipeline.GetOrCreateModelRendererState().ModelSlotRemoved += MeshProcessor_ModelSlotRemoved;
+        }
+
+        private void UnregisterPipelineForEvents(RenderPipeline pipeline)
+        {
+            pipeline.GetOrCreateModelRendererState().ModelSlotAdded -= MeshProcessor_ModelSlotAdded;
+            pipeline.GetOrCreateModelRendererState().ModelSlotRemoved -= MeshProcessor_ModelSlotRemoved;
+        }
+
+        void MeshProcessor_ModelSlotAdded(ModelRendererState modelRendererState, ModelRendererSlot modelRendererSlot)
+        {
+            foreach (var matchingEntity in enabledEntities)
+            {
+                // Look for existing render model
+                RenderModel renderModel = null;
+                foreach (var renderModelKVP in matchingEntity.Value.RenderModels)
+                {
+                    if (renderModelKVP.Key == modelRendererState)
+                    {
+                        renderModel = renderModelKVP.Value;
+                        break;
+                    }
+                }
+
+                // If it doesn't exist, it's because it wasn't accepted
+                if (renderModel == null)
+                    continue;
+
+                // Ensure RenderMeshes is big enough to contain the new slot
+                renderModel.RenderMeshes.EnsureCapacity(modelRendererSlot.Slot + 1);
+
+                // Prepare the render meshes
+                modelRendererSlot.PrepareRenderModel(renderModel);
+            }
+        }
+
+        void MeshProcessor_ModelSlotRemoved(ModelRendererState modelRendererState, ModelRendererSlot modelRendererSlot)
+        {
+            foreach (var matchingEntity in enabledEntities)
+            {
+                // Look for existing render model
+                RenderModel renderModel = null;
+                foreach (var renderModelKVP in matchingEntity.Value.RenderModels)
+                {
+                    if (renderModelKVP.Key == modelRendererState)
+                    {
+                        renderModel = renderModelKVP.Value;
+                        break;
+                    }
+                }
+
+                // If it doesn't exist, it's because it wasn't accepted
+                if (renderModel == null)
+                    continue;
+
+                // Remove the slot
+                // TODO: Free resources?
+                renderModel.RenderMeshes[modelRendererSlot.Slot] = null;
             }
         }
 
