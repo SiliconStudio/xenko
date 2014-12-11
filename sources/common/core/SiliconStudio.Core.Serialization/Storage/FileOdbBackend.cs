@@ -71,27 +71,14 @@ namespace SiliconStudio.Core.Storage
             if (!virtualFileProvider.FileExists(url))
             {
                 if (mode == VirtualFileMode.Open || mode == VirtualFileMode.Truncate)
-                    return null;
+                    throw new FileNotFoundException();
 
                 // Otherwise, file creation is allowed, so make sure directory exists
                 virtualFileProvider.CreateDirectory(ExtractPath(url));
 
             }
 
-            try
-            {
-                return virtualFileProvider.OpenStream(url, mode, access, share);
-            }
-            catch (FileNotFoundException)
-            {
-                return null;
-            }
-#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
-            catch (DirectoryNotFoundException)
-            {
-                return null;
-            }
-#endif
+            return virtualFileProvider.OpenStream(url, mode, access, share);
         }
 
         /// <inheritdoc/>

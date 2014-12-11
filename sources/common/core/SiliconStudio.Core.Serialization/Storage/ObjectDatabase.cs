@@ -342,10 +342,11 @@ namespace SiliconStudio.Core.Storage
             {
                 if (!LoadedBlobs.TryGetValue(objectId, out blob))
                 {
-                    // Try to load blob if not cached
-                    var stream = OpenStream(objectId).ToNativeStream();
-                    if (stream == null)
+                    if (!Exists(objectId))
                         return null;
+
+                    // Load blob if not cached
+                    var stream = OpenStream(objectId).ToNativeStream();
 
                     // Create blob and add to cache
                     blob = new Blob(this, objectId, stream);
@@ -383,7 +384,7 @@ namespace SiliconStudio.Core.Storage
             if (backendRead2 != null && backendRead2.Exists(objectId))
                 return backendRead2.OpenStream(objectId, mode, access, share);
 
-            return null;
+            throw new FileNotFoundException();
         }
     }
 }
