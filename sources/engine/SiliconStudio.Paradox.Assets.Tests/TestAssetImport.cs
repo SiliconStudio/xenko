@@ -12,7 +12,7 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Paradox.Assets.Materials;
 using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
 using SiliconStudio.Paradox.Assets.Model;
-using SiliconStudio.Paradox.Assets.Texture;
+using SiliconStudio.Paradox.Assets.Textures;
 
 namespace SiliconStudio.Paradox.Assets.Tests
 {

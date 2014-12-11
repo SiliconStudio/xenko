@@ -153,7 +153,7 @@ namespace SiliconStudio.Paradox.Effects
 
             // Performs the light prepass on opaque geometry.
             // Adds this pass to the pipeline.
-            var lightDeferredProcessor = new LightingPrepassRenderer(serviceRegistry, prepassEffectName, graphicsService.GraphicsDevice.DepthStencilBuffer.Texture, gbufferProcessor.GBufferTexture);
+            var lightDeferredProcessor = new LightingPrepassRenderer(serviceRegistry, prepassEffectName, graphicsService.GraphicsDevice.DepthStencilBuffer, gbufferProcessor.GBufferTexture);
             mainPipeline.Renderers.Add(lightDeferredProcessor);
 
             // Sets the render targets and clear them. Also sets the viewport.
@@ -163,7 +163,7 @@ namespace SiliconStudio.Paradox.Effects
                 EnableClearDepth = false,
                 RenderTarget = graphicsService.GraphicsDevice.BackBuffer,
                 DepthStencil = graphicsService.GraphicsDevice.DepthStencilBuffer,
-                Viewport = new Viewport(0, 0, graphicsService.GraphicsDevice.BackBuffer.Width, graphicsService.GraphicsDevice.BackBuffer.Height)
+                Viewport = new Viewport(0, 0, graphicsService.GraphicsDevice.BackBuffer.ViewWidth, graphicsService.GraphicsDevice.BackBuffer.ViewHeight)
             });
 
             // Draws a background from a texture.
@@ -179,7 +179,7 @@ namespace SiliconStudio.Paradox.Effects
                 EnableClearTarget = false,
                 RenderTarget = graphicsService.GraphicsDevice.BackBuffer,
                 DepthStencil = graphicsService.GraphicsDevice.DepthStencilBuffer,
-                Viewport = new Viewport(0, 0, graphicsService.GraphicsDevice.BackBuffer.Width, graphicsService.GraphicsDevice.BackBuffer.Height)
+                Viewport = new Viewport(0, 0, graphicsService.GraphicsDevice.BackBuffer.ViewWidth, graphicsService.GraphicsDevice.BackBuffer.ViewHeight)
             });
 
             // Renders transparent geometry. Depth stencil state is determined by the object to draw.

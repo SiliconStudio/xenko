@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.Graphics
     /// A Common description for all textures.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct TextureDescription : IEquatable<TextureDescription>
+    public partial struct TextureDescription : IEquatable<TextureDescription>
     {
         /// <summary>
         /// The dimension of a texture.
@@ -88,7 +88,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <remarks>
         /// This field is only valid for <see cref="Texture2D"/>.
         /// </remarks>
-        public MSAALevel Level;
+        public MSAALevel MultiSampleLevel;
 
         /// <summary>	
         /// <dd> <p>Value that identifies how the texture is to be read from and written to. The most common value is <see cref="SharpDX.Direct3D11.ResourceUsage.Default"/>; see <strong><see cref="SharpDX.Direct3D11.ResourceUsage"/></strong> for all possible values.</p> </dd>	
@@ -101,6 +101,66 @@ namespace SiliconStudio.Paradox.Graphics
         public TextureFlags Flags;
 
         /// <summary>
+        /// Gets a value indicating whether this instance is a render target.
+        /// </summary>
+        /// <value><c>true</c> if this instance is render target; otherwise, <c>false</c>.</value>
+        public bool IsRenderTarget
+        {
+            get
+            {
+                return (Flags & TextureFlags.RenderTarget) != 0;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is a depth stencil.
+        /// </summary>
+        /// <value><c>true</c> if this instance is a depth stencil; otherwise, <c>false</c>.</value>
+        public bool IsDepthStencil
+        {
+            get
+            {
+                return (Flags & TextureFlags.DepthStencil) != 0;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is a shader resource.
+        /// </summary>
+        /// <value><c>true</c> if this instance is a shader resource; otherwise, <c>false</c>.</value>
+        public bool IsShaderResource
+        {
+            get
+            {
+                return (Flags & TextureFlags.ShaderResource) != 0;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is a shader resource.
+        /// </summary>
+        /// <value><c>true</c> if this instance is a shader resource; otherwise, <c>false</c>.</value>
+        public bool IsUnorderedAccess
+        {
+            get
+            {
+                return (Flags & TextureFlags.UnorderedAccess) != 0;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is a multi sample texture.
+        /// </summary>
+        /// <value><c>true</c> if this instance is multi sample texture; otherwise, <c>false</c>.</value>
+        public bool IsMultiSample
+        {
+            get
+            {
+                return this.MultiSampleLevel > MSAALevel.None;
+            }
+        }
+
+        /// <summary>
         /// Gets the staging description for this instance..
         /// </summary>
         /// <returns>A Staging description</returns>
@@ -110,6 +170,34 @@ namespace SiliconStudio.Paradox.Graphics
             copy.Flags = TextureFlags.None;
             copy.Usage = GraphicsResourceUsage.Staging;
             return copy;
+        }
+
+        /// <summary>
+        /// Gets a clone description of this instance (if texture is immutable, it is switched to default).
+        /// </summary>
+        /// <returns>A clone of this instance.</returns>
+        public TextureDescription ToCloneableDescription()
+        {
+            var description = this;
+            if (description.Usage == GraphicsResourceUsage.Immutable)
+                description.Usage = GraphicsResourceUsage.Default;
+            return description;
+        }
+
+        /// <summary>
+        /// Creates a new description from another description but overrides <see cref="Flags"/> and <see cref="Usage"/>.
+        /// </summary>
+        /// <param name="desc">The desc.</param>
+        /// <param name="textureFlags">The texture flags.</param>
+        /// <param name="usage">The usage.</param>
+        /// <returns>TextureDescription.</returns>
+        public static TextureDescription FromDescription(TextureDescription desc, TextureFlags textureFlags, GraphicsResourceUsage usage)
+        {
+            desc.Flags = textureFlags;
+            desc.Usage = usage;
+            if ((textureFlags & TextureFlags.UnorderedAccess) != 0)
+                desc.Usage = GraphicsResourceUsage.Default;
+            return desc;
         }
 
         /// <summary>
@@ -128,8 +216,8 @@ namespace SiliconStudio.Paradox.Graphics
                 ArraySize = description.ArraySize,
                 MipLevels = description.MipLevels,
                 Format = description.Format,
-                Flags = TextureFlags.None,
-                Level = MSAALevel.None
+                Flags = TextureFlags.ShaderResource,
+                MultiSampleLevel = MSAALevel.None
             };
         }
 
@@ -154,7 +242,7 @@ namespace SiliconStudio.Paradox.Graphics
 
         public bool Equals(TextureDescription other)
         {
-            return Dimension == other.Dimension && Width == other.Width && Height == other.Height && Depth == other.Depth && ArraySize == other.ArraySize && MipLevels == other.MipLevels && Format == other.Format && Level == other.Level && Usage == other.Usage && Flags == other.Flags;
+            return Dimension == other.Dimension && Width == other.Width && Height == other.Height && Depth == other.Depth && ArraySize == other.ArraySize && MipLevels == other.MipLevels && Format == other.Format && MultiSampleLevel == other.MultiSampleLevel && Usage == other.Usage && Flags == other.Flags;
         }
 
         public override bool Equals(object obj)
@@ -175,7 +263,7 @@ namespace SiliconStudio.Paradox.Graphics
                 hashCode = (hashCode * 397) ^ ArraySize;
                 hashCode = (hashCode * 397) ^ MipLevels;
                 hashCode = (hashCode * 397) ^ (int)Format;
-                hashCode = (hashCode * 397) ^ (int)Level;
+                hashCode = (hashCode * 397) ^ (int)MultiSampleLevel;
                 hashCode = (hashCode * 397) ^ (int)Usage;
                 hashCode = (hashCode * 397) ^ (int)Flags;
                 return hashCode;

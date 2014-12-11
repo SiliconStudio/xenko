@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// </summary>
     /// <typeparam name="T">Pixel struct that should match the input texture format</typeparam>
     /// <remarks>The input texture should be small enough to avoid CPU/GPU readback stalling</remarks>
-    public class ImageReadback<T> : ImageEffectBase where T : struct
+    public class ImageReadback<T> : ImageEffect where T : struct
     {
         private readonly List<Texture> stagingTargets;
 

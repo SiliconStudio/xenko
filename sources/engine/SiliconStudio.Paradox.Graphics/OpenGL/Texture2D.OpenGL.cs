@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.Graphics
         {
         }
 
-        public override Texture ToTexture(ViewType viewType, int arraySlice, int mipMapSlice)
+        public override Texture ToTextureView(ViewType viewType, int arraySlice, int mipMapSlice)
         {
             // Exists since OpenGL 4.3
             if (viewType != ViewType.Full || arraySlice != 0 || mipMapSlice != 0)
@@ -41,7 +41,7 @@ namespace SiliconStudio.Paradox.Graphics
             return new DepthStencilBuffer(GraphicsDevice, this, isReadOnly);
         }
 
-        public Texture2D ToDepthTextureCompatible()
+        public Texture2D CreateDepthTextureCompatible()
         {
             throw new NotImplementedException();
         }

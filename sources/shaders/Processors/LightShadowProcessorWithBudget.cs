@@ -60,13 +60,13 @@ namespace SiliconStudio.Paradox.Effects.Processors
                 // clear the virtual allocation
                 foreach (var texture in shadowMapDefaultTextures)
                 {
-                    texture.GuillotinePacker.Clear(texture.ShadowMapDepthBuffer.Texture.Width, texture.ShadowMapDepthBuffer.Texture.Height);
-                    texturesDefault[texture] = texture.ShadowMapDepthBuffer.Texture.Width * texture.ShadowMapDepthBuffer.Texture.Height;
+                    texture.GuillotinePacker.Clear(texture.ShadowMapDepthTexture.ViewWidth, texture.ShadowMapDepthTexture.ViewHeight);
+                    texturesDefault[texture] = texture.ShadowMapDepthTexture.ViewWidth * texture.ShadowMapDepthTexture.ViewHeight;
                 }
                 foreach (var texture in shadowMapVsmTextures)
                 {
-                    texture.GuillotinePacker.Clear(texture.ShadowMapDepthBuffer.Texture.Width, texture.ShadowMapDepthBuffer.Texture.Height);
-                    texturesVsm[texture] = texture.ShadowMapDepthBuffer.Texture.Width * texture.ShadowMapDepthBuffer.Texture.Height;
+                    texture.GuillotinePacker.Clear(texture.ShadowMapDepthTexture.ViewWidth, texture.ShadowMapDepthTexture.ViewHeight);
+                    texturesVsm[texture] = texture.ShadowMapDepthTexture.ViewWidth * texture.ShadowMapDepthTexture.ViewHeight;
                 }
 
                 // sort the textures based on the available size.
@@ -122,9 +122,9 @@ namespace SiliconStudio.Paradox.Effects.Processors
 
                 // clear the virtual allocation again
                 foreach (var texture in shadowMapDefaultTextures)
-                    texture.GuillotinePacker.Clear(texture.ShadowMapDepthBuffer.Texture.Width, texture.ShadowMapDepthBuffer.Texture.Height);
+                    texture.GuillotinePacker.Clear(texture.ShadowMapDepthTexture.ViewWidth, texture.ShadowMapDepthTexture.ViewHeight);
                 foreach (var texture in shadowMapVsmTextures)
-                    texture.GuillotinePacker.Clear(texture.ShadowMapDepthBuffer.Texture.Width, texture.ShadowMapDepthBuffer.Texture.Height);
+                    texture.GuillotinePacker.Clear(texture.ShadowMapDepthTexture.ViewWidth, texture.ShadowMapDepthTexture.ViewHeight);
             }
         }
 
@@ -141,12 +141,12 @@ namespace SiliconStudio.Paradox.Effects.Processors
         {
             if (filterType == ShadowMapFilterType.Variance)
             {
-                texturesVsm.Add(shadowMapTexture, shadowMapTexture.ShadowMapDepthTexture.Width * shadowMapTexture.ShadowMapDepthTexture.Height);
+                texturesVsm.Add(shadowMapTexture, shadowMapTexture.ShadowMapDepthTexture.ViewWidth * shadowMapTexture.ShadowMapDepthTexture.ViewHeight);
                 shadowMapVsmTextures.Add(shadowMapTexture);
             }
             else
             {
-                texturesDefault.Add(shadowMapTexture, shadowMapTexture.ShadowMapDepthTexture.Width * shadowMapTexture.ShadowMapDepthTexture.Height);
+                texturesDefault.Add(shadowMapTexture, shadowMapTexture.ShadowMapDepthTexture.ViewWidth * shadowMapTexture.ShadowMapDepthTexture.ViewHeight);
                 shadowMapDefaultTextures.Add(shadowMapTexture);
             }
 

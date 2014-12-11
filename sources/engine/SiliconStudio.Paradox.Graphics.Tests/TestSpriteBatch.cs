@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
     public class TestSpriteBatch : TestGameBase
     {
         private SpriteBatch spriteBatch;
-        private Texture2D sphere;
+        private Texture sphere;
 
         private const int SphereSpace = 4;
         private const int SphereWidth = 150;
@@ -42,7 +42,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             await base.LoadContent();
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            sphere = Asset.Load<Texture2D>("Sphere");
+            sphere = Asset.Load<Texture>("Sphere");
             rotatedImages = Asset.Load<SpriteGroup>("RotatedImages");
         }
 
@@ -67,7 +67,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         {
             GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Black);
             GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsDevice.SetRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
             spriteBatch.Begin();
 
             var pos = new Vector2(0f);
@@ -130,7 +130,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             const int NbRows = 1;
             const int NbColumns = 5;
-            var textureOffset = new Vector2((float)GraphicsDevice.BackBuffer.Width / NbColumns, (float)GraphicsDevice.BackBuffer.Height / NbRows);
+            var textureOffset = new Vector2((float)GraphicsDevice.BackBuffer.ViewWidth / NbColumns, (float)GraphicsDevice.BackBuffer.ViewHeight / NbRows);
             var textureOrigin = new Vector2(SphereWidth / 2.0f, SphereHeight / 2.0f);
             var random = new Random(0);
 

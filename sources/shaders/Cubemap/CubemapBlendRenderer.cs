@@ -59,7 +59,7 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
         /// <summary>
         /// Cached list of cubemaps.
         /// </summary>
-        private List<Tuple<TextureCube, float>> selectedCubemaps;
+        private List<Tuple<Texture, float>> selectedCubemaps;
 
         /// <summary>
         /// Cached ParameterCollection used by the blending effect.
@@ -74,7 +74,7 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
         {
             cubemapBlendEffects = new Dictionary<int, Effect>();
             useMultipleRenderTargets = false;
-            selectedCubemaps = new List<Tuple<TextureCube, float>>();
+            selectedCubemaps = new List<Tuple<Texture, float>>();
             blendEffectParameters = new ParameterCollection();
         }
 
@@ -171,7 +171,7 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
 
                 // clear target
                 // TODO: custom clear color?
-                GraphicsDevice.Clear(cubemap.Value.Texture.ToRenderTarget(ViewType.Full, 0, 0), Color.Black);
+                GraphicsDevice.Clear(cubemap.Value.FullRenderTarget, Color.Black);
 
                 // set states
                 GraphicsDevice.SetDepthStencilState(GraphicsDevice.DepthStencilStates.None);
@@ -195,7 +195,7 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
             }
         }
 
-        private void FindClosestCubemaps(Dictionary<Entity, CubemapSourceComponent> textureCubes, Vector3 position, int maxCubemapBlend, List<Tuple<TextureCube, float>> selectedCubemaps)
+        private void FindClosestCubemaps(Dictionary<Entity, CubemapSourceComponent> textureCubes, Vector3 position, int maxCubemapBlend, List<Tuple<Texture, float>> selectedCubemaps)
         {
             foreach (var tex in textureCubes)
             {
@@ -212,7 +212,7 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
             }
         }
 
-        private void FindMostInfluencialCubemaps(Dictionary<Entity, CubemapSourceComponent> textureCubes, Vector3 position, int maxCubemapBlend, List<Tuple<TextureCube, float>> selectedCubemaps)
+        private void FindMostInfluencialCubemaps(Dictionary<Entity, CubemapSourceComponent> textureCubes, Vector3 position, int maxCubemapBlend, List<Tuple<Texture, float>> selectedCubemaps)
         {
             foreach (var tex in textureCubes)
             {
@@ -238,7 +238,7 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
 
         // Sebastien Largarde's weights
         // http://seblagarde.wordpress.com/2012/09/29/image-based-lighting-approaches-and-parallax-corrected-cubemap/
-        private void FindMostInfluencialCubemaps2(Dictionary<Entity, CubemapSourceComponent> textureCubes, Vector3 position, int maxCubemapBlend, List<Tuple<TextureCube, float>> selectedCubemaps)
+        private void FindMostInfluencialCubemaps2(Dictionary<Entity, CubemapSourceComponent> textureCubes, Vector3 position, int maxCubemapBlend, List<Tuple<Texture, float>> selectedCubemaps)
         {
             var inflSum = 0f;
             var invInflSum = 0f;

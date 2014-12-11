@@ -28,19 +28,16 @@ namespace SiliconStudio.Paradox.VisualStudio.Shaders
 
         protected override byte[] GenerateCode(string inputFileName, string inputFileContent)
         {
-            using (var domain = new AppDomainUnloadWrapper(ParadoxCommandsProxy.CreateAppDomain()))
+            try
             {
-                try
-                {
-                    var remoteCommands = ParadoxCommandsProxy.CreateProxy(domain);
-                    return remoteCommands.GenerateShaderKeys(inputFileName, inputFileContent);
-                }
-                catch (Exception ex)
-                {
-                    GeneratorError(4, ex.ToString(), 0, 0);
+                var remoteCommands = ParadoxCommandsProxy.GetProxy();
+                return remoteCommands.GenerateShaderKeys(inputFileName, inputFileContent);
+            }
+            catch (Exception ex)
+            {
+                GeneratorError(4, ex.ToString(), 0, 0);
 
-                    return new byte[0];
-                }
+                return new byte[0];
             }
         }
     }

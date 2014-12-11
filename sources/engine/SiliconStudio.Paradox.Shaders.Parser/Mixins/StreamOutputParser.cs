@@ -12,7 +12,7 @@ using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 {
-    public static class StreamOutputParser
+    internal static class StreamOutputParser
     {
         private static Regex streamOutputRegex = new Regex(@"(([0-9]*)\s*:\s*)?(\w+)(.(\w+))?");
         private static readonly string[] masks = new[] { "xyzw", "rgba", "stuv" };

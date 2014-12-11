@@ -5,7 +5,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// A bright pass filter.
     /// </summary>
-    public class BrightFilter : ImageEffect
+    public class BrightFilter : ImageEffectShader
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="BrightFilter"/> class.

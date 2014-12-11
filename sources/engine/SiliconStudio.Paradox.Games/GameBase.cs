@@ -744,7 +744,7 @@ namespace SiliconStudio.Paradox.Games
             // TODO: Check how we can handle this more cleanly
             if (GraphicsDevice != null && GraphicsDevice.BackBuffer != null)
             {
-                GraphicsDevice.SetRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+                GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
             }
         }
 

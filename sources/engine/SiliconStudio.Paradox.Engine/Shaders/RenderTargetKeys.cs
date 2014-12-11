@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <summary>
         /// The depth stencil buffer key.
         /// </summary>
-        public static readonly ParameterKey<DepthStencilBuffer> DepthStencil = ParameterKeys.New<DepthStencilBuffer>();
+        public static readonly ParameterKey<Texture> DepthStencil = ParameterKeys.New<Texture>();
 
         /// <summary>
         /// The depth stencil buffer key used as an input shader resource.
@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <summary>
         /// The render target key.
         /// </summary>
-        public static readonly ParameterKey<RenderTarget> RenderTarget = ParameterKeys.New<RenderTarget>();
+        public static readonly ParameterKey<Texture> RenderTarget = ParameterKeys.New<Texture>();
 
         /// <summary>
         /// The render target key.

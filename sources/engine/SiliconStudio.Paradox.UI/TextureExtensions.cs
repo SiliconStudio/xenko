@@ -17,15 +17,15 @@ namespace SiliconStudio.Paradox.UI
         /// <param name="graphicsDevice">The graphics device in which to create the texture</param>
         /// <param name="data">The image file data</param>
         /// <returns>A 2D texture</returns>
-        public static Texture2D CreateTextureFromFileData(GraphicsDevice graphicsDevice, byte[] data)
+        public static Texture CreateTextureFromFileData(GraphicsDevice graphicsDevice, byte[] data)
         {
-            Texture2D result;
+            Texture result;
 
             {
                 using (var imageStream = new MemoryStream(data))
                 {
                     using (var image = Image.Load(imageStream))
-                        result = Texture2D.New(graphicsDevice, image);
+                        result = Texture.New(graphicsDevice, image);
                 }
             }
 
@@ -34,7 +34,7 @@ namespace SiliconStudio.Paradox.UI
                 using (var imageStream = new MemoryStream(data))
                 {
                     using (var image = Image.Load(imageStream))
-                        ((Texture2D)graphicsResource).Recreate(image.ToDataBox());
+                        ((Texture)graphicsResource).Recreate(image.ToDataBox());
                 }
             };
 

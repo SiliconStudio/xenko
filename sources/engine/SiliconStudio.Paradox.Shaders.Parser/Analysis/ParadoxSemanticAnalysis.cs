@@ -529,6 +529,11 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
         /// <returns>a collection of all possible members</returns>
         protected override IEnumerable<IDeclaration> FindDeclarationsFromObject(TypeBase typeBase, string memberName)
         {
+            if (typeBase == null)
+            {
+                yield break;
+            }
+
             // look if it is a composition
             // the typebase is unique for each extern so there is no need to look for the right class
             //var mixin = compositionsVirtualTables.FirstOrDefault(x => ReferenceEquals(x.Key.ResolveType(), typeBase.ResolveType())).Value;
@@ -672,9 +677,6 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
                                 {
                                     expression.TypeInference.TargetType = topMethod.ReturnType.ResolveType();
                                     expression.Target.TypeInference.Declaration = topMethod;
-
-                                    if (!(topMethod is MethodDefinition))
-                                        Warning(ParadoxMessageCode.WarningDeclarationCall, memberReferenceExpression.Span, expression, topMethod, analyzedModuleMixin.MixinName);
                                 }
                                 else
                                     Error(ParadoxMessageCode.ErrorImpossibleVirtualCall, memberReferenceExpression.Span, expression, analyzedModuleMixin.MixinName, analyzedModuleMixin.MixinName);
@@ -740,9 +742,6 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
                         parsingInfo.StageMethodCalls.Add(expression);
                 }
             }
-
-            if (!(isBuiltIn || methodDecl == null || expression.Target.TypeInference.Declaration is MethodDefinition || methodDecl.Qualifiers.Contains(ParadoxStorageQualifier.Stage)))
-                Warning(ParadoxMessageCode.WarningDeclarationCall, expression.Span, expression, expression.Target.TypeInference.Declaration, analyzedModuleMixin.MixinName);
         }
 
         /// <summary>
@@ -948,6 +947,10 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
                 else
                     parsingInfo.ClassReferences.InsertVariable(variable, new ExpressionNodeCouple(expression, ParentNode));
             }
+            else
+            {
+                parsingInfo.NavigableNodes.Add(expression);
+            }
         }
 
         /// <summary>
@@ -967,6 +970,29 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
                     parsingInfo.StageInitReferences.InsertMethod(methodDecl, expression);
                 else
                     parsingInfo.ClassReferences.InsertMethod(methodDecl, expression);
+            }
+            else
+            {
+                parsingInfo.NavigableNodes.Add(expression);
+            }
+        }
+
+        [Visit]
+        private void Visit(ShaderClassType shaderClassType)
+        {
+            Visit((Node)shaderClassType);
+
+            // Allow to navigate to base classes
+            foreach (var baseClass in shaderClassType.BaseClasses)
+            {
+                var firstOrDefault = analyzedModuleMixin.InheritanceList.FirstOrDefault(moduleMixin => moduleMixin.Shader.Name.Text == baseClass.Name.Text);
+                if (firstOrDefault != null)
+                {
+                    var declaration = firstOrDefault.Shader;
+                    baseClass.TypeInference.Declaration = declaration;
+                }
+
+                parsingInfo.NavigableNodes.Add(baseClass);
             }
         }
 

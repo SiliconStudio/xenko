@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Shaders.Parser.Ast;
 using SiliconStudio.Paradox.Shaders.Parser.Mixins;
 using SiliconStudio.Paradox.Shaders.Parser.Performance;
@@ -58,6 +59,14 @@ namespace SiliconStudio.Paradox.Shaders.Parser
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderMixinParser"/> class.
         /// </summary>
+        public ShaderMixinParser() :
+            this(AssetManager.FileProvider)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ShaderMixinParser"/> class.
+        /// </summary>
         public ShaderMixinParser(DatabaseFileProvider fileProvider)
         {
             SourceManager = new ShaderSourceManager(fileProvider);
@@ -84,24 +93,22 @@ namespace SiliconStudio.Paradox.Shaders.Parser
         {
             shaderLibrary.DeleteObsoleteCache(modifiedShaders);
         }
-
-        /// <summary>
-        /// Mixes shader parts to produces a single HLSL file shader.
-        /// </summary>
-        /// <param name="shaderMixinSource">The shader source.</param>
-        /// <param name="macros">The shader perprocessor macros.</param>
-        /// <param name="modifiedShaders">The list of modified shaders.</param>
-        /// <returns>The combined shader in AST form.</returns>
-        public ShaderMixinParsingResult Parse(ShaderMixinSource shaderMixinSource, Paradox.Shaders.ShaderMacro[] macros = null)
+        public bool AllowNonInstantiatedGenerics
         {
-            //SemanticPerformance.Reset();
-            //PerformanceLogger.Reset();
-            //MixPerformance.Reset();
-            //GenerateShaderPerformance.Reset();
-            //StreamCreatorPerformance.Reset();
+            get
+            {
+                return shaderLibrary.AllowNonInstantiatedGenerics;
+            }
+            set
+            {
+                shaderLibrary.AllowNonInstantiatedGenerics = value;
+            }
+        }
 
+        internal ShaderCompilationContext ParseAndAnalyze(ShaderMixinSource shaderMixinSource, Paradox.Shaders.ShaderMacro[] macros, out ShaderMixinParsingResult parsingResult, out HashSet<ModuleMixinInfo> mixinsToAnalyze)
+        {
             // Creates a parsing result
-            var parsingResult = new ShaderMixinParsingResult();
+            parsingResult = new ShaderMixinParsingResult();
 
             SiliconStudio.Shaders.Parser.ShaderMacro[] macrosParser;
             if (macros == null)
@@ -119,7 +126,6 @@ namespace SiliconStudio.Paradox.Shaders.Parser
             // ----------------------------------------------------------
             // Load all shaders
             // ----------------------------------------------------------
-            HashSet<ModuleMixinInfo> mixinsToAnalyze;
             lock (shaderLibrary)
             {
                 //PerformanceLogger.Start(PerformanceStage.Loading);
@@ -147,7 +153,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
 
             // Return directly if there was any errors
             if (parsingResult.HasErrors)
-                return parsingResult;
+                return null;
 
             // ----------------------------------------------------------
             // Perform Type Analysis
@@ -158,7 +164,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
 
             // Return directly if there was any errors
             if (parsingResult.HasErrors)
-                return parsingResult;
+                return context;
 
             lock (SemanticAnalyzerLock)
             {
@@ -169,6 +175,23 @@ namespace SiliconStudio.Paradox.Shaders.Parser
                 //SemanticPerformance.Pause(SemanticStage.Global);
                 //PerformanceLogger.Stop(PerformanceStage.SemanticAnalysis);
             }
+
+            return context;
+        }
+
+        /// <summary>
+        /// Mixes shader parts to produces a single HLSL file shader.
+        /// </summary>
+        /// <param name="shaderMixinSource">The shader source.</param>
+        /// <param name="macros">The shader perprocessor macros.</param>
+        /// <param name="modifiedShaders">The list of modified shaders.</param>
+        /// <returns>The combined shader in AST form.</returns>
+        public ShaderMixinParsingResult Parse(ShaderMixinSource shaderMixinSource, Paradox.Shaders.ShaderMacro[] macros = null)
+        {
+            // Creates a parsing result
+            HashSet<ModuleMixinInfo> mixinsToAnalyze;
+            ShaderMixinParsingResult parsingResult;
+            var context = ParseAndAnalyze(shaderMixinSource, macros, out parsingResult, out mixinsToAnalyze);
 
             // Return directly if there was any errors
             if (parsingResult.HasErrors)

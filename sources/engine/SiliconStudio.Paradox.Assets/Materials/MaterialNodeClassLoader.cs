@@ -62,7 +62,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 if (!loader.ClassExists(name))
                     return null;
 
-                var shader = loader.LoadClassSource(new ShaderClassSource(name), null, logger);
+                var shader = loader.LoadClassSource(new ShaderClassSource(name), null, logger, false);
                 if (logger.HasErrors)
                 {
                     // TODO: output messages

@@ -35,7 +35,7 @@ namespace SiliconStudio.Paradox.Graphics
     /// </remarks>
     public abstract class GraphicsPresenter : ComponentBase
     {
-        private DepthStencilBuffer depthStencilBuffer;
+        private Texture depthStencilBuffer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphicsPresenter" /> class.
@@ -72,12 +72,12 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// Gets the default back buffer for this presenter.
         /// </summary>
-        public abstract RenderTarget BackBuffer { get; }
+        public abstract Texture BackBuffer { get; }
 
         /// <summary>
         /// Gets the default depth stencil buffer for this presenter.
         /// </summary>
-        public DepthStencilBuffer DepthStencilBuffer
+        public Texture DepthStencilBuffer
         {
             get
             {
@@ -143,7 +143,6 @@ namespace SiliconStudio.Paradox.Graphics
         {
             if (DepthStencilBuffer != null)
             {
-                depthStencilBuffer.Texture.ReleaseInternal();
                 depthStencilBuffer.RemoveKeepAliveBy(this);
             }
         }
@@ -172,8 +171,14 @@ namespace SiliconStudio.Paradox.Graphics
                 return;
 
             // Creates the depth stencil buffer.
-            var depthTexture = Texture2D.New(GraphicsDevice, Description.BackBufferWidth, Description.BackBufferHeight, Description.DepthStencilFormat, TextureFlags.DepthStencil | TextureFlags.ShaderResource).KeepAliveBy(this);
-            DepthStencilBuffer = depthTexture.ToDepthStencilBuffer(false).KeepAliveBy(this);
+            var flags = TextureFlags.DepthStencil;
+            if (GraphicsDevice.Features.Profile >= GraphicsProfile.Level_10_0)
+            {
+                flags |= TextureFlags.ShaderResource;
+            }
+
+            var depthTexture = Texture.New2D(GraphicsDevice, Description.BackBufferWidth, Description.BackBufferHeight, Description.DepthStencilFormat, flags);
+            DepthStencilBuffer = depthTexture.KeepAliveBy(this);
         }
     }
 }

@@ -48,7 +48,7 @@ Does it work with kanjis too? let's see that in the following line. Here we goes
                 Content = textBlock, 
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                BackgroundImage = new UIImage(Asset.Load<Texture2D>("DumbWhite"))
+                BackgroundImage = new UIImage(Asset.Load<Texture>("DumbWhite"))
             };
 
             UI.RootElement = decorator;

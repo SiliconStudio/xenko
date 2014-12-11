@@ -54,7 +54,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
                 Content = textScroller, 
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                BackgroundImage = new UIImage(Asset.Load<Texture2D>("DumbWhite"))
+                BackgroundImage = new UIImage(Asset.Load<Texture>("DumbWhite"))
             };
 
             UI.RootElement = decorator;

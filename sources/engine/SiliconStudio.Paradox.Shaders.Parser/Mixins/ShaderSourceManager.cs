@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -44,7 +45,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// Gets or sets a value indicating whether [use file system]. (Currently used only by tests, made static)
         /// </summary>
         /// <value><c>true</c> if [use file system]; otherwise, <c>false</c>.</value>
-        public static bool UseFileSystem { get; set; }
+        public bool UseFileSystem { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderSourceManager" /> class.
@@ -64,6 +65,24 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             : this(AssetManager.FileProvider)
         {
         }
+
+        /// <summary>
+        /// Adds the shader source registered manually.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="sourceCode">The source code.</param>
+        /// <param name="sourcePath">The source path.</param>
+        public void AddShaderSource(string type, string sourceCode, string sourcePath)
+        {
+            lock (locker)
+            {
+                var shaderSource = new ShaderSourceWithHash() { Source = sourceCode, Path = sourcePath };
+                shaderSource.Hash = ObjectId.FromBytes(Encoding.UTF8.GetBytes(shaderSource.Source));
+                loadedShaderSources[type] = shaderSource;
+                classNameToPath[type] = sourcePath;
+            }
+        }
+
 
         /// <summary>
         /// Deletes the shader cache for the specified shaders.
@@ -104,6 +123,10 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     if (sourceUrl != null)
                     {
                         shaderSource = new ShaderSourceWithHash();
+                        if (!UrlToFilePath.TryGetValue(sourceUrl, out shaderSource.Path))
+                        {
+                            shaderSource.Path = sourceUrl;
+                        }
 
                         // On Windows, Always try to load first from the original URL in order to get the latest version
                         if (Platform.IsWindowsDesktop)
@@ -120,6 +143,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
                                     if (File.Exists(shaderSourcePath))
                                     {
+                                        // Replace path with a local path
+                                        shaderSource.Path = Path.Combine(Environment.CurrentDirectory, shaderSourcePath);
                                         using (var sourceStream = File.Open(shaderSourcePath, FileMode.Open, FileAccess.Read, FileShare.Read))
                                         {
                                             using (var sr = new StreamReader(sourceStream))
@@ -151,15 +176,6 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                             shaderSource.Hash = ObjectId.FromBytes(Encoding.UTF8.GetBytes(shaderSource.Source));
                         }
 
-                        // Convert URL to absolute file path
-                        // TODO can we handle path differently? Current code is just a hack
-                        UrlToFilePath.TryGetValue(sourceUrl, out shaderSource.Path);
-
-                        // If Path is null, set it to type at least to be able to have more information
-                        if (shaderSource.Path == null)
-                        {
-                            shaderSource.Path = type;
-                        }
                         loadedShaderSources[type] = shaderSource;
                     }
                     else

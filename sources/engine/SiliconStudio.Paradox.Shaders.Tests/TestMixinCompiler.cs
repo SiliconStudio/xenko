@@ -26,9 +26,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         [Test]
         public void TestMixinAndComposeKeys()
         {
-            ShaderSourceManager.UseFileSystem = true;
-
-            var compiler = new EffectCompiler();
+            var compiler = new EffectCompiler { UseFileSystem = true };
             compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Paradox.Graphics\Shaders");
             compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Paradox.Shaders.Tests\GameAssets\Mixins");
 

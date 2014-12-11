@@ -408,27 +408,22 @@ namespace SiliconStudio.Paradox.Graphics
                         case EffectParameterType.RWByteAddressBuffer:
                             binding.Param.Key = FindOrCreateResourceKey<Buffer>(keyName);
                             break;
+                        case EffectParameterType.Texture:
                         case EffectParameterType.Texture1D:
                         case EffectParameterType.Texture1DArray:
                         case EffectParameterType.RWTexture1D:
                         case EffectParameterType.RWTexture1DArray:
-                            binding.Param.Key = FindOrCreateResourceKey<Texture1D>(keyName);
-                            break;
                         case EffectParameterType.Texture2D:
                         case EffectParameterType.Texture2DArray:
                         case EffectParameterType.Texture2DMultisampled:
                         case EffectParameterType.Texture2DMultisampledArray:
                         case EffectParameterType.RWTexture2D:
                         case EffectParameterType.RWTexture2DArray:
-                            binding.Param.Key = FindOrCreateResourceKey<Texture2D>(keyName);
-                            break;
                         case EffectParameterType.TextureCube:
                         case EffectParameterType.TextureCubeArray:
-                            binding.Param.Key = FindOrCreateResourceKey<TextureCube>(keyName);
-                            break;
                         case EffectParameterType.RWTexture3D:
                         case EffectParameterType.Texture3D:
-                            binding.Param.Key = FindOrCreateResourceKey<Texture3D>(keyName);
+                            binding.Param.Key = FindOrCreateResourceKey<Texture>(keyName);
                             break;
                     }
                     break;

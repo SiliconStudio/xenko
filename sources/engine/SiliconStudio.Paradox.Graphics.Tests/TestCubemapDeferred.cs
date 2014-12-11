@@ -56,7 +56,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             };
             Entities.Add(teapotEntity);
 
-            var textureCube = Asset.Load<TextureCube>("uv_cube");
+            var textureCube = Asset.Load<Texture>("uv_cube");
             var staticCubemapEntity = new Entity()
             {
                 new CubemapSourceComponent(textureCube) { Enabled = true, InfluenceRadius = 2f, IsDynamic = false },
@@ -118,7 +118,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             // Add sthe G-buffer pass to the pipeline.
             RenderSystem.Pipeline.Renderers.Add(gbufferProcessor);
 
-            var readOnlyDepthBuffer = GraphicsDevice.DepthStencilBuffer.Texture.ToDepthStencilBuffer(true);
+            var readOnlyDepthBuffer = GraphicsDevice.DepthStencilBuffer; // TODO ToDepthStencilBuffer(true);
             IBLRenderer = new LightingIBLRenderer(Services, "CubemapIBLSpecular", readOnlyDepthBuffer);
             RenderSystem.Pipeline.Renderers.Add(IBLRenderer);
             RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services)

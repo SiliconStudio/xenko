@@ -5,7 +5,7 @@
 /// </summary>
 class ComputeBRDFColorSpecularBlinnPhong : ComputeBRDFColorSpecularPhong
 {
-    override float3 GetNH(float3 lightDir, float3 normal, float3 eye)
+    override float GetNH(float3 lightDir, float3 normal, float3 eye)
     {
         float3 HalfWay = normalize(lightDir + eye);
         return saturate(dot(normal, HalfWay));

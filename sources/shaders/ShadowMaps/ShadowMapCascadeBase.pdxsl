@@ -56,11 +56,13 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
         {
             base.ComputeShadowMapPositions(vPositionWS);
 
+            [unroll]
     #if HAS_DYNAMIC_SHADOWMAP_COUNT == 1
             for(int i = 0; i < SHADOWMAP_COUNT && i < ShadowMapLightCount; ++i) {
     #else
             for(int i = 0; i < SHADOWMAP_COUNT; ++i) {
     #endif
+                [unroll]
                 for(int j = 0; j < SHADOWMAP_CASCADE_COUNT; j++)
                 {
                     streams.vShadowMapPos[i * SHADOWMAP_CASCADE_COUNT + j] = mul(vPositionWS, shadowMapLevels[i][j].ShadowMapWVP);

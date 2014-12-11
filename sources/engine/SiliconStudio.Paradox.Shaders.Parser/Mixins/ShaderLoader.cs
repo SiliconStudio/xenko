@@ -78,9 +78,10 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <param name="shaderClassSource">The shader class source.</param>
         /// <param name="shaderMacros">The shader macros.</param>
         /// <param name="log">The log to output error logs.</param>
+        /// <param name="autoGenericInstances"></param>
         /// <returns>A ShaderClassType or null if there was some errors.</returns>
         /// <exception cref="System.ArgumentNullException">shaderClassSource</exception>
-        public ShaderClassType LoadClassSource(ShaderClassSource shaderClassSource, SiliconStudio.Shaders.Parser.ShaderMacro[] shaderMacros, LoggerResult log)
+        public ShaderClassType LoadClassSource(ShaderClassSource shaderClassSource, SiliconStudio.Shaders.Parser.ShaderMacro[] shaderMacros, LoggerResult log, bool autoGenericInstances)
         {
             if (shaderClassSource == null) throw new ArgumentNullException("shaderClassSource");
 
@@ -97,10 +98,20 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 return null;
 
             // Instantiate generic class
-            if (shaderClassSource.GenericArguments != null)
+            if (shaderClassSource.GenericArguments != null || (shaderClassType.ShaderGenerics.Count > 0 && autoGenericInstances))
             {
                 if (shaderClassType.IsInstanciated)
                     return shaderClassType;
+
+                // If we want to automatically generate a generic instance (in case we just want to parse and verify the generic)
+                if (autoGenericInstances)
+                {
+                    shaderClassSource.GenericArguments = new string[shaderClassType.ShaderGenerics.Count];
+                    for (int i = 0; i < shaderClassSource.GenericArguments.Length; i++)
+                    {
+                        shaderClassSource.GenericArguments[i] = string.Empty;
+                    }
+                }
 
                 if (shaderClassSource.GenericArguments.Length != shaderClassType.ShaderGenerics.Count)
                 {
@@ -121,8 +132,13 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 if (log.HasErrors)
                     return null;
 
-                var className = GenerateGenericClassName(shaderClassSource);
-                shaderClassType.Name = new Identifier(className);
+                // When we use an actual generic instance, we replace the name with the name of the class + a hash of the generic parameters
+                if (!autoGenericInstances)
+                {
+                    var className = GenerateGenericClassName(shaderClassSource);
+                    shaderClassType.Name = new Identifier(className);
+                }
+
                 var genericAssociation = CreateGenericAssociation(shaderClassType.ShaderGenerics, shaderClassSource.GenericArguments);
                 var identifierGenerics = GenerateIdentifierFromGenerics(genericAssociation);
                 var expressionGenerics = GenerateGenericsExpressionValues(shaderClassType.ShaderGenerics, shaderClassSource.GenericArguments);
@@ -176,27 +192,50 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
             if (genericArguments.Length > 0)
             {
-                string allGenerics = "";
-                foreach (var generic in genericArguments)
-                    allGenerics += "," + generic.ToString();
-                allGenerics = allGenerics.Substring(1);
-
-                var node = CreateExpressionFromString(allGenerics);
-
-                if (node is ExpressionList)
+                var allGenerics = new StringBuilder();
+                bool allEmpty = true;
+                for (int i = 0; i < genericArguments.Length; i++)
                 {
-                    var nodeList = (ExpressionList)node;
-                    if (nodeList.Count != genericArguments.Length)
-                        throw new Exception("mismatch generic length after parsing");
+                    var generic = genericArguments[i];
+                    var genericText = generic.ToString();
 
+                    if (!string.IsNullOrWhiteSpace(genericText))
+                    {
+                        allEmpty = false;
+                    }
+                    if (i > 0)
+                    {
+                        allGenerics.Append(',');
+                    }
+
+                    // TODO: If a generic is empty, we should throw an error
+                    allGenerics.Append(genericText);
+                }
+
+                if (allEmpty)
+                {
                     for (var i = 0; i < genericArguments.Length; ++i)
-                        result.Add(genericParameters[i].Name.Text, nodeList[i]);
+                        result.Add(genericParameters[i].Name.Text, null);
                 }
                 else
                 {
-                    if (genericArguments.Length != 1)
-                        throw new Exception("mismatch generic length after parsing");
-                    result.Add(genericParameters[0].Name.Text, node);
+                    var node = CreateExpressionFromString(allGenerics.ToString());
+
+                    if (node is ExpressionList)
+                    {
+                        var nodeList = (ExpressionList)node;
+                        if (nodeList.Count != genericArguments.Length)
+                            throw new Exception("mismatch generic length after parsing");
+
+                        for (var i = 0; i < genericArguments.Length; ++i)
+                            result.Add(genericParameters[i].Name.Text, nodeList[i]);
+                    }
+                    else
+                    {
+                        if (genericArguments.Length != 1)
+                            throw new Exception("mismatch generic length after parsing");
+                        result.Add(genericParameters[0].Name.Text, node);
+                    }
                 }
             }
             return result;
@@ -212,7 +251,6 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         private ShaderClassType LoadShaderClass(string type, string generics, LoggerResult log, SiliconStudio.Shaders.Parser.ShaderMacro[] macros = null)
         {
             if (type == null) throw new ArgumentNullException("type");
-
             var shaderSourceKey = new ShaderSourceKey(type, generics, macros);
 
             lock (loadedShaders)
@@ -228,8 +266,16 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 // Load file
                 var shaderSource = SourceManager.LoadShaderSource(type);
 
-                // TODO USE ORIGINAL SOURCE PATH and not to object database path
-                var preprocessedSource = PreProcessor.Run(shaderSource.Source, shaderSource.Path, macros);
+                string preprocessedSource;
+                try
+                {
+                    preprocessedSource = PreProcessor.Run(shaderSource.Source, shaderSource.Path, macros);
+                }
+                catch (Exception ex)
+                {
+                    log.Error(MessageCode.ErrorUnexpectedException, new SourceSpan(new SourceLocation(shaderSource.Path, 0, 1, 1),1), ex);
+                    return null;
+                }
 
                 byte[] byteArray = Encoding.ASCII.GetBytes(preprocessedSource);
                 var hashPreprocessSource = ObjectId.FromBytes(byteArray);
@@ -249,7 +295,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 var shaderClassTypes = ParadoxShaderParser.GetShaderClassTypes(shader.Declarations).ToList();
                 if (shaderClassTypes.Count != 1)
                 {
-                    throw new InvalidOperationException(string.Format("Shader [{0}] must contain only a single Shader class type intead of [{1}]", type, shaderClassTypes.Count));
+                    log.Error(ParadoxMessageCode.ShaderMustContainSingleClassDeclaration, new SourceSpan(new SourceLocation(shaderSource.Path, 0, 0, 0), 10), type);
+                    return null;
                 }
 
                 shaderClass = shaderClassTypes.First();
@@ -259,14 +306,15 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 shaderClass.IsInstanciated = false;
 
                 // TODO: We should not use Console. Change the way we log things here
-                Console.WriteLine("Loading Shader {0}{1}", type, macros != null && macros.Length > 0 ? String.Format("<{0}>", string.Join(", ", macros)) : string.Empty);
+                // Console.WriteLine("Loading Shader {0}{1}", type, macros != null && macros.Length > 0 ? String.Format("<{0}>", string.Join(", ", macros)) : string.Empty);
 
+                // If the file name is not matching the class name, provide an error
                 if (shaderClass.Name.Text != type)
                 {
-                    throw new InvalidOperationException(string.Format("Unable to load shader [{0}] not maching class name [{1}]", type, shaderClass.Name.Text));
+                    log.Error(ParadoxMessageCode.FileNameNotMatchingClassName, shaderClass.Name.Span, type, shaderClass.Name.Text);
+                    return null;
                 }
 
-                // Only full version are stored
                 loadedShaders.Add(shaderSourceKey, shaderClass);
 
                 return shaderClass;

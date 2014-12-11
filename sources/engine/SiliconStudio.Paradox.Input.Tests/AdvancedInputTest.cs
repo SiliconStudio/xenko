@@ -95,7 +95,7 @@ namespace SiliconStudio.Paradox.Input.Tests
             spriteFont11 = Asset.Load<SpriteFont>("Arial11");
 
             // load the round texture 
-            roundTexture = Asset.Load<Texture2D>("round");
+            roundTexture = Asset.Load<Texture>("round");
 
             // create the SpriteBatch used to render them
             spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -125,7 +125,7 @@ namespace SiliconStudio.Paradox.Input.Tests
             // clear the screen
             GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.White);
             GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsDevice.SetRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
 
             spriteBatch.Begin();
 

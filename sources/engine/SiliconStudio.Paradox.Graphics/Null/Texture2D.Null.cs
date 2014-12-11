@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Graphics
             throw new NotImplementedException();
         }
 
-        public Texture2D ToDepthTextureCompatible()
+        public Texture2D CreateDepthTextureCompatible()
         {
             throw new NotImplementedException();
         }
