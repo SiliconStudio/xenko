@@ -1,0 +1,36 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Paradox.Effects.Images
+{
+    /// <summary>
+    /// This takes in entry several blurred levels, and depending on the pixel CoC,
+    /// the final color will be an interpolation between 2 of these levels. 
+    /// Level 0 is the original sharp image. The last level is the blurriest version. 
+    /// Expects as input:
+    /// - Texture0: a [Linear Depth, CoC] buffer
+    /// - Texture1 ~ TextureX: the different blur levels. (0 == no blur)
+    /// </summary>
+
+    internal class CombineLevelsFromCoCShader<int LevelCount> : ImageEffectShader
+    {
+        stage override float4 Shading()
+        {
+            //TODO support more than 2 levels
+
+            // Gets CoC
+            float CoC = Texture0.Sample(LinearSampler, streams.TexCoord).y;
+
+            // Sample the color
+            float3 color = Texture1.Sample(LinearSampler, streams.TexCoord).rgb;
+
+            // Sample full-blur texture
+            float3 blurColor = Texture2.Sample(LinearSampler, streams.TexCoord).rgb;
+
+            // Interpolates between original and blurred image
+            float3 result = lerp(color, blurColor, CoC);
+
+            return float4( result, 1.0 );
+        }
+    };
+}

@@ -603,6 +603,51 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Images\DepthOfField\CircleOfConfusion.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CircleOfConfusion.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Images\DepthOfField\CombineLevelsFromCoCEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CombineLevelsFromCoCEffect.pdxfx</DependentUpon>
+    </Compile>
+    <Compile Include="Images\DepthOfField\CombineLevelsFromCoCKeys.cs" />
+    <Compile Include="Images\DepthOfField\CombineLevelsFromCoCShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CombineLevelsFromCoCShader.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Images\DepthOfField\DepthAwareUniformBlurEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>DepthAwareUniformBlurEffect.pdxfx</DependentUpon>
+    </Compile>
+    <Compile Include="Images\DepthOfField\DepthAwareUniformBlurKeys.cs" />
+    <Compile Include="Images\DepthOfField\DepthAwareUniformBlurShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>DepthAwareUniformBlurShader.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Images\DepthOfField\Hexagonal\McIntoshBokeh.cs" />
+    <Compile Include="Images\DepthOfField\Hexagonal\McIntoshCombineShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>McIntoshCombineShader.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Images\DepthOfField\LinearDepthCoCShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>LinearDepthCoCShader.pdxsl</DependentUpon>
+    </Compile>
     <Compile Include="Images\GaussianBlur\GaussianBlur.cs" />
     <Compile Include="Images\GaussianBlur\GaussianBlurKeys.cs" />
     <Compile Include="Images\GaussianBlur\GaussianBlurShader.cs">
@@ -2130,6 +2175,34 @@
     <None Include="Images\ColorCombiner\ColorCombinerEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ColorCombinerEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Images\DepthOfField\CircleOfConfusion.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CircleOfConfusion.cs</LastGenOutput>
+    </None>
+    <None Include="Images\DepthOfField\CombineLevelsFromCoCEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CombineLevelsFromCoCEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Images\DepthOfField\CombineLevelsFromCoCShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CombineLevelsFromCoCShader.cs</LastGenOutput>
+    </None>
+    <None Include="Images\DepthOfField\DepthAwareUniformBlurEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>DepthAwareUniformBlurEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Images\DepthOfField\DepthAwareUniformBlurShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>DepthAwareUniformBlurShader.cs</LastGenOutput>
+    </None>
+    <None Include="Images\DepthOfField\Hexagonal\McIntoshCombineShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>McIntoshCombineShader.cs</LastGenOutput>
+    </None>
+    <None Include="Images\DepthOfField\LinearDepthCoCShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>LinearDepthCoCShader.cs</LastGenOutput>
     </None>
     <None Include="Images\GaussianBlur\GaussianBlurShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
