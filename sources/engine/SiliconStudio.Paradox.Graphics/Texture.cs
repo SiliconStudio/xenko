@@ -22,6 +22,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -38,6 +39,7 @@ namespace SiliconStudio.Paradox.Graphics
     /// </summary>
     [ContentSerializer]
     [DataConverter(AutoGenerate = false, ContentReference = true, DataType = false)]
+    [DebuggerDisplay("Texture {ViewWidth}x{ViewHeight}x{ViewDepth} {Format} ({ViewFlags})")]
     public sealed partial class Texture : GraphicsResource
     {
         internal const int DepthStencilReadOnlyFlags = 16;
