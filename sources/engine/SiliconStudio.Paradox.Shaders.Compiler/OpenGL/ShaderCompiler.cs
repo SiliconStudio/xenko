@@ -27,6 +27,17 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
             Core.NativeLibrary.PreloadLibrary("glsl_optimizer.dll");
         }
 
+        private int renderTargetCount;
+
+        /// <summary>
+        /// The constructor.
+        /// </summary>
+        /// <param name="rtCount">The number of render targets</param>
+        public ShaderCompiler(int rtCount)
+        {
+            renderTargetCount = rtCount;
+        }
+
         /// <summary>
         /// Converts the hlsl code into glsl and stores the result as plain text
         /// </summary>
@@ -44,20 +55,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
             var shaderBytecodeResult = new ShaderBytecodeResult();
             byte[] rawData;
 
-            // find the number of output
-            // TODO: improve that
-            var renderTargetCount = 0;
-            if (stage == ShaderStage.Pixel)
-            {
-                for (int i = 8; i >= 0; --i) // go to 0 so that SV_Target (without index) can be tested
-                {
-                    renderTargetCount = HasTargetCount(shaderSource, i - 1);
-                    if (renderTargetCount > 0)
-                        break;
-                }
-            }
-
-            var shader = Compile(shaderSource, entryPoint, stage, isOpenGLES, isOpenGLES3, renderTargetCount, shaderBytecodeResult, sourceFilename);
+            var shader = Compile(shaderSource, entryPoint, stage, isOpenGLES, isOpenGLES3, shaderBytecodeResult, sourceFilename);
 
             if (shader == null)
                 return shaderBytecodeResult;
@@ -74,7 +72,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
                 else
                 {
                     shaderBytecodes.DataES2 = shader;
-                    shaderBytecodes.DataES3 = Compile(shaderSource, entryPoint, stage, true, true, renderTargetCount, shaderBytecodeResult, sourceFilename);
+                    shaderBytecodes.DataES3 = Compile(shaderSource, entryPoint, stage, true, true, shaderBytecodeResult, sourceFilename);
                 }
                 using (var stream = new MemoryStream())
                 {
@@ -97,20 +95,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
             return shaderBytecodeResult;
         }
 
-        private static int HasTargetCount(string shaderSource, int rtCount)
-        {
-            // small workaround to map rtCount < 0 to SV_Target. That way both SV_Target0 and SV_Target can be tested.
-            var target = "SV_Target";
-            if (rtCount >= 0)
-                target += rtCount;
-            else
-                rtCount = 0;
-            if (shaderSource.IndexOf(target) > 0)
-                return rtCount + 1;
-            return -1;
-        }
-
-        private string Compile(string shaderSource, string entryPoint, ShaderStage stage, bool isOpenGLES, bool isOpenGLES3, int renderTargetCount, ShaderBytecodeResult shaderBytecodeResult, string sourceFilename = null)
+        private string Compile(string shaderSource, string entryPoint, ShaderStage stage, bool isOpenGLES, bool isOpenGLES3, ShaderBytecodeResult shaderBytecodeResult, string sourceFilename = null)
         {
             if (isOpenGLES && !isOpenGLES3 && renderTargetCount > 1)
                 shaderBytecodeResult.Error("OpenGL ES 2 does not support multiple render targets.");
@@ -204,7 +189,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
 
                 if (pipelineStage == PipelineStage.Pixel)
                     glslShaderCode
-                        .AppendLine("out vec4 gl_FragData[" + renderTargetCount + "];") // TODO: find the correct number of outputs
+                        .AppendLine("out vec4 gl_FragData[" + renderTargetCount + "];")
                         .AppendLine();
             }
 
