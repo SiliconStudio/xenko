@@ -313,7 +313,7 @@ namespace SiliconStudio.Presentation.Quantum
         public CombinedObservableNode(ObservableViewModel ownerViewModel, string name, CombinedObservableNode parentNode, IEnumerable<SingleObservableNode> combinedNodes, object index)
             : base(ownerViewModel, name, parentNode, combinedNodes, index)
         {
-            DependentProperties.Add(Tuple.Create("TypedValue", "Value"));
+            DependentProperties.Add("TypedValue", new[] { "Value" });
         }
 
         /// <summary>
