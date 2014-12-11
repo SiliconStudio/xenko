@@ -33,7 +33,7 @@ namespace SiliconStudio.Paradox.Effects.Modules
         {
             // Setup render target
             GraphicsDevice.Clear(gbufferTextureRenderTarget, Color.Transparent);
-            GraphicsDevice.Clear(depthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
+            GraphicsDevice.Clear(depthStencilBuffer, DepthStencilClearOptions.DepthBuffer); // only clear depth since we do not know the format of the depth buffer. It might not contain stencil
             GraphicsDevice.SetRenderTarget(depthStencilBuffer, gbufferTextureRenderTarget);
 
             base.OnRendering(context);
