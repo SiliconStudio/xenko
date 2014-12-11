@@ -1150,39 +1150,43 @@ namespace SiliconStudio.Paradox.Graphics
             {
                 var boundTexture = boundTextures[textureInfo.TextureUnit];
                 var texture = textures[textureInfo.TextureUnit];
-                var boundSamplerState = texture.BoundSamplerState ?? defaultSamplerState;
-                var samplerState = samplerStates[textureInfo.TextureUnit] ?? SamplerStates.LinearClamp;
+
+                if (texture != null)
+                {
+                    var boundSamplerState = texture.BoundSamplerState ?? defaultSamplerState;
+                    var samplerState = samplerStates[textureInfo.TextureUnit] ?? SamplerStates.LinearClamp;
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                bool hasMipmap = texture.Description.MipLevels > 1;
+                    bool hasMipmap = texture.Description.MipLevels > 1;
 #else
-                bool hasMipmap = false;
+                    bool hasMipmap = false;
 #endif
 
-                bool textureChanged = texture != boundTexture;
-                bool samplerStateChanged = samplerState != boundSamplerState;
+                    bool textureChanged = texture != boundTexture;
+                    bool samplerStateChanged = samplerState != boundSamplerState;
 
-                // TODO: Lazy update for texture
-                if (textureChanged || samplerStateChanged)
-                {
-                    if (activeTexture != textureInfo.TextureUnit)
+                    // TODO: Lazy update for texture
+                    if (textureChanged || samplerStateChanged)
                     {
-                        activeTexture = textureInfo.TextureUnit;
-                        GL.ActiveTexture(TextureUnit.Texture0 + textureInfo.TextureUnit);
-                    }
+                        if (activeTexture != textureInfo.TextureUnit)
+                        {
+                            activeTexture = textureInfo.TextureUnit;
+                            GL.ActiveTexture(TextureUnit.Texture0 + textureInfo.TextureUnit);
+                        }
 
-                    // Lazy update for texture
-                    if (textureChanged)
-                    {
-                        boundTextures[textureInfo.TextureUnit] = texture;
-                        GL.BindTexture(texture.Target, texture.resourceId);
-                    }
+                        // Lazy update for texture
+                        if (textureChanged)
+                        {
+                            boundTextures[textureInfo.TextureUnit] = texture;
+                            GL.BindTexture(texture.Target, texture.resourceId);
+                        }
 
-                    // Lazy update for sampler state
-                    if (samplerStateChanged)
-                    {
-                        samplerState.Apply(hasMipmap, boundSamplerState);
-                        texture.BoundSamplerState = samplerState;
+                        // Lazy update for sampler state
+                        if (samplerStateChanged)
+                        {
+                            samplerState.Apply(hasMipmap, boundSamplerState);
+                            texture.BoundSamplerState = samplerState;
+                        }
                     }
                 }
             }
