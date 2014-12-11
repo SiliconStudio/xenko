@@ -8,6 +8,7 @@ using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
@@ -27,11 +28,29 @@ namespace SiliconStudio.Paradox.Effects
         private readonly Dictionary<string, List<CompilerResults>> earlyCompilerCache = new Dictionary<string, List<CompilerResults>>();
         private Dictionary<EffectBytecode, Effect> cachedEffects = new Dictionary<EffectBytecode, Effect>();
         private DirectoryWatcher directoryWatcher;
+        private DatabaseFileProvider fileProvider;
 
         private readonly HashSet<string> recentlyModifiedShaders = new HashSet<string>();
         private bool clearNextFrame = false;
 
         public IEffectCompiler Compiler { get { return compiler; } }
+
+        /// <summary>
+        /// Gets or sets the database file provider, to use for loading effects and shader sources.
+        /// </summary>
+        /// <value>
+        /// The database file provider.
+        /// </value>
+        public DatabaseFileProvider FileProvider
+        {
+            get { return fileProvider ?? AssetManager.FileProvider; }
+            set
+            {
+                fileProvider = value;
+                if(compiler != null)
+                    compiler.FileProvider = value;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EffectSystem"/> class.
@@ -161,7 +180,7 @@ namespace SiliconStudio.Paradox.Effects
                     foreach (var type in bytecode.HashSources.Keys)
                     {
                         // TODO: the "/path" is hardcoded, used in ImportStreamCommand and ShaderSourceManager. Find a place to share this correctly.
-                        using (var pathStream = Asset.OpenAsStream(EffectCompilerBase.GetStoragePathFromShaderType(type) + "/path"))
+                        using (var pathStream = FileProvider.OpenStream(EffectCompilerBase.GetStoragePathFromShaderType(type) + "/path", VirtualFileMode.Open, VirtualFileAccess.Read))
                         using (var reader = new StreamReader(pathStream))
                         {
                             var path = reader.ReadToEnd();

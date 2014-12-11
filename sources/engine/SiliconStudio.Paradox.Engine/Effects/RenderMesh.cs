@@ -124,7 +124,6 @@ namespace SiliconStudio.Paradox.Effects
 
         internal void Initialize(GraphicsDevice device)
         {
-            Utilities.Dispose(ref vertexArrayObject);
             vertexArrayObject = VertexArrayObject.New(device, Effect.InputSignature, Mesh.Draw.IndexBuffer, Mesh.Draw.VertexBuffers);
         }
 
