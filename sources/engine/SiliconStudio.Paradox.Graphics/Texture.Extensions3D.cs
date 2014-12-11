@@ -67,7 +67,7 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         /// <summary>
-        /// Creates a new <see cref="Texture3D" /> with texture data for the firs map.
+        /// Creates a new 3D <see cref="Texture" /> with texture data for the firs map.
         /// </summary>
         /// <typeparam name="T">Type of the data to upload to the texture</typeparam>
         /// <param name="device">The <see cref="GraphicsDevice"/>.</param>
@@ -78,7 +78,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="usage">The usage.</param>
         /// <param name="textureData">The texture data, width * height * depth datas </param>
         /// <param name="textureFlags">true if the texture needs to support unordered read write.</param>
-        /// <returns>A new instance of <see cref="Texture3D" /> class.</returns>
+        /// <returns>A new instance of 3D <see cref="Texture" /> class.</returns>
         /// <remarks>
         /// The first dimension of mipMapTextures describes the number of is an array ot Texture3D Array
         /// </remarks>
