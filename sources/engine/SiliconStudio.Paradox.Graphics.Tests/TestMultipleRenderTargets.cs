@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
@@ -121,7 +122,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 var period = (float) (2 * Math.PI * UpdateTime.Total.TotalMilliseconds / 15000);
                 teapot.Transformation.Rotation = Quaternion.RotationAxis(Vector3.UnitY, period);
 
-                if (Input.IsKeyPressed(Keys.Space))
+                if (Input.PointerEvents.Any(x => x.State == PointerState.Down))
                     renderTargetToDisplayIndex = (renderTargetToDisplayIndex + 1) % 3;
             }
         }
