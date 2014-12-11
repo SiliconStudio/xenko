@@ -268,7 +268,10 @@ namespace SiliconStudio.Paradox.Graphics
 
         private void UpdateReference(GraphicsResource resource, int referenceDelta)
         {
-            if (resource == null) throw new ArgumentNullException("resource");
+            if (resource == null)
+            {
+                return;
+            }
 
             var texture = resource as Texture;
             bool resourceFound;
