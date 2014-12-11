@@ -14,23 +14,15 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-
-#line 3 "D:\Code\Paradox\sources\engine\SiliconStudio.Paradox.Shaders.Tests\GameAssets\Mixins\test_mixin_simple_child.pdxfx"
 namespace Test3
 {
-
-    #line 5
     internal static partial class ShaderMixins
     {
         internal partial class ChildMixin  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-
-                #line 7
                 context.Mixin(mixin, "C1");
-
-                #line 8
                 context.Mixin(mixin, "C2");
             }
 
@@ -42,25 +34,15 @@ namespace Test3
             }
         }
     }
-
-    #line 11
     internal static partial class ShaderMixins
     {
         internal partial class DefaultSimpleChild  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-
-                #line 13
                 context.Mixin(mixin, "A");
-
-                #line 14
                 context.Mixin(mixin, "B");
-
-                #line 15
                 context.Mixin(mixin, "C");
-
-                #line 16
                 context.Mixin(mixin, "ChildMixin");
             }
 

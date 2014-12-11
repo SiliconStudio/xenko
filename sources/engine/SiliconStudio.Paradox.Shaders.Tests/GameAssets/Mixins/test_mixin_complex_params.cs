@@ -14,95 +14,47 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-
-#line 3 "D:\Code\Paradox\sources\engine\SiliconStudio.Paradox.Shaders.Tests\GameAssets\Mixins\test_mixin_complex_params.pdxfx"
 namespace Test1
 {
-    [DataContract]
-#line 5
-    public partial class SubParameters : ShaderMixinParameters
+    [DataContract]public partial class SubParameters : ShaderMixinParameters
     {
-
-        #line 7
         public static readonly ParameterKey<bool> param1 = ParameterKeys.New<bool>();
-
-        #line 8
         public static readonly ParameterKey<int> param2 = ParameterKeys.New<int>(1);
-
-        #line 9
         public static readonly ParameterKey<string> param3 = ParameterKeys.New<string>("ok");
     };
-    [DataContract]
-#line 12
-    public partial class TestParameters : ShaderMixinParameters
+    [DataContract]public partial class TestParameters : ShaderMixinParameters
     {
-
-        #line 14
         public static readonly ParameterKey<SubParameters> subParam1 = ParameterKeys.New<SubParameters>();
-
-        #line 15
         public static readonly ParameterKey<SubParameters[]> subParameters = ParameterKeys.New<SubParameters[]>();
     };
-
-    #line 18
     internal static partial class ShaderMixins
     {
         internal partial class DefaultComplexParams  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-
-                #line 23
                 context.Mixin(mixin, "A");
-
-                #line 24
                 context.Mixin(mixin, "B");
-
-                #line 25
                 context.Mixin(mixin, "C");
-
-                #line 27
-
-                #line 27
                 int x = 1;
-
-                #line 28
                 foreach(var ____1 in context.GetParam(TestParameters.subParameters))
 
                 {
-
-                    #line 28
                     context.PushParameters(____1);
-
-                    #line 30
                     if (context.GetParam(SubParameters.param1))
                     {
-
-                        #line 32
                         context.Mixin(mixin, "C" + x);
                     }
-
-                    #line 35
                     x++;
-
-                    #line 28
                     context.PopParameters();
                 }
 
                 {
-
-                    #line 38
                     context.PushParameters(context.GetParam(TestParameters.subParam1));
-
-                    #line 41
                     if (context.GetParam(SubParameters.param2) == 1)
                     {
-
-                        #line 43
                         context.Mixin(mixin, "D");
                     }
-
-                    #line 38
                     context.PopParameters();
                 }
             }

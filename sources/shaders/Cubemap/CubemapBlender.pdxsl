@@ -1,27 +1,30 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corporation (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-/// <summary>
-/// Blends cubemaps.
-/// </summary>
-/// <remarks>
-/// TEXTURECUBE_BLEND_COUNT: Macro - Number of cubemaps to blend.
-/// </remarks>
-class CubemapBlender : CubemapBlenderBase, ShadingBase
+namespace SiliconStudio.Paradox.Effects.Cubemap
 {
-    stage int ViewIndex;
-
-    override stage float4 Shading()
+    /// <summary>
+    /// Blends cubemaps.
+    /// </summary>
+    /// <remarks>
+    /// TEXTURECUBE_BLEND_COUNT: Macro - Number of cubemaps to blend.
+    /// </remarks>
+    class CubemapBlender : CubemapBlenderBase, ShadingBase
     {
-        float4 finalColor = 0;
+        stage int ViewIndex;
 
-        int index = 0;
-        foreach (var cubemap in Cubemaps)
+        override stage float4 Shading()
         {
-            float4 color = cubemap.ComputeFaceColor(ViewIndex);
-            finalColor += BlendIndices[index] * color;
-            ++index;
-        }
+            float4 finalColor = 0;
 
-        return finalColor;
-    }
-};
+            int index = 0;
+            foreach (var cubemap in Cubemaps)
+            {
+                float4 color = cubemap.ComputeFaceColor(ViewIndex);
+                finalColor += BlendIndices[index] * color;
+                ++index;
+            }
+
+            return finalColor;
+        }
+    };
+}

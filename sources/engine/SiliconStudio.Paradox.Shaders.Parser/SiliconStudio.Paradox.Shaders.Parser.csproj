@@ -95,6 +95,8 @@
     <Compile Include="ShaderMixinParser.cs" />
     <Compile Include="ShaderLinker.cs" />
     <Compile Include="ShaderMixinParsingResult.cs" />
+    <Compile Include="ShaderNavigation.cs" />
+    <Compile Include="ShaderNavigationResult.cs" />
     <Compile Include="Utility\ParadoxMessageCode.cs" />
   </ItemGroup>
   <ItemGroup>

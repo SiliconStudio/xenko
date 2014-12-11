@@ -72,13 +72,18 @@ namespace SiliconStudio.Paradox.Shaders
         }
 
         /// <summary>
-        /// Generates a <see cref="ShaderMixinSourceTree"/> for the specified names and parameters.
+        /// Generates a <see cref="ShaderMixinSourceTree" /> for the specified names and parameters.
         /// </summary>
         /// <param name="pdxfxEffectName">The name.</param>
         /// <param name="properties">The properties.</param>
-        /// <param name="mainUsedParameters">The parameters when prcessing the mixin.</param>
         /// <returns>The result of the mixin.</returns>
-        public static ShaderMixinSourceTree Generate(string pdxfxEffectName, ParameterCollection properties, out ShaderMixinParameters mainUsedParameters, out List<ShaderMixinParameters> usedParameters)
+        /// <exception cref="System.ArgumentNullException">
+        /// pdxfxEffectName
+        /// or
+        /// properties
+        /// </exception>
+        /// <exception cref="System.ArgumentException">pdxfxEffectName</exception>
+        public static ShaderMixinSourceTree Generate(string pdxfxEffectName, ParameterCollection properties)
         {
             if (pdxfxEffectName == null) throw new ArgumentNullException("pdxfxEffectName");
 
@@ -95,12 +100,13 @@ namespace SiliconStudio.Paradox.Shaders
                 builders = new Dictionary<string, IShaderMixinBuilder>(RegisteredBuilders);
             }
 
-            var context = new ShaderMixinContext(properties, builders, pdxfxEffectName);
+            // TODO cache mixin context and avoid to recreate one (check if if thread concurrency could occur here)
+            var context = new ShaderMixinContext(properties, builders);
             var mixinTree = new ShaderMixinSourceTree() { Name = pdxfxEffectName };
+            context.BeginChild(mixinTree);
             builder.Generate(mixinTree, context);
+            context.EndChild();
 
-            mainUsedParameters = context.GetMainUsedParameters();
-            usedParameters = context.GetUsedParameters();
             return mixinTree;
         }
 

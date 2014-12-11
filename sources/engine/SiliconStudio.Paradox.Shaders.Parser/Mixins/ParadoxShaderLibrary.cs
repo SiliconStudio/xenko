@@ -45,11 +45,6 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// </summary>
         public HashSourceCollection SourceHashes = new HashSourceCollection();
 
-        /// <summary>
-        /// List of shaders that should be loaded from the disk.
-        /// </summary>
-        public HashSet<string> ModifiedShaders = new HashSet<string>();
-
         #endregion
 
         #region Private members
@@ -309,7 +304,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         {
             var classSource = (ShaderClassSource)mixinInfo.ShaderSource;
 
-            var shaderClass = ShaderLoader.LoadClassSource(classSource, mixinInfo.Macros, mixinInfo.Log, ModifiedShaders);
+            var shaderClass = ShaderLoader.LoadClassSource(classSource, mixinInfo.Macros, mixinInfo.Log);
 
             // If result is null, there was some errors while parsing.
             if (shaderClass == null)

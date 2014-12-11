@@ -18,5 +18,3 @@ Permutations:
       - Keys: 
           Effect.Name: UIEffectSeparateAlpha
           EffectSourceCode.ClassDeclaration: internal partial
-      - Keys: 
-          Effect.Name: SimplePickingEffect

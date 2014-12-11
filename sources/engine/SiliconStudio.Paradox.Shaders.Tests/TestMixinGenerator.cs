@@ -8,8 +8,6 @@ using NUnit.Framework;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Effects;
 
-using Test;
-
 namespace SiliconStudio.Paradox.Shaders.Tests
 {
     /// <summary>
@@ -97,6 +95,45 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             mixin.Children.Values.First().Mixin.CheckMixin("A", "B", "C", "C1", "C2");
         }
 
+
+        /// <summary>
+        /// Test parameters
+        /// </summary>
+        [Test]
+        public void TestMixinAndComposeKeys()
+        {
+            var properties = new ShaderMixinParameters();
+
+            var subCompute1Key = TestABC.TestParameters.UseComputeColor2.ComposeWith("SubCompute1");
+            var subCompute2Key = TestABC.TestParameters.UseComputeColor2.ComposeWith("SubCompute2");
+            var subComputesKey = TestABC.TestParameters.UseComputeColorRedirect.ComposeWith("SubComputes[0]");
+
+            properties.Set(subCompute1Key, true);
+            properties.Set(subComputesKey, true);
+            ShaderMixinParameters usedProperties;
+
+            var mixin = GenerateMixin("test_mixin_compose_keys", properties, out usedProperties);
+            mixin.Mixin.CheckMixin("A");
+
+            Assert.AreEqual(3, mixin.Mixin.Compositions.Count);
+
+            Assert.IsTrue(mixin.Mixin.Compositions.ContainsKey("SubCompute1"));
+            Assert.IsTrue(mixin.Mixin.Compositions.ContainsKey("SubCompute2"));
+            Assert.IsTrue(mixin.Mixin.Compositions.ContainsKey("SubComputes"));
+
+            Assert.AreEqual("mixin ComputeColor2", mixin.Mixin.Compositions["SubCompute1"].ToString());
+            Assert.AreEqual("mixin ComputeColor", mixin.Mixin.Compositions["SubCompute2"].ToString());
+            Assert.AreEqual("[mixin ComputeColorRedirect [{ColorRedirect = mixin ComputeColor2}]]", mixin.Mixin.Compositions["SubComputes"].ToString());
+
+            Assert.IsTrue(mixin.UsedParameters.ContainsKey(subCompute1Key));
+            Assert.IsTrue(mixin.UsedParameters.ContainsKey(subCompute2Key));
+            Assert.IsTrue(mixin.UsedParameters.ContainsKey(subComputesKey));
+
+            Assert.IsTrue(mixin.UsedParameters.Get(subCompute1Key));
+            Assert.IsFalse(mixin.UsedParameters.Get(subCompute2Key));
+            Assert.IsTrue(mixin.UsedParameters.Get(subComputesKey));
+        }
+
         /// <summary>
         /// Test parameters
         /// </summary>
@@ -110,7 +147,10 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             var mixin = GenerateMixin("DefaultSimpleChildParams", properties, out usedProperties);
             mixin.Mixin.CheckMixin("A", "B", "C");
             Assert.That(mixin.Children.Count, Is.EqualTo(1), "Expecting one children mixin");
-            mixin.Children.Values.First().Mixin.CheckMixin("A", "B", "C1");
+            var childMixin = mixin.Children.Values.First();
+            childMixin.Mixin.CheckMixin("A", "B", "C1");
+            Assert.IsTrue(childMixin.UsedParameters.ContainsKey(Test4.TestParameters.TestCount));
+            Assert.AreEqual(0, childMixin.UsedParameters.Get(Test4.TestParameters.TestCount));
         }
 
         /// <summary>

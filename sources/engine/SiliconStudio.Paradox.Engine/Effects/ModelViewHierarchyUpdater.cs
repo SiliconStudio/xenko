@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Effects
@@ -117,7 +117,7 @@ namespace SiliconStudio.Paradox.Effects
                     renderMesh.Enabled = enabled;
                     if (enabled)
                     {
-                        renderMesh.Mesh.Parameters.Set(TransformationKeys.World, nodeTransformationsLocal[renderMesh.Mesh.NodeIndex].WorldMatrix);
+                        renderMesh.Parameters.Set(TransformationKeys.World, nodeTransformationsLocal[renderMesh.Mesh.NodeIndex].WorldMatrix);
                     }
                 }
             }

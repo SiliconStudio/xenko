@@ -1,0 +1,58 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using SiliconStudio.Paradox.Engine;
+
+namespace SiliconStudio.Paradox.Effects.ShadowMaps
+{
+    // Partial shader used for ShadowMap (receiver)
+    partial shader ShadowMapReceiverEffect
+    {
+        using params ShadowMapParameters;
+
+        mixin ShadowMapCascadeBase;
+
+        mixin macro SHADOWMAP_COUNT = ShadowMapParameters.ShadowMapCount;
+        mixin macro SHADOWMAP_CASCADE_COUNT = ShadowMapParameters.ShadowMapCascadeCount;
+
+        if (ShadowMapParameters.FilterType == ShadowMapFilterType.Nearest)
+            mixin ShadowMapFilterDefault;
+        else if (ShadowMapParameters.FilterType == ShadowMapFilterType.PercentageCloserFiltering)
+            mixin ShadowMapFilterPcf;
+        else if (ShadowMapParameters.FilterType == ShadowMapFilterType.Variance)
+            mixin ShadowMapFilterVsm;
+    }
+
+    // Spawn a sub-shader for the shadow map caster pass
+    partial shader ShadowMapCaster
+    {
+        using params ShadowMapParameters;
+
+        // Clone the current state of mixins into this shader
+        mixin clone;
+        mixin ShadowMapCasterBase;
+
+        if (ShadowMapParameters.FilterType == ShadowMapFilterType.Variance)
+            mixin ShadowMapCasterVsm;
+    };
+
+    // Partial shader used for ShadowMap (caster/receiver)
+    partial shader ShadowMapEffect
+    {
+        using params ShadowMapParameters;
+
+        mixin child ShadowMapCaster;
+
+        if (ShadowMapParameters.ShadowMaps == null || ShadowMapParameters.ShadowMaps.Length == 0)
+            discard;
+            
+        mixin ShadowMapReceiver;
+        
+        // Receiver
+        // Modify the composition of the shadows when compositing the shadows
+        // Iterate on all shadowmap types
+        foreach(params ShadowMapParameters.ShadowMaps)
+        {
+            mixin compose shadows += ShadowMapReceiverEffect;
+        }
+    };
+}

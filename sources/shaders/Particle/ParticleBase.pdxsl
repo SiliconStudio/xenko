@@ -19,11 +19,11 @@ class ParticleBase : PARTICLE_STRUCT##Base
     };
 
     stage RWStructuredBuffer<PARTICLE_STRUCT> ParticleGlobalBuffer;
-    [Map("ParticleGlobalBuffer")]
+    [Link("ParticleGlobalBuffer")]
     stage StructuredBuffer<PARTICLE_STRUCT> ParticleGlobalBufferRO;
     stage RWStructuredBuffer<PARTICLE_STRUCT> ParticleInputBuffer;
     stage RWStructuredBuffer<PARTICLE_STRUCT> ParticleOutputBuffer;
     stage RWStructuredBuffer<uint2> ParticleSortBuffer;
-    [Map("ParticleSortBuffer")]
+    [Link("ParticleSortBuffer")]
     stage StructuredBuffer<uint2> ParticleSortBufferRO;
 };

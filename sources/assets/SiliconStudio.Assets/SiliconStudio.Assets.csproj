@@ -80,6 +80,7 @@
     <Compile Include="AssetImporterBase.cs" />
     <Compile Include="AssetToImport.cs" />
     <Compile Include="AssetImportSession.cs" />
+    <Compile Include="Compiler\IPackageCompiler.cs" />
     <Compile Include="Diff\AssetMergePolicies.cs" />
     <Compile Include="FileVersionManager.cs" />
     <Compile Include="Compiler\AssetCommand.cs" />
@@ -125,7 +126,7 @@
     <Compile Include="Compiler\IAssetCompiler.cs" />
     <Compile Include="Compiler\ImportStreamCommand.cs" />
     <Compile Include="Compiler\ItemListCompiler.cs" />
-    <Compile Include="Compiler\PackageAssetsCompiler.cs" />
+    <Compile Include="Compiler\PackageCompiler.cs" />
     <Compile Include="Compiler\ThumbnailCommand.cs" />
     <Compile Include="Compiler\ThumbnailBuiltEventArgs.cs" />
     <Compile Include="Compiler\ThumbnailCompilerAttribute.cs" />

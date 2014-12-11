@@ -27,7 +27,7 @@ class LightPrepass : ShaderBase, Transformation, PositionStream2, BRDFDiffuseBas
         stage LightInfo LightInfos[64];
     }
 
-    [Map("LightKeys.LightAttenuationCutoff")]
+    [Link("Light.LightAttenuationCutoff")]
     stage float LightAttenuationCutoff;
 
     float CalculateLightAttenuation(float lightDistance, float lightIntensity, float lightRadius, float cutoff)

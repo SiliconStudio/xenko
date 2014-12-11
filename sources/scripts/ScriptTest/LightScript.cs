@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using SiliconStudio.Paradox;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 //using Paradox.Mathematics;
 using SiliconStudio.Paradox.Effects;
 using System.Diagnostics;

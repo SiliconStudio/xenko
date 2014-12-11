@@ -21,6 +21,8 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
 {
     internal partial class ShaderCompiler : IShaderCompiler
     {
+        private static readonly object GlslOptimizerLock = new object();
+
         static ShaderCompiler()
         {
             // Preload proper glsl optimizer native library (depending on CPU type)
@@ -220,46 +222,49 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
 
         private string RunOptimizer(string baseShader, bool openGLES, bool es30, bool vertex)
 	    {
-		    IntPtr ctx = IntPtr.Zero;
-            var inputShader = baseShader;
-            if (openGLES)
-		    {
-			    if (es30)
-                    ctx = glslopt_initialize(2);
-			    else
-                    ctx = glslopt_initialize(1);
-
-			    if (vertex)
-			    {
-                    var pre = "#define gl_Vertex _glesVertex\nattribute highp vec4 _glesVertex;\n";
-				    pre += "#define gl_Normal _glesNormal\nattribute mediump vec3 _glesNormal;\n";
-				    pre += "#define gl_MultiTexCoord0 _glesMultiTexCoord0\nattribute highp vec4 _glesMultiTexCoord0;\n";
-				    pre += "#define gl_MultiTexCoord1 _glesMultiTexCoord1\nattribute highp vec4 _glesMultiTexCoord1;\n";
-				    pre += "#define gl_Color _glesColor\nattribute lowp vec4 _glesColor;\n";
-                    inputShader = pre + inputShader;
-			    }
-		    }
-		    else
+            lock (GlslOptimizerLock)
             {
-                ctx = glslopt_initialize(0);
-		    }
+                IntPtr ctx = IntPtr.Zero;
+                var inputShader = baseShader;
+                if (openGLES)
+                {
+                    if (es30)
+                        ctx = glslopt_initialize(2);
+                    else
+                        ctx = glslopt_initialize(1);
 
-		    int type = vertex ? 0 : 1;
-            var shader = glslopt_optimize(ctx, type, inputShader, 0);
+                    if (vertex)
+                    {
+                        var pre = "#define gl_Vertex _glesVertex\nattribute highp vec4 _glesVertex;\n";
+                        pre += "#define gl_Normal _glesNormal\nattribute mediump vec3 _glesNormal;\n";
+                        pre += "#define gl_MultiTexCoord0 _glesMultiTexCoord0\nattribute highp vec4 _glesMultiTexCoord0;\n";
+                        pre += "#define gl_MultiTexCoord1 _glesMultiTexCoord1\nattribute highp vec4 _glesMultiTexCoord1;\n";
+                        pre += "#define gl_Color _glesColor\nattribute lowp vec4 _glesColor;\n";
+                        inputShader = pre + inputShader;
+                    }
+                }
+                else
+                {
+                    ctx = glslopt_initialize(0);
+                }
 
-		    bool optimizeOk = glslopt_get_status(shader);
+                int type = vertex ? 0 : 1;
+                var shader = glslopt_optimize(ctx, type, inputShader, 0);
 
-            string shaderAsString = null;
-		    if (optimizeOk)
-		    {
-                IntPtr optShader = glslopt_get_output(shader);
-                shaderAsString = Marshal.PtrToStringAnsi(optShader);
-		    }
+                bool optimizeOk = glslopt_get_status(shader);
 
-            glslopt_shader_delete(shader);
-            glslopt_cleanup(ctx);
+                string shaderAsString = null;
+                if (optimizeOk)
+                {
+                    IntPtr optShader = glslopt_get_output(shader);
+                    shaderAsString = Marshal.PtrToStringAnsi(optShader);
+                }
 
-            return shaderAsString;
+                glslopt_shader_delete(shader);
+                glslopt_cleanup(ctx);
+
+                return shaderAsString;
+            }
 	    }
 
         [DllImport("glsl_optimizer.dll", CallingConvention=CallingConvention.Cdecl)]

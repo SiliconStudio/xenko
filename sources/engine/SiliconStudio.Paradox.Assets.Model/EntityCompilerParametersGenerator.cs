@@ -108,11 +108,11 @@ namespace SiliconStudio.Paradox.Assets.Effect.Generators
                 return allEntityParameters;
             });
 
-            
-            if (entityParametersList.Count != 0)
+            var useMeshParameters = baseParameters.Get(MeshKeys.UseParameters);
+            var useMaterialParameters = baseParameters.Get(MaterialAssetKeys.UseParameters) && !baseParameters.Get(MaterialAssetKeys.GenerateShader);
+
+            if ((useMeshParameters || useMaterialParameters) && entityParametersList.Count != 0)
             {
-                var useMeshParameters = baseParameters.Get(MeshKeys.UseParameters);
-                var useMaterialParameters = baseParameters.Get(MaterialAssetKeys.UseParameters) && !baseParameters.Get(MaterialAssetKeys.GenerateShader);
                 var hashParameters = new HashSet<ObjectId>();
 
                 foreach (var entityParameters in entityParametersList)

@@ -25,7 +25,7 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics.Internals;
 
 namespace SiliconStudio.Paradox.Graphics
@@ -93,6 +93,8 @@ namespace SiliconStudio.Paradox.Graphics
         private readonly int indexStructSize;
         private readonly VertexDeclaration vertexDeclaration;
 
+        private readonly ParameterCollection parameters;
+
         /// <summary>
         /// Boolean indicating if we are between a call of Begin and End.
         /// </summary>
@@ -129,9 +131,23 @@ namespace SiliconStudio.Paradox.Graphics
             indexStructSize = indexSize;
             this.vertexDeclaration = vertexDeclaration;
             vertexStructSize = vertexDeclaration.CalculateSize();
+
+            parameters = new ParameterCollection();
             
             // Creates the vertex buffer (shared by within a device context).
             ResourceContext = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerContext, resourceBufferInfo.ResourceKey, () => new DeviceResourceContext(GraphicsDevice, DefaultEffect, vertexDeclaration, resourceBufferInfo, indexStructSize));
+        }
+
+        /// <summary>
+        /// Gets the parameters applied on the SpriteBatch effect.
+        /// </summary>
+        /// <value>The parameters.</value>
+        protected ParameterCollection Parameters
+        {
+            get
+            {
+                return parameters;
+            }
         }
 
         /// <summary>
@@ -189,8 +205,8 @@ namespace SiliconStudio.Paradox.Graphics
             var localSamplerState = SamplerState ?? GraphicsDevice.SamplerStates.LinearClamp;
 
             // Sets the sampler state of the effect
-            Effect.Parameters.Set(TexturingKeys.Sampler, localSamplerState);
-            Effect.Apply();
+            Parameters.Set(TexturingKeys.Sampler, localSamplerState);
+            Effect.Apply(Parameters);
 
             // Setup states (Blend, DepthStencil, Rasterizer)
             GraphicsDevice.SetBlendState(BlendState ?? GraphicsDevice.BlendStates.AlphaBlend);

@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.Graphics
         {
             get
             {
-                return bytecode ?? (bytecode = BinarySerialization.Read<EffectBytecode>(binaryBytecode));
+                return bytecode ?? (bytecode = EffectBytecode.FromBytesSafe(binaryBytecode));
             }
         }
     }

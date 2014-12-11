@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Effects
 
         public static PropertyKey<ModelRendererState> Key = new PropertyKey<ModelRendererState>("ModelRendererState", typeof(ModelRendererState));
 
-        private readonly Dictionary<RenderPass, int> modelSlotMapping = new Dictionary<RenderPass, int>();
+        private readonly Dictionary<SlotKey, int> modelSlotMapping = new Dictionary<SlotKey, int>();
 
         #endregion
 
@@ -47,7 +47,7 @@ namespace SiliconStudio.Paradox.Effects
         {
             get
             {
-                return AcceptModel != null && PrepareRenderModel != null && AcceptRenderModel != null;
+                return AcceptModel != null && PrepareRenderModel != null;
             }
         }
 
@@ -63,12 +63,6 @@ namespace SiliconStudio.Paradox.Effects
         public Action<RenderModel> PrepareRenderModel { get; set; }
 
         /// <summary>
-        /// The action that will be applied on every render model to check 
-        /// </summary>
-        /// <value>The process mesh.</value>
-        public Func<RenderModel, bool> AcceptRenderModel { get; set; }
-
-        /// <summary>
         /// Gets the current list of models to render.
         /// </summary>
         /// <value>The render models.</value>
@@ -78,15 +72,49 @@ namespace SiliconStudio.Paradox.Effects
         /// Gets or creates a mesh pass slot for this pass inside its <see cref="RenderPipeline" />.
         /// </summary>
         /// <param name="renderPass">The render pass.</param>
+        /// <param name="effectName">Name of the effect.</param>
         /// <returns>A mesh pass slot.</returns>
-        public int GetModelSlot(RenderPass renderPass)
+        public int GetModelSlot(RenderPass renderPass, string effectName)
         {
             int meshPassSlot;
-            if (!modelSlotMapping.TryGetValue(renderPass, out meshPassSlot))
+            var key = new SlotKey(renderPass, effectName);
+            if (!modelSlotMapping.TryGetValue(key, out meshPassSlot))
             {
-                modelSlotMapping[renderPass] = meshPassSlot = modelSlotMapping.Count;
+                modelSlotMapping[key] = meshPassSlot = modelSlotMapping.Count;
             }
             return meshPassSlot;
+        }
+
+        private struct SlotKey : IEquatable<SlotKey>
+        {
+            public SlotKey(RenderPass pass, string effectName)
+            {
+                Pass = pass;
+                EffectName = effectName;
+            }
+
+            public readonly RenderPass Pass;
+
+            public readonly string EffectName;
+
+            public bool Equals(SlotKey other)
+            {
+                return string.Equals(EffectName, other.EffectName) && Equals(Pass, other.Pass);
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) return false;
+                return obj is SlotKey && Equals((SlotKey)obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    return ((EffectName != null ? EffectName.GetHashCode() : 0) * 397) ^ (Pass != null ? Pass.GetHashCode() : 0);
+                }
+            }
         }
     }
 }

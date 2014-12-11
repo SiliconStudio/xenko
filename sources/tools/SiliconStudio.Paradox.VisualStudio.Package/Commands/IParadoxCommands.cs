@@ -3,6 +3,8 @@
 using System;
 using EnvDTE80;
 
+using NShader;
+
 namespace SiliconStudio.Paradox.VisualStudio.Commands
 {
     /// <summary>
@@ -10,11 +12,24 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
     /// </summary>
     public interface IParadoxCommands
     {
+        /// <summary>
+        /// Initialize parsing (this method can be called from a separate thread).
+        /// </summary>
+        void Initialize();
+
+        /// <summary>
+        /// Test whether we should reload these commands (assemblies changed)
+        /// </summary>
+        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
+        bool ShouldReload();
+
         void StartRemoteBuildLogServer(IBuildMonitorCallback buildMonitorCallback, string logPipeUrl);
 
         byte[] GenerateShaderKeys(string inputFileName, string inputFileContent);
 
         byte[] GenerateDataClasses(string assemblyOutput, string projectFullName, string intermediateAssembly);
+
+        RawShaderNavigationResult AnalyzeAndGoToDefinition(string sourceCode, RawSourceSpan span);
     }
 
     public interface IBuildMonitorCallback

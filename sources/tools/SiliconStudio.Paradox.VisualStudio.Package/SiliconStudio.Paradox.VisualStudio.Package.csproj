@@ -198,7 +198,6 @@
     <Compile Include="BuildSubmissionAwaitExtensions.cs" />
     <Compile Include="CodeGenerator\BaseCodeGenerator.cs" />
     <Compile Include="CodeGenerator\BaseCodeGeneratorWithSite.cs" />
-    <Compile Include="Commands\AppDomainUnloadWrapper.cs" />
     <Compile Include="Commands\BuildMonitorCallback.cs" />
     <Compile Include="Commands\IParadoxCommands.cs" />
     <Compile Include="Commands\ParadoxCommandsProxy.cs" />
@@ -232,6 +231,10 @@
     <Compile Include="NShader\NShaderSource.cs" />
     <Compile Include="NShader\NShaderSupportedExtensions.cs" />
     <Compile Include="NShader\NShaderVersion.cs" />
+    <Compile Include="NShader\NShaderViewFilter.cs" />
+    <Compile Include="NShader\RawShaderAnalysisMessage.cs" />
+    <Compile Include="NShader\RawShaderNavigationResult.cs" />
+    <Compile Include="NShader\RawSourceSpan.cs" />
     <Compile Include="ParadoxCommands.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>

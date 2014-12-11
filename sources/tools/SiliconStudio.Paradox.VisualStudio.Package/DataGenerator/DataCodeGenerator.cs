@@ -114,19 +114,16 @@ namespace SiliconStudio.Paradox.VisualStudio.BuildEngine
             }
 
             // Defer execution to current Paradox VS package plugin
-            using (var domain = new AppDomainUnloadWrapper(ParadoxCommandsProxy.CreateAppDomain()))
+            try
             {
-                try
-                {
-                    var remoteCommands = ParadoxCommandsProxy.CreateProxy(domain);
-                    return remoteCommands.GenerateDataClasses(assemblyOutput, projectFullName, intermediateAssembly);
-                }
-                catch (Exception ex)
-                {
-                    GeneratorError(4, ex.ToString(), 0, 0);
+                var remoteCommands = ParadoxCommandsProxy.GetProxy();
+                return remoteCommands.GenerateDataClasses(assemblyOutput, projectFullName, intermediateAssembly);
+            }
+            catch (Exception ex)
+            {
+                GeneratorError(4, ex.ToString(), 0, 0);
 
-                    return new byte[0];
-                }
+                return new byte[0];
             }
         }
 

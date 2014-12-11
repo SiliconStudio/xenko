@@ -8,7 +8,7 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Assets.Materials.Nodes;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Data;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 
@@ -142,7 +142,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
                     Parameters.Set(keyValue.Key, keyValue.Value);
             }
 
-            // NOTE: this can set the shader uniforms and potentially override what was in Material.Parameters
+            // NOTE: this can set the shader uniforms and potentially override what was in Material.SharedParameters
             foreach (var keyValue in shaders)
             {
                 if (log != null && (keyValue.Key == MaterialParameters.BumpMap || keyValue.Key == MaterialParameters.EmissiveMap || keyValue.Key == MaterialParameters.ReflectionMap))

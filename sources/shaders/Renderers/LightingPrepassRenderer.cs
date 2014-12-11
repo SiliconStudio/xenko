@@ -7,8 +7,8 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Effects.Modules.Processors;
-using SiliconStudio.Paradox.Effects.Modules.Shadowmap;
+using SiliconStudio.Paradox.Effects.Processors;
+using SiliconStudio.Paradox.Effects.ShadowMaps;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
@@ -16,7 +16,7 @@ using SiliconStudio.Paradox.Shaders.Compiler;
 
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-namespace SiliconStudio.Paradox.Effects.Modules.Renderers
+namespace SiliconStudio.Paradox.Effects.Renderers
 {
     public class LightingPrepassRenderer : Renderer
     {
@@ -309,12 +309,12 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         private void AddShadowEffect(int cascadeCount, ShadowMapFilterType filterType, CompilerParameters  parameters)
         {
-            parameters.Set(ShadowMapParameters.ShadowMapCascadeCount, cascadeCount);
-            parameters.Set(ShadowMapParameters.FilterType, filterType);
+            parameters.Set(ShadowMapParameters.ShadowMapCascadeCount.ComposeWith("shadows[0]"), cascadeCount);
+            parameters.Set(ShadowMapParameters.FilterType.ComposeWith("shadows[0]"), filterType);
 
             //////////////////////////////////////////////
             // DIRECTIONAL LIGHT
-            parameters.Set(ShadowMapParameters.LightType, LightType.Directional);
+            parameters.Set(ShadowMapParameters.LightType.ComposeWith("shadows[0]"), LightType.Directional);
 
             ShadowEffectInfo seiDirect;
             seiDirect.LightType = LightType.Directional;
@@ -324,7 +324,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
             //////////////////////////////////////////////
             // SPOT LIGHT
-            parameters.Set(ShadowMapParameters.LightType, LightType.Spot);
+            parameters.Set(ShadowMapParameters.LightType.ComposeWith("shadows[0]"), LightType.Spot);
 
             ShadowEffectInfo seiSpot;
             seiSpot.LightType = LightType.Spot;
@@ -1099,7 +1099,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         private bool SearchLightingGroup(Effect effect, int index, string groupName, List<LightingDeferredParameters> finalList)
         {
-            var constantBuffers = effect.ConstantBuffers;
+            var constantBuffers = effect.Bytecode.Reflection.ConstantBuffers;
             var info = new LightingDeferredParameters();
 
             LightingDeferredSemantic foundParameterSemantic;
@@ -1149,10 +1149,11 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         private void UpdateLightingParameterSemantics(int index, string compositionName)
         {
             lightingParameterSemantics.Clear();
-            var lightGroupSubKey = string.Format("." + compositionName + "[{0}]", index);
+            // TODO: use StringBuilder instead
+            var lightGroupSubKey = string.Format(compositionName + "[{0}]", index);
             foreach (var param in LightParametersDict)
             {
-                lightingParameterSemantics.Add(param.Key.AppendKey(lightGroupSubKey), param.Value);
+                lightingParameterSemantics.Add(param.Key.ComposeWith(lightGroupSubKey), param.Value);
             }
         }
 

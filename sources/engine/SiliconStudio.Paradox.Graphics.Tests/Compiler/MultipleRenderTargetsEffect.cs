@@ -14,71 +14,42 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-
-#line 3 "D:\Code\Paradox\sources\engine\SiliconStudio.Paradox.Graphics.Tests\Compiler\MultipleRenderTargetsEffect.pdxfx"
 using SiliconStudio.Paradox.Effects.Data;
-
-#line 5
 namespace Test
 {
-
-    #line 7
     internal static partial class ShaderMixins
     {
         internal partial class MultipleRenderTargetsEffect  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-
-                #line 13
                 context.Mixin(mixin, "ShaderBase");
-
-                #line 14
                 context.Mixin(mixin, "TransformationWAndVP");
-
-                #line 15
                 context.Mixin(mixin, "PositionVSStream");
-
-                #line 16
                 context.Mixin(mixin, "NormalVSStream");
-
-                #line 18
                 mixin.Mixin.AddMacro("RENDER_TARGET_COUNT", 3);
-
-                #line 19
                 context.Mixin(mixin, "ShadingBase");
-
-                #line 20
                 if (context.GetParam(MaterialParameters.AlbedoDiffuse) != null)
 
                     {
-
-                        #line 21
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-
-                        #line 21
+                        context.PushComposition(mixin, "ShadingColor0", __subMixin);
                         context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoDiffuse));
-                        mixin.Mixin.AddComposition("ShadingColor0", __subMixin.Mixin);
+                        context.PopComposition();
                     }
 
                 {
-
-                    #line 22
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-
-                    #line 22
+                    context.PushComposition(mixin, "ShadingColor1", __subMixin);
                     context.Mixin(__subMixin, "LinearDepth");
-                    mixin.Mixin.AddComposition("ShadingColor1", __subMixin.Mixin);
+                    context.PopComposition();
                 }
 
                 {
-
-                    #line 23
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-
-                    #line 23
+                    context.PushComposition(mixin, "ShadingColor2", __subMixin);
                     context.Mixin(__subMixin, "NormalColor");
-                    mixin.Mixin.AddComposition("ShadingColor2", __subMixin.Mixin);
+                    context.PopComposition();
                 }
             }
 

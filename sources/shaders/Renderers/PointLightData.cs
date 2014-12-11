@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Effects.Modules.Renderers
+namespace SiliconStudio.Paradox.Effects.Renderers
 {
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct PointLightData

@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Effects
     {
         public static void RegisterParameter(this ParameterCollection parameterCollection, ParameterKey parameterKey, bool addDependencies = true)
         {
-            var metaData = parameterKey.Metadatas.OfType<ParameterKeyMetadata>().FirstOrDefault();
+            var metaData = parameterKey.Metadatas.OfType<ParameterKeyValueMetadata>().FirstOrDefault();
             
             if (metaData == null)
                 throw new ArgumentException("ParameterKey must be declared with metadata", "parameterKey");

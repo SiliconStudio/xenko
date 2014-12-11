@@ -12,7 +12,7 @@ using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Assets.Materials;
 using SiliconStudio.Paradox.Assets.Materials.Nodes;
 using SiliconStudio.Paradox.Assets.SpriteFont;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 using System.Linq;
 
 namespace SiliconStudio.Paradox.Assets.Tests

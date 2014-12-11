@@ -14,7 +14,9 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-namespace SiliconStudio.Paradox.Effects.Modules
+
+#line 3 "C:\Code\Paradox\sources\shaders\Cubemap\ComputeColorTextureCubeParallax.pdxsl"
+namespace SiliconStudio.Paradox.Effects.Cubemap
 {
     public static partial class ComputeColorTextureCubeParallaxKeys
     {

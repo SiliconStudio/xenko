@@ -1,28 +1,15 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using NUnit.Framework;
 
-using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Shaders;
-using SiliconStudio.Paradox.Shaders.Compiler;
-using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders.Parser;
 using SiliconStudio.Paradox.Shaders.Parser.Ast;
 using SiliconStudio.Paradox.Shaders.Parser.Mixins;
-using SiliconStudio.Shaders.Ast;
-using SiliconStudio.Shaders.Parser;
 
 namespace SiliconStudio.Paradox.Engine.Tests
 {
@@ -36,13 +23,10 @@ namespace SiliconStudio.Paradox.Engine.Tests
         [SetUp]
         public void Init()
         {
-            using (var profile = Profiler.Begin(GameProfilingKeys.ObjectDatabaseInitialize))
-            {
-                // Create and mount database file system
-                var objDatabase = new ObjectDatabase("/data/db", "index", "/local/db");
-                var databaseFileProvider = new DatabaseFileProvider(objDatabase);
-                AssetManager.GetFileProvider = () => databaseFileProvider;
-            }
+            // Create and mount database file system
+            var objDatabase = new ObjectDatabase("/data/db", "index", "/local/db");
+            var databaseFileProvider = new DatabaseFileProvider(objDatabase);
+            AssetManager.GetFileProvider = () => databaseFileProvider;
 
             sourceManager = new ShaderSourceManager();
             sourceManager.LookupDirectoryList.Add(@"shaders");

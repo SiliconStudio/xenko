@@ -3,7 +3,7 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.Graphics
 {
@@ -15,6 +15,8 @@ namespace SiliconStudio.Paradox.Graphics
         private readonly Effect simpleEffect;
         private readonly SharedData sharedData;
         private const int QuadCount = 3;
+
+        private readonly ParameterCollection parameters;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PrimitiveQuad" /> class with a <see cref="SimpleEffect"/>.
@@ -33,7 +35,8 @@ namespace SiliconStudio.Paradox.Graphics
         {
             GraphicsDevice = graphicsDevice;
             simpleEffect = effect;
-            simpleEffect.Parameters.Set(SpriteBaseKeys.MatrixTransform, Matrix.Identity);
+            parameters = new ParameterCollection();
+            parameters.Set(SpriteBaseKeys.MatrixTransform, Matrix.Identity);
             sharedData = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, "PrimitiveQuad::VertexBuffer", () => new SharedData(GraphicsDevice, simpleEffect.InputSignature));
         }
 
@@ -42,6 +45,18 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         /// <value>The graphics device.</value>
         public GraphicsDevice GraphicsDevice { get; private set; }
+
+        /// <summary>
+        /// Gets the parameters used.
+        /// </summary>
+        /// <value>The parameters.</value>
+        public ParameterCollection Parameters
+        {
+            get
+            {
+                return parameters;
+            }
+        }
 
         /// <summary>
         /// Draws a quad. The effect must have been applied before calling this method with pixel shader having the signature float2:TEXCOORD.
@@ -75,10 +90,10 @@ namespace SiliconStudio.Paradox.Graphics
             if (texture2D == null) throw new ArgumentException("Expecting a Texture2D", "texture");
 
             // Make sure that we are using our vertex shader
-            simpleEffect.Parameters.Set(SpriteEffectKeys.Color, color);
-            simpleEffect.Parameters.Set(TexturingKeys.Texture0, texture as Texture2D);
-            simpleEffect.Parameters.Set(TexturingKeys.Sampler, samplerState ?? GraphicsDevice.SamplerStates.LinearClamp);
-            simpleEffect.Apply();
+            parameters.Set(SpriteEffectKeys.Color, color);
+            parameters.Set(TexturingKeys.Texture0, texture as Texture2D);
+            parameters.Set(TexturingKeys.Sampler, samplerState ?? GraphicsDevice.SamplerStates.LinearClamp);
+            simpleEffect.Apply(parameters);
             Draw();
 
             // TODO ADD QUICK UNBIND FOR SRV

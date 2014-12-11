@@ -6,14 +6,10 @@ using System.Linq;
 
 using NUnit.Framework;
 
-using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Shaders.Compiler;
 using SiliconStudio.Paradox.Shaders.Parser;
-using SiliconStudio.Paradox.Shaders.Parser.Mixins;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
 
@@ -26,17 +22,13 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         [SetUp]
         public void Init()
         {
-            using (var profile = Profiler.Begin(GameProfilingKeys.ObjectDatabaseInitialize))
-            {
-                // Create and mount database file system
-                var objDatabase = new ObjectDatabase("/data/db", "index", "/local/db");
-                var databaseFileProvider = new DatabaseFileProvider(objDatabase);
-                AssetManager.GetFileProvider = () => databaseFileProvider;
-            }
+            // Create and mount database file system
+            var objDatabase = new ObjectDatabase("/data/db", "index", "/local/db");
+            var databaseFileProvider = new DatabaseFileProvider(objDatabase);
+            AssetManager.GetFileProvider = () => databaseFileProvider;
 
             shaderMixinParser = new ShaderMixinParser();
-            var sources = new List<string> { "shaders" };
-            shaderMixinParser.SourceManager.LookupDirectoryList = sources;
+            shaderMixinParser.SourceManager.LookupDirectoryList.Add("/shaders"); 
         }
 
         [Test]

@@ -5,7 +5,7 @@
 /// </summary>
 class NormalPack : Texturing
 {
-    [Map("GBufferKeys.NormalPack")]
+    [Link("GBuffer.NormalPack")]
     stage Texture2D NormalPackTexture;
 
     float3 EncodeNormal(float3 vNormal)

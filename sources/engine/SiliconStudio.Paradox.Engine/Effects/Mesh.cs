@@ -28,7 +28,7 @@ namespace SiliconStudio.Paradox.Effects
             Draw = mesh.Draw;
             
             // TODO: share parameter collection or copy parameters in a new one?
-            Parameters = mesh.Parameters ?? new ParameterCollection();
+            Parameters = mesh.Parameters;
             
             Material = mesh.Material;
             NodeIndex = mesh.NodeIndex;

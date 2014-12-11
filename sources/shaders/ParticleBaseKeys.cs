@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.Effects.Modules
+namespace SiliconStudio.Paradox.Effects
 {
     /// <summary>
     /// Keys used for the particle system.
@@ -11,8 +11,6 @@ namespace SiliconStudio.Paradox.Effects.Modules
     {
         static ParticleBaseKeys()
         {
-            ParticleGlobalBufferRO = ParticleGlobalBuffer;
-            ParticleSortBufferRO = ParticleSortBuffer;
         }
     }
 }

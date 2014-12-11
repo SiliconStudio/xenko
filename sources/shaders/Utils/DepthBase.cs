@@ -6,18 +6,4 @@
 // and re-save the associated .pdxfx.
 // </auto-generated>
 
-using System;
-using SiliconStudio.Core;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Shaders;
-using SiliconStudio.Core.Mathematics;
-using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
-
-namespace SiliconStudio.Paradox.Effects.Modules
-{
-    public static partial class DepthBaseKeys
-    {
-        public static readonly ParameterKey<Texture> DepthStencil = RenderTargetKeys.DepthStencilSource;
-    }
-}
+// Nothing to generate

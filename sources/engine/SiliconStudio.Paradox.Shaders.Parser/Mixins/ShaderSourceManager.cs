@@ -1,10 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Configuration;
 using System.Text;
 
+using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
@@ -26,13 +28,19 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// Gets the directory list.
         /// </summary>
         /// <value>The directory list.</value>
-        public List<string> LookupDirectoryList { get; set; }
+        public List<string> LookupDirectoryList { get; private set; }
 
         /// <summary>
         /// Gets or sets the URL mapping to file path.
         /// </summary>
         /// <value>The URL automatic file path.</value>
         public Dictionary<string, string> UrlToFilePath { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether [use file system]. (Currently used only by tests, made static)
+        /// </summary>
+        /// <value><c>true</c> if [use file system]; otherwise, <c>false</c>.</value>
+        public bool UseFileSystem { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderSourceManager"/> class.
@@ -44,15 +52,36 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         }
 
         /// <summary>
+        /// Adds the shader source registered manually.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="sourceCode">The source code.</param>
+        /// <param name="sourcePath">The source path.</param>
+        public void AddShaderSource(string type, string sourceCode, string sourcePath)
+        {
+            lock (locker)
+            {
+                var shaderSource = new ShaderSourceWithHash() { Source = sourceCode, Path = sourcePath };
+                shaderSource.Hash = ObjectId.FromBytes(Encoding.UTF8.GetBytes(shaderSource.Source));
+                loadedShaderSources[type] = shaderSource;
+                classNameToPath[type] = sourcePath;
+            }
+        }
+
+
+        /// <summary>
         /// Deletes the shader cache for the specified shaders.
         /// </summary>
         /// <param name="modifiedShaders">The modified shaders.</param>
         public void DeleteObsoleteCache(HashSet<string> modifiedShaders)
         {
-            foreach (var shaderName in modifiedShaders)
+            lock (locker)
             {
-                loadedShaderSources.Remove(shaderName);
-                //classNameToPath.Remove(shaderName); // is it really useful?
+                foreach (var shaderName in modifiedShaders)
+                {
+                    loadedShaderSources.Remove(shaderName);
+                    classNameToPath.Remove(shaderName);
+                }
             }
         }
 
@@ -65,10 +94,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// Loads the shader source with the specified type name.
         /// </summary>
         /// <param name="type">The typeName.</param>
-        /// <param name="modifiedShaders">The list of modified shaders.</param>
         /// <returns>ShaderSourceWithHash.</returns>
         /// <exception cref="System.IO.FileNotFoundException">If the file was not found</exception>
-        public ShaderSourceWithHash LoadShaderSource(string type, HashSet<string> modifiedShaders = null)
+        public ShaderSourceWithHash LoadShaderSource(string type)
         {
             lock (locker)
             {
@@ -80,32 +108,41 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     if (sourceUrl != null)
                     {
                         shaderSource = new ShaderSourceWithHash();
-
-                        if (modifiedShaders != null && modifiedShaders.Contains(sourceUrl))
+                        if (!UrlToFilePath.TryGetValue(sourceUrl, out shaderSource.Path))
                         {
-                            using (var fileStream = AssetManager.FileProvider.OpenStream(sourceUrl + "/path", VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read))
-                            {
-                                string shaderSourcePath;
-                                using (var sr = new StreamReader(fileStream, Encoding.UTF8))
-                                    shaderSourcePath = sr.ReadToEnd();
+                            shaderSource.Path = sourceUrl;
+                        }
 
-                                try
+                        // On Windows, Always try to load first from the original URL in order to get the latest version
+                        if (Platform.IsWindowsDesktop)
+                        {
+                            // TODO: the "/path" is hardcoded, used in ImportStreamCommand and EffectSystem. Find a place to share this correctly.
+                            var pathUrl = sourceUrl + "/path";
+                            if (FileExists(pathUrl))
+                            {
+                                using (var fileStream = OpenStream(pathUrl))
                                 {
-                                    using (var sourceStream = File.Open(shaderSourcePath, FileMode.Open, FileAccess.Read))
+                                    string shaderSourcePath;
+                                    using (var sr = new StreamReader(fileStream, Encoding.UTF8))
+                                        shaderSourcePath = sr.ReadToEnd();
+
+                                    if (File.Exists(shaderSourcePath))
                                     {
-                                        using (var sr = new StreamReader(sourceStream))
-                                            shaderSource.Source = sr.ReadToEnd();
+                                        // Replace path with a local path
+                                        shaderSource.Path = Path.Combine(Environment.CurrentDirectory, shaderSourcePath);
+                                        using (var sourceStream = File.Open(shaderSourcePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                                        {
+                                            using (var sr = new StreamReader(sourceStream))
+                                                shaderSource.Source = sr.ReadToEnd();
+                                        }
                                     }
-                                }
-                                catch (FileNotFoundException)
-                                {
-                                    throw new FileNotFoundException(string.Format("Unable to find shader [{0}] on disk", type), string.Format("{0}.pdxsl", type));
                                 }
                             }
                         }
-                        else
+
+                        if (shaderSource.Source == null)
                         {
-                            using (var fileStream = AssetManager.FileProvider.OpenStream(sourceUrl, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read))
+                            using (var fileStream = OpenStream(sourceUrl))
                             {
                                 using (var sr = new StreamReader(fileStream))
                                     shaderSource.Source = sr.ReadToEnd();
@@ -124,15 +161,6 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                             shaderSource.Hash = ObjectId.FromBytes(Encoding.UTF8.GetBytes(shaderSource.Source));
                         }
 
-                        // Convert URL to absolute file path
-                        // TODO can we handle path differently? Current code is just a hack
-                        UrlToFilePath.TryGetValue(sourceUrl, out shaderSource.Path);
-
-                        // If Path is null, set it to type at least to be able to have more information
-                        if (shaderSource.Path == null)
-                        {
-                            shaderSource.Path = type;
-                        }
                         loadedShaderSources[type] = shaderSource;
                     }
                     else
@@ -161,25 +189,38 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 if (LookupDirectoryList == null)
                     return null;
 
-                string path;
+                string path = null;
                 if (classNameToPath.TryGetValue(type, out path))
                     return path;
 
                 foreach (var directory in LookupDirectoryList)
                 {
                     var fileName = Path.ChangeExtension(type, DefaultEffectFileExtension);
-                    var testPath = string.IsNullOrEmpty(directory) || directory == "/" || directory == "\\" ? string.Format("/{0}", fileName) : string.Format("{0}/{1}", directory.TrimEnd('/'), fileName);
-                    if (AssetManager.FileProvider.FileExists(testPath))
+                    var testPath = Path.Combine(directory, fileName).Replace('\\', '/'); // use / for directory separation to allow to work with both Storage and FileSystem.
+                    if (FileExists(testPath))
                     {
                         path = testPath;
                         break;
                     }
                 }
 
-                classNameToPath.Add(type, path);
+                if (path != null)
+                {
+                    classNameToPath.Add(type, path);
+                }
 
                 return path;
             }
+        }
+
+        private bool FileExists(string path)
+        {
+            return UseFileSystem ? File.Exists(path) : AssetManager.FileProvider.FileExists(path);
+        }
+
+        private Stream OpenStream(string path)
+        {
+            return UseFileSystem ? File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read) : AssetManager.FileProvider.OpenStream(path, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read);
         }
 
         public struct ShaderSourceWithHash

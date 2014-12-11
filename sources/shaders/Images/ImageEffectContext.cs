@@ -14,8 +14,10 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// </summary>
     public class ImageEffectContext : ComponentBase
     {
-        public TextureDescription DefaultTextureDescription;
-        private readonly Dictionary<TextureDescription, List<TextureLink>> textureCache = new Dictionary<TextureDescription, List<TextureLink>>();
+        private const string SharedImageEffectContextKey = "__SharedImageEffectContext__";
+        private readonly Dictionary<Type, ImageEffect> sharedEffects = new Dictionary<Type, ImageEffect>();
+
+        private readonly GraphicsResourceAllocator allocator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageEffectContext" /> class.
@@ -30,11 +32,16 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Initializes a new instance of the <see cref="ImageEffectContext" /> class.
         /// </summary>
         /// <param name="serviceRegistry">The service registry.</param>
-        public ImageEffectContext(IServiceRegistry serviceRegistry)
+        /// <param name="allocator">The allocator.</param>
+        /// <exception cref="System.ArgumentNullException">serviceRegistry</exception>
+        public ImageEffectContext(IServiceRegistry serviceRegistry, GraphicsResourceAllocator allocator = null)
         {
+            if (serviceRegistry == null) throw new ArgumentNullException("serviceRegistry");
             Services = serviceRegistry;
             Effects = serviceRegistry.GetSafeServiceAs<EffectSystem>();
+            this.allocator = allocator ?? new GraphicsResourceAllocator(Services).DisposeBy(this);
             GraphicsDevice = serviceRegistry.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
+            Parameters = new ParameterCollection();
         }
 
         /// <summary>
@@ -56,189 +63,67 @@ namespace SiliconStudio.Paradox.Effects.Images
         public IServiceRegistry Services { get; private set; }
 
         /// <summary>
-        /// Gets a <see cref="RenderTarget" /> output for the specified description.
+        /// Gets the parameters shared with all <see cref="ImageEffect"/> instance.
         /// </summary>
-        /// <returns>A new instance of <see cref="RenderTarget" /> class.</returns>
-        public RenderTarget GetTemporaryRenderTarget2D(TextureDescription description)
-        {
-            return GetTemporaryTexture(description).ToRenderTarget();
-        }
+        /// <value>The parameters.</value>
+        public ParameterCollection Parameters { get; private set; }
 
         /// <summary>
-        /// Gets a <see cref="RenderTarget" /> output for the specified description with a single mipmap.
+        /// Gets the <see cref="GraphicsResource"/> allocator.
         /// </summary>
-        /// <param name="width">The width.</param>
-        /// <param name="height">The height.</param>
-        /// <param name="format">Describes the format to use.</param>
-        /// <param name="flags">Sets the texture flags (for unordered access...etc.)</param>
-        /// <param name="arraySize">Size of the texture 2D array, default to 1.</param>
-        /// <returns>A new instance of <see cref="RenderTarget" /> class.</returns>
-        /// <msdn-id>ff476521</msdn-id>
-        ///   <unmanaged>HRESULT ID3D11Device::CreateTexture2D([In] const D3D11_TEXTURE2D_DESC* pDesc,[In, Buffer, Optional] const D3D11_SUBRESOURCE_DATA* pInitialData,[Out, Fast] ID3D11Texture2D** ppTexture2D)</unmanaged>
-        ///   <unmanaged-short>ID3D11Device::CreateTexture2D</unmanaged-short>
-        public RenderTarget GetTemporaryRenderTarget2D(int width, int height, PixelFormat format, TextureFlags flags = TextureFlags.RenderTarget | TextureFlags.ShaderResource, int arraySize = 1)
+        /// <value>The allocator.</value>
+        public GraphicsResourceAllocator Allocator
         {
-            return GetTemporaryTexture(Texture2DBase.NewDescription(width, height, format, flags, 1, arraySize, GraphicsResourceUsage.Default)).ToRenderTarget();
-        }
-
-        /// <summary>
-        /// Gets a <see cref="RenderTarget" /> output for the specified description.
-        /// </summary>
-        /// <param name="width">The width.</param>
-        /// <param name="height">The height.</param>
-        /// <param name="mipCount">Number of mipmaps, set to true to have all mipmaps, set to an int &gt;=1 for a particular mipmap count.</param>
-        /// <param name="format">Describes the format to use.</param>
-        /// <param name="flags">Sets the texture flags (for unordered access...etc.)</param>
-        /// <param name="arraySize">Size of the texture 2D array, default to 1.</param>
-        /// <returns>A new instance of <see cref="RenderTarget" /> class.</returns>
-        /// <msdn-id>ff476521</msdn-id>
-        ///   <unmanaged>HRESULT ID3D11Device::CreateTexture2D([In] const D3D11_TEXTURE2D_DESC* pDesc,[In, Buffer, Optional] const D3D11_SUBRESOURCE_DATA* pInitialData,[Out, Fast] ID3D11Texture2D** ppTexture2D)</unmanaged>
-        ///   <unmanaged-short>ID3D11Device::CreateTexture2D</unmanaged-short>
-        public RenderTarget GetTemporaryRenderTarget2D(int width, int height, MipMapCount mipCount, PixelFormat format, TextureFlags flags = TextureFlags.RenderTarget | TextureFlags.ShaderResource, int arraySize = 1)
-        {
-            return GetTemporaryTexture(Texture2DBase.NewDescription(width, height, format, flags, mipCount, arraySize, GraphicsResourceUsage.Default)).ToRenderTarget();
-        }
-
-        /// <summary>
-        /// Gets a texture for the specified description.
-        /// </summary>
-        /// <param name="description">The description.</param>
-        /// <returns>A texture</returns>
-        public Texture GetTemporaryTexture(TextureDescription description)
-        {
-            // For a specific description, get allocated textures
-            List<TextureLink> textureLinks = null;
-            if (!textureCache.TryGetValue(description, out textureLinks))
+            get
             {
-                textureLinks = new List<TextureLink>();
-                textureCache.Add(description, textureLinks);
+                return allocator;
             }
+        }
 
-            // Find a texture available
-            foreach (var textureLink in textureLinks)
+        /// <summary>
+        /// Gets or creates a shared effect.
+        /// </summary>
+        /// <typeparam name="T">Type of the shared effect (mush have a constructor taking a <see cref="ImageEffectContext"/></typeparam>
+        /// <returns>A singleton instance of <typeparamref name="T"/></returns>
+        public T GetSharedEffect<T>() where T : ImageEffect
+        {
+            // TODO: Add a way to support custom constructor
+            lock (sharedEffects)
             {
-                if (textureLink.RefCount == 0)
+                ImageEffect effect;
+                if (!sharedEffects.TryGetValue(typeof(T), out effect))
                 {
-                    textureLink.RefCount = 1;
-                    return textureLink.Texture;
+                    effect = (ImageEffect)Activator.CreateInstance(typeof(T), this);
+                    sharedEffects.Add(typeof(T), effect);
                 }
-            }
 
-            // If no texture available, then creates a new one
-            var newTexture = CreateTexture(description);
-            if (newTexture.Name == null)
-            {
-                newTexture.Name = string.Format("PostEffect{0}-{1}", Name == null ? string.Empty : string.Format("-{0}", Name), textureLinks.Count);
-            }
-
-            // Add the texture to the allocated textures
-            // Start RefCount == 1, because we don't want this texture to be available if a post FxProcessor is calling
-            // several times this GetTemporaryTexture method.
-            var newTextureLink = new TextureLink(newTexture) { RefCount = 1 };
-            textureLinks.Add(newTextureLink);
-
-            return newTexture;
-        }
-
-        /// <summary>
-        /// Increments the reference to an temporary texture.
-        /// </summary>
-        /// <param name="texture"></param>
-        public void AddReferenceToTemporaryTexture(Texture texture)
-        {
-            if (texture == null)
-            {
-                return;
-            }
-
-            List<TextureLink> textureLinks = null;
-            if (textureCache.TryGetValue(texture.Description, out textureLinks))
-            {
-                foreach (var textureLink in textureLinks)
-                {
-                    if (textureLink.Texture == texture)
-                    {
-                        textureLink.RefCount++;
-                        return;
-                    }
-                }
+                return (T)effect;
             }
         }
 
         /// <summary>
-        /// Decrements the reference to a temporary texture.
+        /// Gets a global shared context.
         /// </summary>
-        /// <param name="texture">The texture.</param>
-        /// <exception cref="System.InvalidOperationException">Unexpected Texture RefCount < 0</exception>
-        public void ReleaseTemporaryTexture(Texture texture)
+        /// <param name="services">The services.</param>
+        /// <returns>ImageEffectContext.</returns>
+        public static ImageEffectContext GetShared(IServiceRegistry services)
         {
-            if (texture == null)
-            {
-                return;
-            }
+            if (services == null) throw new ArgumentNullException("services");
 
-            List<TextureLink> textureLinks = null;
-            if (textureCache.TryGetValue(texture.Description, out textureLinks))
-            {
-                foreach (var textureLink in textureLinks)
-                {
-                    if (textureLink.Texture == texture)
-                    {
-                        textureLink.RefCount--;
-
-                        // If we are back to RefCount == 1, then the texture is 
-                        // available.
-                        if (textureLink.RefCount < 0)
-                        {
-                            throw new InvalidOperationException("Unexpected Texture RefCount < 0");
-                        }
-                        return;
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Creates a texture for output.
-        /// </summary>
-        /// <param name="description">The description.</param>
-        /// <returns>Texture.</returns>
-        protected virtual Texture CreateTexture(TextureDescription description)
-        {
-            return Texture.New(GraphicsDevice, description);
+            // Store ImageEffectContext shared into the GraphicsDevice
+            var graphicsDevice = services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
+            return graphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, SharedImageEffectContextKey, () => new ImageEffectContext(services));
         }
 
         protected override void Destroy()
         {
-            foreach (var textureLinks in textureCache.Values)
+            foreach (var effectPair in sharedEffects)
             {
-                foreach (var textureLink in textureLinks)
-                {
-                    textureLink.Texture.Dispose();
-                }
-                textureLinks.Clear();
+                effectPair.Value.Dispose();
             }
-            textureCache.Clear();
+            sharedEffects.Clear();
 
             base.Destroy();
-        }
-
-        private class TextureLink
-        {
-            public TextureLink(Texture texture)
-            {
-                Texture = texture;
-            }
-
-            /// <summary>
-            /// The texture
-            /// </summary>
-            public readonly Texture Texture;
-
-            /// <summary>
-            /// The number of active reference to this texture
-            /// </summary>
-            public int RefCount;
         }
     }
 }

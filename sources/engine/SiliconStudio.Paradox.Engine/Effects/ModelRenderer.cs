@@ -179,12 +179,11 @@ namespace SiliconStudio.Paradox.Effects
             var pipelineModelState = Pass.GetOrCreateModelRendererState();
 
             // Get the slot for the pass of this processor
-            meshPassSlot = pipelineModelState.GetModelSlot(Pass);
+            meshPassSlot = pipelineModelState.GetModelSlot(Pass, EffectName);
 
             // Register callbacks used by the MeshProcessor
             pipelineModelState.AcceptModel += OnAcceptModel;
             pipelineModelState.PrepareRenderModel += PrepareModelForRendering;
-            pipelineModelState.AcceptRenderModel += OnAcceptRenderModel;
         }
 
         public override void Unload()
@@ -196,7 +195,6 @@ namespace SiliconStudio.Paradox.Effects
             // Unregister callbacks
             pipelineModelState.AcceptModel -= OnAcceptModel;
             pipelineModelState.PrepareRenderModel -= PrepareModelForRendering;
-            pipelineModelState.AcceptRenderModel -= OnAcceptRenderModel;
         }
 
         protected override void OnRendering(RenderContext context)
@@ -207,6 +205,11 @@ namespace SiliconStudio.Paradox.Effects
             meshesToRender.Clear();
             foreach (var renderModel in state.RenderModels)
             {
+                if (!OnAcceptRenderModel(renderModel))
+                {
+                    continue;
+                }
+
                 var meshes = renderModel.RenderMeshes[meshPassSlot];
                 if (meshes != null)
                     meshesToRender.AddRange(meshes);
@@ -260,22 +263,26 @@ namespace SiliconStudio.Paradox.Effects
 
         private void PrepareModelForRendering(RenderModel renderModel)
         {
-            foreach (var mesh in renderModel.Model.Meshes)
+            // Register mesh for rendering
+            if (renderModel.RenderMeshes[meshPassSlot] == null)
             {
-                if (acceptPrepareMeshForRenderings.Count > 0 && !OnAcceptPrepareMeshForRendering(renderModel, mesh))
+                foreach (var mesh in renderModel.Model.Meshes)
                 {
-                    continue;
-                }
+                    if (acceptPrepareMeshForRenderings.Count > 0 && !OnAcceptPrepareMeshForRendering(renderModel, mesh))
+                    {
+                        continue;
+                    }
 
-                var effectMesh = new RenderMesh(renderModel, mesh);
-                UpdateEffect(effectMesh);
+                    var renderMesh = new RenderMesh(renderModel, mesh);
+                    UpdateEffect(renderMesh);
 
-                // Register mesh for rendering
-                if (renderModel.RenderMeshes[meshPassSlot] == null)
-                {
-                    renderModel.RenderMeshes[meshPassSlot] = new List<RenderMesh>();
+                    // Register mesh for rendering
+                    if (renderModel.RenderMeshes[meshPassSlot] == null)
+                    {
+                        renderModel.RenderMeshes[meshPassSlot] = new List<RenderMesh>();
+                    }
+                    renderModel.RenderMeshes[meshPassSlot].Add(renderMesh);
                 }
-                renderModel.RenderMeshes[meshPassSlot].Add(effectMesh);
             }
         }
 

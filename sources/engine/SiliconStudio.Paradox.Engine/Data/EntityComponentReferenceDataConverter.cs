@@ -10,7 +10,7 @@ using SiliconStudio.Paradox.EntityModel.Data;
 
 namespace SiliconStudio.Paradox.Data
 {
-    internal class EntityComponentReferenceDataConverter<TSource> : DataConverter<EntityComponentReference<TSource>, TSource>
+    public class EntityComponentReferenceDataConverter<TSource> : DataConverter<EntityComponentReference<TSource>, TSource>
         where TSource : EntityComponent
     {
         public override bool CacheResult
