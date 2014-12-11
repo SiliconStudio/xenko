@@ -765,6 +765,15 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Images\ColorTransforms\ToneMap\ToneMap.cs" />
+    <Compile Include="Pipelines\CompositePipelineBuilder.cs" />
+    <Compile Include="Pipelines\DeferredPipelineBuilder.cs" />
+    <Compile Include="Pipelines\ForwardPipelineBuilder.cs" />
+    <Compile Include="Pipelines\LambdaPipelineBuilder.cs" />
+    <Compile Include="Pipelines\LightingPipelineBuilder.cs" />
+    <Compile Include="Pipelines\MainPipelineBuilder.cs" />
+    <Compile Include="Pipelines\PipelineBuilder.cs" />
+    <Compile Include="Pipelines\PipelineBuilders.cs" />
+    <Compile Include="Pipelines\SimpleRendererPipelineBuilder.cs" />
     <Compile Include="Renderers\DirectLightData.cs" />
     <Compile Include="Renderers\LightForwardModelRendererExtensions.cs" />
     <Compile Include="Renderers\LightingGroupInfo.cs" />
