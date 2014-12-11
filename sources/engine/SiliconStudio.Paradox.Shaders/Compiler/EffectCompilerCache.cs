@@ -46,7 +46,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
         public override EffectBytecode Compile(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters, LoggerResult log)
         {
-            var database = AssetManager.FileProvider;
+            var database = FileProvider ?? AssetManager.FileProvider;
             if (database == null)
             {
                 throw new NotSupportedException("Using the cache requires to AssetManager.FileProvider to be valid.");

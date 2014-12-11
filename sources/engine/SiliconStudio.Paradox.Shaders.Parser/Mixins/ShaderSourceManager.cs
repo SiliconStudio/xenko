@@ -21,6 +21,11 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         private readonly Dictionary<string, ShaderSourceWithHash> loadedShaderSources = new Dictionary<string, ShaderSourceWithHash>();
         private readonly Dictionary<string, string> classNameToPath = new Dictionary<string, string>();
 
+        /// <summary>
+        /// The file provider used to load shader sources.
+        /// </summary>
+        private readonly DatabaseFileProvider fileProvider;
+
         private const string DefaultEffectFileExtension = ".pdxsl";
 
         /// <summary>
@@ -42,12 +47,22 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         public static bool UseFileSystem { get; set; }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="ShaderSourceManager" /> class.
+        /// </summary>
+        /// <param name="fileProvider">The file provider to use for loading shader sources.</param>
+        public ShaderSourceManager(DatabaseFileProvider fileProvider)
+        {
+            this.fileProvider = fileProvider;
+            LookupDirectoryList = new List<string>();
+            UrlToFilePath = new Dictionary<string, string>();
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ShaderSourceManager"/> class.
         /// </summary>
         public ShaderSourceManager()
+            : this(AssetManager.FileProvider)
         {
-            LookupDirectoryList = new List<string>();
-            UrlToFilePath = new Dictionary<string, string>();
         }
 
         /// <summary>
@@ -199,12 +214,12 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
         private bool FileExists(string path)
         {
-            return UseFileSystem ? File.Exists(path) : AssetManager.FileProvider.FileExists(path);
+            return UseFileSystem ? File.Exists(path) : fileProvider.FileExists(path);
         }
 
         private Stream OpenStream(string path)
         {
-            return UseFileSystem ? File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read) : AssetManager.FileProvider.OpenStream(path, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read);
+            return UseFileSystem ? File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read) : fileProvider.OpenStream(path, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read);
         }
 
         public struct ShaderSourceWithHash

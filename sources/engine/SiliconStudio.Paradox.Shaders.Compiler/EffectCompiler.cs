@@ -8,6 +8,8 @@ using System.Text;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
@@ -33,6 +35,8 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
         public List<string> SourceDirectories { get; private set; }
 
         public Dictionary<string, string> UrlToFilePath { get; private set; }
+
+        public override DatabaseFileProvider FileProvider { get; set; }
 
         public EffectCompiler()
         {
@@ -62,7 +66,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 // Generate the AST from the mixin description
                 if (shaderMixinParser == null)
                 {
-                    shaderMixinParser = new ShaderMixinParser();
+                    shaderMixinParser = new ShaderMixinParser(FileProvider ?? AssetManager.FileProvider);
                     shaderMixinParser.SourceManager.LookupDirectoryList.AddRange(SourceDirectories); // TODO: temp
                     shaderMixinParser.SourceManager.UrlToFilePath = UrlToFilePath; // TODO: temp
                 }
