@@ -364,7 +364,7 @@ namespace SiliconStudio.Presentation.Quantum
         public ObservableModelNode(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, SingleObservableNode parentNode, IModelNode modelNode, ModelNodePath modelNodePath, object index)
             : base(ownerViewModel, baseName, isPrimitive, parentNode, modelNode, modelNodePath, index)
         {
-            DependentProperties.Add(Tuple.Create("TypedValue", "Value"));
+            DependentProperties.Add("TypedValue", new[] { "Value" });
         }
 
         /// <summary>
