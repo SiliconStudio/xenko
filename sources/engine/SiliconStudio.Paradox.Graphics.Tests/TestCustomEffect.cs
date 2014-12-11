@@ -64,7 +64,8 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             effectParameters.Set(MyCustomShaderKeys.ColorFactor2, (Vector4)Color.Red);
             effectParameters.Set(CustomShaderKeys.SwitchEffectLevel, switchEffectLevel);
             effectParameters.Set(TexturingKeys.Texture0, UVTexture);
-            switchEffectLevel++;
+            // TODO: Add switch Effect to test and capture frames
+            //switchEffectLevel++;
             dynamicEffectCompiler.Update(effectInstance);
 
             GraphicsDevice.DrawQuad(effectInstance.Effect, effectParameters);

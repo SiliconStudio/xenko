@@ -4,8 +4,17 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 {
     partial shader CustomSubEffect
     {
+        using params CustomShaderKeys;
+
         mixin clone;
-        mixin CustomShader2;
+		if (CustomShaderKeys.SwitchEffectLevel < 10)
+		{
+			mixin CustomShader;
+		}
+		else
+		{
+			mixin CustomShader2;
+		}
     };
 
     /// <summary>
@@ -13,18 +22,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
     /// </summary>
     shader CustomEffect
     {
-        using params CustomShaderKeys;
-
         mixin CustomShader;
         mixin child CustomSubEffect;
-
-        //if (CustomShaderKeys.SwitchEffectLevel < 10)
-        //{
-        //    mixin CustomShader;
-        //}
-        //else
-        //{
-        //    mixin CustomShader;
-        //}
     };
 }

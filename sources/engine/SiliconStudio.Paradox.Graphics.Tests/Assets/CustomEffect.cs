@@ -23,7 +23,14 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
                 context.CloneParentMixinToCurrent();
-                context.Mixin(mixin, "CustomShader2");
+                if (context.GetParam(CustomShaderKeys.SwitchEffectLevel) < 10)
+                {
+                    context.Mixin(mixin, "CustomShader");
+                }
+                else
+                {
+                    context.Mixin(mixin, "CustomShader2");
+                }
             }
 
             [ModuleInitializer]

@@ -73,5 +73,10 @@ namespace SiliconStudio.Paradox.Graphics
                 parameters.Set(TexturingKeys.Sampler, value);
             }
         }
+
+        public void Apply()
+        {
+            Apply(parameters);
+        }
     }
 }
