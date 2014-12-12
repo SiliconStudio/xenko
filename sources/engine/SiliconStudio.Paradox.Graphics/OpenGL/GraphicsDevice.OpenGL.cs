@@ -972,8 +972,9 @@ namespace SiliconStudio.Paradox.Graphics
                         GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, depthStencilBuffer.ResourceId);
 
                     // If stencil buffer is separate, it's resource id might be stored in depthStencilBuffer.Texture.ResouceIdStencil
-                    if(depthStencilBuffer.IsStencilBuffer)
-                        GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.StencilAttachment, RenderbufferTarget.Renderbuffer, depthStencilBuffer.Texture.ResouceIdStencil != 0 ? depthStencilBuffer.Texture.ResouceIdStencil : depthStencilBuffer.ResourceId);
+                    // TODO: reactivate that
+                    //if(depthStencilBuffer.IsStencilBuffer)
+                    //    GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.StencilAttachment, RenderbufferTarget.Renderbuffer, depthStencilBuffer.ResouceIdStencil != 0 ? depthStencilBuffer.ResouceIdStencil : depthStencilBuffer.ResourceId);
 #endif
                 }
 

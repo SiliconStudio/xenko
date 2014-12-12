@@ -329,7 +329,11 @@ namespace SiliconStudio.Paradox.Graphics
                     pixelSize = 4;
                     break;
                 case PixelFormat.D16_UNorm:
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                    internalFormat = PixelInternalFormat.Rgba;
+#else
                     internalFormat = PixelInternalFormat.DepthComponent16;
+#endif
                     format = PixelFormatGl.DepthComponent;
                     type = PixelType.UnsignedShort;
                     pixelSize = 2;
@@ -419,12 +423,6 @@ namespace SiliconStudio.Paradox.Graphics
                     type = PixelType.Float;
                     pixelSize = 4;
                     break;
-                case PixelFormat.D24_UNorm_S8_UInt:
-                    internalFormat = PixelInternalFormat.DepthComponent24;
-                    format = PixelFormatGl.DepthComponent;
-                    type = PixelType.UnsignedInt248;
-                    pixelSize = 4;
-                    break;
 #endif
 #if SILICONSTUDIO_PLATFORM_ANDROID
                 case PixelFormat.ETC1:
@@ -465,6 +463,16 @@ namespace SiliconStudio.Paradox.Graphics
                     type = PixelType.UnsignedByte;
                     break;
 #endif
+                case PixelFormat.D24_UNorm_S8_UInt:
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                    internalFormat = PixelInternalFormat.Rgba;
+#else
+                    internalFormat = PixelInternalFormat.DepthComponent24;
+#endif
+                    format = PixelFormatGl.DepthComponent;
+                    type = PixelType.UnsignedInt248;
+                    pixelSize = 4;
+                    break;
                 default:
                     throw new InvalidOperationException("Unsupported texture format");
             }
