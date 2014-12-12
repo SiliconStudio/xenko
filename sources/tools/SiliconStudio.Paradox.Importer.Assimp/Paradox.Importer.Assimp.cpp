@@ -64,6 +64,7 @@ public:
 	MeshDrawData^ Draw;
 	List<MeshBoneDefinition>^ Bones;
 	String^ Name;
+	int MaterialIndex;
 	bool HasSkinningPosition;
 	bool HasSkinningNormal;
 	int TotalClusterCount;
@@ -451,6 +452,7 @@ private:
 		meshInfo->Draw = drawData;
 		meshInfo->Name = gcnew String(meshNames[mesh].c_str());
 		meshInfo->Bones = bones;
+		meshInfo->MaterialIndex = mesh->mMaterialIndex;
 		meshInfo->HasSkinningPosition = hasSkinningPosition;
 		meshInfo->HasSkinningNormal = hasSkinningNormal;
 		meshInfo->TotalClusterCount = totalClusterCount;
@@ -1506,6 +1508,7 @@ private:
 					auto nodeMeshData = gcnew MeshData();
 					nodeMeshData->Draw = meshInfo->Draw;
 					nodeMeshData->Name = meshInfo->Name;
+					nodeMeshData->MaterialIndex = meshInfo->MaterialIndex;
 					nodeMeshData->NodeIndex = *nodeIndexPtr;
 
 					if (meshInfo->Bones != nullptr)

@@ -23,8 +23,8 @@ namespace SiliconStudio.Paradox.Effects
         /// <returns>ModelRenderer.</returns>
         public static ModelRenderer AddTransparentFilter(this ModelRenderer modelRenderer)
         {
-            modelRenderer.AcceptPrepareMeshForRendering.Add((model, mesh) => IsTransparent(mesh));
-            modelRenderer.AcceptRenderMesh.Add((context, renderMesh) => IsTransparent(renderMesh.Mesh));
+            modelRenderer.AcceptPrepareMeshForRendering.Add((model, mesh) => IsTransparent(model, mesh));
+            modelRenderer.AcceptRenderMesh.Add((context, renderMesh) => IsTransparent(renderMesh));
             modelRenderer.AppendDebugName("Transparent");
             return modelRenderer;
         }
@@ -36,13 +36,19 @@ namespace SiliconStudio.Paradox.Effects
         /// <returns>ModelRenderer.</returns>
         public static ModelRenderer AddOpaqueFilter(this ModelRenderer modelRenderer)
         {
-            modelRenderer.AcceptPrepareMeshForRendering.Add((model, mesh) => !IsTransparent(mesh));
-            modelRenderer.AcceptRenderMesh.Add((context, renderMesh) => !IsTransparent(renderMesh.Mesh));
+            modelRenderer.AcceptPrepareMeshForRendering.Add((model, mesh) => !IsTransparent(model, mesh));
+            modelRenderer.AcceptRenderMesh.Add((context, renderMesh) => !IsTransparent(renderMesh));
             modelRenderer.AppendDebugName("Opaque");
             return modelRenderer;
         }
 
-        private static bool IsTransparent(Mesh mesh)
+        private static bool IsTransparent(RenderModel model, Mesh mesh)
+        {
+            return model.GetMaterial(mesh.MaterialIndex).Parameters.Get(MaterialParameters.UseTransparent);
+        }
+
+
+        private static bool IsTransparent(RenderMesh mesh)
         {
             return mesh.Material.Parameters.Get(MaterialParameters.UseTransparent);
         }

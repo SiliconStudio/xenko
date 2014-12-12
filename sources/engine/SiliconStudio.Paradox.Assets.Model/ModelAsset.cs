@@ -16,6 +16,7 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.Paradox.Assets.Materials;
 using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.Assets.Model
@@ -40,7 +41,8 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// </summary>
         public ModelAsset()
         {
-            MeshParameters = new Dictionary<string, MeshMaterialParameters>();
+            SerializedVersion = AssetFormatVersion;
+            Materials = new List<ModelMaterial>();
             Nodes = new List<NodeInformation>();
             SetDefaults();
         }
@@ -84,13 +86,13 @@ namespace SiliconStudio.Paradox.Assets.Model
         public Vector3 FrontAxis { get; set; }
 
         /// <summary>
-        /// The mesh parameters.
+        /// The materials.
         /// </summary>
         /// <userdoc>
-        /// The list of all the meshes in the model.
+        /// The list of materials in the model.
         /// </userdoc>
         [DataMember(40)]
-        public Dictionary<string, MeshMaterialParameters> MeshParameters { get; private set; }
+        public List<ModelMaterial> Materials { get; private set; }
 
         /// <summary>
         /// Gets or sets if the mesh will be compacted (meshes will be merged).

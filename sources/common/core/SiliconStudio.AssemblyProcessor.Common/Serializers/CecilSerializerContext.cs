@@ -200,8 +200,8 @@ namespace SiliconStudio.AssemblyProcessor.Serializers
             foreach (var serializableItem in ComplexClassSerializerGenerator.GetSerializableItems(type, true))
             {
                 // Check that all closed types have a proper serializer
-                if (!serializableItem.Type.ContainsGenericParameter() && GenerateSerializer(serializableItem.Type, profile: profile) == null
-                    && !serializableItem.Attributes.Any(x => x.AttributeType.FullName == "SiliconStudio.Core.DataMemberCustomSerializerAttribute"))
+                if (!serializableItem.Attributes.Any(x => x.AttributeType.FullName == "SiliconStudio.Core.DataMemberCustomSerializerAttribute")
+                    && !serializableItem.Type.ContainsGenericParameter() && GenerateSerializer(serializableItem.Type, profile: profile) == null)
                 {
                     throw new InvalidOperationException(string.Format("Member {0} (type: {1}) doesn't seem to have a valid serializer.", serializableItem.MemberInfo, serializableItem.Type.ConvertCSharp()));
                 }
@@ -482,7 +482,7 @@ namespace SiliconStudio.AssemblyProcessor.Serializers
                                     var importedType = Assembly.MainModule.Import(dependentType);
                                     if (GenerateSerializer(importedType) == null)
                                     {
-                                        throw new InvalidOperationException(string.Format("Could not find serializer for generic dependent type {0}", dependentType));
+                                        throw new InvalidOperationException(string.Format("Could not find serializer for generic dependent type {0} when processing {1}", dependentType, dataType));
                                     }
                                 }
                             }

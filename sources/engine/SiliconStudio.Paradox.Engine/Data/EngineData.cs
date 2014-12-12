@@ -194,9 +194,9 @@ namespace SiliconStudio.Paradox.Effects.Data
         public SiliconStudio.Paradox.Effects.Data.MeshDrawData Draw;
 
         /// <summary>
-        /// Data field for <see cref="SiliconStudio.Paradox.Effects.Mesh.Material"/>.
+        /// Data field for <see cref="SiliconStudio.Paradox.Effects.Mesh.MaterialIndex"/>.
         /// </summary>
-        public SiliconStudio.Core.Serialization.ContentReference<SiliconStudio.Paradox.Effects.Data.MaterialData> Material;
+        public System.Int32 MaterialIndex;
 
         /// <summary>
         /// Data field for <see cref="SiliconStudio.Paradox.Effects.Mesh.Parameters"/>.
@@ -232,6 +232,11 @@ namespace SiliconStudio.Paradox.Effects.Data
     [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Converters.DataContentConverterSerializer<ModelData, SiliconStudio.Paradox.Effects.Model>))]
     public partial class ModelData
     {
+        /// <summary>
+        /// Data field for <see cref="SiliconStudio.Paradox.Effects.Model.Materials"/>.
+        /// </summary>
+        public System.Collections.Generic.List<SiliconStudio.Core.Serialization.ContentReference<SiliconStudio.Paradox.Effects.Data.MaterialData>> Materials = new System.Collections.Generic.List<SiliconStudio.Core.Serialization.ContentReference<SiliconStudio.Paradox.Effects.Data.MaterialData>>();
+
         /// <summary>
         /// Data field for <see cref="SiliconStudio.Paradox.Effects.Model.Children"/>.
         /// </summary>
@@ -592,6 +597,11 @@ namespace SiliconStudio.Paradox.Engine.Data
     public partial class ModelComponentData : SiliconStudio.Paradox.EntityModel.Data.EntityComponentData
     {
         /// <summary>
+        /// Data field for <see cref="SiliconStudio.Paradox.Engine.ModelComponent.Materials"/>.
+        /// </summary>
+        public System.Collections.Generic.List<SiliconStudio.Core.Serialization.ContentReference<SiliconStudio.Paradox.Effects.Data.MaterialData>> Materials;
+
+        /// <summary>
         /// Data field for <see cref="SiliconStudio.Paradox.Engine.ModelComponent.Model"/>.
         /// </summary>
         public SiliconStudio.Core.Serialization.ContentReference<SiliconStudio.Paradox.Effects.Data.ModelData> Model;
@@ -809,7 +819,7 @@ namespace SiliconStudio.Paradox.Effects.Data
                 target = new SiliconStudio.Paradox.Effects.Data.MeshData();
 				
             context.ConvertToData(ref target.Draw, source.Draw);
-            context.ConvertToData(ref target.Material, source.Material);
+            target.MaterialIndex = source.MaterialIndex;
             context.ConvertToData(ref target.Parameters, source.Parameters);
             target.NodeIndex = source.NodeIndex;
             target.Name = source.Name;
@@ -828,11 +838,7 @@ namespace SiliconStudio.Paradox.Effects.Data
                 context.ConvertFromData(target.Draw, ref temp);
                 source.Draw = temp;
             }
-            {
-                var temp = source.Material;
-                context.ConvertFromData(target.Material, ref temp);
-                source.Material = temp;
-            }
+            source.MaterialIndex = target.MaterialIndex;
             {
                 var temp = source.Parameters;
                 context.ConvertFromData(target.Parameters, ref temp);
@@ -855,7 +861,8 @@ namespace SiliconStudio.Paradox.Effects.Data
         {
 			if(target == null)
                 target = new SiliconStudio.Paradox.Effects.Data.ModelData();
-				
+
+            context.ConvertToData(ref target.Materials, source.Materials);
             context.ConvertToData(ref target.Children, source.Children);
             context.ConvertToData(ref target.Meshes, source.Meshes);
             target.Hierarchy = source.Hierarchy;
@@ -868,6 +875,10 @@ namespace SiliconStudio.Paradox.Effects.Data
             if(source == null)
                 source = new SiliconStudio.Paradox.Effects.Model();
 
+            {
+                var temp = source.Materials;
+                context.ConvertFromData(target.Materials, ref temp);
+            }
             {
                 var temp = source.Children;
                 context.ConvertFromData(target.Children, ref temp);
@@ -1613,6 +1624,7 @@ namespace SiliconStudio.Paradox.Engine.Data
 				ConvertToData(context, ref targetBase, sourceBase);
 			}
 
+            context.ConvertToData(ref target.Materials, source.Materials);
             context.ConvertToData(ref target.Model, source.Model);
             target.Enabled = source.Enabled;
             target.DrawOrder = source.DrawOrder;
@@ -1643,6 +1655,10 @@ namespace SiliconStudio.Paradox.Engine.Data
         /// <inheritdoc/>
         public void ConvertFromData(SiliconStudio.Core.Serialization.Converters.ConverterContext context, SiliconStudio.Paradox.Engine.Data.ModelComponentData target, ref SiliconStudio.Paradox.Engine.ModelComponent source)
         {
+            {
+                var temp = source.Materials;
+                context.ConvertFromData(target.Materials, ref temp);
+            }
             {
                 var temp = source.Model;
                 context.ConvertFromData(target.Model, ref temp);

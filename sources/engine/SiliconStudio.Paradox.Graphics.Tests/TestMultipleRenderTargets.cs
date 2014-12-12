@@ -39,10 +39,11 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 {
                     Model = new Model()
                     {
+                        material,
                         new Mesh()
                         {
                             Draw = primitive.ToMeshDraw(),
-                            Material = material
+                            MaterialIndex = 0,
                         }
                     }
                 },

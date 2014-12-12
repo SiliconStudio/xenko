@@ -301,7 +301,10 @@ namespace SiliconStudio.Paradox.Effects
                 if (!mesh.Enabled || (acceptRenderMeshes.Count > 0 && !OnAcceptRenderMesh(context, mesh)))
                 {
                     meshes.SwapRemoveAt(i--);
+                    continue;
                 }
+
+                mesh.UpdateMaterial();
             }
         }
 
@@ -427,10 +430,10 @@ namespace SiliconStudio.Paradox.Effects
                     return 0;
 
                 // TODO: Add a kind of associated data to an effect mesh to speed up this test?
-                var leftMaterial = left.Mesh.Material;
+                var leftMaterial = left.Material;
                 var isLeftTransparent = (leftMaterial != null && leftMaterial.Parameters.Get(MaterialParameters.UseTransparent));
 
-                var rightMaterial = right.Mesh.Material;
+                var rightMaterial = right.Material;
                 var isRightTransparent = (rightMaterial != null && rightMaterial.Parameters.Get(MaterialParameters.UseTransparent));
 
                 if (isLeftTransparent && !isRightTransparent)

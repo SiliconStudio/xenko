@@ -76,7 +76,7 @@ namespace SiliconStudio.Paradox.Assets.Effect.Generators
                                 foreach (var meshData in modelComponent.Model.Value.Meshes)
                                 {
                                     var lightingParameters = GetLightingParameters(meshData);
-                                    var materialParameters = GetMeshMaterialParameters(meshData);
+                                    var materialParameters = GetMeshMaterialParameters(modelComponent, meshData);
 
                                     if (lightingParameters == null || lightingParameters.Count == 0)
                                     {
@@ -160,15 +160,26 @@ namespace SiliconStudio.Paradox.Assets.Effect.Generators
         /// </summary>
         /// <param name="meshData">The mesh.</param>
         /// <returns>The material parameters.</returns>
-        private ParameterCollectionData GetMeshMaterialParameters(MeshData meshData)
+        private ParameterCollectionData GetMeshMaterialParameters(ModelComponentData modelComponent, MeshData meshData)
         {
+            // Note: This should match RenderModel.GetMaterial() behavior
+            // This should be unified as soon as data layer is gone
             if (meshData != null)
             {
-                var material = meshData.Material.Value;
+                var materialIndex = meshData.MaterialIndex;
+
+                if (materialIndex == -1)
+                    return null;
+
+                // Similar to RenderModel.GetMaterial: First, try to get it from ModelComponent, then Model
+                var material = modelComponent.Materials != null && materialIndex < modelComponent.Materials.Count ? modelComponent.Materials[materialIndex] : null;
                 if (material != null)
                 {
-                    return material.Parameters;
+                    material = modelComponent.Model.Value.Materials != null && materialIndex < modelComponent.Model.Value.Materials.Count ? modelComponent.Model.Value.Materials[materialIndex] : null;
                 }
+
+                if (material != null && material.Value != null)
+                    return material.Value.Parameters;
             }
             return null;
         }

@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System.Collections.Generic;
 using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.EntityModel;
@@ -17,6 +19,7 @@ namespace SiliconStudio.Paradox.Engine
         public static PropertyKey<ModelComponent> Key = new PropertyKey<ModelComponent>("Key", typeof(ModelComponent));
 
         private Model model;
+        private List<Material> materials = new List<Material>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ModelComponent"/> class.
@@ -55,6 +58,19 @@ namespace SiliconStudio.Paradox.Engine
                 model = value;
                 ModelUpdated();
             }
+        }
+
+        /// <summary>
+        /// Gets the materials; non-null ones will override materials from <see cref="Effects.Model.Materials"/> (same slots should be used).
+        /// </summary>
+        /// <value>
+        /// The materials overriding <see cref="Effects.Model.Materials"/> ones.
+        /// </value>
+        [DataMemberConvert]
+        [DataMemberCustomSerializer]
+        public List<Material> Materials
+        {
+            get { return materials; }
         }
 
         [DataMemberIgnore]

@@ -90,5 +90,26 @@ namespace SiliconStudio.Paradox.Effects
         /// The render pipeline.
         /// </value>
         public readonly RenderPipeline Pipeline;
+
+        public Material GetMaterial(int materialIndex)
+        {
+            // TBD, but for now, -1 means null material
+            if (materialIndex == -1)
+                return null;
+
+            // Try to get material first from model instance, then model
+            return GetMaterialHelper(ModelInstance.Materials, materialIndex)
+                   ?? GetMaterialHelper(Model.Materials, materialIndex);
+        }
+
+        private static Material GetMaterialHelper(List<Material> materials, int index)
+        {
+            if (materials != null && index < materials.Count)
+            {
+                return materials[index];
+            }
+
+            return null;
+        }
     }
 }

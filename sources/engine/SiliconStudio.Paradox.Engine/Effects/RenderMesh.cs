@@ -26,6 +26,8 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         public readonly Mesh Mesh;
 
+        public Material Material;
+
         private readonly ParameterCollection parameters;
 
         /// <summary>
@@ -41,6 +43,8 @@ namespace SiliconStudio.Paradox.Effects
             RenderModel = renderModel;
             Mesh = mesh;
             Enabled = true;
+
+            UpdateMaterial();
 
             // A RenderMesh is inheriting values from Mesh.Parameters
             // We are considering that Mesh.Parameters is not updated frequently (should be almost immutable)
@@ -75,7 +79,8 @@ namespace SiliconStudio.Paradox.Effects
         {
             // Retrieve effect parameters
             var currentPass = context.CurrentPass;
-            var currentRenderData = this.Mesh.Draw;
+            var mesh = Mesh;
+            var currentRenderData = mesh.Draw;
 
             //using (Profiler.Begin(ProfilingKeys.PrepareMesh))
             {
@@ -87,14 +92,17 @@ namespace SiliconStudio.Paradox.Effects
                 // TODO: really copy mesh parameters into renderMesh instead of just referencing the meshDraw parameters.
 
                 var modelComponent = this.RenderModel.ModelInstance;
-                var hasMaterialParams = this.Mesh.Material != null && this.Mesh.Material.Parameters != null;
                 var hasModelComponentParams = modelComponent != null && modelComponent.Parameters != null;
-                if (hasMaterialParams)
+                
+                var material = Material;
+                var materialParameters = material != null && material.Parameters != null ? material.Parameters : null;
+
+                if (materialParameters != null)
                 {
                     if (hasModelComponentParams)
-                        this.Effect.Apply(currentPass.Parameters, this.Mesh.Material.Parameters, modelComponent.Parameters, parameters, true);
+                        this.Effect.Apply(currentPass.Parameters, materialParameters, modelComponent.Parameters, parameters, true);
                     else
-                        this.Effect.Apply(currentPass.Parameters, this.Mesh.Material.Parameters, parameters, true);
+                        this.Effect.Apply(currentPass.Parameters, materialParameters, parameters, true);
                 }
                 else if (hasModelComponentParams)
                     this.Effect.Apply(currentPass.Parameters, modelComponent.Parameters, parameters, true);
@@ -122,6 +130,11 @@ namespace SiliconStudio.Paradox.Effects
             }
         }
 
+        public void UpdateMaterial()
+        {
+            Material = RenderModel.GetMaterial(Mesh.MaterialIndex);
+        }
+
         internal void Initialize(GraphicsDevice device)
         {
             vertexArrayObject = VertexArrayObject.New(device, Effect.InputSignature, Mesh.Draw.IndexBuffer, Mesh.Draw.VertexBuffers);
@@ -129,9 +142,10 @@ namespace SiliconStudio.Paradox.Effects
 
         public override void FillParameterCollections(IList<ParameterCollection> parameterCollections)
         {
-            if (Mesh.Material != null)
+            var material = Material;
+            if (material != null && material.Parameters != null)
             {
-                parameterCollections.Add(Mesh.Material.Parameters);
+                parameterCollections.Add(material.Parameters);
             }
 
             var modelInstance = RenderModel.ModelInstance;

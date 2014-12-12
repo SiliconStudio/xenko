@@ -28,7 +28,7 @@ namespace SiliconStudio.Paradox.Extensions
                     {
                         var newMeshData = new MeshData
                             {
-                                Material = mesh.Material,
+                                MaterialIndex = mesh.MaterialIndex,
                                 Parameters = mesh.Parameters,
                                 Name = mesh.Name,
                                 Draw = draw,

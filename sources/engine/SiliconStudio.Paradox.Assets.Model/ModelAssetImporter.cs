@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Runtime.InteropServices;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
@@ -226,19 +226,12 @@ namespace SiliconStudio.Paradox.Assets.Model
             if (entityInfo.Models != null)
             {
                 var loadedMaterials = assetReferences.Where(x => x.Asset is MaterialAsset).ToList();
-                foreach (var model in entityInfo.Models)
+                foreach (var material in entityInfo.Materials)
                 {
-                    var meshParams = new MeshMaterialParameters { Parameters = model.Parameters, NodeName = model.NodeName };
-
-                    var matId = model.MaterialName;
-                    var matName = GenerateFinalMaterialName(localPath, matId);
+                    var matName = GenerateFinalMaterialName(localPath, material.Key);
                     var foundMaterial = loadedMaterials.FirstOrDefault(x => x.Location == new UFile(matName, null));
                     if (foundMaterial != null)
-                    {
-                        var matReference = new AssetReference<MaterialAsset>(foundMaterial.Id, foundMaterial.Location);
-                        meshParams.Material = matReference;
-                    }
-                    asset.MeshParameters.Add(model.MeshName, meshParams);
+                        asset.Materials.Add(new ModelMaterial { Name = material.Key, Material = new AssetReference<MaterialAsset>(foundMaterial.Id, foundMaterial.Location) });
                 }
             }
 

@@ -26,13 +26,14 @@
     <Compile Include="EntityTreeAsset.cs" />
     <Compile Include="FbxAssetImporter.cs" />
     <Compile Include="EntityCompilerParametersGenerator.cs" />
+    <Compile Include="MaterialInstance.cs" />
     <Compile Include="ImportAssimpCommand.cs" />
     <Compile Include="ImportFbxCommand.cs" />
     <Compile Include="ImportModelCommand.cs" />
-    <Compile Include="MeshMaterialParameters.cs" />
     <Compile Include="ModelAsset.cs" />
     <Compile Include="ModelAssetCompiler.cs" />
     <Compile Include="ModelAssetImporter.cs" />
+    <Compile Include="ModelMaterial.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="NodeInformation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
