@@ -83,7 +83,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             textures = new Texture[3]
             {
                 Texture.New2D(GraphicsDevice, 800, 480, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource),
-                Texture.New2D(GraphicsDevice, 800, 480, PixelFormat.R32_Float, TextureFlags.RenderTarget | TextureFlags.ShaderResource),
+                Texture.New2D(GraphicsDevice, 800, 480, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource),
                 Texture.New2D(GraphicsDevice, 800, 480, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource),
             };
 
@@ -95,6 +95,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             {
                 ClearColor = Color.CornflowerBlue,
                 RenderTargets = textures,
+                DepthStencil = depthBuffer,
                 ClearColors = new Color[] { Color.Black, Color.White, Color.Black }
             });
             RenderSystem.Pipeline.Renderers.Add(new ModelRenderer(Services, "MultipleRenderTargetsEffect"));

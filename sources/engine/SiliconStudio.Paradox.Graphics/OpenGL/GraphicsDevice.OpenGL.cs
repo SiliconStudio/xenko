@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System.Windows.Forms;
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL 
 #if SILICONSTUDIO_PLATFORM_ANDROID
 extern alias opentkold;
@@ -69,10 +71,10 @@ namespace SiliconStudio.Paradox.Graphics
         internal DepthStencilState defaultDepthStencilState;
         internal BlendState defaultBlendState;
         internal int versionMajor, versionMinor;
-        internal RenderTarget windowProvidedRenderTarget;
-        internal Texture2D windowProvidedRenderTexture;
-        internal DepthStencilBuffer windowProvidedDepthBuffer;
-        internal Texture2D windowProvidedDepthTexture;
+        //internal RenderTarget windowProvidedRenderTarget;
+        internal Texture windowProvidedRenderTexture;
+        //internal DepthStencilBuffer windowProvidedDepthBuffer;
+        internal Texture windowProvidedDepthTexture;
 
         internal bool HasVAO;
 
@@ -84,7 +86,7 @@ namespace SiliconStudio.Paradox.Graphics
 
         private int windowProvidedFrameBuffer;
 
-        private RenderTarget defaultRenderTarget;
+        private Texture defaultRenderTarget;
         private GraphicsDevice immediateContext;
         private GraphicsAdapter _adapter;
         private SwapChainBackend _defaultSwapChainBackend;
@@ -139,8 +141,8 @@ namespace SiliconStudio.Paradox.Graphics
         private int boundStencilReference;
         private BlendState boundBlendState;
         private RasterizerState boundRasterizerState;
-        private DepthStencilBuffer boundDepthStencilBuffer;
-        private RenderTarget[] boundRenderTargets = new RenderTarget[16];
+        private Texture boundDepthStencilBuffer;
+        private Texture[] boundRenderTargets = new Texture[16];
         private int boundFBO;
         internal bool hasRenderTarget, hasDepthStencilBuffer;
         private int boundFBOHeight;
@@ -242,7 +244,8 @@ namespace SiliconStudio.Paradox.Graphics
 
         public void ApplyPlatformSpecificParams(Effect effect)
         {
-            effect.Parameters.Set(ShaderBaseKeys.ParadoxFlipRendertarget, flipRenderTarget ? -1.0f : 1.0f);
+            //effect.Parameters.Set(ShaderBaseKeys.ParadoxFlipRendertarget, flipRenderTarget ? -1.0f : 1.0f);
+            Parameters.Set(ShaderBaseKeys.ParadoxFlipRendertarget, flipRenderTarget ? -1.0f : 1.0f);
         }
 
         /// <summary>
@@ -281,7 +284,7 @@ namespace SiliconStudio.Paradox.Graphics
         {
         }
 
-        public void Clear(DepthStencilBuffer depthStencilBuffer, DepthStencilClearOptions options, float depth = 1, byte stencil = 0)
+        public void Clear(Texture depthStencilBuffer, DepthStencilClearOptions options, float depth = 1, byte stencil = 0)
         {
 #if DEBUG
             EnsureContextActive();
@@ -316,7 +319,7 @@ namespace SiliconStudio.Paradox.Graphics
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFBO);
         }
 
-        public void Clear(RenderTarget renderTarget, Color4 color)
+        public void Clear(Texture renderTarget, Color4 color)
         {
 #if DEBUG
             EnsureContextActive();
@@ -438,8 +441,8 @@ namespace SiliconStudio.Paradox.Graphics
 #if DEBUG
             EnsureContextActive();
 #endif
-            var sourceTexture = source as Texture2D;
-            var destTexture = destination as Texture2D;
+            var sourceTexture = source as Texture;
+            var destTexture = destination as Texture;
 
             if (sourceTexture == null || destTexture == null)
                 throw new NotImplementedException("Copy is only implemented for ITexture2D objects.");
@@ -851,49 +854,40 @@ namespace SiliconStudio.Paradox.Graphics
 
         internal int FindOrCreateFBO(GraphicsResourceBase graphicsResource)
         {
-            if (graphicsResource == RootDevice.windowProvidedRenderTarget
-                || graphicsResource == RootDevice.windowProvidedRenderTexture)
+            if (graphicsResource == RootDevice.windowProvidedRenderTexture)
                 return windowProvidedFrameBuffer;
 
-            if (graphicsResource is DepthStencilBuffer)
-                return FindOrCreateFBO((DepthStencilBuffer)graphicsResource, null);
-            if (graphicsResource is RenderTarget)
-                return FindOrCreateFBO(null, new[] { (RenderTarget)graphicsResource });
-            if (graphicsResource is Texture)
-                return FindOrCreateFBO(null, new[] { ((Texture)graphicsResource).GetCachedRenderTarget() });
+            var texture = graphicsResource as Texture;
+            if (texture != null)
+            {
+                if ((texture.Flags & TextureFlags.RenderTarget) != 0)
+                    return FindOrCreateFBO(null, new[] { texture });
+                if ((texture.Flags & TextureFlags.DepthStencil) != 0)
+                    return FindOrCreateFBO(texture, null);
+            }
 
             throw new NotSupportedException();
         }
 
-        internal int FindOrCreateFBO(DepthStencilBuffer depthStencilBuffer)
+        internal int FindOrCreateFBO(Texture texture)
         {
+            var isDepthBuffer = ((texture.Flags & TextureFlags.DepthStencil) != 0);
             lock (RootDevice.existingFBOs)
             {
                 foreach (var key in RootDevice.existingFBOs)
                 {
-                    if (key.Key.DepthStencilBuffer == depthStencilBuffer)
-                        return key.Value;
-                }
-            } 
-            
-            return FindOrCreateFBO(depthStencilBuffer, null);
-        }
-
-        internal int FindOrCreateFBO(RenderTarget target)
-        {
-            lock (RootDevice.existingFBOs)
-            {
-                foreach (var key in RootDevice.existingFBOs)
-                {
-                    if (key.Key.LastRenderTarget == 1 && key.Key.RenderTargets[0] == target)
+                    if ((isDepthBuffer && key.Key.DepthStencilBuffer == texture)
+                        || !isDepthBuffer && key.Key.LastRenderTarget == 1 && key.Key.RenderTargets[0] == texture)
                         return key.Value;
                 }
             }
 
-            return FindOrCreateFBO(null, new[] { target });
+            if (isDepthBuffer)
+                return FindOrCreateFBO(texture, null);
+            return FindOrCreateFBO(null, new[] { texture });
         }
 
-        internal int FindOrCreateFBO(DepthStencilBuffer depthStencilBuffer, RenderTarget[] renderTargets)
+        internal int FindOrCreateFBO(Texture depthStencilBuffer, Texture[] renderTargets)
         {
             int framebufferId;
 
@@ -904,8 +898,8 @@ namespace SiliconStudio.Paradox.Graphics
 
                 // Is it the default provided render target?
                 // TODO: Need to disable some part of rendering if either is null
-                var isProvidedDepthBuffer = (depthStencilBuffer == RootDevice.windowProvidedDepthBuffer);
-                var isProvidedRenderTarget = (fboKey.LastRenderTarget == 1 && renderTargets[0] == RootDevice.windowProvidedRenderTarget);
+                var isProvidedDepthBuffer = (depthStencilBuffer == RootDevice.windowProvidedDepthTexture);
+                var isProvidedRenderTarget = (fboKey.LastRenderTarget == 1 && renderTargets[0] == RootDevice.windowProvidedRenderTexture);
                 if ((isProvidedDepthBuffer || boundDepthStencilBuffer == null) && (isProvidedRenderTarget || fboKey.LastRenderTarget == 0)) // device provided framebuffer
                 {
                     return windowProvidedFrameBuffer;
@@ -968,7 +962,8 @@ namespace SiliconStudio.Paradox.Graphics
                     else
                         attachmentType = FramebufferAttachment.StencilAttachment;
 
-                    if (depthStencilBuffer.Texture.IsRenderbuffer)
+                    // TODO: use renderbuffer if the depthStencil buffer is not a shader resource
+                    if (depthStencilBuffer.IsRenderbuffer)
                         GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, attachmentType, RenderbufferTarget.Renderbuffer, depthStencilBuffer.ResourceId);
                     else
                         GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, attachmentType, TextureTarget.Texture2D, depthStencilBuffer.ResourceId, 0);
@@ -1399,7 +1394,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         /// <param name="depthStencilBuffer">The depth stencil buffer.</param>
         /// <param name="renderTarget">The render target.</param>
-        public void SetDepthAndRenderTarget(DepthStencilBuffer depthStencilBuffer, RenderTarget renderTarget)
+        public void SetDepthAndRenderTarget(Texture depthStencilBuffer, Texture renderTarget)
         {
             SetDepthAndRenderTargets(depthStencilBuffer, (renderTarget == null) ? null : new[] { renderTarget });
 
@@ -1413,7 +1408,7 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
-        public void SetDepthAndRenderTargets(DepthStencilBuffer depthStencilBuffer, params RenderTarget[] renderTargets)
+        public void SetDepthAndRenderTargets(Texture depthStencilBuffer, params Texture[] renderTargets)
         {
             if (renderTargets == null)
             {
@@ -1425,7 +1420,7 @@ namespace SiliconStudio.Paradox.Graphics
             var expectedHeight = renderTargets[0].Height;
             if (depthStencilBuffer != null)
             {
-                if (expectedWidth != depthStencilBuffer.Texture.Width || expectedHeight != depthStencilBuffer.Texture.Height)
+                if (expectedWidth != depthStencilBuffer.Width || expectedHeight != depthStencilBuffer.Height)
                     throw new Exception("Depth buffer is not the same size as the render target");
             }
             for (int i = 1; i < renderTargets.Length; ++i)
@@ -1834,7 +1829,7 @@ namespace SiliconStudio.Paradox.Graphics
             EnsureContextActive();
 #endif
 
-            SetDepthAndRenderTargets((DepthStencilBuffer)null, null);
+            SetDepthAndRenderTargets((Texture)null, null);
         }
 
         internal void UpdateSubresource(GraphicsResource resource, int subResourceIndex, DataBox databox)
@@ -2149,7 +2144,7 @@ namespace SiliconStudio.Paradox.Graphics
             lock (RootDevice.existingFBOs)
             {
                 RootDevice.existingFBOs.Clear();
-                RootDevice.existingFBOs[new FBOKey(windowProvidedDepthBuffer, new[] { windowProvidedRenderTarget })] = windowProvidedFrameBuffer;
+                RootDevice.existingFBOs[new FBOKey(windowProvidedDepthTexture, new[] { windowProvidedRenderTexture })] = windowProvidedFrameBuffer;
             }
 
             // Clear bound states
@@ -2187,35 +2182,25 @@ namespace SiliconStudio.Paradox.Graphics
         internal void InitDefaultRenderTarget(PresentationParameters presentationParameters)
         {
             // TODO: iOS (and possibly other platforms): get real render buffer ID for color/depth?
-            windowProvidedRenderTexture = new Texture2D(this, new TextureDescription
-                {
-                    Dimension = TextureDimension.Texture2D,
-                    Format = presentationParameters.BackBufferFormat,
-                    Width = presentationParameters.BackBufferWidth,
-                    Height = presentationParameters.BackBufferHeight,
-                    Flags = TextureFlags.RenderTarget,
-                    Depth = 1,
-                    MipLevels = 1,
-                    ArraySize = 1
-                }, null, false);
+            windowProvidedRenderTexture = Texture.New2D(
+                this,
+                presentationParameters.BackBufferWidth,
+                presentationParameters.BackBufferHeight,
+                1,
+                presentationParameters.BackBufferFormat,
+                TextureFlags.RenderTarget);
             windowProvidedRenderTexture.Reload = (graphicsResource) => { };
-            windowProvidedRenderTarget = windowProvidedRenderTexture.ToRenderTarget();
 
             if (presentationParameters.DepthStencilFormat != PixelFormat.None)
             {
-                windowProvidedDepthTexture = new Texture2D(this, new TextureDescription
-                    {
-                        Dimension = TextureDimension.Texture2D,
-                        Format = presentationParameters.DepthStencilFormat,
-                        Width = presentationParameters.BackBufferWidth,
-                        Height = presentationParameters.BackBufferHeight,
-                        Flags = TextureFlags.DepthStencil,
-                        Depth = 1,
-                        MipLevels = 1,
-                        ArraySize = 1
-                    }, null, false);
+                windowProvidedDepthTexture = Texture.New2D(
+                    this,
+                    presentationParameters.BackBufferWidth,
+                    presentationParameters.BackBufferHeight,
+                    1,
+                    presentationParameters.DepthStencilFormat,
+                    TextureFlags.DepthStencil);
                 windowProvidedDepthTexture.Reload = (graphicsResource) => { };
-                windowProvidedDepthBuffer = new DepthStencilBuffer(this, windowProvidedDepthTexture, false);
             }
 
 #if SILICONSTUDIO_PLATFORM_IOS
@@ -2239,14 +2224,14 @@ namespace SiliconStudio.Paradox.Graphics
             windowProvidedDepthBuffer.resourceId = renderTargetTextureId;
 #endif
 
-            RootDevice.existingFBOs[new FBOKey(windowProvidedDepthBuffer, new[] { windowProvidedRenderTarget })] = windowProvidedFrameBuffer;
+            RootDevice.existingFBOs[new FBOKey(windowProvidedDepthTexture, new[] { windowProvidedRenderTexture })] = windowProvidedFrameBuffer;
 
             // TODO: Provide some flags to choose user prefers either:
             // - Auto-Blitting while allowing default RenderTarget to be associable with any DepthStencil
             // - No blitting, but default RenderTarget won't work with a custom FBO
             // - Later we should be able to detect that automatically?
             //defaultRenderTarget = Texture.New2D(this, presentationParameters.BackBufferWidth, presentationParameters.BackBufferHeight, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget).ToRenderTarget();
-            defaultRenderTarget = windowProvidedRenderTarget;
+            defaultRenderTarget = windowProvidedRenderTexture;
         }
 
         public GraphicsDevice ImmediateContext
@@ -2292,7 +2277,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// Gets the default render target associated with this graphics device.
         /// </summary>
         /// <value>The default render target.</value>
-        internal RenderTarget DefaultRenderTarget
+        internal Texture DefaultRenderTarget
         {
             get
             {
@@ -2368,11 +2353,11 @@ namespace SiliconStudio.Paradox.Graphics
 
         internal struct FBOKey
         {
-            public readonly DepthStencilBuffer DepthStencilBuffer;
-            public readonly RenderTarget[] RenderTargets;
+            public readonly Texture DepthStencilBuffer;
+            public readonly Texture[] RenderTargets;
             public readonly int LastRenderTarget;
 
-            public FBOKey(DepthStencilBuffer depthStencilBuffer, RenderTarget[] renderTargets)
+            public FBOKey(Texture depthStencilBuffer, Texture[] renderTargets)
             {
                 DepthStencilBuffer = depthStencilBuffer;
 

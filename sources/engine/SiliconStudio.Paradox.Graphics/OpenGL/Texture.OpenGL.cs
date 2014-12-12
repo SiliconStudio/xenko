@@ -32,8 +32,6 @@ namespace SiliconStudio.Paradox.Graphics
     /// </summary>
     public partial class Texture
     {
-        private RenderTarget cachedRenderTarget;
-
         internal SamplerState BoundSamplerState;
 
         public PixelInternalFormat InternalFormat { get; set; }
@@ -42,15 +40,195 @@ namespace SiliconStudio.Paradox.Graphics
         public TextureTarget Target { get; set; }
         public int DepthPitch { get; set; }
         public int RowPitch { get; set; }
+        public bool IsDepthBuffer { get; private set; }
+        public bool IsStencilBuffer { get; private set; }
+        public bool IsRenderbuffer { get; private set; }
         internal int PixelBufferObjectId { get; set; }
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
         public IntPtr StagingData { get; set; }
 #endif
 
-        public virtual void Recreate(DataBox[] dataBoxes = null)
+        public static bool IsDepthStencilReadOnlySupported(GraphicsDevice device)
+        {
+            // TODO: check that
+            return true;
+        }
+
+        public void Recreate(DataBox[] dataBoxes = null)
+        {
+            InitializeFromImpl(dataBoxes);
+        }
+
+        private void OnRecreateImpl()
         {
             throw new NotImplementedException();
+        }
+
+        private void InitializeFromImpl(DataBox[] dataBoxes = null)
+        {
+            // TODO: how to use ParentTexture?
+            // TODO: texture used as depth buffer should be a render buffer for optimization purposes
+            if (ParentTexture != null)
+            {
+                resourceId = ParentTexture.ResourceId;
+            }
+
+            if (resourceId == 0)
+            {
+                switch (Dimension)
+                {
+                    case TextureDimension.Texture1D:
+                        Target = TextureTarget.Texture1D;
+                        break;
+                    case TextureDimension.Texture2D:
+                        Target = TextureTarget.Texture2D;
+                        break;
+                    case TextureDimension.Texture3D:
+                        Target = TextureTarget.Texture3D;
+                        break;
+                    case TextureDimension.TextureCube:
+                        Target = TextureTarget.TextureCubeMap;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
+                PixelInternalFormat internalFormat;
+                PixelFormatGl format;
+                PixelType type;
+                int pixelSize;
+                bool compressed;
+                ConvertPixelFormat(GraphicsDevice, Description.Format, out internalFormat, out format, out type, out pixelSize, out compressed);
+
+                InternalFormat = internalFormat;
+                FormatGl = format;
+                Type = type;
+                DepthPitch = Description.Width * Description.Height * pixelSize;
+                RowPitch = Description.Width * pixelSize;
+
+                // TODO: review staging
+                /*
+                if (Description.Usage == GraphicsResourceUsage.Staging)
+                {
+#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                    GL.GenBuffers(1, out resourceId);
+                    GL.BindBuffer(BufferTarget.PixelPackBuffer, resourceId);
+                    GL.BufferData(BufferTarget.PixelPackBuffer, (IntPtr)DepthPitch, IntPtr.Zero,
+                                    BufferUsageHint.StreamRead);
+                    GL.BindBuffer(BufferTarget.PixelPackBuffer, 0);
+#else
+                    StagingData = Marshal.AllocHGlobal(DepthPitch);
+#endif
+                }
+                */
+
+                // Depth texture are render buffer for now
+                // TODO: enable switch
+                if ((Description.Flags & TextureFlags.DepthStencil) != 0 && (Description.Flags & TextureFlags.ShaderResource) == 0)
+                {
+                    RenderbufferStorage depth, stencil;
+                    ConvertDepthFormat(GraphicsDevice, Description.Format, out depth, out stencil);
+
+                    GL.GenRenderbuffers(1, out resourceId);
+                    GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, resourceId);
+                    GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, depth, Width, Height);
+
+                    // separate stencil
+                    if (stencil != 0)
+                    {
+                        int resouceIdStencil;
+                        GL.GenRenderbuffers(1, out resouceIdStencil);
+                        GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, resouceIdStencil);
+                        GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, stencil, Width, Height);
+                    }
+
+                    GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
+                    IsRenderbuffer = true;
+                    IsDepthBuffer = true;
+                    IsStencilBuffer = HasStencil(Format);
+                }
+                else
+                {
+                    GL.GenTextures(1, out resourceId);
+                    GL.BindTexture(Target, resourceId);
+
+                    IsRenderbuffer = false;
+                    IsDepthBuffer = false;
+                    IsStencilBuffer = false;
+                }
+
+                // No filtering on depth buffer
+                if ((Description.Flags & (TextureFlags.RenderTarget | TextureFlags.DepthStencil)) !=
+                    TextureFlags.None)
+                {
+                    GL.TexParameter(Target, TextureParameterName.TextureMinFilter,
+                                    (int)TextureMinFilter.Nearest);
+                    GL.TexParameter(Target, TextureParameterName.TextureMagFilter,
+                                    (int)TextureMagFilter.Nearest);
+                    GL.TexParameter(Target, TextureParameterName.TextureWrapS,
+                                    (int)TextureWrapMode.ClampToEdge);
+                    GL.TexParameter(Target, TextureParameterName.TextureWrapT,
+                                    (int)TextureWrapMode.ClampToEdge);
+                }
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                else if (Description.MipLevels <= 1)
+                {
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+                }
+#endif
+
+#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                GL.TexParameter(Target, TextureParameterName.TextureBaseLevel, 0);
+                GL.TexParameter(Target, TextureParameterName.TextureMaxLevel, Description.MipLevels - 1);
+#endif
+
+                if (Description.MipLevels == 0)
+                    throw new NotImplementedException();
+
+                for (int i = 0; i < Description.MipLevels; ++i)
+                {
+                    IntPtr data = IntPtr.Zero;
+                    var width = CalculateMipSize(Description.Width, i);
+                    var height = CalculateMipSize(Description.Height, i);
+                    if (dataBoxes != null && i < dataBoxes.Length)
+                    {
+                        if (!compressed && dataBoxes[i].RowPitch != width * pixelSize)
+                            throw new NotSupportedException("Can't upload texture with pitch in glTexImage2D.");
+                        // Might be possible, need to check API better.
+                        data = dataBoxes[i].DataPointer;
+                    }
+                    if (compressed)
+                    {
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
+                        throw new NotSupportedException("Can't use compressed textures on desktop OpenGL ES.");
+#else
+                        GL.CompressedTexImage2D(Target, i, internalFormat,
+                            width, height, 0, dataBoxes[i].SlicePitch, data);
+#endif
+                    }
+                    else
+                    {
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
+                        GL.TexImage2D(TextureTarget2d.Texture2D, i, internalFormat.ToOpenGL(),
+                                        width, height, 0, format, type, data);
+#else
+                        GL.TexImage2D(Target, i, internalFormat,
+                                        width, height, 0, format, type, data);
+#endif
+                    }
+                }
+                GL.BindTexture(Target, 0);
+
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                if (!GraphicsDevice.IsOpenGLES2)
+#endif
+                {
+                    if (Description.Usage == GraphicsResourceUsage.Dynamic)
+                        InitializePixelBufferObject();
+                }
+            }
         }
 
         /// <inheritdoc/>
@@ -79,21 +257,6 @@ namespace SiliconStudio.Paradox.Graphics
             resourceId = 0;
 
             base.DestroyImpl();
-        }
-
-        public RenderTarget ToRenderTarget(ViewType viewType, int arraySlize, int mipSlice)
-        {
-            return new RenderTarget(GraphicsDevice, this, ViewType.Single, 0, 0);
-        }
-
-        internal RenderTarget GetCachedRenderTarget()
-        {
-            if (cachedRenderTarget == null)
-            {
-                cachedRenderTarget = new RenderTarget(GraphicsDevice, this, ViewType.Single, 0, 0);
-            }
-
-            return cachedRenderTarget;
         }
 
         protected static void ConvertDepthFormat(GraphicsDevice graphicsDevice, PixelFormat requestedFormat, out RenderbufferStorage depthFormat, out RenderbufferStorage stencilFormat)
@@ -137,6 +300,21 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
+        private static bool HasStencil(PixelFormat format)
+        {
+            switch (format)
+            {
+                case PixelFormat.D32_Float_S8X24_UInt:
+                case PixelFormat.R32_Float_X8X24_Typeless:
+                case PixelFormat.X32_Typeless_G8X24_UInt:
+                case PixelFormat.D24_UNorm_S8_UInt:
+                case PixelFormat.R24_UNorm_X8_Typeless:
+                case PixelFormat.X24_Typeless_G8_UInt:
+                    return true;
+                default:
+                    return false;
+            }
+        }
 
         protected static void ConvertPixelFormat(GraphicsDevice graphicsDevice, PixelFormat inputFormat, out PixelInternalFormat internalFormat, out PixelFormatGl format, out PixelType type, out int pixelSize, out bool compressed)
         {
@@ -241,6 +419,12 @@ namespace SiliconStudio.Paradox.Graphics
                     type = PixelType.Float;
                     pixelSize = 4;
                     break;
+                case PixelFormat.D24_UNorm_S8_UInt:
+                    internalFormat = PixelInternalFormat.DepthComponent24;
+                    format = PixelFormatGl.DepthComponent;
+                    type = PixelType.UnsignedInt248;
+                    pixelSize = 4;
+                    break;
 #endif
 #if SILICONSTUDIO_PLATFORM_ANDROID
                 case PixelFormat.ETC1:
@@ -286,9 +470,14 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
+        internal static PixelFormat ComputeShaderResourceFormatFromDepthFormat(PixelFormat format)
+        {
+            return format;
+        }
+
         private bool IsFlippedTexture()
         {
-            return GraphicsDevice.BackBuffer.Texture == this || GraphicsDevice.DepthStencilBuffer.Texture == this;
+            return GraphicsDevice.BackBuffer == this || GraphicsDevice.DepthStencilBuffer == this;
         }
 
         protected void InitializePixelBufferObject()
