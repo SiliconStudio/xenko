@@ -109,20 +109,6 @@ namespace SiliconStudio.Quantum
         }
 
         /// <summary>
-        /// Removes a model that was previously registered.
-        /// </summary>
-        /// <param name="guid">The guid of the model to remove.</param>
-        /// <returns><c>true</c> if a model has been actually removed, <c>false</c> otherwise.</returns>
-        public bool RemoveModelNode(Guid guid)
-        {
-            if (guidContainer != null)
-            {
-                guidContainer.UnregisterGuid(guid);
-            }
-            return modelsByGuid.Remove(guid);
-        }
-
-        /// <summary>
         /// Removes all models that were previously registered.
         /// </summary>
         public void Clear()
@@ -141,51 +127,6 @@ namespace SiliconStudio.Quantum
         public void UpdateReferences(IModelNode node)
         {
             UpdateReferences(node, true);
-        }
-
-        public int CollectGarbage(IEnumerable<object> objectsToKeep)
-        {
-            var guidToRemove = modelsByGuid.Keys.ToDictionary(guid => guid);
-            foreach (var obj in objectsToKeep)
-            {
-                CollectGarbageRecursively(obj, guidToRemove);
-            }
-            int guidRemoved = 0;
-            foreach (var guid in guidToRemove.Where(x => x.Value != Guid.Empty).Select(x => x.Value))
-            {
-                guidContainer.UnregisterGuid(guid);
-                modelsByGuid.Remove(guid);
-                ++guidRemoved;
-            }
-            return guidRemoved;
-        }
-
-        private void CollectGarbageRecursively(object obj, Dictionary<Guid, Guid> guidToRemove)
-        {
-            var model = GetModelNode(obj);
-            if (model != null)
-            {
-                guidToRemove[model.Guid] = Guid.Empty;
-                foreach (var child in model.Children)
-                {
-                    if (child.Content.IsReference)
-                    {
-                        var enumRef = child.Content.Reference as ReferenceEnumerable;
-                        var objRef = child.Content.Reference as ObjectReference;
-                        if (enumRef != null)
-                        {
-                            foreach (var itemRef in enumRef)
-                            {
-                                CollectGarbageRecursively(itemRef.ObjectValue, guidToRemove);
-                            }
-                        }
-                        if (objRef != null)
-                        {
-                            CollectGarbageRecursively(objRef.ObjectValue, guidToRemove);
-                        }
-                    }
-                }
-            }
         }
 
         private IModelNode CreateModelNode(object rootObject, Type type)
