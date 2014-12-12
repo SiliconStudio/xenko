@@ -6,22 +6,21 @@ using System.Collections.Generic;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
+    /// <summary>
+    /// An effect combining a list of <see cref="ColorTransform"/> sub-effects.
+    /// </summary>
+    /// <remarks>
+    /// This effect and all <see cref="Transforms"/> are collected and compiled into a single shader.
+    /// </remarks>
     public class ColorTransformGroup : ImageEffect
     {
         private readonly ParameterCollection transformsParameters;
-
         private readonly ImageEffectShader transformGroupEffect;
-
         private readonly Dictionary<ParameterCompositeKey, ParameterKey> compositeKeys;
-
         private readonly ColorTransformCollection transforms;
-
         private readonly List<ColorTransform> collectTransforms;
-
         private readonly List<ColorTransform> enabledTransforms;
-
         private readonly GammaTransform gammaTransform;
-
         private readonly ColorTransformContext context;
 
         /// <summary>
@@ -137,23 +136,21 @@ namespace SiliconStudio.Paradox.Effects.Images
             for (int i = 0; i < enabledTransforms.Count; i++)
             {
                 var transform = enabledTransforms[i];
-                // Update parameters only if transform is active
-                //if (transform.Enable)
-                {
-                    transform.UpdateParameters(context);
+                // Always update parameters
+                transform.UpdateParameters(context);
 
-                    // Copy transform parameters back to the composition with the current index
-                    var sourceParameters = transform.Parameters;
-                    foreach (var parameterValue in sourceParameters )
-                    {
-                        var key = GetComposedKey(parameterValue.Key, i);
-                        sourceParameters.CopySharedTo(parameterValue.Key, key, transformsParameters);
-                    }
+                // Copy transform parameters back to the composition with the current index
+                var sourceParameters = transform.Parameters;
+                foreach (var parameterValue in sourceParameters )
+                {
+                    var key = GetComposedKey(parameterValue.Key, i);
+                    sourceParameters.CopySharedTo(parameterValue.Key, key, transformsParameters);
                 }
             }
 
             // NOTE: This is very important to reset the transforms here, as pre-caching by DynamicEffectCompiler is done on parameters changes
             // and as we have a list here, modifying a list doesn't trigger a change for the specified key
+            // TODO: if the list was the same than previous one, we could optimize this and not setup the value
             Parameters.Set(ColorTransformGroupKeys.Transforms, enabledTransforms);
         }
 

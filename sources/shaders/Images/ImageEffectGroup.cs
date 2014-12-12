@@ -6,23 +6,30 @@ using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
+    /// <summary>
+    /// A group of <see cref="ImageEffect"/>.
+    /// </summary>
     public class ImageEffectGroup : ImageEffect
     {
         private readonly LuminanceEffect luminanceEffect;
-
         private readonly BrightFilter brightFilter;
-
         private readonly Bloom bloom;
-
         private readonly ColorTransformGroup colorTransformGroup;
-
         private readonly ToneMap toneMap;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImageEffectGroup"/> class.
+        /// </summary>
+        /// <param name="services">The services.</param>
         public ImageEffectGroup(IServiceRegistry services)
             : this(ImageEffectContext.GetShared(services))
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImageEffectGroup"/> class.
+        /// </summary>
+        /// <param name="context">The context.</param>
         public ImageEffectGroup(ImageEffectContext context)
             : base(context)
         {
