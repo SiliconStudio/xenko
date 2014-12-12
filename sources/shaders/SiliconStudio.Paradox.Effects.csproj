@@ -583,7 +583,6 @@
       <DependentUpon>MaterialReflectanceGBuffer.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Images\Bloom\Bloom.cs" />
-    <Compile Include="Images\Bloom\BloomStep.cs" />
     <Compile Include="Images\BrightFilter\BrightFilter.cs" />
     <Compile Include="Images\BrightFilter\BrightFilterShader.cs">
       <DependentUpon>BrightFilterShader.pdxsl</DependentUpon>
@@ -591,7 +590,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Images\BrightFilter\BrightFilterStep.cs" />
     <Compile Include="Images\GaussianBlur\GaussianBlur.cs" />
     <Compile Include="Images\GaussianBlur\GaussianBlurKeys.cs" />
     <Compile Include="Images\GaussianBlur\GaussianBlurShader.cs">
@@ -607,15 +605,10 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Images\IImageEffectRequiredParameterKeys.cs" />
     <Compile Include="Images\ImageEffectGroup.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Images\ImageEffectStep.cs" />
-    <Compile Include="Images\ImageEffectStepCollection.cs" />
-    <Compile Include="Images\ImageEffectStepCollectionExtensions.cs" />
-    <Compile Include="Images\ImageEffectStepEnableDelegate.cs" />
-    <Compile Include="Images\ImageEffectStepKeys.cs" />
+    <Compile Include="Images\ColorTransforms\ColorTransformCollection.cs" />
     <Compile Include="Images\ImageReadback\ImageReadback.cs" />
     <Compile Include="Images\ImageScaler\ImageScalerEffect.cs">
       <DependentUpon>ImageScalerEffect.pdxfx</DependentUpon>
@@ -645,7 +638,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Images\LuminanceEffect\LuminanceEffect.cs" />
-    <Compile Include="Images\LuminanceEffect\LuminanceEffectStep.cs" />
     <Compile Include="Images\LuminanceEffect\LuminanceLogEffect.cs" />
     <Compile Include="Images\LuminanceEffect\LuminanceLogShader.cs">
       <DependentUpon>LuminanceLogShader.pdxsl</DependentUpon>

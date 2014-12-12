@@ -10,7 +10,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// A tonemap effect.
     /// </summary>
-    public class ToneMap : ColorTransform, IImageEffectRequiredParameterKeys
+    public class ToneMap : ColorTransform
     {
         private readonly float[] weightedLuminances = new float[16];
         private int currentWeightedLuminanceIndex = 0;
@@ -139,12 +139,6 @@ namespace SiliconStudio.Paradox.Effects.Images
             {
                 Parameters.Set(ToneMapShaderKeys.Brightness, value);
             }
-        }
-
-
-        void IImageEffectRequiredParameterKeys.FillRequired(HashSet<ParameterKey> dependencies)
-        {
-            dependencies.Add(ToneMapKeys.LuminanceResult);
         }
 
         public override void UpdateParameters(ColorTransformContext context)

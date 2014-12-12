@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
-    public class ColorTransformGroup : ImageEffect, IImageEffectRequiredParameterKeys
+    public class ColorTransformGroup : ImageEffect
     {
         private readonly ParameterCollection transformsParameters;
 
@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         private readonly Dictionary<ParameterCompositeKey, ParameterKey> compositeKeys;
 
-        private readonly List<ColorTransform> transforms;
+        private readonly ColorTransformCollection transforms;
 
         private readonly List<ColorTransform> collectTransforms;
 
@@ -33,7 +33,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             : base(context, colorTransformGroupEffect)
         {
             compositeKeys = new Dictionary<ParameterCompositeKey, ParameterKey>();
-            transforms = new List<ColorTransform>();
+            transforms = new ColorTransformCollection();
             enabledTransforms = new List<ColorTransform>();
             collectTransforms = new List<ColorTransform>();
 
@@ -53,7 +53,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Gets the color transforms.
         /// </summary>
         /// <value>The transforms.</value>
-        public List<ColorTransform> Transforms
+        public ColorTransformCollection Transforms
         {
             get
             {
@@ -100,18 +100,6 @@ namespace SiliconStudio.Paradox.Effects.Images
         protected virtual void CollectPostTransforms()
         {
             AddTemporaryTransform(gammaTransform);
-        }
-
-        void IImageEffectRequiredParameterKeys.FillRequired(HashSet<ParameterKey> dependencies)
-        {
-            foreach (var transform in CollectTransforms())
-            {
-                var effectDepdencies = transform as IImageEffectRequiredParameterKeys;
-                if (effectDepdencies != null)
-                {
-                    effectDepdencies.FillRequired(dependencies);
-                }
-            }
         }
 
         protected void AddTemporaryTransform(ColorTransform transform)

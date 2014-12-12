@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 
+using SiliconStudio.Core;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects.Images
@@ -84,7 +85,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         }
 
         /// <summary>
-        /// Updates the effect <see cref="Parameters" /> from properties defined in this instance. See remarks.
+        /// Updates the effect <see cref="ImageEffectShader.Parameters" /> from properties defined in this instance. See remarks.
         /// </summary>
         /// <exception cref="System.InvalidOperationException">Expecting less than 10 textures in input</exception>
         /// <remarks>By default, all the input textures will be remapped to <see cref="TexturingKeys.Texture0" />...etc.</remarks>
@@ -101,7 +102,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                 }
                 else
                 {
-                    throw new InvalidOperationException("Expecting less than 10 textures in input");
+                    throw new InvalidOperationException("Expecting less than {0} textures in input".ToFormat(TexturingKeys.DefaultTextures.Count));
                 }
             }
         }
