@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     {
         private readonly GaussianBlur blur;
 
-        private readonly ImageEffectShader blurCombine = null; // TODO
+        private readonly ColorCombiner blurCombine;
         private readonly List<Texture> resultList = new List<Texture>();
 
         /// <summary>
@@ -23,6 +23,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         public Bloom(ImageEffectContext context)
             : base(context)
         {
+            blurCombine = new ColorCombiner(Context);
             blur = new GaussianBlur(context);
 
             Radius = 3;
@@ -52,6 +53,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         protected override void DrawCore()
         {
             var inputTexture = GetInput(0);
+            var output = GetOutput(0) ?? inputTexture;
 
             if (inputTexture == null)
             {
@@ -74,7 +76,6 @@ namespace SiliconStudio.Paradox.Effects.Images
             // Create other rendertargets upto lastMinSize max
             resultList.Clear();
             var tempList = new List<Texture>();
-            var blurList = new List<Texture>();
             var sizeDown4 = nextSize.Down2();
 
             //var radius = (float)power;
@@ -97,6 +98,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                 blur.SetOutput(nextRenderTarget);
                 blur.Draw();
 
+                // TODO: Use the MultiScaler for this part instead of recoding it here
                 GraphicsDevice.BeginProfile(Color.Green, "UpGroup");
                 // Only blur after 2nd downscale
                 if (resultList.Count > 0)
@@ -130,45 +132,42 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             MaxMip = resultList.Count;
 
-            // Blur the results
-            for (int i = 0; i < resultList.Count; i++)
-            {
-                var result = resultList[i];
-
-                blurCombine.SetInput(i, result);
-                //factorsParameter.SetValue(i, new Vector4((float)Math.Pow(2.0f, i)));
-                //factorsParameter.SetValue(i, new Vector4(i == MipIndex ? (float)Math.Pow(2.0f, i * 2.0f): 0.0f));
-
-                var exponent = (float)Math.Max(0, i) - 4.0f;
-                var level = !ShowOnlyMip || i == MipIndex ? (float)Math.Pow(2.0f, exponent) : 0.0f;
-                level *= Amount;
-                // TODO: Setup parameters
-                // blurCombine.SharedParameters.Set(, new Vector4(level));
-            }
-
             // Copy the input texture to the output
             if (ShowOnlyMip || ShowOnlyBloom)
             {
-                GraphicsDevice.Clear(GetSafeOutput(0), Color.Black);
+                GraphicsDevice.Clear(output, Color.Black);
             }
             else
             {
-                if (inputTexture != GetSafeOutput(0))
+                if (inputTexture != output)
                 {
                     Scaler.SetInput(inputTexture);
-                    Scaler.SetOutput(GetSafeOutput(0));
+                    Scaler.SetOutput(output);
                     Scaler.Draw();
                 }
             }
 
+            // Switch to additive
             GraphicsDevice.SetBlendState(GraphicsDevice.BlendStates.Additive);
             if (resultList.Count == 1)
             {
-                GraphicsDevice.SetDepthAndRenderTargets(GetSafeOutput(0));
-                GraphicsDevice.DrawTexture(resultList[0]);
+                Scaler.SetInput(resultList[0]);
+                Scaler.SetOutput(output);
+                Scaler.Draw();
             }
             else if (resultList.Count > 1)
             {
+                // Combine the blurred mips
+                for (int i = 0; i < resultList.Count; i++)
+                {
+                    var result = resultList[i];
+                    blurCombine.SetInput(i, result);
+                    var exponent = (float)Math.Max(0, i) - 4.0f;
+                    var level = !ShowOnlyMip || i == MipIndex ? (float)Math.Pow(2.0f, exponent) : 0.0f;
+                    level *= Amount;
+                    blurCombine.Factors[i] = level;
+                }
+
                 blurCombine.SetOutput(GetSafeOutput(0));
                 blurCombine.Draw();
             }
