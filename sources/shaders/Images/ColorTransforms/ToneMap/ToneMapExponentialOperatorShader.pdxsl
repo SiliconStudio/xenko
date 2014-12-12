@@ -6,11 +6,11 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// The logarithmic tonemap operator.
     /// </summary>
-    internal class ToneMapLogarithmicOperatorShader : ToneMapCommonOperatorShader
+    internal class ToneMapExponentialOperatorShader : ToneMapCommonOperatorShader
     {
-        override float3 Compute(float3 color)
+        override float4 Compute(float4 color)
         {
-	        float pixelLuminance = lum(color);    
+	        float pixelLuminance = LuminanceUtils.Luma(color);    
 	        float toneMappedLuminance = 1 - exp(-pixelLuminance / WhiteLevel);
 	        return toneMappedLuminance * pow(color / pixelLuminance, LuminanceSaturation);
         }

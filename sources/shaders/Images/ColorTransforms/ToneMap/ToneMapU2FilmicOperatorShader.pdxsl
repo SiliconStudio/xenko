@@ -28,13 +28,13 @@ namespace SiliconStudio.Paradox.Effects.Images
 	        return ((x*(A*x+C*B)+D*E)/(x*(A*x+B)+D*F)) - E/F;
         }
 
-        override float3 Compute(float3 color)
+        override float4 Compute(float4 color)
         {
             // Applies the Uncharted 2 filmic tone mapping curve
-	        float3 numerator = U2Func(color);        
+	        float3 numerator = U2Func(color.rgb);        
 	        float3 denominator = U2Func(LinearWhite);
 
-	        return numerator / denominator;
+	        return float4(numerator / denominator, 1);
         }
     };
 }

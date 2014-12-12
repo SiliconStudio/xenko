@@ -11,7 +11,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// </remarks>
     internal class ToneMapHejlDawsonOperatorShader : ToneMapOperatorShader
     {
-        override float3 Compute(float3 color)
+        override float4 Compute(float4 color)
         {
            color = max(0,color-0.004);
            color = (color*(6.2*color+.5))/(color*(6.2*color+1.7)+0.06);

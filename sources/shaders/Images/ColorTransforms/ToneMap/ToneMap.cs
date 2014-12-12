@@ -192,7 +192,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             var newShader = currentOperator != null ? currentOperator.Shader : null;
             if (previousShader != newShader)
             {
-                Parameters.Set(ToneMapKeys.Operator, currentOperator.Shader);
+                Parameters.Set(ToneMapKeys.Operator.ComposeWith("ToneMapOperator"), newShader ?? "ToneMapOperatorShader");
             }
         }
     }

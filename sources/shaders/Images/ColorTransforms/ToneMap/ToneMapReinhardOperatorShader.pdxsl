@@ -8,7 +8,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// </summary>
     internal class ToneMapReinhardOperatorShader : ToneMapCommonOperatorShader
     {
-        override float3 Compute(float3 color)
+        override float4 Compute(float4 color)
         {
 	        float pixelLuminance = LuminanceUtils.Luma(color);    
             // TODO add version: toneMappedLuminance = pixelLuminance / (1.0f + pixelLuminance);
