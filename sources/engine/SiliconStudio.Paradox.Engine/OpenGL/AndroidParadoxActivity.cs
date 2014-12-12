@@ -62,6 +62,31 @@ namespace SiliconStudio.Paradox.Starter
             // set up a listener to the android ringer mode (Normal/Silent/Vibrate)
             ringerModeIntentReceiver = new RingerModeIntentReceiver((AudioManager)GetSystemService(AudioService));
             RegisterReceiver(ringerModeIntentReceiver, new IntentFilter(AudioManager.RingerModeChangedAction));
+
+            SetImmersiveMode();
+        }
+
+        public override void OnWindowFocusChanged(bool hasFocus)
+        {
+            base.OnWindowFocusChanged(hasFocus);
+            if (hasFocus)
+            {
+                SetImmersiveMode();
+            }
+        }
+
+        private void SetImmersiveMode()
+        {
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.Kitkat) // http://redth.codes/such-android-api-levels-much-confuse-wow/
+            {
+                // set sticky fullscreen immersion mode
+                // http://developer.android.com/training/system-ui/immersive.html#sticky
+                // http://developer.xamarin.com/samples/AdvancedImmersiveMode/
+                var view = Window.DecorView;
+                int flags = (int)view.SystemUiVisibility;
+                flags |= (int)(SystemUiFlags.Fullscreen | SystemUiFlags.HideNavigation | SystemUiFlags.ImmersiveSticky | SystemUiFlags.LayoutFullscreen | SystemUiFlags.LayoutHideNavigation | SystemUiFlags.LayoutStable);
+                view.SystemUiVisibility = (StatusBarVisibility)flags;
+            }
         }
 
         private void SetupGameViewAndGameContext()
