@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
+using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.Effects;
@@ -17,7 +17,7 @@ using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Graphics.Data;
 using SiliconStudio.Paradox.Shaders;
 
-namespace SiliconStudio.BuildEngine
+namespace SiliconStudio.Paradox.Assets.Model
 {
     public abstract class ImportModelCommand : SingleFileImportCommand
     {
