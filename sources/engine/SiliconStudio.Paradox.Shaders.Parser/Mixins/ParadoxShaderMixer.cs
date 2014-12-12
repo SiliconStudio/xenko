@@ -298,7 +298,6 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             {
                 if (variable.Qualifiers.Contains(ParadoxStorageQualifier.Extern))
                 {
-                    var baselink = context + "." + variable.Name.Text;
                     List<ModuleMixin> mixins;
                     if (CompositionsPerVariable.TryGetValue(variable, out mixins))
                     {
@@ -306,11 +305,13 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                         {
                             for (var i = 0; i < mixins.Count; ++i)
                             {
-                                LinkVariables(mixins[i], baselink + "[" + i + "]", visitedMixins);
+                                var baselink = "." + variable.Name.Text + "[" + i + "]" + context;
+                                LinkVariables(mixins[i], baselink, visitedMixins);
                             }
                         }
                         else
                         {
+                            var baselink = "." + variable.Name.Text + context;
                             LinkVariables(mixins[0], baselink, visitedMixins);
                         }
                     }
