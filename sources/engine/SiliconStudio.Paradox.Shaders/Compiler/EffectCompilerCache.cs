@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 
 using SiliconStudio.Core;
@@ -77,8 +78,10 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 // On non Windows platform, we are expecting to have the bytecode stored directly
                 if (!Platform.IsWindowsDesktop && bytecode == null)
                 {
-                    Log.Error("Unable to find compiled shaders [{0}] for mixin [{1}] with parameters [{2}]", compiledUrl, mixin, compilerParameters.ToStringDetailed());
-                    throw new InvalidOperationException("Unable to find compiled shaders [{0}]".ToFormat(compiledUrl));
+                    var stringBuilder = new StringBuilder();
+                    stringBuilder.AppendFormat("Unable to find compiled shaders [{0}] for mixin [{1}] with parameters [{2}]", compiledUrl, mixin, usedParameters.ToStringDetailed());
+                    Log.Error(stringBuilder.ToString());
+                    throw new InvalidOperationException(stringBuilder.ToString());
                 }
             }
 
