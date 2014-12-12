@@ -24,8 +24,6 @@ namespace SiliconStudio.Paradox.Effects.Images
         private readonly ImageMultiScaler multiScaler;
         private readonly ImageReadback<Half> readback;
 
-        private Texture autoOutputTexture;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="LuminanceEffect" /> class.
         /// </summary>
@@ -107,40 +105,13 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
-        /// <summary>
-        /// Gets the local luminance texture.
-        /// </summary>
-        /// <value>The local luminance texture.</value>
-        public Texture LocalLuminanceTexture
-        {
-            get
-            {
-                return autoOutputTexture;
-            }
-        }
-
         protected override void DrawCore()
         {
             var input = GetSafeInput(0);
-            var output = GetOutput(0);
+            var output = GetSafeOutput(0);
 
-            Texture outputTextureDown = null;
-            var blurTextureSize = (output != null) ? output.Size.Down2(UpscaleCount) : input.Size.Down2(DownscaleCount);
-            outputTextureDown = NewScopedRenderTarget2D(blurTextureSize.Width, blurTextureSize.Height, luminanceFormat, 1);
-
-            // If no output, we are only calculating the average luminance.
-            if (output == null)
-            {
-                var autoOutputTextureSize = blurTextureSize.Up2(UpscaleCount);
-                autoOutputTexture = Context.Allocator.GetTemporaryTexture2D(autoOutputTextureSize.Width, autoOutputTextureSize.Height, luminanceFormat, 1);
-                output = autoOutputTexture;
-            }
-            else if (autoOutputTexture != null )
-            {
-                // If we have an output, release the previous auto output texture
-                Context.Allocator.ReleaseReference(autoOutputTexture);
-                autoOutputTexture = null;
-            }
+            var blurTextureSize = output.Size.Down2(UpscaleCount);
+            var outputTextureDown = NewScopedRenderTarget2D(blurTextureSize.Width, blurTextureSize.Height, luminanceFormat, 1);
 
             var luminanceMap = NewScopedRenderTarget2D(input.ViewWidth, input.ViewHeight, luminanceFormat, 1);
 
@@ -176,14 +147,6 @@ namespace SiliconStudio.Paradox.Effects.Images
                 var rawLogValue = readback.Result[0];
                 AverageLuminance = (float)Math.Pow(2.0, rawLogValue);
             }
-
-            // Set the result back in the context
-            var luminanceResult = new LuminanceResult()
-            {
-                AverageLuminance = AverageLuminance,
-                LocalTexture = LocalLuminanceTexture
-            };
-            Context.Parameters.Set(LuminanceResult, luminanceResult);
         }
     }
 }
