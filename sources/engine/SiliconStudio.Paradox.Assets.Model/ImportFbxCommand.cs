@@ -3,11 +3,12 @@
 using System;
 using System.ComponentModel;
 using System.IO;
+using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.Effects.Data;
 
-namespace SiliconStudio.BuildEngine
+namespace SiliconStudio.Paradox.Assets.Model
 {
     [CommandDependsOn(typeof(Paradox.Importer.FBX.MeshConverter))]
     [Description("Import FBX")]

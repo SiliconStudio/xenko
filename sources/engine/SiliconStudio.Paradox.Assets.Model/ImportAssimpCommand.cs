@@ -4,12 +4,12 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-
+using SiliconStudio.BuildEngine;
 using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Effects.Data;
 
-namespace SiliconStudio.BuildEngine
+namespace SiliconStudio.Paradox.Assets.Model
 {
     [CommandDependsOn(typeof(Paradox.Importer.AssimpNET.MeshConverter))]
     [Description("Import Assimp")]
