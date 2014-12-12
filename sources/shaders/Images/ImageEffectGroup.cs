@@ -77,7 +77,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             // Luminance pass (only if tone mapping is enabled)
             if (toneMap.Enabled)
             {
-                const int LocalLuminanceDownScale = 2;
+                const int LocalLuminanceDownScale = 3;
                 var lumSize = input.Size.Down2(LocalLuminanceDownScale);
                 var luminanceTexture = NewScopedRenderTarget2D(lumSize.Width, lumSize.Height, PixelFormat.R16_Float, 1);
 
@@ -95,9 +95,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             // TODO: Add Glare pass
             if (bloom.Enabled)
             {
-                const int LocalBrightDownScale = 4;
-                var brightSize = input.Size.Down2(LocalBrightDownScale);
-                var brightTexture = NewScopedRenderTarget2D(brightSize.Width, brightSize.Height, input.Format, 1);
+                var brightTexture = NewScopedRenderTarget2D(input.Width, input.Height, input.Format, 1);
 
                 brightFilter.SetInput(input);
                 brightFilter.SetOutput(brightTexture);
@@ -105,6 +103,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
                 bloom.SetInput(brightTexture);
                 bloom.SetOutput(input);
+                bloom.Draw();
             }
 
             // Color transform group pass (tonemap, color grading, gamma correction)

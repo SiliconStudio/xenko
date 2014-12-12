@@ -28,7 +28,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             Radius = 3;
             Amount = 1.0f;
-            DownScale = 5;
+            DownScale = 3;
         }
 
         public int Radius { get; set; }
@@ -137,15 +137,15 @@ namespace SiliconStudio.Paradox.Effects.Images
             {
                 GraphicsDevice.Clear(output, Color.Black);
             }
-            else
-            {
-                if (inputTexture != output)
-                {
-                    Scaler.SetInput(inputTexture);
-                    Scaler.SetOutput(output);
-                    Scaler.Draw();
-                }
-            }
+            //else
+            //{
+            //    if (inputTexture != output)
+            //    {
+            //        Scaler.SetInput(inputTexture);
+            //        Scaler.SetOutput(output);
+            //        Scaler.Draw();
+            //    }
+            //}
 
             // Switch to additive
             GraphicsDevice.SetBlendState(GraphicsDevice.BlendStates.Additive);

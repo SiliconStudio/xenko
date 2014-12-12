@@ -188,11 +188,11 @@ namespace SiliconStudio.Paradox.Effects.Images
             var currentOperator = Operator ?? defaultOperator;
             currentOperator.UpdateParameters(context);
 
-            // Only change shader when actually changing (to allow compilation checks based on parameters counters not changing)
-            var newShader = currentOperator != null ? currentOperator.Shader : null;
-            if (previousShader != newShader)
+            // Copy sub parameters from composition to this transform
+            foreach (var parameterValue in currentOperator.Parameters)
             {
-                Parameters.Set(ToneMapKeys.Operator.ComposeWith("ToneMapOperator"), newShader ?? "ToneMapOperatorShader");
+                var key = parameterValue.Key.ComposeWith("ToneMapOperator");
+                currentOperator.Parameters.CopySharedTo(parameterValue.Key, key, Parameters);
             }
         }
     }

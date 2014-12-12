@@ -685,7 +685,6 @@
     </Compile>
     <Compile Include="Images\ColorTransforms\ColorTransformKeys.cs" />
     <Compile Include="Images\ColorTransforms\GammaTransform.cs" />
-    <Compile Include="Images\ColorTransforms\ToneMap\ToneMapKeys.cs" />
     <Compile Include="Images\ColorTransforms\ToneMap\ToneMapEffect.cs">
       <DependentUpon>ToneMapEffect.pdxfx</DependentUpon>
       <AutoGen>True</AutoGen>

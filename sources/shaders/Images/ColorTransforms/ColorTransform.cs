@@ -27,6 +27,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             // Initialize all Parameters with values coming from each ParameterKey
             InitializeProperties();
+
             Shader = colorTransformShader;
         }
 
