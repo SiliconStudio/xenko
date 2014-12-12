@@ -110,7 +110,47 @@
     <Reference Include="monotouch" Label="Paradox.DoNotSync" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\CustomEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CustomEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Assets\CustomShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CustomShader.cs</LastGenOutput>
+    </None>
+    <None Include="Assets\CustomShader2.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CustomShader2.cs</LastGenOutput>
+    </None>
+    <None Include="Assets\MyCustomColorTransformShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MyCustomColorTransformShader.cs</LastGenOutput>
+    </None>
     <None Label="Paradox.DoNotSync" Include="Info.plist" />
+    <Compile Include="Assets\CustomEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CustomEffect.pdxfx</DependentUpon>
+    </Compile>
+    <Compile Include="Assets\CustomShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CustomShader.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Assets\CustomShader2.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CustomShader2.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Assets\MyCustomColorTransformShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MyCustomColorTransformShader.pdxsl</DependentUpon>
+    </Compile>
     <Compile Label="Paradox.DoNotSync" Include="Properties\AssemblyInfo.cs" />
     <Compile Label="Paradox.DoNotSync" Include="..\..\..\sources\common\shared\tests\nunitlite\NUnitLiteLauncher.iPhone.cs">
       <Link>NUnitLiteLauncher.iPhone.cs</Link>
@@ -159,11 +199,6 @@
       <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
       <Name>SiliconStudio.Paradox</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\sources\shaders\SiliconStudio.Paradox.Effects.csproj">
-      <Project>{0342C3E7-4A38-46B4-A8EC-E728D50085D3}</Project>
-      <Name>SiliconStudio.Paradox.Effects</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Paradox.Engine\SiliconStudio.Paradox.Engine.csproj">
       <Project>{C121A566-555E-42B9-9B0A-1696529A9088}</Project>
       <Name>SiliconStudio.Paradox.Engine</Name>
@@ -175,6 +210,10 @@
     <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\common\shaders\SiliconStudio.Shaders\SiliconStudio.Shaders.csproj">
       <Project>{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}</Project>
       <Name>SiliconStudio.Shaders</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\shaders\SiliconStudio.Paradox.Effects.csproj">
+      <Project>{0342c3e7-4a38-46b4-a8ec-e728d50085d3}</Project>
+      <Name>SiliconStudio.Paradox.Effects</Name>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Paradox.Games\SiliconStudio.Paradox.Games.csproj">
       <Project>{42780CBD-3FE7-48E3-BD5B-59945EA20137}</Project>
@@ -190,12 +229,6 @@
     </ProjectReference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Compile Include="Assets\CustomEffect1.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>CustomEffect.pdxsl</DependentUpon>
-    </Compile>
     <Compile Include="Compiler\CubemapEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -277,10 +310,6 @@
     <Compile Include="TestTexture.cs" />
     <Compile Include="TestGraphicsApiCheck.cs" />
     <Compile Include="TestTextureSampling.cs" />
-    <None Include="Assets\CustomEffect.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>CustomEffect1.cs</LastGenOutput>
-    </None>
     <None Include="Compiler\CubemapEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CubemapEffect.cs</LastGenOutput>

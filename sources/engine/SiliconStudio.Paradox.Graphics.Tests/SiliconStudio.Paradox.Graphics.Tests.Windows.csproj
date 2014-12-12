@@ -49,7 +49,7 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SiliconStudio.Paradox.Graphics.Tests.TestMultipleRenderTargets</StartupObject>
+    <StartupObject>SiliconStudio.Paradox.Graphics.Tests.TestGeometricPrimitives</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">

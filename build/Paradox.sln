@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31010.0
+VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "90-Tools", "90-Tools", "{1AE1AC60-5D2F-4CA7-AE20-888F44551185}"
 EndProject
@@ -339,16 +339,14 @@ Global
 		{457D4B45-85B9-4098-8389-6CBC012D140F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{457D4B45-85B9-4098-8389-6CBC012D140F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{457D4B45-85B9-4098-8389-6CBC012D140F}.Release|Win32.ActiveCfg = Release|Any CPU
-		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.Release|Win32.ActiveCfg = Release|Any CPU
+		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.Debug|Any CPU.ActiveCfg = Debug|Android
+		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.Debug|Mixed Platforms.ActiveCfg = Debug|Android
+		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.Debug|Mixed Platforms.Build.0 = Debug|Android
+		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.Debug|Win32.ActiveCfg = Debug|Android
+		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.Release|Any CPU.ActiveCfg = Release|Android
+		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.Release|Mixed Platforms.ActiveCfg = Release|Android
+		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.Release|Mixed Platforms.Build.0 = Release|Android
+		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.Release|Win32.ActiveCfg = Release|Android
 		{A8F8D125-7A22-489F-99BC-9A02F545A17F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A8F8D125-7A22-489F-99BC-9A02F545A17F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A8F8D125-7A22-489F-99BC-9A02F545A17F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU

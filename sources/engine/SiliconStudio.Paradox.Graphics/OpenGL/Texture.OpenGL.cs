@@ -43,6 +43,7 @@ namespace SiliconStudio.Paradox.Graphics
         public bool IsDepthBuffer { get; private set; }
         public bool IsStencilBuffer { get; private set; }
         public bool IsRenderbuffer { get; private set; }
+        internal int ResourceIdStencil { get; private set; }
         internal int PixelBufferObjectId { get; set; }
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
@@ -79,8 +80,10 @@ namespace SiliconStudio.Paradox.Graphics
                 switch (Dimension)
                 {
                     case TextureDimension.Texture1D:
+#if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
                         Target = TextureTarget.Texture1D;
                         break;
+#endif
                     case TextureDimension.Texture2D:
                         Target = TextureTarget.Texture2D;
                         break;
@@ -141,6 +144,7 @@ namespace SiliconStudio.Paradox.Graphics
                         GL.GenRenderbuffers(1, out resouceIdStencil);
                         GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, resouceIdStencil);
                         GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, stencil, Width, Height);
+                        ResourceIdStencil = resouceIdStencil;
                     }
 
                     GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
@@ -183,7 +187,7 @@ namespace SiliconStudio.Paradox.Graphics
                 GL.TexParameter(Target, TextureParameterName.TextureBaseLevel, 0);
                 GL.TexParameter(Target, TextureParameterName.TextureMaxLevel, Description.MipLevels - 1);
 #endif
-
+                // TODO: review initialization for texture3D and textureCube
                 if (Description.MipLevels == 0)
                     throw new NotImplementedException();
 
@@ -252,9 +256,14 @@ namespace SiliconStudio.Paradox.Graphics
                 {
                     GL.DeleteTextures(1, ref resourceId);
                 }
+#if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
+                if (ResourceIdStencil != 0)
+                    GL.DeleteRenderbuffer(ResourceIdStencil);
+#endif
             }
 
             resourceId = 0;
+            ResourceIdStencil = 0;
 
             base.DestroyImpl();
         }

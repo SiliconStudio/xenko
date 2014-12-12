@@ -3,7 +3,6 @@
 using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Images;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Input;

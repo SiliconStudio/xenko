@@ -1,7 +1,5 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-
-using System.Windows.Forms;
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL 
 #if SILICONSTUDIO_PLATFORM_ANDROID
 extern alias opentkold;
@@ -71,9 +69,7 @@ namespace SiliconStudio.Paradox.Graphics
         internal DepthStencilState defaultDepthStencilState;
         internal BlendState defaultBlendState;
         internal int versionMajor, versionMinor;
-        //internal RenderTarget windowProvidedRenderTarget;
         internal Texture windowProvidedRenderTexture;
-        //internal DepthStencilBuffer windowProvidedDepthBuffer;
         internal Texture windowProvidedDepthTexture;
 
         internal bool HasVAO;
@@ -972,9 +968,8 @@ namespace SiliconStudio.Paradox.Graphics
                         GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, depthStencilBuffer.ResourceId);
 
                     // If stencil buffer is separate, it's resource id might be stored in depthStencilBuffer.Texture.ResouceIdStencil
-                    // TODO: reactivate that
-                    //if(depthStencilBuffer.IsStencilBuffer)
-                    //    GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.StencilAttachment, RenderbufferTarget.Renderbuffer, depthStencilBuffer.ResouceIdStencil != 0 ? depthStencilBuffer.ResouceIdStencil : depthStencilBuffer.ResourceId);
+                    if(depthStencilBuffer.IsStencilBuffer)
+                        GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.StencilAttachment, RenderbufferTarget.Renderbuffer, depthStencilBuffer.ResourceIdStencil != 0 ? depthStencilBuffer.ResourceIdStencil : depthStencilBuffer.ResourceId);
 #endif
                 }
 
@@ -2216,13 +2211,13 @@ namespace SiliconStudio.Paradox.Graphics
             GL.GetFramebufferAttachmentParameter(FramebufferTarget.Framebuffer, FramebufferSlot.ColorAttachment0, FramebufferParameterName.FramebufferAttachmentObjectName, out renderTargetTextureId);
             windowProvidedRenderTexture.resourceId = renderTargetTextureId;
             windowProvidedRenderTexture.Reload = (graphicsResource) => { throw new NotImplementedException(); };
-            windowProvidedRenderTarget.resourceId = renderTargetTextureId;
+            windowProvidedRenderTexture.resourceId = renderTargetTextureId;
 
             // Extract FBO depth target
             GL.GetFramebufferAttachmentParameter(FramebufferTarget.Framebuffer, FramebufferSlot.DepthAttachment, FramebufferParameterName.FramebufferAttachmentObjectName, out renderTargetTextureId);
             windowProvidedDepthTexture.resourceId = renderTargetTextureId;
             windowProvidedDepthTexture.Reload = (graphicsResource) => { throw new NotImplementedException(); };
-            windowProvidedDepthBuffer.resourceId = renderTargetTextureId;
+            windowProvidedRenderTexture.resourceId = renderTargetTextureId;
 #endif
 
             RootDevice.existingFBOs[new FBOKey(windowProvidedDepthTexture, new[] { windowProvidedRenderTexture })] = windowProvidedFrameBuffer;
