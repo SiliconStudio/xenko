@@ -77,7 +77,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             // Luminance pass (only if tone mapping is enabled)
             if (toneMap.Enabled)
             {
-                const int LocalLuminanceDownScale = 6;
+                const int LocalLuminanceDownScale = 2;
                 var lumSize = input.Size.Down2(LocalLuminanceDownScale);
                 var luminanceTexture = NewScopedRenderTarget2D(lumSize.Width, lumSize.Height, PixelFormat.R16_Float, 1);
 
