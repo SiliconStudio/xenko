@@ -590,6 +590,19 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Images\ColorCombiner\ColorCombinerShader.cs">
+      <DependentUpon>ColorCombinerShader.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Images\ColorCombiner\ColorCombiner.cs" />
+    <Compile Include="Images\ColorCombiner\ColorCombinerEffect.cs">
+      <DependentUpon>ColorCombinerEffect.pdxfx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Images\GaussianBlur\GaussianBlur.cs" />
     <Compile Include="Images\GaussianBlur\GaussianBlurKeys.cs" />
     <Compile Include="Images\GaussianBlur\GaussianBlurShader.cs">
@@ -2110,6 +2123,14 @@
     <None Include="Images\BrightFilter\BrightFilterShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>BrightFilterShader.cs</LastGenOutput>
+    </None>
+    <None Include="Images\ColorCombiner\ColorCombinerShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ColorCombinerShader.cs</LastGenOutput>
+    </None>
+    <None Include="Images\ColorCombiner\ColorCombinerEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ColorCombinerEffect.cs</LastGenOutput>
     </None>
     <None Include="Images\GaussianBlur\GaussianBlurShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
