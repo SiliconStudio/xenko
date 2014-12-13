@@ -618,7 +618,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Images\ImageEffectGroup.cs">
+    <Compile Include="Images\ImageEffectBundle.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Images\ColorTransforms\ColorTransformCollection.cs" />

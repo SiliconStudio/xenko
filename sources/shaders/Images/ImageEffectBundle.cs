@@ -7,9 +7,9 @@ using SiliconStudio.Paradox.Graphics;
 namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
-    /// A group of <see cref="ImageEffect"/>.
+    /// A default bundle of <see cref="ImageEffect"/>.
     /// </summary>
-    public class ImageEffectGroup : ImageEffect
+    public class ImageEffectBundle : ImageEffect
     {
         private readonly LuminanceEffect luminanceEffect;
         private readonly BrightFilter brightFilter;
@@ -18,19 +18,19 @@ namespace SiliconStudio.Paradox.Effects.Images
         private readonly ToneMap toneMap;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImageEffectGroup"/> class.
+        /// Initializes a new instance of the <see cref="ImageEffectBundle"/> class.
         /// </summary>
         /// <param name="services">The services.</param>
-        public ImageEffectGroup(IServiceRegistry services)
+        public ImageEffectBundle(IServiceRegistry services)
             : this(ImageEffectContext.GetShared(services))
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImageEffectGroup"/> class.
+        /// Initializes a new instance of the <see cref="ImageEffectBundle"/> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        public ImageEffectGroup(ImageEffectContext context)
+        public ImageEffectBundle(ImageEffectContext context)
             : base(context)
         {
             luminanceEffect = new LuminanceEffect(Context);
