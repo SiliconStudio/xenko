@@ -74,6 +74,8 @@ namespace SiliconStudio.Paradox.Effects.Images
                 return;
             }
 
+            // TODO: Add DOF/MotionBlur pass
+
             // Luminance pass (only if tone mapping is enabled)
             if (toneMap.Enabled)
             {
@@ -88,8 +90,6 @@ namespace SiliconStudio.Paradox.Effects.Images
                 // Set this parameter that will be used by the tone mapping
                 colorTransformGroup.Parameters.Set(LuminanceEffect.LuminanceResult, new LuminanceResult(luminanceEffect.AverageLuminance, luminanceTexture));
             }
-
-            // TODO: Add DOF/MotionBlur pass
 
             // Bloom pass
             // TODO: Add Glare pass

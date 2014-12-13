@@ -14,6 +14,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         private readonly GaussianBlur blur;
 
         private readonly ColorCombiner blurCombine;
+        private readonly ImageMultiScaler multiScaler;
         private readonly List<Texture> resultList = new List<Texture>();
 
         /// <summary>
@@ -24,6 +25,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             : base(context)
         {
             blurCombine = new ColorCombiner(Context);
+            multiScaler = new ImageMultiScaler(Context);
             blur = new GaussianBlur(context);
 
             Radius = 3;
@@ -52,10 +54,10 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         protected override void DrawCore()
         {
-            var inputTexture = GetInput(0);
-            var output = GetOutput(0) ?? inputTexture;
+            var input = GetInput(0);
+            var output = GetOutput(0) ?? input;
 
-            if (inputTexture == null)
+            if (input == null)
             {
                 return;
             }
@@ -63,9 +65,9 @@ namespace SiliconStudio.Paradox.Effects.Images
             // ----------------------------------------
             // Downscale / 2
             // ----------------------------------------
-            var nextSize = inputTexture.Size.Down2();
-            var startRenderTarget = NewScopedRenderTarget2D(nextSize.Width, nextSize.Height, inputTexture.ViewFormat);
-            Scaler.SetInput(inputTexture);
+            var nextSize = input.Size.Down2();
+            var startRenderTarget = NewScopedRenderTarget2D(nextSize.Width, nextSize.Height, input.Format);
+            Scaler.SetInput(input);
             Scaler.SetOutput(startRenderTarget);
             Scaler.Draw("Down/2");
 
@@ -75,17 +77,16 @@ namespace SiliconStudio.Paradox.Effects.Images
             var previousRenderTarget = startRenderTarget;
             // Create other rendertargets upto lastMinSize max
             resultList.Clear();
-            var tempList = new List<Texture>();
-            var sizeDown4 = nextSize.Down2();
+            var upscaleSize = nextSize; //nextSize.Down2();
 
             //var radius = (float)power;
-            var maxInputSize = Math.Max(inputTexture.Size.Width, inputTexture.Size.Height);
+            var maxInputSize = Math.Max(input.Size.Width, input.Size.Height);
             var maxLevel = (int)(Math.Max(1, Math.Floor(Math.Log(maxInputSize, 2.0))) - 2);
 
             for (int mip = 0; mip < DownScale; mip++)
             {
                 nextSize = nextSize.Down2();
-                var nextRenderTarget = NewScopedRenderTarget2D(nextSize.Width, nextSize.Height, inputTexture.ViewFormat);
+                var nextRenderTarget = NewScopedRenderTarget2D(nextSize.Width, nextSize.Height, input.Format);
 
                 // Downscale
                 Scaler.SetInput(previousRenderTarget);
@@ -99,53 +100,26 @@ namespace SiliconStudio.Paradox.Effects.Images
                 blur.Draw();
 
                 // TODO: Use the MultiScaler for this part instead of recoding it here
-                GraphicsDevice.BeginProfile(Color.Green, "UpGroup");
                 // Only blur after 2nd downscale
-                if (resultList.Count > 0)
+                var renderTargetToCombine = nextRenderTarget;
+                if (mip > 0)
                 {
-                    // Upscale back to /4
-                    var sourceUpScale = nextRenderTarget;
-                    for (int i = tempList.Count - 1; i >= 0; i--)
-                    {
-                        Scaler.SetInput(sourceUpScale);
-                        Scaler.SetOutput(tempList[i]);
-                        Scaler.Draw("Upx2");
-                        sourceUpScale = tempList[i];
-                    }
-                    tempList.Add(nextRenderTarget);
-
-                    var result = NewScopedRenderTarget2D(sizeDown4.Width, sizeDown4.Height, inputTexture.ViewFormat);
-                    Scaler.SetInput(tempList[0]);
-                    Scaler.SetOutput(result);
-                    Scaler.Draw("Upx2");
-
-                    resultList.Add(result);
+                    renderTargetToCombine = NewScopedRenderTarget2D(upscaleSize.Width, upscaleSize.Height, input.Format);
+                    multiScaler.SetInput(nextRenderTarget);
+                    multiScaler.SetOutput(renderTargetToCombine);
+                    multiScaler.Draw();
                 }
-                else
-                {
-                    resultList.Add(nextRenderTarget);
-                }
-                GraphicsDevice.EndProfile();
-
+                resultList.Add(renderTargetToCombine);
                 previousRenderTarget = nextRenderTarget;
             }
 
-            MaxMip = resultList.Count;
+            MaxMip = DownScale - 1;
 
             // Copy the input texture to the output
             if (ShowOnlyMip || ShowOnlyBloom)
             {
                 GraphicsDevice.Clear(output, Color.Black);
             }
-            //else
-            //{
-            //    if (inputTexture != output)
-            //    {
-            //        Scaler.SetInput(inputTexture);
-            //        Scaler.SetOutput(output);
-            //        Scaler.Draw();
-            //    }
-            //}
 
             // Switch to additive
             GraphicsDevice.SetBlendState(GraphicsDevice.BlendStates.Additive);
@@ -158,6 +132,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             else if (resultList.Count > 1)
             {
                 // Combine the blurred mips
+                blurCombine.Reset();
                 for (int i = 0; i < resultList.Count; i++)
                 {
                     var result = resultList[i];
@@ -168,7 +143,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                     blurCombine.Factors[i] = level;
                 }
 
-                blurCombine.SetOutput(GetSafeOutput(0));
+                blurCombine.SetOutput(output);
                 blurCombine.Draw();
             }
             GraphicsDevice.SetBlendState(GraphicsDevice.BlendStates.Default);

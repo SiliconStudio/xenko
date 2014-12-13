@@ -18,6 +18,10 @@ namespace SiliconStudio.Paradox.Effects.Images
 	        float luminance = LuminanceUtils.Luma(color);
 
 	        // Apply threshold
+            //float middle = luminance - BrightPassThreshold;
+            //float range = 0.05f;
+            //float value = smoothstep(0, 1, saturate(middle * range));
+	        //color *= value;
 	        color *= luminance < BrightPassThreshold ? 0.0f : 1.0f;
 	
 	        return float4(color, 1.0);
