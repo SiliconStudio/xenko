@@ -53,7 +53,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
 
             // Check that ComputeColor2.Color is correctly composed for variables
             var computeColorSubCompute2 = ComputeColor2Keys.Color.ComposeWith("SubCompute1");
-            var computeColorSubComputes = ComputeColor2Keys.Color.ComposeWith("SubComputes[0].ColorRedirect");
+            var computeColorSubComputes = ComputeColor2Keys.Color.ComposeWith("ColorRedirect.SubComputes[0]");
 
             var members = cbuffer.Members.Select(member => member.Param.KeyName).ToList();
             Assert.IsTrue(members.Contains(computeColorSubCompute2.Name));
