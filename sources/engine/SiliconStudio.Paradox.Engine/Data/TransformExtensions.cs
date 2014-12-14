@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.Extensions
         /// Transform a vertex buffer positions, normals, tangents and bitangents using the given matrix.
         /// </summary>
         /// <param name="meshData">The mesh data.</param>
-        public unsafe static void TransformBuffer(this VertexBufferBindingData vertexBufferBinding, ref Matrix matrix)
+        public unsafe static void TransformBuffer(this VertexBufferBinding vertexBufferBinding, ref Matrix matrix)
         {
             // List of items that need to be transformed by the matrix
             var vertexElementsToTransform1 = vertexBufferBinding.Declaration
@@ -49,7 +49,7 @@ namespace SiliconStudio.Paradox.Extensions
             }
 
             // Transform buffer data
-            var bufferData = vertexBufferBinding.Buffer.Value.Content;
+            var bufferData = vertexBufferBinding.Buffer.GetSerializationData().Content;
             var vertexStride = vertexBufferBinding.Declaration.VertexStride;
             var vertexCount = vertexBufferBinding.Count;
             fixed (byte* bufferPointerStart = &bufferData[vertexBufferBinding.Offset])

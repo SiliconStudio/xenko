@@ -15,7 +15,7 @@ using SiliconStudio.Paradox.EntityModel.Data;
 namespace SiliconStudio.Paradox.EntityModel
 {
     [DataContract]
-    [ContentSerializer(typeof(DataContentWithEntityReferenceSerializer))]
+    //[ContentSerializer(typeof(DataContentWithEntityReferenceSerializer))]
     public class EntityHierarchyData
     {
         [DataMember(10)]
@@ -29,8 +29,8 @@ namespace SiliconStudio.Paradox.EntityModel
             Entities = new EntityCollection(this);
         }
 
-        [DataSerializer(typeof(KeyedSortedListSerializer<EntityCollection, Guid, EntityData>))]
-        public sealed class EntityCollection : KeyedSortedList<Guid, EntityData>
+        [DataSerializer(typeof(KeyedSortedListSerializer<EntityCollection, Guid, Entity>))]
+        public sealed class EntityCollection : KeyedSortedList<Guid, Entity>
         {
             private readonly EntityHierarchyData container;
 
@@ -39,14 +39,14 @@ namespace SiliconStudio.Paradox.EntityModel
                 this.container = container;
             }
         
-            protected override Guid GetKeyForItem(EntityData item)
+            protected override Guid GetKeyForItem(Entity item)
             {
                 return item.Id;
             }
         
-            protected override void InsertItem(int index, EntityData item)
+            protected override void InsertItem(int index, Entity item)
             {
-                item.Container = container;
+                //item.Container = container;
                 base.InsertItem(index, item);
             }
         
@@ -54,29 +54,29 @@ namespace SiliconStudio.Paradox.EntityModel
             {
                 var item = items[index];
                 base.RemoveItem(index);
-                item.Container = null;
+                //item.Container = null;
             }
         }
     }
 
-    public class DataContentWithEntityReferenceSerializer : DataContentSerializer<EntityHierarchyData>
-    {
-        public override void Serialize(ContentSerializerContext context, SerializationStream stream, ref EntityHierarchyData entityHierarchyData)
-        {
-            var entityAnalysisResult = new EntityReference.EntityAnalysisResult();
-            stream.Context.Set(EntityReference.EntityAnalysisResultKey, entityAnalysisResult);
-
-            base.Serialize(context, stream, ref entityHierarchyData);
-
-            foreach (var entityReference in entityAnalysisResult.EntityReferences)
-            {
-                entityReference.Value = entityHierarchyData.Entities.First(x => x.Id == entityReference.Id);
-            }
-
-            foreach (var entityComponentReference in entityAnalysisResult.EntityComponentReferences)
-            {
-                entityComponentReference.Value = entityComponentReference.Entity.Value.Components[entityComponentReference.Component];
-            }
-        }
-    }
+    //public class DataContentWithEntityReferenceSerializer : DataContentSerializer<EntityHierarchyData>
+    //{
+    //    public override void Serialize(ContentSerializerContext context, SerializationStream stream, EntityHierarchyData entityHierarchyData)
+    //    {
+    //        var entityAnalysisResult = new EntityReference.EntityAnalysisResult();
+    //        stream.Context.Set(EntityReference.EntityAnalysisResultKey, entityAnalysisResult);
+    //
+    //        base.Serialize(context, stream, entityHierarchyData);
+    //
+    //        foreach (var entityReference in entityAnalysisResult.EntityReferences)
+    //        {
+    //            entityReference.Value = entityHierarchyData.Entities.First(x => x.Id == entityReference.Id);
+    //        }
+    //
+    //        foreach (var entityComponentReference in entityAnalysisResult.EntityComponentReferences)
+    //        {
+    //            entityComponentReference.Value = entityComponentReference.Entity.Value.Components[entityComponentReference.Component];
+    //        }
+    //    }
+    //}
 }

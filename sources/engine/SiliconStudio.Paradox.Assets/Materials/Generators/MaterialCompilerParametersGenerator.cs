@@ -34,7 +34,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Generators
                 var assetManager = new AssetManager();
                 var settings = new AssetManagerLoaderSettings()
                 {
-                    ContentFilter = AssetManagerLoaderSettings.NewContentFilterByType(typeof(MaterialData)),
+                    ContentFilter = AssetManagerLoaderSettings.NewContentFilterByType(typeof(Material)),
                 };
 
                 var hashParameters = new HashSet<ObjectId>();
@@ -44,7 +44,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Generators
                     var assetPath = materialAssetItem.Location.GetDirectoryAndFileName();
                     try
                     {
-                        var materialData = assetManager.Load<MaterialData>(assetPath, settings);
+                        var materialData = assetManager.Load<Material>(assetPath, settings);
                         if (materialData != null && materialData.Parameters != null && materialData.Parameters.Count > 0)
                         {
                             var materialParameters = new ParameterCollection();

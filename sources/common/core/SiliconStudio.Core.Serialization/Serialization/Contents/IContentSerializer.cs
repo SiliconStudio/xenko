@@ -19,13 +19,13 @@ namespace SiliconStudio.Core.Serialization.Contents
         //bool CanSerializeContext(ContentSerializerContext executor);
 
         //void Serialize(ContentSerializerExecutorBase executor, ref object obj/*, ref object intermediateData*/);
-        void Serialize(ContentSerializerContext context, SerializationStream stream, ref object obj);
+        void Serialize(ContentSerializerContext context, SerializationStream stream, object obj);
 
         object Construct(ContentSerializerContext context);
     }
 
     public interface IContentSerializer<T> : IContentSerializer
     {
-        void Serialize(ContentSerializerContext context, SerializationStream stream, ref T obj);
+        void Serialize(ContentSerializerContext context, SerializationStream stream, T obj);
     }
 }

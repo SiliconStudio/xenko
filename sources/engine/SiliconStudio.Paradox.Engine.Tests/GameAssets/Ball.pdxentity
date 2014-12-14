@@ -10,14 +10,14 @@ Hierarchy:
             -   Id: 3729e200-1a43-4e7c-a0ff-832ad06c32e3
                 Name: Root
                 Components:
-                    TransformationComponent.Key: !TransformationComponentData
+                    TransformationComponent.Key:
                         Children: []
                         Rotation: {W: 1, X: 0, Y: 0, Z: 0}
                         Scaling: {X: 1, Y: 1, Z: 1}
                         Translation: {X: 0, Y: 0, Z: 0}
                         UseTRS: true
-                    SpriteComponent.Key: !SpriteComponentData
+                    SpriteComponent.Key:
                         Color: {R: 255, G: 255, B: 255, A: 255}
                         SpriteEffect: None
-                        SpriteGroupInternal: 5d8ecea5-50f2-49c1-8fe8-16e67dd65ab0:BallSprite1
+                        SpriteGroup: 5d8ecea5-50f2-49c1-8fe8-16e67dd65ab0:BallSprite1
 AssetBases: {}

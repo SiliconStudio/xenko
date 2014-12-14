@@ -5,6 +5,8 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using SiliconStudio.Paradox.Effects.Data;
 using SiliconStudio.Core;
+using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Graphics.Data;
 
 namespace SiliconStudio.Paradox.Extensions
 {
@@ -15,7 +17,7 @@ namespace SiliconStudio.Paradox.Extensions
         /// </summary>
         /// <param name="meshData">The mesh data.</param>
         /// <param name="vertexElementToExtract">The declaration to extract (e.g. "POSITION0"...etc.) </param>
-        public static T[] GetVertexBufferData<T>(this MeshDrawData meshData, params string[] vertexElementToExtract) where T : struct
+        public static T[] GetVertexBufferData<T>(this MeshDraw meshData, params string[] vertexElementToExtract) where T : struct
         {
             var declaration = meshData.VertexBuffers[0].Declaration;
 
@@ -36,7 +38,7 @@ namespace SiliconStudio.Paradox.Extensions
             var handleOutput = GCHandle.Alloc(output, GCHandleType.Pinned);
             var ptrOutput = handleOutput.AddrOfPinnedObject();
 
-            var handleInput = GCHandle.Alloc(meshData.VertexBuffers[0].Buffer.Value.Content, GCHandleType.Pinned);
+            var handleInput = GCHandle.Alloc(meshData.VertexBuffers[0].Buffer.GetSerializationData().Content, GCHandleType.Pinned);
             var ptrInput = handleInput.AddrOfPinnedObject();
 
             for(int i = 0; i < count; i++)

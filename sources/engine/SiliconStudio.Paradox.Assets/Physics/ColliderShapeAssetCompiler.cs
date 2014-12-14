@@ -13,8 +13,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
-﻿using SiliconStudio.Paradox.Physics;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Physics;
 
 ﻿using VHACDSharp;
 
@@ -66,10 +67,10 @@ namespace SiliconStudio.Paradox.Assets.Physics
                         {
                             var loadSettings = new AssetManagerLoaderSettings
                             {
-                                ContentFilter = AssetManagerLoaderSettings.NewContentFilterByType(typeof(MeshData))
+                                ContentFilter = AssetManagerLoaderSettings.NewContentFilterByType(typeof(Mesh))
                             };
 
-                            var modelAsset = assetManager.Load<ModelData>(convexHullDesc.Model.Location, loadSettings);
+                            var modelAsset = assetManager.Load<Model>(UrlServices.GetUrl(convexHullDesc.Model), loadSettings);
                             if (modelAsset != null)
                             {
                                 convexHullDesc.ConvexHulls = new List<List<List<Vector3>>>();
@@ -122,7 +123,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
                                         var indexOffset = (uint)combinedVerts.Count / 3;
 
                                         var stride = meshData.Draw.VertexBuffers[0].Declaration.VertexStride;
-                                        var vertexDataAsset = assetManager.Load<BufferData>(meshData.Draw.VertexBuffers[0].Buffer.Location);
+                                        var vertexDataAsset = assetManager.Load<BufferData>(UrlServices.GetUrl(meshData.Draw.VertexBuffers[0].Buffer));
 
                                         var vertexData = vertexDataAsset.Content;
                                         var vertexIndex = meshData.Draw.VertexBuffers[0].Offset;
@@ -141,7 +142,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
                                             vertexIndex += stride;
                                         }
 
-                                        var indexDataAsset = assetManager.Load<BufferData>(meshData.Draw.IndexBuffer.Buffer.Location);
+                                        var indexDataAsset = assetManager.Load<BufferData>(UrlServices.GetUrl(meshData.Draw.IndexBuffer.Buffer));
 
                                         var indexData = indexDataAsset.Content;
                                         var indexIndex = meshData.Draw.IndexBuffer.Offset;                                 

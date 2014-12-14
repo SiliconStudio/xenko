@@ -9,7 +9,7 @@ using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Assets.Materials.Nodes;
-using SiliconStudio.Paradox.Effects.Data;
+using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
@@ -643,7 +643,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// </summary>
         public MaterialAsset2()
         {
-            Parameters = new ParameterCollectionData();
+            Parameters = new ParameterCollection();
         }
         /// <summary>
         /// Gets or sets the material composition.
@@ -658,6 +658,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// </summary>
         /// <value>The parameters.</value>
         [DataMember(20)]
-        public ParameterCollectionData Parameters { get; private set; }
+        public ParameterCollection Parameters { get; private set; }
     }
 }

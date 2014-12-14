@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SiliconStudio.Core;
 
 namespace SiliconStudio.Paradox.Graphics
 {
@@ -6,7 +7,8 @@ namespace SiliconStudio.Paradox.Graphics
     /// A group of images.
     /// </summary>
     /// <typeparam name="T">The type of image</typeparam>
-    public class ImageGroup<T> where T: ImageFragment
+    [DataContract(Inherited = true)]
+    public class ImageGroup<T> where T : ImageFragment
     {
         /// <summary>
         /// The list of sprites.

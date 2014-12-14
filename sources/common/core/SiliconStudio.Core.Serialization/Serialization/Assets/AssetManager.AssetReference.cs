@@ -21,6 +21,8 @@ namespace SiliconStudio.Core.Serialization.Assets
             /// </summary>
             public AssetReference Next, Prev;
 
+            public bool Deserialized;
+
             /// <summary>
             /// The object being referenced.
             /// </summary>

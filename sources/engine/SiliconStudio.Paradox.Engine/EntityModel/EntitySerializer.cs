@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.EntityModel
                 var entityData = new EntityData
                     {
                         Name = entity.Name,
-                        Components = entity.Tags
+                        Components = entity.Components
                             .Where(x => x.Value is EntityComponent)
                             .ToDictionary(x => x.Key, x => (EntityComponent)x.Value),
                     };
@@ -47,7 +47,7 @@ namespace SiliconStudio.Paradox.EntityModel
 
                 foreach (var component in entityData.Components)
                 {
-                    entity.Tags.SetObject(component.Key, component.Value);
+                    entity.Components.SetObject(component.Key, component.Value);
                 }
             }
         }

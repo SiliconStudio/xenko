@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Paradox.Assets.Materials.Nodes;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Data;
 
 namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
@@ -12,9 +13,9 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
         {
         }
 
-        public ParameterCollectionData GetParameters()
+        public ParameterCollection GetParameters()
         {
-            var parameters = new ParameterCollectionData();
+            var parameters = new ParameterCollection();
             foreach (var startNodeName in Material.ColorNodes)
             {
                 var startNode = Material.FindNode(startNodeName.Value);
@@ -31,7 +32,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
         /// </summary>
         /// <param name="node">The node to look into.</param>
         /// <param name="parameters">The parameter collection to fill.</param>
-        private void GetParametersFromNode(IMaterialNode node, ParameterCollectionData parameters)
+        private void GetParametersFromNode(IMaterialNode node, ParameterCollection parameters)
         {
             if (node == null)
                 return;
@@ -43,7 +44,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
                 {
                     //foreach (var member in shaderNode.Members)
                     foreach (var member in shaderNode.GetParameters(context))
-                        parameters.Set(member.Key, member.Value);
+                        parameters.SetObject(member.Key, member.Value);
                 }
             }, new MaterialContext { Material = Material, ExploreGenerics = false });
         }

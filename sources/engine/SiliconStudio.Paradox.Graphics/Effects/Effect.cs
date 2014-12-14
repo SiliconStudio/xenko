@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics.Internals;
 using SiliconStudio.Paradox.Shaders;
@@ -14,10 +14,12 @@ using SiliconStudio.Paradox.Shaders.Compiler;
 
 namespace SiliconStudio.Paradox.Graphics
 {
-    [ContentSerializer(typeof(DataContentConverterSerializer<Effect>))]
+    [ContentSerializer(typeof(DataContentSerializer<Effect>))]
+    [DataSerializer(typeof(EffectSerializer))]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<Effect>), Profile = "Asset")]
     public class Effect : ComponentBase
     {
-        private readonly GraphicsDevice graphicsDeviceDefault;
+        private GraphicsDevice graphicsDeviceDefault;
         private EffectProgram program;
         private ShaderParameterUpdaterDefinition updaterDefinition;
         private EffectParameterResourceBinding[] resourceBindings;
@@ -25,7 +27,7 @@ namespace SiliconStudio.Paradox.Graphics
         private EffectReflection reflection;
         private EffectInputSignature inputSignature;
 
-        private readonly EffectBytecode bytecode;
+        private EffectBytecode bytecode;
         private const int DefaultParameterCollectionCount = 2;
 
         private EffectStateBindings effectStateBindings;
@@ -37,9 +39,8 @@ namespace SiliconStudio.Paradox.Graphics
         internal ParameterCollection CompilationParameters;
         internal ParameterCollection DefaultCompilationParameters;
 
-        static Effect()
+        internal Effect()
         {
-            ConverterContext.RegisterConverter(new EffectConverter());
         }
 
         /// <summary>
@@ -54,6 +55,11 @@ namespace SiliconStudio.Paradox.Graphics
         /// bytecode
         /// </exception>
         public Effect(GraphicsDevice device, EffectBytecode bytecode, ParameterCollection usedParameters = null)
+        {
+            InitializeFrom(device, bytecode, usedParameters);
+        }
+
+        internal void InitializeFrom(GraphicsDevice device, EffectBytecode bytecode, ParameterCollection usedParameters = null)
         {
             if (device == null) throw new ArgumentNullException("device");
             if (bytecode == null) throw new ArgumentNullException("bytecode");

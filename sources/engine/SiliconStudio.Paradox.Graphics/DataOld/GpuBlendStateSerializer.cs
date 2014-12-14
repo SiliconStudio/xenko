@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.Graphics.DataOld
             this.graphicsDevice = graphicsDevice;
         }
 
-        public override void Serialize(ContentSerializerContext context, SerializationStream stream, ref BlendState blendState)
+        public override void Serialize(ContentSerializerContext context, SerializationStream stream, BlendState blendState)
         {
             if (context.Mode == ArchiveMode.Deserialize)
             {

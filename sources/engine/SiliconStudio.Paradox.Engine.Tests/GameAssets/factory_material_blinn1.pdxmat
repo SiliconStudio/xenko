@@ -16,11 +16,9 @@ Material:
     ColorNodes:
         MaterialParameters.AlbedoDiffuse: pdx_diffuseOpaque
     Parameters:
-        Capacity: 4
-        ~Items:
-            Material.SpecularColorValue: !Color4 {R: 0.5, G: 0.5, B: 0.5, A: 1}
-            Material.SpecularIntensity: 1
-            Material.SpecularPower: 0.06311791
+        Material.SpecularColorValue: !Color4 {R: 0.5, G: 0.5, B: 0.5, A: 1}
+        Material.SpecularIntensity: 1
+        Material.SpecularPower: 0.06311791
 ~Base:
     Location: --import--
     Asset: !MaterialAsset
@@ -41,8 +39,6 @@ Material:
             ColorNodes:
                 MaterialParameters.AlbedoDiffuse: pdx_diffuseOpaque
             Parameters:
-                Capacity: 4
-                ~Items:
-                    Material.SpecularColorValue: !Color4 {R: 0.5, G: 0.5, B: 0.5, A: 1}
-                    Material.SpecularIntensity: 1
-                    Material.SpecularPower: 0.06311791
+                Material.SpecularColorValue: !Color4 {R: 0.5, G: 0.5, B: 0.5, A: 1}
+                Material.SpecularIntensity: 1
+                Material.SpecularPower: 0.06311791

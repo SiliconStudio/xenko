@@ -9,7 +9,6 @@ using System.Reflection;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Converters;
 
 namespace SiliconStudio.Paradox.EntityModel
 {
@@ -85,16 +84,16 @@ namespace SiliconStudio.Paradox.EntityModel
             var data = new CloneEntityComponentData { Properties = new List<EntityComponentProperty>() };
             foreach (var field in entityComponent.GetType().GetTypeInfo().DeclaredFields)
             {
-                if (!field.GetCustomAttributes(typeof(DataMemberConvertAttribute), true).Any())
-                    continue;
+                //if (!field.GetCustomAttributes(typeof(DataMemberConvertAttribute), true).Any())
+                //    continue;
 
                 data.Properties.Add(new EntityComponentProperty(EntityComponentPropertyType.Field, field.Name, field.GetValue(entityComponent)));
             }
 
             foreach (var property in entityComponent.GetType().GetTypeInfo().DeclaredProperties)
             {
-                if (!property.GetCustomAttributes(typeof(DataMemberConvertAttribute), true).Any())
-                    continue;
+                //if (!property.GetCustomAttributes(typeof(DataMemberConvertAttribute), true).Any())
+                //    continue;
 
                 data.Properties.Add(new EntityComponentProperty(EntityComponentPropertyType.Property, property.Name, property.GetValue(entityComponent, null)));
             }

@@ -7,8 +7,8 @@ using System.Collections.Specialized;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.ReferenceCounting;
-using SiliconStudio.Core.Serialization.Converters;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Paradox.Graphics;
 
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
@@ -19,10 +19,12 @@ namespace SiliconStudio.Paradox.Effects
     /// Collection of <see cref="Mesh"/>, each one usually being a different LOD of the same Model.
     /// The effect system will select the appropriate LOD depending on distance, current pass, and other effect-specific requirements.
     /// </summary>
-    [DataConverter(AutoGenerate = true, ContentReference = true)]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<Model>), Profile = "Asset")]
+    [ContentSerializer(typeof(DataContentSerializer<Model>))]
+    [DataContract]
     public class Model : IEnumerable
     {
-        private readonly List<Mesh> meshes = new List<Mesh>();
+        private List<Mesh> meshes = new List<Mesh>();
         private readonly List<Material> materials = new List<Material>();
         private IList<Model> children;
         private Model parent;
@@ -33,7 +35,6 @@ namespace SiliconStudio.Paradox.Effects
         /// <value>
         /// The views.
         /// </value>
-        [DataMemberConvert]
         public IList<Model> Children
         {
             get { return children; }
@@ -46,8 +47,6 @@ namespace SiliconStudio.Paradox.Effects
         /// <value>
         /// The materials.
         /// </value>
-        [DataMemberConvert]
-        [DataMemberCustomSerializer]
         public List<Material> Materials
         {
             get { return materials; }
@@ -59,10 +58,10 @@ namespace SiliconStudio.Paradox.Effects
         /// <value>
         /// The meshes.
         /// </value>
-        [DataMemberConvert]
         public List<Mesh> Meshes
         {
             get { return meshes; }
+            set { meshes = value; }
         }
 
         /// <summary>
@@ -71,7 +70,6 @@ namespace SiliconStudio.Paradox.Effects
         /// <value>
         /// The hierarchy, which describes nodes name, default transformation and hierarchical parent.
         /// </value>
-        [DataMemberConvert]
         public ModelViewHierarchyDefinition Hierarchy { get; set; }
 
         /// <summary>
@@ -80,7 +78,6 @@ namespace SiliconStudio.Paradox.Effects
         /// <value>
         /// The bounding box.
         /// </value>
-        [DataMemberConvert]
         public BoundingBox BoundingBox { get; set; }
 
         // Temporarily removed

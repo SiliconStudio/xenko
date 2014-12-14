@@ -15,6 +15,7 @@ using SiliconStudio.Paradox.Assets.Materials.Nodes;
 using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
 using SiliconStudio.Paradox.Effects.Data;
 using System.Linq;
+using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
@@ -115,7 +116,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 if (materialParameterCreator.CreateParameterCollectionData(commandContext.Logger))
                     return Task.FromResult(ResultStatus.Failed);
 
-                var materialData = new MaterialData { Parameters = materialParameterCreator.Parameters };
+                var materialData = new Material { Parameters = materialParameterCreator.Parameters };
                 
                 var assetManager = new AssetManager();
                 assetManager.Save(assetUrl, materialData);

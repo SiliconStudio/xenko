@@ -9,9 +9,7 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Paradox.Assets.Model.Analysis;
-using SiliconStudio.Paradox.Data;
 using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Engine.Data;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.EntityModel.Data;
 
@@ -29,33 +27,30 @@ namespace SiliconStudio.Paradox.Assets.Model
             return (EntityAsset)AssetCloner.Clone(source);
         }
 
-        static IEnumerable<EntityData> EnumerateChildren(this EntityData entity)
+        static IEnumerable<Entity> EnumerateChildren(this Entity entity)
         {
-            EntityComponentData entityComponent;
-            if (!entity.Components.TryGetValue(TransformationComponent.Key, out entityComponent))
+            var transformationComponent = entity.Get(TransformationComponent.Key);
+            if (transformationComponent == null)
                 yield break;
 
 
-            var transformationComponent = (TransformationComponentData)entityComponent;
             foreach (var child in transformationComponent.Children)
             {
-                yield return child.Entity.Value;
+                yield return child.Entity;
             }
         }
 
-        static EntityData FindParent(EntityHierarchyData hierarchy, EntityData entity)
+        static Entity FindParent(EntityHierarchyData hierarchy, Entity entity)
         {
             // Note: we could also use a cache, but it's probably not worth it... (except if we had tens of thousands of new objects at once)
             // Let's optimize if really needed
             foreach (var currentEntity in hierarchy.Entities)
             {
-                EntityComponentData entityComponent;
-                if (!currentEntity.Components.TryGetValue(TransformationComponent.Key, out entityComponent))
+                var transformationComponent = currentEntity.Get(TransformationComponent.Key);
+                if (transformationComponent == null)
                     continue;
 
-                var transformationComponent = (TransformationComponentData)entityComponent;
-
-                if (transformationComponent.Children.Any(x => x.Entity.Value == entity))
+                if (transformationComponent.Children.Any(x => x.Entity == entity))
                     return currentEntity;
             }
 
@@ -145,9 +140,9 @@ namespace SiliconStudio.Paradox.Assets.Model
         // TODO: Use Diff3Node?
         class EntityDiff3
         {
-            public EntityData Base;
-            public EntityData Asset1;
-            public EntityData Asset2;
+            public Entity Base;
+            public Entity Asset1;
+            public Entity Asset2;
             public MergeResult MergeResult;
         }
 

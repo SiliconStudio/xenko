@@ -6,7 +6,7 @@ using System.Linq;
 using System.Runtime.Remoting.Contexts;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using SiliconStudio.Core.Serialization.Serializers;
+using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.AssemblyProcessor.Serializers
 {
@@ -256,7 +256,7 @@ namespace SiliconStudio.AssemblyProcessor.Serializers
             // 2.1. Check if there is DataSerializerAttribute on this type (if yes, it is serializable, but not a "complex type")
             var dataSerializerAttribute =
                 resolvedType.CustomAttributes.FirstOrDefault(
-                    x => x.AttributeType.FullName == "SiliconStudio.Core.Serialization.Serializers.DataSerializerAttribute");
+                    x => x.AttributeType.FullName == "SiliconStudio.Core.Serialization.DataSerializerAttribute");
             if (dataSerializerAttribute != null)
             {
                 var modeField = dataSerializerAttribute.Fields.FirstOrDefault(x => x.Name == "Mode");

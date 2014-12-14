@@ -6,7 +6,6 @@
 using namespace System;
 using namespace SiliconStudio::Paradox::DataModel;
 using namespace SiliconStudio::Paradox::EntityModel::Data;
-using namespace SiliconStudio::Paradox::Engine::Data;
 using namespace SiliconStudio::Core::Diagnostics;
 using namespace SiliconStudio::Core::Mathematics;
 

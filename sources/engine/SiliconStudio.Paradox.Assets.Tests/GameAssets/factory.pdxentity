@@ -20,7 +20,5 @@ Hierarchy:
                         DrawOrder: 0
                         Enabled: true
                         Model: ddb8f78e-58f5-4c3d-b22f-259ffd5d6be3:factory_model
-                        Parameters:
-                            Capacity: 0
-                            ~Items: {}
+                        Parameters: {}
 AssetBases: {}

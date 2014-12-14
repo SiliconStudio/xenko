@@ -20,7 +20,5 @@ Hierarchy:
                         DrawOrder: 0
                         Enabled: true
                         Model: 7f3fde7c-fab1-412e-8f22-d37276477f6f:Cube/cube_model
-                        Parameters:
-                            Capacity: 0
-                            ~Items: {}
+                        Parameters: {}
 AssetBases: {}

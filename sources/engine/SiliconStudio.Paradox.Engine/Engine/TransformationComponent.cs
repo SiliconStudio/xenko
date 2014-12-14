@@ -3,22 +3,17 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using SiliconStudio.Core.Serialization.Converters;
-using SiliconStudio.Core.Serialization.Serializers;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Games;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Paradox.Engine
 {
     /// <summary>
     /// Defines Position, Rotation and Scale of its <see cref="Entity"/>.
     /// </summary>
-    [DataConverter(AutoGenerate = true)]
     [DataContract("TransformationComponent")]
     [DataSerializerGlobal(null, typeof(TrackingCollection<TransformationComponent>))]
     public sealed class TransformationComponent : EntityComponent
@@ -38,30 +33,29 @@ namespace SiliconStudio.Paradox.Engine
         /// The world matrix.
         /// Use <see cref="UpdateWorldMatrix"/> to ensure it is updated.
         /// </summary>
+        [DataMemberIgnore]
         public Matrix WorldMatrix = Matrix.Identity;
 
         /// <summary>
         /// The local matrix.
         /// Use <see cref="UpdateLocalMatrix"/> to ensure it is updated.
         /// </summary>
+        [DataMemberIgnore]
         public Matrix LocalMatrix = Matrix.Identity;
 
         /// <summary>
         /// The translation relative to the parent transformation.
         /// </summary>
-        [DataMemberConvert]
         public Vector3 Translation;
 
         /// <summary>
         /// The rotation relative to the parent transformation.
         /// </summary>
-        [DataMemberConvert]
         public Quaternion Rotation;
 
         /// <summary>
         /// The scaling relative to the parent transformation.
         /// </summary>
-        [DataMemberConvert]
         public Vector3 Scaling;
 
         /// <summary>
@@ -79,7 +73,6 @@ namespace SiliconStudio.Paradox.Engine
             Rotation = Quaternion.Identity;
         }
 
-        [DataMemberConvert]
         public bool UseTRS
         {
             get { return useTRS; }
@@ -92,7 +85,6 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The children.
         /// </value>
-        [DataMemberConvert]
         public FastCollection<TransformationComponent> Children { get; private set; }
 
         /// <summary>
@@ -102,6 +94,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The euler rotation.
         /// </value>
+        [DataMemberIgnore]
         public Vector3 RotationEulerXYZ
         {
             get
@@ -174,6 +167,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The parent.
         /// </value>
+        [DataMemberIgnore]
         public TransformationComponent Parent
         {
             get { return parent; }

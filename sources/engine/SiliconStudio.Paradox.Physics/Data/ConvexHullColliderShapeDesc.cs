@@ -4,6 +4,7 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -27,7 +28,7 @@ namespace SiliconStudio.Paradox.Physics
         /// Model asset from where the engine will derive the convex hull.
         /// </userdoc>
         [DataMember(30)]
-        public Core.Serialization.ContentReference<Effects.Data.ModelData> Model;
+        public Model Model;
 
         /// <userdoc>
         /// If this is checked the following parameters are totally ignored, as only a simple convex hull of the whole model will be generated.

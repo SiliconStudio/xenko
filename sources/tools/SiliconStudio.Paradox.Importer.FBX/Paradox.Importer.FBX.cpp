@@ -25,7 +25,6 @@ using namespace SiliconStudio::Paradox::EntityModel::Data;
 using namespace SiliconStudio::Paradox::Effects;
 using namespace SiliconStudio::Paradox::Effects::Data;
 using namespace SiliconStudio::Paradox::Engine;
-using namespace SiliconStudio::Paradox::Engine::Data;
 using namespace SiliconStudio::Paradox::Extensions;
 using namespace SiliconStudio::Paradox::Graphics;
 using namespace SiliconStudio::Paradox::Graphics::Data;
@@ -72,7 +71,7 @@ internal:
 	String^ vfsOutputFilename;
 	String^ inputPath;
 
-	ModelData^ modelData;
+	Model^ modelData;
 
 	Dictionary<IntPtr, int> nodeMapping;
 	List<ModelNodeDefinition> nodes;
@@ -497,10 +496,10 @@ public:
 				continue;
 
 			auto buffer = buildMesh->buffer;
-			auto vertexBufferBinding = gcnew VertexBufferBindingData(ContentReference::Create(gcnew BufferData(BufferFlags::VertexBuffer, buffer)), gcnew VertexDeclaration(vertexElements->ToArray()), buildMesh->polygonCount * 3, 0, 0);
+			auto vertexBufferBinding = VertexBufferBinding(GraphicsSerializerExtensions::ToSerializableVersion(gcnew BufferData(BufferFlags::VertexBuffer, buffer)), gcnew VertexDeclaration(vertexElements->ToArray()), buildMesh->polygonCount * 3, 0, 0);
 			
-			auto drawData = gcnew MeshDrawData();
-			auto vbb = gcnew List<VertexBufferBindingData^>();
+			auto drawData = gcnew MeshDraw();
+			auto vbb = gcnew List<VertexBufferBinding>();
 			vbb->Add(vertexBufferBinding);
 			drawData->VertexBuffers = vbb->ToArray();
 			drawData->PrimitiveType = PrimitiveType::TriangleList;
@@ -525,7 +524,7 @@ public:
 			if (normalElement != NULL && uvElements.size() > 0)
 				TNBExtensions::GenerateTangentBinormal(drawData);
 
-			auto meshData = gcnew MeshData();
+			auto meshData = gcnew Mesh();
 			meshData->NodeIndex = nodeMapping[(IntPtr)pMesh->GetNode()];
 			meshData->Draw = drawData;
 			if (!controlPointWeights.empty())
@@ -556,7 +555,7 @@ public:
 
 				if (hasSkinningPosition || hasSkinningNormal || totalClusterCount > 0)
 				{
-					meshData->Parameters = gcnew ParameterCollectionData();
+					meshData->Parameters = gcnew ParameterCollection();
 
 					if (hasSkinningPosition)
 						meshData->Parameters->Set(MaterialParameters::HasSkinningPosition, true);
@@ -1040,7 +1039,7 @@ public:
 		}
 	}
 
-	ShaderClassSource^ GenerateTextureLayerFBX(FbxFileTexture* lFileTexture, std::map<std::string, int>& uvElementMapping, MeshData^ meshData, int& textureCount, ParameterKey<Texture^>^ surfaceMaterialKey)
+	ShaderClassSource^ GenerateTextureLayerFBX(FbxFileTexture* lFileTexture, std::map<std::string, int>& uvElementMapping, Mesh^ meshData, int& textureCount, ParameterKey<Texture^>^ surfaceMaterialKey)
 	{
 		auto texScale = lFileTexture->GetUVScaling();
 		auto texturePath = FindFilePath(lFileTexture);
@@ -1122,7 +1121,7 @@ public:
 	void ProcessCamera(List<CameraInfo^>^ cameras, FbxNode* pNode, FbxCamera* pCamera, std::map<FbxNode*, std::string>& nodeNames)
 	{
 		auto cameraInfo = gcnew CameraInfo();
-		auto cameraData = gcnew CameraComponentData();
+		auto cameraData = gcnew CameraComponent();
 		cameraInfo->Data = cameraData;
 
 		cameraInfo->NodeName = gcnew String(nodeNames[pNode].c_str());
@@ -1164,7 +1163,7 @@ public:
 	void ProcessLight(List<LightInfo^>^ lights, FbxNode* pNode, FbxLight* pLight, std::map<FbxNode*, std::string>& nodeNames)
 	{
 		auto lightInfo = gcnew LightInfo();
-		auto lightData = gcnew LightComponentData();
+		auto lightData = gcnew LightComponent();
 		lightInfo->Data = lightData;
 		
 		lightInfo->NodeName = gcnew String(nodeNames[pNode].c_str());
@@ -1209,8 +1208,8 @@ public:
 
 	void RegisterNode(FbxNode* pNode, int parentIndex, std::map<FbxNode*, std::string>& nodeNames)
 	{
-		auto resultNode = gcnew EntityData();
-		resultNode->Components->Add(TransformationComponent::Key, gcnew TransformationComponentData());
+		auto resultNode = gcnew Entity();
+		resultNode->GetOrCreate(TransformationComponent::Key);
 
 		int currentIndex = nodes.Count;
 
@@ -2591,14 +2590,14 @@ public:
 		return nullptr;
 	}
 
-	ModelData^ Convert(String^ inputFilename, String^ vfsOutputFilename, Dictionary<System::String^, int>^ materialIndices)
+	Model^ Convert(String^ inputFilename, String^ vfsOutputFilename, Dictionary<System::String^, int>^ materialIndices)
 	{
 		try
 		{
 			Initialize(inputFilename, vfsOutputFilename, ImportConfiguration::ImportAll());
 
 			// Create default ModelViewData
-			modelData = gcnew ModelData();
+			modelData = gcnew Model();
 			modelData->Hierarchy = gcnew ModelViewHierarchyDefinition();
 			modelData->Hierarchy->Nodes = nodes.ToArray();
 

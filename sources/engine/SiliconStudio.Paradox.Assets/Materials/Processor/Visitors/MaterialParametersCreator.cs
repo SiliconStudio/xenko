@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
 
         #region Public properties
 
-        public ParameterCollectionData Parameters { get; private set; }
+        public ParameterCollection Parameters { get; private set; }
 
         #endregion
 
@@ -32,7 +32,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
 
         public MaterialParametersCreator(MaterialDescription mat, string assetUrl) : base(mat)
         {
-            Parameters = new ParameterCollectionData();
+            Parameters = new ParameterCollection();
             materialUrl = assetUrl;
         }
 
@@ -56,37 +56,37 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
             foreach (var keyValue in Material.Parameters)
             {
                 // NOTE: cheap way to activate alpha blending
-                Parameters.Set(keyValue.Key, keyValue.Value);
+                Parameters.SetObject(keyValue.Key, keyValue.Value);
                 if (keyValue.Key == MaterialParameters.UseTransparent && Material.GetParameter(MaterialParameters.UseTransparent))
                 {
                     // using non premultiply alpha blending
                     var blendStateDescr = new BlendStateDescription(Blend.SourceAlpha, Blend.InverseSourceAlpha);
-                    var blendState = new FakeBlendState(blendStateDescr);
-                    Parameters.Set(SiliconStudio.Paradox.Graphics.Effect.BlendStateKey, ContentReference.Create((BlendState)blendState));
+                    var blendState = new BlendState(blendStateDescr);
+                    Parameters.Set(SiliconStudio.Paradox.Graphics.Effect.BlendStateKey, blendState);
 
                     // disable face culling
                     // TODO: make this programmable
                     var rasterizerStateDescr = new RasterizerStateDescription(CullMode.None);
-                    var rasterizerState = new FakeRasterizerState(rasterizerStateDescr);
-                    Parameters.Set(SiliconStudio.Paradox.Graphics.Effect.RasterizerStateKey, ContentReference.Create((RasterizerState)rasterizerState));
+                    var rasterizerState = new RasterizerState(rasterizerStateDescr);
+                    Parameters.Set(SiliconStudio.Paradox.Graphics.Effect.RasterizerStateKey, rasterizerState);
 
                     // disable depth write
                     var depthStencilStateDescr = new DepthStencilStateDescription(true, false);
-                    var depthStencilState = new FakeDepthStencilState(depthStencilStateDescr);
-                    Parameters.Set(SiliconStudio.Paradox.Graphics.Effect.DepthStencilStateKey, ContentReference.Create((DepthStencilState)depthStencilState));
+                    var depthStencilState = new DepthStencilState(depthStencilStateDescr);
+                    Parameters.Set(SiliconStudio.Paradox.Graphics.Effect.DepthStencilStateKey, depthStencilState);
                 }
                 else if (keyValue.Key == MaterialParameters.UseTransparentMask && Material.GetParameter(MaterialParameters.UseTransparentMask))
                 {
                     // disable face culling
                     // TODO: make this programmable
                     var rasterizerStateDescr = new RasterizerStateDescription(CullMode.None);
-                    var rasterizerState = new FakeRasterizerState(rasterizerStateDescr);
-                    Parameters.Set(SiliconStudio.Paradox.Graphics.Effect.RasterizerStateKey, ContentReference.Create((RasterizerState)rasterizerState));
+                    var rasterizerState = new RasterizerState(rasterizerStateDescr);
+                    Parameters.Set(SiliconStudio.Paradox.Graphics.Effect.RasterizerStateKey, rasterizerState);
 
                     // enable depth write
                     var depthStencilStateDescr = new DepthStencilStateDescription(true, true);
-                    var depthStencilState = new FakeDepthStencilState(depthStencilStateDescr);
-                    Parameters.Set(SiliconStudio.Paradox.Graphics.Effect.DepthStencilStateKey, ContentReference.Create((DepthStencilState)depthStencilState));
+                    var depthStencilState = new DepthStencilState(depthStencilStateDescr);
+                    Parameters.Set(SiliconStudio.Paradox.Graphics.Effect.DepthStencilStateKey, depthStencilState);
                 }
             }
 
@@ -102,7 +102,9 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
                 }
                 else
                 {
-                    Parameters.Set(texture.UsedParameterKey, new ContentReference<Graphics.Texture>(texture.TextureReference.Id, texture.TextureReference.Location));
+                    // TODO: Factorize (Texture extension?)
+                    var textureGpu = UrlServices.CreateSerializableVersion<Texture>(texture.TextureReference.Id, texture.TextureReference.Location);
+                    Parameters.Set(texture.UsedParameterKey, textureGpu);
                     AddSampler(texture.Sampler);
                 }
             }
@@ -128,7 +130,11 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
                             hasErrors = true;
                         }
                         else
-                            Parameters.Set(keyValue.Key, new ContentReference<Graphics.Texture>(textureNode.TextureReference.Id, textureNode.TextureReference.Location));
+                        {
+                            // TODO: Factorize (Texture extension?)
+                            var textureGpu = UrlServices.CreateSerializableVersion<Texture>(textureNode.TextureReference.Id, textureNode.TextureReference.Location);
+                            Parameters.Set((ParameterKey<Texture>)keyValue.Key, textureGpu);
+                        }
                     }
                 }
                 else if (keyValue.Value is NodeParameterSampler)
@@ -139,7 +145,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
                     AddSampler(sampler);
                 }
                 else
-                    Parameters.Set(keyValue.Key, keyValue.Value);
+                    Parameters.SetObject(keyValue.Key, keyValue.Value);
             }
 
             // NOTE: this can set the shader uniforms and potentially override what was in Material.SharedParameters
@@ -148,7 +154,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
                 if (log != null && (keyValue.Key == MaterialParameters.BumpMap || keyValue.Key == MaterialParameters.EmissiveMap || keyValue.Key == MaterialParameters.ReflectionMap))
                     log.Warning("[Material] Material {0} contains the key {1} which is not yet handled by the engine.", materialUrl, keyValue.Key);
                 
-                Parameters.Set(keyValue.Key, keyValue.Value);
+                Parameters.SetObject(keyValue.Key, keyValue.Value);
             }
 
             return hasErrors;
@@ -167,8 +173,8 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
                         AddressV = sampler.AddressModeV,
                         AddressW = TextureAddressMode.Wrap
                     };
-                var samplerState = new FakeSamplerState(samplerStateDescr);
-                Parameters.Set(sampler.SamplerParameterKey, ContentReference.Create((SamplerState)samplerState));
+                var samplerState = new SamplerState(samplerStateDescr);
+                Parameters.Set(sampler.SamplerParameterKey, samplerState);
             }
         }
 

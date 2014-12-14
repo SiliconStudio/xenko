@@ -10,19 +10,6 @@ using SiliconStudio.Paradox.EntityModel.Data;
 
 namespace SiliconStudio.Paradox.EntityModel
 {
-    public static class EntityComponentReference
-    {
-        public static EntityComponentReference<T> New<T>(EntityData entityData, PropertyKey<T> component) where T : EntityComponent
-        {
-            return new EntityComponentReference<T>(entityData, component);
-        }
-
-        public static EntityComponentReference<T> New<T>(EntityComponentData entityComponent) where T : EntityComponent
-        {
-            return new EntityComponentReference<T>(entityComponent);
-        }
-    }
-
     public struct EntityPathReference
     {
         public EntityReference[] Path { get; set; }
@@ -30,58 +17,68 @@ namespace SiliconStudio.Paradox.EntityModel
 
     [DataContract]
     [DataStyle(DataStyle.Compact)]
-    [DataSerializerGlobal(typeof(EntityComponentReferenceSerializer<>), typeof(EntityComponentReference<>), DataSerializerGenericMode.GenericArguments)]
-    public sealed class EntityComponentReference<T> : IEntityComponentReference where T : EntityComponent
+    [DataSerializerGlobal(typeof(EntityComponentReferenceSerializer), typeof(EntityComponentReference))]
+    public sealed class EntityComponentReference : IEntityComponentReference
     {
         // TODO: implement a serializer and pass these fields readonly (and their related properties)
         internal EntityReference entity;
-        internal PropertyKey<T> component;
+        internal PropertyKey component;
 
-        private EntityComponentData value;
+        private EntityComponent value;
 
         public EntityComponentReference()
         {
         }
 
-        public EntityComponentReference(EntityReference entity, PropertyKey<T> component)
+        public EntityComponentReference(EntityReference entity, PropertyKey component)
         {
             this.entity = entity;
             this.component = component;
             this.value = null;
         }
 
-        public EntityComponentReference(EntityComponentData entityComponent)
+        public EntityComponentReference(EntityComponent entityComponent)
         {
-            this.entity = new EntityReference();
-            this.component = null;
+            this.entity = new EntityReference { Id = entityComponent.Entity.Id };
+            this.component = entityComponent.DefaultKey;
             this.value = entityComponent;
         }
 
-        PropertyKey IEntityComponentReference.Component { get { return Component; } set { Component = (PropertyKey<T>)value; } }
+        PropertyKey IEntityComponentReference.Component { get { return Component; } set { Component = value; } }
 
         [DataMemberIgnore]
-        public Type ComponentType { get { return typeof(T); } }
+        public Type ComponentType { get { return component.PropertyType; } }
 
         [DataMember(10)]
         public EntityReference Entity { get { return entity; } set { entity = value; } }
 
         [DataMember(20)]
-        public PropertyKey<T> Component { get { return component; } set { component = value; } }
+        public PropertyKey Component { get { return component; } set { component = value; } }
 
         [DataMemberIgnore]
-        public EntityComponentData Value
+        public EntityComponent Value
         {
             get { return value; }
             set { this.value = value; }
         }
+
+        public static EntityComponentReference New(EntityData entityData, PropertyKey component)
+        {
+            return new EntityComponentReference(entityData, component);
+        }
+
+        public static EntityComponentReference New(EntityComponent entityComponent)
+        {
+            return new EntityComponentReference(entityComponent);
+        }
     }
 
-    internal class EntityComponentReferenceSerializer<T> : DataSerializer<EntityComponentReference<T>> where T : EntityComponent
+    internal class EntityComponentReferenceSerializer : DataSerializer<EntityComponentReference>
     {
-        public override void Serialize(ref EntityComponentReference<T> obj, ArchiveMode mode, SerializationStream stream)
+        public override void Serialize(ref EntityComponentReference obj, ArchiveMode mode, SerializationStream stream)
         {
             if (obj == null)
-                obj = new EntityComponentReference<T>();
+                obj = new EntityComponentReference();
 
             if (mode == ArchiveMode.Deserialize)
             {

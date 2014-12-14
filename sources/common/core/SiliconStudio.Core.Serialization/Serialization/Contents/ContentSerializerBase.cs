@@ -34,16 +34,15 @@ namespace SiliconStudio.Core.Serialization.Contents
         }
 
         /// <inheritdoc/>
-        public virtual void Serialize(ContentSerializerContext context, Serialization.SerializationStream stream, ref T obj)
+        public virtual void Serialize(ContentSerializerContext context, SerializationStream stream, T obj)
         {
         }
 
         /// <inheritdoc/>
-        public void Serialize(ContentSerializerContext context, Serialization.SerializationStream stream, ref object obj)
+        public void Serialize(ContentSerializerContext context, SerializationStream stream, object obj)
         {
             var objT = (T)obj;
-            Serialize(context, stream, ref objT);
-            obj = objT;
+            Serialize(context, stream, objT);
         }
     }
 }

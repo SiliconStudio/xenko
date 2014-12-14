@@ -45,7 +45,7 @@ namespace SiliconStudio.Paradox.EntityModel
             foreach (var currentEntity in ParameterContainerExtensions.CollectEntityTree(entity))
             {
                 clonedObjects.Add(currentEntity);
-                foreach (var component in currentEntity.Tags.Where(x => x.Value is EntityComponent))
+                foreach (var component in currentEntity.Components.Where(x => x.Value is EntityComponent))
                 {
                     clonedObjects.Add(component.Value);
                 }

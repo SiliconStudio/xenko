@@ -25,7 +25,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             return !String.IsNullOrEmpty(ext) && ext.ToLower().Equals(".fbx");
         }
 
-        protected override ModelData LoadModel(ICommandContext commandContext, AssetManager assetManager)
+        protected override Effects.Model LoadModel(ICommandContext commandContext, AssetManager assetManager)
         {
             var meshConverter = this.CreateMeshConverter(commandContext, assetManager);
             var materialMapping = Materials.Select((s, i) => new { Value = s, Index = i }).ToDictionary(x => x.Value.Name, x => x.Index);

@@ -8,6 +8,7 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Data;
 using SiliconStudio.Paradox.Shaders.Compiler;
 
@@ -43,17 +44,17 @@ namespace SiliconStudio.Paradox.Assets.Effect
                 {
                     // Check unrolls
                     // NOTE: this is note safe since it is possible that the parameters are overridden somewhere else... but the user should not do that
-                    var configDict = new Dictionary<LightingConfigurationData, CompilerParameters>();
+                    var configDict = new Dictionary<LightingConfiguration, CompilerParameters>();
                     foreach (var perm in results)
                     {
-                        configDict.Add(new LightingConfigurationData(perm), perm);
+                        configDict.Add(new LightingConfiguration(perm), perm);
                     }
                     var configList = configDict.Select(x => x.Key).ToList();
                     configList.Sort((x, y) => x.TotalLightCount - y.TotalLightCount);
                     // TODO: remove duplicates
-                    LightingConfigurationData.CheckUnrolls(configList.ToArray());
+                    LightingConfiguration.CheckUnrolls(configList.ToArray());
 
-                    var configs = new LightingConfigurationsSetData();
+                    var configs = new LightingConfigurationsSet();
                     configs.Configs = configList.ToArray();
 
                     var assetManager = new AssetManager();

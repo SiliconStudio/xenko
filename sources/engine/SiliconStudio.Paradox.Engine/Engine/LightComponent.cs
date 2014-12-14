@@ -3,7 +3,6 @@
 using System;
 using System.ComponentModel;
 
-using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.EntityModel;
@@ -23,7 +22,6 @@ namespace SiliconStudio.Paradox.Engine
     /// <summary>
     /// Add a light to an <see cref="Entity"/>, that will be used during rendering.
     /// </summary>
-    [DataConverter(AutoGenerate = true)]
     [DataContract("LightComponent")]
     public sealed class LightComponent : EntityComponent
     {
@@ -53,13 +51,11 @@ namespace SiliconStudio.Paradox.Engine
         /// <summary>
         /// Gets or sets a value indicating whether the light is enabled.
         /// </summary>
-        [DataMemberConvert]
         [DefaultValue(true)]
         public bool Enabled { get; set; }
 
         /// <summary>Gets or sets a value indicating whether the light is deferred (if available).</summary>
         /// <value>true if light is deferred, false if not.</value>
-        [DataMemberConvert]
         [DefaultValue(true)]
         public bool Deferred { get; set; }
 
@@ -69,7 +65,6 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The type.
         /// </value>
-        [DataMemberConvert]
         public LightType Type { get; set; }
 
         /// <summary>
@@ -78,7 +73,6 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The color.
         /// </value>
-        [DataMemberConvert]
         public Color3 Color { get; set; }
 
         /// <summary>
@@ -87,7 +81,6 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The light intensity.
         /// </value>
-        [DataMemberConvert]
         [DefaultValue(1.0f)]
         public float Intensity { get; set; }
 
@@ -97,60 +90,50 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The decay start.
         /// </value>
-        [DataMemberConvert]
         [DefaultValue(100.0f)]
         public float DecayStart { get; set; }
 
         /// <summary>Gets or sets the light direction.</summary>
         /// <value>The light direction.</value>
-        [DataMemberConvert]
         public Vector3 LightDirection { get; set; }
 
         /// <summary>Gets or sets the beam angle of the spot light.</summary>
         /// <value>The beam angle of the spot (in degrees between 0 and 90).</value>
-        [DataMemberConvert]
         [DefaultValue(0)]
         public float SpotBeamAngle { get; set; }
 
         /// <summary>Gets or sets the spot field angle of the spot light.</summary>
         /// <value>The spot field angle of the spot (in degrees between 0 and 90).</value>
-        [DataMemberConvert]
         [DefaultValue(0)]
         public float SpotFieldAngle { get; set; }
 
         /// <summary>Gets or Sets a value indicating if the light cast shadows.</summary>
         /// <value>True if the ligh generates a shadowmap, false otherwise.</value>
-        [DataMemberConvert]
         [DefaultValue(false)]
         public bool ShadowMap { get; set; }
 
         /// <summary>Gets or Sets the maximium size (in pixel) of one cascade of the shadow map.</summary>
         /// <value>The maximum size of the shadow map.</value>
-        [DataMemberConvert]
         [DefaultValue(512)]
         public int ShadowMapMaxSize { get; set; }
 
         /// <summary>Gets or Sets the minimum size (in pixel) of one cascade of the shadow map.</summary>
         /// <value>The minimum size of the shadow map.</value>
-        [DataMemberConvert]
         [DefaultValue(512)]
         public int ShadowMapMinSize { get; set; }
 
         /// <summary>Gets or Sets the number of cascades for this shadow.</summary>
         /// <value>The number of cascades for this shadow.</value>
-        [DataMemberConvert]
         [DefaultValue(1)]
         public int ShadowMapCascadeCount { get; set; }
 
         /// <summary>Gets or Sets the near plane distance of the shadow.</summary>
         /// <value>The near plane distance of the shadow.</value>
-        [DataMemberConvert]
         [DefaultValue(1.0f)]
         public float ShadowNearDistance { get; set; }
 
         /// <summary>Gets or Sets the far plane distance of the shadow.</summary>
         /// <value>The far plane distance of the shadow.</value>
-        [DataMemberConvert]
         [DefaultValue(100000.0f)]
         public float ShadowFarDistance { get; set; }
 
@@ -158,7 +141,6 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets or sets the shadow map filtering.
         /// </summary>
         /// <value>The filter type.</value>
-        [DataMemberConvert]
         [DefaultValue(ShadowMapFilterType.Nearest)]
         public ShadowMapFilterType ShadowMapFilterType { get; set; }
 
@@ -166,7 +148,6 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets or sets the bleeding factor of the variance shadow map.
         /// </summary>
         /// <value>The bleeding factor.</value>
-        [DataMemberConvert]
         [DefaultValue(0.0f)]
         public float BleedingFactor { get; set; }
 
@@ -174,7 +155,6 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets or sets the minimal value of the variance of the variance shadow map.
         /// </summary>
         /// <value>The minimal variance.</value>
-        [DataMemberConvert]
         [DefaultValue(0.0f)]
         public float MinVariance { get; set; }
 
@@ -184,7 +164,6 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The layer mask.
         /// </value>
-        [DataMemberConvert]
         [DefaultValue(RenderLayers.RenderLayerAll)]
         public RenderLayers Layers { get; set; }
 

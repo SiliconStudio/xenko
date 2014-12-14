@@ -10,17 +10,15 @@ Hierarchy:
             -   Id: b24f4f8d-c512-43f9-b593-9b0283d25ed3
                 Name: Root
                 Components:
-                    TransformationComponent.Key: !TransformationComponentData
+                    TransformationComponent.Key:
                         Children: []
                         Rotation: {W: 1, X: 0, Y: 0, Z: 0}
                         Scaling: {X: 1, Y: 1, Z: 1}
                         Translation: {X: 0, Y: 0, Z: 0}
                         UseTRS: true
-                    ModelComponent.Key: !ModelComponentData
+                    ModelComponent.Key:
                         DrawOrder: 0
                         Enabled: true
                         Model: 4a8c60c7-e044-4ac8-991c-66632a3c6ff9:factory_model
-                        Parameters:
-                            Capacity: 0
-                            ~Items: {}
+                        Parameters: {}
 AssetBases: {}

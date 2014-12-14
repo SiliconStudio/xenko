@@ -217,6 +217,16 @@ namespace SiliconStudio.Core.Reflection
                     stack.Add(nextObject);
                 }
 
+                if (actionType == MemberPathAction.ValueClear)
+                {
+                    if (lastItem is CollectionPathItem)
+                        actionType = MemberPathAction.CollectionRemove;
+                    else if (lastItem is DictionaryPathItem)
+                        actionType = MemberPathAction.DictionaryRemove;
+                    else
+                        actionType = MemberPathAction.ValueSet;
+                }
+
                 switch (actionType)
                 {
                     case MemberPathAction.ValueSet:

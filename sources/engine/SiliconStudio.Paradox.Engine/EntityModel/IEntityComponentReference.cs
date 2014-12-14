@@ -4,7 +4,7 @@ using System;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.EntityModel.Data;
+using SiliconStudio.Paradox.EntityModel;
 
 namespace SiliconStudio.Paradox.EntityModel
 {
@@ -16,6 +16,6 @@ namespace SiliconStudio.Paradox.EntityModel
 
         Type ComponentType { get; }
 
-        EntityComponentData Value { get; set; }
+        EntityComponent Value { get; set; }
     }
 }

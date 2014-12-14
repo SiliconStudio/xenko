@@ -1,6 +1,5 @@
 ﻿using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 
@@ -11,7 +10,6 @@ using System;
 namespace SiliconStudio.Paradox.Physics
 {
     [DataContract]
-    [DataConverter(AutoGenerate = true)]
     public class PhysicsElement
     {
         public enum Types
@@ -27,7 +25,6 @@ namespace SiliconStudio.Paradox.Physics
         /// <userdoc>
         /// The physics type of this element. 
         /// </userdoc>
-        [DataMemberConvert]
         public Types Type { get; set; }
 
         /// <summary>
@@ -39,13 +36,11 @@ namespace SiliconStudio.Paradox.Physics
         /// <userdoc>
         /// In the case of skinned mesh this must be the bone node name linked with this element.
         /// </userdoc>
-        [DataMemberConvert]
         public string LinkedBoneName { get; set; }
 
         /// <userdoc>
         /// the Collider Shape of this element.
         /// </userdoc>
-        [DataMemberConvert]
         public PhysicsColliderShape Shape { get; set; }
 
         //todo: is there a better way to solve this?
@@ -95,7 +90,6 @@ namespace SiliconStudio.Paradox.Physics
         /// <userdoc>
         /// The collision group of this element, default is AllFilter.
         /// </userdoc>
-        [DataMemberConvert]
         public CollisionFilterGroups1 CollisionGroup { get; set; }
 
         /// <summary>
@@ -107,7 +101,6 @@ namespace SiliconStudio.Paradox.Physics
         /// <userdoc>
         /// Which collider groups this element can collide with, when nothing is selected AllFilter is intended to be default.
         /// </userdoc>
-        [DataMemberConvert]
         public CollisionFilterGroups CanCollideWith { get; set; }
 
         /// <summary>
@@ -119,7 +112,6 @@ namespace SiliconStudio.Paradox.Physics
         /// <userdoc>
         /// Only valid for CharacterController type, describes the max slope height a character can climb.
         /// </userdoc>
-        [DataMemberConvert]
         public float StepHeight { get; set; }
 
         /// <summary>
@@ -131,7 +123,6 @@ namespace SiliconStudio.Paradox.Physics
         /// <userdoc>
         /// If this element is associated with a Sprite Component's sprite. This is necessary because Sprites use an inverted Y axis and the physics engine must be aware of that.
         /// </userdoc>
-        [DataMemberConvert]
         public bool Sprite { get; set; }
 
         #region Ignore or Private/Internal

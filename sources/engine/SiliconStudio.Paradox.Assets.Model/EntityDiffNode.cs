@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Engine.Data;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.EntityModel.Data;
 
@@ -41,10 +40,9 @@ namespace SiliconStudio.Paradox.Assets.Model
             Guid = entityGuid;
             Name = entityData.Name;
 
-            EntityComponentData entityComponent;
-            if (entityData.Components.TryGetValue(TransformationComponent.Key, out entityComponent))
+            var transformationComponent = entityData.Get(TransformationComponent.Key);
+            if (transformationComponent != null)
             {
-                var transformationComponent = (TransformationComponentData)entityComponent;
                 Children = new List<EntityDiffNode>(transformationComponent.Children.Count);
 
                 // Build children

@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 
 using SiliconStudio.Core;
-using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Paradox.Audio;
 using SiliconStudio.Paradox.EntityModel;
 
@@ -222,7 +221,6 @@ namespace SiliconStudio.Paradox.Engine
         /// If the calculation yields a result of no attenuation effect, this value has no effect.
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException">The distance scale of an audio emitter must be greater than or equal to zero.</exception>
-        [DataMemberConvert]
         public float DistanceScale
         {
             get { return distanceScale; }
@@ -250,7 +248,6 @@ namespace SiliconStudio.Paradox.Engine
         /// If the calculation yields a result of no Doppler effect, this value has no effect.
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException">The Doppler scale of an audio emitter must be greater than or equal to zero.</exception>
-        [DataMemberConvert]
         public float DopplerScale
         {
             get { return dopplerScale; }
@@ -268,6 +265,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <summary>
         /// Boolean indicating to the <see cref="AudioEmitterProcessor"/> if the AudioEmitterComponent need to be processed or can be skipped.
         /// </summary>
+        [DataMemberIgnore]
         internal bool ShouldBeProcessed { get; set; }
 
         public override PropertyKey DefaultKey

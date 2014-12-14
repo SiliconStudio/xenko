@@ -41,9 +41,7 @@ Material:
         MaterialParameters.NormalMap: normalMap
         MaterialParameters.SpecularIntensityMap: specularIntensity
         MaterialParameters.SpecularPowerMap: specularPower
-    Parameters:
-        Capacity: 0
-        ~Items: {}
+    Parameters: {}
 ~Base:
     Location: --import--
     Asset: !MaterialAsset
@@ -89,6 +87,4 @@ Material:
                 MaterialParameters.NormalMap: normalMap
                 MaterialParameters.SpecularIntensityMap: specularIntensity
                 MaterialParameters.SpecularPowerMap: specularPower
-            Parameters:
-                Capacity: 0
-                ~Items: {}
+            Parameters: {}

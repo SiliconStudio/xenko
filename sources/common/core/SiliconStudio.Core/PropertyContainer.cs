@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
 
 namespace SiliconStudio.Core
@@ -26,7 +27,7 @@ namespace SiliconStudio.Core
     /// </remarks>
     [DataContract]
     [DataSerializer(typeof(PropertyContainer.Serializer))]
-    public partial struct PropertyContainer : IEnumerable<KeyValuePair<PropertyKey, object>> //IDictionary<PropertyKey, object>
+    public partial struct PropertyContainer : IDictionary<PropertyKey, object>
     {
         private static readonly Dictionary<Type, List<PropertyKey>> accessorProperties = new Dictionary<Type, List<PropertyKey>>();
         private Dictionary<PropertyKey, object> properties;
@@ -55,6 +56,7 @@ namespace SiliconStudio.Core
             this.owner = owner;
         }
 
+        [DataMemberIgnore]
         public object Owner
         {
             get
@@ -568,42 +570,25 @@ namespace SiliconStudio.Core
             return GetEnumerator();
         }
 
-        /*void ICollection<KeyValuePair<PropertyKey, object>>.Add(KeyValuePair<PropertyKey, object> item)
+        void ICollection<KeyValuePair<PropertyKey, object>>.Add(KeyValuePair<PropertyKey, object> item)
         {
             Add(item.Key, item.Value);
         }
 
         bool ICollection<KeyValuePair<PropertyKey, object>>.Contains(KeyValuePair<PropertyKey, object> item)
         {
-            object value;
-            if (TryGetValue(item.Key, out value))
-            {
-                return Equals(value, item.Value);
-            }
-            return false;
+            return properties.ContainsValue(item);
         }
 
         void ICollection<KeyValuePair<PropertyKey, object>>.CopyTo(KeyValuePair<PropertyKey, object>[] array, int arrayIndex)
         {
-            if (properties != null)
-            {
-                ((IDictionary<PropertyKey, object>)properties).CopyTo(array, arrayIndex);
-            }
+            ((IDictionary<PropertyKey, object>)properties).CopyTo(array, arrayIndex);
         }
 
         bool ICollection<KeyValuePair<PropertyKey, object>>.Remove(KeyValuePair<PropertyKey, object> item)
         {
-            object value;
-            if (TryGetValue(item.Key, out value))
-            {
-                if (Equals(value, item.Value))
-                {
-                    Remove(item.Key);
-                }
-            }
-            return false;
+            return ((IDictionary<PropertyKey, object>)properties).Remove(item);
         }
-         */
 
         internal abstract class ValueHolder
         {

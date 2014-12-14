@@ -5,11 +5,10 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Core.Serialization.Converters;
 
 namespace SiliconStudio.Paradox.Graphics.Font
 {
-    [ContentSerializer(typeof(DataContentConverterSerializer<StaticSpriteFont>))]
+    [ContentSerializer(typeof(DataContentSerializer<StaticSpriteFont>))]
     internal class StaticSpriteFont : SpriteFont
     {
         private readonly Dictionary<char, Glyph> characterToGlyph;

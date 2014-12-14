@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
         /// </summary>
         /// <param name="sourceParameters">The source ParameterCollectionData.</param>
         /// <param name="destParameters">The destination ParameterCollection.</param>
-        protected static void AddToParameters(ParameterCollectionData sourceParameters, ParameterCollection destParameters)
+        protected static void AddToParameters(ParameterCollection sourceParameters, ParameterCollection destParameters)
         {
             if (sourceParameters != null)
             {

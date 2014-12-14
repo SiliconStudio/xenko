@@ -10,17 +10,15 @@ Hierarchy:
             -   Id: 3dab8d09-1bcc-4bf3-9469-1c0f970b27df
                 Name: Root
                 Components:
-                    TransformationComponent.Key: !TransformationComponentData
+                    TransformationComponent.Key:
                         Children: []
                         Rotation: {W: 1, X: 0, Y: 0, Z: 0}
                         Scaling: {X: 1, Y: 1, Z: 1}
                         Translation: {X: 0, Y: 0, Z: 0}
                         UseTRS: true
-                    ModelComponent.Key: !ModelComponentData
+                    ModelComponent.Key:
                         DrawOrder: 0
                         Enabled: true
                         Model: 8a7c3a26-18fd-4881-a539-29b025238a7b:Cube/cube_model
-                        Parameters:
-                            Capacity: 0
-                            ~Items: {}
+                        Parameters: {}
 AssetBases: {}

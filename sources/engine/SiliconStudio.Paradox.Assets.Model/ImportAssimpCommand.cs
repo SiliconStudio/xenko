@@ -36,7 +36,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             };
         }
 
-        protected override ModelData LoadModel(ICommandContext commandContext, AssetManager assetManager)
+        protected override Effects.Model LoadModel(ICommandContext commandContext, AssetManager assetManager)
         {
             var converter = CreateMeshConverter(commandContext);
 

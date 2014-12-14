@@ -147,6 +147,7 @@ namespace SiliconStudio.Core
         /// <summary>
         /// Gets the attached properties to this component.
         /// </summary>
+        [DataMemberIgnore] // Do not try to recreate object (preserve Tags.Owner)
         public PropertyContainer Tags;
     }
 }

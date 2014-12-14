@@ -45,7 +45,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// The parameters of the material. Any parameter can be set here. This is the lowest priority collection so it can be overridden by the model and mesh parameters.
         /// </userdoc>
         [DataMember(50)]
-        public ParameterCollectionData Parameters { get; set; }
+        public ParameterCollection Parameters { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialDescription"/> class.
@@ -55,7 +55,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             //MaterialTrees = new Dictionary<string, MaterialTree>();
             Nodes = new Dictionary<string, IMaterialNode>();
             ColorNodes = new Dictionary<ParameterKey<ShaderMixinSource>, string>();
-            Parameters = new ParameterCollectionData();
+            Parameters = new ParameterCollection();
         }
 
         /// <summary>
@@ -147,7 +147,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <param name="value">The value.</param>
         public void SetParameter(ParameterKey parameterKey, object value)
         {
-            Parameters.Set(parameterKey, value);
+            Parameters.SetObject(parameterKey, value);
         }
 
         /// <summary>
@@ -164,7 +164,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// Get all the Compilation parameters for this model.
         /// </summary>
         /// <returns>A collection of all the parameters.</returns>
-        public ParameterCollectionData GetParameters()
+        public ParameterCollection GetParameters()
         {
             return Parameters;
         }

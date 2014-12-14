@@ -14,7 +14,7 @@ using SiliconStudio.Core.Storage;
 using SiliconStudio.Paradox.Assets.Model;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Data;
-using SiliconStudio.Paradox.Engine.Data;
+using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.EntityModel.Data;
 using SiliconStudio.Paradox.Shaders.Compiler;
@@ -31,10 +31,10 @@ namespace SiliconStudio.Paradox.Assets.Effect.Generators
 
         public struct EntityParameters
         {
-            public ParameterCollectionData MaterialParameters;
-            public ParameterCollectionData ModelParameters;
-            public ParameterCollectionData MeshParameters;
-            public ParameterCollectionData LightingParameters;
+            public ParameterCollection MaterialParameters;
+            public ParameterCollection ModelParameters;
+            public ParameterCollection MeshParameters;
+            public ParameterCollection LightingParameters;
         };
         
         public override int GeneratorPriority
@@ -58,7 +58,7 @@ namespace SiliconStudio.Paradox.Assets.Effect.Generators
                 
                 var settings = new AssetManagerLoaderSettings()
                 {
-                    ContentFilter = AssetManagerLoaderSettings.NewContentFilterByType(typeof(ModelData), typeof(MeshData), typeof(MaterialData), typeof(LightingConfigurationsSetData)),
+                    ContentFilter = AssetManagerLoaderSettings.NewContentFilterByType(typeof(Effects.Model), typeof(Mesh), typeof(Material), typeof(LightingConfigurationsSet)),
                 };
 
                 var allEntityParameters = new List<EntityParameters>();
@@ -67,13 +67,14 @@ namespace SiliconStudio.Paradox.Assets.Effect.Generators
                     var assetPath = entityAssetItem.Location.GetDirectoryAndFileName();
                     try
                     {
-                        var entityHiearchy = assetManager.Load<EntityHierarchyData>(assetPath, settings);
+                        var entityHiearchy = assetManager.Load<Entity>(assetPath, settings);
 
-                        foreach (var entity in entityHiearchy.Entities)
+                        foreach (var entity in ParameterContainerExtensions.CollectEntityTree(entityHiearchy))
                         {
-                            foreach (var modelComponent in entity.Components.Select(x => x.Value).OfType<ModelComponentData>())
+                            var modelComponent = entity.Get(ModelComponent.Key);
+                            if (modelComponent != null)
                             {
-                                foreach (var meshData in modelComponent.Model.Value.Meshes)
+                                foreach (var meshData in modelComponent.Model.Meshes)
                                 {
                                     var lightingParameters = GetLightingParameters(meshData);
                                     var materialParameters = GetMeshMaterialParameters(modelComponent, meshData);
@@ -158,9 +159,12 @@ namespace SiliconStudio.Paradox.Assets.Effect.Generators
         /// <summary>
         /// Get the parameters from the material.
         /// </summary>
+        /// <param name="modelComponent">The model component.</param>
         /// <param name="meshData">The mesh.</param>
-        /// <returns>The material parameters.</returns>
-        private ParameterCollectionData GetMeshMaterialParameters(ModelComponentData modelComponent, MeshData meshData)
+        /// <returns>
+        /// The material parameters.
+        /// </returns>
+        private ParameterCollection GetMeshMaterialParameters(ModelComponent modelComponent, Mesh meshData)
         {
             // Note: This should match RenderModel.GetMaterial() behavior
             // This should be unified as soon as data layer is gone
@@ -173,13 +177,13 @@ namespace SiliconStudio.Paradox.Assets.Effect.Generators
 
                 // Similar to RenderModel.GetMaterial: First, try to get it from ModelComponent, then Model
                 var material = modelComponent.Materials != null && materialIndex < modelComponent.Materials.Count ? modelComponent.Materials[materialIndex] : null;
-                if (material != null)
+                if (material == null)
                 {
-                    material = modelComponent.Model.Value.Materials != null && materialIndex < modelComponent.Model.Value.Materials.Count ? modelComponent.Model.Value.Materials[materialIndex] : null;
+                    material = modelComponent.Model.Materials != null && materialIndex < modelComponent.Model.Materials.Count ? modelComponent.Model.Materials[materialIndex] : null;
                 }
 
-                if (material != null && material.Value != null)
-                    return material.Value.Parameters;
+                if (material != null)
+                    return material.Parameters;
             }
             return null;
         }
@@ -189,41 +193,37 @@ namespace SiliconStudio.Paradox.Assets.Effect.Generators
         /// </summary>
         /// <param name="meshData">The mesh.</param>
         /// <returns>The lighting configurations.</returns>
-        private List<ParameterCollectionData> GetLightingParameters(MeshData meshData)
+        private List<ParameterCollection> GetLightingParameters(Mesh meshData)
         {
             if (meshData != null && meshData.Parameters != null && meshData.Parameters.ContainsKey(LightingKeys.LightingConfigurations))
             {
-                var lightingDescContent = meshData.Parameters[LightingKeys.LightingConfigurations];
-                if (lightingDescContent != null && lightingDescContent is ContentReference<LightingConfigurationsSetData>)
+                var lightingDesc = meshData.Parameters.Get(LightingKeys.LightingConfigurations);
+                if (lightingDesc != null)
                 {
-                    var lightingDesc = ((ContentReference<LightingConfigurationsSetData>)lightingDescContent).Value;
-                    if (lightingDesc != null)
+                    var collection = new List<ParameterCollection>();
+                    foreach (var config in lightingDesc.Configs)
                     {
-                        var collection = new List<ParameterCollectionData>();
-                        foreach (var config in lightingDesc.Configs)
-                        {
-                            var parameters = config.GetCollection();
-                            SetShadowCasterReceiverConfiguration(meshData.Parameters, parameters, shadowKeys);
-                            collection.Add(parameters);
-                        }
-                        return collection;
+                        var parameters = config.GetCollection();
+                        SetShadowCasterReceiverConfiguration(meshData.Parameters, parameters, shadowKeys);
+                        collection.Add(parameters);
                     }
+                    return collection;
                 }
-                var defaultParameters = new ParameterCollectionData();
+                var defaultParameters = new ParameterCollection();
                 SetShadowCasterReceiverConfiguration(meshData.Parameters, defaultParameters, shadowKeys);
-                return new List<ParameterCollectionData> { defaultParameters };
+                return new List<ParameterCollection> { defaultParameters };
             }
             return null;
         }
 
-        private static void SetShadowCasterReceiverConfiguration(ParameterCollectionData sourceParameters, ParameterCollectionData targetParameters, params ParameterKey[] keys)
+        private static void SetShadowCasterReceiverConfiguration(ParameterCollection sourceParameters, ParameterCollection targetParameters, params ParameterKey[] keys)
         {
             if (sourceParameters != null)
             {
                 foreach (var key in keys)
                 {
                     if (sourceParameters.ContainsKey(key))
-                        targetParameters.Set(key, sourceParameters[key]);
+                        targetParameters.SetObject(key, sourceParameters[key]);
                 }
             }
         }

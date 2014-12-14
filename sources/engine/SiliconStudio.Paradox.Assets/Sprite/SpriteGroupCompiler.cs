@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Graphics.Data;
 
 namespace SiliconStudio.Paradox.Assets.Sprite
@@ -20,17 +22,17 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                 result.BuildSteps.Add(new SpriteGroupCommand(urlInStorage, new ImageGroupParameters<SpriteGroupAsset>(asset, context.Platform), SpriteToTextureIndex, SeparateAlphaTexture));
         }
 
-        internal class SpriteGroupCommand : ImageGroupCommand<SpriteGroupAsset, SpriteInfo, SpriteGroupData, SpriteData>
+        internal class SpriteGroupCommand : ImageGroupCommand<SpriteGroupAsset, SpriteInfo, SpriteGroup, Graphics.Sprite>
         {
             public SpriteGroupCommand(string url, ImageGroupParameters<SpriteGroupAsset> asset, Dictionary<SpriteInfo, int> imageToTextureIndex, bool separateAlpha)
                 : base(url, asset, imageToTextureIndex, separateAlpha)
             {
             }
-
-            protected override void SetImageSpecificFields(SpriteInfo imageInfo, SpriteData newImage)
+        
+            protected override void SetImageSpecificFields(SpriteInfo imageInfo, Graphics.Sprite newImage)
             {
                 base.SetImageSpecificFields(imageInfo, newImage);
-
+        
                 newImage.Center = imageInfo.Center + (imageInfo.CenterFromMiddle ? +new Vector2(imageInfo.TextureRegion.Width, imageInfo.TextureRegion.Height) / 2 : Vector2.Zero);
             }
         }

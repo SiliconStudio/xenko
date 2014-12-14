@@ -16,9 +16,7 @@ Material:
     ColorNodes:
         MaterialParameters.AlbedoDiffuse: Untitled
     Parameters:
-        Capacity: 4
-        ~Items:
-            MaterialParameters.UseTransparent: true
+        MaterialParameters.UseTransparent: true
 ~Base:
     Location: --import--
     Asset: !MaterialAsset
@@ -38,6 +36,4 @@ Material:
                     RightChild: null
             ColorNodes:
                 MaterialParameters.AlbedoDiffuse: pdx_diffuseOpaque
-            Parameters:
-                Capacity: 0
-                ~Items: {}
+            Parameters: {}

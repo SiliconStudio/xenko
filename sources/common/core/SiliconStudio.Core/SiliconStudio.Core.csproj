@@ -199,14 +199,14 @@
     <Compile Include="Serialization\Serializers\CollectionSerializers.cs" />
     <Compile Include="Serialization\Serializers\KeyedSortedListSerializer.cs" />
     <Compile Include="Serialization\Serializers\ComplexTypeSerializerFlags.cs" />
-    <Compile Include="Serialization\Serializers\DataSerializerAttribute.cs" />
-    <Compile Include="Serialization\Serializers\DataSerializerGenericMode.cs" />
+    <Compile Include="Serialization\DataSerializerAttribute.cs" />
+    <Compile Include="Serialization\DataSerializerGenericMode.cs" />
     <Compile Include="Serialization\Serializers\NamespaceDoc.cs" />
     <Compile Include="Serialization\Serializers\NullableSerializer.cs" />
     <Compile Include="Serialization\Serializers\PrimitiveTypeSerializers.cs" />
     <Compile Include="Serialization\Serializers\PropertyInfoSerializer.cs" />
     <Compile Include="Serialization\Serializers\PropertyKeySerializer.cs" />
-    <Compile Include="Serialization\Serializers\DataSerializerGlobalAttribute.cs" />
+    <Compile Include="Serialization\DataSerializerGlobalAttribute.cs" />
     <Compile Include="Serialization\Serializers\TupleSerializer.cs">
       <DependentUpon>TupleSerializer.tt</DependentUpon>
       <AutoGen>True</AutoGen>

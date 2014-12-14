@@ -7,6 +7,7 @@ using System.Linq;
 using SiliconStudio.Paradox.Effects.Data;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics.Data;
 
 namespace SiliconStudio.Paradox.Extensions
@@ -18,7 +19,7 @@ namespace SiliconStudio.Paradox.Extensions
         /// </summary>
         /// <param name="meshDrawDatas">The mesh draw datas.</param>
         /// <param name="can32BitIndex">A flag stating if 32 bit index buffers.</param>
-        public unsafe static MeshDrawData MergeDrawData(IList<MeshDrawData> meshDrawDatas, bool can32BitIndex)
+        public unsafe static MeshDraw MergeDrawData(IList<MeshDraw> meshDrawDatas, bool can32BitIndex)
         {
             if (meshDrawDatas.Count == 0)
                 throw new ArgumentException("Need at least 1 MeshDrawData.", "meshDrawDatas");
@@ -70,11 +71,11 @@ namespace SiliconStudio.Paradox.Extensions
             }
 
             // Allocate vertex buffer
-            var result = new MeshDrawData { PrimitiveType = PrimitiveType.TriangleList };
+            var result = new MeshDraw { PrimitiveType = PrimitiveType.TriangleList };
             var destBufferData = new byte[firstVertexBuffer.Declaration.VertexStride * totalVertexCount];
-            result.VertexBuffers = new VertexBufferBindingData[] {
-                new VertexBufferBindingData(
-                    new BufferData(BufferFlags.VertexBuffer, destBufferData),
+            result.VertexBuffers = new VertexBufferBinding[] {
+                new VertexBufferBinding(
+                    new BufferData(BufferFlags.VertexBuffer, destBufferData).ToSerializableVersion(),
                     firstVertexBuffer.Declaration,
                     totalVertexCount,
                     firstVertexBuffer.Stride)};
@@ -83,9 +84,9 @@ namespace SiliconStudio.Paradox.Extensions
             fixed (byte* destBufferDataStart = &destBufferData[0])
             {
                 var destBufferDataCurrent = destBufferDataStart;
-                foreach (MeshDrawData meshDrawData in meshDrawDatas)
+                foreach (var meshDrawData in meshDrawDatas)
                 {
-                    var sourceBuffer = meshDrawData.VertexBuffers[0].Buffer.Value;
+                    var sourceBuffer = meshDrawData.VertexBuffers[0].Buffer.GetSerializationData();
                     fixed (byte* sourceBufferDataStart = &sourceBuffer.Content[0])
                     {
                         Utilities.CopyMemory((IntPtr)destBufferDataCurrent, (IntPtr)sourceBufferDataStart, sourceBuffer.Content.Length);
@@ -100,8 +101,8 @@ namespace SiliconStudio.Paradox.Extensions
 
                 // Allocate index buffer
                 destBufferData = new byte[(use32BitIndex ? sizeof(uint) : sizeof(ushort)) * totalIndexCount];
-                result.IndexBuffer = new IndexBufferBindingData(
-                    new BufferData(BufferFlags.IndexBuffer, destBufferData),
+                result.IndexBuffer = new IndexBufferBinding(
+                    new BufferData(BufferFlags.IndexBuffer, destBufferData).ToSerializableVersion(),
                     use32BitIndex,
                     totalIndexCount);
 
@@ -110,7 +111,7 @@ namespace SiliconStudio.Paradox.Extensions
                 {
                     var destBufferDataCurrent = destBufferDataStart;
                     var offset = 0;
-                    foreach (MeshDrawData meshDrawData in meshDrawDatas)
+                    foreach (var meshDrawData in meshDrawDatas)
                     {
                         var indexBuffer = meshDrawData.IndexBuffer;
                         byte[] sourceBufferContent = null;
@@ -118,7 +119,7 @@ namespace SiliconStudio.Paradox.Extensions
 
                         if (indexBuffer != null)
                         {
-                            sourceBufferContent = indexBuffer.Buffer.Value.Content;
+                            sourceBufferContent = indexBuffer.Buffer.GetSerializationData().Content;
                             is32Bit = indexBuffer.Is32Bit;
                         }
 
@@ -156,15 +157,15 @@ namespace SiliconStudio.Paradox.Extensions
         /// </summary>
         /// <param name="meshDrawDatas">The list of meshes.</param>
         /// <returns>A list of grouped meshes.</returns>
-        public static List<List<MeshDrawData>> CreateDeclarationMergeGroup(IList<MeshDrawData> meshDrawDatas)
+        public static List<List<MeshDraw>> CreateDeclarationMergeGroup(IList<MeshDraw> meshDrawDatas)
         {
-            var mergingLists = new List<List<MeshDrawData>>();
+            var mergingLists = new List<List<MeshDraw>>();
 
             foreach (var meshDrawData in meshDrawDatas)
             {
                 if (!meshDrawData.IsSimple() || meshDrawData.PrimitiveType != PrimitiveType.TriangleList) // only one (interlaced) vertex buffer is allowed
                 {
-                    mergingLists.Add(new List<MeshDrawData> { meshDrawData });
+                    mergingLists.Add(new List<MeshDraw> { meshDrawData });
                     continue;
                 }
 
@@ -182,7 +183,7 @@ namespace SiliconStudio.Paradox.Extensions
                 }
 
                 if (createNewGroup)
-                    mergingLists.Add(new List<MeshDrawData> { meshDrawData });
+                    mergingLists.Add(new List<MeshDraw> { meshDrawData });
             }
 
             return mergingLists;
@@ -194,17 +195,17 @@ namespace SiliconStudio.Paradox.Extensions
         /// <param name="meshDrawDatas">List of MehsDrawData to merge.</param>
         /// <param name="can32BitIndex">A flag stating if 32 bit index buffers are allowed.</param>
         /// <returns>A List of groups to merge internally.</returns>
-        public static List<List<MeshDrawData>> CreateOptimizedMergeGroups(IList<MeshDrawData> meshDrawDatas, bool can32BitIndex)
+        public static List<List<MeshDraw>> CreateOptimizedMergeGroups(IList<MeshDraw> meshDrawDatas, bool can32BitIndex)
         {
             if (meshDrawDatas.Count == 0)
-                return new List<List<MeshDrawData>>();
+                return new List<List<MeshDraw>>();
                 
             if (meshDrawDatas.Count == 1)
-                return new List<List<MeshDrawData>> { meshDrawDatas.ToList() };
+                return new List<List<MeshDraw>> { meshDrawDatas.ToList() };
 
             // list of (vertices count -> list of meshes)
             // vertices count is the higher possible value for an index
-            var mergingLists = new List<KeyValuePair<int, List<MeshDrawData>>>();
+            var mergingLists = new List<KeyValuePair<int, List<MeshDraw>>>();
 
             var maxVerticesCount = can32BitIndex ? uint.MaxValue : ushort.MaxValue;
 
@@ -226,14 +227,14 @@ namespace SiliconStudio.Paradox.Extensions
 
                 if (insertIndex < 0) // new entry
                 {
-                    var newList = new List<MeshDrawData>() { drawData };
-                    mergingLists.Add(new KeyValuePair<int, List<MeshDrawData>>(vertexCount, newList));
+                    var newList = new List<MeshDraw>() { drawData };
+                    mergingLists.Add(new KeyValuePair<int, List<MeshDraw>>(vertexCount, newList));
                 }
                 else // append
                 {
                     var kvp = mergingLists[insertIndex];
                     kvp.Value.Add(drawData);
-                    mergingLists[insertIndex] = new KeyValuePair<int, List<MeshDrawData>>(vertexCount + kvp.Key, kvp.Value);
+                    mergingLists[insertIndex] = new KeyValuePair<int, List<MeshDraw>>(vertexCount + kvp.Key, kvp.Value);
                 }
 
             }
@@ -316,7 +317,7 @@ namespace SiliconStudio.Paradox.Extensions
         /// </summary>
         /// <param name="meshDrawDatas">The list of MeshDrawdata to merge.</param>
         /// <returns>True if an index is needed, false otherwise.</returns>
-        public static bool IsIndexed(IList<MeshDrawData> meshDrawDatas)
+        public static bool IsIndexed(IList<MeshDraw> meshDrawDatas)
         {
             return meshDrawDatas.Any(drawdata => drawdata.IndexBuffer != null);
         }
@@ -327,7 +328,7 @@ namespace SiliconStudio.Paradox.Extensions
         /// <param name="meshDrawDatas">The list of meshes to group.</param>
         /// <param name="can32BitIndex">A flag stating if 32 bit index buffers are allowed</param>
         /// <returns>The list of merged meshes.</returns>
-        public static List<MeshDrawData> GroupDrawData(this IList<MeshDrawData> meshDrawDatas, bool can32BitIndex)
+        public static List<MeshDraw> GroupDrawData(this IList<MeshDraw> meshDrawDatas, bool can32BitIndex)
         {
             var declGroups = CreateDeclarationMergeGroup(meshDrawDatas);
             var groups = declGroups.SelectMany(x => CreateOptimizedMergeGroups(x, can32BitIndex)).ToList();

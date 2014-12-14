@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
-using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Core;
@@ -12,13 +11,14 @@ namespace SiliconStudio.Paradox.Engine
     /// <summary>
     /// Add a <see cref="Model"/> to an <see cref="Entity"/>, that will be used during rendering.
     /// </summary>
-    [DataConverter(AutoGenerate = true)]
     [DataContract("ModelComponent")]
     public sealed class ModelComponent : EntityComponent, IModelInstance
     {
         public static PropertyKey<ModelComponent> Key = new PropertyKey<ModelComponent>("Key", typeof(ModelComponent));
 
         private Model model;
+        private ModelViewHierarchyUpdater modelViewHierarchy;
+        private bool modelViewHierarchyDirty = true;
         private List<Material> materials = new List<Material>();
 
         /// <summary>
@@ -45,7 +45,6 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The model.
         /// </value>
-        [DataMemberConvert]
         [DataMemberCustomSerializer]
         public Model Model
         {
@@ -55,8 +54,9 @@ namespace SiliconStudio.Paradox.Engine
             }
             set
             {
+                if (model != value)
+                    modelViewHierarchyDirty = true;
                 model = value;
-                ModelUpdated();
             }
         }
 
@@ -66,8 +66,6 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The materials overriding <see cref="Effects.Model.Materials"/> ones.
         /// </value>
-        [DataMemberConvert]
-        [DataMemberCustomSerializer]
         public List<Material> Materials
         {
             get { return materials; }
@@ -76,8 +74,16 @@ namespace SiliconStudio.Paradox.Engine
         [DataMemberIgnore]
         public ModelViewHierarchyUpdater ModelViewHierarchy
         {
-            get;
-            internal set;
+            get
+            {
+                if (modelViewHierarchyDirty)
+                {
+                    ModelUpdated();
+                    modelViewHierarchyDirty = false;
+                }
+
+                return modelViewHierarchy;
+            }
         }
 
         /// <summary>
@@ -86,7 +92,6 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         ///   <c>true</c> if rendering is enabled; otherwise, <c>false</c>.
         /// </value>
-        [DataMemberConvert]
         public bool Enabled { get; set; }
 
         /// <summary>
@@ -95,28 +100,26 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The draw order.
         /// </value>
-        [DataMemberConvert]
         public float DrawOrder { get; set; }
 
         /// <summary>
         /// Gets the parameters used to render this mesh.
         /// </summary>
         /// <value>The parameters.</value>
-        [DataMemberConvert]
         public ParameterCollection Parameters { get; private set; }
 
         private void ModelUpdated()
         {
             if (model != null)
             {
-                if (ModelViewHierarchy != null)
+                if (modelViewHierarchy != null)
                 {
                     // Reuse previous ModelViewHierarchy
-                    ModelViewHierarchy.Initialize(model);
+                    modelViewHierarchy.Initialize(model);
                 }
                 else
                 {
-                    ModelViewHierarchy = new ModelViewHierarchyUpdater(model);
+                    modelViewHierarchy = new ModelViewHierarchyUpdater(model);
                 }
             }
         }

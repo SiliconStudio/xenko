@@ -23,6 +23,7 @@
     <Compile Include="EntityAssetOperations.cs" />
     <Compile Include="EntityHierarchyDiffNodeBuilder.cs" />
     <Compile Include="EntityDiffNode.cs" />
+    <Compile Include="EntitySerializer.cs" />
     <Compile Include="EntityTreeAsset.cs" />
     <Compile Include="FbxAssetImporter.cs" />
     <Compile Include="EntityCompilerParametersGenerator.cs" />

@@ -17,6 +17,7 @@ using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Paradox.Assets.Model.Analysis;
+using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.EntityModel.Data;
 using IObjectFactory = SiliconStudio.Core.Reflection.IObjectFactory;
@@ -64,9 +65,9 @@ namespace SiliconStudio.Paradox.Assets.Model
             public object New(Type type)
             {
                 // Create a new root entity, and make sure transformation component is created
-                var rootEntity = new EntityData();
+                var rootEntity = new Entity();
                 rootEntity.Name = "Root";
-                rootEntity.GetTransformation();
+                rootEntity.GetOrCreate(TransformationComponent.Key);
 
                 return new EntityAsset
                 {

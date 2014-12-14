@@ -9,9 +9,11 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Assets.Materials;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Graphics.Data;
 using SiliconStudio.TextureConverter;
 
 namespace SiliconStudio.Paradox.Assets.Textures
@@ -280,7 +282,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                         if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
                             return ResultStatus.Cancelled;
 
-                        assetManager.Save(outputUrl, outputImage);
+                        assetManager.Save(outputUrl, outputImage.ToSerializableVersion());
 
                         logger.Info("Compression successful [{3}] to ({0}x{1},{2})", outputImage.Description.Width, outputImage.Description.Height, outputImage.Description.Format, outputUrl);
                     }

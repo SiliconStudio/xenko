@@ -3,7 +3,6 @@
 using System;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Physics

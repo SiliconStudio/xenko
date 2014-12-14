@@ -5,7 +5,6 @@ using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Engine.Data;
 
 namespace SiliconStudio.Paradox.EntityModel.Data
 {
@@ -59,16 +58,9 @@ namespace SiliconStudio.Paradox.EntityModel.Data
         /// </summary>
         /// <param name="createIfMissing">If <c>true</c> and if the entity does not have a transformation component, this method will create and add a new one.</param>
         /// <returns>The transformation component of this entity.</returns>
-        public TransformationComponentData GetTransformation(bool createIfMissing = true)
+        public TransformationComponent GetTransformation(bool createIfMissing = true)
         {
-            EntityComponentData component;
-            if (!Components.TryGetValue(TransformationComponent.Key, out component) && createIfMissing)
-            {
-                var result = new TransformationComponentData();
-                Components.Add(TransformationComponent.Key, result);
-                return result;
-            }
-            return (TransformationComponentData)component;
+            throw new InvalidOperationException();
         }
 
         void ComponentsCollectionChanged(object sender, TrackingCollectionChangedEventArgs e)

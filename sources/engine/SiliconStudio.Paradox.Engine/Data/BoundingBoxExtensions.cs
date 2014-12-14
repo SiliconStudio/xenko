@@ -3,13 +3,14 @@
 using System.Linq;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects.Data;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Graphics.Data;
 
 namespace SiliconStudio.Paradox.Extensions
 {
     public static class BoundingBoxExtensions
     {
-        public unsafe static BoundingBox ComputeBoundingBox(this VertexBufferBindingData vertexBufferBinding, ref Matrix matrix)
+        public unsafe static BoundingBox ComputeBoundingBox(this VertexBufferBinding vertexBufferBinding, ref Matrix matrix)
         {
             var positionOffset = vertexBufferBinding.Declaration
                 .EnumerateWithOffsets()
@@ -19,7 +20,7 @@ namespace SiliconStudio.Paradox.Extensions
             var boundingBox = BoundingBox.Empty;
 
             var vertexStride = vertexBufferBinding.Declaration.VertexStride;
-            fixed (byte* bufferStart = &vertexBufferBinding.Buffer.Value.Content[vertexBufferBinding.Offset])
+            fixed (byte* bufferStart = &vertexBufferBinding.Buffer.GetSerializationData().Content[vertexBufferBinding.Offset])
             {
                 byte* buffer = bufferStart;
                 for (int i = 0; i < vertexBufferBinding.Count; ++i)

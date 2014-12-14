@@ -1,5 +1,3 @@
-using SiliconStudio.Core.Serialization.Converters;
-
 namespace SiliconStudio.Paradox.EntityModel.Data
 {
     internal class EntityHierarchyDataConverter : DataConverter<EntityHierarchyData, Entity>

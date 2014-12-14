@@ -1,5 +1,4 @@
 using System.Linq;
-using SiliconStudio.Core.Serialization.Converters;
 
 namespace SiliconStudio.Paradox.EntityModel.Data
 {
@@ -16,7 +15,7 @@ namespace SiliconStudio.Paradox.EntityModel.Data
             entity.Id = entityData.Id;
             foreach (var component in entityData.Components)
             {
-                entity.Tags.SetObject(component.Key, converterContext.ConvertFromData<EntityComponent>(component.Value, ConvertFromDataFlags.Construct));
+                entity.Components.SetObject(component.Key, converterContext.ConvertFromData<EntityComponent>(component.Value, ConvertFromDataFlags.Construct));
             }
         }
 
@@ -24,9 +23,9 @@ namespace SiliconStudio.Paradox.EntityModel.Data
         {
             foreach (var component in entityData.Components)
             {
-                var entityComponent = (EntityComponent)entity.Tags.Get(component.Key);
+                var entityComponent = (EntityComponent)entity.Components.Get(component.Key);
                 converterContext.ConvertFromData(component.Value, ref entityComponent, ConvertFromDataFlags.Convert);
-                entity.Tags.SetObject(component.Key, entityComponent);
+                entity.Components.SetObject(component.Key, entityComponent);
             }
         }
 
@@ -34,7 +33,7 @@ namespace SiliconStudio.Paradox.EntityModel.Data
         {
             entityData = new EntityData { Name = entity.Name };
 
-            foreach (var component in entity.Tags.Where(x => x.Value is EntityComponent))
+            foreach (var component in entity.Components.Where(x => x.Value is EntityComponent))
             {
                 entityData.Components.Add(component.Key, converterContext.ConvertToData<EntityComponentData>(component.Value));
             }

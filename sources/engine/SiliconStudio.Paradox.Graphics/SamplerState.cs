@@ -1,11 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Core.ReferenceCounting;
-using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Paradox.Graphics
 {
-    [ContentSerializer(typeof(SamplerStateSerializer))]
     public partial class SamplerState : GraphicsResourceBase
     {
         /// <summary>
@@ -19,7 +17,7 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         // For FakeSamplerState.
-        protected SamplerState(SamplerStateDescription description)
+        public SamplerState(SamplerStateDescription description)
         {
             Description = description;
         }

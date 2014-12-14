@@ -3,7 +3,6 @@
 using System.Reflection;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Paradox.Data;
 
 namespace SiliconStudio.Paradox.Engine
@@ -14,9 +13,6 @@ namespace SiliconStudio.Paradox.Engine
         public static void Initialize()
         {
             AssemblyRegistry.Register(typeof(Module).GetTypeInfo().Assembly, AssemblyCommonCategories.Assets);
-
-            // Register EntityReferenceDataConverter
-            ConverterContext.RegisterConverter(new EntityReferenceDataConverter());
         }
     }
 }

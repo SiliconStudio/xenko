@@ -4,6 +4,7 @@ using System;
 using System.Runtime.CompilerServices;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Serializers;
+using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Core.Serialization
 {
@@ -11,44 +12,66 @@ namespace SiliconStudio.Core.Serialization
     {
         private static ConditionalWeakTable<object, UrlInfo> urls = new ConditionalWeakTable<object, UrlInfo>();
 
-        public static string GetUrl(IContentData contentData)
-        {
-            return contentData.Url;
-        }
-
-        public static void SetUrl(IContentData contentData, string url)
-        {
-            contentData.Url = url;
-        }
-
         public static string GetUrl(object obj)
         {
-            var contentData = obj as IContentData;
-            if (contentData != null)
-                return contentData.Url;
-
-            // TODO: Allow only IReferencable and/or ICollectionHolder
-            var urlInfo = urls.GetValue(obj, x => new UrlInfo());
-            return urlInfo.Url;
+            UrlInfo urlInfo;
+            return urls.TryGetValue(obj, out urlInfo) ? urlInfo.Url : null;
         }
 
         public static void SetUrl(object obj, string url)
         {
-            var contentData = obj as IContentData;
-            if (contentData != null)
-            {
-                contentData.Url = url;
-                return;
-            }
-
-            // TODO: Allow only IReferencable and/or ICollectionHolder
             var urlInfo = urls.GetValue(obj, x => new UrlInfo());
             urlInfo.Url = url;
         }
 
-        class UrlInfo
+        public static UrlInfo GetUrlInfo(object obj)
+        {
+            UrlInfo urlInfo;
+            urls.TryGetValue(obj, out urlInfo);
+            return urlInfo;
+        }
+
+        public static UrlInfo GetOrCreateUrlInfo(object obj)
+        {
+            return urls.GetValue(obj, x => new UrlInfo());
+        }
+
+        public static T CreateSerializableVersion<T>(Guid id, string location) where T : class, new()
+        {
+            var result = new T();
+            var urlInfo = GetOrCreateUrlInfo(result);
+            urlInfo.Id = id;
+            urlInfo.Url = location;
+            urlInfo.IsProxy = true;
+            return result;
+        }
+
+        public static object CreateSerializableVersion(Type type, Guid id, string location)
+        {
+            var result = Activator.CreateInstance(type);
+            var urlInfo = GetOrCreateUrlInfo(result);
+            urlInfo.Id = id;
+            urlInfo.Url = location;
+            urlInfo.IsProxy = true;
+            return result;
+        }
+
+        public class UrlInfo
         {
             public string Url;
+
+            public Guid Id;
+
+            /// <summary>
+            /// If yes, it won't be recursively saved.
+            /// Use this if you only care about the Url.
+            /// </summary>
+            public bool IsProxy;
+
+            /// <summary>
+            /// Data representation.
+            /// </summary>
+            public object Data;
         }
     }
 

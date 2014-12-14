@@ -12,7 +12,7 @@ using namespace SiliconStudio::Paradox::Assets::Materials;
 using namespace SiliconStudio::Paradox::Assets::Materials::Nodes;
 using namespace SiliconStudio::Paradox::Effects;
 using namespace SiliconStudio::Paradox::Effects::Data;
-using namespace SiliconStudio::Paradox::Engine::Data;
+using namespace SiliconStudio::Paradox::Engine;
 using namespace SiliconStudio::Paradox::Graphics;
 using namespace SiliconStudio::Paradox::Shaders;
 
@@ -23,10 +23,10 @@ public ref class MeshParameters
 public:
 	MeshParameters()
 	{
-		Parameters = gcnew ParameterCollectionData();
+		Parameters = gcnew ParameterCollection();
 	}
 
-	ParameterCollectionData^ Parameters;
+	ParameterCollection^ Parameters;
 	String^ MaterialName;
 	String^ MeshName;
 	String^ NodeName;
@@ -45,14 +45,14 @@ public ref class CameraInfo
 public:
 	String^ NodeName;
 	String^ TargetNodeName;
-	CameraComponentData^ Data;
+	CameraComponent^ Data;
 };
 
 public ref class LightInfo
 {
 public:
 	String^ NodeName;
-	LightComponentData^ Data;
+	LightComponent^ Data;
 };
 
 public ref class EntityInfo
@@ -91,7 +91,7 @@ public:
 
 	static ShaderClassSource^ GenerateTextureLayer(String^ vfsOutputPath, String^ sourceTextureFile, int textureUVSetIndex, Vector2 textureUVscaling , 
 										int& textureCount, ParameterKey<Texture^>^ surfaceMaterialKey, 
-										MeshData^ meshData, Logger^ logger)
+										Mesh^ meshData, Logger^ logger)
 	{
 		ParameterKey<Texture^>^ parameterKey;
 

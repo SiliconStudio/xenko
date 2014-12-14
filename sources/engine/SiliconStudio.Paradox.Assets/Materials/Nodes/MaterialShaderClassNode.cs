@@ -266,9 +266,9 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
             Members = newMembers;
         }
 
-        public ParameterCollectionData GetParameters(object context)
+        public ParameterCollection GetParameters(object context)
         {
-            var collection = new ParameterCollectionData();
+            var collection = new ParameterCollection();
 
             if (MixinReference != null)
             {
@@ -318,12 +318,14 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
                         {
                             var textureNode = matContext.Material.FindNode(((NodeParameterTexture)keyValue.Value).Reference);
                             if (textureNode != null)
-                                AddToCollection<Graphics.Texture>(keyValue.Key, textureNode, collection);
+                                throw new NotImplementedException();
+                                //AddToCollection<Graphics.Texture>(keyValue.Key, textureNode, collection);
                         }
                     }
                     else if (expectedType == typeof(NodeParameterSampler))
                     {
-                        AddToCollection<Graphics.SamplerState>(keyValue.Key, keyValue.Value, collection);
+                        throw new NotImplementedException();
+                        //AddToCollection<Graphics.SamplerState>(keyValue.Key, keyValue.Value, collection);
                     }
                 }
             }
@@ -428,7 +430,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
         /// <param name="key">The key of the variable.</param>
         /// <param name="value"></param>
         /// <param name="collection"></param>
-        private void AddToCollection<T>(ParameterKey key, object value, ParameterCollectionData collection)
+        private void AddToCollection<T>(ParameterKey key, T value, ParameterCollection collection)
         {
             var pk = key as ParameterKey<T>;
             if (pk != null)

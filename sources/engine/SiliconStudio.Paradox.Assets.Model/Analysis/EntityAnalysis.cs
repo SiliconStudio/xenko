@@ -3,9 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Assets.Visitors;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Paradox.Data;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.EntityModel.Data;
 
@@ -15,8 +15,7 @@ namespace SiliconStudio.Paradox.Assets.Model.Analysis
     {
         public struct Result
         {
-            public List<IEntityComponentReference> EntityComponentReferences;
-            public List<EntityReference> EntityReferences;
+            public List<EntityLink> EntityReferences;
         }
 
         public static Result Visit(EntityHierarchyData entityHierarchy)
@@ -36,56 +35,6 @@ namespace SiliconStudio.Paradox.Assets.Model.Analysis
         /// <param name="entityHierarchy">The entity asset.</param>
         public static void UpdateEntityReferences(EntityHierarchyData entityHierarchy)
         {
-            var entityAnalysisResult = Visit(entityHierarchy);
-
-            // Updates EntityComponent references
-            foreach (var entityComponentReference in entityAnalysisResult.EntityComponentReferences)
-            {
-                if (entityComponentReference.Value != null)
-                {
-                    var containingEntity = entityComponentReference.Value.Entity;
-                    if (containingEntity == null)
-                        throw new InvalidOperationException("Found a reference to a component which doesn't have any entity");
-
-                    // If we have a component value but no entity, update it
-                    if (entityComponentReference.Entity.Value == null)
-                        entityComponentReference.Entity.Value = containingEntity;
-                    //else if (entityComponentReference.Entity.Value != containingEntity)
-                    //    throw new InvalidOperationException("Entity reference doesn't seem to match Component actual entity");
-
-                    // If we have a component value but no component key, try to find ourself in containing entity
-                    if (entityComponentReference.Component == null)
-                    {
-                        foreach (var component in containingEntity.Components)
-                        {
-                            if (component.Value == entityComponentReference.Value)
-                            {
-                                entityComponentReference.Component = component.Key;
-                                break;
-                            }
-                        }
-                        if (entityComponentReference.Component == null)
-                        {
-                            throw new InvalidOperationException("Could not find a component in its containing Entity");
-                        }
-                    }
-
-                    // Make sure this component belongs to this container
-                    if (entityComponentReference.Value.Entity.Container != entityHierarchy)
-                    {
-                        throw new InvalidOperationException("It seems this component and/or entity doesn't belong to this asset");
-                    }
-                }
-            }
-
-            // Updates Entity references
-            foreach (var entityReference in entityAnalysisResult.EntityReferences)
-            {
-                if (entityReference.Value != null)
-                {
-                    entityReference.Id = entityReference.Value.Id;
-                }
-            }
         }
 
         /// <summary>
@@ -96,35 +45,52 @@ namespace SiliconStudio.Paradox.Assets.Model.Analysis
         {
             var entityAnalysisResult = Visit(entityHierarchy);
 
-            // Check if a given EntityReference points to an existing entity Id.
-            // If yes, updates value and name, otherwise clears it.
-            foreach (var entityReference in entityAnalysisResult.EntityReferences)
-            {
-                EntityData entityData;
-                if (!entityHierarchy.Entities.TryGetValue(entityReference.Id, out entityData))
-                {
-                    // Invalid Id, let's clear it
-                    entityReference.Id = Guid.Empty;
-                }
+            // Reverse the list, so that we can still properly update everything
+            // (i.e. if we have a[0], a[1], a[1].Test, we have to do it from back to front to be valid at each step)
+            entityAnalysisResult.EntityReferences.Reverse();
 
-                // Update EntityReference.Value.
-                entityReference.Value = entityData;
-            }
-
-            // Check if a given EntityComponentReference uses a valid EntityReference and referenced components exist.
-            // If no, clears it.
-            foreach (var entityComponentReference in entityAnalysisResult.EntityComponentReferences)
+            // Updates Entity/EntityComponent references
+            foreach (var entityLink in entityAnalysisResult.EntityReferences)
             {
-                var entityData = entityComponentReference.Entity.Value;
-                if (entityData != null)
+                object obj = null;
+
+                if (entityLink.EntityComponent != null)
                 {
-                    EntityComponentData entityComponent;
-                    entityData.Components.TryGetValue(entityComponentReference.Component, out entityComponent);
-                    entityComponentReference.Value = entityComponent;
+                    var containingEntity = entityLink.EntityComponent.Entity;
+                    if (containingEntity == null)
+                        throw new InvalidOperationException("Found a reference to a component which doesn't have any entity");
+
+                    Entity realEntity;
+                    if (entityHierarchy.Entities.TryGetValue(containingEntity.Id, out realEntity)
+                        && realEntity.Components.TryGetValue(entityLink.EntityComponent.DefaultKey, out obj))
+                    {
+                        // If we already have the proper item, let's skip
+                        if (obj == entityLink.EntityComponent)
+                            continue;
+                    }
                 }
                 else
                 {
-                    entityComponentReference.Value = null;
+                    Entity realEntity;
+                    if (entityHierarchy.Entities.TryGetValue(entityLink.Entity.Id, out realEntity))
+                    {
+                        obj = realEntity;
+
+                        // If we already have the proper item, let's skip
+                        if (obj == entityLink.Entity)
+                            continue;
+                    }
+                }
+
+                if (obj != null)
+                {
+                    // We could find the referenced item, let's use it
+                    entityLink.Path.Apply(entityHierarchy, MemberPathAction.ValueSet, obj);
+                }
+                else
+                {
+                    // Item could not be found, let's null it
+                    entityLink.Path.Apply(entityHierarchy, MemberPathAction.ValueClear, null);
                 }
             }
         }
@@ -153,20 +119,21 @@ namespace SiliconStudio.Paradox.Assets.Model.Analysis
 
             // Remap entity references with new Id
             var entityAnalysisResult = EntityAnalysis.Visit(entityHierarchy);
-            foreach (var entity in entityAnalysisResult.EntityReferences)
+            foreach (var entityLink in entityAnalysisResult.EntityReferences)
             {
-                if (idRemapping.TryGetValue(entity.Id, out newId))
-                    entity.Id = newId;
+                if (idRemapping.TryGetValue(entityLink.Entity.Id, out newId))
+                    entityLink.Entity.Id = newId;
             }
         }
 
         private class EntityReferenceAnalysis : AssetVisitorBase
         {
+            private int componentDepth;
+
             public EntityReferenceAnalysis()
             {
                 var result = new Result();
-                result.EntityComponentReferences = new List<IEntityComponentReference>();
-                result.EntityReferences = new List<EntityReference>();
+                result.EntityReferences = new List<EntityLink>();
                 Result = result;
             }
 
@@ -174,18 +141,54 @@ namespace SiliconStudio.Paradox.Assets.Model.Analysis
 
             public override void VisitObject(object obj, ObjectDescriptor descriptor, bool visitMembers)
             {
-                base.VisitObject(obj, descriptor, visitMembers);
-                var entityReference = obj as EntityReference;
-                if (entityReference != null)
+                if (obj is EntityComponent)
+                    componentDepth++;
+
+                bool processObject = true;
+
+                if (componentDepth >= 2)
                 {
-                    Result.EntityReferences.Add(entityReference);
+                    var entity = obj as Entity;
+                    if (entity != null)
+                    {
+                        Result.EntityReferences.Add(new EntityLink(entity, CurrentPath.Clone()));
+                        processObject = false;
+                    }
+
+                    var entityComponent = obj as EntityComponent;
+                    if (entityComponent != null)
+                    {
+                        Result.EntityReferences.Add(new EntityLink(entityComponent, CurrentPath.Clone()));
+                        processObject = false;
+                    }
                 }
 
-                var componentReference = obj as IEntityComponentReference;
-                if (componentReference != null)
-                {
-                    Result.EntityComponentReferences.Add(componentReference);
-                }
+                if (processObject)
+                    base.VisitObject(obj, descriptor, visitMembers);
+
+                if (obj is EntityComponent)
+                    componentDepth--;
+            }
+        }
+
+        public struct EntityLink
+        {
+            public readonly Entity Entity;
+            public readonly EntityComponent EntityComponent;
+            public readonly MemberPath Path;
+
+            public EntityLink(Entity entity, MemberPath path)
+            {
+                Entity = entity;
+                EntityComponent = null;
+                Path = path;
+            }
+
+            public EntityLink(EntityComponent entityComponent, MemberPath path)
+            {
+                Entity = null;
+                EntityComponent = entityComponent;
+                Path = path;
             }
         }
     }

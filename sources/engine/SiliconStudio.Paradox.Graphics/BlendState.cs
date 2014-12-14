@@ -2,14 +2,12 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.ReferenceCounting;
-using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Paradox.Graphics
 {
     /// <summary>	
     /// Describes a blend state.	
     /// </summary>
-    [ContentSerializer(typeof(BlendStateSerializer))]
     public partial class BlendState : GraphicsResourceBase
     {
         // For FakeBlendState.
@@ -18,7 +16,7 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         // For FakeBlendState.
-        protected BlendState(BlendStateDescription description)
+        public BlendState(BlendStateDescription description)
         {
             Description = description;
         }

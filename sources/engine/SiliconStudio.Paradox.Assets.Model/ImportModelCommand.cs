@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 {
     public abstract class ImportModelCommand : SingleFileImportCommand
     {
-        private delegate bool SameGroup(MeshData baseMesh, MeshData newMesh);
+        private delegate bool SameGroup(Mesh baseMesh, Mesh newMesh);
 
         /// <inheritdoc/>
         public override IEnumerable<Tuple<string, string>> TagList { get { yield return Tuple.Create("Texture", "Value of the TextureTag property"); } }
@@ -105,7 +105,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                     // Apply materials
                     foreach (var modelMaterial in Materials)
                     {
-                        model.Materials.Add(new ContentReference<MaterialData>(modelMaterial.Material.Id, modelMaterial.Material.Location));
+                        model.Materials.Add(UrlServices.CreateSerializableVersion<Material>(modelMaterial.Material.Id, modelMaterial.Material.Location));
                     }
 
                     model.BoundingBox = BoundingBox.Empty;
@@ -126,7 +126,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                         // For now, make sure the mesh parameters list exists.
                         // Not sure if we should allow it being null or not.
                         if (mesh.Parameters == null)
-                            mesh.Parameters = new ParameterCollectionData();
+                            mesh.Parameters = new ParameterCollection();
 
                         // TODO: Regression: Lighting configuration is currently unsupported in new material model
                         // TODO: remove this when Lighting configuration will be behind a key in mesh parameters. This case will be handled by the code just above
@@ -152,15 +152,15 @@ namespace SiliconStudio.Paradox.Assets.Model
                         }
 
                         // group meshes with same material and same root
-                        var sameMaterialMeshes = new List<GroupList<int, MeshData>>();
+                        var sameMaterialMeshes = new List<GroupList<int, Mesh>>();
                         GroupFromIndex(model, 0, indicesBlackList, model.Meshes, sameMaterialMeshes);
 
                         // remove meshes that cannot be merged
-                        var excludedMeshes = new List<MeshData>();
-                        var finalMeshGroups = new List<GroupList<int, MeshData>>();
+                        var excludedMeshes = new List<Mesh>();
+                        var finalMeshGroups = new List<GroupList<int, Mesh>>();
                         foreach (var meshList in sameMaterialMeshes)
                         {
-                            var mergeList = new GroupList<int, MeshData> { Key = meshList.Key };
+                            var mergeList = new GroupList<int, Mesh> { Key = meshList.Key };
 
                             foreach (var mesh in meshList)
                             {
@@ -176,7 +176,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                                 finalMeshGroups.Add(mergeList);
                         }
 
-                        var finalMeshes = new List<MeshData>();
+                        var finalMeshes = new List<Mesh>();
 
                         finalMeshes.AddRange(excludedMeshes);
 
@@ -190,7 +190,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                             }
 
                             // refine the groups base on several tests
-                            var newMeshGroups = new List<GroupList<int, MeshData>> { meshList };
+                            var newMeshGroups = new List<GroupList<int, Mesh>> { meshList };
                             // only regroup meshes if they share the same parameters
                             newMeshGroups = RefineGroups(newMeshGroups, CompareParameters);
                             // only regroup meshes if they share the shadow options
@@ -206,7 +206,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                                 var newMeshList = sameParamsMeshes.Select(x => x.Draw).ToList().GroupDrawData(Allow32BitIndex);
                                 foreach (var generatedMesh in newMeshList)
                                 {
-                                    finalMeshes.Add(new MeshData {
+                                    finalMeshes.Add(new Mesh {
                                             MaterialIndex = baseMesh.MaterialIndex,
                                             Parameters = baseMesh.Parameters,
                                             Name = baseMesh.Name,
@@ -291,6 +291,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                     }
 
                     // bounding boxes
+                    var modelBoundingBox = model.BoundingBox;
                     foreach (var mesh in model.Meshes)
                     {
                         var vertexBuffers = mesh.Draw.VertexBuffers;
@@ -303,16 +304,17 @@ namespace SiliconStudio.Paradox.Assets.Model
                             // Compute model bounding box (includes node transformation)
                             hierarchyUpdater.GetWorldMatrix(mesh.NodeIndex, out matrix);
                             var meshBoundingBox = vertexBuffers[0].ComputeBoundingBox(ref matrix);
-                            BoundingBox.Merge(ref model.BoundingBox, ref meshBoundingBox, out model.BoundingBox);
+                            BoundingBox.Merge(ref modelBoundingBox, ref meshBoundingBox, out modelBoundingBox);
                         }
 
                         // TODO: temporary Always try to compact
                         mesh.Draw.CompactIndexBuffer();
                     }
+                    model.BoundingBox = modelBoundingBox;
 
                     // merges all the Draw VB and IB together to produce one final VB and IB by entity.
-                    var sizeVertexBuffer = model.Meshes.SelectMany(x => x.Draw.VertexBuffers).Select(x => x.Buffer.Value.Content.Length).Sum();
-                    var sizeIndexBuffer = model.Meshes.Select(x => x.Draw.IndexBuffer).Select(x => x.Buffer.Value.Content.Length).Sum();
+                    var sizeVertexBuffer = model.Meshes.SelectMany(x => x.Draw.VertexBuffers).Select(x => x.Buffer.GetSerializationData().Content.Length).Sum();
+                    var sizeIndexBuffer = model.Meshes.Select(x => x.Draw.IndexBuffer).Select(x => x.Buffer.GetSerializationData().Content.Length).Sum();
                     var vertexBuffer = new BufferData(BufferFlags.VertexBuffer, new byte[sizeVertexBuffer]);
                     var indexBuffer = new BufferData(BufferFlags.IndexBuffer, new byte[sizeIndexBuffer]);
                     var vertexBufferNextIndex = 0;
@@ -320,25 +322,24 @@ namespace SiliconStudio.Paradox.Assets.Model
                     foreach (var drawMesh in model.Meshes.Select(x => x.Draw))
                     {
                         // the index buffer
-                        var oldIndexBuffer = drawMesh.IndexBuffer.Buffer.Value.Content;
+                        var oldIndexBuffer = drawMesh.IndexBuffer.Buffer.GetSerializationData().Content;
                     
                         Array.Copy(oldIndexBuffer, 0, indexBuffer.Content, indexBufferNextIndex, oldIndexBuffer.Length);
                     
-                        drawMesh.IndexBuffer.Offset = indexBufferNextIndex;
-                        drawMesh.IndexBuffer.Buffer = indexBuffer;
+                        drawMesh.IndexBuffer = new IndexBufferBinding(indexBuffer.ToSerializableVersion(), drawMesh.IndexBuffer.Is32Bit, drawMesh.IndexBuffer.Count, indexBufferNextIndex);
                     
                         indexBufferNextIndex += oldIndexBuffer.Length;
                     
                         // the vertex buffers
-                        foreach (var vertexBufferBinding in drawMesh.VertexBuffers)
+                        for (int index = 0; index < drawMesh.VertexBuffers.Length; index++)
                         {
-                            var oldVertexBuffer = vertexBufferBinding.Buffer.Value.Content;
-                    
+                            var vertexBufferBinding = drawMesh.VertexBuffers[index];
+                            var oldVertexBuffer = vertexBufferBinding.Buffer.GetSerializationData().Content;
+
                             Array.Copy(oldVertexBuffer, 0, vertexBuffer.Content, vertexBufferNextIndex, oldVertexBuffer.Length);
-                    
-                            vertexBufferBinding.Offset = vertexBufferNextIndex;
-                            vertexBufferBinding.Buffer = vertexBuffer;
-                    
+
+                            drawMesh.VertexBuffers[index] = new VertexBufferBinding(vertexBuffer.ToSerializableVersion(), vertexBufferBinding.Declaration, vertexBufferBinding.Count, vertexBufferBinding.Stride, vertexBufferNextIndex);
+
                             vertexBufferNextIndex += oldVertexBuffer.Length;
                         }
                     }
@@ -383,12 +384,12 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <param name="meshList">The list of mesh groups.</param>
         /// <param name="sameGroupDelegate">The test delegate.</param>
         /// <returns>The new list of mesh groups.</returns>
-        private List<GroupList<int, MeshData>> RefineGroups(List<GroupList<int, MeshData>> meshList, SameGroup sameGroupDelegate)
+        private List<GroupList<int, Mesh>> RefineGroups(List<GroupList<int, Mesh>> meshList, SameGroup sameGroupDelegate)
         {
-            var finalGroups = new List<GroupList<int, MeshData>>();
+            var finalGroups = new List<GroupList<int, Mesh>>();
             foreach (var meshGroup in meshList)
             {
-                var updatedGroups = new List<GroupList<int, MeshData>>();
+                var updatedGroups = new List<GroupList<int, Mesh>>();
                 foreach (var mesh in meshGroup)
                 {
                     var createNewGroup = true;
@@ -404,7 +405,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 
                     if (createNewGroup)
                     {
-                        var newGroup = new GroupList<int, MeshData> { Key = meshGroup.Key };
+                        var newGroup = new GroupList<int, Mesh> { Key = meshGroup.Key };
                         newGroup.Add(mesh);
                         updatedGroups.Add(newGroup);
                     }
@@ -423,11 +424,11 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <param name="meshes">The meshes and their node index.</param>
         /// <param name="finalLists">List of mergeable meshes and their root node.</param>
         /// <returns>A list of mergeable meshes in progress.</returns>
-        private Dictionary<int, List<MeshData>> GroupFromIndex(ModelData model, int index, HashSet<int> nodeBlackList, List<MeshData> meshes, List<GroupList<int, MeshData>> finalLists)
+        private Dictionary<int, List<Mesh>> GroupFromIndex(Effects.Model model, int index, HashSet<int> nodeBlackList, List<Mesh> meshes, List<GroupList<int, Mesh>> finalLists)
         {
             var children = GetChildren(model.Hierarchy.Nodes, index);
             
-            var materialGroups = new Dictionary<int, List<MeshData>>();
+            var materialGroups = new Dictionary<int, List<Mesh>>();
 
             // Get the group from each child
             foreach (var child in children)
@@ -437,7 +438,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                 foreach (var group in newMaterialGroups)
                 {
                     if (!materialGroups.ContainsKey(group.Key))
-                        materialGroups.Add(group.Key, new List<MeshData>());
+                        materialGroups.Add(group.Key, new List<Mesh>());
                     materialGroups[group.Key].AddRange(group.Value);
                 }
             }
@@ -447,7 +448,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             {
                 var matId = nodeMesh.MaterialIndex;
                 if (!materialGroups.ContainsKey(matId))
-                    materialGroups.Add(matId, new List<MeshData>());
+                    materialGroups.Add(matId, new List<Mesh>());
                 materialGroups[matId].Add(nodeMesh);
             }
 
@@ -456,7 +457,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             {
                 foreach (var materialGroup in materialGroups)
                 {
-                    var groupList = new GroupList<int, MeshData>();
+                    var groupList = new GroupList<int, Mesh>();
                     groupList.Key = index;
                     groupList.AddRange(materialGroup.Value);
                     finalLists.Add(groupList);
@@ -509,7 +510,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             return result;
         }
 
-        protected abstract ModelData LoadModel(ICommandContext commandContext, AssetManager assetManager);
+        protected abstract Effects.Model LoadModel(ICommandContext commandContext, AssetManager assetManager);
 
         protected abstract AnimationClip LoadAnimation(ICommandContext commandContext, AssetManager assetManager);
 
@@ -555,7 +556,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <param name="newMesh">The mesh to compare.</param>
         /// <param name="extra">Unused parameter.</param>
         /// <returns>True if all the parameters are the same, false otherwise.</returns>
-        private static bool CompareParameters(MeshData baseMesh, MeshData newMesh)
+        private static bool CompareParameters(Mesh baseMesh, Mesh newMesh)
         {
             var localParams = baseMesh.Parameters;
             if (localParams == null && newMesh.Parameters == null)
@@ -572,20 +573,20 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <param name="newMesh">The mesh to compare.</param>
         /// <param name="extra">Unused parameter.</param>
         /// <returns>True if the options are the same, false otherwise.</returns>
-        private static bool CompareShadowOptions(MeshData baseMesh, MeshData newMesh)
+        private static bool CompareShadowOptions(Mesh baseMesh, Mesh newMesh)
         {
             return CompareKeyValue(baseMesh.Parameters, newMesh.Parameters, LightingKeys.CastShadows)
                    && CompareKeyValue(baseMesh.Parameters, newMesh.Parameters, LightingKeys.ReceiveShadows);
         }
 
         /// <summary>
-        /// Compares the value behind a key in two ParameterCollectionData.
+        /// Compares the value behind a key in two ParameterCollection.
         /// </summary>
-        /// <param name="parameters0">The first ParameterCollectionData.</param>
-        /// <param name="parameters1">The second ParameterCollectionData.</param>
+        /// <param name="parameters0">The first ParameterCollection.</param>
+        /// <param name="parameters1">The second ParameterCollection.</param>
         /// <param name="key">The ParameterKey.</param>
         /// <returns>True</returns>
-        private static bool CompareKeyValue<T>(ParameterCollectionData parameters0, ParameterCollectionData parameters1, ParameterKey<T> key)
+        private static bool CompareKeyValue<T>(ParameterCollection parameters0, ParameterCollection parameters1, ParameterKey<T> key)
         {
             var value0 = parameters0 != null && parameters0.ContainsKey(key) ? parameters0[key] : key.DefaultValueMetadataT.DefaultValue;
             var value1 = parameters1 != null && parameters1.ContainsKey(key) ? parameters1[key] : key.DefaultValueMetadataT.DefaultValue;
@@ -598,7 +599,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <param name="baseMesh">The base mesh.</param>
         /// <param name="newMesh">The mesh to compare.</param>
         /// <returns>True if all the configurations are the same, false otherwise.</returns>
-        private static bool CompareLightingConfigurations(MeshData baseMesh, MeshData newMesh)
+        private static bool CompareLightingConfigurations(Mesh baseMesh, Mesh newMesh)
         {
             var config0Content = GetLightingConfigurations(baseMesh);
             var config1Content = GetLightingConfigurations(newMesh);
@@ -614,7 +615,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// </summary>
         /// <param name="mesh">The mesh containing the lighting configurations.</param>
         /// <returns>The content reference to the lighting configuration.</returns>
-        private static ContentReference GetLightingConfigurations(MeshData mesh)
+        private static ContentReference GetLightingConfigurations(Mesh mesh)
         {
             if (mesh != null && mesh.Parameters != null && mesh.Parameters.ContainsKey(LightingKeys.LightingConfigurations))
             {
@@ -626,12 +627,12 @@ namespace SiliconStudio.Paradox.Assets.Model
         }
 
         /// <summary>
-        /// Test if two ParameterCollectionData are equal
+        /// Test if two ParameterCollection are equal
         /// </summary>
-        /// <param name="parameters0">The first ParameterCollectionData.</param>
-        /// <param name="parameters1">The second ParameterCollectionData.</param>
+        /// <param name="parameters0">The first ParameterCollection.</param>
+        /// <param name="parameters1">The second ParameterCollection.</param>
         /// <returns>True if the collections are the same, false otherwise.</returns>
-        private static bool AreCollectionsEqual(ParameterCollectionData parameters0, ParameterCollectionData parameters1)
+        private static bool AreCollectionsEqual(ParameterCollection parameters0, ParameterCollection parameters1)
         {
             bool result = true;
             foreach (var paramKey in parameters0)

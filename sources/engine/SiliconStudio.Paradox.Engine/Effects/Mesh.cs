@@ -4,11 +4,10 @@ using System.Linq;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization.Converters;
 
 namespace SiliconStudio.Paradox.Effects
 {
-    [DataConverter(AutoGenerate = true)]
+    [DataContract]
     public class Mesh
     {
         /// <summary>
@@ -37,32 +36,25 @@ namespace SiliconStudio.Paradox.Effects
             Skinning = mesh.Skinning;
         }
 
-        [DataMemberConvert]
         public MeshDraw Draw { get; set; }
 
-        [DataMemberConvert]
         public int MaterialIndex { get; set; }
         
-        [DataMemberConvert]
         public ParameterCollection Parameters { get; set; }
         
         /// <summary>
         /// Index of the transformation node in <see cref="Model"/>.
         /// </summary>
-        [DataMemberConvert]
         public int NodeIndex;
 
-        [DataMemberConvert]
         public string Name;
 
         /// <summary>
         /// Gets or sets the bounding box encompassing this <see cref="Mesh"/>.
         /// </summary>
-        [DataMemberConvert]
         public BoundingBox BoundingBox;
 
         // TODO: Skinning could be shared between multiple Mesh inside a ModelView (multimaterial, etc...)
-        [DataMemberConvert]
         public MeshSkinningDefinition Skinning;
     }
 }

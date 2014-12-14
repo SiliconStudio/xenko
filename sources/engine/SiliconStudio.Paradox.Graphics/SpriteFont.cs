@@ -9,7 +9,6 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Paradox.Graphics.Font;
 
 using Color = SiliconStudio.Core.Mathematics.Color;
@@ -21,8 +20,7 @@ namespace SiliconStudio.Paradox.Graphics
     /// <summary>
     /// SpriteFont to use with <see cref="SpriteBatch"/>. See <see cref="SpriteFont"/> to learn how to use it.
     /// </summary>
-    [ContentSerializer(typeof(DataContentConverterSerializer<DynamicSpriteFontData, SpriteFont>))]
-    [ContentSerializer(typeof(DataContentConverterSerializer<StaticSpriteFontData, SpriteFont>))]
+    [ContentSerializer(typeof(DataContentSerializer<SpriteFont>))]
     public class SpriteFont : ComponentBase
     {
         private Vector4 nullVector4 = Vector4.Zero; 

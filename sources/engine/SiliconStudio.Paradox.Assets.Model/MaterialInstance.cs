@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.Assets.Model
     {
         public MaterialInstance()
         {
-            Parameters = new ParameterCollectionData();
+            Parameters = new ParameterCollection();
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// The mesh-specific parameters. This will override the material parameters.
         /// </userdoc>
         [DataMember(60)]
-        public ParameterCollectionData Parameters;
+        public ParameterCollection Parameters;
 
         /// <summary>
         /// The light permutation parameters

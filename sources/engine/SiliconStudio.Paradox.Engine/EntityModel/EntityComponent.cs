@@ -3,15 +3,14 @@
 using System;
 using System.Runtime.CompilerServices;
 
-using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Serialization.Serializers;
+using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Paradox.EntityModel
 {
-    [DataConverter(AutoGenerate = false, ContentReference = true)]
-    [DataSerializer(typeof(CloneEntityComponentSerializer<>), Mode = DataSerializerGenericMode.Type)]
-    public class EntityComponent : IContentUrl
+    //[DataSerializer(typeof(CloneEntityComponentSerializer<>), Mode = DataSerializerGenericMode.Type)]
+    [DataContract]
+    public class EntityComponent
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityComponent"/> class.
@@ -26,6 +25,7 @@ namespace SiliconStudio.Paradox.EntityModel
         /// <value>
         /// The owner entity.
         /// </value>
+        [DataMemberIgnore]
         public Entity Entity { get; set; }
 
         /// <summary>
@@ -33,6 +33,7 @@ namespace SiliconStudio.Paradox.EntityModel
         /// </summary>
         /// <value>The entity.</value>
         /// <exception cref="System.InvalidOperationException">Entity on this instance is null</exception>
+        [DataMemberIgnore]
         protected Entity EnsureEntity
         {
             get
@@ -43,11 +44,10 @@ namespace SiliconStudio.Paradox.EntityModel
             }
         }
 
-        string IContentUrl.Url { get; set; }
-
         /// <summary>
         /// The default key this component is associated to.
         /// </summary>
+        [DataMemberIgnore]
         public virtual PropertyKey DefaultKey
         {
             get

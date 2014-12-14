@@ -61,7 +61,7 @@ public:
 		TotalClusterCount = 0;
 	}
 
-	MeshDrawData^ Draw;
+	MeshDraw^ Draw;
 	List<MeshBoneDefinition>^ Bones;
 	String^ Name;
 	int MaterialIndex;
@@ -86,15 +86,15 @@ private:
 	String^ vfsOutputFilename;
 	String^ vfsInputPath;
 
-	ModelData^ modelData;
+	Model^ modelData;
 	List<ModelNodeDefinition> nodes;
 	Dictionary<IntPtr, int> nodeMapping;
 	Dictionary<String^, int>^ textureNameCount;
 
-	List<MeshData^>^ effectMeshes;	// array of EffectMeshes built from the aiMeshes (same order)
-	Dictionary<String^, List<EntityData^ >^ >^ nodeNameToNodeData; // access to the built nodeData via their String ID (may not be unique)
-	Dictionary<IntPtr, EntityData^>^ nodePtrToNodeData; // access to the built nodeData via their corresponding aiNode
-	Dictionary<int, List<EntityData^>^ >^ meshIndexToReferingNodes; // access all the nodes that reference a Mesh Index
+	List<Mesh^>^ effectMeshes;	// array of EffectMeshes built from the aiMeshes (same order)
+	Dictionary<String^, List<Entity^ >^ >^ nodeNameToNodeData; // access to the built nodeData via their String ID (may not be unique)
+	Dictionary<IntPtr, Entity^>^ nodePtrToNodeData; // access to the built nodeData via their corresponding aiNode
+	Dictionary<int, List<Entity^>^ >^ meshIndexToReferingNodes; // access all the nodes that reference a Mesh Index
 
 public:
 	MeshConverter(Core::Diagnostics::Logger^ logger)
@@ -148,10 +148,10 @@ private:
 	// Reset all data related to one specific file conversion
 	void ResetConvertionData()
 	{
-		effectMeshes = gcnew List<MeshData^>();
-		nodeNameToNodeData = gcnew Dictionary<String^, List<EntityData^ >^ >();
-		nodePtrToNodeData = gcnew Dictionary<IntPtr, EntityData^>();
-		meshIndexToReferingNodes = gcnew Dictionary<int, List<EntityData^>^ >();
+		effectMeshes = gcnew List<Mesh^>();
+		nodeNameToNodeData = gcnew Dictionary<String^, List<Entity^ >^ >();
+		nodePtrToNodeData = gcnew Dictionary<IntPtr, Entity^>();
+		meshIndexToReferingNodes = gcnew Dictionary<int, List<Entity^>^ >();
 		textureNameCount = gcnew Dictionary<String^, int>();
 	}
 	
@@ -430,11 +430,11 @@ private:
 		}
 
 		// Build the mesh data
-		auto vertexBufferBinding = gcnew VertexBufferBindingData(gcnew BufferData(BufferFlags::VertexBuffer, vertexBuffer), gcnew VertexDeclaration(vertexElements->ToArray()), mesh->mNumVertices, 0, 0);
-		auto indexBufferBinding = gcnew IndexBufferBindingData(gcnew BufferData(BufferFlags::IndexBuffer, indexBuffer), is32BitIndex, nbIndices, 0);
+		auto vertexBufferBinding = VertexBufferBinding(GraphicsSerializerExtensions::ToSerializableVersion(gcnew BufferData(BufferFlags::VertexBuffer, vertexBuffer)), gcnew VertexDeclaration(vertexElements->ToArray()), mesh->mNumVertices, 0, 0);
+		auto indexBufferBinding = gcnew IndexBufferBinding(GraphicsSerializerExtensions::ToSerializableVersion(gcnew BufferData(BufferFlags::IndexBuffer, indexBuffer)), is32BitIndex, nbIndices, 0);
 
-		auto drawData = gcnew MeshDrawData();
-		auto vbb = gcnew List<VertexBufferBindingData^>();
+		auto drawData = gcnew MeshDraw();
+		auto vbb = gcnew List<VertexBufferBinding>();
 		vbb->Add(vertexBufferBinding);
 		drawData->VertexBuffers = vbb->ToArray();
 		drawData->IndexBuffer = indexBufferBinding;
@@ -506,7 +506,7 @@ private:
 	// Register all the nodes in dictionnaries
 	void RegisterNodes_old(aiNode* fromNode)
 	{
-		auto curNode = gcnew EntityData();
+		auto curNode = gcnew Entity();
 
 		// the name
 		curNode->Name = aiStringToString(fromNode->mName);
@@ -517,7 +517,7 @@ private:
 
 		// add the current node to the hash tables in order to be able to find it easily when processing attributes 
 		if(!nodeNameToNodeData->ContainsKey(curNode->Name))
-			nodeNameToNodeData->Add(curNode->Name, gcnew List<EntityData^>());
+			nodeNameToNodeData->Add(curNode->Name, gcnew List<Entity^>());
 		nodeNameToNodeData[curNode->Name]->Add(curNode);
 		nodePtrToNodeData->Add((IntPtr)fromNode, curNode); 
 
@@ -526,7 +526,7 @@ private:
 		{
 			int index = fromNode->mMeshes[m];
 			if(!meshIndexToReferingNodes->ContainsKey(index))
-				meshIndexToReferingNodes->Add(index, gcnew List<EntityData^>());
+				meshIndexToReferingNodes->Add(index, gcnew List<Entity^>());
 			meshIndexToReferingNodes[index]->Add(curNode);
 		}
 	}
@@ -550,7 +550,7 @@ private:
 		auto camNodes = nodeNameToNodeData[camName];
 
 		// Build the camera attribute data
-		auto camData = gcnew CameraComponentData();
+		auto camData = gcnew CameraComponent();
 		camData->NearPlane = assimpCam->mClipPlaneNear;
 		camData->FarPlane = assimpCam->mClipPlaneFar;
 		camData->AspectRatio = assimpCam->mAspect;
@@ -572,8 +572,8 @@ private:
 		}
 
 		// Attach the camera attribute to the Camera nodes
-		for each (EntityData^ camNode in camNodes)
-			camNode->Components->Add(CameraComponent::Key, camData);
+		for each (Entity^ camNode in camNodes)
+			camNode->Add(CameraComponent::Key, camData);
 	}
 
 	void ProcessLight(const aiLight* assimpLight)
@@ -595,7 +595,7 @@ private:
 		auto lightNodes = nodeNameToNodeData[lightName];
 
 		// Build the camera attribute data
-		auto lightData = gcnew LightComponentData();
+		auto lightData = gcnew LightComponent();
 		lightData->LightDirection = Vector3(assimpLight->mDirection.x, assimpLight->mDirection.y, assimpLight->mDirection.z);
 		lightData->Type = aiLightTypeToPdxLightType(assimpLight->mType, lightName, Logger);
 
@@ -609,8 +609,8 @@ private:
 		lightData->Layers = RenderLayers::RenderLayerAll;
 
 		// Attach the camera attribute to the Light nodes
-		for each (EntityData^ lightNode in lightNodes)
-			lightNode->Components->Add(LightComponent::Key, lightData);
+		for each (Entity^ lightNode in lightNodes)
+			lightNode->Add(LightComponent::Key, lightData);
 	}
 
 	void ProcessAnimationCurveVector(AnimationClip^ animationClip, const aiVectorKey* keys, unsigned int nbKeys, String^ partialTargetName, double ticksPerSec)
@@ -1386,7 +1386,7 @@ private:
 			cameraInfo->TargetNodeName = cameraInfo->NodeName + ".Target";
 
 			// Build the camera attribute data
-			auto camData = gcnew CameraComponentData();
+			auto camData = gcnew CameraComponent();
 			camData->NearPlane = assimpCam->mClipPlaneNear;
 			camData->FarPlane = assimpCam->mClipPlaneFar;
 			camData->AspectRatio = assimpCam->mAspect;
@@ -1427,7 +1427,7 @@ private:
 			lightInfo->NodeName = gcnew String(assimpLight->mName.C_Str()); // TODO: check that the node exists
 
 			// Build the light attribute data
-			auto lightData = gcnew LightComponentData();
+			auto lightData = gcnew LightComponent();
 			lightData->LightDirection = Vector3(assimpLight->mDirection.x, assimpLight->mDirection.y, assimpLight->mDirection.z);
 			lightData->Type = aiLightTypeToPdxLightType(assimpLight->mType, lightInfo->NodeName, Logger);
 
@@ -1479,9 +1479,9 @@ private:
 		return animationList;
 	}
 	
-	ModelData^ ConvertAssimpScene(const aiScene *scene)
+	Model^ ConvertAssimpScene(const aiScene *scene)
 	{
-		modelData = gcnew ModelData();
+		modelData = gcnew Model();
 		modelData->Hierarchy = gcnew ModelViewHierarchyDefinition();
 
 		std::map<aiMesh*, std::string> meshNames;
@@ -1505,7 +1505,7 @@ private:
 
 				for (std::vector<int>::iterator nodeIndexPtr = meshIndexToNodeIndex[i]->begin(); nodeIndexPtr != meshIndexToNodeIndex[i]->end(); ++nodeIndexPtr)
 				{
-					auto nodeMeshData = gcnew MeshData();
+					auto nodeMeshData = gcnew Mesh();
 					nodeMeshData->Draw = meshInfo->Draw;
 					nodeMeshData->Name = meshInfo->Name;
 					nodeMeshData->MaterialIndex = meshInfo->MaterialIndex;
@@ -1518,7 +1518,7 @@ private:
 					}
 					if (meshInfo->HasSkinningPosition || meshInfo->HasSkinningNormal || meshInfo->TotalClusterCount > 0)
 					{
-						nodeMeshData->Parameters = gcnew ParameterCollectionData();
+						nodeMeshData->Parameters = gcnew ParameterCollection();
 						if (meshInfo->HasSkinningPosition)
 							nodeMeshData->Parameters->Set(MaterialParameters::HasSkinningPosition, true);
 						if (meshInfo->HasSkinningNormal)
@@ -1650,7 +1650,7 @@ public:
 		}
 	}
 
-	ModelData^ Convert(String^ inputFilename, String^ outputFilename)
+	Model^ Convert(String^ inputFilename, String^ outputFilename)
 	{
 		// the importer is kept here since it owns the scene object.
 		Assimp::Importer importer;

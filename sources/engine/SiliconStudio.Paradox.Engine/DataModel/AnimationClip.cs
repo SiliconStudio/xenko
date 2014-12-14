@@ -4,12 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Core.Serialization.Converters;
-using SiliconStudio.Core.Storage;
 using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.DataModel
@@ -19,7 +16,7 @@ namespace SiliconStudio.Paradox.DataModel
     /// </summary>
     [DataContract]
     [ContentSerializer(typeof(DataContentSerializer<AnimationClip>))]
-    [DataConverter(ContentReference = true, DataType = false)]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<AnimationClip>), Profile = "Asset")]
     public sealed class AnimationClip
     {
         // If there is an evaluator, animation clip can't be changed anymore.

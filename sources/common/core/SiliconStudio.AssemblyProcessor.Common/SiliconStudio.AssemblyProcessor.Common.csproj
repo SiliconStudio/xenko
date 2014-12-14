@@ -56,7 +56,7 @@
     <Compile Include="..\SiliconStudio.Core\PlatformType.cs">
       <Link>Core\PlatformType.cs</Link>
     </Compile>
-    <Compile Include="..\SiliconStudio.Core\Serialization\Serializers\DataSerializerGenericMode.cs">
+    <Compile Include="..\SiliconStudio.Core\Serialization\DataSerializerGenericMode.cs">
       <Link>Core\DataSerializerGenericMode.cs</Link>
     </Compile>
     <Compile Include="..\SiliconStudio.Core\Storage\ObjectId.cs">

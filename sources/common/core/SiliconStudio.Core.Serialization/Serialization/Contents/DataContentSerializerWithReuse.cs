@@ -8,14 +8,14 @@ namespace SiliconStudio.Core.Serialization.Contents
     /// <typeparam name="T">The type to serialize.</typeparam>
     public class DataContentSerializerWithReuse<T> : DataContentSerializer<T> where T : new()
     {
-        public override void Serialize(ContentSerializerContext context, SerializationStream stream, ref T obj)
+        public override void Serialize(ContentSerializerContext context, SerializationStream stream, T obj)
         {
             // Save and change serializer selector to the optimized one
             var previousSerializerSelector = stream.Context.SerializerSelector;
             stream.Context.SerializerSelector = context.AssetManager.Serializer.LowLevelSerializerSelectorWithReuse;
 
             // Serialize
-            base.Serialize(context, stream, ref obj);
+            base.Serialize(context, stream, obj);
 
             // Restore serializer selector
             stream.Context.SerializerSelector = previousSerializerSelector;

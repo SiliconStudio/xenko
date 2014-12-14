@@ -160,6 +160,7 @@ namespace SiliconStudio.BuildEngine
         public void ComputeCommandHash(Stream stream, IPrepareContext prepareContext)
         {
             var writer = new BinarySerializationWriter(stream);
+            writer.Context.SerializerSelector = SerializerSelector.Asset;
 
             writer.Write(CommandCacheVersion);
 

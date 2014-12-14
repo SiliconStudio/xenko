@@ -1,15 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System.Runtime.CompilerServices;
-using SiliconStudio.Core.Serialization.Serializers;
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Mono.Cecil;
-using TypeAttributes = Mono.Cecil.TypeAttributes;
 
 namespace SiliconStudio.AssemblyProcessor
 {

@@ -9,7 +9,6 @@ using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Assets.Model.Analysis;
 using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Engine.Data;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.EntityModel.Data;
 
@@ -46,7 +45,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             }
         }
 
-        class EntityDictionary : TrackingDictionary<Guid, EntityData>, IDiffProxy
+        class EntityDictionary : TrackingDictionary<Guid, Entity>, IDiffProxy
         {
             private EntityHierarchyData source;
 
@@ -77,15 +76,11 @@ namespace SiliconStudio.Paradox.Assets.Model
                 if (!entityHashes.Add(rootEntity))
                     return;
 
-                EntityData entity;
+                Entity entity;
                 if (!source.Entities.TryGetValue(rootEntity, out entity))
                     return;
 
-                EntityComponentData entityComponent;
-                if (!entity.Components.TryGetValue(TransformationComponent.Key, out entityComponent))
-                    return;
-
-                var transformationComponent = (TransformationComponentData)entityComponent;
+                var transformationComponent = entity.Get(TransformationComponent.Key);
 
                 foreach (var child in transformationComponent.Children)
                 {

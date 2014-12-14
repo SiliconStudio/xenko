@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Graphics.Data
             this.graphicsDevice = graphicsDevice;
         }
 
-        public override void Serialize(ContentSerializerContext context, SerializationStream stream, ref Texture texture)
+        public override void Serialize(ContentSerializerContext context, SerializationStream stream, Texture texture)
         {
             if (context.Mode == ArchiveMode.Serialize)
                 throw new NotImplementedException();
@@ -36,7 +36,7 @@ namespace SiliconStudio.Paradox.Graphics.Data
             {
                 try
                 {
-                    texture = Texture.New(graphicsDevice, textureData);
+                    texture.InitializeFrom(textureData.Description, new TextureViewDescription(), textureData.ToDataBox());
 
                     // Setup reload callback (reload from asset manager)
                     texture.Reload = (graphicsResource) =>
@@ -56,7 +56,7 @@ namespace SiliconStudio.Paradox.Graphics.Data
 
         public override object Construct(SiliconStudio.Core.Serialization.Contents.ContentSerializerContext context)
         {
-            return null;
+            return new Texture(graphicsDevice);
         }
     }
 }

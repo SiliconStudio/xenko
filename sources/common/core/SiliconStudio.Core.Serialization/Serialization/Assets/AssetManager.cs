@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Core.Serialization.Assets
@@ -28,7 +27,7 @@ namespace SiliconStudio.Core.Serialization.Assets
 
         public AssetManager()
         {
-            Serializer = new AssetSerializer { LowLevelSerializerSelector = SerializerSelector.Default };
+            Serializer = new AssetSerializer();
         }
 
         public void Save(string url, object asset)
@@ -61,8 +60,7 @@ namespace SiliconStudio.Core.Serialization.Assets
             {
                 using (var profile = Profiler.Begin(AssetProfilingKeys.AssetLoad, url))
                 {
-                    AssetReference assetReference;
-                    return (T)DeserializeObject(null, out assetReference, url, typeof(T), settings);
+                    return (T)DeserializeObject(url, typeof(T), settings);
                 }
             }
         }
@@ -113,7 +111,47 @@ namespace SiliconStudio.Core.Serialization.Assets
             }
         }
 
-        internal object DeserializeObject(AssetReference parentAssetReference, out AssetReference assetReference, string url, Type objType, AssetManagerLoaderSettings settings, ConverterContext converterContext = null)
+        struct DeserializeOperation
+        {
+            public readonly AssetReference ParentAssetReference;
+            public readonly string Url;
+            public readonly Type ObjectType;
+            public readonly Object Object;
+
+            public DeserializeOperation(AssetReference parentAssetReference, string url, Type objectType, object obj)
+            {
+                ParentAssetReference = parentAssetReference;
+                Url = url;
+                ObjectType = objectType;
+                Object = obj;
+            }
+        }
+
+        private object DeserializeObject(string url, Type type, AssetManagerLoaderSettings settings)
+        {
+            AssetReference assetReference;
+
+            var serializeOperations = new Queue<DeserializeOperation>();
+            serializeOperations.Enqueue(new DeserializeOperation(null, url, type, null));
+
+            bool isFirstOperation = true;
+            object result = null;
+
+            while (serializeOperations.Count > 0)
+            {
+                var serializeOperation = serializeOperations.Dequeue();
+                var deserializedObject = DeserializeObject(serializeOperations, serializeOperation.ParentAssetReference, serializeOperation.Url, serializeOperation.ObjectType, serializeOperation.Object, settings);
+                if (isFirstOperation)
+                {
+                    result = deserializedObject;
+                    isFirstOperation = false;
+                }
+            }
+
+            return result;
+        }
+
+        internal object FindDeserializedObject(string url, Type objType)
         {
             // Resolve URL
             ObjectId objectId;
@@ -121,6 +159,7 @@ namespace SiliconStudio.Core.Serialization.Assets
                 throw new InvalidOperationException(string.Format("Asset [{0}] not found.", url));
 
             // Try to find already loaded object
+            AssetReference assetReference;
             if (loadedAssetsByUrl.TryGetValue(objectId, out assetReference))
             {
                 while (assetReference != null && !objType.GetTypeInfo().IsAssignableFrom(assetReference.Object.GetType().GetTypeInfo()))
@@ -129,6 +168,52 @@ namespace SiliconStudio.Core.Serialization.Assets
                 }
 
                 if (assetReference != null)
+                {
+                    // TODO: Currently ReferenceSerializer creates a ContentReference, so we will go through DeserializeObject later to add the reference
+                    // This should be unified at some point
+
+                    // Add reference
+                    //bool isRoot = parentAssetReference == null;
+                    //if (isRoot || parentAssetReference.References.Add(assetReference))
+                    //{
+                    //    IncrementReference(assetReference, isRoot);
+                    //}
+
+                    return assetReference.Object;
+                }
+            }
+
+            return null;
+        }
+
+        internal void RegisterDeserializedObject<T>(string url, T obj)
+        {
+            // Resolve URL
+            ObjectId objectId;
+            if (!FileProvider.AssetIndexMap.TryGetValue(url, out objectId))
+                throw new InvalidOperationException(string.Format("Asset [{0}] not found.", url));
+
+            var assetReference = new AssetReference(objectId, url, false);
+            SetAssetObject(assetReference, obj);
+        }
+
+        private object DeserializeObject(Queue<DeserializeOperation> serializeOperations, AssetReference parentAssetReference, string url, Type objType, object obj, AssetManagerLoaderSettings settings)
+        {
+            // Resolve URL
+            ObjectId objectId;
+            if (!FileProvider.AssetIndexMap.TryGetValue(url, out objectId))
+                throw new InvalidOperationException(string.Format("Asset [{0}] not found.", url));
+
+            // Try to find already loaded object
+            AssetReference assetReference;
+            if (loadedAssetsByUrl.TryGetValue(objectId, out assetReference))
+            {
+                while (assetReference != null && !objType.GetTypeInfo().IsAssignableFrom(assetReference.Object.GetType().GetTypeInfo()))
+                {
+                    assetReference = assetReference.Next;
+                }
+
+                if (assetReference != null && assetReference.Deserialized)
                 {
                     // Add reference
                     bool isRoot = parentAssetReference == null;
@@ -180,18 +265,25 @@ namespace SiliconStudio.Core.Serialization.Assets
                     streamReader.NativeStream.Seek(chunkHeader.OffsetToObject, SeekOrigin.Begin);
                 }
 
-                // Create AssetReference
-                assetReference = new AssetReference(objectId, url, parentAssetReference == null);
-                contentSerializerContext.AssetReference = assetReference;
+                if (assetReference == null)
+                {
+                    // Create AssetReference
+                    assetReference = new AssetReference(objectId, url, parentAssetReference == null);
+                    contentSerializerContext.AssetReference = assetReference;
+                    result = obj ?? serializer.Construct(contentSerializerContext);
+                    SetAssetObject(assetReference, result);
+                }
+                else
+                {
+                    result = assetReference.Object;
+                    contentSerializerContext.AssetReference = assetReference;
+                }
 
-                result = serializer.Construct(contentSerializerContext);
+                assetReference.Deserialized = true;
 
                 PrepareSerializerContext(contentSerializerContext, streamReader.Context);
-                contentSerializerContext.ConverterContext = converterContext;
 
-                result = contentSerializerContext.SerializeContent(streamReader, serializer, result);
-
-                SetAssetObject(assetReference, result);
+                contentSerializerContext.SerializeContent(streamReader, serializer, result);
 
                 // Add reference
                 if (parentAssetReference != null)
@@ -208,14 +300,14 @@ namespace SiliconStudio.Core.Serialization.Assets
                 {
                     bool shouldBeLoaded = true;
 
-                    AssetReference childReference;
+                    //AssetReference childReference;
 
                     if (settings.ContentFilter != null)
                         settings.ContentFilter(contentReference, ref shouldBeLoaded);
 
                     if (shouldBeLoaded)
                     {
-                        contentReference.ObjectValue = DeserializeObject(assetReference, out childReference, contentReference.Location, contentReference.Type, settings);
+                        serializeOperations.Enqueue(new DeserializeOperation(assetReference, contentReference.Location, contentReference.Type, contentReference.ObjectValue));
                     }
                 }
             }
@@ -223,47 +315,33 @@ namespace SiliconStudio.Core.Serialization.Assets
             return result;
         }
 
-        internal object DeserializeObjectRecursive(AssetReference parentAssetReference, out AssetReference assetReference,
-            string url, Type objType, AssetManagerLoaderSettings settings, ContentSerializerContext otherContext, Stream stream, Type headerObjType, ConverterContext converterContext = null)
+        struct SerializeOperation
         {
-            // Resolve URL
-            ObjectId objectId;
-            if (!FileProvider.AssetIndexMap.TryGetValue(url, out objectId))
-                throw new InvalidOperationException(string.Format("Asset [{0}] not found.", url));
+            public readonly string Url;
+            public readonly object Object;
+            public readonly bool PublicReference;
 
-            // Find serializer
-            var serializer = Serializer.GetSerializer(headerObjType, objType);
-            if (serializer == null)
-                throw new InvalidOperationException(string.Format("Content serializer for {0}/{1} could not be found.", headerObjType, objType));
-            var contentSerializerContext = new ContentSerializerContext(url, ArchiveMode.Deserialize, this);
-
-            contentSerializerContext.chunkReferences.AddRange(otherContext.chunkReferences);
-
-            // Create AssetReference
-            assetReference = new AssetReference(objectId, url, parentAssetReference == null);
-            contentSerializerContext.AssetReference = assetReference;
-
-            var result = serializer.Construct(contentSerializerContext);
-
-            var streamReader = new BinarySerializationReader(stream);
-
-            PrepareSerializerContext(contentSerializerContext, streamReader.Context);
-            contentSerializerContext.ConverterContext = converterContext;
-
-            result = contentSerializerContext.SerializeContent(streamReader, serializer, result);
-
-            SetAssetObject(assetReference, result);
-
-            // Add reference
-            if (parentAssetReference != null)
+            public SerializeOperation(string url, object obj, bool publicReference)
             {
-                parentAssetReference.References.Add(assetReference);
+                Url = url;
+                Object = obj;
+                PublicReference = publicReference;
             }
-            
-            return result;
         }
 
         private void SerializeObject(string url, object obj, bool publicReference)
+        {
+            var serializeOperations = new Queue<SerializeOperation>();
+            serializeOperations.Enqueue(new SerializeOperation(url, obj, publicReference));
+
+            while (serializeOperations.Count > 0)
+            {
+                var serializeOperation = serializeOperations.Dequeue();
+                SerializeObject(serializeOperations, serializeOperation.Url, serializeOperation.Object, serializeOperation.PublicReference);
+            }
+        }
+
+        private void SerializeObject(Queue<SerializeOperation> serializeOperations, string url, object obj, bool publicReference)
         {
             // Don't create context in case we don't want to serialize referenced objects
             //if (!SerializeReferencedObjects && obj != RootObject)
@@ -328,7 +406,13 @@ namespace SiliconStudio.Core.Serialization.Assets
             foreach (var contentReference in contentSerializerContext.ContentReferences)
             {
                 if (contentReference.ObjectValue != null)
-                    SerializeObject(contentReference.Location, contentReference.ObjectValue, false);
+                {
+                    var urlInfo = UrlServices.GetUrlInfo(contentReference.ObjectValue);
+                    if (urlInfo == null || urlInfo.IsProxy)
+                        continue;
+
+                    serializeOperations.Enqueue(new SerializeOperation(contentReference.Location, contentReference.ObjectValue, false));
+                }
             }
         }
 

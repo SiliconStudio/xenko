@@ -10,20 +10,18 @@ Hierarchy:
             -   Id: e5867f8f-f79a-4066-bc5b-2f2c6ff6707c
                 Name: Root
                 Components:
-                    TransformationComponent.Key: !TransformationComponentData
+                    TransformationComponent.Key:
                         Children: []
                         Rotation: {W: 1, X: 0, Y: 0, Z: 0}
                         Scaling: {X: 1, Y: 1, Z: 1}
                         Translation: {X: 0, Y: 0, Z: 0}
                         UseTRS: true
-                    ModelComponent.Key: !ModelComponentData
+                    ModelComponent.Key:
                         DrawOrder: 0
                         Enabled: true
                         Model: 10d4f06c-ee97-402d-bdb4-21ff1f69bacb:knight_model
-                        Parameters:
-                            Capacity: 0
-                            ~Items: {}
-                    AnimationComponent.Key: !AnimationComponentData
+                        Parameters: {}
+                    AnimationComponent.Key:
                         Animations:
                             Idle: 27999019-8210-4e22-bf08-36c0bed86b22:KnightIdle
                             Run: 05c427ea-1a26-4ffa-bff6-9d3c7dc7e85e:KnightRun

@@ -98,7 +98,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Flattener
                     plane = GeometricPrimitive.Plane.New(graphicsDevice, 2.0f, 2.0f);
 
                 var assetManager = new AssetManager();
-                assetManager.Serializer.RegisterSerializer(new GpuTextureSerializer2(graphicsDevice));
+                //assetManager.Serializer.RegisterSerializer(new GpuTextureSerializer2(graphicsDevice));
 
                 var textures = new Dictionary<string, Graphics.Texture>();
                 var materialTreeShaderCreator = new MaterialTreeShaderCreator(Material);
@@ -270,7 +270,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Flattener
                     image.Save(resultFileStream, ImageFileType.Png);
                 }
 
-                assetManager.Save(filename, image);
+                assetManager.Save(filename, image.ToSerializableVersion());
             }
 #endif
         }

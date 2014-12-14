@@ -47,13 +47,6 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Data\ParadoxData.cs">
-      <DependentUpon>ParadoxData.pdxdata</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Data\ParameterCollectionData.cs" />
     <Compile Include="Data\ParameterCollectionHashSerializer.cs" />
     <Compile Include="Data\ParameterCollectionSerializer.cs" />
     <Compile Include="Effects\AssemblyEffectKeysAttribute.cs" />
@@ -134,10 +127,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Data\ParadoxData.pdxdata">
-      <Generator>ParadoxDataCodeGenerator</Generator>
-      <LastGenOutput>ParadoxData.cs</LastGenOutput>
-    </None>
     <None Include="Effects\ParameterDynamicBase.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ParameterDynamicBase.cs</LastGenOutput>

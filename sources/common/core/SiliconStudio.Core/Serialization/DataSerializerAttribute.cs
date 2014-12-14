@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 
-namespace SiliconStudio.Core.Serialization.Serializers
+namespace SiliconStudio.Core.Serialization
 {
     /// <summary>
     /// Use this attribute on a class to specify its data serializer type.

@@ -208,7 +208,7 @@ namespace SiliconStudio.Paradox.EntityModel
 
         protected virtual bool EntityMatch(Entity entity)
         {
-            return RequiredKeys.All(x => entity.Tags.Get(x) != null);
+            return RequiredKeys.All(x => entity.Components.Get(x) != null);
         }
 
         protected virtual void EntityReadd(Entity entity)
