@@ -164,6 +164,7 @@
     <Compile Include="ImageGroupCompiler.cs" />
     <Compile Include="ImageInfo.cs" />
     <Compile Include="Materials\GenericDictionary.cs" />
+    <Compile Include="Materials\MaterialAsset2.cs" />
     <Compile Include="Materials\NodeParameter.cs" />
     <Compile Include="Materials\IMaterialNode.cs" />
     <Compile Include="Materials\IMaterialValueNode.cs" />
