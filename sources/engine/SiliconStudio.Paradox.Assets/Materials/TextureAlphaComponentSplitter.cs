@@ -129,7 +129,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             var colorTextureURL = GenerateColorTextureURL(originalTextureURL);
 
             // create a new image containing only the alpha component
-            texTool.Decompress(texImage);
+            texTool.Decompress(texImage, texImage.Format.IsSRgb());
             using (var alphaImage = texTool.CreateImageFromAlphaComponent(texImage))
             {
                 // generate the mip-maps for the alpha component if required
@@ -143,7 +143,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             }
 
             // save the color component
-            texTool.Decompress(texImage);
+            texTool.Decompress(texImage, texImage.Format.IsSRgb());
             texTool.Compress(texImage, outputFormat);
             using (var outputImage = texTool.ConvertToParadoxImage(texImage))
                 assetManager.Save(colorTextureURL, outputImage);

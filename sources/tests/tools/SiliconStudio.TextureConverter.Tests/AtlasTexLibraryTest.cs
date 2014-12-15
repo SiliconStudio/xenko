@@ -1,13 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
+
 using System.Collections.Generic;
 using System.IO;
 
 using NUnit.Framework;
 using SiliconStudio.TextureConverter.Requests;
 using SiliconStudio.TextureConverter.TexLibraries;
-using SiliconStudio.TextureConverter;
 
 namespace SiliconStudio.TextureConverter.Tests
 {
@@ -41,7 +40,7 @@ namespace SiliconStudio.TextureConverter.Tests
         public void CanHandleRequestTest()
         {
             TexAtlas atlas = new TexAtlas(TexAtlas.TexLayout.Import(TestTools.InputTestFolder + Path.GetFileNameWithoutExtension("atlas_WMipMaps.dds") + TexAtlas.TexLayout.Extension), TestTools.Load(dxtLib, "atlas_WMipMaps.dds"));
-            Assert.IsFalse(library.CanHandleRequest(atlas, new DecompressingRequest()));
+            Assert.IsFalse(library.CanHandleRequest(atlas, new DecompressingRequest(false)));
             Assert.IsTrue(library.CanHandleRequest(atlas, new AtlasCreationRequest(new List<TexImage>())));
             Assert.IsTrue(library.CanHandleRequest(atlas, new AtlasExtractionRequest(0)));
             Assert.IsTrue(library.CanHandleRequest(atlas, new AtlasUpdateRequest(new TexImage(), "")));
@@ -171,7 +170,7 @@ namespace SiliconStudio.TextureConverter.Tests
         private TexImage Load(ITexLibrary library, string filePath)
         {
             var image = new TexImage();
-            library.Execute(image, new LoadingRequest(filePath));
+            library.Execute(image, new LoadingRequest(filePath, false));
             image.Name = Path.GetFileName(filePath);
             image.CurrentLibrary = library;
             return image;

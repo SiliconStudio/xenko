@@ -1,12 +1,16 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.IO;
 
+using SiliconStudio.Core;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.TextureConverter.DxtWrapper;
 using SiliconStudio.TextureConverter.Requests;
+
+using Utilities = SiliconStudio.TextureConverter.DxtWrapper.Utilities;
 
 namespace SiliconStudio.TextureConverter.TexLibraries
 {
@@ -180,7 +184,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <param name="image">The image.</param>
         /// <param name="libraryData">The library data.</param>
         /// <param name="loader">The loader.</param>
-        /// <exception cref="TexLibraryException">Loading dds file failed</exception>
+        /// <exception cref="TextureToolsException">Loading dds file failed</exception>
         private void Load(TexImage image, DxtTextureLibraryData libraryData, LoadingRequest loader)
         {
             Log.Info("Loading " + loader.FilePath + " ...");
@@ -199,6 +203,10 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             }
 
             libraryData.DxtImages = libraryData.Image.GetImages();
+
+            // adapt the image format based on whether input image is sRGB or not
+            var format = (PixelFormat)libraryData.Metadata.format;
+            ChangeDxtImageType(libraryData, (DXGI_FORMAT)(loader.LoadAsSRgb ? format.ToSRgb() : format.ToNonSRgb()));
 
             image.DisposingLibrary = this;
 
@@ -222,6 +230,15 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             UpdateImage(image, libraryData);
         }
 
+        private static void ChangeDxtImageType(DxtTextureLibraryData libraryData, DXGI_FORMAT dxgiFormat)
+        {
+            if(((PixelFormat)libraryData.Metadata.format).SizeInBits() != ((PixelFormat)dxgiFormat).SizeInBits())
+                throw new ArgumentException("Impossible to change image data format. The two formats '{0}' and '{1}' are not compatibles.".ToFormat(libraryData.Metadata.format, dxgiFormat));
+
+            libraryData.Metadata.format = dxgiFormat;
+            for (var i = 0; i < libraryData.DxtImages.Length; ++i)
+                libraryData.DxtImages[i].format = dxgiFormat;
+        }
 
         /// <summary>
         /// Compresses the specified image.
@@ -342,8 +359,12 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         private void Decompress(TexImage image, DxtTextureLibraryData libraryData, DecompressingRequest request)
         {
             Log.Info("Decompressing texture ...");
-            ScratchImage scratchImage = new ScratchImage();
-            HRESULT hr = Utilities.Decompress(libraryData.DxtImages, libraryData.DxtImages.Length, ref libraryData.Metadata, (DXGI_FORMAT)request.DecompressedFormat, scratchImage);
+
+            // determine the output format to avoid any sRGB/RGB conversions (only decompression, no conversion)
+            var outputFormat = !((PixelFormat)libraryData.Metadata.format).IsSRgb() ? request.DecompressedFormat.ToNonSRgb() : request.DecompressedFormat.ToSRgb();
+
+            var scratchImage = new ScratchImage();
+            var hr = Utilities.Decompress(libraryData.DxtImages, libraryData.DxtImages.Length, ref libraryData.Metadata, (DXGI_FORMAT)outputFormat, scratchImage);
 
             if (hr != HRESULT.S_OK)
             {
@@ -353,6 +374,9 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
             // Freeing Memory
             if (image.DisposingLibrary != null) image.DisposingLibrary.Dispose(image);
+            
+            // adapt the image format based on desired output format
+            ChangeDxtImageType(libraryData, (DXGI_FORMAT)request.DecompressedFormat);
 
             libraryData.Image = scratchImage;
             libraryData.DxtImages = libraryData.Image.GetImages();

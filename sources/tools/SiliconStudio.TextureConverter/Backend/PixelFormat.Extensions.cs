@@ -1,12 +1,34 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
+using System.Collections.Generic;
+
+using SiliconStudio.Core;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.TextureConverter
 {
     public static class PixelFormatExtensions
     {
+        private static readonly Dictionary<PixelFormat, PixelFormat> SRgbConvertion = new Dictionary<PixelFormat, PixelFormat>
+        {
+            { PixelFormat.R8G8B8A8_UNorm_SRgb, PixelFormat.R8G8B8A8_UNorm },
+            { PixelFormat.R8G8B8A8_UNorm, PixelFormat.R8G8B8A8_UNorm_SRgb },
+            { PixelFormat.BC1_UNorm_SRgb, PixelFormat.BC1_UNorm },
+            { PixelFormat.BC1_UNorm, PixelFormat.BC1_UNorm_SRgb },
+            { PixelFormat.BC2_UNorm_SRgb, PixelFormat.BC2_UNorm },
+            { PixelFormat.BC2_UNorm, PixelFormat.BC2_UNorm_SRgb },
+            { PixelFormat.BC3_UNorm_SRgb, PixelFormat.BC3_UNorm },
+            { PixelFormat.BC3_UNorm, PixelFormat.BC3_UNorm_SRgb },
+            { PixelFormat.B8G8R8A8_UNorm_SRgb, PixelFormat.B8G8R8A8_UNorm },
+            { PixelFormat.B8G8R8A8_UNorm, PixelFormat.B8G8R8A8_UNorm_SRgb },
+            { PixelFormat.B8G8R8X8_UNorm_SRgb, PixelFormat.B8G8R8X8_UNorm },
+            { PixelFormat.B8G8R8X8_UNorm, PixelFormat.B8G8R8X8_UNorm_SRgb },
+            { PixelFormat.BC7_UNorm_SRgb, PixelFormat.BC7_UNorm },
+            { PixelFormat.BC7_UNorm, PixelFormat.BC7_UNorm_SRgb },
+        };
+        
         /// <summary>
         /// Gets the BPP of the specified format.
         /// </summary>
@@ -216,8 +238,7 @@ namespace SiliconStudio.TextureConverter
                     return false;
             }
         }
-
-
+        
         /// <summary>
         /// Determines whether the specified format is in BGRA order.
         /// </summary>
@@ -239,6 +260,62 @@ namespace SiliconStudio.TextureConverter
                 default:
                     return false;
             }
+        }
+
+        /// <summary>
+        /// Determine if the format has an equivalent sRGB format.
+        /// </summary>
+        /// <param name="format">the non-sRGB format</param>
+        /// <returns>true if the format has an sRGB equivalent</returns>
+        public static bool HasSRgbEquivalent(this PixelFormat format)
+        {
+            if (format.IsSRgb())
+                throw new ArgumentException("The '{0}' format is already an sRGB format".ToFormat(format));
+
+            return SRgbConvertion.ContainsKey(format);
+        }
+
+        /// <summary>
+        /// Determine if the format has an equivalent non-sRGB format.
+        /// </summary>
+        /// <param name="format">the sRGB format</param>
+        /// <returns>true if the format has an non-sRGB equivalent</returns>
+        public static bool HasNonSRgbEquivalent(this PixelFormat format)
+        {
+            if (!format.IsSRgb())
+                throw new ArgumentException("The provided format is not a sRGB format");
+
+            return SRgbConvertion.ContainsKey(format);
+        }
+
+        /// <summary>
+        /// Find the equivalent sRGB format to the provided format.
+        /// </summary>
+        /// <param name="format">The non sRGB format.</param>
+        /// <returns>
+        /// The equivalent sRGB format if any, the provided format else.
+        /// </returns>
+        public static PixelFormat ToSRgb(this PixelFormat format)
+        {
+            if (format.IsSRgb() || !SRgbConvertion.ContainsKey(format))
+                return format;
+
+            return SRgbConvertion[format];
+        }
+
+        /// <summary>
+        /// Find the equivalent non sRGB format to the provided sRGB format.
+        /// </summary>
+        /// <param name="format">The non sRGB format.</param>
+        /// <returns>
+        /// The equivalent non sRGB format if any, the provided format else.
+        /// </returns>
+        public static PixelFormat ToNonSRgb(this PixelFormat format)
+        {
+            if (!format.IsSRgb() || !SRgbConvertion.ContainsKey(format))
+                return format;
+
+            return SRgbConvertion[format];
         }
     }
 }

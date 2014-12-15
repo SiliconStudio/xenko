@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.IO;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.TextureConverter.PvrttWrapper;
 using SiliconStudio.TextureConverter.Requests;
 
@@ -289,7 +290,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         {
             Log.Info("Loading " + request.FilePath + " ...");
 
-            PvrTextureLibraryData libraryData = new PvrTextureLibraryData();
+            var libraryData = new PvrTextureLibraryData();
             image.LibraryData[this] = libraryData;
 
             libraryData.Texture = new PVRTexture(request.FilePath);
@@ -298,10 +299,12 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             image.Width = (int)libraryData.Header.GetWidth();
             image.Height = (int)libraryData.Header.GetHeight();
             image.Depth = (int)libraryData.Header.GetDepth();
-            image.Format = RetrieveFormatFromNativeData(libraryData.Header);
+            
+            var format = RetrieveFormatFromNativeData(libraryData.Header);
+            image.Format = request.LoadAsSRgb? format.ToSRgb(): format.ToNonSRgb();
 
             int pitch, slice;
-            Tools.ComputePitch(image.Format, (int)image.Width, (int)image.Height, out pitch, out slice);
+            Tools.ComputePitch(image.Format, image.Width, image.Height, out pitch, out slice);
             image.RowPitch = pitch;
             image.SlicePitch = slice;
 
@@ -317,7 +320,6 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                 image.Dimension = TexImage.TextureDimension.Texture2D;
             else
                 image.Dimension = TexImage.TextureDimension.Texture1D;
-
         }
 
 

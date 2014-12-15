@@ -128,10 +128,10 @@ namespace SiliconStudio.Paradox.Assets.Textures
         public bool GenerateMipmaps { get; set; }
 
         /// <summary>
-        /// Gets or sets the value indicating whether to the texture should use standard RGB color space encryption.
+        /// Gets or sets the value indicating whether to the input texture is encoded into the standard RGB color space.
         /// </summary>
         /// <userdoc>
-        /// If checked, the texture colors are represented using the standard RGB (sRGB) color space.
+        /// If checked, the input image is considered as an sRGB image.
         /// </userdoc>
         [DataMember(65)]
         [DefaultValue(false)]

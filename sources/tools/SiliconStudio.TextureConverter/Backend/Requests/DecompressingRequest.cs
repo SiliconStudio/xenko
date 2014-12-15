@@ -20,9 +20,10 @@ namespace SiliconStudio.TextureConverter.Requests
         /// <summary>
         /// Initializes a new instance of the <see cref="DecompressingRequest"/> class.
         /// </summary>
-        public DecompressingRequest(PixelFormat compressedFormat)
+        /// <param name="isSRgb">Indicate if the input image is an sRGB image</param>
+        public DecompressingRequest(bool isSRgb)
         {
-            DecompressedFormat = compressedFormat.IsSRgb() ? PixelFormat.R8G8B8A8_UNorm_SRgb : PixelFormat.R8G8B8A8_UNorm;
+            DecompressedFormat = isSRgb ? PixelFormat.R8G8B8A8_UNorm_SRgb : PixelFormat.R8G8B8A8_UNorm;
         }
     }
 }

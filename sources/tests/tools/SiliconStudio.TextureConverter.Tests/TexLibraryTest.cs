@@ -7,7 +7,6 @@ using NUnit.Framework;
 
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.TextureConverter.Requests;
-using SiliconStudio.TextureConverter.TexLibraries;
 
 namespace SiliconStudio.TextureConverter.Tests
 {
@@ -67,9 +66,9 @@ namespace SiliconStudio.TextureConverter.Tests
 
         public static void SwitchChannelsTest(TexImage image, ITexLibrary library)
         {
-            bool isInRGBAOrder = Tools.IsInRGBAOrder(image.Format);
+            var isInRgbaOrder = image.Format.IsInRGBAOrder();
             library.Execute(image, new SwitchingBRChannelsRequest());
-            Assert.IsTrue(Tools.IsInRGBAOrder(image.Format) != isInRGBAOrder);
+            Assert.IsTrue(image.Format.IsInRGBAOrder() != isInRgbaOrder);
 
             //Console.WriteLine("SwitchChannelsTest_" + image.Name + "." + TestTools.ComputeSHA1(image.Data, image.DataSize));
             Assert.IsTrue(TestTools.ComputeSHA1(image.Data, image.DataSize).Equals(TestTools.GetInstance().Checksum["SwitchChannelsTest_" + image.Name]));
@@ -86,17 +85,15 @@ namespace SiliconStudio.TextureConverter.Tests
         public static void DecompressTest(TexImage image, ITexLibrary library)
         {
             Assert.IsTrue(image.Format.IsCompressed());
-            int dataSize = image.DataSize;
-            library.Execute(image, new DecompressingRequest());
-            Assert.IsTrue(image.Format == SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm);
+            library.Execute(image, new DecompressingRequest(false));
+            Assert.IsTrue(image.Format == PixelFormat.R8G8B8A8_UNorm);
             Assert.IsTrue(TestTools.ComputeSHA1(image.Data, image.DataSize).Equals(TestTools.GetInstance().Checksum["DecompressTest_" + image.Name]));
             //Console.WriteLine("DecompressTest_" + image.Name + "." + TestTools.ComputeSHA1(image.Data, image.DataSize));
         }
 
-        public static void CompressTest(TexImage image, ITexLibrary library, SiliconStudio.Paradox.Graphics.PixelFormat format)
+        public static void CompressTest(TexImage image, ITexLibrary library, PixelFormat format)
         {
             Assert.IsTrue(!image.Format.IsCompressed());
-            int dataSize = image.DataSize;
             library.Execute(image, new CompressingRequest(format));
 
             Assert.IsTrue(image.Format == format);
@@ -107,8 +104,7 @@ namespace SiliconStudio.TextureConverter.Tests
         public static void GenerateMipMapTest(TexImage image, ITexLibrary library, Filter.MipMapGeneration filter)
         {
             Assert.IsTrue(image.MipmapCount == 1);
-            int dataSize = image.DataSize;
-            if (image.Format.IsCompressed()) library.Execute(image, new DecompressingRequest());
+            if (image.Format.IsCompressed()) library.Execute(image, new DecompressingRequest(false));
             library.Execute(image, new MipMapsGenerationRequest(filter));
             Assert.IsTrue(image.MipmapCount > 1);
             Assert.IsTrue(TestTools.ComputeSHA1(image.Data, image.DataSize).Equals(TestTools.GetInstance().Checksum["GenerateMipMapTest_" + filter + "_" + image.Name]));
@@ -117,7 +113,7 @@ namespace SiliconStudio.TextureConverter.Tests
 
         public static void GenerateNormalMapTest(TexImage image, ITexLibrary library)
         {
-            library.Execute(image, new DecompressingRequest());
+            library.Execute(image, new DecompressingRequest(false));
             var request = new NormalMapGenerationRequest(1);
             library.Execute(image, request);
 
@@ -159,7 +155,7 @@ namespace SiliconStudio.TextureConverter.Tests
             library.Execute(image, new ExportRequest(TestTools.TempFolder + outputFile, minMipMapSize));
 
             TexImage image2 = new TexImage();
-            library.Execute(image2, new LoadingRequest(TestTools.TempFolder + outputFile));
+            library.Execute(image2, new LoadingRequest(TestTools.TempFolder + outputFile, false));
             image2.CurrentLibrary = library;
 
             image.Update();

@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -22,7 +23,7 @@ namespace SiliconStudio.TextureConverter.Tests
             byte[] retVal = sha1.ComputeHash(file);
             file.Close();
 
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             for (int i = 0; i < retVal.Length; i++)
             {
                 sb.Append(retVal[i].ToString("x2"));
@@ -38,7 +39,7 @@ namespace SiliconStudio.TextureConverter.Tests
             SHA1 sha1 = new SHA1CryptoServiceProvider();
             byte[] retVal = sha1.ComputeHash(array);
 
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             for (int i = 0; i < retVal.Length; i++)
             {
                 sb.Append(retVal[i].ToString("x2"));
@@ -50,7 +51,7 @@ namespace SiliconStudio.TextureConverter.Tests
         public static TexImage Load(ITexLibrary library, string file)
         {
             var image = new TexImage();
-            library.Execute(image, new LoadingRequest(InputTestFolder + file));
+            library.Execute(image, new LoadingRequest(InputTestFolder + file, false));
             image.Name = file;
             image.CurrentLibrary = library;
             return image;
@@ -59,7 +60,7 @@ namespace SiliconStudio.TextureConverter.Tests
         public Dictionary<String, String> Checksum { get; private set; }
 
         private TestTools() {
-            Checksum = new Dictionary<string, string>()
+            Checksum = new Dictionary<string, string>
             {
                 // ParadoxTexLibrary
                 {"ExportTest_Texture3D_WMipMaps_ATC_RGBA_Explicit.pdx", "b351c27d236ee7bd1dfd4c0e8a5a5c785a2b9c53"},
@@ -257,15 +258,15 @@ namespace SiliconStudio.TextureConverter.Tests
             };
         }
 
-        private static TestTools INSTANCE = null;
+        private static TestTools instance;
 
         public static TestTools GetInstance()
         {
-            if (INSTANCE == null)
+            if (instance == null)
             {
-                INSTANCE = new TestTools();
+                instance = new TestTools();
             }
-            return INSTANCE;
+            return instance;
         }
     }
 }

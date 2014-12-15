@@ -181,18 +181,14 @@ namespace SiliconStudio.Paradox.Assets.Textures
                     break;
                 case TextureFormat.HighColor:
                     if (textureAsset.SRgb)
-                    {
                         throw new NotSupportedException("HighColor texture format does not support sRGB color encryption");
-                    }
+
+                    if (textureAsset.Alpha == AlphaFormat.None)
+                        outputFormat = PixelFormat.B5G6R5_UNorm;
+                    else if (textureAsset.Alpha == AlphaFormat.Mask)
+                        outputFormat = PixelFormat.B5G5R5A1_UNorm;
                     else
-                    {
-                        if (textureAsset.Alpha == AlphaFormat.None)
-                            outputFormat = PixelFormat.B5G6R5_UNorm;
-                        else if (textureAsset.Alpha == AlphaFormat.Mask)
-                            outputFormat = PixelFormat.B5G5R5A1_UNorm;
-                        else
-                            throw new NotImplementedException("This alpha format requires a TrueColor texture format.");
-                    }
+                        throw new NotImplementedException("This alpha format requires a TrueColor texture format.");
                     break;
                 case TextureFormat.TrueColor:
                     outputFormat = textureAsset.SRgb ? PixelFormat.R8G8B8A8_UNorm_SRgb : PixelFormat.R8G8B8A8_UNorm;
@@ -211,10 +207,10 @@ namespace SiliconStudio.Paradox.Assets.Textures
             var assetManager = new AssetManager();
 
             using (var texTool = new TextureTool())
-            using (var texImage = texTool.Load(sourcePath))
+            using (var texImage = texTool.Load(sourcePath, textureAsset.SRgb))
             {
                 // Apply transformations
-                texTool.Decompress(texImage);
+                texTool.Decompress(texImage, textureAsset.SRgb);
 
                 if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
                     return ResultStatus.Cancelled;
@@ -254,8 +250,11 @@ namespace SiliconStudio.Paradox.Assets.Textures
 
                 // Generate mipmaps
                 if (textureAsset.GenerateMipmaps)
-                    texTool.GenerateMipMaps(texImage, Filter.MipMapGeneration.Box);
-
+                {
+                    var boxFilteringIsSupported = texImage.Format != PixelFormat.B8G8R8A8_UNorm_SRgb || (IsPowerOfTwo(textureSize.X) && IsPowerOfTwo(textureSize.Y));
+                    texTool.GenerateMipMaps(texImage, boxFilteringIsSupported? Filter.MipMapGeneration.Box: Filter.MipMapGeneration.Linear);
+                }
+                
                 if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
                     return ResultStatus.Cancelled;
 

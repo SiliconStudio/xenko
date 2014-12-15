@@ -231,7 +231,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             }
 
             // Converting the image into BGRA_8888 format
-            libraryData = new FreeImageTextureLibraryData { Bitmaps = new FIBITMAP[1] { FreeImage.ConvertTo32Bits(temp) } };
+            libraryData = new FreeImageTextureLibraryData { Bitmaps = new [] { FreeImage.ConvertTo32Bits(temp) } };
             image.LibraryData[this] = libraryData;
 
             FreeImage.Unload(temp);
@@ -241,7 +241,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             image.Height = (int)FreeImage.GetHeight(libraryData.Bitmaps[0]);
             image.Depth = 1;
             image.Dimension = image.Height == 1 ? TexImage.TextureDimension.Texture1D : TexImage.TextureDimension.Texture2D;
-            image.Format = SiliconStudio.Paradox.Graphics.PixelFormat.B8G8R8A8_UNorm;
+            image.Format = loader.LoadAsSRgb? PixelFormat.B8G8R8A8_UNorm_SRgb : PixelFormat.B8G8R8A8_UNorm;
             
             int rowPitch, slicePitch;
             Tools.ComputePitch(image.Format, image.Width, image.Height, out rowPitch, out slicePitch);
