@@ -19,6 +19,7 @@ namespace SiliconStudio.Presentation.Quantum
         private IModelNode targetNode;
         private IDictionary<string, object> associatedData;
         private bool isInitialized;
+        private int? customOrder;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObservableModelNode"/> class.
@@ -95,7 +96,12 @@ namespace SiliconStudio.Presentation.Quantum
         }
 
         /// <inheritdoc/>
-        public override int? Order { get { return sourceNode.Content is MemberContent && (!(sourceNode.Content.Reference is ReferenceEnumerable) && Index == null) ? ((MemberContent)sourceNode.Content).Member.Order : null; } }
+        public override int? Order { get { return CustomOrder ?? (sourceNode.Content is MemberContent && (!(sourceNode.Content.Reference is ReferenceEnumerable) && Index == null) ? ((MemberContent)sourceNode.Content).Member.Order : null); } }
+
+        /// <summary>
+        /// Gets or sets a custom value for the <see cref="Order"/> of this node.
+        /// </summary>
+        public int? CustomOrder { get { return customOrder; } set { SetValue(ref customOrder, value, "CustomOrder", "Order"); } }
 
         /// <inheritdoc/>
         public sealed override bool IsPrimitive { get { AssertInit(); return isPrimitive; } }
