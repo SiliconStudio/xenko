@@ -1,9 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
+
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Physics;
 
 namespace SiliconStudio.Paradox.Assets.Physics
@@ -11,7 +14,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
     [DataContract("ColliderShapeAsset")]
     [AssetFileExtension(FileExtension)]
     [AssetCompiler(typeof(ColliderShapeAssetCompiler))]
-    [AssetFactory(typeof(ColliderShapeFactory))]
+    [ObjectFactory(typeof(ColliderShapeFactory))]
     [Display("Collider Shape", "A physics collider shape")]
     public class ColliderShapeAsset : Asset
     {
@@ -30,9 +33,9 @@ namespace SiliconStudio.Paradox.Assets.Physics
         [DataMember(10)]
         public PhysicsColliderShapeData Data { get; set; }
 
-        private class ColliderShapeFactory : IAssetFactory
+        private class ColliderShapeFactory : IObjectFactory
         {
-            public Asset New()
+            public object New(Type type)
             {
                 return new ColliderShapeAsset();
             }

@@ -14,11 +14,12 @@ using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.VisualStudio;
 using SiliconStudio.Core.Yaml;
 using AttributeRegistry = SiliconStudio.Core.Reflection.AttributeRegistry;
+using IObjectFactory = SiliconStudio.Core.Reflection.IObjectFactory;
 
 namespace SiliconStudio.Assets
 {
     /// <summary>
-    /// A registry for file extensions, <see cref="IAssetImporter"/>, <see cref="IAssetFactory"/> 
+    /// A registry for file extensions, <see cref="IAssetImporter"/>, <see cref="IObjectFactory"/> 
     /// and aliases associated with assets.
     /// </summary>
     public static class AssetRegistry
@@ -26,7 +27,6 @@ namespace SiliconStudio.Assets
         private static Logger log = GlobalLogger.GetLogger("Assets.Registry");
         private static readonly SolutionPlatformCollection supportedPlatforms = new SolutionPlatformCollection();
         private static readonly Dictionary<Type, string> RegisteredDefaultAssetExtension = new Dictionary<Type, string>();
-        private static readonly Dictionary<Type, IAssetFactory> RegisteredFactories = new Dictionary<Type, IAssetFactory>();
         private static readonly Dictionary<Type, bool> RegisteredDynamicThumbnails = new Dictionary<Type, bool>();
 
         private static readonly Dictionary<Guid, IAssetImporter> RegisteredImportersInternal = new Dictionary<Guid, IAssetImporter>();
@@ -173,12 +173,12 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Returns an array of asset types that can be instanced with <see cref="NewDefaultInstance"/>.
+        /// Returns an array of asset types that can be instanced with <see cref="ObjectFactory.NewInstance"/>.
         /// </summary>
         /// <returns>An array of <see cref="Type"/> elements.</returns>
         public static Type[] GetInstantiableTypes()
         {
-            return RegisteredFactories.Keys.ToArray();
+            return ObjectFactory.FindRegisteredFactories().Where(type => typeof(Asset).IsAssignableFrom(type)).ToArray();
         }
 
         /// <summary>
@@ -202,27 +202,6 @@ namespace SiliconStudio.Assets
         {
             return RegisteredDynamicThumbnails.Keys.ToArray();
         }
-
-        /// <summary>
-        /// Creates a default instance for an asset type.
-        /// </summary>
-        /// <param name="assetType">Type of the asset.</param>
-        /// <returns>A new default instance of an asset.</returns>
-        public static Asset NewDefaultInstance(Type assetType)
-        {
-            AssertAssetType(assetType);
-            IAssetFactory factory;
-            RegisteredFactories.TryGetValue(assetType, out factory);
-
-            // If no registered factory, creates directly the asset
-            if (factory == null)
-            {
-                return (Asset)Activator.CreateInstance(assetType);
-            }
-
-            return factory.New();
-        }
-
 
         /// <summary>
         /// Determines whether [is importer supporting extension] [the specified extension].
@@ -316,17 +295,6 @@ namespace SiliconStudio.Assets
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Registers a <see cref="IAssetFactory" /> for the specified asset type.
-        /// </summary>
-        /// <param name="assetType">Type of the asset.</param>
-        /// <param name="factory">The factory.</param>
-        public static void RegisterFactory(Type assetType, IAssetFactory factory)
-        {
-            AssertAssetType(assetType);
-            RegisteredFactories[assetType] = factory;
         }
 
         /// <summary>
@@ -445,37 +413,16 @@ namespace SiliconStudio.Assets
                 }
 
                 // Asset factory
-                var assetFactory = assetType.GetCustomAttribute<AssetFactoryAttribute>();
+                var assetFactory = assetType.GetCustomAttribute<ObjectFactoryAttribute>();
                 if (assetFactory != null)
                 {
-                    // A null factory name means that the type is not instantiable
-                    if (assetFactory.FactoryTypeName != null)
+                    try
                     {
-                        try
-                        {
-                            var factoryType = Type.GetType(assetFactory.FactoryTypeName);
-                            if (factoryType == null)
-                            {
-                                log.Error("Unable to find factory [{0}] for asset [{1}]", assetFactory.FactoryTypeName, assetType);
-                                goto labelAssetDescription;
-                            }
-
-                            var factoryInstance = Activator.CreateInstance(factoryType) as IAssetFactory;
-                            if (factoryInstance == null)
-                            {
-                                log.Error("Invalid factory type [{0}], must inherit from IAssetImporter", assetFactory.FactoryTypeName);
-                                goto labelAssetDescription;
-                            }
-
-                            RegisterFactory(assetType, factoryInstance);
-                        }
-                        catch (Exception ex)
-                        {
-                            if (ex is AssetException)
-                                throw;
-
-                            throw new AssetException("Unable to instantiate factory [{0}]".ToFormat(assetFactory.FactoryTypeName), ex);
-                        }
+                        ObjectFactory.RegisterFactory(assetType);
+                    }
+                    catch (Exception ex)
+                    {
+                        log.Error("Unable to instantiate factory [{0}] for asset [{1}]", ex, assetFactory.FactoryTypeName, assetType);
                     }
                 }
                 else
@@ -483,10 +430,10 @@ namespace SiliconStudio.Assets
                     var assetConstructor = assetType.GetConstructor(Type.EmptyTypes);
                     if (assetConstructor != null)
                     {
-                        RegisterFactory(assetType, null);
+                        // Register the asset even if it has no factory (default using empty constructor)
+                        ObjectFactory.RegisterFactory(assetType, null);
                     }
                 }
-            labelAssetDescription:
 
                 // Asset description
                 var thumbnailCompilerAttribute = assetType.GetCustomAttribute<ThumbnailCompilerAttribute>();

@@ -24,7 +24,7 @@ namespace SiliconStudio.Quantum.Commands
         /// <inheritdoc/>
         protected override object ModifyValue(object currentValue, ITypeDescriptor descriptor, object parameter)
         {
-            return parameter != null ? Activator.CreateInstance((Type)parameter) : currentValue;
+            return parameter != null ? ObjectFactory.NewInstance((Type)parameter) : currentValue;
         }
     }
 }

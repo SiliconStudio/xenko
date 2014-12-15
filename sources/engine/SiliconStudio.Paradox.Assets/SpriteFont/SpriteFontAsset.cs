@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -8,6 +9,7 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Graphics.Font;
 
 namespace SiliconStudio.Paradox.Assets.SpriteFont
@@ -19,7 +21,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
     [AssetFileExtension(FileExtension)]
     [AssetCompiler(typeof(SpriteFontAssetCompiler))]
     [ThumbnailCompiler(PreviewerCompilerNames.FontThumbnailCompilerQualifiedName, true)]
-    [AssetFactory(typeof(SpriteFontFactory))]
+    [ObjectFactory(typeof(SpriteFontFactory))]
     [Display("Sprite Font", "A sprite containing a rendered font")]
     public class SpriteFontAsset : Asset
     {
@@ -222,9 +224,9 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
 
         internal string SafeCharacterSet { get { return CharacterSet ?? ""; } }
         
-        private class SpriteFontFactory : IAssetFactory
+        private class SpriteFontFactory : IObjectFactory
         {
-            public Asset New()
+            public object New(Type type)
             {
                 return Default();
             }

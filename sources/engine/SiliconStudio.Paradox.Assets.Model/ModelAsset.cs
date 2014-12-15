@@ -13,6 +13,7 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Paradox.Effects;
 
@@ -22,7 +23,6 @@ namespace SiliconStudio.Paradox.Assets.Model
     [AssetFileExtension(FileExtension)]
     [AssetCompiler(typeof(ModelAssetCompiler))]
     [ThumbnailCompiler(PreviewerCompilerNames.ModelThumbnailCompilerQualifiedName, true)]
-    [AssetFactory((Type)null)]
     [Display("Model", "A 3D model")]
     [AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
     public sealed class ModelAsset : AssetImportTracked
