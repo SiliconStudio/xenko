@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace SiliconStudio.Core
@@ -11,6 +11,8 @@ namespace SiliconStudio.Core
     /// </summary>
     public class DisplayAttribute : Attribute
     {
+        private static readonly Dictionary<MemberInfo, DisplayAttribute> RegisteredDisplayAttributes = new Dictionary<MemberInfo, DisplayAttribute>();
+
         private readonly int? order;
 
         private readonly string name;
@@ -102,26 +104,25 @@ namespace SiliconStudio.Core
             }
         }
 
-        public static bool IsDisplayable(object obj)
-        {
-            return IsDisplayable(obj.GetType());
-        }
-
-        public static bool IsDisplayable(Type type)
-        {
-            return type.GetTypeInfo().GetCustomAttributes(typeof(DisplayAttribute), true).GetEnumerator().MoveNext();
-        }
-
-        public static DisplayAttribute GetDisplay(Type type)
-        {
-            var attributes = type.GetTypeInfo().GetCustomAttributes(typeof(DisplayAttribute), true);
-            return attributes.FirstOrDefault() as DisplayAttribute;
-        }
-
+        /// <summary>
+        /// Gets the display attribute attached to the specified member info.
+        /// </summary>
+        /// <param name="memberInfo">Member type (Property, Field or Type).</param>
+        /// <returns>DisplayAttribute.</returns>
+        /// <exception cref="System.ArgumentNullException">memberInfo</exception>
         public static DisplayAttribute GetDisplay(MemberInfo memberInfo)
         {
-            var attributes = memberInfo.GetCustomAttributes(typeof(DisplayAttribute), true);
-            return attributes.FirstOrDefault() as DisplayAttribute;
+            if (memberInfo == null) throw new ArgumentNullException("memberInfo");
+            lock (RegisteredDisplayAttributes)
+            {
+                DisplayAttribute value;
+                if (!RegisteredDisplayAttributes.TryGetValue(memberInfo, out value))
+                {
+                    value = memberInfo.GetCustomAttribute<DisplayAttribute>() ?? new DisplayAttribute(memberInfo.Name, string.Format("Description of {0}", memberInfo.Name));
+                    RegisteredDisplayAttributes.Add(memberInfo, value);
+                }
+                return value;
+            }
         }
     }
 }
