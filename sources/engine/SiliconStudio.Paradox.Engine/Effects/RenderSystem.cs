@@ -82,6 +82,10 @@ namespace SiliconStudio.Paradox.Effects
 
                 GraphicsDevice.ClearState();
 
+                // Update global time
+                GraphicsDevice.Parameters.Set(GlobalKeys.Time, (float)gameTime.Total.TotalSeconds);
+                GraphicsDevice.Parameters.Set(GlobalKeys.TimeStep, (float)gameTime.Elapsed.TotalSeconds);
+
                 if (GraphicsDevice.IsProfilingSupported)
                 {
                     GraphicsDevice.EnableProfile(true);
