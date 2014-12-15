@@ -219,10 +219,8 @@
     <Compile Include="Serializers\AssetBaseSerializer.cs" />
     <Compile Include="Serializers\AssetReferenceSerializer.cs" />
     <Compile Include="AssetRegistry.cs" />
-    <Compile Include="AssetFactoryAttribute.cs" />
     <Compile Include="AssetItem.cs" />
     <Compile Include="FileUtility.cs" />
-    <Compile Include="IAssetFactory.cs" />
     <Compile Include="IAssetImporter.cs" />
     <Compile Include="Package.cs" />
     <Compile Include="PropertyCollection.cs" />

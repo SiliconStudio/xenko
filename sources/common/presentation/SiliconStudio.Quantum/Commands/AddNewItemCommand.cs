@@ -56,7 +56,7 @@ namespace SiliconStudio.Quantum.Commands
             }
             else
             {
-                var newItem = Activator.CreateInstance(collectionDescriptor.ElementType);
+                var newItem = ObjectFactory.NewInstance(collectionDescriptor.ElementType);
                 undoToken = new UndoToken(true, collectionDescriptor.GetCollectionCount(currentValue));
                 collectionDescriptor.Add(currentValue, parameter ?? newItem);
             }

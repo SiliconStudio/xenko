@@ -1,11 +1,14 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Reflection;
+using SiliconStudio.Paradox.Assets.Materials.Nodes;
 using SiliconStudio.Paradox.Effects.Data;
 
 namespace SiliconStudio.Paradox.Assets.Materials
@@ -108,6 +111,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// </summary>
     [DataContract("MaterialSmoothnessMapAttribute")]
     [Display("Smoothness Map")]
+    [ObjectFactory(typeof(Factory))]
     public class MaterialSmoothnessMapAttribute : IMaterialMicroSurfaceAttribute
     {
         /// <summary>
@@ -117,6 +121,14 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [Display("Smoothness Map")]
         [DefaultValue(null)]
         public IMaterialNode SmoothnessMap { get; set; }
+
+        private class Factory : IObjectFactory
+        {
+            public object New(Type type)
+            {
+                return new MaterialSmoothnessMapAttribute() { SmoothnessMap = new MaterialTextureNode() };
+            }
+        }
     }
 
     /// <summary>
@@ -124,6 +136,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// </summary>
     [DataContract("MaterialDiffuseMapAttribute")]
     [Display("Diffuse Map")]
+    [ObjectFactory(typeof(Factory))]
     public class MaterialDiffuseMapAttribute : IMaterialDiffuseAttribute
     {
         /// <summary>
@@ -133,6 +146,14 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [Display("Diffuse Map")]
         [DefaultValue(null)]
         public IMaterialNode DiffuseMap { get; set; }
+
+        private class Factory : IObjectFactory
+        {
+            public object New(Type type)
+            {
+                return new MaterialDiffuseMapAttribute() { DiffuseMap = new MaterialTextureNode() };
+            }
+        }
     }
 
     /// <summary>
@@ -140,6 +161,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// </summary>
     [DataContract("MaterialSpecularMapAttribute")]
     [Display("Specular Map")]
+    [ObjectFactory(typeof(Factory))]
     public class MaterialSpecularMapAttribute : IMaterialSpecularAttribute
     {
         /// <summary>
@@ -163,6 +185,19 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The fresnel.</value>
         [DefaultValue(null)]
         public IMaterialNode Fresnel { get; set; }
+
+        private class Factory : IObjectFactory
+        {
+            public object New(Type type)
+            {
+                return new MaterialSpecularMapAttribute()
+                {
+                    SpecularMap = new MaterialTextureNode(),
+                    Intensity = new MaterialFloatNode(1.0f),
+                    Fresnel = new MaterialFloatNode(1.0f),
+                };
+            }
+        }
     }
 
     /// <summary>
@@ -170,6 +205,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// </summary>
     [DataContract("MaterialMetalnessMapAttribute")]
     [Display("Metalness Map")]
+    [ObjectFactory(typeof(Factory))]
     public class MaterialMetalnessMapAttribute : IMaterialSpecularAttribute
     {
         /// <summary>
@@ -179,6 +215,14 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [Display("Metalness Map")]
         [DefaultValue(null)]
         public IMaterialNode MetalnessMap { get; set; }
+
+        private class Factory : IObjectFactory
+        {
+            public object New(Type type)
+            {
+                return new MaterialMetalnessMapAttribute() { MetalnessMap = new MaterialTextureNode() };
+            }
+        }
     }
 
     /// <summary>
@@ -186,6 +230,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// </summary>
     [DataContract("MaterialOcclusionMapAttribute")]
     [Display("Occlusion Map")]
+    [ObjectFactory(typeof(Factory))]
     public class MaterialOcclusionMapAttribute : IMaterialOcclusionAttribute
     {
         /// <summary>
@@ -232,6 +277,18 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [DefaultValue(1.0f)]
         [DataMember(40)]
         public float SpecularCavity { get; set; }
+
+        private class Factory : IObjectFactory
+        {
+            public object New(Type type)
+            {
+                return new MaterialOcclusionMapAttribute()
+                {
+                    OcclusionMap = new MaterialTextureNode(),
+                    CavityMap = new MaterialTextureNode(),
+                };
+            }
+        }
     }
 
     /// <summary>
@@ -248,6 +305,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// </summary>
     [DataContract("MaterialNormalMapAttribute")]
     [Display("Normal Map")]
+    [ObjectFactory(typeof(Factory))]
     public class MaterialNormalMapAttribute : IMaterialSurfaceAttribute
     {
         /// <summary>
@@ -257,6 +315,14 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [Display("Normal Map")]
         [DefaultValue(null)]
         public IMaterialNode NormalMap { get; set; }
+
+        private class Factory : IObjectFactory
+        {
+            public object New(Type type)
+            {
+                return new MaterialNormalMapAttribute() { NormalMap = new MaterialTextureNode() };
+            }
+        }
     }
 
     /// <summary>
@@ -286,6 +352,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// </summary>
     [DataContract("MaterialBlendLayer")]
     [Display("Blend Layer")]
+    [ObjectFactory(typeof(Factory))]
     public class MaterialBlendLayer
     {
         /// <summary>
@@ -336,6 +403,17 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The overrides.</value>
         [DataMember(50)]
         public MaterialBlendOverrides Overrides { get; private set; }
+
+        private class Factory : IObjectFactory
+        {
+            public object New(Type type)
+            {
+                return new MaterialBlendLayer()
+                {
+                    BlendMap = new MaterialTextureNode(),
+                };
+            }
+        }
     }
 
     /// <summary>

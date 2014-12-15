@@ -7,6 +7,7 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
@@ -17,7 +18,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     [AssetFileExtension(FileExtension)]
     [ThumbnailCompiler(PreviewerCompilerNames.MaterialThumbnailCompilerQualifiedName, true)]
     [AssetCompiler(typeof(MaterialAssetCompiler))]
-    [AssetFactory(typeof(MaterialFactory))]
+    [ObjectFactory(typeof(MaterialFactory))]
     [Display("Material", "A material")]
     public sealed class MaterialAsset : Asset
     {
@@ -46,9 +47,9 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [DataMember(20)]
         public MaterialDescription Material { get; set; }
 
-        private class MaterialFactory : IAssetFactory
+        private class MaterialFactory : IObjectFactory
         {
-            public Asset New()
+            public object New(Type type)
             {
                 var newMaterial = new MaterialAsset { Material = new MaterialDescription() };
                 return newMaterial;

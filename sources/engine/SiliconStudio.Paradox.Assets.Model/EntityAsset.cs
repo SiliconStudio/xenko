@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using System.Linq;
 
 using SharpYaml.Serialization;
@@ -12,6 +13,7 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Paradox.Assets.Model.Analysis;
@@ -24,7 +26,7 @@ namespace SiliconStudio.Paradox.Assets.Model
     [AssetFileExtension(FileExtension)]
     [AssetCompiler(typeof(EntityAssetCompiler))]
     [ThumbnailCompiler(PreviewerCompilerNames.EntityThumbnailCompilerQualifiedName, true)]
-    [AssetFactory(typeof(EntityFactory))]
+    [ObjectFactory(typeof(EntityFactory))]
     [Display("Entity", "An entity")]
     [AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
     public class EntityAsset : AssetImportTracked, IDiffResolver, IAssetComposer
@@ -56,9 +58,9 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// </summary>
         public Dictionary<Guid, EntityBase> AssetBases = new Dictionary<Guid, EntityBase>();
 
-        private class EntityFactory : IAssetFactory
+        private class EntityFactory : IObjectFactory
         {
-            public Asset New()
+            public object New(Type type)
             {
                 // Create a new root entity, and make sure transformation component is created
                 var rootEntity = new EntityData();
