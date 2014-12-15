@@ -9,7 +9,7 @@ namespace SiliconStudio.Core
     /// Defines range values for a property or field.
     /// </summary>
     /// <remarks><see cref="Minimum"/>, <see cref="Maximum"/> and <see cref="Step"/> must have the same type</remarks>
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple: false, Inherited: false)]
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
     public class DataRangeAttribute : Attribute
     {
         private readonly object minimum;
