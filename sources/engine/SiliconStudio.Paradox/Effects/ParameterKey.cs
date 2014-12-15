@@ -200,6 +200,17 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="length">The length.</param>
+        /// <param name="metadata">The metadata.</param>
+        public ParameterKey(string name, int length, PropertyKeyMetadata metadata)
+            : this(name, length, new []{ metadata })
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ParameterKey{T}"/> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="length">The length.</param>
         /// <param name="metadatas">The metadatas.</param>
         public ParameterKey(string name, int length = 1, params PropertyKeyMetadata[] metadatas)
             : base(typeof(T), name, length, metadatas.Length > 0 ? metadatas : new PropertyKeyMetadata[]{ new ParameterKeyValueMetadata<T>() })
