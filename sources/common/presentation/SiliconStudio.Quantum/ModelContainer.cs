@@ -17,6 +17,7 @@ namespace SiliconStudio.Quantum
     {
         private readonly Dictionary<Guid, IModelNode> modelsByGuid = new Dictionary<Guid, IModelNode>();
         private readonly IGuidContainer guidContainer;
+        private readonly object lockObject = new object();
 
         /// <summary>
         /// Create a new instance of <see cref="ModelContainer"/>.
@@ -63,9 +64,12 @@ namespace SiliconStudio.Quantum
         /// <returns>The <see cref="IModelNode"/> associated to the given object if available, or <c>null</c> otherwise.</returns>
         public IModelNode GetModelNode(object rootObject)
         {
-            if (guidContainer == null) throw new InvalidOperationException("This ModelContainer has no GuidContainer and can't retrieve Guid associated to a data object.");
-            Guid guid = guidContainer.GetGuid(rootObject);
-            return guid == Guid.Empty ? null : GetModelNode(guid);
+            lock (lockObject)
+            {
+                if (guidContainer == null) throw new InvalidOperationException("This ModelContainer has no GuidContainer and can't retrieve Guid associated to a data object.");
+                Guid guid = guidContainer.GetGuid(rootObject);
+                return guid == Guid.Empty ? null : GetModelNode(guid);
+            }
         }
 
         /// <summary>
@@ -75,8 +79,11 @@ namespace SiliconStudio.Quantum
         /// <returns>The <see cref="IModelNode"/> associated to the given Guid if available, or <c>null</c> otherwise.</returns>
         public IModelNode GetModelNode(Guid guid)
         {
-            IModelNode result;
-            return modelsByGuid.TryGetValue(guid, out result) ? result : null;
+            lock (lockObject)
+            {
+                IModelNode result;
+                return modelsByGuid.TryGetValue(guid, out result) ? result : null;
+            }
         }
 
         /// <summary>
@@ -87,8 +94,11 @@ namespace SiliconStudio.Quantum
         /// <returns>The <see cref="Guid"/> associated to the given object if available, or <see cref="Guid.Empty"/> otherwise.</returns>
         public Guid GetGuid(object rootObject, Type type)
         {
-            if (guidContainer == null) throw new InvalidOperationException("This ModelContainer has no GuidContainer and can't retrieve Guid associated to a data object.");
-            return guidContainer.GetGuid(rootObject);
+            lock (lockObject)
+            {
+                if (guidContainer == null) throw new InvalidOperationException("This ModelContainer has no GuidContainer and can't retrieve Guid associated to a data object.");
+                return guidContainer.GetGuid(rootObject);
+            }
         }
 
         /// <summary>
@@ -99,13 +109,16 @@ namespace SiliconStudio.Quantum
         /// <returns>The <see cref="IModelNode"/> associated to the given object.</returns>
         public IModelNode GetOrCreateModelNode(object rootObject, Type type)
         {
-            IModelNode result = null;
-            if (guidContainer != null && (rootObject == null || !rootObject.GetType().IsValueType))
+            lock (lockObject)
             {
-                result = GetModelNode(rootObject);
-            }
+                IModelNode result = null;
+                if (guidContainer != null && (rootObject == null || !rootObject.GetType().IsValueType))
+                {
+                    result = GetModelNode(rootObject);
+                }
 
-            return result ?? CreateModelNode(rootObject, type);
+                return result ?? CreateModelNode(rootObject, type);
+            }
         }
 
         /// <summary>
@@ -113,11 +126,14 @@ namespace SiliconStudio.Quantum
         /// </summary>
         public void Clear()
         {
-            if (guidContainer != null)
+            lock (lockObject)
             {
-                guidContainer.Clear();
+                if (guidContainer != null)
+                {
+                    guidContainer.Clear();
+                }
+                modelsByGuid.Clear();
             }
-            modelsByGuid.Clear();
         }
 
         /// <summary>
@@ -126,7 +142,10 @@ namespace SiliconStudio.Quantum
         /// <param name="node">The node to update</param>
         public void UpdateReferences(IModelNode node)
         {
-            UpdateReferences(node, true);
+            lock (lockObject)
+            {
+                UpdateReferences(node, true);
+            }
         }
 
         private IModelNode CreateModelNode(object rootObject, Type type)
