@@ -238,8 +238,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// </summary>
         public MaterialOcclusionMapAttribute()
         {
-            DiffuseCavity = 1.0f;
-            SpecularCavity = 1.0f;
         }
 
         /// <summary>
@@ -265,18 +263,20 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// </summary>
         /// <value>The diffuse cavity.</value>
         [Display("Diffuse Cavity")]
-        [DefaultValue(1.0f)]
+        [DefaultValue(null)]
         [DataMember(30)]
-        public float DiffuseCavity { get; set; }
+        [DataRangeAttribute(0.0f, 1.0f, 0.01f)]
+        public IMaterialNode DiffuseCavity { get; set; }
 
         /// <summary>
         /// Gets or sets the specular cavity.
         /// </summary>
         /// <value>The specular cavity.</value>
         [Display("Specular Cavity")]
-        [DefaultValue(1.0f)]
+        [DefaultValue(null)]
         [DataMember(40)]
-        public float SpecularCavity { get; set; }
+        [DataRangeAttribute(0.0f, 1.0f, 0.01f)]
+        public IMaterialNode SpecularCavity { get; set; }
 
         private class Factory : IObjectFactory
         {
@@ -286,6 +286,8 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 {
                     OcclusionMap = new MaterialTextureNode(),
                     CavityMap = new MaterialTextureNode(),
+                    DiffuseCavity = new MaterialFloatNode(1.0f),
+                    SpecularCavity = new MaterialFloatNode(1.0f),
                 };
             }
         }
