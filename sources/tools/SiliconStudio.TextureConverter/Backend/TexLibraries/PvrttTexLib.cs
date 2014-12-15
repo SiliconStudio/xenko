@@ -246,7 +246,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                     break;
 
                 case RequestType.Decompressing:
-                    Decompress(image, libraryData);
+                    Decompress(image, libraryData, (DecompressingRequest)request);
                     break;
 
                 case RequestType.MipMapsGeneration:
@@ -495,14 +495,14 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             UpdateImage(image, libraryData);
         }
 
-
         /// <summary>
         /// Decompresses the specified image.
         /// </summary>
         /// <param name="image">The image.</param>
         /// <param name="libraryData">The library data.</param>
-        /// <exception cref="TexLibraryException">Decompression failed!</exception>
-        public void Decompress(TexImage image, PvrTextureLibraryData libraryData)
+        /// <param name="request">The decompression request</param>
+        /// <exception cref="TextureToolsException">Decompression failed!</exception>
+        public void Decompress(TexImage image, PvrTextureLibraryData libraryData, DecompressingRequest request)
         {
             Log.Info("Decompressing texture ...");
 
@@ -512,7 +512,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                 throw new TextureToolsException("Decompression failed!");
             }
 
-            image.Format = SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm;
+            image.Format = request.DecompressedFormat;
 
             int pitch,slice;
             Tools.ComputePitch(image.Format, image.Width, image.Height, out pitch, out slice);

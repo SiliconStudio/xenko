@@ -378,7 +378,7 @@ namespace SiliconStudio.TextureConverter
                 return;
             }
 
-            ExecuteRequest(image, new DecompressingRequest());
+            ExecuteRequest(image, new DecompressingRequest(image.Format));
         }
 
 

@@ -154,7 +154,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                     Export(image, libraryData, (ExportRequest)request);
                     break;
                 case RequestType.Decompressing:
-                    Decompress(image, libraryData);
+                    Decompress(image, libraryData, (DecompressingRequest)request);
                     break;
                 case RequestType.MipMapsGeneration:
                     GenerateMipMaps(image, libraryData, (MipMapsGenerationRequest)request);
@@ -332,18 +332,18 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             UpdateImage(image, libraryData);
         }
 
-
         /// <summary>
         /// Decompresses the specified image.
         /// </summary>
         /// <param name="image">The image.</param>
         /// <param name="libraryData">The library data.</param>
-        /// <exception cref="TexLibraryException">Decompression failed</exception>
-        private void Decompress(TexImage image, DxtTextureLibraryData libraryData)
+        /// <param name="request">The decompression request</param>
+        /// <exception cref="TextureToolsException">Decompression failed</exception>
+        private void Decompress(TexImage image, DxtTextureLibraryData libraryData, DecompressingRequest request)
         {
             Log.Info("Decompressing texture ...");
             ScratchImage scratchImage = new ScratchImage();
-            HRESULT hr = Utilities.Decompress(libraryData.DxtImages, libraryData.DxtImages.Length, ref libraryData.Metadata, DXGI_FORMAT.DXGI_FORMAT_R8G8B8A8_UNORM, scratchImage);
+            HRESULT hr = Utilities.Decompress(libraryData.DxtImages, libraryData.DxtImages.Length, ref libraryData.Metadata, (DXGI_FORMAT)request.DecompressedFormat, scratchImage);
 
             if (hr != HRESULT.S_OK)
             {
@@ -647,7 +647,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             image.Height = libraryData.Metadata.height;
             image.Depth = libraryData.Metadata.depth;
             image.RowPitch = libraryData.DxtImages[0].rowPitch;
-            image.Format = (SiliconStudio.Paradox.Graphics.PixelFormat) libraryData.Metadata.format;
+            image.Format = (PixelFormat) libraryData.Metadata.format;
             image.MipmapCount = libraryData.Metadata.mipLevels;
             image.ArraySize = libraryData.Metadata.arraySize;
             image.SlicePitch = libraryData.DxtImages[0].slicePitch;
