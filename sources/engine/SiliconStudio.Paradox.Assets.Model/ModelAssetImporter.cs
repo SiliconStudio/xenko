@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using SiliconStudio.Assets;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
@@ -400,7 +401,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <summary>
         /// Used only for category purpose, there is no such thing as a Camera asset (it will be a CameraComponent inside an EntityAsset).
         /// </summary>
-        [AssetDescription("Camera", "A camera")]
+        [Display("Camera", "A camera")]
         class CameraAsset : Asset
         {
 
@@ -409,7 +410,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <summary>
         /// Used only for category purpose, there is no such thing as a Light asset (it will be a LightComponent inside an EntityAsset).
         /// </summary>
-        [AssetDescription("Light", "A light")]
+        [Display("Light", "A light")]
         class LightAsset : Asset
         {
 

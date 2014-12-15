@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         float4 ShoulderCoeffs;
         float  MiddleCrossOver;
 
-        override float3 Compute(float3 color)
+        override float4 Compute(float4 color)
         {
 	        float4 coeffs = (color < MiddleCrossOver) ? ToeCoeffs : ShoulderCoeffs;
 	        float2 fraction = coeffs.xy * color + coeffs.zw;

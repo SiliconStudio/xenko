@@ -22,9 +22,9 @@ namespace SiliconStudio.Paradox.Assets.Model
     [DataContract("Model")]
     [AssetFileExtension(FileExtension)]
     [AssetCompiler(typeof(ModelAssetCompiler))]
-    [ThumbnailCompiler(PreviewerCompilerNames.ModelThumbnailCompilerQualifiedName)]
+    [ThumbnailCompiler(PreviewerCompilerNames.ModelThumbnailCompilerQualifiedName, true)]
     [AssetFactory((Type)null)]
-    [AssetDescription("Model", "A 3D model", true)]
+    [Display("Model", "A 3D model")]
     [AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
     public sealed class ModelAsset : AssetImportTracked
     {

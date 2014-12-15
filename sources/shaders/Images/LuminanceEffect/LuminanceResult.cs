@@ -11,9 +11,15 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// </summary>
     public struct LuminanceResult
     {
-        public Texture Texture { get; set; }
+        public LuminanceResult(float averageLuminance, Texture localTexture)
+            : this()
+        {
+            AverageLuminance = averageLuminance;
+            LocalTexture = localTexture;
+        }
 
         public float AverageLuminance { get; set; }
 
+        public Texture LocalTexture { get; set; }
     }
 }

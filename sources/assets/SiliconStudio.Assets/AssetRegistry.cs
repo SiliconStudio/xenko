@@ -6,6 +6,8 @@ using System.Linq;
 using System.Reflection;
 using SharpYaml.Serialization;
 using SiliconStudio.Assets.Diff;
+
+using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
@@ -26,7 +28,8 @@ namespace SiliconStudio.Assets
         private static readonly SolutionPlatformCollection supportedPlatforms = new SolutionPlatformCollection();
         private static readonly Dictionary<Type, string> RegisteredDefaultAssetExtension = new Dictionary<Type, string>();
         private static readonly Dictionary<Type, IAssetFactory> RegisteredFactories = new Dictionary<Type, IAssetFactory>();
-        private static readonly Dictionary<Type, AssetDescription> RegisteredDescriptions = new Dictionary<Type, AssetDescription>();
+        private static readonly Dictionary<Type, bool> RegisteredDynamicThumbnails = new Dictionary<Type, bool>();
+        private static readonly Dictionary<Type, DisplayAttribute> RegisteredDisplayAttributes = new Dictionary<Type, DisplayAttribute>();
         private static readonly Dictionary<Guid, IAssetImporter> RegisteredImportersInternal = new Dictionary<Guid, IAssetImporter>();
         private static readonly Dictionary<Type, int> RegisteredFormatVersions = new Dictionary<Type, int>();
         private static readonly Dictionary<Type, Type[]> RegisteredFormatVersionUpdaterTypes = new Dictionary<Type, Type[]>();
@@ -185,12 +188,32 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <param name="assetType">Type of the asset.</param>
         /// <returns>Am <see cref="AssetDescription"/> object, if available, or <c>null</c> otherwise.</returns>
-        public static AssetDescription GetDescription(Type assetType)
+        public static DisplayAttribute GetDisplay(Type assetType)
+        {
+            if (assetType == null) throw new ArgumentNullException("assetType");
+            lock (RegisteredDisplayAttributes)
+            {
+                DisplayAttribute value;
+                if (!RegisteredDisplayAttributes.TryGetValue(assetType, out value))
+                {
+                    value = new DisplayAttribute(assetType.Name, string.Format("Description of {0}", assetType.Name));
+                    RegisteredDisplayAttributes.Add(assetType, value);
+                }
+                return value;
+            }
+        }
+
+        /// <summary>
+        /// Gets a boolean indicating whether an asset type has a dynamic thumbnail.
+        /// </summary>
+        /// <param name="assetType">Type of the asset.</param>
+        /// <returns><c>true</c> if [has dynamic thumbnail] [the specified asset type]; otherwise, <c>false</c>.</returns>
+        public static bool HasDynamicThumbnail(Type assetType)
         {
             AssertAssetType(assetType);
-            AssetDescription description;
-            RegisteredDescriptions.TryGetValue(assetType, out description);
-            return description;
+            bool hasThumbnail;
+            RegisteredDynamicThumbnails.TryGetValue(assetType, out hasThumbnail);
+            return hasThumbnail;
         }
 
         /// <summary>
@@ -199,7 +222,7 @@ namespace SiliconStudio.Assets
         /// <returns>An array of <see cref="Type"/> elements.</returns>
         public static Type[] GetDescribedTypes()
         {
-            return RegisteredDescriptions.Keys.ToArray();
+            return RegisteredDynamicThumbnails.Keys.ToArray();
         }
 
         /// <summary>
@@ -329,15 +352,15 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Registers a <see cref="AssetDescription"/> for the specified asset type.
+        /// Registers a <see cref="AssetDescription" /> for the specified asset type.
         /// </summary>
         /// <param name="assetType">Type of the asset.</param>
-        /// <param name="description">The description.</param>
-        public static void RegisterDescription(Type assetType, AssetDescription description)
+        /// <param name="isDynamicThumbnail">if set to <c>true</c> [is dynamic thumbnail].</param>
+        /// <exception cref="System.ArgumentNullException">description</exception>
+        private static void RegisterDynamicThumbnail(Type assetType, bool isDynamicThumbnail)
         {
-            if (description == null) throw new ArgumentNullException("description");
             AssertAssetType(assetType);
-            RegisteredDescriptions[assetType] = description;
+            RegisteredDynamicThumbnails[assetType] = isDynamicThumbnail;
         }
 
         /// <summary>
@@ -504,10 +527,10 @@ namespace SiliconStudio.Assets
             labelAssetDescription:
 
                 // Asset description
-                var assetDescription = assetType.GetCustomAttribute<AssetDescriptionAttribute>();
-                if (assetDescription != null)
+                var thumbnailCompilerAttribute = assetType.GetCustomAttribute<ThumbnailCompilerAttribute>();
+                if (thumbnailCompilerAttribute != null)
                 {
-                    RegisterDescription(assetType, assetDescription.GetDescription());
+                    RegisterDynamicThumbnail(assetType, thumbnailCompilerAttribute.DynamicThumbnails);
                 }
             }
         }

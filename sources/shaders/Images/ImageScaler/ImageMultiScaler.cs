@@ -136,7 +136,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                     }
 
                     int newScalingDirection = outputSize.CompareTo(inputSize);
-                    if (scalingDirection != 0 && Math.Sign(scalingDirection * newScalingDirection) != Math.Sign(scalingDirection))
+                    if (scalingDirection != 0 && Math.Sign(scalingDirection) != Math.Sign(newScalingDirection))
                     {
                         throw new InvalidOperationException("Support only output scaling to the same direction");
                     }

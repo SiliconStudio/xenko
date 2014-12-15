@@ -13,8 +13,8 @@ namespace SiliconStudio.Paradox.Assets.UIImage
     [AssetFileExtension(FileExtension)]
     [AssetCompiler(typeof(UIImageGroupCompiler))]
     [AssetFactory(typeof(UIImageGroupFactory))]
-    [ThumbnailCompiler(PreviewerCompilerNames.UIImageGroupThumbnailCompilerQualifiedName)]
-    [AssetDescription("UI Image Group", "An UI Image group", true)]
+    [ThumbnailCompiler(PreviewerCompilerNames.UIImageGroupThumbnailCompilerQualifiedName, true)]
+    [Display("UI Image Group", "An UI Image group")]
     public sealed class UIImageGroupAsset : ImageGroupAsset<UIImageInfo>
     {
         /// <summary>

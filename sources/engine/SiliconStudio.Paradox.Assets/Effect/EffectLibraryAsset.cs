@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
     [DataContract("EffectLibrary")]
     [AssetFileExtension(FileExtension)]
     [AssetCompiler(typeof(EffectLibraryAssetCompiler))]
-    [AssetDescription("Effect Library", "An effect library", false)]
+    [Display("Effect Library", "An effect library")]
     public sealed class EffectLibraryAsset : Asset
     {
         /// <summary>

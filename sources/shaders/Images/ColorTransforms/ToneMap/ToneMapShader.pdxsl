@@ -6,7 +6,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// A tonemap shader
     /// </summary>
-    internal class ToneMapShader : ColorTransformShader
+    internal class ToneMapShader : ColorTransformShader, Texturing
     {
         // Luminance texture
         Texture2D LuminanceTexture;
@@ -23,9 +23,10 @@ namespace SiliconStudio.Paradox.Effects.Images
         float Brightness = 0.0f;
 
         // ToneMap Operator
+        [Link("ToneMap.Operator")]
         compose ToneMapOperatorShader ToneMapOperator;
 
-        stage override float4 Compute(float4 inputColor)
+        override float4 Compute(float4 inputColor)
         {
             // Get the input color to tonemap
 	        float3 color = inputColor.rgb;
@@ -63,7 +64,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
 	        float exposure = CalculateExposure(avgLuminance, threshold);
 	        color *= exposure;
-	        color = ToneMapOperator.Compute(color);
+	        color = ToneMapOperator.Compute(float4(color,1)).rgb;
 	        return color;
         }
     };

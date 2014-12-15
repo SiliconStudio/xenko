@@ -590,6 +590,19 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Images\ColorCombiner\ColorCombinerShader.cs">
+      <DependentUpon>ColorCombinerShader.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Images\ColorCombiner\ColorCombiner.cs" />
+    <Compile Include="Images\ColorCombiner\ColorCombinerEffect.cs">
+      <DependentUpon>ColorCombinerEffect.pdxfx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Images\GaussianBlur\GaussianBlur.cs" />
     <Compile Include="Images\GaussianBlur\GaussianBlurKeys.cs" />
     <Compile Include="Images\GaussianBlur\GaussianBlurShader.cs">
@@ -605,14 +618,10 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Images\IImageEffectParameterKeyDependencies.cs" />
-    <Compile Include="Images\ImageEffects.cs">
+    <Compile Include="Images\ImageEffectBundle.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Images\ImageEffectStep.cs" />
-    <Compile Include="Images\ImageEffectStepCollection.cs" />
-    <Compile Include="Images\ImageEffectStepCollectionExtensions.cs" />
-    <Compile Include="Images\ImageEffectStepEnableDelegate.cs" />
+    <Compile Include="Images\ColorTransforms\ColorTransformCollection.cs" />
     <Compile Include="Images\ImageReadback\ImageReadback.cs" />
     <Compile Include="Images\ImageScaler\ImageScalerEffect.cs">
       <DependentUpon>ImageScalerEffect.pdxfx</DependentUpon>
@@ -676,7 +685,6 @@
     </Compile>
     <Compile Include="Images\ColorTransforms\ColorTransformKeys.cs" />
     <Compile Include="Images\ColorTransforms\GammaTransform.cs" />
-    <Compile Include="Images\ColorTransforms\ToneMap\ToneMapKeys.cs" />
     <Compile Include="Images\ColorTransforms\ToneMap\ToneMapEffect.cs">
       <DependentUpon>ToneMapEffect.pdxfx</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -2123,6 +2131,14 @@
     <None Include="Images\BrightFilter\BrightFilterShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>BrightFilterShader.cs</LastGenOutput>
+    </None>
+    <None Include="Images\ColorCombiner\ColorCombinerShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ColorCombinerShader.cs</LastGenOutput>
+    </None>
+    <None Include="Images\ColorCombiner\ColorCombinerEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ColorCombinerEffect.cs</LastGenOutput>
     </None>
     <None Include="Images\GaussianBlur\GaussianBlurShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

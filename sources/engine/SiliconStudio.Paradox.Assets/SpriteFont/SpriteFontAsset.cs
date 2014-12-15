@@ -18,9 +18,9 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
     [DataContract("SpriteFont")]
     [AssetFileExtension(FileExtension)]
     [AssetCompiler(typeof(SpriteFontAssetCompiler))]
-    [ThumbnailCompiler(PreviewerCompilerNames.FontThumbnailCompilerQualifiedName)]
+    [ThumbnailCompiler(PreviewerCompilerNames.FontThumbnailCompilerQualifiedName, true)]
     [AssetFactory(typeof(SpriteFontFactory))]
-    [AssetDescription("Sprite Font", "A sprite containing a rendered font", true)]
+    [Display("Sprite Font", "A sprite containing a rendered font")]
     public class SpriteFontAsset : Asset
     {
         /// <summary>

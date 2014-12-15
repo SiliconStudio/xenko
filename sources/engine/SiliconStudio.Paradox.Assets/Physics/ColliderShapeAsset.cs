@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
     [AssetFileExtension(FileExtension)]
     [AssetCompiler(typeof(ColliderShapeAssetCompiler))]
     [AssetFactory(typeof(ColliderShapeFactory))]
-    [AssetDescription("Collider Shape", "A physics collider shape", false)]
+    [Display("Collider Shape", "A physics collider shape")]
     public class ColliderShapeAsset : Asset
     {
         public const string FileExtension = ".pdxphy";
