@@ -11,9 +11,9 @@ namespace SiliconStudio.Paradox.Assets.Model
     [DataContract("Entity")]
     [AssetFileExtension(FileExtension)]
     [AssetCompiler(typeof(EntityAssetCompiler))]
-    [ThumbnailCompiler(PreviewerCompilerNames.EntityThumbnailCompilerQualifiedName)]
+    [ThumbnailCompiler(PreviewerCompilerNames.EntityThumbnailCompilerQualifiedName, true)]
     [AssetFactory(typeof(EntityFactory))]
-    [AssetDescription("Entity", "An entity", true)]
+    [Display("Entity", "An entity")]
     public class EntityAsset : Asset
     {
         /// <summary>

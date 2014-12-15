@@ -7,10 +7,11 @@ using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Effects.Data;
-using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
+    // TODO: Move all these interfaces/classes to single file once the design is stabilized
+
     /// <summary>
     /// Base interface for a material attribute.
     /// </summary>
@@ -96,16 +97,9 @@ namespace SiliconStudio.Paradox.Assets.Materials
     }
 
     /// <summary>
-    /// The base interface for a material descriptor.
-    /// </summary>
-    public interface IMaterialDescriptor
-    {
-    }
-
-    /// <summary>
     /// A material composition.
     /// </summary>
-    public interface IMaterialComposition : IMaterialDescriptor
+    public interface IMaterialComposition
     {
     }
 
@@ -270,8 +264,21 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// </summary>
     [DataContract("MaterialBlendLayerStack")]
     [Display("Material Layers")]
-    public class MaterialBlendLayerStack : List<MaterialBlendLayer>, IMaterialComposition
+    public class MaterialBlendLayerStack : IMaterialComposition
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MaterialBlendLayerStack"/> class.
+        /// </summary>
+        public MaterialBlendLayerStack()
+        {
+            Layers = new List<MaterialBlendLayer>();
+        }
+
+        /// <summary>
+        /// Gets the layers.
+        /// </summary>
+        /// <value>The layers.</value>
+        public List<MaterialBlendLayer> Layers { get; private set; }
     }
 
     /// <summary>
@@ -287,6 +294,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         public MaterialBlendLayer()
         {
             Enabled = true;
+            Overrides = new MaterialBlendOverrides();
         }
 
         /// <summary>
@@ -326,14 +334,15 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// Gets or sets the material overrides.
         /// </summary>
         /// <value>The overrides.</value>
-        [DefaultValue(null)]
         [DataMember(50)]
-        public MaterialBlendOverrides Overrides { get; set; }
+        public MaterialBlendOverrides Overrides { get; private set; }
     }
 
     /// <summary>
     /// Material overrides used in a <see cref="MaterialBlendLayer"/>
     /// </summary>
+    [DataContract("MaterialBlendOverrides")]
+    [Display("Material Overrides")]
     public class MaterialBlendOverrides
     {
         /// <summary>
@@ -446,7 +455,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// </summary>
     [DataContract("MaterialAttributes")]
     [Display("Material Attributes")]
-    public class MaterialAttributes : IMaterialDescriptor
+    public class MaterialAttributes : IMaterialComposition
     {
         /// <summary>
         /// Gets or sets the tessellation.
@@ -556,14 +565,13 @@ namespace SiliconStudio.Paradox.Assets.Materials
         {
             Parameters = new ParameterCollectionData();
         }
-
         /// <summary>
-        /// Gets or sets the material descriptor.
+        /// Gets or sets the material composition.
         /// </summary>
-        /// <value>The material descriptor.</value>
+        /// <value>The material composition.</value>
         [DefaultValue(null)]
         [DataMember(10)]
-        public IMaterialDescriptor Descriptor { get; set; }
+        public IMaterialComposition Composition { get; set; }
 
         /// <summary>
         /// Gets the parameters.

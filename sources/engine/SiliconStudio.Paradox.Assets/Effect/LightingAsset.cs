@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
     [DataContract("LightingConfiguration")]
     [AssetFileExtension(FileExtension)]
     [AssetCompiler(typeof(LightingAssetCompiler))]
-    [AssetDescription("Lighting Configuration", "A lighting configuration", false)]
+    [Display("Lighting Configuration", "A lighting configuration")]
     public sealed class LightingAsset : Asset
     {
         /// <summary>

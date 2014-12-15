@@ -228,7 +228,6 @@
     <Compile Include="Effects\TessellationPermutation.cs" />
     <Compile Include="Effects\ParameterPath.cs" />
     <Compile Include="Engine\CameraComponent.cs" />
-    <Compile Include="Engine\DisplayAttribute.cs" />
     <Compile Include="Engine\ParticleEmitterComponent.cs" />
     <Compile Include="Engine\LightComponent.cs" />
     <Compile Include="Engine\LightShaftsComponent.cs" />

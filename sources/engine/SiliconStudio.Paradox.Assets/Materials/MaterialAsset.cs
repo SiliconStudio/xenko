@@ -15,10 +15,10 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// </summary>
     [DataContract("MaterialAsset")]
     [AssetFileExtension(FileExtension)]
-    [ThumbnailCompiler(PreviewerCompilerNames.MaterialThumbnailCompilerQualifiedName)]
+    [ThumbnailCompiler(PreviewerCompilerNames.MaterialThumbnailCompilerQualifiedName, true)]
     [AssetCompiler(typeof(MaterialAssetCompiler))]
     [AssetFactory(typeof(MaterialFactory))]
-    [AssetDescription("Material", "A material", true)]
+    [Display("Material", "A material")]
     public sealed class MaterialAsset : Asset
     {
         /// <summary>

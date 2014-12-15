@@ -8,7 +8,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 {
     [DataContract("AdditiveAnimation")]
     [AssetFactory(typeof(AdditiveAnimationFactory))]
-    [AssetDescription("Additive Animation", "An additive skeletal animation", false)]
+    [Display("Additive Animation", "An additive skeletal animation")]
     public class AdditiveAnimationAsset : AnimationAsset
     {
         /// <summary>
