@@ -28,7 +28,7 @@ namespace SiliconStudio.Assets
         private static readonly Dictionary<Type, string> RegisteredDefaultAssetExtension = new Dictionary<Type, string>();
         private static readonly Dictionary<Type, IAssetFactory> RegisteredFactories = new Dictionary<Type, IAssetFactory>();
         private static readonly Dictionary<Type, bool> RegisteredDynamicThumbnails = new Dictionary<Type, bool>();
-        private static readonly Dictionary<Type, DisplayAttribute> RegisteredDisplayAttributes = new Dictionary<Type, DisplayAttribute>();
+        private static readonly Dictionary<MemberInfo, DisplayAttribute> RegisteredDisplayAttributes = new Dictionary<MemberInfo, DisplayAttribute>();
         private static readonly Dictionary<Guid, IAssetImporter> RegisteredImportersInternal = new Dictionary<Guid, IAssetImporter>();
         private static readonly Dictionary<Type, int> RegisteredFormatVersions = new Dictionary<Type, int>();
         private static readonly Dictionary<Type, Type[]> RegisteredFormatVersionUpdaterTypes = new Dictionary<Type, Type[]>();
@@ -185,8 +185,9 @@ namespace SiliconStudio.Assets
         /// Gets the description associated to the asset type, if available.
         /// </summary>
         /// <param name="assetType">Type of the asset.</param>
-        /// <returns>Am <see cref="AssetDescription"/> object, if available, or <c>null</c> otherwise.</returns>
-        public static DisplayAttribute GetDisplay(Type assetType)
+        /// <returns>DisplayAttribute.</returns>
+        /// <exception cref="System.ArgumentNullException">assetType</exception>
+        public static DisplayAttribute GetDisplay(MemberInfo assetType)
         {
             if (assetType == null) throw new ArgumentNullException("assetType");
             lock (RegisteredDisplayAttributes)
@@ -194,7 +195,11 @@ namespace SiliconStudio.Assets
                 DisplayAttribute value;
                 if (!RegisteredDisplayAttributes.TryGetValue(assetType, out value))
                 {
-                    value = new DisplayAttribute(assetType.Name, string.Format("Description of {0}", assetType.Name));
+                    value = assetType.GetCustomAttribute<DisplayAttribute>();
+                    if (value == null)
+                    {
+                        value = new DisplayAttribute(assetType.Name, string.Format("Description of {0}", assetType.Name));
+                    }
                     RegisteredDisplayAttributes.Add(assetType, value);
                 }
                 return value;
