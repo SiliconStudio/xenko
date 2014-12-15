@@ -18,7 +18,7 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public abstract class ObservableNode : DispatcherViewModel, IObservableNode, IDynamicMetaObjectProvider
     {
-        private readonly SortedObservableCollection<IObservableNode> children = new SortedObservableCollection<IObservableNode>(new AnonymousComparer<IObservableNode>(CompareChildren));
+        private readonly AutoUpdatingSortedObservableCollection<IObservableNode> children = new AutoUpdatingSortedObservableCollection<IObservableNode>(new AnonymousComparer<IObservableNode>(CompareChildren));
 
         private readonly ObservableCollection<INodeCommandWrapper> commands = new ObservableCollection<INodeCommandWrapper>();
         private bool isVisible;
@@ -361,6 +361,12 @@ namespace SiliconStudio.Presentation.Quantum
             // Order has the best priority for comparison, if set.
             if (a.Order != null && b.Order != null)
                 return ((int)a.Order).CompareTo(b.Order);
+
+            // If one has order and not the other one, consider the one with order as more prioritary
+            if (a.Order != null)
+                return -1;
+            if (b.Order != null)
+                return 1;
 
             // Then we use index, if they are set and comparable.
             if (a.Index != null && b.Index != null)
