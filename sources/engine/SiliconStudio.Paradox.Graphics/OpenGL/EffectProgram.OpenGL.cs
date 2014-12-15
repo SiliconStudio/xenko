@@ -520,6 +520,7 @@ namespace SiliconStudio.Paradox.Graphics
 #if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                         case ActiveUniformType.Sampler1D:
                         case ActiveUniformType.Sampler3D:
+                        case ActiveUniformType.SamplerCube:
 #endif
                         case ActiveUniformType.Sampler2D:
 #if SILICONSTUDIO_PLATFORM_ANDROID

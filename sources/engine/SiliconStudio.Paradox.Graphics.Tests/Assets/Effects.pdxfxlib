@@ -10,5 +10,7 @@ Permutations:
                 - Level_9_1
                 - Level_11_0
         - Keys: 
-            Effect.Name: MultipleRenderTargetsEffect
+            Effect.Name:
+                - MultipleRenderTargetsEffect
+                - CubemapDisplayEffect
             CompilerParameters.GraphicsProfileKey: Level_11_0

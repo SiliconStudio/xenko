@@ -20,6 +20,32 @@ namespace Test
 {
     internal static partial class ShaderMixins
     {
+        internal partial class CubemapDisplayEffect  : IShaderMixinBuilder
+        {
+            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            {
+                context.Mixin(mixin, "ShaderBase");
+                context.Mixin(mixin, "TransformationWAndVP");
+                context.Mixin(mixin, "AlbedoFlatShading");
+
+                {
+                    var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                    context.PushComposition(mixin, "albedoDiffuse", __subMixin);
+                    context.Mixin(__subMixin, "ComputeColorTextureCubeBasic", TexturingKeys.TextureCube0);
+                    context.PopComposition();
+                }
+            }
+
+            [ModuleInitializer]
+            internal static void __Initialize__()
+
+            {
+                ShaderMixinManager.Register("CubemapDisplayEffect", new CubemapDisplayEffect());
+            }
+        }
+    }
+    internal static partial class ShaderMixins
+    {
         internal partial class CubemapEffect  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
