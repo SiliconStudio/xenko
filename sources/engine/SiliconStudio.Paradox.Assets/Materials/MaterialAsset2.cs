@@ -555,7 +555,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// The material asset.
     /// </summary>
     [DataContract("MaterialAsset2")]
-    [Display("Material Asset")]
+    [Display("Material Asset", "A material asset")]
     public class MaterialAsset2 : Asset
     {
         /// <summary>
