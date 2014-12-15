@@ -629,13 +629,31 @@
       <DependentUpon>DepthAwareUniformBlurEffect.pdxfx</DependentUpon>
     </Compile>
     <Compile Include="Images\DepthOfField\DepthAwareUniformBlurKeys.cs" />
+    <Compile Include="Images\DepthOfField\DepthAwareUniformBlurUtil.cs">
+      <DependentUpon>DepthAwareUniformBlurUtil.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Images\DepthOfField\DepthAwareUniformBlurShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>DepthAwareUniformBlurShader.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Images\DepthOfField\Hexagonal\McIntoshOptimizedEffect.cs">
+      <DependentUpon>McIntoshOptimizedEffect.pdxfx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Images\DepthOfField\Hexagonal\McIntoshBokeh.cs" />
+    <Compile Include="Images\DepthOfField\Hexagonal\McIntoshOptimizedShader.cs">
+      <DependentUpon>McIntoshOptimizedShader.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Images\DepthOfField\Hexagonal\McIntoshCombineShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -2192,9 +2210,21 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>DepthAwareUniformBlurEffect.cs</LastGenOutput>
     </None>
+    <None Include="Images\DepthOfField\DepthAwareUniformBlurUtil.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>DepthAwareUniformBlurUtil.cs</LastGenOutput>
+    </None>
     <None Include="Images\DepthOfField\DepthAwareUniformBlurShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>DepthAwareUniformBlurShader.cs</LastGenOutput>
+    </None>
+    <None Include="Images\DepthOfField\Hexagonal\McIntoshOptimizedEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>McIntoshOptimizedEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Images\DepthOfField\Hexagonal\McIntoshOptimizedShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>McIntoshOptimizedShader.cs</LastGenOutput>
     </None>
     <None Include="Images\DepthOfField\Hexagonal\McIntoshCombineShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

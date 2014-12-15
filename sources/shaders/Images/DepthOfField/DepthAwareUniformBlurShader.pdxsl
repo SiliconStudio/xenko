@@ -5,62 +5,15 @@ namespace SiliconStudio.Paradox.Effects.Images
 {
 
     /// <summary>
-    /// A blur with uniform weights applied along one direction. 
-    /// The blurring algorithm is also depth-aware: sample weights are modified on-the-fly to avoid 
-    /// artifacts such as in-focus objects bleeding into out-of-focus background objects.
-    /// Expects as input: 
-    /// - Texture0: color buffer
-    /// - Texture1: a [Linear Depth, CoC] buffer
+    /// A blur with uniform weights applied along one direction. (depth-aware blur to avoid artifacts)
     /// </summary>
 
-    internal class DepthAwareUniformBlurShader<int BlurCount> : ImageEffectShader
+    class DepthAwareUniformBlurShader<int TapCount> :  DepthAwareUniformBlurUtil<TapCount>, ImageEffectShader
     {
-        // Direction to apply the blur. (normalized vector)
-        stage float2 Direction;
-
-        // The radius of the blur to apply around the considered fragment
-        stage float Radius;
-
         stage override float4 Shading()
         {
-            // Offset between 2 consecutive taps
-            float2 tapOffset =  Radius / (BlurCount - 1) * Texture0TexelSize;
-
-            // Default weight for a tap
-            // (It's better than assuming a weight of 1.0 and risking to overflow before arriving at the final normalization)
-            float uniformWeight = 1.0 / (2.0 * BlurCount - 1.0);
-
-            // Initializes with the center point
-            float totalWeight = uniformWeight;
-            float3 resultColor = Texture0.Sample(LinearSampler, streams.TexCoord).rgb;
-            resultColor *= uniformWeight;
-            float centerDepth = Texture1.Sample(LinearSampler, streams.TexCoord).x;
-
-            // Treats all the taps in the 2 directions from the center
-            [unroll]
-            for(int i = 1; i < BlurCount; i++)
-            {
-                [unroll]
-                for (int j = -1.0; j <= 1.0; j += 2) // Backward(-1) and forward(+1) along the direction
-                {                     
-                    float2 tapUV = streams.TexCoord + j * i * Direction * tapOffset;
-                    float2 depthCoC = Texture1.Sample(LinearSampler, tapUV).xy;
-
-                    // We want to avoid color-bleeding due to depth occlusion: 
-                    // tap's weight is recalculated to prevent artifacts
-                    float contribution = (depthCoC.x >= centerDepth);
-                    contribution += depthCoC.y;
-                    contribution = saturate(contribution);
-                    float tapWeight = contribution * uniformWeight;
-
-                    float3 tapColor = Texture0.Sample(LinearSampler, tapUV).rgb;
-                    resultColor += tapColor * tapWeight;
-                    totalWeight += tapWeight;
-                }
-            }
-
-            // Normalizes the final result
-            return float4(resultColor / totalWeight, 1);
+            return Compute();
         }
+
     };
 }

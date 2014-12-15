@@ -8,7 +8,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// Keys used by the DepthAwareUniformBlurEffect
     /// </summary>
-    internal static class DepthAwareUniformBlurKeys
+    public static class DepthAwareUniformBlurKeys
     {
         public static readonly ParameterKey<int> Count = ParameterKeys.New<int>();
     }
