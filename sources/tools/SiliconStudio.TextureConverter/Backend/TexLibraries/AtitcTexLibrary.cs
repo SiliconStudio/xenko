@@ -82,7 +82,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
             libraryData.Textures = new Texture[image.SubImageArray.Length];
 
-            int bpp = (int)Tools.GetBPP(image.Format);
+            int bpp = (int)image.Format.GetBPP();
 
             for (int i = 0; i < image.SubImageArray.Length; ++i)
             {

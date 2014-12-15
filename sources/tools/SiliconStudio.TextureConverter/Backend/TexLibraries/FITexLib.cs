@@ -65,7 +65,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             image.LibraryData[this] = libraryData;
 
             libraryData.Bitmaps = new FIBITMAP[image.SubImageArray.Length];
-            uint bpp = Tools.GetBPP(image.Format);
+            uint bpp = image.Format.GetBPP();
 
             for (int i = 0; i < image.SubImageArray.Length; ++i)
             {
@@ -367,10 +367,10 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                 FreeImage.Unload(redChannel);
             }
 
-            if (Tools.IsInBGRAOrder(image.Format))
-                image.Format = SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm;
+            if (image.Format.IsInBGRAOrder())
+                image.Format = PixelFormat.R8G8B8A8_UNorm;
             else
-                image.Format = SiliconStudio.Paradox.Graphics.PixelFormat.B8G8R8A8_UNorm;
+                image.Format = PixelFormat.B8G8R8A8_UNorm;
         }
 
         public bool SupportBGRAOrder()
@@ -493,7 +493,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                 throw new TextureToolsException("Not implemented.");
             }
 
-            if(!Tools.IsInBGRAOrder(image.Format))
+            if(!image.Format.IsInBGRAOrder())
             {
                 SwitchChannels(image, libraryData, new SwitchingBRChannelsRequest());
             }
