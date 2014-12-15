@@ -396,7 +396,14 @@ namespace SiliconStudio.BuildEngine
                     if (!Command.BasePreCommandCalled)
                         throw new InvalidOperationException("base.PreCommand not called in command " + Command);
 
-                    status = await Command.DoCommand(commandContext);
+                    try
+                    {
+                        status = await Command.DoCommand(commandContext);
+                    }
+                    catch (Exception)
+                    {
+                        status = ResultStatus.Failed;
+                    }
 
                     Command.PostCommand(commandContext, status);
                     if (!Command.BasePostCommandCalled)
