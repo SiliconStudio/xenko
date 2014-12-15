@@ -7,6 +7,7 @@ using System.IO;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.TextureConverter.Requests;
 using FreeImageAPI;
 using FreeImageAPI.Plugins;
@@ -54,7 +55,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
         public void StartLibrary(TexImage image)
         {
-            if(Tools.IsCompressed(image.Format))
+            if(image.Format.IsCompressed())
             {
                 Log.Error("FreeImage can't process compressed texture.");
                 throw new TextureToolsException("FreeImage can't process compressed texture.");

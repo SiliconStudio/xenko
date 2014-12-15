@@ -373,7 +373,7 @@ namespace SiliconStudio.TextureConverter
         /// <param name="image">The <see cref="TexImage"/>.</param>
         public void Decompress(TexImage image)
         {
-            if (!Tools.IsCompressed(image.Format))
+            if (!image.Format.IsCompressed())
             {
                 return;
             }
@@ -398,7 +398,7 @@ namespace SiliconStudio.TextureConverter
 
             var request = new ExportRequest(fileName, minimumMipMapSize);
 
-            if (FindLibrary(image, request) == null && Tools.IsCompressed(image.Format))
+            if (FindLibrary(image, request) == null && image.Format.IsCompressed())
             {
                 Log.Warning("No library can export this texture with the actual compression format. We will try to decompress it first.");
                 Decompress(image);
@@ -429,14 +429,14 @@ namespace SiliconStudio.TextureConverter
                 throw new TextureToolsException("The minimup Mipmap size can't be negative. Put 0 or 1 for a complete Mipmap chain.");
             }
 
-            if (image.Format != format && Tools.IsCompressed(format) && !Tools.IsCompressed(image.Format))
+            if (image.Format != format && format.IsCompressed() && !image.Format.IsCompressed())
             {
                 TexImage workingImage = (TexImage)image.Clone();
                 Compress(workingImage, format);
                 ExecuteRequest(workingImage, new ExportRequest(fileName, minimumMipMapSize));
                 workingImage.Dispose();
             }
-            else if (image.Format != format && Tools.IsCompressed(format))
+            else if (image.Format != format && format.IsCompressed())
             {
                 TexImage workingImage = (TexImage)image.Clone();
                 Decompress(workingImage);
@@ -461,7 +461,7 @@ namespace SiliconStudio.TextureConverter
         /// <param name="image">The image.</param>
         public void SwitchChannel(TexImage image)
         {
-            if (Tools.IsCompressed(image.Format))
+            if (image.Format.IsCompressed())
             {
                 Log.Warning("You can't switch channels of a compressed texture. It will be decompressed first..");
                 Decompress(image);
@@ -484,7 +484,7 @@ namespace SiliconStudio.TextureConverter
         {
             if (image.Format == format) return;
 
-            if (Tools.IsCompressed(image.Format))
+            if (image.Format.IsCompressed())
             {
                 Log.Warning("You can't compress an already compressed texture. It will be decompressed first..");
                 Decompress(image);
@@ -502,7 +502,7 @@ namespace SiliconStudio.TextureConverter
         /// <param name="colorKey">The color key.</param>
         public void ColorKey(TexImage image, Color colorKey)
         {
-            if (Tools.IsCompressed(image.Format))
+            if (image.Format.IsCompressed())
             {
                 Log.Warning("You can't compress an already compressed texture. It will be decompressed first..");
                 Decompress(image);
@@ -528,7 +528,7 @@ namespace SiliconStudio.TextureConverter
         /// <param name="filter">The filter.</param>
         public void GenerateMipMaps(TexImage image, Filter.MipMapGeneration filter)
         {
-            if (Tools.IsCompressed(image.Format))
+            if (image.Format.IsCompressed())
             {
                 Log.Warning("You can't generate mipmaps for a compressed texture. It will be decompressed first..");
                 Decompress(image);
@@ -562,7 +562,7 @@ namespace SiliconStudio.TextureConverter
                 return;
             }
 
-            if (Tools.IsCompressed(image.Format))
+            if (image.Format.IsCompressed())
             {
                 Log.Warning("You can't resize a compressed texture. It will be decompressed first..");
                 Decompress(image);
@@ -597,7 +597,7 @@ namespace SiliconStudio.TextureConverter
                 return;
             }
 
-            if (Tools.IsCompressed(image.Format))
+            if (image.Format.IsCompressed())
             {
                 Log.Warning("You can't rescale a compressed texture. It will be decompressed first..");
                 Decompress(image);
@@ -621,7 +621,7 @@ namespace SiliconStudio.TextureConverter
                 throw new TextureToolsException("The amplitude must be a positive float.");
             }
 
-            if (Tools.IsCompressed(heightMap.Format))
+            if (heightMap.Format.IsCompressed())
             {
                 Log.Warning("You can't generate a normal map from a compressed height hmap. It will be decompressed first..");
                 Decompress(heightMap);
@@ -641,7 +641,7 @@ namespace SiliconStudio.TextureConverter
         /// <param name="image">The image.</param>
         public void PreMultiplyAlpha(TexImage image)
         {
-            if (Tools.IsCompressed(image.Format))
+            if (image.Format.IsCompressed())
             {
                 Log.Warning("You can't premultiply alpha on a compressed texture. It will be decompressed first..");
                 Decompress(image);
@@ -685,7 +685,7 @@ namespace SiliconStudio.TextureConverter
         /// <returns>The extracted region <see cref="TexImage"/>. Note: it is the user responsibility to dispose the returned image.</returns>
         public unsafe Image CreateImageFromRegion(TexImage texImage, Rectangle region)
         {
-            if (texImage.Dimension != TexImage.TextureDimension.Texture2D || Tools.IsCompressed(texImage.Format))
+            if (texImage.Dimension != TexImage.TextureDimension.Texture2D || texImage.Format.IsCompressed())
                 throw new NotImplementedException();
 
             Log.Info("Extracting region and exporting to Paradox Image ...");
@@ -760,7 +760,7 @@ namespace SiliconStudio.TextureConverter
                 throw new TextureToolsException("The gamma must be a positive float.");
             }
 
-            if (Tools.IsCompressed(image.Format))
+            if (image.Format.IsCompressed())
             {
                 Log.Warning("You can't correct gamme on a compressed texture. It will be decompressed first..");
                 Decompress(image);
@@ -779,7 +779,7 @@ namespace SiliconStudio.TextureConverter
         /// <param name="orientation">The orientation <see cref="Orientation.Flip"/>.</param>
         public void Flip(TexImage image, Orientation orientation)
         {
-            if (Tools.IsCompressed(image.Format))
+            if (image.Format.IsCompressed())
             {
                 Log.Warning("You can't flip a compressed texture. It will be decompressed first..");
                 Decompress(image);
@@ -798,7 +798,7 @@ namespace SiliconStudio.TextureConverter
         /// <param name="orientation">The orientation <see cref="Orientation.Flip"/>.</param>
         public void FlipSub(TexImage image, int index, Orientation orientation)
         {
-            if (Tools.IsCompressed(image.Format))
+            if (image.Format.IsCompressed())
             {
                 Log.Warning("You can't flip a compressed texture. It will be decompressed first..");
                 Decompress(image);
@@ -872,7 +872,7 @@ namespace SiliconStudio.TextureConverter
 
             var request = new AtlasExtractionRequest(name, minimumMipmapSize);
 
-            if(Tools.IsCompressed(atlas.Format))
+            if (atlas.Format.IsCompressed())
             {
                 Decompress(atlas);
             }
@@ -934,7 +934,7 @@ namespace SiliconStudio.TextureConverter
 
             var request = new AtlasExtractionRequest(minimumMipmapSize);
 
-            if (Tools.IsCompressed(atlas.Format))
+            if (atlas.Format.IsCompressed())
             {
                 Log.Warning("You can't extract a texture from a compressed atlas. The atlas will be decompressed first..");
                 Decompress(atlas);
@@ -963,7 +963,7 @@ namespace SiliconStudio.TextureConverter
 
             var request = new ArrayExtractionRequest(minimumMipmapSize);
 
-            if (Tools.IsCompressed(array.Format))
+            if (array.Format.IsCompressed())
             {
                 Decompress(array);
             }
@@ -1109,9 +1109,9 @@ namespace SiliconStudio.TextureConverter
             if (candidate.Format != model.Format)
             {
                 Log.Warning("The given texture format isn't correct. The texture will be converted..");
-                if (Tools.IsCompressed(model.Format))
+                if (model.Format.IsCompressed())
                 {
-                    if (Tools.IsCompressed(candidate.Format)) Decompress(candidate);
+                    if (candidate.Format.IsCompressed()) Decompress(candidate);
                     Compress(candidate, model.Format);
                 }
                 else

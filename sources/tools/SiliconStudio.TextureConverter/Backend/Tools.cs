@@ -26,7 +26,7 @@ namespace SiliconStudio.TextureConverter
 
             int bpp = (int)GetBPP(fmt);
 
-            if (IsCompressed(fmt))
+            if (fmt.IsCompressed())
             {
                 widthCount = Math.Max(1, (width + 3) / 4);
                 heightCount = Math.Max(1, (height + 3) / 4);
@@ -294,61 +294,6 @@ namespace SiliconStudio.TextureConverter
                 case PixelFormat.B8G8R8A8_UNorm_SRgb:
                 case PixelFormat.B8G8R8X8_Typeless:
                 case PixelFormat.B8G8R8X8_UNorm_SRgb:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        /// <summary>
-        /// Determines whether the specified format is compressed.
-        /// </summary>
-        /// <param name="fmt">The format.</param>
-        /// <returns>
-        ///   <c>true</c> if the specified format is compressed; otherwise, <c>false</c>.
-        /// </returns>
-        public static bool IsCompressed(PixelFormat fmt)
-        {
-            switch (fmt)
-            {
-                case PixelFormat.BC1_Typeless:
-                case PixelFormat.BC1_UNorm:
-                case PixelFormat.BC1_UNorm_SRgb:
-                case PixelFormat.BC2_Typeless:
-                case PixelFormat.BC2_UNorm:
-                case PixelFormat.BC2_UNorm_SRgb:
-                case PixelFormat.BC3_Typeless:
-                case PixelFormat.BC3_UNorm:
-                case PixelFormat.BC3_UNorm_SRgb:
-                case PixelFormat.BC4_Typeless:
-                case PixelFormat.BC4_UNorm:
-                case PixelFormat.BC4_SNorm:
-                case PixelFormat.BC5_Typeless:
-                case PixelFormat.BC5_UNorm:
-                case PixelFormat.BC5_SNorm:
-                case PixelFormat.BC6H_Typeless:
-                case PixelFormat.BC6H_Uf16:
-                case PixelFormat.BC6H_Sf16:
-                case PixelFormat.BC7_Typeless:
-                case PixelFormat.BC7_UNorm:
-                case PixelFormat.BC7_UNorm_SRgb:
-                case PixelFormat.PVRTC_2bpp_RGB:
-                case PixelFormat.PVRTC_2bpp_RGBA:
-                case PixelFormat.PVRTC_4bpp_RGB:
-                case PixelFormat.PVRTC_4bpp_RGBA:
-                case PixelFormat.PVRTC_II_2bpp:
-                case PixelFormat.PVRTC_II_4bpp:
-                case PixelFormat.ETC1:
-                case PixelFormat.ETC2_RGB:
-                case PixelFormat.ETC2_RGBA:
-                case PixelFormat.ETC2_RGB_A1:
-                case PixelFormat.EAC_R11_Unsigned:
-                case PixelFormat.EAC_R11_Signed:
-                case PixelFormat.EAC_RG11_Unsigned:
-                case PixelFormat.EAC_RG11_Signed:
-                case PixelFormat.ATC_RGB:
-                case PixelFormat.ATC_RGBA_Explicit:
-                case PixelFormat.ATC_RGBA_Interpolated:
                     return true;
                 default:
                     return false;

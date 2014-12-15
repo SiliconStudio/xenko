@@ -4,6 +4,8 @@ using System;
 using System.IO;
 
 using NUnit.Framework;
+
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.TextureConverter.Requests;
 using SiliconStudio.TextureConverter.TexLibraries;
 
@@ -83,7 +85,7 @@ namespace SiliconStudio.TextureConverter.Tests
 
         public static void DecompressTest(TexImage image, ITexLibrary library)
         {
-            Assert.IsTrue(Tools.IsCompressed(image.Format));
+            Assert.IsTrue(image.Format.IsCompressed());
             int dataSize = image.DataSize;
             library.Execute(image, new DecompressingRequest());
             Assert.IsTrue(image.Format == SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm);
@@ -93,7 +95,7 @@ namespace SiliconStudio.TextureConverter.Tests
 
         public static void CompressTest(TexImage image, ITexLibrary library, SiliconStudio.Paradox.Graphics.PixelFormat format)
         {
-            Assert.IsTrue(!Tools.IsCompressed(image.Format));
+            Assert.IsTrue(!image.Format.IsCompressed());
             int dataSize = image.DataSize;
             library.Execute(image, new CompressingRequest(format));
 
@@ -106,7 +108,7 @@ namespace SiliconStudio.TextureConverter.Tests
         {
             Assert.IsTrue(image.MipmapCount == 1);
             int dataSize = image.DataSize;
-            if(Tools.IsCompressed(image.Format))library.Execute(image, new DecompressingRequest());
+            if (image.Format.IsCompressed()) library.Execute(image, new DecompressingRequest());
             library.Execute(image, new MipMapsGenerationRequest(filter));
             Assert.IsTrue(image.MipmapCount > 1);
             Assert.IsTrue(TestTools.ComputeSHA1(image.Data, image.DataSize).Equals(TestTools.GetInstance().Checksum["GenerateMipMapTest_" + filter + "_" + image.Name]));
