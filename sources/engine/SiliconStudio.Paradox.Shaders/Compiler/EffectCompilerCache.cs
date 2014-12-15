@@ -185,7 +185,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
         private bool IsBytecodeObsolete(EffectBytecode bytecode)
         {
-           foreach (var hashSource in bytecode.HashSources)
+            foreach (var hashSource in bytecode.HashSources)
             {
                 if (GetShaderSourceHash(hashSource.Key) != hashSource.Value)
                 {

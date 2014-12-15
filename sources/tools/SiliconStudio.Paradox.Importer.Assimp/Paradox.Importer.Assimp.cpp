@@ -1037,14 +1037,14 @@ private:
                     case sizeof(double):
                         {
 							auto value = *((double*)pProp->mData);
-                            ParameterKey<float>^ key = gcnew ParameterKey<float>(propertyName, 1, nullptr);
+							ParameterKey<float>^ key = gcnew ParameterKey<float>(propertyName, 1);
                             finalMaterial->SetParameter(key, (float)value);
                         }
                         break;
                     case 3*sizeof(double):
                         {
                             auto value = (double*)pProp->mData;
-                            ParameterKey<Vector3>^ key = gcnew ParameterKey<Vector3>(propertyName, 1, nullptr);
+                            ParameterKey<Vector3>^ key = gcnew ParameterKey<Vector3>(propertyName, 1);
                             finalMaterial->SetParameter(key, Vector3((float)value[0], (float)value[1], (float)value[2]));
                         }
                         break;

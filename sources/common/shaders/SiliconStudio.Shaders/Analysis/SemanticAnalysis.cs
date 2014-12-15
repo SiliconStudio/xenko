@@ -176,6 +176,7 @@ namespace SiliconStudio.Shaders.Analysis
             }
             else if (targetType is ClassType)
             {
+                // This is for buffers<type>, especially in compute shaders
                 // TODO: check all the cases
                 var classType = (ClassType)targetType;
                 if (classType.GenericArguments.Count > 0)
