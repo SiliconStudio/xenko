@@ -191,36 +191,42 @@ namespace SiliconStudio.Paradox.Graphics
                 if (Description.MipLevels == 0)
                     throw new NotImplementedException();
 
-                for (int i = 0; i < Description.MipLevels; ++i)
+                for (var arrayIndex = 0; arrayIndex < Description.ArraySize; ++arrayIndex)
                 {
-                    IntPtr data = IntPtr.Zero;
-                    var width = CalculateMipSize(Description.Width, i);
-                    var height = CalculateMipSize(Description.Height, i);
-                    if (dataBoxes != null && i < dataBoxes.Length)
+                    var trueTarget = OpenGLConvertExtensions.GetRealTextureTarget(Target, arrayIndex);
+                    var offsetArray = arrayIndex*Description.MipLevels;
+                    for (int i = 0; i < Description.MipLevels; ++i)
                     {
-                        if (!compressed && dataBoxes[i].RowPitch != width * pixelSize)
-                            throw new NotSupportedException("Can't upload texture with pitch in glTexImage2D.");
-                        // Might be possible, need to check API better.
-                        data = dataBoxes[i].DataPointer;
-                    }
-                    if (compressed)
-                    {
+                        IntPtr data = IntPtr.Zero;
+                        var width = CalculateMipSize(Description.Width, i);
+                        var height = CalculateMipSize(Description.Height, i);
+                        if (dataBoxes != null && i < dataBoxes.Length)
+                        {
+                            if (!compressed && dataBoxes[i].RowPitch != width*pixelSize)
+                                throw new NotSupportedException("Can't upload texture with pitch in glTexImage2D.");
+                            // Might be possible, need to check API better.
+                            data = dataBoxes[offsetArray + i].DataPointer;
+                        }
+                        if (compressed)
+                        {
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
-                        throw new NotSupportedException("Can't use compressed textures on desktop OpenGL ES.");
+                            throw new NotSupportedException("Can't use compressed textures on desktop OpenGL ES.");
 #else
-                        GL.CompressedTexImage2D(Target, i, internalFormat,
-                            width, height, 0, dataBoxes[i].SlicePitch, data);
+                            GL.CompressedTexImage2D(trueTarget, i, internalFormat,
+                                width, height, 0, dataBoxes[offsetArray + i].SlicePitch, data);
 #endif
-                    }
-                    else
-                    {
+                        }
+                        else
+                        {
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
-                        GL.TexImage2D(TextureTarget2d.Texture2D, i, internalFormat.ToOpenGL(),
-                                        width, height, 0, format, type, data);
+                            // TODO: other texture formats
+                            GL.TexImage2D(TextureTarget2d.Texture2D, i, internalFormat.ToOpenGL(),
+                                            width, height, 0, format, type, data);
 #else
-                        GL.TexImage2D(Target, i, internalFormat,
-                                        width, height, 0, format, type, data);
+                            GL.TexImage2D(trueTarget, i, internalFormat,
+                                width, height, 0, format, type, data);
 #endif
+                        }
                     }
                 }
                 GL.BindTexture(Target, 0);

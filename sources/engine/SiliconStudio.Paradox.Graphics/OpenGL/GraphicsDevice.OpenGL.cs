@@ -1150,6 +1150,7 @@ namespace SiliconStudio.Paradox.Graphics
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                     bool hasMipmap = texture.Description.MipLevels > 1;
 #else
+                    // TODO: change that
                     bool hasMipmap = false;
 #endif
 
@@ -1175,7 +1176,7 @@ namespace SiliconStudio.Paradox.Graphics
                         // Lazy update for sampler state
                         if (samplerStateChanged)
                         {
-                            samplerState.Apply(hasMipmap, boundSamplerState);
+                            samplerState.Apply(hasMipmap, boundSamplerState, texture.Target);
                             texture.BoundSamplerState = samplerState;
                         }
                     }

@@ -22,6 +22,16 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
         }
 
+        public static TextureTarget GetRealTextureTarget(TextureTarget target, int arrayIndex)
+        {
+            // TODO: array
+            if (target == TextureTarget.TextureCubeMap)
+            {
+                return TextureTarget.TextureCubeMapPositiveX + arrayIndex;
+            }
+            return target;
+        }
+
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
         public static TextureComponentCount ToOpenGL(this PixelInternalFormat format)
         {

@@ -80,7 +80,7 @@ namespace SiliconStudio.Paradox.Graphics
             return true;
         }
 
-        internal void Apply(bool hasMipmap, SamplerState oldSamplerState)
+        internal void Apply(bool hasMipmap, SamplerState oldSamplerState, TextureTarget target)
         {
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
             // TODO: support texture array, 3d and cube
@@ -88,38 +88,38 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
             {
                 if (Description.MinMipLevel != oldSamplerState.Description.MinMipLevel)
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinLod, Description.MinMipLevel);
+                    GL.TexParameter(target, TextureParameterName.TextureMinLod, Description.MinMipLevel);
                 if (Description.MaxMipLevel != oldSamplerState.Description.MaxMipLevel)
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLod, Description.MaxMipLevel);
+                    GL.TexParameter(target, TextureParameterName.TextureMaxLod, Description.MaxMipLevel);
                 if (textureWrapR != oldSamplerState.textureWrapR)
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapR, (int)textureWrapR);
+                    GL.TexParameter(target, TextureParameterName.TextureWrapR, (int)textureWrapR);
                 if (compareFunc != oldSamplerState.compareFunc)
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareFunc, (int)compareFunc);
+                    GL.TexParameter(target, TextureParameterName.TextureCompareFunc, (int)compareFunc);
             }
 
 #if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
             if (borderColor != oldSamplerState.borderColor)
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, borderColor);
+                GL.TexParameter(target, TextureParameterName.TextureBorderColor, borderColor);
             if (Description.MipMapLevelOfDetailBias != oldSamplerState.Description.MipMapLevelOfDetailBias)
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureLodBias, Description.MipMapLevelOfDetailBias);
+                GL.TexParameter(target, TextureParameterName.TextureLodBias, Description.MipMapLevelOfDetailBias);
             if (minFilter != oldSamplerState.minFilter)
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
+                GL.TexParameter(target, TextureParameterName.TextureMinFilter, (int)minFilter);
 #else
             // On OpenGL ES, we need to choose the appropriate min filter ourself if the texture doesn't contain mipmaps (done at PreDraw)
             if (minFilter != oldSamplerState.minFilter)
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, hasMipmap ? (int)minFilter : (int)minFilterNoMipmap);
+                GL.TexParameter(target, TextureParameterName.TextureMinFilter, hasMipmap ? (int)minFilter : (int)minFilterNoMipmap);
 #endif
 
 #if !SILICONSTUDIO_PLATFORM_IOS
             if (Description.MaxAnisotropy != oldSamplerState.Description.MaxAnisotropy)
-                GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)OpenTK.Graphics.ES20.ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, Description.MaxAnisotropy);
+                GL.TexParameter(target, (TextureParameterName)OpenTK.Graphics.ES20.ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, Description.MaxAnisotropy);
 #endif
             if (magFilter != oldSamplerState.magFilter)
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
+                GL.TexParameter(target, TextureParameterName.TextureMagFilter, (int)magFilter);
             if (textureWrapS != oldSamplerState.textureWrapS)
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)textureWrapS);
+                GL.TexParameter(target, TextureParameterName.TextureWrapS, (int)textureWrapS);
             if (textureWrapT != oldSamplerState.textureWrapT)
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)textureWrapT);
+                GL.TexParameter(target, TextureParameterName.TextureWrapT, (int)textureWrapT);
         }
     }
 } 
