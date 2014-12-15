@@ -138,6 +138,17 @@ static HRESULT _EnsureWicBitmapPixelFormat( _In_ IWICImagingFactory* pWIC, _In_ 
         {
             ComPtr<IWICFormatConverter> converter;
             hr = pWIC->CreateFormatConverter( converter.GetAddressOf() );
+
+            if ( SUCCEEDED(hr) )
+            {
+                BOOL canConvert = FALSE;
+                hr = converter->CanConvert( actualPixelFormat, desiredPixelFormat, &canConvert );
+                if ( FAILED(hr) || !canConvert )
+                {
+                    return E_UNEXPECTED;
+                }
+            }
+
             if ( SUCCEEDED(hr) )
             {
                 hr = converter->Initialize( src, desiredPixelFormat, _GetWICDither(filter), 0, 0, WICBitmapPaletteTypeCustom );
@@ -381,6 +392,15 @@ static bool _UseWICFiltering( _In_ DXGI_FORMAT format, _In_ DWORD filter )
         return false;
     }
 
+#if defined(_XBOX_ONE) && defined(_TITLE)
+    if ( format == DXGI_FORMAT_R16G16B16A16_FLOAT
+         || format == DXGI_FORMAT_R16_FLOAT )
+    {
+        // Use non-WIC code paths as these conversions are not supported by Xbox One XDK
+        return false;
+    }
+#endif
+
     static_assert( TEX_FILTER_POINT == 0x100000, "TEX_FILTER_ flag values don't match TEX_FILTER_MASK" );
 
     switch ( filter & TEX_FILTER_MASK )
@@ -529,6 +549,13 @@ static HRESULT _GenerateMipMapsUsingWIC( _In_ const Image& baseImage, _In_ DWORD
                 hr = pWIC->CreateFormatConverter( FC.GetAddressOf() );
                 if ( FAILED(hr) )
                     return hr;
+
+                BOOL canConvert = FALSE;
+                hr = FC->CanConvert( pfScaler, pfGUID, &canConvert );
+                if ( FAILED(hr) || !canConvert )
+                {
+                    return E_UNEXPECTED;
+                }
 
                 hr = FC->Initialize( scaler.Get(), pfGUID, _GetWICDither( filter ), 0, 0, WICBitmapPaletteTypeCustom );
                 if ( FAILED(hr) )
@@ -1146,7 +1173,7 @@ static HRESULT _Generate2DMipsTriangleFilter( _In_ size_t levels, _In_ DWORD fil
             {
                 size_t v = yFrom->to[ j ].u;
                 assert( v < nheight );
-                TriangleRow* rowAcc = &rowActive.get()[ v ];
+                TriangleRow* rowAcc = &rowActive[ v ];
 
                 ++rowAcc->remaining;
 
@@ -1167,7 +1194,7 @@ static HRESULT _Generate2DMipsTriangleFilter( _In_ size_t levels, _In_ DWORD fil
             {
                 size_t v = yFrom->to[ j ].u;
                 assert( v < nheight );
-                TriangleRow* rowAcc = &rowActive.get()[ v ];
+                TriangleRow* rowAcc = &rowActive[ v ];
 
                 if ( !rowAcc->scanline )
                 {
@@ -1233,7 +1260,7 @@ static HRESULT _Generate2DMipsTriangleFilter( _In_ size_t levels, _In_ DWORD fil
             {
                 size_t v = yFrom->to[ j ].u;
                 assert( v < nheight );
-                TriangleRow* rowAcc = &rowActive.get()[ v ];
+                TriangleRow* rowAcc = &rowActive[ v ];
 
                 assert( rowAcc->remaining > 0 );
                 --rowAcc->remaining;
@@ -2293,7 +2320,7 @@ static HRESULT _Generate3DMipsTriangleFilter( _In_ size_t depth, _In_ size_t lev
             {
                 size_t w = zFrom->to[ j ].u;
                 assert( w < ndepth );
-                TriangleRow* sliceAcc = &sliceActive.get()[ w ];
+                TriangleRow* sliceAcc = &sliceActive[ w ];
 
                 ++sliceAcc->remaining;
 
@@ -2315,7 +2342,7 @@ static HRESULT _Generate3DMipsTriangleFilter( _In_ size_t depth, _In_ size_t lev
             {
                 size_t w = zFrom->to[ j ].u;
                 assert( w < ndepth );
-                TriangleRow* sliceAcc = &sliceActive.get()[ w ];
+                TriangleRow* sliceAcc = &sliceActive[ w ];
 
                 if ( !sliceAcc->scanline )
                 {
@@ -2405,7 +2432,7 @@ static HRESULT _Generate3DMipsTriangleFilter( _In_ size_t depth, _In_ size_t lev
             {
                 size_t w = zFrom->to[ j ].u;
                 assert( w < ndepth );
-                TriangleRow* sliceAcc = &sliceActive.get()[ w ];
+                TriangleRow* sliceAcc = &sliceActive[ w ];
 
                 assert( sliceAcc->remaining > 0 );
                 --sliceAcc->remaining;
@@ -2487,6 +2514,9 @@ HRESULT GenerateMipMaps( const Image& baseImage, DWORD filter, size_t levels, Sc
         return E_POINTER;
 
     if ( !_CalculateMipLevels(baseImage.width, baseImage.height, levels) )
+        return E_INVALIDARG;
+
+    if ( levels <= 1 )
         return E_INVALIDARG;
 
     if ( IsCompressed(baseImage.format) || IsTypeless(baseImage.format) || IsPlanar(baseImage.format) || IsPalettized(baseImage.format) )
@@ -2651,7 +2681,10 @@ HRESULT GenerateMipMaps( const Image* srcImages, size_t nimages, const TexMetada
     if ( !_CalculateMipLevels(metadata.width, metadata.height, levels) )
         return E_INVALIDARG;
 
-    std::vector<const Image> baseImages;
+    if ( levels <= 1 )
+        return E_INVALIDARG;
+
+    std::vector<Image> baseImages;
     baseImages.reserve( metadata.arraySize );
     for( size_t item=0; item < metadata.arraySize; ++item )
     {
@@ -2857,6 +2890,9 @@ HRESULT GenerateMipMaps3D( const Image* baseImages, size_t depth, DWORD filter, 
     if ( !_CalculateMipLevels3D(width, height, depth, levels) )
         return E_INVALIDARG;
 
+    if ( levels <= 1 )
+        return E_INVALIDARG;
+
     for( size_t slice=0; slice < depth; ++slice )
     {
         if ( !baseImages[slice].pixels )
@@ -2957,7 +2993,10 @@ HRESULT GenerateMipMaps3D( const Image* srcImages, size_t nimages, const TexMeta
     if ( !_CalculateMipLevels3D(metadata.width, metadata.height, metadata.depth, levels) )
         return E_INVALIDARG;
 
-    std::vector<const Image> baseImages;
+    if ( levels <= 1 )
+        return E_INVALIDARG;
+
+    std::vector<Image> baseImages;
     baseImages.reserve( metadata.depth );
     for( size_t slice=0; slice < metadata.depth; ++slice )
     {
