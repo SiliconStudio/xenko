@@ -347,7 +347,16 @@ namespace SiliconStudio.Paradox.Graphics
             EnsureContextActive();
 #endif
 
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
             throw new NotImplementedException();
+#else
+            if((buffer.BufferFlags & BufferFlags.UnorderedAccess) != BufferFlags.UnorderedAccess)
+                throw new ArgumentException("Buffer does not support unordered access");
+
+            GL.BindBuffer(buffer.bufferTarget, buffer.resourceId);
+            GL.ClearBufferData(buffer.bufferTarget, buffer.internalFormat, buffer.glPixelFormat, All.UnsignedInt8888, ref value);
+            GL.BindBuffer(buffer.bufferTarget, 0);
+#endif
         }
 
         public unsafe void ClearReadWrite(Buffer buffer, Int4 value)
@@ -356,7 +365,16 @@ namespace SiliconStudio.Paradox.Graphics
             EnsureContextActive();
 #endif
 
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
             throw new NotImplementedException();
+#else
+            if ((buffer.BufferFlags & BufferFlags.UnorderedAccess) != BufferFlags.UnorderedAccess)
+                throw new ArgumentException("Buffer does not support unordered access");
+
+            GL.BindBuffer(buffer.bufferTarget, buffer.resourceId);
+            GL.ClearBufferData(buffer.bufferTarget, buffer.internalFormat, buffer.glPixelFormat, All.UnsignedInt8888, ref value);
+            GL.BindBuffer(buffer.bufferTarget, 0);
+#endif
         }
 
         public unsafe void ClearReadWrite(Buffer buffer, UInt4 value)
@@ -365,7 +383,16 @@ namespace SiliconStudio.Paradox.Graphics
             EnsureContextActive();
 #endif
 
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
             throw new NotImplementedException();
+#else
+            if ((buffer.BufferFlags & BufferFlags.UnorderedAccess) != BufferFlags.UnorderedAccess)
+                throw new ArgumentException("Buffer does not support unordered access");
+
+            GL.BindBuffer(buffer.bufferTarget, buffer.resourceId);
+            GL.ClearBufferData(buffer.bufferTarget, buffer.internalFormat, buffer.glPixelFormat, All.UnsignedInt8888, ref value);
+            GL.BindBuffer(buffer.bufferTarget, 0);
+#endif
         }
 
         public unsafe void ClearReadWrite(Texture texture, Vector4 value)
@@ -373,7 +400,6 @@ namespace SiliconStudio.Paradox.Graphics
 #if DEBUG
             EnsureContextActive();
 #endif
-
             throw new NotImplementedException();
         }
 
