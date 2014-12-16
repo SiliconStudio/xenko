@@ -519,10 +519,10 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
 #if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                         case ActiveUniformType.Sampler1D:
-                        case ActiveUniformType.Sampler3D:
-                        case ActiveUniformType.SamplerCube:
 #endif
                         case ActiveUniformType.Sampler2D:
+                        case ActiveUniformType.Sampler3D: // TODO: remove Texture3D that is not available in OpenGL ES 2
+                        case ActiveUniformType.SamplerCube:
 #if SILICONSTUDIO_PLATFORM_ANDROID
                             var uniformIndex = GL.GetUniformLocation(resourceId, new StringBuilder(uniformName));
 #else

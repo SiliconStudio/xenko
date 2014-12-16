@@ -178,22 +178,26 @@ namespace SiliconStudio.Paradox.Graphics
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 else if (Description.MipLevels <= 1)
                 {
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+                    GL.TexParameter(Target, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+                    GL.TexParameter(Target, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
                 }
 #endif
 
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                GL.TexParameter(Target, TextureParameterName.TextureBaseLevel, 0);
-                GL.TexParameter(Target, TextureParameterName.TextureMaxLevel, Description.MipLevels - 1);
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                if (!GraphicsDevice.IsOpenGLES2)
 #endif
+                {
+                    GL.TexParameter(Target, TextureParameterName.TextureBaseLevel, 0);
+                    GL.TexParameter(Target, TextureParameterName.TextureMaxLevel, Description.MipLevels - 1);
+                }
+
                 // TODO: review initialization for texture3D and textureCube
                 if (Description.MipLevels == 0)
                     throw new NotImplementedException();
 
                 for (var arrayIndex = 0; arrayIndex < Description.ArraySize; ++arrayIndex)
                 {
-                    var trueTarget = OpenGLConvertExtensions.GetRealTextureTarget(Target, arrayIndex);
+                    var dataSetTarget = GetTextureTargetForDataSet(Target, arrayIndex);
                     var offsetArray = arrayIndex*Description.MipLevels;
                     for (int i = 0; i < Description.MipLevels; ++i)
                     {
@@ -212,7 +216,7 @@ namespace SiliconStudio.Paradox.Graphics
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
                             throw new NotSupportedException("Can't use compressed textures on desktop OpenGL ES.");
 #else
-                            GL.CompressedTexImage2D(trueTarget, i, internalFormat,
+                            GL.CompressedTexImage2D(dataSetTarget, i, internalFormat,
                                 width, height, 0, dataBoxes[offsetArray + i].SlicePitch, data);
 #endif
                         }
@@ -220,10 +224,10 @@ namespace SiliconStudio.Paradox.Graphics
                         {
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
                             // TODO: other texture formats
-                            GL.TexImage2D(TextureTarget2d.Texture2D, i, internalFormat.ToOpenGL(),
+                            GL.TexImage2D(dataSetTarget, i, internalFormat.ToOpenGL(),
                                             width, height, 0, format, type, data);
 #else
-                            GL.TexImage2D(trueTarget, i, internalFormat,
+                            GL.TexImage2D(dataSetTarget, i, internalFormat,
                                 width, height, 0, format, type, data);
 #endif
                         }
@@ -492,6 +496,25 @@ namespace SiliconStudio.Paradox.Graphics
                     throw new InvalidOperationException("Unsupported texture format");
             }
         }
+
+
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
+        private static TextureTarget2d GetTextureTargetForDataSet(TextureTarget target, int arrayIndex)
+        {
+            // TODO: array
+            if (target == TextureTarget.TextureCubeMap)
+                return TextureTarget2d.TextureCubeMapPositiveX + arrayIndex;
+            return TextureTarget2d.Texture2D;
+        }
+#else
+        private static TextureTarget GetTextureTargetForDataSet(TextureTarget target, int arrayIndex)
+        {
+            // TODO: array
+            if (target == TextureTarget.TextureCubeMap)
+                return TextureTarget.TextureCubeMapPositiveX + arrayIndex;
+            return target;
+        }
+#endif
 
         internal static PixelFormat ComputeShaderResourceFormatFromDepthFormat(PixelFormat format)
         {
