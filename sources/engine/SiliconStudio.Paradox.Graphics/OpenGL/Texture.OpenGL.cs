@@ -1,6 +1,6 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL 
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
 using System;
 using System.Runtime.InteropServices;
 
@@ -102,7 +102,7 @@ namespace SiliconStudio.Paradox.Graphics
                 PixelType type;
                 int pixelSize;
                 bool compressed;
-                ConvertPixelFormat(GraphicsDevice, Description.Format, out internalFormat, out format, out type, out pixelSize, out compressed);
+                OpenGLConvertExtensions.ConvertPixelFormat(GraphicsDevice, Description.Format, out internalFormat, out format, out type, out pixelSize, out compressed);
 
                 InternalFormat = internalFormat;
                 FormatGl = format;
@@ -198,7 +198,7 @@ namespace SiliconStudio.Paradox.Graphics
                 for (var arrayIndex = 0; arrayIndex < Description.ArraySize; ++arrayIndex)
                 {
                     var dataSetTarget = GetTextureTargetForDataSet(Target, arrayIndex);
-                    var offsetArray = arrayIndex*Description.MipLevels;
+                    var offsetArray = arrayIndex * Description.MipLevels;
                     for (int i = 0; i < Description.MipLevels; ++i)
                     {
                         IntPtr data = IntPtr.Zero;
@@ -206,7 +206,7 @@ namespace SiliconStudio.Paradox.Graphics
                         var height = CalculateMipSize(Description.Height, i);
                         if (dataBoxes != null && i < dataBoxes.Length)
                         {
-                            if (!compressed && dataBoxes[i].RowPitch != width*pixelSize)
+                            if (!compressed && dataBoxes[i].RowPitch != width * pixelSize)
                                 throw new NotSupportedException("Can't upload texture with pitch in glTexImage2D.");
                             // Might be possible, need to check API better.
                             data = dataBoxes[offsetArray + i].DataPointer;
@@ -335,169 +335,6 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
-        protected static void ConvertPixelFormat(GraphicsDevice graphicsDevice, PixelFormat inputFormat, out PixelInternalFormat internalFormat, out PixelFormatGl format, out PixelType type, out int pixelSize, out bool compressed)
-        {
-            compressed = false;
-
-            switch (inputFormat)
-            {
-                case PixelFormat.R8G8B8A8_UNorm:
-                    internalFormat = PixelInternalFormat.Rgba;
-                    format = PixelFormatGl.Rgba;
-                    type = PixelType.UnsignedByte;
-                    pixelSize = 4;
-                    break;
-                case PixelFormat.D16_UNorm:
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                    internalFormat = PixelInternalFormat.Rgba;
-#else
-                    internalFormat = PixelInternalFormat.DepthComponent16;
-#endif
-                    format = PixelFormatGl.DepthComponent;
-                    type = PixelType.UnsignedShort;
-                    pixelSize = 2;
-                    break;
-                case PixelFormat.A8_UNorm:
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                    internalFormat = PixelInternalFormat.Alpha;
-                    format = PixelFormatGl.Alpha;
-#else
-                    internalFormat = PixelInternalFormat.R8;
-                    format = PixelFormatGl.Red;
-#endif
-                    type = PixelType.UnsignedByte;
-                    pixelSize = 1;
-                    break;
-                case PixelFormat.R8_UNorm:
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                    internalFormat = PixelInternalFormat.Luminance;
-                    format = PixelFormatGl.Luminance;
-#else
-                    internalFormat = PixelInternalFormat.R8;
-                    format = PixelFormatGl.Red;
-#endif
-                    type = PixelType.UnsignedByte;
-                    pixelSize = 1;
-                    break;
-                case PixelFormat.B8G8R8A8_UNorm:
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                    if (!graphicsDevice.HasExtTextureFormatBGRA8888)
-                        throw new NotSupportedException();
-
-                    // It seems iOS and Android expects different things
-#if SILICONSTUDIO_PLATFORM_IOS
-                    internalFormat = PixelInternalFormat.Rgba;
-#else
-                    internalFormat = (PixelInternalFormat)ExtTextureFormatBgra8888.BgraExt;
-#endif
-                    format = (PixelFormatGl)ExtTextureFormatBgra8888.BgraExt;
-#else
-                    internalFormat = PixelInternalFormat.Rgba;
-                    format = PixelFormatGl.Bgra;
-#endif
-                    type = PixelType.UnsignedByte;
-                    pixelSize = 4;
-                    break;
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                case PixelFormat.R32_UInt:
-                    internalFormat = PixelInternalFormat.R32ui;
-                    format = PixelFormatGl.RedInteger;
-                    type = PixelType.UnsignedInt;
-                    pixelSize = 4;
-                    break;
-                case PixelFormat.R16G16B16A16_Float:
-                    internalFormat = PixelInternalFormat.Rgba16f;
-                    format = PixelFormatGl.Rgba;
-                    type = PixelType.HalfFloat;
-                    pixelSize = 8;
-                    break;
-                case PixelFormat.R32_Float:
-                    internalFormat = PixelInternalFormat.R32f;
-                    format = PixelFormatGl.Red;
-                    type = PixelType.Float;
-                    pixelSize = 4;
-                    break;
-                case PixelFormat.R32G32_Float:
-                    internalFormat = PixelInternalFormat.Rg32f;
-                    format = PixelFormatGl.Rg;
-                    type = PixelType.Float;
-                    pixelSize = 8;
-                    break;
-                case PixelFormat.R32G32B32_Float:
-                    internalFormat = PixelInternalFormat.Rgb32f;
-                    format = PixelFormatGl.Rgb;
-                    type = PixelType.Float;
-                    pixelSize = 12;
-                    break;
-                case PixelFormat.R32G32B32A32_Float:
-                    internalFormat = PixelInternalFormat.Rgba32f;
-                    format = PixelFormatGl.Rgba;
-                    type = PixelType.Float;
-                    pixelSize = 16;
-                    break;
-                    // TODO: Temporary depth format (need to decide relation between RenderTarget1D and Texture)
-                case PixelFormat.D32_Float:
-                    internalFormat = PixelInternalFormat.DepthComponent32f;
-                    format = PixelFormatGl.DepthComponent;
-                    type = PixelType.Float;
-                    pixelSize = 4;
-                    break;
-#endif
-#if SILICONSTUDIO_PLATFORM_ANDROID
-                case PixelFormat.ETC1:
-                    // TODO: Runtime check for extension?
-                    internalFormat = (PixelInternalFormat)OesCompressedEtc1Rgb8Texture.Etc1Rgb8Oes;
-                    format = (PixelFormatGl)OesCompressedEtc1Rgb8Texture.Etc1Rgb8Oes;
-                    compressed = true;
-                    pixelSize = 2;
-                    type = PixelType.UnsignedByte;
-                    break;
-#elif SILICONSTUDIO_PLATFORM_IOS
-                case PixelFormat.PVRTC_4bpp_RGB:
-                    internalFormat = (PixelInternalFormat)ImgTextureCompressionPvrtc.CompressedRgbPvrtc4Bppv1Img;
-                    format = (PixelFormatGl)ImgTextureCompressionPvrtc.CompressedRgbPvrtc4Bppv1Img;
-                    compressed = true;
-                    pixelSize = 4;
-                    type = PixelType.UnsignedByte;
-                    break;
-                case PixelFormat.PVRTC_2bpp_RGB:
-                    internalFormat = (PixelInternalFormat)ImgTextureCompressionPvrtc.CompressedRgbPvrtc2Bppv1Img;
-                    format = (PixelFormatGl)ImgTextureCompressionPvrtc.CompressedRgbPvrtc2Bppv1Img;
-                    compressed = true;
-                    pixelSize = 2;
-                    type = PixelType.UnsignedByte;
-                    break;
-                case PixelFormat.PVRTC_4bpp_RGBA:
-                    internalFormat = (PixelInternalFormat)ImgTextureCompressionPvrtc.CompressedRgbaPvrtc4Bppv1Img;
-                    format = (PixelFormatGl)ImgTextureCompressionPvrtc.CompressedRgbaPvrtc4Bppv1Img;
-                    compressed = true;
-                    pixelSize = 4;
-                    type = PixelType.UnsignedByte;
-                    break;
-                case PixelFormat.PVRTC_2bpp_RGBA:
-                    internalFormat = (PixelInternalFormat)ImgTextureCompressionPvrtc.CompressedRgbaPvrtc2Bppv1Img;
-                    format = (PixelFormatGl)ImgTextureCompressionPvrtc.CompressedRgbaPvrtc2Bppv1Img;
-                    compressed = true;
-                    pixelSize = 2;
-                    type = PixelType.UnsignedByte;
-                    break;
-#endif
-                case PixelFormat.D24_UNorm_S8_UInt:
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                    internalFormat = PixelInternalFormat.Rgba;
-#else
-                    internalFormat = PixelInternalFormat.DepthComponent24;
-#endif
-                    format = PixelFormatGl.DepthComponent;
-                    type = PixelType.UnsignedInt248;
-                    pixelSize = 4;
-                    break;
-                default:
-                    throw new InvalidOperationException("Unsupported texture format");
-            }
-        }
-
-
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
         private static TextureTarget2d GetTextureTargetForDataSet(TextureTarget target, int arrayIndex)
         {
@@ -544,5 +381,5 @@ namespace SiliconStudio.Paradox.Graphics
         }
     }
 }
- 
-#endif 
+
+#endif
