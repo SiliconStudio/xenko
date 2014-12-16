@@ -14,6 +14,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Grammar
     {
         protected readonly NonTerminal semantic_type = T("semantic_type", CreateSemanticTypeAst);
         protected readonly NonTerminal link_type = T("link_type", CreateLinkTypeAst);
+        protected readonly NonTerminal member_name = T("member_name", CreateStreamNameAst);
         protected readonly NonTerminal var_type = T("var_type", CreateVarTypeAst);
         protected readonly NonTerminal foreach_statement = T("foreach_statement", CreateForEachStatementAst);
         protected readonly NonTerminal foreach_params_statement = T("foreach_params_statement", CreateForEachParamsStatementAst);
@@ -56,6 +57,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Grammar
 
             link_type.Rule = Keyword("LinkType");
             type.Rule |= link_type;
+
+            member_name.Rule = Keyword("MemberName");
+            type.Rule |= member_name;
 
             var_type.Rule = Keyword("var");
             object_type.Rule |= var_type;

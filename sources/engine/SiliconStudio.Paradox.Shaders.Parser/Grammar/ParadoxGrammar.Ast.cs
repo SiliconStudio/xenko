@@ -85,6 +85,11 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Grammar
             Ast<LinkType>(node);
         }
 
+        private static void CreateStreamNameAst(ParsingContext context, ParseTreeNode node)
+        {
+            Ast<MemberName>(node);
+        }
+
         private static void CreateVarTypeAst(ParsingContext context, ParseTreeNode node)
         {
             Ast<VarType>(node);
