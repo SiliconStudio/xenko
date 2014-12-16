@@ -443,6 +443,10 @@ namespace SiliconStudio.Presentation.Controls
 
         protected sealed override void OnCancelled()
         {
+            BindingExpression expression = GetBindingExpression(ValueProperty);
+            if (expression != null)
+                expression.UpdateTarget();
+
             var textValue = FormatValue(Value);
             SetCurrentValue(TextProperty, textValue);
         }
@@ -505,11 +509,6 @@ namespace SiliconStudio.Presentation.Controls
             return FormatValue(value);
         }
 
-        /// <summary>
-        /// Formats the text to 
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
         protected string FormatValue(double value)
         {
             int decimalPlaces = DecimalPlaces;
