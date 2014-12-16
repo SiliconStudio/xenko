@@ -1,9 +1,13 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
+
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Quantum.Commands
 {
+    [Obsolete("Use The CreateNewInstanceCommand with the static property SetToNull passed as parameter to replace this command.")]
     public class SetToNullCommand : ModifyValueCommand
     {
         /// <inheritdoc/>
