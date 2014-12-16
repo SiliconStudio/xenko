@@ -17,6 +17,7 @@ using OesCompressedEtc1Rgb8Texture = OpenTK.Graphics.ES20.OesCompressedEtc1Rgb8T
 #else
 using OpenTK.Graphics.OpenGL;
 using PixelFormatGl = OpenTK.Graphics.OpenGL.PixelFormat;
+using PrimitiveTypeGl = OpenTK.Graphics.OpenGL.PrimitiveType;
 #endif
 
 namespace SiliconStudio.Paradox.Graphics
@@ -90,20 +91,20 @@ namespace SiliconStudio.Paradox.Graphics
             return target;
         }
 
-        public static BeginMode ToOpenGL(this PrimitiveType primitiveType)
+        public static PrimitiveTypeGl ToOpenGL(this PrimitiveType primitiveType)
         {
             switch (primitiveType)
             {
                 case PrimitiveType.PointList:
-                    return BeginMode.Points;
+                    return PrimitiveTypeGl.Points;
                 case PrimitiveType.LineList:
-                    return BeginMode.Lines;
+                    return PrimitiveTypeGl.Lines;
                 case PrimitiveType.LineStrip:
-                    return BeginMode.LineStrip;
+                    return PrimitiveTypeGl.LineStrip;
                 case PrimitiveType.TriangleList:
-                    return BeginMode.Triangles;
+                    return PrimitiveTypeGl.Triangles;
                 case PrimitiveType.TriangleStrip:
-                    return BeginMode.TriangleStrip;
+                    return PrimitiveTypeGl.TriangleStrip;
                 default:
                     throw new NotImplementedException();
             }
