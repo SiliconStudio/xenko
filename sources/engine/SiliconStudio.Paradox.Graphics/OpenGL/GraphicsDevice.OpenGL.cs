@@ -400,7 +400,16 @@ namespace SiliconStudio.Paradox.Graphics
 #if DEBUG
             EnsureContextActive();
 #endif
+
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
             throw new NotImplementedException();
+#else
+            GL.BindTexture(texture.Target, texture.resourceId);
+
+            GL.ClearTexImage(texture.resourceId, 0, texture.FormatGl, texture.Type, ref value);
+
+            GL.BindTexture(texture.Target, 0);
+#endif
         }
 
         public unsafe void ClearReadWrite(Texture texture, Int4 value)
@@ -409,7 +418,15 @@ namespace SiliconStudio.Paradox.Graphics
             EnsureContextActive();
 #endif
 
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
             throw new NotImplementedException();
+#else
+            GL.BindTexture(texture.Target, texture.resourceId);
+
+            GL.ClearTexImage(texture.resourceId, 0, texture.FormatGl, texture.Type, ref value);
+
+            GL.BindTexture(texture.Target, 0);
+#endif
         }
 
         public unsafe void ClearReadWrite(Texture texture, UInt4 value)
@@ -418,7 +435,15 @@ namespace SiliconStudio.Paradox.Graphics
             EnsureContextActive();
 #endif
 
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
             throw new NotImplementedException();
+#else
+            GL.BindTexture(texture.Target, texture.resourceId);
+
+            GL.ClearTexImage(texture.resourceId, 0, texture.FormatGl, texture.Type, ref value);
+
+            GL.BindTexture(texture.Target, 0);
+#endif
         }
 
         public void ClearState()
