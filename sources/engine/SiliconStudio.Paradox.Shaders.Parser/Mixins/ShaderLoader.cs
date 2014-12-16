@@ -295,7 +295,12 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 var shaderClassTypes = ParadoxShaderParser.GetShaderClassTypes(shader.Declarations).ToList();
                 if (shaderClassTypes.Count != 1)
                 {
-                    log.Error(ParadoxMessageCode.ShaderMustContainSingleClassDeclaration, new SourceSpan(new SourceLocation(shaderSource.Path, 0, 0, 0), 10), type);
+                    var sourceSpan = new SourceSpan(new SourceLocation(shaderSource.Path, 0, 0, 0), 1);
+                    if (shaderClassTypes.Count > 1)
+                    {
+                        sourceSpan = shaderClassTypes[1].Span;
+                    }
+                    log.Error(ParadoxMessageCode.ShaderMustContainSingleClassDeclaration, sourceSpan, type);
                     return null;
                 }
 
