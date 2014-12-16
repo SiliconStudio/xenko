@@ -320,6 +320,44 @@ namespace SiliconStudio.Presentation.Controls
             SetCurrentValue(TextProperty, textValue);
         }
 
+        private void RootParentIsKeyboardFocusWithinChanged(object sender, DependencyPropertyChangedEventArgs args)
+        {
+            if ((bool)args.NewValue == false)
+            {
+                // Cancel dragging in progress
+                if (dragState == DragState.Dragging)
+                {
+                    if (adorner != null)
+                    {
+                        var adornerLayer = AdornerLayer.GetAdornerLayer(this);
+                        if (adornerLayer != null)
+                        {
+                            adornerLayer.Remove(adorner);
+                            adorner = null;
+                        }
+                    }
+                    Cancel();
+
+                    var handler = DragCompleted;
+                    if (handler != null)
+                    {
+                        Point position = Mouse.GetPosition(this);
+                        double dx = Math.Abs(position.X - mouseDownPosition.X);
+                        double dy = Math.Abs(position.Y - mouseDownPosition.Y);
+                        handler(this, new DragCompletedEventArgs(dx, dy, true));
+                    }
+
+                    Mouse.OverrideCursor = null;
+                    dragState = DragState.None;
+
+                }
+
+                var root = this.FindVisualRoot() as FrameworkElement;
+                if (root != null)
+                    root.IsKeyboardFocusWithinChanged -= RootParentIsKeyboardFocusWithinChanged;
+            }
+        }
+
         /// <inheritdoc/>
         protected override void OnPreviewMouseDown(MouseButtonEventArgs e)
         {
@@ -363,6 +401,10 @@ namespace SiliconStudio.Presentation.Controls
 
                 if (dx > SystemParameters.MinimumHorizontalDragDistance || dy > SystemParameters.MinimumVerticalDragDistance)
                 {
+                    var root = this.FindVisualRoot() as FrameworkElement;
+                    if (root != null)
+                        root.IsKeyboardFocusWithinChanged += RootParentIsKeyboardFocusWithinChanged;
+                    
                     dragState = DragState.Dragging;
                     e.MouseDevice.Capture(this);
                     var handler = DragStarted;
@@ -415,7 +457,7 @@ namespace SiliconStudio.Presentation.Controls
                 }
             }
             else if (dragState == DragState.Dragging && AllowMouseDrag)
-            {
+            {                
                 if (adorner != null)
                 {
                     var adornerLayer = AdornerLayer.GetAdornerLayer(this);
