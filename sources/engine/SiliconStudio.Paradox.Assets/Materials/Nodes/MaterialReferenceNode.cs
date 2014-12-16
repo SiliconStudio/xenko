@@ -34,6 +34,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
         /// The name of the referenced node.
         /// </userdoc>
         [DataMember(10)]
+        [MaterialNodeValuePropertyAttribute]
         public string Name { get; set; }
 
         /// <inheritdoc/>

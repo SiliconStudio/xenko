@@ -40,6 +40,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
         /// The operation between the background (LeftChild) and the foreground (RightChild).
         /// </userdoc>
         [DataMember(10)]
+        [MaterialNodeValuePropertyAttribute]
         public MaterialBinaryOperand Operand { get; set; }
 
         /// <summary>

@@ -38,6 +38,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
         /// The default value.
         /// </userdoc>
         [DataMember(20)]
+        [MaterialNodeValuePropertyAttribute]
         public T Value
         {
             get

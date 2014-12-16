@@ -60,6 +60,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
         /// </userdoc>
         [DataMember(10)] 
         [DefaultValue(null)]
+        [MaterialNodeValuePropertyAttribute]
         public AssetReference<TextureAsset> TextureReference { get; set; }
 
         /// <summary>
