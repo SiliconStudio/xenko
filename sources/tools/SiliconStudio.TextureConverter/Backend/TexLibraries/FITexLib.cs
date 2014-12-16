@@ -61,15 +61,24 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                 throw new TextureToolsException("FreeImage can't process compressed texture.");
             }
 
-            FreeImageTextureLibraryData libraryData = new FreeImageTextureLibraryData();
+            var libraryData = new FreeImageTextureLibraryData();
             image.LibraryData[this] = libraryData;
 
             libraryData.Bitmaps = new FIBITMAP[image.SubImageArray.Length];
-            uint bpp = image.Format.GetBPP();
 
+            FREE_IMAGE_TYPE type;
+            uint bpp, redMask, greenMask, blueMask;
+            if (!FreeImage.GetFormatParameters(image.Format, out type, out bpp, out redMask, out greenMask, out blueMask))
+            {
+                throw new ArgumentException("The pixel format '{0}' is not supported by FreeImage".ToFormat(image.Format));
+            }
             for (int i = 0; i < image.SubImageArray.Length; ++i)
             {
-                libraryData.Bitmaps[i] = FreeImage.ConvertFromRawBits(image.SubImageArray[i].Data, FREE_IMAGE_TYPE.FIT_BITMAP, image.SubImageArray[i].Width, image.SubImageArray[i].Height, image.SubImageArray[i].RowPitch, bpp, 0x00FF0000, 0x0000FF00, 0x000000FF, false);
+                var data = image.SubImageArray[i].Data;
+                var width = image.SubImageArray[i].Width;
+                var heigth = image.SubImageArray[i].Height;
+                var pitch = image.SubImageArray[i].RowPitch;
+                libraryData.Bitmaps[i] = FreeImage.ConvertFromRawBits(data, type, width, heigth, pitch, bpp, redMask, greenMask, blueMask, false);
             }
 
             if (image.DisposingLibrary != null) image.DisposingLibrary.Dispose(image);
