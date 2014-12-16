@@ -91,6 +91,26 @@ namespace SiliconStudio.Paradox.Graphics
             return target;
         }
 
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+        public static BeginMode ToOpenGL(this PrimitiveType primitiveType)
+        {
+            switch (primitiveType)
+            {
+                case PrimitiveType.PointList:
+                    return BeginMode.Points;
+                case PrimitiveType.LineList:
+                    return BeginMode.Lines;
+                case PrimitiveType.LineStrip:
+                    return BeginMode.LineStrip;
+                case PrimitiveType.TriangleList:
+                    return BeginMode.Triangles;
+                case PrimitiveType.TriangleStrip:
+                    return BeginMode.TriangleStrip;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+#else
         public static PrimitiveTypeGl ToOpenGL(this PrimitiveType primitiveType)
         {
             switch (primitiveType)
@@ -109,6 +129,8 @@ namespace SiliconStudio.Paradox.Graphics
                     throw new NotImplementedException();
             }
         }
+#endif
+
 #endif
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
