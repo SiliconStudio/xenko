@@ -11,6 +11,7 @@ using BufferUsageHint = OpenTK.Graphics.ES30.BufferUsage;
 #endif
 #else
 using OpenTK.Graphics.OpenGL;
+using PixelFormatGl = OpenTK.Graphics.OpenGL.PixelFormat;
 #endif
 
 namespace SiliconStudio.Paradox.Graphics
@@ -23,6 +24,10 @@ namespace SiliconStudio.Paradox.Graphics
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
         // Special case: ConstantBuffer are faked with a byte array on OpenGL ES 2.0.
         internal IntPtr StagingData { get; set; }
+#else
+        internal PixelFormatGl glPixelFormat;
+        internal PixelInternalFormat internalFormat;
+        internal PixelType type;
 #endif
 
         /// <summary>
@@ -40,6 +45,12 @@ namespace SiliconStudio.Paradox.Graphics
             BufferFlags = bufferFlags;
             ViewFormat = viewFormat;
 
+#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+            int pixelSize;
+            bool isCompressed;
+            OpenGLConvertExtensions.ConvertPixelFormat(device, viewFormat, out internalFormat, out glPixelFormat, out type, out pixelSize, out isCompressed);
+#endif
+
             Recreate(dataPointer);
         }
 
@@ -52,6 +63,14 @@ namespace SiliconStudio.Paradox.Graphics
             else if ((BufferFlags & BufferFlags.IndexBuffer) == BufferFlags.IndexBuffer)
             {
                 bufferTarget = BufferTarget.ElementArrayBuffer;
+            }
+            else if ((BufferFlags & BufferFlags.UnorderedAccess) == BufferFlags.UnorderedAccess)
+            {
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                throw new NotSupportedException("GLES not support UnorderedAccess buffer");
+#else
+                bufferTarget = BufferTarget.ShaderStorageBuffer;
+#endif
             }
 
             if ((BufferFlags & BufferFlags.ConstantBuffer) == BufferFlags.ConstantBuffer)
