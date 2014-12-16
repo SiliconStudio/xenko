@@ -5,12 +5,12 @@ Permutations:
         MaterialAsset.GenerateShader: true
     Children:
         - Keys: 
-            Effect.Name: CustomEffect
+            Effect.Name:
+                - CustomEffect
+                - CubemapDisplayEffect
             CompilerParameters.GraphicsProfileKey:
                 - Level_9_1
                 - Level_11_0
         - Keys: 
-            Effect.Name:
-                - MultipleRenderTargetsEffect
-                - CubemapDisplayEffect
+            Effect.Name: MultipleRenderTargetsEffect
             CompilerParameters.GraphicsProfileKey: Level_11_0
