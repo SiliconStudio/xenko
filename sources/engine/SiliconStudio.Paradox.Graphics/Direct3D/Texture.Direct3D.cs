@@ -561,22 +561,46 @@ namespace SiliconStudio.Paradox.Graphics
                 else
                 {
                     // Determine TypeLess Format and ShaderResourceView Format
-                    switch (textureDescription.Format)
+                    if (GraphicsDevice.Features.Profile < GraphicsProfile.Level_11_0)
                     {
-                        case PixelFormat.D16_UNorm:
-                            format = SharpDX.DXGI.Format.R16_Typeless;
-                            break;
-                        case PixelFormat.D32_Float:
-                            format = SharpDX.DXGI.Format.R32_Typeless;
-                            break;
-                        case PixelFormat.D24_UNorm_S8_UInt:
-                            format = SharpDX.DXGI.Format.R24G8_Typeless;
-                            break;
-                        case PixelFormat.D32_Float_S8X24_UInt:
-                            format = SharpDX.DXGI.Format.R32G8X24_Typeless;
-                            break;
-                        default:
-                            throw new NotSupportedException(String.Format("Unsupported DepthFormat [{0}] for depth buffer", textureDescription.Format));
+                        switch (textureDescription.Format)
+                        {
+                            case PixelFormat.D16_UNorm:
+                                format = SharpDX.DXGI.Format.D16_UNorm;
+                                break;
+                            case PixelFormat.D32_Float:
+                                format = SharpDX.DXGI.Format.D32_Float;
+                                break;
+                            case PixelFormat.D24_UNorm_S8_UInt:
+                                format = SharpDX.DXGI.Format.D24_UNorm_S8_UInt;
+                                break;
+                            case PixelFormat.D32_Float_S8X24_UInt:
+                                format = SharpDX.DXGI.Format.D32_Float_S8X24_UInt;
+                                break;
+                            default:
+                                throw new NotSupportedException(String.Format("Unsupported DepthFormat [{0}] for depth buffer", textureDescription.Format));
+                        }
+                    }
+                    else
+                    {
+                        switch (textureDescription.Format)
+                        {
+                            case PixelFormat.D16_UNorm:
+                                format = SharpDX.DXGI.Format.R16_Typeless;
+                                break;
+                            case PixelFormat.D32_Float:
+                                format = SharpDX.DXGI.Format.R32_Typeless;
+                                break;
+                            case PixelFormat.D24_UNorm_S8_UInt:
+                                //format = SharpDX.DXGI.Format.D24_UNorm_S8_UInt;
+                                format = SharpDX.DXGI.Format.R24G8_Typeless;
+                                break;
+                            case PixelFormat.D32_Float_S8X24_UInt:
+                                format = SharpDX.DXGI.Format.R32G8X24_Typeless;
+                                break;
+                            default:
+                                throw new NotSupportedException(String.Format("Unsupported DepthFormat [{0}] for depth buffer", textureDescription.Format));
+                        }
                     }
                 }
             }

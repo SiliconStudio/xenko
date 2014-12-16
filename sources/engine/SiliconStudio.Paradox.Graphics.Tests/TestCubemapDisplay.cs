@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         public TestCubemapDisplay()
         {
-            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0 };
+            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_1 };
         }
 
         protected override async Task LoadContent()
