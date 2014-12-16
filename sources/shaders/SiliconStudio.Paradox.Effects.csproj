@@ -660,6 +660,13 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>McIntoshCombineShader.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Images\DepthOfField\Hexagonal\TripleRhombi.cs" />
+    <Compile Include="Images\DepthOfField\Hexagonal\TripleRhombiCombineShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>TripleRhombiCombineShader.pdxsl</DependentUpon>
+    </Compile>
     <Compile Include="Images\DepthOfField\LinearDepthCoCShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -2229,6 +2236,10 @@
     <None Include="Images\DepthOfField\Hexagonal\McIntoshCombineShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>McIntoshCombineShader.cs</LastGenOutput>
+    </None>
+    <None Include="Images\DepthOfField\Hexagonal\TripleRhombiCombineShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>TripleRhombiCombineShader.cs</LastGenOutput>
     </None>
     <None Include="Images\DepthOfField\LinearDepthCoCShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         private int tapCount;
 
         // Simple flag to switch between the debug version or the optimized version
-        private bool useOptimizedPath;
+        private bool useOptimizedPath = true;
 
         /// <summary>
         /// Phase of the bokeh effect. (rotation angle in radian)
@@ -46,7 +46,6 @@ namespace SiliconStudio.Paradox.Effects.Images
             optimizedEffect = new ImageEffectShader(context, "McIntoshOptimizedEffect");
             Radius = 5;
             Phase = 0f;
-            useOptimizedPath = true;
         }
 
         /// <summary>

@@ -1,0 +1,28 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Paradox.Effects.Images
+{
+    /// <summary>
+    /// Combines the 3 rhombi blurs into an hexagonal blur. (Final pass of the TripleRhombi bokeh effect.)
+    /// Expects as input: 
+    ///  - Texture0: a color buffer with the top-left rhombi blur
+    ///  - Texture1: a color buffer with the top-right rhombi blur
+    ///  - Texture2: a color buffer with the bottom rhombi blur
+    /// </summary>
+    class TripleRhombiCombineShader : ImageEffectShader
+    {
+        // Offset to apply when reading a texture coordinate (for each of the 3 rhombis)
+        stage float2 RhombiTapOffsets[3];
+
+        stage override float4 Shading()
+        {
+            float3 result =    Texture0.Sample( Sampler, streams.TexCoord + RhombiTapOffsets[0] ).rgb
+                             + Texture1.Sample( Sampler, streams.TexCoord + RhombiTapOffsets[1] ).rgb
+                             + Texture2.Sample( Sampler, streams.TexCoord + RhombiTapOffsets[2] ).rgb;
+
+            // Averages the result
+            return float4(result / 3.0, 1.0);
+        }
+    };
+}
