@@ -6,6 +6,14 @@ using System;
 using OpenTK.Graphics.ES30;
 using ES30 = OpenTK.Graphics.ES30;
 using PixelFormatGl = OpenTK.Graphics.ES30.PixelFormat;
+#if SILICONSTUDIO_PLATFORM_IOS
+using ExtTextureFormatBgra8888 = OpenTK.Graphics.ES30.All;
+using ImgTextureCompressionPvrtc = OpenTK.Graphics.ES30.All;
+using OesPackedDepthStencil = OpenTK.Graphics.ES30.All;
+#elif SILICONSTUDIO_PLATFORM_ANDROID
+using ExtTextureFormatBgra8888 = OpenTK.Graphics.ES20.ExtTextureFormatBgra8888;
+using OesCompressedEtc1Rgb8Texture = OpenTK.Graphics.ES20.OesCompressedEtc1Rgb8Texture;
+#endif
 #else
 using OpenTK.Graphics.OpenGL;
 using PixelFormatGl = OpenTK.Graphics.OpenGL.PixelFormat;
