@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         public TestCubemapRendering()
         {
             // cannot render cubemap in level below 10.1
-            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_1 };
+            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0 };
         }
 
         protected override async Task LoadContent()
