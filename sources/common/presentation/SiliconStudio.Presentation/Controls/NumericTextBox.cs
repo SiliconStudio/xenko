@@ -267,6 +267,16 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         public event EventHandler<RepeatButtonPressedRoutedEventArgs> RepeatButtonReleased { add { AddHandler(RepeatButtonReleasedEvent, value); } remove { RemoveHandler(RepeatButtonReleasedEvent, value); } }
 
+        /// <summary>
+        /// Raised when the mouse starts to drag the cursor to change the value.
+        /// </summary>
+        public event EventHandler<DragStartedEventArgs> DragStarted;
+
+        /// <summary>
+        /// Raised when the mouse stops to drag the cursor to change the value, after the validation of the change.
+        /// </summary>
+        public event EventHandler<DragCompletedEventArgs> DragCompleted;
+
         /// <inheritdoc/>
         public override void OnApplyTemplate()
         {
@@ -353,8 +363,14 @@ namespace SiliconStudio.Presentation.Controls
 
                 if (dx > SystemParameters.MinimumHorizontalDragDistance || dy > SystemParameters.MinimumVerticalDragDistance)
                 {
-                    e.MouseDevice.Capture(this);
                     dragState = DragState.Dragging;
+                    e.MouseDevice.Capture(this);
+                    var handler = DragStarted;
+                    if (handler != null)
+                    {
+                        handler(this, new DragStartedEventArgs(mouseDownPosition.X, mouseDownPosition.Y));
+                    }
+
                     SelectAll();
                     if (adorner != null)
                         adorner.SetOrientation(dragOrientation);
@@ -410,6 +426,15 @@ namespace SiliconStudio.Presentation.Controls
                     }
                 }
                 Validate();
+
+                var handler = DragCompleted;
+                if (handler != null)
+                {
+                    Point position = e.GetPosition(this);
+                    double dx = Math.Abs(position.X - mouseDownPosition.X);
+                    double dy = Math.Abs(position.Y - mouseDownPosition.Y);
+                    handler(this, new DragCompletedEventArgs(dx, dy, false));
+                }
             }
 
             Mouse.OverrideCursor = null;
