@@ -12,9 +12,15 @@
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\..\build\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Windows.Shell, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\build\packages\Microsoft.Windows.Shell.3.0.1.0\lib\net40\Microsoft.Windows.Shell.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="PresentationFramework.Aero" />
@@ -44,8 +50,14 @@
     <Compile Include="Commands\CancellableCommand.cs" />
     <Compile Include="Commands\CommandActionItem.cs" />
     <Compile Include="Commands\DisabledCommand.cs" />
+    <Compile Include="Commands\SystemCommand.cs" />
+    <Compile Include="Commands\SystemCommands.cs" />
     <Compile Include="Controls\FilteringComboBox.cs" />
     <Compile Include="Controls\MatrixEditor.cs" />
+    <Compile Include="Controls\PropertyView.cs" />
+    <Compile Include="Controls\PropertyViewItem.cs" />
+    <Compile Include="Controls\PropertyViewItemEventArgs.cs" />
+    <Compile Include="Controls\TextBoxBase.cs" />
     <Compile Include="Core\AnonymousComparer.cs" />
     <Compile Include="Core\AnonymousEqualityComparer.cs" />
     <Compile Include="Behaviors\CharInputBehavior.cs" />
@@ -119,7 +131,6 @@
     <Compile Include="Interactivity\BehaviorCollection.cs" />
     <Compile Include="Behaviors\DeferredBehaviorBase.cs" />
     <Compile Include="Interactivity\Interaction.cs" />
-    <Compile Include="Controls\TimerTextBox.cs" />
     <Compile Include="Extensions\ColorExtensions.cs" />
     <Compile Include="Extensions\DrawingContextExtensions.cs" />
     <Compile Include="Extensions\FrameworkElementExtensions.cs" />
@@ -129,7 +140,6 @@
     <Compile Include="Commands\AnonymousCommand.cs" />
     <Compile Include="Controls\TextBox.cs" />
     <Compile Include="Controls\NumericTextBox.cs" />
-    <Compile Include="Controls\SliderTextBox.cs" />
     <Compile Include="Controls\ScaleBar.cs" />
     <Compile Include="Extensions\DependencyObjectExtensions.cs" />
     <Compile Include="Controls\KeyValueGrid.cs" />
@@ -257,8 +267,26 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\Cursors\CursorDrag.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\close_window.png" />
+    <Resource Include="Resources\Images\maximize_window.png" />
+    <Resource Include="Resources\Images\minimize_window.png" />
+    <Resource Include="Resources\Images\restore_window.png" />
+  </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

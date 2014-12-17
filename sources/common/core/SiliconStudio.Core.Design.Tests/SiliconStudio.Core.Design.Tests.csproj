@@ -13,7 +13,7 @@
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
     <ParadoxBuildTags>WindowsTools</ParadoxBuildTags>
-    <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioSign)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
+    <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
   <ItemGroup>
     <Reference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="nunit.core.interfaces">

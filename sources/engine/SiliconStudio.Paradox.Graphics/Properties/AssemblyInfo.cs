@@ -16,9 +16,9 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.Engine.Step1" + SiliconStudio.PublicKeys.Default)]
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.Games" + SiliconStudio.PublicKeys.Default)]
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.UI" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Graphics.Tests" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudioParadoxGraphicsTests" + SiliconStudio.PublicKeys.Default)] // iOS removes dot
 
 #if !SILICONSTUDIO_SIGNED
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Graphics.Tests")]
-[assembly: InternalsVisibleTo("SiliconStudioParadoxGraphicsTests")] // iOS removes dot
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.Assets.Presentation")]
 #endif

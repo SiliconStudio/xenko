@@ -7,12 +7,12 @@
 /// DEFERRED_MAX_POINT_LIGHT_COUNT: Macro - Maximum number of supported point lights.
 /// </remarks>
 #ifndef DEFERRED_MAX_POINT_LIGHT_COUNT
-# define DEFERRED_MAX_POINT_LIGHT_COUNT 1
+# define DEFERRED_MAX_POINT_LIGHT_COUNT 64
 #endif
 class DeferredPointLighting : DeferredLightingBase
 {
-    BRDFDiffuseBase brdfDiffuse = stage;
-    BRDFSpecularBase brdfSpecular = stage;
+    compose BRDFDiffuseBase brdfDiffuse = stage;
+    compose BRDFSpecularBase brdfSpecular = stage;
 
     struct PointLightInfo
     {
@@ -50,15 +50,12 @@ class DeferredPointLighting : DeferredLightingBase
     {
         float4 lighting = float4(0,0,0,0);
 
-#ifdef DEFERRED_POINT_LIGHTING_UNROLL_LOOP
         [unroll(DEFERRED_MAX_POINT_LIGHT_COUNT)]
-#endif
         for (int lightIndex = 0; lightIndex < DEFERRED_MAX_POINT_LIGHT_COUNT; ++lightIndex)
         {
-#ifdef DEFERRED_POINT_LIGHTING_UNROLL_LOOP
             if (lightIndex >= LightCount)
                 break;
-#endif
+      
             PointLightInfo lightInfo = PointLightInfos[lightIndex];
             float3 lightDir = lightInfo.vPositionVS - positionVS;
 
@@ -70,10 +67,10 @@ class DeferredPointLighting : DeferredLightingBase
             lightColor *= CalculateLightAttenuation(dist, lightInfo.intensity, lightInfo.radius, LightAttenuationCutoff);
 
             // Compute Diffuse Lighting
-            float3 diffuseLighting = lightInfo.intensity * brdfDiffuse.ComputeDiffuseLighting(lightColor, lightDir, normalVS, eyeVS);
+            float3 diffuseLighting = brdfDiffuse.ComputeDiffuseLighting(lightColor, lightDir, normalVS, eyeVS);
 
             // Compute Specular Lighting
-            float3 specularLighting = lightInfo.intensity * brdfSpecular.ComputeSpecularLighting(lightColor, lightDir, normalVS, eyeVS);
+            float3 specularLighting = brdfSpecular.ComputeSpecularLighting(lightColor, lightDir, normalVS, eyeVS);
 
             // To reduce bandwidth we don't store 2 x (RGBDiffuse + RGBSpecular), we store only the RGBDiffuse + Utilities.Luminance(RGBSpecular)
             // Luminance(lighting.Specular)

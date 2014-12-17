@@ -49,7 +49,7 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SiliconStudio.Paradox.Graphics.Tests.TestSpriteBatchToTexture</StartupObject>
+    <StartupObject>SiliconStudio.Paradox.Graphics.Tests.TestMultipleRenderTargets</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
@@ -151,6 +151,18 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>CustomEffect.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Compiler\CubemapEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapEffect.pdxfx</DependentUpon>
+    </Compile>
+    <Compile Include="Compiler\MultipleRenderTargetsEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MultipleRenderTargetsEffect.pdxfx</DependentUpon>
+    </Compile>
     <Compile Label="Paradox.DoNotSync" Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Compiler\MultiTexturesSpriteEffect.cs">
       <AutoGen>True</AutoGen>
@@ -194,12 +206,15 @@
     <Compile Include="Regression\TestMultipleTextures.cs" />
     <Compile Include="Regression\TestSimpleTexture.cs" />
     <Compile Include="TestBitmapSpriteFont.cs" />
+    <Compile Include="TestCubemapDeferred.cs" />
+    <Compile Include="TestCubemapRendering.cs" />
     <Compile Include="TestDynamicSpriteFont.cs" />
     <Compile Include="TestDynamicSpriteFontJapanese.cs" />
     <Compile Include="TestDynamicSpriteFontVarious.cs" />
     <Compile Include="TestExternSpriteFont.cs" />
     <Compile Include="TestFontManager.cs" />
     <Compile Include="TestImageLoad.cs" />
+    <Compile Include="TestMultipleRenderTargets.cs" />
     <Compile Include="TestSprite.cs" />
     <Compile Include="TestSpriteBatchResolution.cs" />
     <Compile Include="TestSpriteBatchToTexture.cs" />
@@ -221,6 +236,14 @@
     <None Include="Assets\CustomEffect.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CustomEffect1.cs</LastGenOutput>
+    </None>
+    <None Include="Compiler\CubemapEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Compiler\MultipleRenderTargetsEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MultipleRenderTargetsEffect.cs</LastGenOutput>
     </None>
     <None Include="Compiler\MultiTexturesSpriteEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>

@@ -52,6 +52,7 @@
     </Compile>
     <Compile Include="AccessorMetadata.cs" />
     <Compile Include="AnonymousDisposable.cs" />
+    <Compile Include="Collections\KeyedSortedList.cs" />
     <Compile Include="IO\NativeFile.cs" />
     <Compile Include="IO\NativeFile.WindowsRuntime.cs" />
     <Compile Include="ThreadHelper.WindowsRuntime.cs" />
@@ -74,7 +75,7 @@
     <Compile Include="NativeLibrary.cs" />
     <Compile Include="NullDisposable.cs" />
     <Compile Include="PlatformType.cs" />
-    <Compile Include="Collections\ConstrainedCollection.cs" />
+    <Compile Include="Collections\ConstrainedList.cs" />
     <Compile Include="Collections\FastList.cs" />
     <Compile Include="Collections\FastListStruct.cs" />
     <Compile Include="Collections\IReadOnlySet.cs" />
@@ -188,6 +189,7 @@
     <Compile Include="Serialization\SerializerSelector.cs" />
     <Compile Include="Serialization\Serializers\ByteArraySerializer.cs" />
     <Compile Include="Serialization\Serializers\CollectionSerializers.cs" />
+    <Compile Include="Serialization\Serializers\KeyedSortedListSerializer.cs" />
     <Compile Include="Serialization\Serializers\ComplexTypeSerializerFlags.cs" />
     <Compile Include="Serialization\Serializers\DataSerializerAttribute.cs" />
     <Compile Include="Serialization\Serializers\DataSerializerGenericMode.cs" />

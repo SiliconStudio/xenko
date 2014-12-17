@@ -2,35 +2,52 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using SiliconStudio.Core.Serialization.Converters;
-using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects
 {
     /// <summary>
     /// Instantiation of a <see cref="Model"/> through a <see cref="RenderPipeline"/>.
     /// </summary>
-    public class RenderModel
+    public sealed class RenderModel
     {
-        private readonly RenderPipeline pipeline;
-        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RenderModel" /> class.
+        /// </summary>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="modelInstance">The model instance.</param>
+        /// <exception cref="System.ArgumentNullException">pipeline</exception>
+        public RenderModel(RenderPipeline pipeline, IModelInstance modelInstance)
+        {
+            if (pipeline == null) throw new ArgumentNullException("pipeline");
+
+            Pipeline = pipeline;
+            ModelInstance = modelInstance;
+            Model = modelInstance.Model;
+            Parameters = modelInstance.Parameters;
+
+            var modelRendererState = Pipeline.GetOrCreateModelRendererState();
+            var slotCount = modelRendererState.ModelSlotCount;
+            RenderMeshes = new List<RenderMesh>[slotCount];
+            if (Model != null)
+            {
+                modelRendererState.PrepareRenderModel(this);
+            }
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderModel"/> class.
         /// </summary>
         /// <param name="pipeline">The pipeline.</param>
         /// <param name="model">The model.</param>
-        /// <param name="modelComponentParameters">ModelComponent parameters.</param>
-        public RenderModel(RenderPipeline pipeline, Model model, ParameterCollection modelComponentParameters = null)
+        /// <exception cref="System.ArgumentNullException">pipeline</exception>
+        [Obsolete]
+        public RenderModel(RenderPipeline pipeline, Model model)
         {
             if (pipeline == null) throw new ArgumentNullException("pipeline");
-            if (model == null) throw new ArgumentNullException("model");
-
-            this.pipeline = pipeline;
+            Pipeline = pipeline;
             Model = model;
-
-            var meshState = pipeline.GetMeshRenderState();
-            InternalMeshes = new List<EffectMesh>[meshState.MeshPassSlotCount];
-            meshState.PrepareRenderModel(this, modelComponentParameters);
+            var slotCount = Pipeline.GetOrCreateModelRendererState().ModelSlotCount;
+            RenderMeshes = new List<RenderMesh>[slotCount];
         }
 
         /// <summary>
@@ -39,15 +56,28 @@ namespace SiliconStudio.Paradox.Effects
         /// <value>
         /// The meshes instantiated for this view.
         /// </value>
-        public List<EffectMesh>[] InternalMeshes { get; private set; }
+        public readonly List<RenderMesh>[] RenderMeshes;
 
         /// <summary>
-        /// Gets or sets the underlying model.
+        /// The model instance
+        /// </summary>
+        public readonly IModelInstance ModelInstance;
+
+        /// <summary>
+        /// Gets the underlying model.
         /// </summary>
         /// <value>
         /// The underlying model.
         /// </value>
-        public Model Model { get; set; }
+        public readonly Model Model;
+
+        /// <summary>
+        /// Gets the instance parameters to this model.
+        /// </summary>
+        /// <value>
+        /// The instance parameters to this model.
+        /// </value>
+        public readonly ParameterCollection Parameters;
 
         /// <summary>
         /// Gets the render pipeline.
@@ -55,9 +85,6 @@ namespace SiliconStudio.Paradox.Effects
         /// <value>
         /// The render pipeline.
         /// </value>
-        public RenderPipeline Pipeline
-        {
-            get { return this.pipeline; }
-        }
+        public readonly RenderPipeline Pipeline;
     }
 }

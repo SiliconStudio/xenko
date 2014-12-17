@@ -83,6 +83,10 @@
       <Name>SiliconStudio.Paradox.Assets.Model</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\engine\SiliconStudio.Paradox.Physics\SiliconStudio.Paradox.Physics.csproj">
+      <Project>{dd592516-b341-40fe-9100-1b0fa784a060}</Project>
+      <Name>SiliconStudio.Paradox.Physics</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\engine\SiliconStudio.Paradox.Shaders\SiliconStudio.Paradox.Shaders.csproj">
       <Project>{273BDD15-7392-4078-91F0-AF23594A3D7B}</Project>
       <Name>SiliconStudio.Paradox.Shaders</Name>

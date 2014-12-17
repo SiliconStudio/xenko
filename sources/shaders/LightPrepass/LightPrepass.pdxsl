@@ -5,8 +5,6 @@
 /// </summary>
 class LightPrepass : ShaderBase, Transformation, PositionStream2, BRDFDiffuseBase, SpecularPowerBase, BRDFSpecularBase, PositionVSBase, NormalVSBase
 {
-    stage stream /*nointerpolation*/ uint lightIndexID : SV_VertexID;
-
     struct LightInfo
     {
         float3 vPositionVS;

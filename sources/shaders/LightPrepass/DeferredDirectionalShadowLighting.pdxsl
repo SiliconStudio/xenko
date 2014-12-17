@@ -3,69 +3,19 @@
 /// <summary>
 /// Computes lighting prepass from directional lights with shadows.
 /// </summary>
-/// <remarks>
-/// DEFERRED_MAX_DIRECT_SHADOW_LIGHT_COUNT: Macro - Maximum number of supported directional lights with shadows.
-/// </remarks>
-#ifndef DEFERRED_MAX_DIRECT_SHADOW_LIGHT_COUNT
-# define DEFERRED_MAX_DIRECT_SHADOW_LIGHT_COUNT 1
-#endif
-class DeferredDirectionalShadowLighting : DeferredLightingBase, ShadowBase
+class DeferredDirectionalShadowLighting : DeferredDirectionalLighting, ShadowBase, Transformation
 {
-    BRDFDiffuseBase brdfDiffuse = stage;
-    BRDFSpecularBase brdfSpecular = stage;
-
-    struct DirectLightInfo
-    {
-        float3 vDirectionVS;
-        float intensity;
-        float3 color;
-    };
-
-    [Link("LightingPrepassRenderer.LightCount")]
-    int LightCount = 64;
-
-    cbuffer LightData
-    {
-        [Link("LightingPrepassRenderer.DirectLightInfos")]
-        DirectLightInfo DirectLightInfos[DEFERRED_MAX_DIRECT_SHADOW_LIGHT_COUNT];
-    }
-
     override float4 ComputeLighting(float3 positionVS, float3 normalVS, float3 eyeVS)
     {
-        float4 lighting = float4(0,0,0,0);
+        float4 vPositionWS = mul(float4(positionVS,1), ViewInverse);
+        ComputeShadowMapPositions(vPositionWS / vPositionWS.w);
 
-        ComputeShadowMapPositions(float4(positionVS,1));
+        float4 lighting = base.ComputeLighting(positionVS, normalVS, eyeVS);
 
-#ifdef DEFERRED_DIRECT_LIGHTING_UNROLL_LOOP
-        [unroll(DEFERRED_MAX_DIRECT_SHADOW_LIGHT_COUNT)]
-#endif
-        for (int lightIndex = 0; lightIndex < DEFERRED_MAX_DIRECT_SHADOW_LIGHT_COUNT; ++lightIndex)
-        {
-#ifndef DEFERRED_DIRECT_LIGHTING_UNROLL_LOOP
-            if (lightIndex >= LightCount)
-                break;
-#endif
+        float3 shadowFactor = ComputeShadowFactor(0);
 
-            DirectLightInfo lightInfo = DirectLightInfos[lightIndex];
-            float3 lightDir = -lightInfo.vDirectionVS;
-
-            // Normalize lightDir
-            lightDir = normalize(lightDir);
+        lighting *= float4(shadowFactor, shadowFactor.x);
         
-            float3 lightColor = lightInfo.color; // pow(lightInfo.color,2.2);
-
-            // Compute Diffuse Lighting
-            float3 diffuseLighting = lightInfo.intensity * brdfDiffuse.ComputeDiffuseLighting(lightColor, lightDir, normalVS, eyeVS);
-
-            // Compute Specular Lighting
-            float3 specularLighting = lightInfo.intensity * brdfSpecular.ComputeSpecularLighting(lightColor, lightDir, normalVS, eyeVS);
-
-            float3 shadowFactor = ComputeShadowFactor(lightIndex);
-
-            // To reduce bandwidth we don't store 2 x (RGBDiffuse + RGBSpecular), we store only the RGBDiffuse + Utilities.Luminance(RGBSpecular)
-            // Luminance(lighting.Specular)
-            lighting += float4(shadowFactor * diffuseLighting, shadowFactor.x * Utilities.Luminance(specularLighting));
-        }
         return lighting;
     }
 };

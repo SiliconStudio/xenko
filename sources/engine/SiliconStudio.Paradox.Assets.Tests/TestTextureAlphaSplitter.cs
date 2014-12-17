@@ -33,7 +33,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
         public void InitializeTest()
         {
             LoadParadoxAssemblies();
-            Game.InitializeAssetDatabase();
+            TestCommon.InitializeAssetDatabase();
         }
 
         [Test]

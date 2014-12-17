@@ -2,9 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 class TestMacros : PositionVSStream, ShadingBase
 {
-    MacroTest macros0;
-    MacroTest macros1;
-    MacroTest macros2;
+    compose MacroTest macros0;
+    compose MacroTest macros1;
+    compose MacroTest macros2;
 
     stage override void PSMain()
     {

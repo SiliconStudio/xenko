@@ -16,7 +16,7 @@ using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Presentation.Quantum
 {
-    public abstract partial class ObservableNode : DispatcherViewModel, IObservableNode, IDynamicMetaObjectProvider
+    public abstract class ObservableNode : DispatcherViewModel, IObservableNode, IDynamicMetaObjectProvider
     {
         private readonly SortedObservableCollection<IObservableNode> children = new SortedObservableCollection<IObservableNode>(new AnonymousComparer<IObservableNode>(CompareChildren));
 
@@ -34,7 +34,6 @@ namespace SiliconStudio.Presentation.Quantum
             Guid = Guid.NewGuid();
             IsVisible = true;
             IsReadOnly = false;
-            InitializeTypeDescriptor(ownerViewModel.ObservableViewModelService);
         }
 
         /// <summary>
@@ -115,7 +114,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets additional data associated to this content. This can be used when the content itself does not contain enough information to be used as a view model.
         /// </summary>
-        public abstract IReadOnlyDictionary<string, object> AssociatedData { get; }
+        public abstract IDictionary<string, object> AssociatedData { get; }
 
         /// <summary>
         /// Gets the order number of this node in its parent.
@@ -171,7 +170,8 @@ namespace SiliconStudio.Presentation.Quantum
         /// Moves the node by setting it a new parent.
         /// </summary>
         /// <param name="newParent">The new parent of the node once moved.</param>
-        public void Move(IObservableNode newParent)
+        /// <param name="newName">The new name to give to the node once moved. This will modify its path. If <c>null</c>, it does not modify the name.</param>
+        public void Move(IObservableNode newParent, string newName = null)
         {
             if (this is CombinedObservableNode)
                 throw new InvalidOperationException("A CombinedObservableNode cannot be moved.");
@@ -185,16 +185,22 @@ namespace SiliconStudio.Presentation.Quantum
                     throw new InvalidOperationException("A node cannot be moved into itself or one of its children.");
                 parent = (ObservableNode)parent.Parent;
             }
-            
+
+            if (newParent.Children.Any(x => (newName == null && x.Name == Name) || x.Name == newName))
+                throw new InvalidOperationException("Unable to move this node, a node with the same name already exists.");
+
             if (Parent != null)
             {
                 parent = (ObservableNode)Parent;
                 parent.RemoveChild(this);
             }
 
+            if (newName != null)
+            {
+                Name = newName;
+            }
             Parent = newParent;
             ((ObservableNode)newParent).AddChild(this);
-
             UpdateCommandPath();
         }
         
@@ -274,12 +280,28 @@ namespace SiliconStudio.Presentation.Quantum
         
         protected void AddCommand(INodeCommandWrapper command)
         {
+            if (command == null) throw new ArgumentNullException("command");
+            OnPropertyChanging(string.Format("{0}{1}", ObservableViewModel.HasCommandPrefix, command.Name));
+            OnPropertyChanging(command.Name);
             commands.Add(command);
+            OnPropertyChanged(command.Name);
+            OnPropertyChanged(string.Format("{0}{1}", ObservableViewModel.HasCommandPrefix, command.Name));
         }
 
         protected void ClearCommands()
         {
+            var commandNames = commands.Select(x => x.Name).ToList();
+            foreach (string commandName in commandNames)
+            {
+                OnPropertyChanging(string.Format("{0}{1}", ObservableViewModel.HasCommandPrefix, commandName));
+                OnPropertyChanging(commandName);
+            }
             commands.Clear();
+            for (int i = commandNames.Count - 1; i >= 0; --i)
+            {
+                OnPropertyChanged(commandNames[i]);
+                OnPropertyChanged(string.Format("{0}{1}", ObservableViewModel.HasCommandPrefix, commandNames[i]));
+            }
         }
         
         protected void CheckDynamicMemberConsistency()

@@ -8,7 +8,7 @@
     <AssemblyName>SiliconStudio.Assets.Tests</AssemblyName>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioSign)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
+    <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>SiliconStudio.Assets.Tests.TestPackage</StartupObject>
@@ -20,6 +20,7 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="nunit.core.interfaces, Version=2.6.0.12051, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(SiliconStudioDependenciesDir)NUnit\nunit.core.interfaces.dll</HintPath>
@@ -47,6 +48,7 @@
     <Compile Include="AssetObjectTest.cs" />
     <Compile Include="TestAssetImport.cs" />
     <Compile Include="TestAssetReferenceCollection.cs" />
+    <Compile Include="TestAssetUpgrade.cs" />
     <Compile Include="TestBase.cs" />
     <Compile Include="TestDependencyManager.cs" />
     <Compile Include="TestFileVersionManager.cs" />

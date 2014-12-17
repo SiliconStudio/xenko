@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="depthEnable">if set to <c>true</c> [depth enable].</param>
         /// <param name="depthWriteEnable">if set to <c>true</c> [depth write enable].</param>
         /// <param name="name">The name.</param>
-        public DepthStencilState(GraphicsDevice device, DepthStencilStateDescription depthStencilStateDescription)
+        private DepthStencilState(GraphicsDevice device, DepthStencilStateDescription depthStencilStateDescription)
             : base(device)
         {
             Description = depthStencilStateDescription;

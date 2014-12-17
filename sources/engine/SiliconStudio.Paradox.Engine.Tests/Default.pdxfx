@@ -4,12 +4,6 @@ using SiliconStudio.Paradox.Effects.Data;
 
 namespace Test
 {
-    params RenderingParameters
-    {
-        bool UseDeferred;            // True to use deferred rendering. False to use standard Forward rendering.
-        bool UseTransparent;        // True to use transparent shading.
-    };
-
     // Spawn a sub-shader for the GBuffer pass
     partial shader GBufferShaderPass
     {

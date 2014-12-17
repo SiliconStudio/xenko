@@ -26,11 +26,8 @@
     <Compile Include="CombinedObservableNode.cs" />
     <Compile Include="CombinedValueChangedActionItem.cs" />
     <Compile Include="Controls\AsyncContentControl.cs" />
-    <Compile Include="ComponentModel\DefaultObservableNodePropertyProvider.cs" />
-    <Compile Include="IAttributeProvider.cs" />
     <Compile Include="INodeCommandWrapper.cs" />
     <Compile Include="IObservableNode.cs" />
-    <Compile Include="ComponentModel\IObservableNodePropertyProvider.cs" />
     <Compile Include="LCS.cs" />
     <Compile Include="NodeCommandWrapperBase.cs" />
     <Compile Include="NodeChangedArgs.cs" />
@@ -42,8 +39,6 @@
     <Compile Include="SingleObservableNode.cs" />
     <Compile Include="DebugExtensions.cs" />
     <Compile Include="ObservableNodeDynamicMetaObject.cs" />
-    <Compile Include="ComponentModel\ObservableNodePropertyDescriptor.cs" />
-    <Compile Include="ObservableNodeTypeDescriptor.cs" />
     <Compile Include="ObservableViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ModelNodeCommandWrapper.cs" />

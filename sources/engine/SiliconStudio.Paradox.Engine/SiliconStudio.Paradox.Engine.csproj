@@ -13,6 +13,7 @@
     <AssemblyName>SiliconStudio.Paradox.Engine</AssemblyName>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
+    <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions) --generate-user-doc</SiliconStudioAssemblyProcessorOptions>
     <ParadoxProjectPlatformDependentWindows>true</ParadoxProjectPlatformDependentWindows>
     <ParadoxBuildTags>*</ParadoxBuildTags>
   </PropertyGroup>
@@ -83,6 +84,7 @@
     </Compile>
     <Compile Include="Data\EntityComponentReference.cs" />
     <Compile Include="Data\EntityComponentReferenceDataConverter.cs" />
+    <Compile Include="Data\GeometricPrimitiveExtension.cs" />
     <Compile Include="Data\IEntityComponentReference.cs" />
     <Compile Include="Data\LightingConfigurationData.cs" />
     <Compile Include="Data\ModelComponentData.cs" />
@@ -95,7 +97,6 @@
     <Compile Include="Data\MeshData.cs" />
     <Compile Include="DataModel\KeyFrameData.cs" />
     <Compile Include="DataModel\LightType.cs" />
-    <Compile Include="Data\MeshDataHelper.cs" />
     <Compile Include="DataModel\NodePropertyData.cs" />
     <Compile Include="Data\EntityComponentDataConverter.cs" />
     <Compile Include="Data\SceneConverter.cs" />
@@ -103,6 +104,8 @@
     <Compile Include="Effects\BackgroundRenderer.cs" />
     <Compile Include="Effects\CameraSetter.cs" />
     <Compile Include="Effects\DelegateRenderer.cs" />
+    <Compile Include="Effects\DynamicEffectCompiler.cs" />
+    <Compile Include="Effects\DynamicEffectInstance.cs" />
     <Compile Include="Effects\EffectParameterUpdater.cs" />
     <Compile Include="Effects\BasicEffect.cs">
       <DependentUpon>BasicEffect.pdxfx</DependentUpon>
@@ -135,10 +138,12 @@
     </Compile>
     <Compile Include="Effects\MeshAnimationUpdater.cs" />
     <Compile Include="Effects\MeshRenderExtensions.cs" />
-    <Compile Include="Effects\MeshRenderState.cs" />
-    <Compile Include="Effects\OpaqueModelRenderer.cs" />
+    <Compile Include="Effects\ModelRendererState.cs" />
+    <Compile Include="Effects\MultipleRenderTargetsSetter.cs" />
+    <Compile Include="Effects\ModelRendererExtensions.cs" />
     <Compile Include="Effects\ProfilingKeys.cs" />
     <Compile Include="Effects\RecursiveRenderer.cs" />
+    <Compile Include="Effects\RendererExtensions.cs" />
     <Compile Include="Effects\RenderLayers.cs" />
     <Compile Include="Effects\Renderer.cs" />
     <Compile Include="Effects\RenderModel.cs" />
@@ -151,7 +156,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Effects\RenderMeshEntry.cs" />
     <Compile Include="Effects\Mesh.cs" />
     <Compile Include="Effects\Model.cs" />
     <Compile Include="Effects\EffectSystem.cs" />
@@ -162,7 +166,6 @@
     <Compile Include="Effects\ShadowMapParameters.cs" />
     <Compile Include="Effects\SpriteRenderer.cs" />
     <Compile Include="Effects\TransformTRS.cs" />
-    <Compile Include="Effects\TransparentModelRenderer.cs" />
     <Compile Include="Effects\UIRenderer.cs" />
     <Compile Include="Engine\AnimationOperation.cs" />
     <Compile Include="Engine\AnimationOperationType.cs" />
@@ -176,15 +179,9 @@
     <Compile Include="Data\BoundingBoxExtensions.cs" />
     <Compile Include="Data\HalfBufferExtensions.cs" />
     <Compile Include="Data\PolySortExtensions.cs" />
-    <Compile Include="Engine\Bullet2PhysicsSystem.cs" />
-    <Compile Include="Engine\ColliderExtensions.cs" />
-    <Compile Include="Engine\IPhysicsSystem.cs" />
-    <Compile Include="Engine\PhysicsColliderShape.cs" />
-    <Compile Include="Engine\PhysicsColliderShapeData.cs" />
-    <Compile Include="Engine\PhysicsColliderShapeSerializer.cs" />
-    <Compile Include="Engine\PhysicsComponent.cs" />
-    <Compile Include="Engine\PhysicsElement.cs" />
-    <Compile Include="Engine\PhysicsProcessor.cs" />
+    <Compile Include="Engine\CubemapBlendComponent.cs" />
+    <Compile Include="Engine\CubemapSourceComponent.cs" />
+    <Compile Include="Effects\IModelInstance.cs" />
     <Compile Include="Engine\LightProcessor.cs" />
     <Compile Include="Engine\PlayingAnimation.cs" />
     <Compile Include="Engine\ModelNodeLinkComponent.cs" />
@@ -209,7 +206,6 @@
     <Compile Include="Particles\ParticleField.cs" />
     <Compile Include="Particles\ParticleFieldAccessor.cs" />
     <Compile Include="Particles\ParticleFieldDescription.cs" />
-    <Compile Include="EntityModel\EffectMeshCloner.cs" />
     <Compile Include="ScriptSystem.cs" />
     <Compile Include="Particles\IParticlePlugin.cs" />
     <Compile Include="Particles\IParticlePluginListener.cs" />
@@ -254,7 +250,7 @@
     <Compile Include="Effects\RenderPass.cs" />
     <Compile Include="Effects\RenderPass.Extensions.cs" />
     <Compile Include="Data\MeshDrawData.cs" />
-    <Compile Include="Effects\EffectMesh.cs" />
+    <Compile Include="Effects\RenderMesh.cs" />
     <Compile Include="Effects\RenderContext.cs" />
     <Compile Include="Engine\AnimationComponent.cs" />
     <Compile Include="Engine\AnimationProcessor.cs" />
@@ -288,7 +284,6 @@
     </Compile>
     <Compile Include="Shaders\TransformationKeys.cs" />
     <Compile Include="Shaders\TransformationSkinningKeys.cs" />
-    <Compile Include="ShadowMapModelRenderer.cs" />
     <Compile Include="Threading\ILockMechanism.cs" />
     <Compile Include="Threading\Lock.cs" />
     <Compile Include="Threading\LockMechanismException.cs" />
@@ -381,10 +376,6 @@
       <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
       <Name>SiliconStudio.Core.Mathematics</Name>
       <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.Physics\SiliconStudio.Paradox.Physics.csproj">
-      <Project>{dd592516-b341-40fe-9100-1b0fa784a060}</Project>
-      <Name>SiliconStudio.Paradox.Physics</Name>
     </ProjectReference>
     <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\SiliconStudio.Paradox.Shaders.Compiler\SiliconStudio.Paradox.Shaders.Compiler.csproj">
       <Project>{E8B3553F-A79F-4E50-B75B-ACEE771C320C}</Project>

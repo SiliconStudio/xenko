@@ -1,22 +1,125 @@
-### Version 1.0.0-beta03
+### Version 1.0.0-beta07
 
-Release date: 2014/??/??
-
-#### New Features
-- UI: Add new UI element: Slider
+Release date: 2014/12/??
 
 #### Issues fixed
+- Shaders: Fix code gen bug not allowing the usage of generic resources type in `pdxsl` files (like `Texture2D<int>` [#128](https://github.com/SiliconStudio/paradox/issues/128)).
+ 
+### Version 1.0.0-beta06
+
+Release date: 2014/11/26
+
+#### Issues fixed
+- Build: Fixed build issues due to Asset Compiler ([#116](https://github.com/SiliconStudio/paradox/issues/116)).
+- Samples: Fixed various samples that didn't build since recent changes in SpriteBatch.MeasureString ([#117](https://github.com/SiliconStudio/paradox/issues/117)).
+- Studio: Fixed high CPU usage due to improper WPF refreshes ([#115](https://github.com/SiliconStudio/paradox/issues/115)).
+
+### Version 1.0.0-beta04
+
+Release date: 2014/11/25
+
+#### New Features
+- Build: We now use OSS (OpenSource Signing) so that you can fake-sign assemblies with the same keys as ours, and use your own compiled Paradox with the official editor ([#88](https://github.com/SiliconStudio/paradox/issues/88)).
+- Engine: Unified 2D and 3D rendering: `SpriteRenderer` now works with custom matrices or camera.
+- Graphics: Spot light shadow maps in deferred rendering ([#96](https://github.com/SiliconStudio/paradox/issues/96)).
+- Studio: Added documentation on properties of the property grid.
+
+#### Enhancements
+- Core: Add support for `ModuleInitializer` in nested types
+- Graphics: Better computation of shadow maps (for both directional and spot lights).
+- Graphics: Add geometric primitive for Cone.
+- Engine: Several internal improvements and factorization to support upcoming `PostEffects` framework.
+- Engine: Add support for filtering model selection and rendering in `ModelRenderer`.  
+- Engine: `SpriteRenderer` now uses the Projection and View matrices set in the pipeline ([#96](https://github.com/SiliconStudio/paradox/issues/96)).
+- Samples: Spot light shadows in DeferredLighting sample.
+- Shaders: Add support for naming a child in a `pdxfx` to allow child override.
+- Shaders: `cs` files generated from `pfxfx` are now using internal and nested types instead of putting everything in the root namespace.
+- Shaders: Add support for declaring a namespace in a `pdxsl`, only valid and used for `ParameterKey` declarations.
+- Studio: Custom enhanced title bar for all windows.
+
+#### Issues fixed
+- Assets: Textures with arbitrary size (non square and non power-of-two) are now correctly loaded.
+- Engine: Fix `EntitySystem.Remove` that was destroying the hierarchy of entities.
+- Graphics: Fix spot light shadow computation.
+- Samples: Fix effect compilation occurring at runtime for some samples 
+- Shaders: Simplify some deferred lighting shaders.
+- Shaders: Don't generate an empty class for `pdxsl` files that don't declare any shader `ParameterKey`
+- Studio: Fix renamed button for string-indexed dictionary that was misplaced and not working
+- Studio: Fix add parameter key control filtering and mouse selection
+- Studio: Fix some actions from the property grid that were not undo-able
+- Studio: Some buttons were sometimes hidden where they should be visible in the property grid.
+
+#### Breaking changes
+- Asset: CastShadows, ReceiveShadows and Layer members of `ModelAsset` class are removed. They should be set in the Parameters of the `ModelAsset` behind the corresponding keys.
+- Engine: Default value for ParameterKeys `LightingKeys.CastShadows` and `LightingKeys.ReceiveShadows` becomes true.
+- Engine: Remove obsolete `MeshDrawHelper` file (use `GeometricPrimitive` instead), move `ToMeshDraw` method to `GeometricPrimitiveExtensions`.
+- Engine: `ModelRenderer` is no longer inheritable but extensible via compositions.
+- Engine: `ModelRenderer.EnableFrustrumCulling` is replaced by the extension method `ModelRenderer.AddDefaultFrustrumCulling`
+- Engine: `EffectMesh` is renamed to `RenderMesh` 
+- Engine: `SpriteRenderer` now requires a valid camera to be set in the pipeline.
+- Engine: `CameraComponent` now uses the Z-axis as camera direction vector to compute the view matrix when `Target` entity is null.
+- Shaders: Declaring a composition member in a shader class must be now prefixed with the `compose` attribute. 
+- Graphics: The signature of some overloads of `SpriteBatch.Begin` have changed for better clarity and easier usage.
+- Graphics: `SpriteBatch.MeasureString` now requires the size of the final render target as parameter.
+
+#### Known Issues
+- Physics: Complex convex hull decomposition can be a very long process and there is visual feedback for it.
+- Physics: Convex hull shape debug shapes in game studio are not rendering very well, although the asset will be OK.
+
+___
+
+### Version 1.0.0-beta03
+
+Release date: 2014/11/11
+
+#### New Features
+- Engine: Add cubemap components to place cubemaps in the scene or render them at runtime.
+- Graphics: Add skybox renderer from a TextureCube (similar to background renderer).
+- Graphics: Add cubemap reflections for deferred rendering.
+- Graphics: Support of shadow mapping in forward rendering for spot lights. Only 1 cascade is supported at the moment.
+- Samples: Add CubemapReflection sample.
+- Samples: Add spot light shadow in ForwardRendering sample.
+- Shaders: Add several cubemap shaders for sampling, reflection, parallax correction etc.
+- UI: Add new UI element: Slider
+- Website: [Paradox Forums](http://forums.paradox3d.net) has just been opened. Feel free to use it to discuss about Paradox, help each other, collaborate and show off what you did with Paradox!
+
+#### Enhancements
+- Studio: Property grids have been reworked to be more efficient and easily extendable.
+- Studio: Numeric input controls have been improved.
+- Physics: Physics assembly now depends on Engine (instead of the opposite). Soon Physics (and some other modules) will become optional.
+- Input: Allow emulation of several touch pointers at a same time with mouse different buttons.
+
+#### Issues fixed
+- Assets: Fix shininess import from FBX files.
+- Core: EnumerableExtensions.LastIndexOf() wasn't working properly ([#62](https://github.com/SiliconStudio/paradox/issues/62)).
+- Game: Properly support windows with height 0 when AllowUserResizing is true ([#65](https://github.com/SiliconStudio/paradox/issues/65)).
+- Game: GameForm is created with a black background, to avoid initial flickering while Windows is being initialized ([#54](https://github.com/SiliconStudio/paradox/issues/54)).
+- Input: Alt+F4 is now properly working on Windows Store/Phone platforms ([#74](https://github.com/SiliconStudio/paradox/issues/74)).
+- Input: Properly maps all extended keyboard keys on Windows Store/Phone platforms ([#84](https://github.com/SiliconStudio/paradox/issues/84)).
+- Input: Fix several crashes and bugs in GestureRecognizers and mouse button states.
+- Misc: PCL can now be used in Windows Store/Phone platforms ([#72](https://github.com/SiliconStudio/paradox/issues/72)).
+- Samples: SimpleDynamicTexture was using expected screen size instead of actual screen size, resulting in incorrect picking in fullscreen mode ([#75](https://github.com/SiliconStudio/paradox/issues/75)).
+- Shaders: Geometry shaders are forced to transmit SV_Position stream to pixel shaders.
+- Shaders: Compositions (especially arrays) couldn't be used in child classes of the one containing their declaration. Function and member calls weren't correctly resolved.
+- Studio: Fix preview and thumbnail of materials with normal map.
+- Studio: Fix binding errors in the property grid ([#29](https://github.com/SiliconStudio/paradox/issues/29)).
+- Studio: Fix undesired hue changes and loss of precision in extremal values in the color picker.
+- Studio: Fix "Show in explorer" on assets.
 - UI: UIImage borders were not properly rendered when image had Orientation.Rotated90.
 
 #### Breaking changes
 - Graphics: Remove Rotated180 and Rotated90C from ImageOrientation enumeration for code simplicity and efficiency purpose.
 - Graphics: Change ImageFragment.Region type from Rectangle to RectangleF and corresponding batch draw function API (SpriteBatch/UIBatch).
 - Graphics: CopyRegion now contains additional parameters for subresource indices and destination offset.
+- Graphics: RasterizerState and DepthStencilState constructors are now private to match other Graphics classes. static New() should be used instead ([#83](https://github.com/SiliconStudio/paradox/issues/83)).
+- Physics: Physics engine initialization has changed since now Physics is a optional module. (please check updated samples)
+- Physics: Added Convex Hull simple wrap shape and complex decomposition as well.
 
-#### Issues fixed
-- Gamestudio: Fix preview and thumbnail of materials with normal map.
-- Shaders: Geometry shaders are forced to transmit SV_Position stream to pixel shaders.
-- Shaders: Compositions (especially arrays) couldn't be used in child classes of the one containing their declaration. Function and member calls weren't correctly resolved.
+#### Known Issues
+- Physics: Complex convex hull decomposition can be a very long process and there is visual feedback for it.
+- Physics: Convex hull shape debug shapes in game studio are not rendering very well, although the asset will be OK.
+
+___
 
 ### Version 1.0.0-beta02
 
@@ -41,6 +144,8 @@ Release date: 2014/10/22
 - UI: Opacity is new correctly taken into account when drawing background color of UI elements ([#43](https://github.com/SiliconStudio/paradox/issues/43)).
 - UI: Fix rendering problems on the Button/ToggleButton's content when setting their background color.
 - Visual Studio Package: Syntax highlighting was not working properly on VS2012 ([#45](https://github.com/SiliconStudio/paradox/issues/45)).
+
+___
 
 ### Version 1.0.0-beta01
 
@@ -112,6 +217,7 @@ More details at [http://paradox3d.net/blog/new-version-open-sourcing](http://par
 - Samples: Since there is no accelerometer Input API yet, Accelerometer sample is currently removed.
 - Windows Store/Phone: UI EditText and Game Resume/Destroy cycles are not implemented.
 - Windows Store/Phone: SharpFont.dll is still compiled against .NET 4.5 (might not pass certifications).
+
 ___
 
 ### Version 1.0.0-alpha11

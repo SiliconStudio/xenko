@@ -67,7 +67,7 @@ namespace SiliconStudio.Paradox.EntityModel
         /// <param name="entity">The entity.</param>
         protected internal abstract void SetEnabled(Entity entity, bool enabled);
 
-        protected internal virtual void OnEnabledChanged(Entity entity, bool enabled)
+        protected virtual void OnEnabledChanged(Entity entity, bool enabled)
         {
             
         }
@@ -94,9 +94,10 @@ namespace SiliconStudio.Paradox.EntityModel
         /// Exposed for inheriting class that has no access to EntitySystem as internal.
         /// </summary>
         /// <param name="entity">The entity.</param>
-        protected internal void InternalRemoveEntity(Entity entity)
+        /// <param name="removeParent">Indicate if entity should be removed from its parent</param>
+        protected internal void InternalRemoveEntity(Entity entity, bool removeParent)
         {
-            EntitySystem.InternalRemoveEntity(entity);
+            EntitySystem.InternalRemoveEntity(entity, removeParent);
         }
     }
 

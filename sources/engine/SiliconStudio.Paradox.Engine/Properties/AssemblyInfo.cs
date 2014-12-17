@@ -25,17 +25,11 @@ using System.Runtime.InteropServices;
 // TODO: Needed for ParameterCollection getters, but it would be better to avoid this kind of dependency.
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.Engine.Serializers" + SiliconStudio.PublicKeys.Default)]
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.Engine.Shaders" + SiliconStudio.PublicKeys.Default)]
-
-#if !SILICONSTUDIO_SIGNED
-// Make internals visible to the Engine Test projects.
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Engine.Audio.Tests")]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Assets.Tests")]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Audio.Tests")]
-[assembly: InternalsVisibleTo("SiliconStudioParadoxAudioTests")]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Audio.Tests.Android.Manual")]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Graphics.Regression")]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Graphics.Tests")]
-[assembly: InternalsVisibleTo("SiliconStudioParadoxGraphicsTests")]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Engine.Tests")]
-[assembly: InternalsVisibleTo("SiliconStudioParadoxEngineTests")]
-#endif
+[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Graphics.Regression" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Audio.Tests" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudioParadoxAudioTests" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Engine.Audio.Tests" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Graphics.Tests" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudioParadoxGraphicsTests" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Engine.Tests" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudioParadoxEngineTests" + SiliconStudio.PublicKeys.Default)]

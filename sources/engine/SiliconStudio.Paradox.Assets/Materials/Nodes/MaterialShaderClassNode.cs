@@ -25,6 +25,12 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
         #region Public properties
 
         //TODO: use typed AssetReferences
+        /// <summary>
+        /// The shader.
+        /// </summary>
+        /// <userdoc>
+        /// The shader used in this node. It should be a ComputeColor.
+        /// </userdoc>
         [DataMember(10)]
         public AssetReference<EffectShaderAsset> MixinReference
         {
@@ -41,18 +47,27 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
         /// <summary>
         /// The generics of this class.
         /// </summary>
+        /// <userdoc>
+        /// The generics of the shader. There is no need to edit the list, it is automatically filled when the shader is loaded.
+        /// </userdoc>
         [DataMember(30)]
         public GenericDictionary Generics { get; set; }
         
         /// <summary>
         /// The compositions of this class.
         /// </summary>
+        /// <userdoc>
+        /// The compositions of the shader where material nodes can be attached. There is no need to edit the list, it is automatically filled when the shader is loaded.
+        /// </userdoc>
         [DataMember(40)]
         public Dictionary<string, IMaterialNode> CompositionNodes { get; set; }
 
         /// <summary>
         /// The members of this class.
         /// </summary>
+        /// <userdoc>
+        /// The editables values of this shader. There is no need to edit the list, it is automatically filled when the shader is loaded.
+        /// </userdoc>
         [DataMember(50)]
         public Dictionary<ParameterKey, object> Members { get; set; }
 

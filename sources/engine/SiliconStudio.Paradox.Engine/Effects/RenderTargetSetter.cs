@@ -111,18 +111,7 @@ namespace SiliconStudio.Paradox.Effects
         /// </value>
         public bool EnableSetTargets { get; set; }
 
-        public override void Load()
-        {
-            // Clear scene
-            Pass.StartPass += OnRender;
-        }
-
-        public override void Unload()
-        {
-            Pass.StartPass -= OnRender;
-        }
-
-        protected void OnRender(RenderContext context)
+        protected override void OnRendering(RenderContext context)
         {
             var graphicsDevice = context.GraphicsDevice;
 

@@ -38,8 +38,10 @@ namespace SiliconStudio.Presentation.Controls
         private FrameworkElement huePickerRenderSurface;
         private Rectangle huePickerSelector;
         private bool interlock;
-        private Color4 internalColor;
+        private ColorHSV internalColor;
         private bool suspendBindingUpdates;
+        private bool templateApplied;
+        private DependencyProperty initializingProperty;
 
         /// <summary>
         /// Identifies the <see cref="Color"/> dependency property.
@@ -125,11 +127,12 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// An internal representation of the color associated to this color picker. Its value never rounded to match a byte division by 255.
         /// </summary>
-        private Color4 InternalColor { get { return internalColor; } set { internalColor = value; interlock = true; Color = value; interlock = false; } }
+        private ColorHSV InternalColor { get { return internalColor; } set { internalColor = value; var prev = interlock; interlock = true; Color = value.ToColor(); interlock = prev; } }
 
         /// <inheritdoc/>
         public override void OnApplyTemplate()
         {
+            templateApplied = false;
             base.OnApplyTemplate();
 
             if (colorPickerRenderSurface != null)
@@ -178,6 +181,7 @@ namespace SiliconStudio.Presentation.Controls
             {
                 Canvas.SetLeft(huePickerSelector, Hue * huePickerRenderSurface.Width / 360.0);
             }
+            templateApplied = true;
         }
 
         /// <summary>
@@ -218,7 +222,9 @@ namespace SiliconStudio.Presentation.Controls
         private void OnColorPickerRenderSurfaceMouseMove(object sender, MouseEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed && colorPickerRenderSurface.IsMouseCaptured)
+            {
                 UpdateColorPickerFromMouse(e.GetPosition(colorPickerRenderSurface));
+            }
         }
 
         /// <summary>
@@ -227,14 +233,16 @@ namespace SiliconStudio.Presentation.Controls
         /// <param name="position">The position of the cursor in the color surface.</param>
         private void UpdateColorPickerFromMouse(Point position)
         {
+            Canvas.SetLeft(colorPickerSelector, MathUtil.Clamp(position.X, 0.0f, colorPickerRenderSurface.Width));
+            Canvas.SetTop(colorPickerSelector, MathUtil.Clamp(position.Y, 0.0f, colorPickerRenderSurface.Height));
             var x = (float)(position.X / colorPickerRenderSurface.Width);
             var y = (float)(position.Y / colorPickerRenderSurface.Height);
-
             x = MathUtil.Clamp(x, 0.0f, 1.0f);
-            y = MathUtil.Clamp(y, 0.0f, 1.0f);
-
+            y = MathUtil.Clamp(y, 0.0f, 1.0f);            
             var colorHSV = new ColorHSV(Hue, x, y, Alpha / 255.0f);
-            Color = colorHSV.ToColor();
+            //SetCurrentValue(ColorProperty, colorHSV.ToColor());
+            SetCurrentValue(SaturationProperty, colorHSV.S * 100.0f);
+            SetCurrentValue(BrightnessProperty, colorHSV.V * 100.0f);
         }
 
 
@@ -276,7 +284,9 @@ namespace SiliconStudio.Presentation.Controls
         private void OnHuePickerRenderSurfaceMouseMove(object sender, MouseEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed && huePickerRenderSurface.IsMouseCaptured)
+            {
                 UpdateHuePickerFromMouse(e.GetPosition(huePickerRenderSurface));
+            }
         }
 
         /// <summary>
@@ -285,10 +295,12 @@ namespace SiliconStudio.Presentation.Controls
         /// <param name="position">The position of the cursor in the hue surface.</param>
         private void UpdateHuePickerFromMouse(Point position)
         {
+            Canvas.SetLeft(huePickerSelector, MathUtil.Clamp(position.X, 0.0f, huePickerRenderSurface.Width));
             var x = (float)(position.X / huePickerRenderSurface.Width);
             x = (float)(360.0 * MathUtil.Clamp(x, 0.0f, 1.0f));
-            var colorHSV = new ColorHSV(x, Saturation / 100.0f, Brightness / 100.0f, Alpha / 255.0f);
-            Color = colorHSV.ToColor();
+            //var colorHSV = new ColorHSV(x, Saturation / 100.0f, Brightness / 100.0f, Alpha / 255.0f);
+            //SetCurrentValue(ColorProperty, colorHSV.ToColor());
+            SetCurrentValue(HueProperty, x);
         }
 
         /// <summary>
@@ -337,25 +349,39 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         private void OnColorChanged()
         {
+            bool isInitializing = !templateApplied && initializingProperty == null;
+            if (isInitializing)
+                initializingProperty = ColorProperty;
+
             if (!interlock)
             {
-                internalColor = Color;
+                InternalColor = ColorHSV.FromColor(Color);
+                var colorRGBA = InternalColor.ToColor();
                 interlock = true;
 
-                SetCurrentValue(RedProperty, (byte)(internalColor.R * 255.0f));
-                SetCurrentValue(GreenProperty, (byte)(internalColor.G * 255.0f));
-                SetCurrentValue(BlueProperty, (byte)(internalColor.B * 255.0f));
-                SetCurrentValue(AlphaProperty, (byte)(internalColor.A * 255.0f));
+                SetCurrentValue(RedProperty, (byte)(Math.Round(colorRGBA.R * 255.0f)));
+                SetCurrentValue(GreenProperty, (byte)(Math.Round(colorRGBA.G * 255.0f)));
+                SetCurrentValue(BlueProperty, (byte)(Math.Round(colorRGBA.B * 255.0f)));
+                SetCurrentValue(AlphaProperty, (byte)(Math.Round(colorRGBA.A * 255.0f)));
 
-                var colorHSV = ColorHSV.FromColor(internalColor);
-                SetCurrentValue(HueProperty, colorHSV.H);
-                SetCurrentValue(SaturationProperty, colorHSV.S * 100.0f);
-                SetCurrentValue(BrightnessProperty, colorHSV.V * 100.0f);
+                SetCurrentValue(HueProperty, InternalColor.H);
+                SetCurrentValue(SaturationProperty, InternalColor.S * 100.0f);
+                SetCurrentValue(BrightnessProperty, InternalColor.V * 100.0f);
                 interlock = false;
             }
-            RenderColorPickerSurface();
 
+            if (!suspendBindingUpdates)
+            {
+                RenderColorPickerSurface();
+            }
+            else if (colorPreviewRenderSurface != null)
+            {
+                colorPreviewRenderSurface.Fill = new SolidColorBrush(Color.ToSystemColor());
+            }
             UpdateBinding(ColorProperty);
+
+            if (isInitializing)
+                initializingProperty = null;
         }
 
         /// <summary>
@@ -364,28 +390,35 @@ namespace SiliconStudio.Presentation.Controls
         /// <param name="e">The dependency property that has changed.</param>
         private void OnRGBAValueChanged(DependencyPropertyChangedEventArgs e)
         {
+            bool isInitializing = !templateApplied && initializingProperty == null;
+            if (isInitializing)
+                initializingProperty = e.Property;
+
             if (!interlock)
             {
+                Color4 colorRGBA;
                 if (e.Property == RedProperty)
-                    InternalColor = new Color4((byte)e.NewValue / 255.0f, InternalColor.G, InternalColor.B, InternalColor.A);
+                    colorRGBA = new Color4((byte)e.NewValue / 255.0f, Green / 255.0f, Blue / 255.0f, Alpha / 255.0f);
                 else if (e.Property == GreenProperty)
-                    InternalColor = new Color4(InternalColor.R, (byte)e.NewValue / 255.0f, InternalColor.B, InternalColor.A);
+                    colorRGBA = new Color4(Red / 255.0f, (byte)e.NewValue / 255.0f, Blue / 255.0f, Alpha / 255.0f);
                 else if (e.Property == BlueProperty)
-                    InternalColor = new Color4(InternalColor.R, InternalColor.G, (byte)e.NewValue / 255.0f, InternalColor.A);
+                    colorRGBA = new Color4(Red / 255.0f, Green / 255.0f, (byte)e.NewValue / 255.0f, Alpha / 255.0f);
                 else if (e.Property == AlphaProperty)
-                    InternalColor = new Color4(InternalColor.R, InternalColor.G, InternalColor.B, (byte)e.NewValue / 255.0f);
+                    colorRGBA = new Color4(Red / 255.0f, Green / 255.0f, Blue / 255.0f, (byte)e.NewValue / 255.0f);
                 else
                     throw new ArgumentException("Property unsupported by method OnRGBAValueChanged.");
 
                 interlock = true;
-                var colorHSV = ColorHSV.FromColor(internalColor);
-                SetCurrentValue(HueProperty, colorHSV.H);
-                SetCurrentValue(SaturationProperty, colorHSV.S * 100.0f);
-                SetCurrentValue(BrightnessProperty, colorHSV.V * 100.0f);
+                InternalColor = ColorHSV.FromColor(colorRGBA);
+                SetCurrentValue(HueProperty, InternalColor.H);
+                SetCurrentValue(SaturationProperty, InternalColor.S * 100.0f);
+                SetCurrentValue(BrightnessProperty, InternalColor.V * 100.0f);
                 interlock = false;
             }
             
             UpdateBinding(e.Property);
+            if (isInitializing)
+                initializingProperty = null;
         }
 
         /// <summary>
@@ -394,43 +427,47 @@ namespace SiliconStudio.Presentation.Controls
         /// <param name="e">The dependency property that has changed.</param>
         private void OnHSVValueChanged(DependencyPropertyChangedEventArgs e)
         {
+            bool isInitializing = !templateApplied && initializingProperty == null;
+            if (isInitializing)
+                initializingProperty = e.Property;
+            
             if (!interlock)
             {
-                ColorHSV colorHSV;
-
                 if (e.Property == HueProperty)
                 {
-                    colorHSV = new ColorHSV((float)e.NewValue, Saturation / 100.0f, Brightness / 100.0f, Alpha / 255.0f);
+                    InternalColor = new ColorHSV((float)e.NewValue, Saturation / 100.0f, Brightness / 100.0f, Alpha / 255.0f);
                     RenderColorPickerSurface();
                 }
                 else if (e.Property == SaturationProperty)
-                    colorHSV = new ColorHSV(Hue, (float)e.NewValue / 100.0f, Brightness / 100.0f, Alpha / 255.0f);
+                    InternalColor = new ColorHSV(Hue, (float)e.NewValue / 100.0f, Brightness / 100.0f, Alpha / 255.0f);
                 else if (e.Property == BrightnessProperty)
-                    colorHSV = new ColorHSV(Hue, Saturation / 100.0f, (float)e.NewValue / 100.0f, Alpha / 255.0f);
+                    InternalColor = new ColorHSV(Hue, Saturation / 100.0f, (float)e.NewValue / 100.0f, Alpha / 255.0f);
                 else
                     throw new ArgumentException("Property unsupported by method OnHSVValueChanged.");
 
-                InternalColor = colorHSV.ToColor();
-
+                var colorRGBA = InternalColor.ToColor();
                 interlock = true;
-                SetCurrentValue(RedProperty, (byte)(internalColor.R * 255.0f));
-                SetCurrentValue(GreenProperty, (byte)(internalColor.G * 255.0f));
-                SetCurrentValue(BlueProperty, (byte)(internalColor.B * 255.0f));
-                SetCurrentValue(AlphaProperty, (byte)(internalColor.A * 255.0f));
+                SetCurrentValue(RedProperty, (byte)(Math.Round(colorRGBA.R * 255.0f)));
+                SetCurrentValue(GreenProperty, (byte)(Math.Round(colorRGBA.G * 255.0f)));
+                SetCurrentValue(BlueProperty, (byte)(Math.Round(colorRGBA.B * 255.0f)));
+                SetCurrentValue(AlphaProperty, (byte)(Math.Round(colorRGBA.A * 255.0f)));
                 interlock = false;
             }
 
             UpdateBinding(e.Property);
 
-            if (colorPickerSelector != null && colorPickerRenderSurface != null)
+            if (colorPickerSelector != null && colorPickerRenderSurface != null && !suspendBindingUpdates)
             {
                 Canvas.SetLeft(colorPickerSelector, Saturation * colorPickerRenderSurface.Width / 100.0);
                 Canvas.SetTop(colorPickerSelector, Brightness * colorPickerRenderSurface.Height / 100.0);
             }
-            if (huePickerSelector != null && huePickerRenderSurface != null)
+            if (huePickerSelector != null && huePickerRenderSurface != null && !suspendBindingUpdates)
             {
                 Canvas.SetLeft(huePickerSelector, Hue * huePickerRenderSurface.Width / 360.0);
             }
+
+            if (isInitializing)
+                initializingProperty = null;
         }
 
         /// <summary>
@@ -439,7 +476,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <param name="dependencyProperty">The dependency property.</param>
         private void UpdateBinding(DependencyProperty dependencyProperty)
         {
-            if (!suspendBindingUpdates)
+            if (!suspendBindingUpdates && dependencyProperty != initializingProperty)
             {
                 BindingExpression expression = GetBindingExpression(dependencyProperty);
                 if (expression != null)

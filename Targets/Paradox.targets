@@ -2,6 +2,15 @@
   <!--Check requirements when running this build file -->
   <Target Name="SiliconStudioParadoxCheckRequirements">
     <Error Condition="'$(SiliconStudioPlatform)' == ''" Text="The property %24(SiliconStudioPlatform) must be defined by the project"/>
+
+    <!-- If we compile without Visual Studio, still properly resolve platform if SolutionPath is given -->
+    <MSBuild Projects="$(SolutionPath)"
+             Condition="'$(BuildingInsideVisualStudio)' != 'true' and '$(BuildingSolutionFile)' != 'true' and '$(SolutionPath)' != '' and '$(SolutionPath)' != '*Undefined*'"
+             Targets="GetSolutionConfigurationContents"
+             Properties="Configuration=$(Configuration);Platform=$(SolutionPlatform)"
+             ContinueOnError="$(ContinueOnError)">
+      <Output TaskParameter="TargetOutputs" PropertyName="CurrentSolutionConfigurationContents"/>
+    </MSBuild>
   </Target>
 
   <PropertyGroup>
@@ -113,6 +122,7 @@
     <PropertyGroup>
       <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioAssemblyProcessorOptions)' == ''">--auto-notify-property --parameter-key --auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
       <SiliconStudioAssemblyProcessorCommand Condition="'$(SiliconStudioAssemblyProcessorCommand)' == ''">"$(SiliconStudioPackageParadoxSdkBin)\SiliconStudio.AssemblyProcessor.exe" --platform=$(SiliconStudioPlatform) --targetFramework=$(SiliconStudioNETFrameworkVersion)  $(SiliconStudioAssemblyProcessorOptions) "$(TargetPath)"</SiliconStudioAssemblyProcessorCommand>
+      <SiliconStudioAssemblyProcessorCommand Condition="'$(AssemblyOriginatorKeyFile)' != ''">$(SiliconStudioAssemblyProcessorCommand) --signkeyfile="$(AssemblyOriginatorKeyFile)"</SiliconStudioAssemblyProcessorCommand>
     </PropertyGroup>
     
     <!-- Run assembly processor -->
@@ -167,5 +177,4 @@
     <RemoveDir Condition="Exists('$(SiliconStudioCompileAssetBuildPath)')" ContinueOnError="true"  Directories="$(SiliconStudioCompileAssetBuildPath)"/>
     <RemoveDir Condition="Exists('$(SiliconStudioCompileAssetOutputPath)')" ContinueOnError="true"  Directories="$(SiliconStudioCompileAssetOutputPath)"/>
   </Target>
-
 </Project>

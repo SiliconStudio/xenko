@@ -61,6 +61,11 @@ namespace SiliconStudio.Paradox.Input
 
         private readonly bool[] mouseButtonsPrevious = new bool[NumberOfMouseButtons];
 
+        /// <summary>
+        /// The exact current down/up state of the mouse button (not synchronized with the update cycles).
+        /// </summary>
+        internal readonly bool[] MouseButtonCurrentlyDown = new bool[NumberOfMouseButtons];
+
         private readonly List<Dictionary<object, float>> virtualButtonValues = new List<Dictionary<object, float>>();
 
         private readonly List<PointerEvent> pointerEvents = new List<PointerEvent>();

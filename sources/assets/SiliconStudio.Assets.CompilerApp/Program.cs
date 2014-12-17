@@ -57,6 +57,9 @@ namespace SiliconStudio.Assets.CompilerApp
 
             //args = new string[] { "test.pdxpkg", "-o:app_data", "-b:tmp", "-t:1" };
 
+            //hardcoded physics
+            Paradox.Physics.PhysicsEngine.InitializeConverters();
+
             var exeName = Path.GetFileName(Assembly.GetExecutingAssembly().Location);
             var showHelp = false;
             var options = new PackageBuilderOptions(GlobalLogger.GetLogger("BuildEngine"));
@@ -216,7 +219,7 @@ namespace SiliconStudio.Assets.CompilerApp
             }
             catch (Exception e)
             {
-                options.Logger.Error("{0}", e);
+                options.Logger.Error("Unhandled exception: {0}", e, e.Message);
                 exitCode = BuildResultCode.BuildError;
             }
             finally

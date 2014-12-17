@@ -11,8 +11,6 @@ namespace PostEffects
     {
         using params PostEffectsParameters;
 
-        mixin PostEffectBase;
-
         // TODO: fix this
         PostEffectsParameters.verticalBlur = true;
 
@@ -22,8 +20,6 @@ namespace PostEffects
     shader HorizontalVsmBlur
     {
         using params PostEffectsParameters;
-
-        mixin PostEffectBase;
 
         // TODO: fix this
         PostEffectsParameters.verticalBlur = false;

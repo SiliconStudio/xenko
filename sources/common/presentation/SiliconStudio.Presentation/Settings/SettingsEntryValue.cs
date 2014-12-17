@@ -25,7 +25,7 @@ namespace SiliconStudio.Presentation.Settings
         /// <inheritdoc/>
         internal override object GetSerializableValue()
         {
-            return Value;
+            return Value != null ? Value.ToString() : null;
         }
     }
 }

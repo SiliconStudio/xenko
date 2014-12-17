@@ -5,26 +5,22 @@
     <CreateProperty Condition=" '$(Platform)' == 'WindowsPhone'" Value="AnyCPU">
       <Output TaskParameter="Value" PropertyName="Platform" />
     </CreateProperty>
-    <CreateProperty Condition=" '$(Platform)' == 'WindowsPhone-x86'" Value="x86">
-      <Output TaskParameter="Value" PropertyName="Platform" />
-    </CreateProperty>
-    <CreateProperty Condition=" '$(Platform)' == 'WindowsPhone-ARM'" Value="ARM">
-      <Output TaskParameter="Value" PropertyName="Platform" />
-    </CreateProperty>
   </Target>
   
   <PropertyGroup>
     <SiliconStudioIsExecutable Condition=" '$(OutputType)' == 'AppContainerExe'">true</SiliconStudioIsExecutable>
     <SiliconStudioNETFrameworkVersion>v4.5.1</SiliconStudioNETFrameworkVersion>
 
-    <SiliconStudioCPU Condition="'$(Platform)' == 'WindowsPhone-x86'">x86</SiliconStudioCPU>
-    <SiliconStudioCPU Condition="'$(Platform)' == 'WindowsPhone-ARM'">ARM</SiliconStudioCPU>
+    <SiliconStudioCPU Condition="'$(Platform)' == 'x86'">x86</SiliconStudioCPU>
+    <SiliconStudioCPU Condition="'$(Platform)' == 'ARM'">ARM</SiliconStudioCPU>
 
     <!-- Assembly processor is currently unsupported on Windows Phone executables -->
     <SiliconStudioAssemblyProcessor Condition="'$(SiliconStudioIsExecutable)' == 'true'">false</SiliconStudioAssemblyProcessor>
 
     <!-- Use OutputPath to define AppxPackage directory -->
     <AppxPackageDir>$(OutputPath)\$(AppxPackageDirName)\</AppxPackageDir>
+    <AppxPackageTestDir>$(AppxPackageDir)Test\</AppxPackageTestDir>
+    <AppxPackageName>$(AssemblyName)</AppxPackageName>
   </PropertyGroup>
   
   <!-- Embed native libraries -->
@@ -54,9 +50,8 @@
     </PrepareResourcesDependsOn>
   </PropertyGroup>
 
-  <!-- iOS: Ensure assets have been deployed before calling _CollectBundleResources -->
+  <!-- WindowsPhone: Transform Assets into Content -->
   <Target Name="DeployAssetsWinRT" DependsOnTargets="SiliconStudioCompileAsset" Condition="'$(SiliconStudioIsExecutable)' == 'true'">
-    <!-- Add all game data as content on iphone. Note that "Link" doesn't work but Xamarin seems to use a similar "LogicalName" property. -->
     <ItemGroup>
       <!-- Define the Assets to deploy -->
       <AssetsToDeploy Include="$(SiliconStudioCompileAssetOutputPath)\**\*.*"/>
@@ -65,15 +60,6 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         <Link>data\%(RecursiveDir)%(Filename)%(Extension)</Link>
       </Content>
-    </ItemGroup>
-  </Target>
-
-  <!-- Enforce platform of referenced projects to be "WindowsPhone" (doesn't include CPU) -->
-  <Target Name="CompileReferencesAsWindowsPhonePlatform" AfterTargets="AssignProjectConfiguration">
-    <ItemGroup>
-      <ProjectReferenceWithConfiguration>
-        <SetPlatform>Platform=WindowsPhone</SetPlatform>
-      </ProjectReferenceWithConfiguration>
     </ItemGroup>
   </Target>
 </Project>

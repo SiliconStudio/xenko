@@ -28,7 +28,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
             RuntimeHelpers.RunModuleConstructor(typeof(SpriteFontAsset).Module.ModuleHandle);
             RuntimeHelpers.RunModuleConstructor(typeof(MaterialKeys).Module.ModuleHandle);
             RuntimeHelpers.RunModuleConstructor(typeof(SiliconStudio.Paradox.Assets.Model.ModelAsset).Module.ModuleHandle);
-            RuntimeHelpers.RunModuleConstructor(typeof(IVertexWindable).Module.ModuleHandle);
+            RuntimeHelpers.RunModuleConstructor(typeof(IVertex).Module.ModuleHandle);
 
             // load assembly to register the assets extensions
             var assetAssembly = Assembly.Load("SiliconStudio.Paradox.Assets");

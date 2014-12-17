@@ -4,15 +4,31 @@ class Texturing
 {
     // Default texture slots - might be automatically used by the material
     stage Texture2D Texture0;
+    stage float2 Texture0TexelSize;
     stage Texture2D Texture1;
+    stage float2 Texture1TexelSize;
     stage Texture2D Texture2;
+    stage float2 Texture2TexelSize;
     stage Texture2D Texture3;
+    stage float2 Texture3TexelSize;
     stage Texture2D Texture4;
+    stage float2 Texture4TexelSize;
     stage Texture2D Texture5;
+    stage float2 Texture5TexelSize;
     stage Texture2D Texture6;
+    stage float2 Texture6TexelSize;
     stage Texture2D Texture7;
+    stage float2 Texture7TexelSize;
     stage Texture2D Texture8;
+    stage float2 Texture8TexelSize;
     stage Texture2D Texture9;
+    stage float2 Texture9TexelSize;
+
+    // Default texture cube slots
+    stage TextureCube TextureCube0;
+    stage TextureCube TextureCube1;
+    stage TextureCube TextureCube2;
+    stage TextureCube TextureCube3;
 
     // Default sampler
     stage SamplerState Sampler;

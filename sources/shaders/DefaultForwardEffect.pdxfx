@@ -3,6 +3,7 @@
 using SiliconStudio.Paradox.Effects.Data;
 using SiliconStudio.Paradox.Effects.Modules;
 using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.DataModel;
 
 namespace DefaultForward
 {
@@ -87,6 +88,39 @@ namespace DefaultForward
         mixin ShadingEyeNormalVS;
 
         //shadows
+        mixin ForwardShadowMapBase;
+        mixin ShadowMapCascadeBase;
+
+        mixin macro SHADOWMAP_COUNT = ShadowMapParameters.ShadowMapCount;
+        mixin macro SHADOWMAP_CASCADE_COUNT = ShadowMapParameters.ShadowMapCascadeCount;
+        mixin macro SHADOWMAP_TOTAL_COUNT = ShadowMapParameters.ShadowMapCount * ShadowMapParameters.ShadowMapCascadeCount;
+        //mixin macro SHADOWMAP_DEBUG = 1;
+
+        if (ShadowMapParameters.FilterType == ShadowMapFilterType.Nearest)
+            mixin ShadowMapFilterDefault;
+        else if (ShadowMapParameters.FilterType == ShadowMapFilterType.PercentageCloserFiltering)
+            mixin ShadowMapFilterPcf;
+        else if (ShadowMapParameters.FilterType == ShadowMapFilterType.Variance)
+            mixin ShadowMapFilterVsm;
+    };
+
+    partial shader ParadoxSpotShadowLightsShader
+    {
+        using params LightingKeys;
+        using params MaterialParameters;
+        using params ShadowMapParameters;
+
+        // lighting
+        mixin macro LIGHTING_MAX_LIGHT_COUNT = ShadowMapParameters.ShadowMapCount;
+        //mixin macro LIGHTING_UNROLL_LOOP = true;
+        
+        mixin ParadoxLightingTypeShader;
+        mixin ShadingPerPixelShadow; // not correct since it can be per vertex. Only for tests
+        mixin SpotShading;
+        mixin ShadingEyeNormalVS;
+
+        //shadows
+        mixin ForwardShadowMapBase;
         mixin ShadowMapCascadeBase;
 
         mixin macro SHADOWMAP_COUNT = ShadowMapParameters.ShadowMapCount;
@@ -134,7 +168,10 @@ namespace DefaultForward
                     mixin ShadowMapReceiver;
                     foreach(params ShadowMapParameters.ShadowMaps)
                     {
-                        mixin compose shadows += ParadoxDirectionalShadowLightsShader;
+                        if (ShadowMapParameters.LightType == LightType.Directional)
+                            mixin compose shadows += ParadoxDirectionalShadowLightsShader;
+                        else if (ShadowMapParameters.LightType == LightType.Spot)
+                            mixin compose shadows += ParadoxSpotShadowLightsShader;
                     }
                 }
                 
@@ -166,9 +203,10 @@ namespace DefaultForward
         {
             mixin ComputeBRDFColorSpecularBlinnPhong;
         }
-        //else if (MaterialParameters.SpecularModel == MaterialSpecularModel.CookTorrance)
-        //{
-        //}
+        else if (MaterialParameters.SpecularModel == MaterialSpecularModel.CookTorrance)
+        {
+            mixin ComputeBRDFColorSpecularCookTorrance;
+        }
 
         // TODO: default behavior is Phong or no specular?
 

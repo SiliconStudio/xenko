@@ -19,7 +19,7 @@
 #endif
 
 #ifndef SHADOWMAP_TOTAL_COUNT
-# define SHADOWMAP_TOTAL_COUNT 1
+# define SHADOWMAP_TOTAL_COUNT SHADOWMAP_COUNT * SHADOWMAP_CASCADE_COUNT
 #endif
 
 #ifndef HAS_DYNAMIC_SHADOWMAP_COUNT
@@ -30,14 +30,14 @@
 # define SHADOWMAP_DEBUG 0
 #endif
 
-class ShadowMapCascadeBase : ForwardShadowMapBase, ShadowMapUtils, ShadowMapFilterBase
+class ShadowMapCascadeBase : ShadowMapBase, ShadowMapUtils, ShadowMapFilterBase
 {
     stream float4 vShadowMapPos[SHADOWMAP_TOTAL_COUNT];
     stream float4 vShadowMapTexPos[SHADOWMAP_TOTAL_COUNT];
     stream float4 vShadowMapDepth[SHADOWMAP_COUNT];
 
-    NormalVSBase normal = stage;
-    PositionVSBase position = stage;
+    compose NormalVSBase normal = stage;
+    compose PositionVSBase position = stage;
 
     cbuffer PerPass
     {
@@ -59,7 +59,8 @@ class ShadowMapCascadeBase : ForwardShadowMapBase, ShadowMapUtils, ShadowMapFilt
 #else
         for(int i = 0; i < SHADOWMAP_COUNT; ++i) {
 #endif
-            for(int j = 0; j < SHADOWMAP_CASCADE_COUNT; j++) {
+            for(int j = 0; j < SHADOWMAP_CASCADE_COUNT; j++)
+            {
                 streams.vShadowMapPos[i * SHADOWMAP_CASCADE_COUNT + j] = mul(vPositionWS, shadowMapLevels[i][j].ShadowMapWVP);
                 streams.vShadowMapDepth[i][j] = dot(shadowMaps[i].ShadowLightDirection, vPositionWS.xyz - shadowMapLevels[i][j].ShadowLightOffset) / shadowMaps[i].ShadowMapDistance;
             }
@@ -70,7 +71,6 @@ class ShadowMapCascadeBase : ForwardShadowMapBase, ShadowMapUtils, ShadowMapFilt
     {
         float2 shadowMapPos0 = 0.0;
         float shadowLERP = 0.0f;
-        float shadow = 1.0f;
 
         int foundCascadeIndex = SHADOWMAP_CASCADE_COUNT;
 
@@ -98,11 +98,11 @@ class ShadowMapCascadeBase : ForwardShadowMapBase, ShadowMapUtils, ShadowMapFilt
 
         // Outside of shadow maps
         if (foundCascadeIndex == SHADOWMAP_CASCADE_COUNT)
-            return 0.0f;//shadow = 0.0f;
+            return 1.0f;
         
         // Calculate shadows with lerp between cascades
         float shadowMapDistance = streams.vShadowMapDepth[i][foundCascadeIndex];
-        shadow = FilterShadow(shadowMapTexture, shadowMapSampler, shadowMapPos0, shadowMapDistance, i);
+        float shadow = FilterShadow(shadowMapTexture, shadowMapSampler, shadowMapPos0, shadowMapDistance, i);
         int nextCascade = foundCascadeIndex + 1;
         // Only lerp when 
         if (shadowLERP > 0.0 && shadowLERP < 1.0f && nextCascade < SHADOWMAP_CASCADE_COUNT)

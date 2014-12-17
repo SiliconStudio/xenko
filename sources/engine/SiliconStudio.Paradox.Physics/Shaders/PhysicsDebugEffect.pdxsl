@@ -2,48 +2,53 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 class PhysicsDebugEffect : ShaderBase
 {
-    // -------------------------------------
-    // streams
-    // -------------------------------------
-    stage stream float4 Position    : POSITION;
-    stage stream float2 TexCoord    : TEXCOORD0;
+	// -------------------------------------
+	// streams
+	// -------------------------------------
+	stage stream float4 Position    : POSITION;
+	stage stream float2 TexCoord    : TEXCOORD0;
 
-    // -------------------------------------
-    // uniforms
-    // -------------------------------------
-    // A general transformation matrix
-    stage float4x4    WorldViewProj;
-        
-    // -------------------------------------
-    // VertexShader
-    // -------------------------------------
-    stage override void VSMain()
-    {
-        streams.ShadingPosition = mul(streams.Position, WorldViewProj);
-    }
+	// -------------------------------------
+	// uniforms
+	// -------------------------------------
+	// A general transformation matrix
+	stage float4x4    WorldViewProj;
+		
+	// -------------------------------------
+	// VertexShader
+	// -------------------------------------
+	stage override void VSMain()
+	{
+		streams.ShadingPosition = mul(streams.Position, WorldViewProj);
+	}
 
-    // Color used to tint the sprite
-    [Color]
-    stage float4 Color = float4(1,1,1,1);
+	// Color used to tint the sprite
+	[Color]
+	stage float4 Color = float4(1,1,1,1);
 
-    //http://www.gamedev.net/topic/529926-terrain-contour-lines-using-pixel-shader/
+	stage float UseUv = 1.0f;
 
-    // Shading of the sprite
-    stage override void PSMain()
-    {
-        float3 f  = frac(streams.Position.xyz * 1.0);
-        float3 df = fwidth(streams.Position.xyz * 1.0);
-        float3 g = smoothstep(df * 1.0, df * 2.0, f);
-        float c = g.x * g.y * g.z;
+	//http://www.gamedev.net/topic/529926-terrain-contour-lines-using-pixel-shader/
 
-        float uvEdge = 0.0;
-        if(streams.TexCoord.x < 0.02 || streams.TexCoord.y < 0.02 || streams.TexCoord.x > 0.98 || streams.TexCoord.y > 0.98)
-        {
-            uvEdge = 1.0;
-        }
+	// Shading of the sprite
+	stage override void PSMain()
+	{
+		float3 f  = frac(streams.Position.xyz * 1.0);
+		float3 df = fwidth(streams.Position.xyz * 1.0);
+		float3 g = smoothstep(df * 1.0, df * 2.0, f);
+		float c = g.x * g.y * g.z;
 
-        clip(c > 0.1f && !uvEdge ? -1 : 1);
+	if(UseUv > 0.5)
+		{
+			float uvEdge = 0.0;
+		if(streams.TexCoord.x < 0.02 || streams.TexCoord.y < 0.02 || streams.TexCoord.x > 0.98 || streams.TexCoord.y > 0.98)
+			{
+				uvEdge = 1.0;
+			}
 
-        streams.ColorTarget = float4(Color.rgb, 1.0);
-    }
+			clip(c > 0.1f && uvEdge == 0.0 ? -1 : 1);
+		}
+
+		streams.ColorTarget = float4(Color.rgb, 1.0);
+	}
 };

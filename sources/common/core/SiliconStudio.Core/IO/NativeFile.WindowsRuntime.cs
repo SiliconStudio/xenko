@@ -17,14 +17,11 @@ namespace SiliconStudio.Core.IO
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool GetFileAttributesEx(string name, int fileInfoLevel, out WIN32_FILE_ATTRIBUTE_DATA lpFileInformation);
 
-        [DllImport(KERNEL_FILE, EntryPoint = "GetFileAttributesW", CharSet = CharSet.Unicode, SetLastError = true)]
-        static extern uint GetFileAttributes(string lpFileName);
-
         [DllImport(KERNEL_FILE, EntryPoint = "DeleteFileW", CharSet = CharSet.Unicode, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool DeleteFile(string name);
 
-        [DllImport(KERNEL_FILE)]
+        [DllImport(KERNEL_FILE, EntryPoint = "CreateDirectoryW", CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool CreateDirectory(string lpPathName, IntPtr lpSecurityAttributes);
 
@@ -82,9 +79,12 @@ namespace SiliconStudio.Core.IO
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool DirectoryExists(string name)
         {
-            var fileAttributes = GetFileAttributes(name);
-            return (fileAttributes != INVALID_FILE_ATTRIBUTES &&
-                (fileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0);
+            WIN32_FILE_ATTRIBUTE_DATA win_file_attribute_data;
+            if (!GetFileAttributesEx(name, 0, out win_file_attribute_data))
+                return false;
+
+            return (win_file_attribute_data.FileAttributes != INVALID_FILE_ATTRIBUTES &&
+                (win_file_attribute_data.FileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

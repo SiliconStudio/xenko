@@ -187,8 +187,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Grammar
             //                       | Keyword("mixin") + Keyword("clone") + ";"
             //                       | Keyword("mixin") + expression + ";";
 
-            value.Target = (node.ChildNodes[1].AstNode as Expression);
-            if (value.Target == null)
+            value.Value = (node.ChildNodes[1].AstNode as Expression);
+            if (value.Value == null)
             {
                 var typeName = node.ChildNodes[1].Term.Name;
                 MixinStatementType type;
@@ -197,7 +197,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Grammar
 
                 if (type != MixinStatementType.Clone)
                 {
-                    value.Target = (Expression)node.ChildNodes[2].AstNode;
+                    value.Value = (Expression)node.ChildNodes[2].AstNode;
                 }
             }
         }

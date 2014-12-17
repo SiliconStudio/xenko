@@ -4,7 +4,7 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Paradox.DataModel
 {
-    [DataContract]
+    [DataContract("LightType")]
     public enum LightType
     {
         Point,

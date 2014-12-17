@@ -35,7 +35,7 @@ namespace SiliconStudio.Paradox.Graphics
         {
         }
 
-        protected static TextureDescription NewDescription(int width, int height, PixelFormat format, TextureFlags textureFlags, int mipCount, int arraySize, GraphicsResourceUsage usage)
+        public static TextureDescription NewDescription(int width, int height, PixelFormat format, TextureFlags textureFlags, int mipCount, int arraySize, GraphicsResourceUsage usage)
         {
             if ((textureFlags & TextureFlags.UnorderedAccess) != 0)
                 usage = GraphicsResourceUsage.Default;

@@ -70,12 +70,13 @@
       <SiliconStudioAssemblyProcessorPath>@(_SiliconStudioAssemblyProcessorPath)</SiliconStudioAssemblyProcessorPath>
       <SiliconStudioCoreAssemblyPath>@(_SiliconStudioCoreAssemblyPath)</SiliconStudioCoreAssemblyPath>
       <!-- Add SiliconStudio.Core path to assembly search directory -->
-      <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioCoreAssemblyPath)' != ''">$(SiliconStudioAssemblyProcessorOptions) --assembly=$(SiliconStudioCoreAssemblyPath)</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioCoreAssemblyPath)' != ''">$(SiliconStudioAssemblyProcessorOptions) --assembly="$(SiliconStudioCoreAssemblyPath)"</SiliconStudioAssemblyProcessorOptions>
     </PropertyGroup>
 
     <!--Add platform and target framework to assembly processor options-->
     <PropertyGroup>
       <SiliconStudioAssemblyProcessorOptions>--platform=$(SiliconStudioPlatform) --targetFramework=$(TargetFrameworkVersion) $(SiliconStudioAssemblyProcessorOptions)</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorOptions Condition="'$(AssemblyOriginatorKeyFile)' != ''">$(SiliconStudioAssemblyProcessorOptions) --signkeyfile="$(AssemblyOriginatorKeyFile)"</SiliconStudioAssemblyProcessorOptions>
     </PropertyGroup>
 
     <!-- Run assembly processor -->

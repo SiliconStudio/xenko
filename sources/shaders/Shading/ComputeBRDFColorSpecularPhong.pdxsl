@@ -8,8 +8,7 @@ class ComputeBRDFColorSpecularPhong : ComputeBRDFColorSpecularBase, SpecularPowe
     override float3 Compute(float3 lightColor, float3 lightDir, float3 normal, float3 eye) 
     {
         // Precalculates NH
-        float3 refl = normalize(reflect(-lightDir, normal));
-        float NH = saturate(dot(eye, refl));
+        float NH = GetNH(lightDir, normal, eye);
 
         float specularPower = SpecularPowerValue();
         float specularIntensity = SpecularIntensityMap.Compute().x;
@@ -20,6 +19,14 @@ class ComputeBRDFColorSpecularPhong : ComputeBRDFColorSpecularBase, SpecularPowe
         float normalizedFactor = (specularPower + 8.0f) / 8.0f;
 
         // SpecularLight = BL * nf * [E.R]^n * [N.L]
-        return lightColor * normalizedFactor * specularIntensity * pow(NH, specularPower) * saturate(dot(normal, lightDir));
+        // we slightly increase specularPower because 0^0 is undefined
+        // see http://msdn.microsoft.com/en-us/library/windows/desktop/bb509636%28v=vs.85%29.aspx
+        return lightColor * specularIntensity * normalizedFactor * pow(NH, specularPower + 0.0001) * saturate(dot(normal, lightDir));
+    }
+
+    float3 GetNH(float3 lightDir, float3 normal, float3 eye)
+    {
+        float3 refl = normalize(reflect(-lightDir, normal));
+        return saturate(dot(eye, refl));
     }
 };

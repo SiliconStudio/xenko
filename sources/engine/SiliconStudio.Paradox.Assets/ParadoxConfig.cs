@@ -96,7 +96,8 @@ namespace SiliconStudio.Paradox.Assets
 
             var windowsStorePlatformx86 = new SolutionPlatformPart(windowsStorePlatform.Name + "-x86")
             {
-                LibraryAlias = windowsStorePlatform.Name,
+                LibraryProjectName = windowsStorePlatform.Name,
+                ExecutableProjectName = "x86",
                 Cpu = "x86",
                 InheritConfigurations = true,
                 UseWithLibraries = false,
@@ -107,7 +108,8 @@ namespace SiliconStudio.Paradox.Assets
 
             var windowsStorePlatformx64 = new SolutionPlatformPart(windowsStorePlatform.Name + "-x64")
             {
-                LibraryAlias = windowsStorePlatform.Name,
+                LibraryProjectName = windowsStorePlatform.Name,
+                ExecutableProjectName = "x64",
                 Cpu = "x64",
                 InheritConfigurations = true,
                 UseWithLibraries = false,
@@ -118,7 +120,8 @@ namespace SiliconStudio.Paradox.Assets
 
             var windowsStorePlatformARM = new SolutionPlatformPart(windowsStorePlatform.Name + "-ARM")
             {
-                LibraryAlias = windowsStorePlatform.Name,
+                LibraryProjectName = windowsStorePlatform.Name,
+                ExecutableProjectName = "ARM",
                 Cpu = "ARM",
                 InheritConfigurations = true,
                 UseWithLibraries = false,
@@ -158,7 +161,8 @@ namespace SiliconStudio.Paradox.Assets
 
             var windowsPhonePlatformx86 = new SolutionPlatformPart(windowsPhonePlatform.Name + "-x86")
             {
-                LibraryAlias = windowsPhonePlatform.Name, 
+                LibraryProjectName = windowsPhonePlatform.Name,
+                ExecutableProjectName = "x86",
                 Cpu = "x86", 
                 InheritConfigurations = true, 
                 UseWithLibraries = false, 
@@ -169,7 +173,8 @@ namespace SiliconStudio.Paradox.Assets
 
             var windowsPhonePlatformARM = new SolutionPlatformPart(windowsPhonePlatform.Name + "-ARM")
             {
-                LibraryAlias = windowsPhonePlatform.Name, 
+                LibraryProjectName = windowsPhonePlatform.Name,
+                ExecutableProjectName = "ARM",
                 Cpu = "ARM", 
                 InheritConfigurations = true, 
                 UseWithLibraries = false, 

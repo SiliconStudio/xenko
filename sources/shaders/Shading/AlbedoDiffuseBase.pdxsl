@@ -6,7 +6,7 @@
 class AlbedoDiffuseBase
 {
     // The color of the diffuse
-    ComputeColor albedoDiffuse;
+    compose ComputeColor albedoDiffuse;
 
     float4 DiffuseAlbedo() { return albedoDiffuse.Compute(); }
 };

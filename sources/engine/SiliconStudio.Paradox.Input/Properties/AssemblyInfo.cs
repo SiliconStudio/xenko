@@ -23,8 +23,5 @@ using System.Runtime.InteropServices;
 
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.UI" + SiliconStudio.PublicKeys.Default)]
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.Input.Serializers" + SiliconStudio.PublicKeys.Default)]
-
-#if !SILICONSTUDIO_SIGNED
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.UI.Tests")]
-[assembly: InternalsVisibleTo("SiliconStudioParadoxUITests")] // iOS removes dot
-#endif
+[assembly: InternalsVisibleTo("SiliconStudio.Paradox.UI.Tests" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudioParadoxUITests" + SiliconStudio.PublicKeys.Default)] // iOS removes dot

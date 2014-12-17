@@ -11,7 +11,7 @@
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
-    <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioSign)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
+    <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />

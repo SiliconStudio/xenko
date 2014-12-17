@@ -38,14 +38,14 @@ namespace SiliconStudio.Paradox.Engine.Data
             SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.EntityModel.Data.EntityComponentDataConverter());
             // Register entity component reference for type EntityComponentData
             SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Data.EntityComponentReferenceDataConverter<SiliconStudio.Paradox.EntityModel.EntityComponent>());
-            // Register type PhysicsColliderShapeData
-            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Engine.Data.PhysicsColliderShapeDataConverter());
-            // Register type PhysicsComponentData
-            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Engine.Data.PhysicsComponentDataConverter());
-            // Register entity component reference for type PhysicsComponentData
-            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Data.EntityComponentReferenceDataConverter<SiliconStudio.Paradox.Engine.PhysicsComponent>());
-            // Register type PhysicsElementData
-            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Engine.Data.PhysicsElementDataConverter());
+            // Register type CubemapBlendComponentData
+            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Engine.Data.CubemapBlendComponentDataConverter());
+            // Register entity component reference for type CubemapBlendComponentData
+            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Data.EntityComponentReferenceDataConverter<SiliconStudio.Paradox.Engine.CubemapBlendComponent>());
+            // Register type CubemapSourceComponentData
+            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Engine.Data.CubemapSourceComponentDataConverter());
+            // Register entity component reference for type CubemapSourceComponentData
+            SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Data.EntityComponentReferenceDataConverter<SiliconStudio.Paradox.Engine.CubemapSourceComponent>());
             // Register type ModelNodeLinkComponentData
             SiliconStudio.Core.Serialization.Converters.ConverterContext.RegisterConverter(new SiliconStudio.Paradox.Engine.Data.ModelNodeLinkComponentDataConverter());
             // Register entity component reference for type ModelNodeLinkComponentData
@@ -212,26 +212,6 @@ namespace SiliconStudio.Paradox.Effects.Data
         public SiliconStudio.Paradox.Effects.Data.ParameterCollectionData Parameters;
 
         /// <summary>
-        /// Data field for <see cref="SiliconStudio.Paradox.Effects.Mesh.Layer"/>.
-        /// </summary>
-        public SiliconStudio.Paradox.Effects.RenderLayers Layer;
-
-        /// <summary>
-        /// Data field for <see cref="SiliconStudio.Paradox.Effects.Mesh.CastShadows"/>.
-        /// </summary>
-        public System.Boolean CastShadows;
-
-        /// <summary>
-        /// Data field for <see cref="SiliconStudio.Paradox.Effects.Mesh.ReceiveShadows"/>.
-        /// </summary>
-        public System.Boolean ReceiveShadows;
-
-        /// <summary>
-        /// Data field for <see cref="SiliconStudio.Paradox.Effects.Mesh.Lighting"/>.
-        /// </summary>
-        public SiliconStudio.Core.Serialization.ContentReference<SiliconStudio.Paradox.Effects.Data.LightingConfigurationsSetData> Lighting;
-
-        /// <summary>
         /// Data field for <see cref="SiliconStudio.Paradox.Effects.Mesh.NodeIndex"/>.
         /// </summary>
         public System.Int32 NodeIndex;
@@ -317,6 +297,11 @@ namespace SiliconStudio.Paradox.Effects.Data
     public partial class ShadowConfigurationData
     {
         /// <summary>
+        /// Data field for <see cref="SiliconStudio.Paradox.Effects.ShadowConfiguration.LightType"/>.
+        /// </summary>
+        public SiliconStudio.Paradox.DataModel.LightType LightType;
+
+        /// <summary>
         /// Data field for <see cref="SiliconStudio.Paradox.Effects.ShadowConfiguration.ShadowCount"/>.
         /// </summary>
         public System.Int32 ShadowCount;
@@ -363,67 +348,77 @@ namespace SiliconStudio.Paradox.EntityModel.Data
 namespace SiliconStudio.Paradox.Engine.Data
 {
     /// <summary>
-    /// Data type for <see cref="SiliconStudio.Paradox.Engine.PhysicsColliderShape"/>.
+    /// Data type for <see cref="SiliconStudio.Paradox.Engine.CubemapBlendComponent"/>.
     /// </summary>
-    [SiliconStudio.Core.DataContract("PhysicsColliderShapeData")]
-    [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Contents.DataContentSerializer<PhysicsColliderShapeData>))]
-    [SiliconStudio.Core.Serialization.Contents.ContentSerializer(typeof(SiliconStudio.Core.Serialization.Converters.DataContentConverterSerializer<SiliconStudio.Paradox.Engine.PhysicsColliderShape>))]
-    public partial class PhysicsColliderShapeData
+    [SiliconStudio.Core.DataContract("CubemapBlendComponentData")]
+    public partial class CubemapBlendComponentData : SiliconStudio.Paradox.EntityModel.Data.EntityComponentData
     {
+        /// <summary>
+        /// Data field for <see cref="SiliconStudio.Paradox.Engine.CubemapBlendComponent.Enabled"/>.
+        /// </summary>
+        public System.Boolean Enabled;
+
+        /// <summary>
+        /// Data field for <see cref="SiliconStudio.Paradox.Engine.CubemapBlendComponent.Size"/>.
+        /// </summary>
+        public System.Int32 Size;
+
+        /// <summary>
+        /// Data field for <see cref="SiliconStudio.Paradox.Engine.CubemapBlendComponent.MaxBlendCount"/>.
+        /// </summary>
+        public System.Int32 MaxBlendCount;
+
+        /// <summary>
+        /// Data field for <see cref="SiliconStudio.Paradox.Engine.CubemapBlendComponent.TextureKey"/>.
+        /// </summary>
+        public SiliconStudio.Paradox.Effects.ParameterKey<SiliconStudio.Paradox.Graphics.Texture> TextureKey;
     }
 
     /// <summary>
-    /// Data type for <see cref="SiliconStudio.Paradox.Engine.PhysicsComponent"/>.
+    /// Data type for <see cref="SiliconStudio.Paradox.Engine.CubemapSourceComponent"/>.
     /// </summary>
-    [SiliconStudio.Core.DataContract("PhysicsComponentData")]
-    public partial class PhysicsComponentData : SiliconStudio.Paradox.EntityModel.Data.EntityComponentData
+    [SiliconStudio.Core.DataContract("CubemapSourceComponentData")]
+    public partial class CubemapSourceComponentData : SiliconStudio.Paradox.EntityModel.Data.EntityComponentData
     {
         /// <summary>
-        /// Data field for <see cref="SiliconStudio.Paradox.Engine.PhysicsComponent.Elements"/>.
+        /// Data field for <see cref="SiliconStudio.Paradox.Engine.CubemapSourceComponent.Enabled"/>.
         /// </summary>
-        public System.Collections.Generic.List<SiliconStudio.Paradox.Engine.Data.PhysicsElementData> Elements = new System.Collections.Generic.List<SiliconStudio.Paradox.Engine.Data.PhysicsElementData>();
-    }
-
-    /// <summary>
-    /// Data type for <see cref="SiliconStudio.Paradox.Engine.PhysicsElement"/>.
-    /// </summary>
-    [SiliconStudio.Core.DataContract("PhysicsElementData")]
-    public partial class PhysicsElementData
-    {
-        /// <summary>
-        /// Data field for <see cref="SiliconStudio.Paradox.Engine.PhysicsElement.Type"/>.
-        /// </summary>
-        public SiliconStudio.Paradox.Engine.PhysicsElement.Types Type;
+        public System.Boolean Enabled;
 
         /// <summary>
-        /// Data field for <see cref="SiliconStudio.Paradox.Engine.PhysicsElement.LinkedBoneName"/>.
+        /// Data field for <see cref="SiliconStudio.Paradox.Engine.CubemapSourceComponent.IsDynamic"/>.
         /// </summary>
-        public System.String LinkedBoneName;
+        public System.Boolean IsDynamic;
 
         /// <summary>
-        /// Data field for <see cref="SiliconStudio.Paradox.Engine.PhysicsElement.Shape"/>.
+        /// Data field for <see cref="SiliconStudio.Paradox.Engine.CubemapSourceComponent.Size"/>.
         /// </summary>
-        public SiliconStudio.Core.Serialization.ContentReference<SiliconStudio.Paradox.Engine.Data.PhysicsColliderShapeData> Shape;
+        public System.Int32 Size;
 
         /// <summary>
-        /// Data field for <see cref="SiliconStudio.Paradox.Engine.PhysicsElement.CollisionGroup"/>.
+        /// Data field for <see cref="SiliconStudio.Paradox.Engine.CubemapSourceComponent.InfinityCubemap"/>.
         /// </summary>
-        public SiliconStudio.Paradox.Engine.PhysicsElement.CollisionFilterGroups1 CollisionGroup;
+        public System.Boolean InfinityCubemap;
 
         /// <summary>
-        /// Data field for <see cref="SiliconStudio.Paradox.Engine.PhysicsElement.CanCollideWith"/>.
+        /// Data field for <see cref="SiliconStudio.Paradox.Engine.CubemapSourceComponent.InfluenceRadius"/>.
         /// </summary>
-        public SiliconStudio.Paradox.Physics.CollisionFilterGroups CanCollideWith;
+        public System.Single InfluenceRadius;
 
         /// <summary>
-        /// Data field for <see cref="SiliconStudio.Paradox.Engine.PhysicsElement.StepHeight"/>.
+        /// Data field for <see cref="SiliconStudio.Paradox.Engine.CubemapSourceComponent.NearPlane"/>.
         /// </summary>
-        public System.Single StepHeight;
+        public System.Single NearPlane;
 
         /// <summary>
-        /// Data field for <see cref="SiliconStudio.Paradox.Engine.PhysicsElement.Sprite"/>.
+        /// Data field for <see cref="SiliconStudio.Paradox.Engine.CubemapSourceComponent.FarPlane"/>.
         /// </summary>
-        public System.Boolean Sprite;
+        public System.Single FarPlane;
+
+        /// <summary>
+        /// Data field for <see cref="SiliconStudio.Paradox.Engine.CubemapSourceComponent.Texture"/>.
+        /// </summary>
+        public SiliconStudio.Core.Serialization.ContentReference<SiliconStudio.Paradox.Graphics.TextureCube> Texture;
     }
 
     /// <summary>
@@ -898,10 +893,6 @@ namespace SiliconStudio.Paradox.Effects.Data
             context.ConvertToData(ref target.Draw, source.Draw);
             context.ConvertToData(ref target.Material, source.Material);
             context.ConvertToData(ref target.Parameters, source.Parameters);
-            target.Layer = source.Layer;
-            target.CastShadows = source.CastShadows;
-            target.ReceiveShadows = source.ReceiveShadows;
-            context.ConvertToData(ref target.Lighting, source.Lighting);
             target.NodeIndex = source.NodeIndex;
             target.Name = source.Name;
             target.BoundingBox = source.BoundingBox;
@@ -928,14 +919,6 @@ namespace SiliconStudio.Paradox.Effects.Data
                 var temp = source.Parameters;
                 context.ConvertFromData(target.Parameters, ref temp);
                 source.Parameters = temp;
-            }
-            source.Layer = target.Layer;
-            source.CastShadows = target.CastShadows;
-            source.ReceiveShadows = target.ReceiveShadows;
-            {
-                var temp = source.Lighting;
-                context.ConvertFromData(target.Lighting, ref temp);
-                source.Lighting = temp;
             }
             source.NodeIndex = target.NodeIndex;
             source.Name = target.Name;
@@ -1038,6 +1021,7 @@ namespace SiliconStudio.Paradox.Effects.Data
 			if(target == null)
                 target = new SiliconStudio.Paradox.Effects.Data.ShadowConfigurationData();
 				
+            target.LightType = source.LightType;
             target.ShadowCount = source.ShadowCount;
             target.CascadeCount = source.CascadeCount;
             target.FilterType = source.FilterType;
@@ -1046,6 +1030,7 @@ namespace SiliconStudio.Paradox.Effects.Data
         /// <inheritdoc/>
         public override void ConvertFromData(SiliconStudio.Core.Serialization.Converters.ConverterContext context, SiliconStudio.Paradox.Effects.Data.ShadowConfigurationData target, ref SiliconStudio.Paradox.Effects.ShadowConfiguration source)
         {
+            source.LightType = target.LightType;
             source.ShadowCount = target.ShadowCount;
             source.CascadeCount = target.CascadeCount;
             source.FilterType = target.FilterType;
@@ -1081,33 +1066,32 @@ namespace SiliconStudio.Paradox.Effects.Data
     }
 
 
-
 }
 
 namespace SiliconStudio.Paradox.Engine.Data
 {
     /// <summary>
-    /// Converter type for <see cref="SiliconStudio.Paradox.Engine.PhysicsComponent"/>.
+    /// Converter type for <see cref="SiliconStudio.Paradox.Engine.CubemapBlendComponent"/>.
     /// </summary>
-    public partial class PhysicsComponentDataConverter : SiliconStudio.Paradox.EntityModel.Data.EntityComponentDataConverter	
+    public partial class CubemapBlendComponentDataConverter : SiliconStudio.Paradox.EntityModel.Data.EntityComponentDataConverter	
 	{
 		/// <inheritdoc/>
 		public override System.Type DataType
 		{
-			get { return typeof(SiliconStudio.Paradox.Engine.Data.PhysicsComponentData); }
+			get { return typeof(SiliconStudio.Paradox.Engine.Data.CubemapBlendComponentData); }
 		}
 
 		/// <inheritdoc/>
 		public override System.Type ObjectType
 		{
-			get { return typeof(SiliconStudio.Paradox.Engine.PhysicsComponent); }
+			get { return typeof(SiliconStudio.Paradox.Engine.CubemapBlendComponent); }
 		}
 				
         /// <inheritdoc/>
         public override void ConvertFromData(SiliconStudio.Core.Serialization.Converters.ConverterContext converterContext, object data, ref object obj)
         {
-            var dataT = (SiliconStudio.Paradox.Engine.Data.PhysicsComponentData)data;
-            var objT = (SiliconStudio.Paradox.Engine.PhysicsComponent)obj;
+            var dataT = (SiliconStudio.Paradox.Engine.Data.CubemapBlendComponentData)data;
+            var objT = (SiliconStudio.Paradox.Engine.CubemapBlendComponent)obj;
             ConvertFromData(converterContext, dataT, ref objT);
             obj = objT;
         }
@@ -1115,17 +1099,17 @@ namespace SiliconStudio.Paradox.Engine.Data
         /// <inheritdoc/>
         public override void ConvertToData(SiliconStudio.Core.Serialization.Converters.ConverterContext converterContext, ref object data, object obj)
         {
-            var dataT = (SiliconStudio.Paradox.Engine.Data.PhysicsComponentData)data;
-            var objT = (SiliconStudio.Paradox.Engine.PhysicsComponent)obj;
+            var dataT = (SiliconStudio.Paradox.Engine.Data.CubemapBlendComponentData)data;
+            var objT = (SiliconStudio.Paradox.Engine.CubemapBlendComponent)obj;
             ConvertToData(converterContext, ref dataT, objT);
             data = dataT;
         }
 
 		        /// <inheritdoc/>
-        public void ConvertToData(SiliconStudio.Core.Serialization.Converters.ConverterContext context, ref SiliconStudio.Paradox.Engine.Data.PhysicsComponentData target, SiliconStudio.Paradox.Engine.PhysicsComponent source)
+        public void ConvertToData(SiliconStudio.Core.Serialization.Converters.ConverterContext context, ref SiliconStudio.Paradox.Engine.Data.CubemapBlendComponentData target, SiliconStudio.Paradox.Engine.CubemapBlendComponent source)
         {
 			if(target == null)
-                target = new SiliconStudio.Paradox.Engine.Data.PhysicsComponentData();
+                target = new SiliconStudio.Paradox.Engine.Data.CubemapBlendComponentData();
 				
 			{
 				var targetBase = (SiliconStudio.Paradox.EntityModel.Data.EntityComponentData)target;
@@ -1133,7 +1117,10 @@ namespace SiliconStudio.Paradox.Engine.Data
 				ConvertToData(context, ref targetBase, sourceBase);
 			}
 
-            context.ConvertToData(ref target.Elements, source.Elements);
+            target.Enabled = source.Enabled;
+            target.Size = source.Size;
+            target.MaxBlendCount = source.MaxBlendCount;
+            target.TextureKey = source.TextureKey;
         }
 
         public override bool CanConstruct
@@ -1145,65 +1132,121 @@ namespace SiliconStudio.Paradox.Engine.Data
         /// <inheritdoc/>
         public override void ConstructFromData(SiliconStudio.Core.Serialization.Converters.ConverterContext converterContext, object data, ref object obj)
         {
-            var dataT = (SiliconStudio.Paradox.Engine.Data.PhysicsComponentData)data;
-            var objT = (SiliconStudio.Paradox.Engine.PhysicsComponent)obj;
+            var dataT = (SiliconStudio.Paradox.Engine.Data.CubemapBlendComponentData)data;
+            var objT = (SiliconStudio.Paradox.Engine.CubemapBlendComponent)obj;
             ConstructFromData(converterContext, dataT, ref objT);
             obj = objT;
         }
 
 		/// <inheritdoc/>
-        public void ConstructFromData(SiliconStudio.Core.Serialization.Converters.ConverterContext context, SiliconStudio.Paradox.Engine.Data.PhysicsComponentData target, ref SiliconStudio.Paradox.Engine.PhysicsComponent source)
+        public void ConstructFromData(SiliconStudio.Core.Serialization.Converters.ConverterContext context, SiliconStudio.Paradox.Engine.Data.CubemapBlendComponentData target, ref SiliconStudio.Paradox.Engine.CubemapBlendComponent source)
 		{
-			source = new SiliconStudio.Paradox.Engine.PhysicsComponent();
+			source = new SiliconStudio.Paradox.Engine.CubemapBlendComponent();
 		}
 
         /// <inheritdoc/>
-        public void ConvertFromData(SiliconStudio.Core.Serialization.Converters.ConverterContext context, SiliconStudio.Paradox.Engine.Data.PhysicsComponentData target, ref SiliconStudio.Paradox.Engine.PhysicsComponent source)
+        public void ConvertFromData(SiliconStudio.Core.Serialization.Converters.ConverterContext context, SiliconStudio.Paradox.Engine.Data.CubemapBlendComponentData target, ref SiliconStudio.Paradox.Engine.CubemapBlendComponent source)
         {
-            {
-                var temp = source.Elements;
-                context.ConvertFromData(target.Elements, ref temp);
-            }
+            source.Enabled = target.Enabled;
+            source.Size = target.Size;
+            source.MaxBlendCount = target.MaxBlendCount;
+            source.TextureKey = target.TextureKey;
         }
     }
 
     /// <summary>
-    /// Converter type for <see cref="SiliconStudio.Paradox.Engine.PhysicsElement"/>.
+    /// Converter type for <see cref="SiliconStudio.Paradox.Engine.CubemapSourceComponent"/>.
     /// </summary>
-    public partial class PhysicsElementDataConverter : SiliconStudio.Core.Serialization.Converters.DataConverter<SiliconStudio.Paradox.Engine.Data.PhysicsElementData, SiliconStudio.Paradox.Engine.PhysicsElement>	
+    public partial class CubemapSourceComponentDataConverter : SiliconStudio.Paradox.EntityModel.Data.EntityComponentDataConverter	
 	{
-        /// <inheritdoc/>
-        public override void ConvertToData(SiliconStudio.Core.Serialization.Converters.ConverterContext context, ref SiliconStudio.Paradox.Engine.Data.PhysicsElementData target, SiliconStudio.Paradox.Engine.PhysicsElement source)
-        {
-			if(target == null)
-                target = new SiliconStudio.Paradox.Engine.Data.PhysicsElementData();
+		/// <inheritdoc/>
+		public override System.Type DataType
+		{
+			get { return typeof(SiliconStudio.Paradox.Engine.Data.CubemapSourceComponentData); }
+		}
+
+		/// <inheritdoc/>
+		public override System.Type ObjectType
+		{
+			get { return typeof(SiliconStudio.Paradox.Engine.CubemapSourceComponent); }
+		}
 				
-            target.Type = source.Type;
-            target.LinkedBoneName = source.LinkedBoneName;
-            context.ConvertToData(ref target.Shape, source.Shape);
-            target.CollisionGroup = source.CollisionGroup;
-            target.CanCollideWith = source.CanCollideWith;
-            target.StepHeight = source.StepHeight;
-            target.Sprite = source.Sprite;
+        /// <inheritdoc/>
+        public override void ConvertFromData(SiliconStudio.Core.Serialization.Converters.ConverterContext converterContext, object data, ref object obj)
+        {
+            var dataT = (SiliconStudio.Paradox.Engine.Data.CubemapSourceComponentData)data;
+            var objT = (SiliconStudio.Paradox.Engine.CubemapSourceComponent)obj;
+            ConvertFromData(converterContext, dataT, ref objT);
+            obj = objT;
+        }
+		
+        /// <inheritdoc/>
+        public override void ConvertToData(SiliconStudio.Core.Serialization.Converters.ConverterContext converterContext, ref object data, object obj)
+        {
+            var dataT = (SiliconStudio.Paradox.Engine.Data.CubemapSourceComponentData)data;
+            var objT = (SiliconStudio.Paradox.Engine.CubemapSourceComponent)obj;
+            ConvertToData(converterContext, ref dataT, objT);
+            data = dataT;
         }
 
-        /// <inheritdoc/>
-        public override void ConvertFromData(SiliconStudio.Core.Serialization.Converters.ConverterContext context, SiliconStudio.Paradox.Engine.Data.PhysicsElementData target, ref SiliconStudio.Paradox.Engine.PhysicsElement source)
+		        /// <inheritdoc/>
+        public void ConvertToData(SiliconStudio.Core.Serialization.Converters.ConverterContext context, ref SiliconStudio.Paradox.Engine.Data.CubemapSourceComponentData target, SiliconStudio.Paradox.Engine.CubemapSourceComponent source)
         {
-            if(source == null)
-                source = new SiliconStudio.Paradox.Engine.PhysicsElement();
+			if(target == null)
+                target = new SiliconStudio.Paradox.Engine.Data.CubemapSourceComponentData();
+				
+			{
+				var targetBase = (SiliconStudio.Paradox.EntityModel.Data.EntityComponentData)target;
+				var sourceBase = (SiliconStudio.Paradox.EntityModel.EntityComponent)source;
+				ConvertToData(context, ref targetBase, sourceBase);
+			}
 
-            source.Type = target.Type;
-            source.LinkedBoneName = target.LinkedBoneName;
+            target.Enabled = source.Enabled;
+            target.IsDynamic = source.IsDynamic;
+            target.Size = source.Size;
+            target.InfinityCubemap = source.InfinityCubemap;
+            target.InfluenceRadius = source.InfluenceRadius;
+            target.NearPlane = source.NearPlane;
+            target.FarPlane = source.FarPlane;
+            context.ConvertToData(ref target.Texture, source.Texture);
+        }
+
+        public override bool CanConstruct
+        {
+            get { return true; }
+        }
+		
+		
+        /// <inheritdoc/>
+        public override void ConstructFromData(SiliconStudio.Core.Serialization.Converters.ConverterContext converterContext, object data, ref object obj)
+        {
+            var dataT = (SiliconStudio.Paradox.Engine.Data.CubemapSourceComponentData)data;
+            var objT = (SiliconStudio.Paradox.Engine.CubemapSourceComponent)obj;
+            ConstructFromData(converterContext, dataT, ref objT);
+            obj = objT;
+        }
+
+		/// <inheritdoc/>
+        public void ConstructFromData(SiliconStudio.Core.Serialization.Converters.ConverterContext context, SiliconStudio.Paradox.Engine.Data.CubemapSourceComponentData target, ref SiliconStudio.Paradox.Engine.CubemapSourceComponent source)
+		{
+			source = new SiliconStudio.Paradox.Engine.CubemapSourceComponent();
+		}
+
+        /// <inheritdoc/>
+        public void ConvertFromData(SiliconStudio.Core.Serialization.Converters.ConverterContext context, SiliconStudio.Paradox.Engine.Data.CubemapSourceComponentData target, ref SiliconStudio.Paradox.Engine.CubemapSourceComponent source)
+        {
+            source.Enabled = target.Enabled;
+            source.IsDynamic = target.IsDynamic;
+            source.Size = target.Size;
+            source.InfinityCubemap = target.InfinityCubemap;
+            source.InfluenceRadius = target.InfluenceRadius;
+            source.NearPlane = target.NearPlane;
+            source.FarPlane = target.FarPlane;
             {
-                var temp = source.Shape;
-                context.ConvertFromData(target.Shape, ref temp);
-                source.Shape = temp;
+                var temp = source.Texture;
+                context.ConvertFromData(target.Texture, ref temp);
+                source.Texture = temp;
             }
-            source.CollisionGroup = target.CollisionGroup;
-            source.CanCollideWith = target.CanCollideWith;
-            source.StepHeight = target.StepHeight;
-            source.Sprite = target.Sprite;
         }
     }
 

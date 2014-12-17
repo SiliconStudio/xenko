@@ -3,14 +3,10 @@
 using System;
 using System.Collections.Generic;
 
-using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects.Modules;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Shaders.Compiler;
+
+using IServiceRegistry = SiliconStudio.Core.IServiceRegistry;
 
 namespace SiliconStudio.Paradox.Effects
 {
@@ -19,31 +15,80 @@ namespace SiliconStudio.Paradox.Effects
     /// </summary>
     public class ModelRenderer : Renderer
     {
-        #region Constants and Fields
+        private int meshPassSlot;
 
-        protected int MeshPassSlot;
+        private readonly FastList<RenderMesh> meshesToRender;
 
-        private FastList<EffectMesh> meshesToRender = new FastList<EffectMesh>();
+        private readonly DynamicEffectCompiler dynamicEffectCompiler;
+        private readonly string effectName;
 
-        private EffectParameterUpdater updater;
+        private readonly SafeDelegateList<AcceptModelDelegate> acceptModels;
 
-        private ParameterCollection[] parameterCollections;
+        private readonly SafeDelegateList<AcceptRenderModelDelegate> acceptRenderModels;
 
-        private string effectName;
+        private readonly SafeDelegateList<AcceptMeshForRenderingDelegate> acceptPrepareMeshForRenderings;
 
-        #endregion
+        private readonly SafeDelegateList<AcceptRenderMeshDelegate> acceptRenderMeshes;
 
-        // Temporary until bytecode names exists
+        private readonly SafeDelegateList<UpdateMeshesDelegate> updateMeshes;
+
+        private readonly SafeDelegateList<PreRenderDelegate> preRenders;
+
+        private readonly SafeDelegateList<PostRenderDelegate> postRenders;
+
+        private readonly SafeDelegateList<PreEffectUpdateDelegate> preEffectUpdates;
+
+        private readonly SafeDelegateList<PostEffectUpdateDelegate> postEffectUpdates;
+
+        /// <summary>
+        /// An accept model callback to test whether a model will be handled by this instance.
+        /// </summary>
+        /// <param name="modelInstance">The model instance</param>
+        /// <returns><c>true</c> if the model instance is going to be handled by this renderer, <c>false</c> otherwise.</returns>
+        public delegate bool AcceptModelDelegate(IModelInstance modelInstance);
+
+        public delegate bool AcceptMeshForRenderingDelegate(RenderModel renderModel, Mesh mesh);
+
+        public delegate bool AcceptRenderMeshDelegate(RenderContext context, RenderMesh renderMesh);
+
+        public delegate bool AcceptRenderModelDelegate(RenderModel renderModel);
+
+        public delegate void UpdateMeshesDelegate(RenderContext context, FastList<RenderMesh> meshes);
+
+        public delegate void PreRenderDelegate(RenderContext context);
+
+        public delegate void PostRenderDelegate(RenderContext context);
+
+        public delegate void PreEffectUpdateDelegate(RenderContext context, RenderMesh renderMesh);
+
+        public delegate void PostEffectUpdateDelegate(RenderContext context, RenderMesh renderMesh);
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ModelRenderer"/> class.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        /// <param name="effectName">Name of the effect.</param>
         public ModelRenderer(IServiceRegistry services, string effectName) : base(services)
         {
             if (effectName == null) throw new ArgumentNullException("effectName");
             this.effectName = effectName;
+            DebugName = string.Format("ModelRenderer [{0}]", effectName);
 
-            updater = new EffectParameterUpdater();
-            parameterCollections = new ParameterCollection[5];
+            dynamicEffectCompiler = new DynamicEffectCompiler(services, effectName);
+
+            meshesToRender = new FastList<RenderMesh>();
+
+            acceptModels = new SafeDelegateList<AcceptModelDelegate>(this);
+            acceptRenderModels = new SafeDelegateList<AcceptRenderModelDelegate>(this);
+            acceptPrepareMeshForRenderings = new SafeDelegateList<AcceptMeshForRenderingDelegate>(this);
+            acceptRenderMeshes = new SafeDelegateList<AcceptRenderMeshDelegate>(this);
+            updateMeshes = new SafeDelegateList<UpdateMeshesDelegate>(this) { UpdateMeshesDefault };
+            SortMeshes = DefaultSort;
+            preRenders = new SafeDelegateList<PreRenderDelegate>(this);
+            postRenders = new SafeDelegateList<PostRenderDelegate>(this);
+            preEffectUpdates = new SafeDelegateList<PreEffectUpdateDelegate>(this);
+            postEffectUpdates = new SafeDelegateList<PostEffectUpdateDelegate>(this);
         }
-
-        public bool EnableFrustumCulling { get; set; }
 
         public string EffectName
         {
@@ -51,485 +96,307 @@ namespace SiliconStudio.Paradox.Effects
             {
                 return effectName;
             }
-            set
+        }
+
+        public SafeDelegateList<AcceptModelDelegate> AcceptModel
+        {
+            get
             {
-                effectName = value;
+                return acceptModels;
             }
         }
 
-        #region Public methods
+        public SafeDelegateList<AcceptRenderModelDelegate> AcceptRenderModel
+        {
+            get
+            {
+                return acceptRenderModels;
+            }
+        }
+
+        public SafeDelegateList<AcceptMeshForRenderingDelegate> AcceptPrepareMeshForRendering
+        {
+            get
+            {
+                return acceptPrepareMeshForRenderings;
+            }
+        }
+
+        public SafeDelegateList<AcceptRenderMeshDelegate> AcceptRenderMesh
+        {
+            get
+            {
+                return acceptRenderMeshes;
+            }
+        }
+
+        public SafeDelegateList<UpdateMeshesDelegate> UpdateMeshes
+        {
+            get
+            {
+                return updateMeshes;
+            }
+        }
+
+        public UpdateMeshesDelegate SortMeshes { get; set; }
+
+        public SafeDelegateList<PreRenderDelegate> PreRender
+        {
+            get
+            {
+                return preRenders;
+            }
+        }
+
+        public SafeDelegateList<PostRenderDelegate> PostRender
+        {
+            get
+            {
+                return postRenders;
+            }
+        }
+
+        public SafeDelegateList<PreEffectUpdateDelegate> PreEffectUpdate
+        {
+            get
+            {
+                return preEffectUpdates;
+            }
+        }
+
+        public SafeDelegateList<PostEffectUpdateDelegate> PostEffectUpdate
+        {
+            get
+            {
+                return postEffectUpdates;
+            }
+        }
 
         public override void Load()
         {
-            var pipelineMeshState = Pass.GetOrCreateMeshRenderState();
+            base.Load();
+
+            var pipelineModelState = Pass.GetOrCreateModelRendererState();
 
             // Get the slot for the pass of this processor
-            MeshPassSlot = pipelineMeshState.GetMeshPassSlot(Pass);
+            meshPassSlot = pipelineModelState.GetModelSlot(Pass);
 
-            // Register callback for preparing RenderModel for rendering
-            pipelineMeshState.PrepareRenderModel += PrepareModelForRendering;
-
-            // Register callback for rendering meshes extracted from RenderModels
-            Pass.StartPass += RenderMeshes;
+            // Register callbacks used by the MeshProcessor
+            pipelineModelState.AcceptModel += OnAcceptModel;
+            pipelineModelState.PrepareRenderModel += PrepareModelForRendering;
+            pipelineModelState.AcceptRenderModel += OnAcceptRenderModel;
         }
 
         public override void Unload()
         {
-            var pipelineMeshState = Pass.GetOrCreateMeshRenderState();
+            base.Unload();
 
-            // Register callback for preparing RenderModel for rendering
-            pipelineMeshState.PrepareRenderModel -= PrepareModelForRendering;
+            var pipelineModelState = Pass.GetOrCreateModelRendererState();
 
-            // Register callback for rendering meshes extracted from RenderModels
-            Pass.StartPass -= RenderMeshes;
+            // Unregister callbacks
+            pipelineModelState.AcceptModel -= OnAcceptModel;
+            pipelineModelState.PrepareRenderModel -= PrepareModelForRendering;
+            pipelineModelState.AcceptRenderModel -= OnAcceptRenderModel;
         }
 
-        #endregion
-
-        #region Protected methods
-
-        /// <summary>
-        /// Draws the mesh stored in the current <see cref="RenderContext" />
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="effectMesh">The current effect mesh.</param>
-        protected virtual void RenderMesh(RenderContext context, EffectMesh effectMesh)
+        protected override void OnRendering(RenderContext context)
         {
-            // Retrieve effect parameters
-            var currentPass = context.CurrentPass;
-            var currentRenderData = effectMesh.RenderData;
-
-            //using (Profiler.Begin(ProfilingKeys.PrepareMesh))
-            {
-                // Order of application of parameters:
-                // - RenderPass.Parameters
-                // - ModelComponent.Parameters
-                // - EffectMesh.Parameters (originally copied from mesh parameters)
-                // The order is based on the granularity level of each element and how shared it can be. Material is heavily shared, a model contains many meshes. An effectMesh is unique.
-                // TODO: really copy mesh parameters into effectMesh instead of just referencing the meshDraw parameters.
-
-                var modelComponent = effectMesh.ModelComponent;
-                var hasMaterialParams = effectMesh.MeshData.Material != null && effectMesh.MeshData.Material.Parameters != null;
-                var hasModelComponentParams = modelComponent != null && modelComponent.Parameters != null;
-                if (hasMaterialParams)
-                {
-                    if (hasModelComponentParams)
-                        effectMesh.Effect.Apply(currentPass.Parameters, effectMesh.MeshData.Material.Parameters, modelComponent.Parameters, effectMesh.Parameters, true);
-                    else
-                        effectMesh.Effect.Apply(currentPass.Parameters, effectMesh.MeshData.Material.Parameters, effectMesh.Parameters, true);
-                }
-                else if (hasModelComponentParams)
-                    effectMesh.Effect.Apply(currentPass.Parameters, modelComponent.Parameters, effectMesh.Parameters, true);
-                else
-                    effectMesh.Effect.Apply(currentPass.Parameters, effectMesh.Parameters, true);
-            }
-
-            //using (Profiler.Begin(ProfilingKeys.RenderMesh))
-            {
-                if (currentRenderData != null)
-                {
-                    var graphicsDevice = context.GraphicsDevice;
-
-                    graphicsDevice.SetVertexArrayObject(effectMesh.VertexArrayObject);
-
-                    if (currentRenderData.IndexBuffer == null)
-                    {
-                        graphicsDevice.Draw(currentRenderData.PrimitiveType, currentRenderData.DrawCount, currentRenderData.StartLocation);
-                    }
-                    else
-                    {
-                        graphicsDevice.DrawIndexed(currentRenderData.PrimitiveType, currentRenderData.DrawCount, currentRenderData.StartLocation);
-                    }
-                }
-            }
-        }
-
-        protected virtual void RenderMeshes(RenderContext context)
-        {
-            var state = Pass.GetMeshRenderState();
+            var state = Pass.GetModelRendererState();
 
             // Get all meshes from render models
             meshesToRender.Clear();
             foreach (var renderModel in state.RenderModels)
             {
-                var meshes = renderModel.InternalMeshes[MeshPassSlot];
+                var meshes = renderModel.RenderMeshes[meshPassSlot];
                 if (meshes != null)
                     meshesToRender.AddRange(meshes);
             }
 
-            foreach (var effectMesh in meshesToRender)
+            // Update meshes
+            foreach (var updateMeshesToRender in updateMeshes)
             {
-                if (EffectSystem.WasEffectRecompiled(effectMesh.Effect))
-                    EffectMeshRefresh(effectMesh, effectMesh.ModelComponent.Parameters);
+                updateMeshesToRender(context, meshesToRender);
             }
 
-            // Update meshes
-            UpdateMeshes(context, ref meshesToRender);
+            // Sort meshes
+            if (SortMeshes != null)
+            {
+                SortMeshes(context, meshesToRender);
+            }
 
-            PreRender(context);
+            // PreRender callbacks
+            foreach (var preRender in preRenders)
+            {
+                preRender(context);
+            }
 
             // TODO: separate update effect and render to tightly batch render calls vs 1 cache-friendly loop on meshToRender
             foreach (var mesh in meshesToRender)
             {
-                PreEffectUpdate(context, mesh);
-                UpdateEffectMesh(mesh);
-                PostEffectUpdate(context, mesh);
-                mesh.Render(context, mesh);
+                // PreEffectUpdate callbacks
+                foreach (var preEffectUpdate in preEffectUpdates)
+                {
+                    preEffectUpdate(context, mesh);
+                }
+
+                // Update Effect and mesh
+                UpdateEffect(mesh);
+
+                // PostEffectUpdate callbacks
+                foreach (var postEffectUpdate in postEffectUpdates)
+                {
+                    postEffectUpdate(context, mesh);
+                }
+
+                mesh.Draw(context);
             }
 
-            PostRender(context);
+            // PostRender callbacks
+            foreach (var postRender in postRenders)
+            {
+                postRender(context);
+            }
         }
 
-        protected virtual void PrepareMeshesForRendering(RenderModel renderModel, Model model, ParameterCollection modelComponentParameters)
+        private void PrepareModelForRendering(RenderModel renderModel)
         {
-            foreach (var mesh in model.Meshes)
+            foreach (var mesh in renderModel.Model.Meshes)
             {
-                var effectMesh = new EffectMesh(null, mesh);
-                CreateEffect(effectMesh, modelComponentParameters);
+                if (acceptPrepareMeshForRenderings.Count > 0 && !OnAcceptPrepareMeshForRendering(renderModel, mesh))
+                {
+                    continue;
+                }
+
+                var effectMesh = new RenderMesh(renderModel, mesh);
+                UpdateEffect(effectMesh);
 
                 // Register mesh for rendering
-                if (renderModel.InternalMeshes[MeshPassSlot] == null)
+                if (renderModel.RenderMeshes[meshPassSlot] == null)
                 {
-                    renderModel.InternalMeshes[MeshPassSlot] = new List<EffectMesh>();
+                    renderModel.RenderMeshes[meshPassSlot] = new List<RenderMesh>();
                 }
-                renderModel.InternalMeshes[MeshPassSlot].Add(effectMesh);
+                renderModel.RenderMeshes[meshPassSlot].Add(effectMesh);
             }
         }
 
-        protected virtual void PrepareModelForRendering(RenderModel renderModelView, ParameterCollection modelComponentParameters)
-        {
-            // TODO:FX Select appropriate view model
-            var model = renderModelView.Model;
-            PrepareMeshesForRendering(renderModelView, model, modelComponentParameters);
-        }
-
-        protected virtual void UpdateMeshes(RenderContext context, ref FastList<EffectMesh> meshes)
+        private void UpdateMeshesDefault(RenderContext context, FastList<RenderMesh> meshes)
         {
             for (var i = 0; i < meshes.Count; ++i)
             {
                 var mesh = meshes[i];
-                // Remove non-enabled effect meshes
-                if (!mesh.Enabled)
+
+                if (!mesh.Enabled || (acceptRenderMeshes.Count > 0 && !OnAcceptRenderMesh(context, mesh)))
                 {
                     meshes.SwapRemoveAt(i--);
-                    continue;
-                }
-
-                ModelComponent modelComponent = mesh.ModelComponent;
-                if (modelComponent == null)
-                    continue;
-
-                // Remove non-enabled mesh components
-                if (!modelComponent.Enabled)
-                {
-                    meshes.SwapRemoveAt(i--);
-                    continue;
-                }
-
-                if (meshes[i].MeshData.Layer == RenderLayers.RenderLayerNone)
-                {
-                    meshes.SwapRemoveAt(i--);
-                    continue;
                 }
             }
+        }
 
-            // Frustum culling
-            if (EnableFrustumCulling)
-            {
-                PerformFrustumCulling(meshes);
-            }
-
+        private void DefaultSort(RenderContext context, FastList<RenderMesh> meshes)
+        {
             // Sort based on ModelComponent.DrawOrder
             meshes.Sort(ModelComponentSorter.Default);
         }
 
-        private void PerformFrustumCulling(FastList<EffectMesh> meshes)
+        private bool OnAcceptRenderModel(RenderModel renderModel)
         {
-            Matrix viewProjection, mat1, mat2;
-
-            // Compute view * projection
-            Pass.Parameters.Get(TransformationKeys.View, out mat1);
-            Pass.Parameters.Get(TransformationKeys.Projection, out mat2);
-            Matrix.Multiply(ref mat1, ref mat2, out viewProjection);
-
-            var frustum = new BoundingFrustum(ref viewProjection);
-
-            for (var i = 0; i < meshes.Count; ++i)
+            // NOTICE: We don't use Linq, as It would allocated objects and triggers GC
+            foreach (var acceptRenderModel in AcceptRenderModel)
             {
-                var mesh = meshes[i];
-
-                // Fast AABB transform: http://zeuxcg.org/2010/10/17/aabb-from-obb-with-component-wise-abs/
-                // Get world matrix
-                mesh.Parameters.Get(TransformationKeys.World, out mat1);
-
-                // Compute transformed AABB (by world)
-                var boundingBox = mesh.MeshData.BoundingBox;
-                var center = boundingBox.Center;
-                var extent = boundingBox.Extent;
-
-                Vector3.TransformCoordinate(ref center, ref mat1, out center);
-
-                // Update world matrix into absolute form
-                unsafe
+                if (!acceptRenderModel(renderModel))
                 {
-                    float* matrixData = &mat1.M11;
-                    for (int j = 0; j < 16; ++j)
-                    {
-                        *matrixData = Math.Abs(*matrixData);
-                        ++matrixData;
-                    }
-                }
-
-                Vector3.TransformNormal(ref extent, ref mat1, out extent);
-
-                // Perform frustum culling
-                if (!Collision.FrustumContainsBox(ref frustum, ref center, ref extent))
-                {
-                    meshes.SwapRemoveAt(i--);
+                    return false;
                 }
             }
+            return true;
         }
 
-        protected virtual void PreRender(RenderContext context)
+        private bool OnAcceptModel(IModelInstance modelInstance)
         {
+            // NOTICE: We don't use Linq, as It would allocated objects and triggers GC
+            foreach (var test in acceptModels)
+            {
+                if (!test(modelInstance))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
-        protected virtual void PostRender(RenderContext context)
+        private bool OnAcceptPrepareMeshForRendering(RenderModel renderModel, Mesh mesh)
         {
+            // NOTICE: Don't use Linq, as It would allocated objects and triggers GC
+            foreach (var test in acceptPrepareMeshForRenderings)
+            {
+                if (!test(renderModel, mesh))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
-        protected virtual void PreEffectUpdate(RenderContext context, EffectMesh effectMesh)
+        private bool OnAcceptRenderMesh(RenderContext context, RenderMesh renderMesh)
         {
-        }
-
-        protected virtual void PostEffectUpdate(RenderContext context, EffectMesh effectMesh)
-        {
+            // NOTICE: Don't use Linq, as It would allocated objects and triggers GC
+            foreach (var test in acceptRenderMeshes)
+            {
+                if (!test(context, renderMesh))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         /// <summary>
         /// Create or update the Effect of the effect mesh.
         /// </summary>
-        /// <param name="effectMesh">The effect mesh.</param>
-        /// <param name="modelComponentParameters">The ModelComponent parameters.</param>
-        protected void CreateEffect(EffectMesh effectMesh, ParameterCollection modelComponentParameters)
+        protected void UpdateEffect(RenderMesh renderMesh)
         {
-            var mesh = effectMesh.MeshData;
-            var compilerParameters = new CompilerParameters();
-
-            // The same order as the one during compilation is used here
-            // 1. Material
-            // 2. ModelComponent
-            // 3. Mesh
-
-            if (mesh.Material != null)
+            if (dynamicEffectCompiler.Update(renderMesh))
             {
-                foreach (var parameter in mesh.Material.Parameters.InternalValues)
-                {
-                    compilerParameters.SetObject(parameter.Key, parameter.Value.Object);
-                }
-            }
-
-            if (modelComponentParameters != null)
-            {
-                foreach (var parameter in modelComponentParameters.InternalValues)
-                {
-                    compilerParameters.SetObject(parameter.Key, parameter.Value.Object);
-                }
-            }
-
-            if (mesh.Parameters != null)
-            {
-                foreach (var parameter in mesh.Parameters.InternalValues)
-                {
-                    compilerParameters.SetObject(parameter.Key, parameter.Value.Object);
-                }
-            }
-            
-            foreach (var parameter in GraphicsDevice.Parameters.InternalValues)
-            {
-                compilerParameters.SetObject(parameter.Key, parameter.Value.Object);
-            }
-
-            // Compile shader
-            // possible exception in LoadEffect
-            var effect = EffectSystem.LoadEffect(effectName, compilerParameters);
-
-            // update effect mesh
-            UpdateEffectMeshEffect(effectMesh, effect, modelComponentParameters);
-        }
-
-        #endregion
-
-        #region Private methods
-
-        private void UpdateEffectMeshEffect(EffectMesh effectMesh, Effect effect, ParameterCollection modelComponentParameters)
-        {
-            if (effect != null && !ReferenceEquals(effect, effectMesh.Effect))
-            {
-                if (effectMesh.Effect != null)
-                {
-                    foreach (var parameter in effectMesh.Effect.Parameters.InternalValues)
-                    {
-                        effect.Parameters.SetObject(parameter.Key, parameter.Value.Object);
-                    }
-                }
-                
-                var mesh = effectMesh.MeshData;
-
-                // Create EffectMesh and setup its draw data and rendering
-                // TODO:FX should later be done inside EffectMesh or in a separate class
-                // Note: this was previously done in RenderContext in previous system.
-                effectMesh.Effect = effect;
-                effectMesh.VertexArrayObject = VertexArrayObject.New(GraphicsDevice, effect.InputSignature, mesh.Draw.IndexBuffer, mesh.Draw.VertexBuffers);
-                effectMesh.Render = RenderMesh;
-                effectMesh.RenderData = mesh.Draw;
-
-                effectMesh.UpdaterDefinition = new EffectParameterUpdaterDefinition(effect.CompilationParameters);
-                var keyMapping = new Dictionary<ParameterKey, int>();
-                for (int i = 0; i < effectMesh.UpdaterDefinition.SortedKeys.Length; i++)
-                    keyMapping.Add(effectMesh.UpdaterDefinition.SortedKeys[i], i);
-                effect.CompilationParameters.SetKeyMapping(keyMapping);
-                effect.DefaultCompilationParameters.SetKeyMapping(keyMapping);
-                effectMesh.UpdaterDefinition.SortedLevels = GetLevels(effectMesh, modelComponentParameters);
-
-                UpdateEffectMeshCounters(effectMesh);
-            }
-            else if (effectMesh.Effect != null)
-            {
-                effectMesh.UpdaterDefinition.UpdateCounter(effect.CompilationParameters);
-                effectMesh.UpdaterDefinition.SortedLevels = GetLevels(effectMesh, modelComponentParameters);
-
-                UpdateEffectMeshCounters(effectMesh);
-            }
-        }
-
-        private void UpdateEffectMeshCounters(EffectMesh effectMesh)
-        {
-            for (var i = 0; i < effectMesh.UpdaterDefinition.SortedLevels.Length; ++i)
-            {
-                var kvp = updater.GetAtIndex(i);
-                effectMesh.UpdaterDefinition.SortedCounters[i] = kvp.Value.Counter;
-            }
-        }
-
-        private void EffectMeshRefresh(EffectMesh effectMesh, ParameterCollection modelComponentParameters)
-        {
-            var effect = effectMesh.Effect;
-            if (effectMesh.Effect != null)
-            {
-                foreach (var parameter in effectMesh.Effect.Parameters.InternalValues)
-                {
-                    effect.Parameters.SetObject(parameter.Key, parameter.Value.Object);
-                }
-            }
-
-            var mesh = effectMesh.MeshData;
-
-            // Create EffectMesh and setup its draw data and rendering
-            // TODO:FX should later be done inside EffectMesh or in a separate class
-            // Note: this was previously done in RenderContext in previous system.
-            effectMesh.VertexArrayObject = VertexArrayObject.New(GraphicsDevice, effect.InputSignature, mesh.Draw.IndexBuffer, mesh.Draw.VertexBuffers);
-            effectMesh.Render = RenderMesh;
-            effectMesh.RenderData = mesh.Draw;
-
-            effectMesh.UpdaterDefinition = new EffectParameterUpdaterDefinition(effect.CompilationParameters);
-            var keyMapping = new Dictionary<ParameterKey, int>();
-            for (int i = 0; i < effectMesh.UpdaterDefinition.SortedKeys.Length; i++)
-                keyMapping.Add(effectMesh.UpdaterDefinition.SortedKeys[i], i);
-            effect.CompilationParameters.SetKeyMapping(keyMapping);
-            effect.DefaultCompilationParameters.SetKeyMapping(keyMapping);
-            effectMesh.UpdaterDefinition.SortedLevels = GetLevels(effectMesh, modelComponentParameters);
-        }
-
-        private void UpdateEffectMesh(EffectMesh effectMesh)
-        {
-            if (effectMesh.ModelComponent == null)
-                return;
-
-            if (HasCollectionChanged(effectMesh))
-            {
-                CreateEffect(effectMesh, effectMesh.ModelComponent.Parameters);
+                renderMesh.Initialize(GraphicsDevice);
             }
         }
 
         /// <summary>
-        /// Checks if a collection has changed and the effect needs to be changed.
+        /// A list to ensure that all delegates are not null.
         /// </summary>
-        /// <param name="effectMesh">The effect mesh.</param>
-        /// <returns>True if the collection changed.</returns>
-        private bool HasCollectionChanged(EffectMesh effectMesh)
+        /// <typeparam name="T">A delegate</typeparam>
+        public class SafeDelegateList<T> : ConstrainedList<T> where T : class
         {
-            PrepareUpdater(effectMesh, effectMesh.ModelComponent.Parameters);
+            private const string ExceptionError = "The delegate added to the list cannot be null";
+            private readonly ModelRenderer renderer;
 
-            for (var i = 0; i < effectMesh.UpdaterDefinition.SortedLevels.Length; ++i)
+            internal SafeDelegateList(ModelRenderer renderer)
+                : base(Constraint, true, ExceptionError)
             {
-                var kvp = updater.GetAtIndex(i);
-                if (effectMesh.UpdaterDefinition.SortedLevels[i] == kvp.Key)
-                {
-                    //TODO: use cache to speed up equality check between complex object (such as ShaderMixinSource)
-                    if (effectMesh.UpdaterDefinition.SortedCounters[i] != kvp.Value.Counter && !Equals(effectMesh.UpdaterDefinition.SortedCompilationValues[i], kvp.Value.Object))
-                        return true;
-                }
-                else
-                {
-                    if (!Equals(effectMesh.UpdaterDefinition.SortedCompilationValues[i], kvp.Value.Object))
-                        return true;
-                }
+                this.renderer = renderer;
             }
-            return false;
-        }
 
-        /// <summary>
-        /// Prepare the EffectParameterUpdater for the effect mesh.
-        /// </summary>
-        /// <param name="effectMesh">The effect mesh.</param>
-        /// <param name="modelComponentParameters">The ModelComponent parameters.</param>
-        private void PrepareUpdater(EffectMesh effectMesh, ParameterCollection modelComponentParameters)
-        {
-            var mesh = effectMesh.MeshData;
-            var collectionCount = 1;
-            parameterCollections[0] = effectMesh.Effect.DefaultCompilationParameters;
-
-            // The same order as the one during compilation is used here
-            // 1. Material
-            // 2. ModelComponent
-            // 3. Mesh
-
-            if (mesh.Material != null)
-                parameterCollections[collectionCount++] = mesh.Material.Parameters;
-            if (modelComponentParameters != null)
-                parameterCollections[collectionCount++] = modelComponentParameters;
-            if (mesh.Parameters != null)
-                parameterCollections[collectionCount++] = mesh.Parameters;
-
-            parameterCollections[collectionCount++] = GraphicsDevice.Parameters;
-
-            updater.Update(effectMesh.UpdaterDefinition, parameterCollections, collectionCount);
-        }
-
-        /// <summary>
-        /// Get the levels of the parameters.
-        /// </summary>
-        /// <param name="effectMesh">The effect mesh.</param>
-        /// <param name="modelComponentParameters">The ModelComponent parameters.</param>
-        /// <returns>A table of levels.</returns>
-        private int[] GetLevels(EffectMesh effectMesh, ParameterCollection modelComponentParameters)
-        {
-            PrepareUpdater(effectMesh, modelComponentParameters);
-            
-            var levels = new int[effectMesh.UpdaterDefinition.SortedKeyHashes.Length];
-            for (var i = 0; i < levels.Length; ++i)
+            public new ModelRenderer Add(T item)
             {
-                levels[i] = updater.GetAtIndex(i).Key;
+                base.Add(item);
+                return renderer;
             }
-            return levels;
-        }
 
-        #endregion
+            public new ModelRenderer Insert(int index, T item)
+            {
+                base.Insert(index, item);
+                return renderer;
+            }
+
+            private static bool Constraint(ConstrainedList<T> constrainedList, T arg2)
+            {
+                return arg2 != null;
+            }
+        }
 
         #region Helper class
 
-        private class ModelComponentSorter : IComparer<EffectMesh>
+        private class ModelComponentSorter : IComparer<RenderMesh>
         {
             #region Constants and Fields
 
@@ -537,19 +404,26 @@ namespace SiliconStudio.Paradox.Effects
 
             #endregion
 
-            public int Compare(EffectMesh x, EffectMesh y)
+            public int Compare(RenderMesh left, RenderMesh right)
             {
-                var xModelComponent = x.ModelComponent;
-                var yModelComponent = y.ModelComponent;
+                var xModelComponent = left.RenderModel.ModelInstance;
+                var yModelComponent = right.RenderModel.ModelInstance;
 
                 // Ignore if no associated mesh component
                 if (xModelComponent == null || yModelComponent == null)
                     return 0;
 
-                if (x.IsTransparent && !y.IsTransparent)
+                // TODO: Add a kind of associated data to an effect mesh to speed up this test?
+                var leftMaterial = left.Mesh.Material;
+                var isLeftTransparent = (leftMaterial != null && leftMaterial.Parameters.Get(MaterialParameters.UseTransparent));
+
+                var rightMaterial = right.Mesh.Material;
+                var isRightTransparent = (rightMaterial != null && rightMaterial.Parameters.Get(MaterialParameters.UseTransparent));
+
+                if (isLeftTransparent && !isRightTransparent)
                     return 1;
 
-                if (!x.IsTransparent && y.IsTransparent)
+                if (!isLeftTransparent && isRightTransparent)
                     return -1;
 
                 // Use draw order

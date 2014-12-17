@@ -86,7 +86,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets additional data associated to this content. This can be used when the content itself does not contain enough information to be used as a view model.
         /// </summary>
-        IReadOnlyDictionary<string, object> AssociatedData { get; }
+        IDictionary<string, object> AssociatedData { get; }
 
         /// <summary>
         /// Gets the order number of this node in its parent.
@@ -118,13 +118,6 @@ namespace SiliconStudio.Presentation.Quantum
         ICommand GetCommand(string name);
 
         /// <summary>
-        /// Returns the additionnal data with the matching name.
-        /// </summary>
-        /// <param name="name">The name of the additionnal data to look for.</param>
-        /// <returns>The corresponding additionnal data, or <c>null</c> if no data with the given name exists.</returns>
-        object GetAssociatedData(string name);
-
-        /// <summary>
         /// Indicates whether this node can be moved.
         /// </summary>
         /// <param name="newParent">The new parent of the node once moved.</param>
@@ -135,6 +128,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// Moves the node by setting it a new parent.
         /// </summary>
         /// <param name="newParent">The new parent of the node once moved.</param>
-        void Move(IObservableNode newParent);
+        /// <param name="newName">The new name to give to the node once moved. This will modify its path. If <c>null</c>, it does not modify the name.</param>
+        void Move(IObservableNode newParent, string newName = null);
     }
 }

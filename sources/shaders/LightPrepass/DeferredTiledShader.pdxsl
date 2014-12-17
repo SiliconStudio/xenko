@@ -1,0 +1,22 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Computes tile position.
+/// </summary>
+class DeferredTiledShader : ShaderBase, PositionStream2
+{
+    stage int TileIndex = 0;
+    stage int TileCountX = 16;
+    stage int TileCountY = 10;
+
+    override stage void VSMain()
+    {
+        base.VSMain();
+
+        uint tileIndex = TileIndex;
+        float2 startXY = float2(tileIndex % TileCountX, tileIndex / TileCountX) / float2(TileCountX, TileCountY) * 2.0 - 1.0;
+        float2 vertexPosition = startXY + 1.0f / float2(TileCountX, TileCountY) * 2.0f * ((streams.Position.xy + 1.0f) * 0.5f);
+
+        streams.ShadingPosition = float4(vertexPosition, 0.0f, 1.0f);
+    }
+};

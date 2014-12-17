@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-namespace Test
+namespace Test5
 {
     shader ChildClone
     {
@@ -14,6 +14,7 @@ namespace Test
         mixin A;
         mixin B;
         mixin C;
-        mixin child ChildClone;
+        // Rename the sub child as Test
+        mixin child Test = ChildClone;
     };
 }

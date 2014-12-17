@@ -67,7 +67,8 @@ namespace SiliconStudio.Core.IO
 
         public override bool DirectoryExists(string url)
         {
-            return NativeFile.DirectoryExists(url);
+            var path = ConvertUrlToFullPath(url);
+            return NativeFile.DirectoryExists(path);
         }
 
         /// <inheritdoc/>

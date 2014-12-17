@@ -5,7 +5,7 @@
 /// </summary>
 class ShadingDiffuse : ShadingGroup
 {
-    AlbedoDiffuseBase albedoDiffuseBase = stage;
+    compose AlbedoDiffuseBase albedoDiffuseBase = stage;
     
     override float3 ComputeDiffuseAlbedo()
     {

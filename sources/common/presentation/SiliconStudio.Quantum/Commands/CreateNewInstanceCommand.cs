@@ -6,7 +6,7 @@ using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Quantum.Commands
 {
-    public class CreateNewInstanceCommand : UncancellableCommand
+    public class CreateNewInstanceCommand : ModifyValueCommand
     {
         /// <inheritdoc/>
         public override string Name { get { return "CreateNewInstance"; } }
@@ -22,7 +22,7 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        protected override object InvokeUncancellable(object currentValue, ITypeDescriptor descriptor, object parameter)
+        protected override object ModifyValue(object currentValue, ITypeDescriptor descriptor, object parameter)
         {
             return parameter != null ? Activator.CreateInstance((Type)parameter) : currentValue;
         }

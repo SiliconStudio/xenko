@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Ast
         /// <summary>
         ///   Initializes a new instance of the <see cref = "StructType" /> class.
         /// </summary>
-        public VarType() : base("$var")
+        public VarType() : base("var")
         {
         }
 

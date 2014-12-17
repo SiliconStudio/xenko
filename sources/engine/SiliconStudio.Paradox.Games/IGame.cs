@@ -32,7 +32,7 @@ namespace SiliconStudio.Paradox.Games
         event EventHandler<EventArgs> WindowCreated;
 
         /// <summary>
-        /// Gets the currnet game time.
+        /// Gets the current game time.
         /// </summary>
         /// <value>The current game time.</value>
         GameTime UpdateTime { get; }

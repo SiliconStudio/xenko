@@ -28,7 +28,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Ast
         public MixinStatement(MixinStatementType type, Expression mixin)
         {
             Type = type;
-            Target = mixin;
+            Value = mixin;
         }
 
         #endregion
@@ -45,7 +45,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Ast
         /// Gets or sets the target of this mixin.
         /// </summary>
         /// <value>The target.</value>
-        public Expression Target { get; set; }
+        public Expression Value { get; set; }
 
         #endregion
 
@@ -55,14 +55,14 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Ast
         public override IEnumerable<Node> Childrens()
         {
             ChildrenList.Clear();
-            ChildrenList.Add(Target);
+            ChildrenList.Add(Value);
             return ChildrenList;
         }
 
         /// <inheritdoc />
         public override string ToString()
         {
-            return string.Format("mixin {0}{1};", Type > 0 ? Type.ToString().ToLowerInvariant() + " " : string.Empty, Target);
+            return string.Format("mixin {0}{1};", Type > 0 ? Type.ToString().ToLowerInvariant() + " " : string.Empty, Value);
         }
 
         #endregion

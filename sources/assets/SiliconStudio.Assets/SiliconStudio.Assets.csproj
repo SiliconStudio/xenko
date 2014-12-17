@@ -11,12 +11,13 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
-    <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
+    <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization --generate-user-doc</SiliconStudioAssemblyProcessorOptions>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Build, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Build.Framework, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Build.Utilities.v12.0, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="NuGet">
       <HintPath>..\..\..\deps\Nuget\NuGet.exe</HintPath>
     </Reference>
@@ -27,9 +28,8 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
-    <Reference Include="SharpYaml, Version=2.0.1.25063, Culture=neutral, PublicKeyToken=2b53052c5884d7a1, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\common\deps\SharpYaml\SharpYaml.dll</HintPath>
+    <Reference Include="SharpYaml">
+      <HintPath>..\..\common\deps\SharpYaml\SharpYaml.dll</HintPath>
     </Reference>
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.XML" />
@@ -67,10 +67,13 @@
     <Compile Include="AssetItemAccessor.cs" />
     <Compile Include="AssetItemCollection.cs" />
     <Compile Include="AssetMemberValue.cs" />
+    <Compile Include="AssetPropertyKeyNameResolver.cs" />
     <Compile Include="AssetSelector.cs" />
+    <Compile Include="AssetFormatVersionAttribute.cs" />
     <Compile Include="AssetToImportMergeGroup.cs" />
     <Compile Include="AssetToImportMerge.cs" />
     <Compile Include="AssetToImportByImporter.cs" />
+    <Compile Include="AssetUpgraderBase.cs" />
     <Compile Include="Bundle.cs" />
     <Compile Include="BundleCollection.cs" />
     <Compile Include="Compiler\AssetDependenciesCompilerBase.cs" />
@@ -91,12 +94,14 @@
     <Compile Include="Compiler\FailedCommand.cs" />
     <Compile Include="Compiler\ThumbnailCommandParameters.cs" />
     <Compile Include="Diff\MergeResult.cs" />
+    <Compile Include="IAssetUpgrader.cs" />
     <Compile Include="IDirtyable.cs" />
     <Compile Include="IFileSynchronizable.cs" />
     <Compile Include="ImportResult.cs" />
     <Compile Include="Analysis\AssetResolver.cs" />
     <Compile Include="NugetLogEventArgs.cs" />
     <Compile Include="NugetStore.cs" />
+    <Compile Include="AssetMigration.cs" />
     <Compile Include="PackageArchive.cs" />
     <Compile Include="PackageArchiveTask.cs" />
     <Compile Include="PackageDependency.cs" />

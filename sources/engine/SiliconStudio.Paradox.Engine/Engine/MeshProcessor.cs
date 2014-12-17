@@ -45,29 +45,30 @@ namespace SiliconStudio.Paradox.Engine
 
         protected override void OnEntityAdding(Entity entity, AssociatedData associatedData)
         {
-            associatedData.RenderModels = new List<KeyValuePair<MeshRenderState, RenderModel>>();
+            associatedData.RenderModels = new List<KeyValuePair<ModelRendererState, RenderModel>>();
 
             // Initialize a RenderModel for every pipeline
             // TODO: Track added/removed pipelines?
+            var modelInstance = associatedData.ModelComponent;
+
             foreach (var pipeline in renderSystem.Pipelines)
             {
-                var renderModel = new RenderModel(pipeline, associatedData.ModelComponent.Model, associatedData.ModelComponent.Parameters);
-                var meshRenderState = pipeline.GetOrCreateMeshRenderState();
+                var modelRenderState = pipeline.GetOrCreateModelRendererState();
 
-                // Register RenderModel
-                associatedData.RenderModels.Add(new KeyValuePair<MeshRenderState, RenderModel>(meshRenderState, renderModel));
-
-                // Assign component to EffectMesh so it can be used during sorting
-                foreach (var meshes in renderModel.InternalMeshes)
+                // If the model is not accepted
+                if (!modelRenderState.IsValid || !modelRenderState.AcceptModel(modelInstance))
                 {
-                    if (meshes == null)
-                        continue;
-
-                    foreach (var mesh in meshes)
-                    {
-                        mesh.ModelComponent = associatedData.ModelComponent;
-                    }
+                    continue;
                 }
+
+                var renderModel = new RenderModel(pipeline, modelInstance);
+                if (renderModel.RenderMeshes == null)
+                {
+                    continue;
+                }
+                
+                // Register RenderModel
+                associatedData.RenderModels.Add(new KeyValuePair<ModelRendererState, RenderModel>(modelRenderState, renderModel));
             }
         }
 
@@ -113,13 +114,19 @@ namespace SiliconStudio.Paradox.Engine
             // Clear all pipelines from previously collected models
             foreach (var pipeline in renderSystem.Pipelines)
             {
-                var renderMeshState = pipeline.GetOrCreateMeshRenderState();
+                var renderMeshState = pipeline.GetOrCreateModelRendererState();
                 renderMeshState.RenderModels.Clear();
             }
 
             // Collect models for this frame
             foreach (var matchingEntity in enabledEntities)
             {
+                // Skip model not enabled
+                if (!matchingEntity.Value.ModelComponent.Enabled)
+                {
+                    continue;
+                }
+
                 var modelViewHierarchy = matchingEntity.Value.ModelComponent.ModelViewHierarchy;
 
                 var transformationComponent = matchingEntity.Value.TransformationComponent;
@@ -146,14 +153,18 @@ namespace SiliconStudio.Paradox.Engine
                     }
                 }
 
-                // Collect models associated to each pipeline
                 foreach (var renderModelEntry in matchingEntity.Value.RenderModels)
                 {
-                    var meshRenderState = renderModelEntry.Key;
+                    var renderModelState = renderModelEntry.Key;
                     var renderModel = renderModelEntry.Value;
 
+                    if (!renderModelState.AcceptRenderModel(renderModel))
+                    {
+                        continue;
+                    }
+
                     // Add model to rendering
-                    meshRenderState.RenderModels.Add(renderModel);
+                    renderModelState.RenderModels.Add(renderModel);
 
                     // Upload matrices to TransformationKeys.World
                     modelViewHierarchy.UpdateToRenderModel(renderModel);
@@ -170,7 +181,7 @@ namespace SiliconStudio.Paradox.Engine
 
             public TransformationComponent TransformationComponent;
 
-            public List<KeyValuePair<MeshRenderState, RenderModel>> RenderModels;
+            internal List<KeyValuePair<ModelRendererState, RenderModel>> RenderModels;
 
             public List<EntityLink> Links;
         }

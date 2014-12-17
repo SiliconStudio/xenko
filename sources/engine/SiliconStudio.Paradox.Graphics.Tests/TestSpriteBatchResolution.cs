@@ -40,7 +40,8 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         {
             await base.LoadContent();
 
-            spriteBatch = new SpriteBatch(GraphicsDevice);
+            var virtualResolution = new Vector3(GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height, 200);
+            spriteBatch = new SpriteBatch(GraphicsDevice) { VirtualResolution = virtualResolution };
             spheres = Asset.Load<SpriteGroup>("SpriteSphere");
             round = Asset.Load<Texture2D>("round");
             staticFont = Asset.Load<SpriteFont>("StaticFonts/CourierNew10");
@@ -107,15 +108,16 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         {
             var fontName = useDynamicFont ? "Dynamic" : "Static";
             var spriteFont = useDynamicFont ? dynamicFont : staticFont;
+            var targetSize = new Vector2(GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height);
             var resolutionRatio = Vector2.One;
-            if (useDynamicFont)
+            if (useDynamicFont && spriteBatch.VirtualResolution.HasValue)
             {
-                resolutionRatio.X = GraphicsDevice.BackBuffer.Width / spriteBatch.VirtualResolution.X;
-                resolutionRatio.Y = GraphicsDevice.BackBuffer.Height / spriteBatch.VirtualResolution.Y;
+                resolutionRatio.X = targetSize.X / spriteBatch.VirtualResolution.Value.X;
+                resolutionRatio.Y = targetSize.Y / spriteBatch.VirtualResolution.Value.Y;
             }
 
             var text = fontName + " font drawn with SpriteBatch(text).";
-            var dim = spriteBatch.MeasureString(spriteFont, text);
+            var dim = spriteBatch.MeasureString(spriteFont, text, targetSize);
 
             spriteBatch.Draw(colorTexture, new RectangleF(x, y, dim.X, dim.Y), Color.Green);
 
@@ -126,7 +128,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             var fontSize = 1.5f * spriteFont.Size;
             text = fontName + " font drawn with SpriteBatch(text, size).";
-            dim = spriteBatch.MeasureString(spriteFont, text, fontSize);
+            dim = spriteBatch.MeasureString(spriteFont, text, fontSize, targetSize);
 
             spriteBatch.Draw(colorTexture, new RectangleF(x, y, dim.X, dim.Y), Color.Green);
 

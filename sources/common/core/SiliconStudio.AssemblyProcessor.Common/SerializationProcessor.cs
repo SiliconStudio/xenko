@@ -11,11 +11,18 @@ namespace SiliconStudio.AssemblyProcessor
 {
     public class SerializationProcessor : IAssemblyDefinitionProcessor
     {
+        public string SignKeyFile { get; private set; }
+
+        public SerializationProcessor(string signKeyFile)
+        {
+            SignKeyFile = signKeyFile;
+        }
+
         public bool Process(AssemblyProcessorContext context)
         {
             // Generate serialization assembly
             var serializationAssemblyFilepath = ComplexSerializerGenerator.GenerateSerializationAssemblyLocation(context.Assembly.MainModule.FullyQualifiedName);
-            context.Assembly = ComplexSerializerGenerator.GenerateSerializationAssembly(context.Platform, context.AssemblyResolver, context.Assembly, serializationAssemblyFilepath);
+            context.Assembly = ComplexSerializerGenerator.GenerateSerializationAssembly(context.Platform, context.AssemblyResolver, context.Assembly, serializationAssemblyFilepath, SignKeyFile);
 
             return true;
         }

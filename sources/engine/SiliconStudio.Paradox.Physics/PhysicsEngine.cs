@@ -5,22 +5,23 @@ using System.Collections.Generic;
 using System.Linq;
 
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Engine.Data;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Physics
 {
     public class PhysicsEngine : IDisposable
     {
-        BulletSharp.DiscreteDynamicsWorld mDiscreteDynamicsWorld;
+        BulletSharp.DiscreteDynamicsWorld discreteDynamicsWorld;
         //BulletSharp.SoftBody.SoftRigidDynamicsWorld mSoftRigidDynamicsWorld;
-        BulletSharp.CollisionWorld mCollisionWorld;
+        BulletSharp.CollisionWorld collisionWorld;
 
-        BulletSharp.CollisionDispatcher mDispatcher;
-        BulletSharp.CollisionConfiguration mCollisionConf;
-        BulletSharp.DbvtBroadphase mBroadphase;
+        BulletSharp.CollisionDispatcher dispatcher;
+        BulletSharp.CollisionConfiguration collisionConfiguration;
+        BulletSharp.DbvtBroadphase broadphase;
 
-        BulletSharp.ContactSolverInfo mSolverInfo;
-        BulletSharp.DispatcherInfo mDispatchInfo;
+        BulletSharp.ContactSolverInfo solverInfo;
+        BulletSharp.DispatcherInfo dispatchInfo;
 
         bool mCanCcd;
 
@@ -33,7 +34,7 @@ namespace SiliconStudio.Paradox.Physics
                     throw new Exception("ContinuousCollisionDetection must be enabled at physics engine initialization using the proper flag.");
                 }
 
-                return mDispatchInfo.UseContinuous;
+                return dispatchInfo.UseContinuous;
             }
             set
             {
@@ -42,7 +43,7 @@ namespace SiliconStudio.Paradox.Physics
                     throw new Exception("ContinuousCollisionDetection must be enabled at physics engine initialization using the proper flag.");
                 }
 
-                mDispatchInfo.UseContinuous = value;
+                dispatchInfo.UseContinuous = value;
             }
         }
 
@@ -70,32 +71,62 @@ namespace SiliconStudio.Paradox.Physics
 
         internal static PhysicsEngine Singleton = null;
 
+        readonly Game game;
+
+        public PhysicsEngine(Game g)
+        {
+            game = g;
+        }
+
+        static bool convertersDone;
+
+        public static void InitializeConverters()
+        {
+            //init converters
+            // Register type PhysicsColliderShapeData
+            Core.Serialization.Converters.ConverterContext.RegisterConverter(new PhysicsColliderShapeDataConverter());
+            // Register type PhysicsComponentData
+            Core.Serialization.Converters.ConverterContext.RegisterConverter(new PhysicsComponentDataConverter());
+            // Register type PhysicsElementData
+            Core.Serialization.Converters.ConverterContext.RegisterConverter(new PhysicsElementDataConverter());
+
+            convertersDone = true;
+        }
+
         /// <summary>
         /// Initializes the Physics engine using the specified flags.
         /// </summary>
         /// <param name="flags">The flags.</param>
         /// <exception cref="System.NotImplementedException">SoftBody processing is not yet available</exception>
-        public void Initialize(PhysicsEngineFlags flags)
+        public void Initialize(PhysicsEngineFlags flags = PhysicsEngineFlags.None)
         {
-            // Preload proper freetype native library (depending on CPU type)
+            // Preload proper libbulletc native library (depending on CPU type)
             Core.NativeLibrary.PreloadLibrary("libbulletc.dll");
 
-            mCollisionConf = new BulletSharp.DefaultCollisionConfiguration();
-            mDispatcher = new BulletSharp.CollisionDispatcher(mCollisionConf);
-            mBroadphase = new BulletSharp.DbvtBroadphase();
+            if (!convertersDone)
+            {
+                InitializeConverters();
+            }
+
+            //add into processors pipeline
+            game.Entities.Processors.Add(new PhysicsProcessor());
+
+            collisionConfiguration = new BulletSharp.DefaultCollisionConfiguration();
+            dispatcher = new BulletSharp.CollisionDispatcher(collisionConfiguration);
+            broadphase = new BulletSharp.DbvtBroadphase();
 
             //this allows characters to have proper physics behavior
-            mBroadphase.OverlappingPairCache.SetInternalGhostPairCallback(new BulletSharp.GhostPairCallback());
+            broadphase.OverlappingPairCache.SetInternalGhostPairCallback(new BulletSharp.GhostPairCallback());
 
             //2D pipeline
             var simplex = new BulletSharp.VoronoiSimplexSolver();
             var pdSolver = new BulletSharp.MinkowskiPenetrationDepthSolver();
             var convexAlgo = new BulletSharp.Convex2DConvex2DAlgorithm.CreateFunc(simplex, pdSolver);
 
-            mDispatcher.RegisterCollisionCreateFunc(BulletSharp.BroadphaseNativeType.Convex2DShape, BulletSharp.BroadphaseNativeType.Convex2DShape, convexAlgo); //this is the ONLY one that we are actually using
-            mDispatcher.RegisterCollisionCreateFunc(BulletSharp.BroadphaseNativeType.Box2DShape, BulletSharp.BroadphaseNativeType.Convex2DShape, convexAlgo);
-            mDispatcher.RegisterCollisionCreateFunc(BulletSharp.BroadphaseNativeType.Convex2DShape, BulletSharp.BroadphaseNativeType.Box2DShape, convexAlgo);
-            mDispatcher.RegisterCollisionCreateFunc(BulletSharp.BroadphaseNativeType.Box2DShape, BulletSharp.BroadphaseNativeType.Box2DShape, new BulletSharp.Box2DBox2DCollisionAlgorithm.CreateFunc());
+            dispatcher.RegisterCollisionCreateFunc(BulletSharp.BroadphaseNativeType.Convex2DShape, BulletSharp.BroadphaseNativeType.Convex2DShape, convexAlgo); //this is the ONLY one that we are actually using
+            dispatcher.RegisterCollisionCreateFunc(BulletSharp.BroadphaseNativeType.Box2DShape, BulletSharp.BroadphaseNativeType.Convex2DShape, convexAlgo);
+            dispatcher.RegisterCollisionCreateFunc(BulletSharp.BroadphaseNativeType.Convex2DShape, BulletSharp.BroadphaseNativeType.Box2DShape, convexAlgo);
+            dispatcher.RegisterCollisionCreateFunc(BulletSharp.BroadphaseNativeType.Box2DShape, BulletSharp.BroadphaseNativeType.Box2DShape, new BulletSharp.Box2DBox2DCollisionAlgorithm.CreateFunc());
             //~2D pipeline
 
             //default solver
@@ -103,7 +134,7 @@ namespace SiliconStudio.Paradox.Physics
 
             if (flags.HasFlag(PhysicsEngineFlags.CollisionsOnly))
             {
-                mCollisionWorld = new BulletSharp.CollisionWorld(mDispatcher, mBroadphase, mCollisionConf);
+                collisionWorld = new BulletSharp.CollisionWorld(dispatcher, broadphase, collisionConfiguration);
             }
             else if (flags.HasFlag(PhysicsEngineFlags.SoftBodySupport))
             {
@@ -114,22 +145,22 @@ namespace SiliconStudio.Paradox.Physics
             }
             else
             {
-                mDiscreteDynamicsWorld = new BulletSharp.DiscreteDynamicsWorld(mDispatcher, mBroadphase, solver, mCollisionConf);
-                mCollisionWorld = mDiscreteDynamicsWorld;
+                discreteDynamicsWorld = new BulletSharp.DiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
+                collisionWorld = discreteDynamicsWorld;
             }
 
-            if (mDiscreteDynamicsWorld != null)
+            if (discreteDynamicsWorld != null)
             {
-                mSolverInfo = mDiscreteDynamicsWorld.SolverInfo; //we are required to keep this reference, or the GC will mess up
-                mDispatchInfo = mDiscreteDynamicsWorld.DispatchInfo;
+                solverInfo = discreteDynamicsWorld.SolverInfo; //we are required to keep this reference, or the GC will mess up
+                dispatchInfo = discreteDynamicsWorld.DispatchInfo;
 
-                mSolverInfo.SolverMode |= BulletSharp.SolverModes.CacheFriendly; //todo test if helps with performance or not
+                solverInfo.SolverMode |= BulletSharp.SolverModes.CacheFriendly; //todo test if helps with performance or not
 
                 if (flags.HasFlag(PhysicsEngineFlags.ContinuosCollisionDetection))
                 {
                     mCanCcd = true;
-                    mSolverInfo.SolverMode |= BulletSharp.SolverModes.Use2FrictionDirections | BulletSharp.SolverModes.RandomizeOrder;
-                    mDispatchInfo.UseContinuous = true;
+                    solverInfo.SolverMode |= BulletSharp.SolverModes.Use2FrictionDirections | BulletSharp.SolverModes.RandomizeOrder;
+                    dispatchInfo.UseContinuous = true;
                 }
             }
 
@@ -230,20 +261,18 @@ namespace SiliconStudio.Paradox.Physics
         public void Dispose()
         {
             //if (mSoftRigidDynamicsWorld != null) mSoftRigidDynamicsWorld.Dispose();
-            if (mDiscreteDynamicsWorld != null) mDiscreteDynamicsWorld.Dispose();
-            else if (mCollisionWorld != null) mCollisionWorld.Dispose();
+            if (discreteDynamicsWorld != null) discreteDynamicsWorld.Dispose();
+            else if (collisionWorld != null) collisionWorld.Dispose();
 
-            if (mBroadphase != null) mBroadphase.Dispose();
-            if (mDispatcher != null) mDispatcher.Dispose();
-            if (mCollisionConf != null) mCollisionConf.Dispose();
+            if (broadphase != null) broadphase.Dispose();
+            if (dispatcher != null) dispatcher.Dispose();
+            if (collisionConfiguration != null) collisionConfiguration.Dispose();
         }
 
         /// <summary>
         /// Creates the collider.
         /// </summary>
         /// <param name="shape">The shape.</param>
-        /// <param name="initialPosition">The initial position.</param>
-        /// <param name="initialRotation">The initial rotation.</param>
         /// <returns></returns>
         public Collider CreateCollider(ColliderShape shape)
         {
@@ -258,6 +287,11 @@ namespace SiliconStudio.Paradox.Physics
 
             collider.InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.NoContactResponse;
 
+            if (shape.NeedsCustomCollisionCallback)
+            {
+                collider.InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.CustomMaterialCallback;
+            }
+
             collider.InternalCollider.UserObject = collider;
             collider.Engine = this;
 
@@ -268,19 +302,22 @@ namespace SiliconStudio.Paradox.Physics
         /// Creates the rigid body.
         /// </summary>
         /// <param name="collider">The collider.</param>
-        /// <param name="getWorldTransformCallback"></param>
-        /// <param name="setWorldTransformCallback"></param>
         /// <returns></returns>
         public RigidBody CreateRigidBody(ColliderShape collider)
         {
             var rb = new RigidBody(collider);
 
             rb.InternalRigidBody = new BulletSharp.RigidBody(0.0f, rb.MotionState, collider.InternalShape, Vector3.Zero);
-            rb.InternalRigidBody.CollisionFlags |= BulletSharp.CollisionFlags.StaticObject; //already set if mass is 0 actually!
+            rb.InternalRigidBody.CollisionFlags |= BulletSharp.CollisionFlags.StaticObject; //already set if mass is 0 actually!   
 
             rb.InternalCollider = rb.InternalRigidBody;
 
             rb.InternalCollider.ContactProcessingThreshold = 1e18f;
+
+            if (collider.NeedsCustomCollisionCallback)
+            {
+                rb.InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.CustomMaterialCallback;
+            }
 
             if (collider.Is2D) //set different defaults for 2D shapes
             {
@@ -298,8 +335,6 @@ namespace SiliconStudio.Paradox.Physics
         /// Creates the character.
         /// </summary>
         /// <param name="collider">The collider.</param>
-        /// <param name="initialPosition">The initial position.</param>
-        /// <param name="initialRotation">The initial rotation.</param>
         /// <param name="stepHeight">Height of the step.</param>
         /// <returns></returns>
         public Character CreateCharacter(ColliderShape collider, float stepHeight)
@@ -313,6 +348,11 @@ namespace SiliconStudio.Paradox.Physics
             };
 
             ch.InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.CharacterObject;
+
+            if (collider.NeedsCustomCollisionCallback)
+            {
+                ch.InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.CustomMaterialCallback;
+            }
 
             ch.InternalCollider.ContactProcessingThreshold = 1e18f;
 
@@ -330,7 +370,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <param name="collider">The collider.</param>
         public void AddCollider(Collider collider)
         {
-            mCollisionWorld.AddCollisionObject(collider.InternalCollider);
+            collisionWorld.AddCollisionObject(collider.InternalCollider);
         }
 
         /// <summary>
@@ -341,7 +381,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <param name="mask">The mask.</param>
         public void AddCollider(Collider collider, CollisionFilterGroups group, CollisionFilterGroups mask)
         {
-            mCollisionWorld.AddCollisionObject(collider.InternalCollider, (BulletSharp.CollisionFilterGroups)group, (BulletSharp.CollisionFilterGroups)mask);
+            collisionWorld.AddCollisionObject(collider.InternalCollider, (BulletSharp.CollisionFilterGroups)group, (BulletSharp.CollisionFilterGroups)mask);
         }
 
         /// <summary>
@@ -350,7 +390,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <param name="collider">The collider.</param>
         public void RemoveCollider(Collider collider)
         {
-            mCollisionWorld.RemoveCollisionObject(collider.InternalCollider);
+            collisionWorld.RemoveCollisionObject(collider.InternalCollider);
         }
 
         /// <summary>
@@ -360,9 +400,9 @@ namespace SiliconStudio.Paradox.Physics
         /// <exception cref="System.Exception">Cannot perform this action when the physics engine is set to CollisionsOnly</exception>
         public void AddRigidBody(RigidBody rigidBody)
         {
-            if (mDiscreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
+            if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
 
-            mDiscreteDynamicsWorld.AddRigidBody(rigidBody.InternalRigidBody);
+            discreteDynamicsWorld.AddRigidBody(rigidBody.InternalRigidBody);
         }
 
         /// <summary>
@@ -374,9 +414,9 @@ namespace SiliconStudio.Paradox.Physics
         /// <exception cref="System.Exception">Cannot perform this action when the physics engine is set to CollisionsOnly</exception>
         public void AddRigidBody(RigidBody rigidBody, CollisionFilterGroups group, CollisionFilterGroups mask)
         {
-            if (mDiscreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
+            if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
 
-            mDiscreteDynamicsWorld.AddRigidBody(rigidBody.InternalRigidBody, (short)group, (short)mask);
+            discreteDynamicsWorld.AddRigidBody(rigidBody.InternalRigidBody, (short)group, (short)mask);
         }
 
         /// <summary>
@@ -386,9 +426,9 @@ namespace SiliconStudio.Paradox.Physics
         /// <exception cref="System.Exception">Cannot perform this action when the physics engine is set to CollisionsOnly</exception>
         public void RemoveRigidBody(RigidBody rigidBody)
         {
-            if (mDiscreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
+            if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
 
-            mDiscreteDynamicsWorld.RemoveRigidBody(rigidBody.InternalRigidBody);
+            discreteDynamicsWorld.RemoveRigidBody(rigidBody.InternalRigidBody);
         }
 
         /// <summary>
@@ -398,12 +438,12 @@ namespace SiliconStudio.Paradox.Physics
         /// <exception cref="System.Exception">Cannot perform this action when the physics engine is set to CollisionsOnly</exception>
         public void AddCharacter(Character character)
         {
-            if (mDiscreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
+            if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
 
             var collider = character.InternalCollider;
             var action = character.KinematicCharacter;
-            mDiscreteDynamicsWorld.AddCollisionObject(collider, BulletSharp.CollisionFilterGroups.CharacterFilter);
-            mDiscreteDynamicsWorld.AddCharacter(action);
+            discreteDynamicsWorld.AddCollisionObject(collider, BulletSharp.CollisionFilterGroups.CharacterFilter);
+            discreteDynamicsWorld.AddCharacter(action);
         }
 
         /// <summary>
@@ -415,12 +455,12 @@ namespace SiliconStudio.Paradox.Physics
         /// <exception cref="System.Exception">Cannot perform this action when the physics engine is set to CollisionsOnly</exception>
         public void AddCharacter(Character character, CollisionFilterGroups group, CollisionFilterGroups mask)
         {
-            if (mDiscreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
+            if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
 
             var collider = character.InternalCollider;
             var action = character.KinematicCharacter;
-            mDiscreteDynamicsWorld.AddCollisionObject(collider, (BulletSharp.CollisionFilterGroups)group, (BulletSharp.CollisionFilterGroups)mask);
-            mDiscreteDynamicsWorld.AddCharacter(action);
+            discreteDynamicsWorld.AddCollisionObject(collider, (BulletSharp.CollisionFilterGroups)group, (BulletSharp.CollisionFilterGroups)mask);
+            discreteDynamicsWorld.AddCharacter(action);
         }
 
         /// <summary>
@@ -430,12 +470,12 @@ namespace SiliconStudio.Paradox.Physics
         /// <exception cref="System.Exception">Cannot perform this action when the physics engine is set to CollisionsOnly</exception>
         public void RemoveCharacter(Character character)
         {
-            if (mDiscreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
+            if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
 
             var collider = character.InternalCollider;
             var action = character.KinematicCharacter;
-            mDiscreteDynamicsWorld.RemoveCollisionObject(collider);
-            mDiscreteDynamicsWorld.RemoveCharacter(action);
+            discreteDynamicsWorld.RemoveCollisionObject(collider);
+            discreteDynamicsWorld.RemoveCharacter(action);
         }
 
         /// <summary>
@@ -455,7 +495,7 @@ namespace SiliconStudio.Paradox.Physics
         /// </exception>
         public Constraint CreateConstraint(ConstraintTypes type, RigidBody rigidBodyA, Matrix frameA, bool useReferenceFrameA = false)
         {
-            if (mDiscreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
+            if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
             if (rigidBodyA == null) throw new Exception("Both RigidBodies must be valid");
 
             var rbA = rigidBodyA.InternalRigidBody;
@@ -590,7 +630,7 @@ namespace SiliconStudio.Paradox.Physics
         /// </exception>
         public Constraint CreateConstraint(ConstraintTypes type, RigidBody rigidBodyA, RigidBody rigidBodyB, Matrix frameA, Matrix frameB, bool useReferenceFrameA = false)
         {
-            if (mDiscreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
+            if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
             if (rigidBodyA == null || rigidBodyB == null) throw new Exception("Both RigidBodies must be valid");
 
             var rbA = rigidBodyA.InternalRigidBody;
@@ -743,11 +783,11 @@ namespace SiliconStudio.Paradox.Physics
         /// <exception cref="System.Exception">Cannot perform this action when the physics engine is set to CollisionsOnly</exception>
         public void AddConstraint(Constraint constraint)
         {
-            if (mDiscreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
+            if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
 
             var c = constraint.InternalConstraint;
 
-            mDiscreteDynamicsWorld.AddConstraint(c);
+            discreteDynamicsWorld.AddConstraint(c);
         }
 
         /// <summary>
@@ -758,11 +798,11 @@ namespace SiliconStudio.Paradox.Physics
         /// <exception cref="System.Exception">Cannot perform this action when the physics engine is set to CollisionsOnly</exception>
         public void AddConstraint(Constraint constraint, bool disableCollisionsBetweenLinkedBodies)
         {
-            if (mDiscreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
+            if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
 
             var c = constraint.InternalConstraint;
 
-            mDiscreteDynamicsWorld.AddConstraint(c, disableCollisionsBetweenLinkedBodies);
+            discreteDynamicsWorld.AddConstraint(c, disableCollisionsBetweenLinkedBodies);
         }
 
         /// <summary>
@@ -772,11 +812,11 @@ namespace SiliconStudio.Paradox.Physics
         /// <exception cref="System.Exception">Cannot perform this action when the physics engine is set to CollisionsOnly</exception>
         public void RemoveConstraint(Constraint constraint)
         {
-            if (mDiscreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
+            if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
 
             var c = constraint.InternalConstraint;
 
-            mDiscreteDynamicsWorld.RemoveConstraint(c);
+            discreteDynamicsWorld.RemoveConstraint(c);
         }
 
         /// <summary>
@@ -791,7 +831,7 @@ namespace SiliconStudio.Paradox.Physics
             
             using (var rcb = new BulletSharp.ClosestRayResultCallback(from, to))
             {
-                mCollisionWorld.RayTest(ref from, ref to, rcb);
+                collisionWorld.RayTest(ref from, ref to, rcb);
 
                 if (rcb.CollisionObject == null) return result;
                 result.Succeeded = true;
@@ -815,7 +855,7 @@ namespace SiliconStudio.Paradox.Physics
             
             using (var rcb = new BulletSharp.AllHitsRayResultCallback(from, to))
             {
-                mCollisionWorld.RayTest(ref from, ref to, rcb);
+                collisionWorld.RayTest(ref from, ref to, rcb);
 
                 var count = rcb.CollisionObjects.Count;
 
@@ -853,7 +893,7 @@ namespace SiliconStudio.Paradox.Physics
 
             using (var rcb = new BulletSharp.ClosestConvexResultCallback(from.TranslationVector, to.TranslationVector))
             {
-                mCollisionWorld.ConvexSweepTest(sh, from, to, rcb);
+                collisionWorld.ConvexSweepTest(sh, from, to, rcb);
 
                 if (rcb.HitCollisionObject == null) return result;
                 result.Succeeded = true;
@@ -882,7 +922,7 @@ namespace SiliconStudio.Paradox.Physics
 
             using (var rcb = new BulletSharp.AllHitsConvexResultCallback())
             {
-                mCollisionWorld.ConvexSweepTest(sh, from, to, rcb);
+                collisionWorld.ConvexSweepTest(sh, from, to, rcb);
 
                 var count = rcb.CollisionObjects.Count;
                 for (var i = 0; i < count; i++)
@@ -925,13 +965,13 @@ namespace SiliconStudio.Paradox.Physics
         {
             get
             {
-                if (mDiscreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
-                return mDiscreteDynamicsWorld.Gravity;
+                if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
+                return discreteDynamicsWorld.Gravity;
             }
             set
             {
-                if (mDiscreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
-                mDiscreteDynamicsWorld.Gravity = value;
+                if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
+                discreteDynamicsWorld.Gravity = value;
             }
         }
 
@@ -939,10 +979,10 @@ namespace SiliconStudio.Paradox.Physics
         {
             if (DisableSimulation) return;
 
-            if (mCollisionWorld == null) return;
+            if (collisionWorld == null) return;
 
-            if (mDiscreteDynamicsWorld != null) mDiscreteDynamicsWorld.StepSimulation(delta);
-            else mCollisionWorld.PerformDiscreteCollisionDetection();
+            if (discreteDynamicsWorld != null) discreteDynamicsWorld.StepSimulation(delta);
+            else collisionWorld.PerformDiscreteCollisionDetection();
         }
     }
 }

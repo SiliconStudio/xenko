@@ -10,7 +10,7 @@
     <AssemblyName>SiliconStudio.Presentation.Tests</AssemblyName>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
     <ParadoxBuildTags>WindowsTools</ParadoxBuildTags>
-    <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioSign)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
+    <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="nunit.framework">
@@ -29,6 +29,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestCore.cs" />
+    <Compile Include="TestDispatcher.cs" />
     <Compile Include="TestSettings.cs" />
   </ItemGroup>
   <ItemGroup>

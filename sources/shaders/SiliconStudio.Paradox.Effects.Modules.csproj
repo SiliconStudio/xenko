@@ -9,7 +9,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{0342C3E7-4A38-46B4-A8EC-E728D50085D3}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>SiliconStudio.Paradox.Effects.Modules</RootNamespace>
+    <RootNamespace>SiliconStudio.Paradox.Effects</RootNamespace>
     <AssemblyName>SiliconStudio.Paradox.Effects.Modules</AssemblyName>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <ParadoxBuildTags>*</ParadoxBuildTags>
@@ -22,6 +22,12 @@
     <Compile Include="..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="BasicShaders.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>BasicShaders.pdxfx</DependentUpon>
+    </Compile>
     <Compile Include="ComputeColor\3dsMax\ComputeColorAdd3ds.cs">
       <DependentUpon>ComputeColorAdd3ds.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
@@ -29,293 +35,648 @@
       <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\3dsMax\ComputeColorDarken3ds.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorDarken3ds.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorDarken3ds.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\3dsMax\ComputeColorDifference3ds.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorDifference3ds.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorDifference3ds.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\3dsMax\ComputeColorLighten3ds.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorLighten3ds.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorLighten3ds.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\3dsMax\ComputeColorMask3ds.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorMask3ds.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorMask3ds.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\3dsMax\ComputeColorMultiply3ds.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorMultiply3ds.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorMultiply3ds.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\3dsMax\ComputeColorOver3ds.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorOver3ds.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorOver3ds.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\3dsMax\ComputeColorOverlay3ds.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorOverlay3ds.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorOverlay3ds.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\3dsMax\ComputeColorSubtract3ds.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeColorSubtract3ds.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="BasicShaders.cs">
-      <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>BasicShaders.pdxfx</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColor.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColor.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColor.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColor3.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColor3.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColor3.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorAdd.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorAdd.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorAdd.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorAdd3.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorAdd3.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorAdd3.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorAverage.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorAverage.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorAverage.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorCave.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorCave.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorCave.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorColor.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorColor.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorColor.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorColorBurn.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorColorBurn.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorColorBurn.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorColorDodge.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorColorDodge.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorColorDodge.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorConstantColorLink.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorConstantColorLink.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorConstantColorLink.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorConstantFloatLink.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorConstantFloatLink.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorConstantFloatLink.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorConstantLink.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorConstantLink.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorConstantLink.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorDesaturate.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorDesaturate.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorDesaturate.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorDivide.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorDivide.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorDivide.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorExclusion.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorExclusion.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorExclusion.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorFixed.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorFixed.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorFixed.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorHardLight.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorHardLight.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorHardLight.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorHardMix.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorHardMix.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorHardMix.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorHue.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorHue.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorHue.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorIlluminate.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorIlluminate.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorIlluminate.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorIn.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorIn.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorIn.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorLerpAlpha.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorLerpAlpha.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorLerpAlpha.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorLinearBurn.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorLinearBurn.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorLinearBurn.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorLinearDodge.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorLinearDodge.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorLinearDodge.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorMask.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorMask.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorMask.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorMultiply.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorMultiply.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorMultiply.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorNone.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorNone.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorNone.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorOne.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorOne.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorOne.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorOpaque.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorOpaque.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorOpaque.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorOut.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorOut.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorOut.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorOutdoor.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorOutdoor.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorOutdoor.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorOverlay.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorOverlay.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorOverlay.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorParameter.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorParameter.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorParameter.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorPinLight.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorPinLight.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorPinLight.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorSaturate.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorSaturate.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorSaturate.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorSaturation.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorSaturation.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorSaturation.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorScaler.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorScaler.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorScaler.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorScreen.cs">
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ComputeColorScreen.pdxsl</DependentUpon>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorScreen.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorSoftLight.cs">
+      <DependentUpon>ComputeColorSoftLight.pdxsl</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ComputeColor\ComputeColorStream.cs">
+      <DependentUpon>ComputeColorStream.pdxsl</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ComputeColor\ComputeColorSubstituteAlpha.cs">
+      <DependentUpon>ComputeColorSubstituteAlpha.pdxsl</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ComputeColor\ComputeColorSubstituteAlphaWithColor.cs">
+      <DependentUpon>ComputeColorSubstituteAlphaWithColor.pdxsl</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ComputeColor\ComputeColorSynthetic.cs">
+      <DependentUpon>ComputeColorSynthetic.pdxsl</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ComputeColor\ComputeColorTexture.cs">
+      <DependentUpon>ComputeColorTexture.pdxsl</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ComputeColor\ComputeColorTextureDisplacement.cs">
+      <DependentUpon>ComputeColorTextureDisplacement.pdxsl</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ComputeColor\ComputeColorTextureDynamicScaledOffset.cs">
+      <DependentUpon>ComputeColorTextureDynamicScaledOffset.pdxsl</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ComputeColor\ComputeColorTextureRepeat.cs">
+      <DependentUpon>ComputeColorTextureRepeat.pdxsl</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ComputeColor\ComputeColorTextureSampler.cs">
+      <DependentUpon>ComputeColorTextureSampler.pdxsl</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ComputeColor\ComputeColorTextureScaled.cs">
+      <DependentUpon>ComputeColorTextureScaled.pdxsl</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ComputeColor\ComputeColorTextureScaledOffset.cs">
+      <DependentUpon>ComputeColorTextureScaledOffset.pdxsl</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ComputeColor\ComputeColorTextureScaledOffsetSampler.cs">
+      <DependentUpon>ComputeColorTextureScaledOffsetSampler.pdxsl</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ComputeColor\ComputeColorTextureScaledSampler.cs">
+      <DependentUpon>ComputeColorTextureScaledSampler.pdxsl</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ComputeColor\ComputeColorValue.cs">
+      <DependentUpon>ComputeColorValue.pdxsl</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ComputeColor\Maya\ComputeColorAddMaya.cs">
+      <DependentUpon>ComputeColorAddMaya.pdxsl</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ComputeColor\Maya\ComputeColorDarkenMaya.cs">
+      <DependentUpon>ComputeColorDarkenMaya.pdxsl</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ComputeColor\Maya\ComputeColorDifferenceMaya.cs">
+      <DependentUpon>ComputeColorDifferenceMaya.pdxsl</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ComputeColor\Maya\ComputeColorLightenMaya.cs">
+      <DependentUpon>ComputeColorLightenMaya.pdxsl</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ComputeColor\Maya\ComputeColorMultiplyMaya.cs">
+      <DependentUpon>ComputeColorMultiplyMaya.pdxsl</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ComputeColor\Maya\ComputeColorOverMaya.cs">
+      <DependentUpon>ComputeColorOverMaya.pdxsl</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ComputeColor\Maya\ComputeColorSubtractMaya.cs">
+      <DependentUpon>ComputeColorSubtractMaya.pdxsl</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="CubemapBlendEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorSoftLight.pdxsl</DependentUpon>
+      <DependentUpon>CubemapBlendEffect.pdxfx</DependentUpon>
     </Compile>
+    <Compile Include="Cubemap\ComputeColorTextureCube.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ComputeColorTextureCube.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\ComputeColorTextureCubeBasic.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ComputeColorTextureCubeBasic.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\ComputeColorTextureCubeReflect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ComputeColorTextureCubeReflect.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\ComputeColorTextureCubeLod.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ComputeColorTextureCubeLod.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\ComputeColorTextureCubeParallax.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ComputeColorTextureCubeParallax.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapBlender.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapBlender.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapBlenderBase.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapBlenderBase.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapBlenderMRT.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapBlenderMRT.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapFace.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapFace.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapFaceBase.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapFaceBase.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapFaceDisplay.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapFaceDisplay.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapFaceDisplayNoFlip.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapFaceDisplayNoFlip.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapIBLBase.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapIBLBase.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapIBLSpecular.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapIBLSpecular.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapIBLDiffuse.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapIBLDiffuse.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapIBLWithRoughness.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapIBLWithRoughness.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapSkybox.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapSkybox.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Cubemap\CubemapUtils.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapUtils.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Deferred\EnvironmentMapDiffuseDeferredShading.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>EnvironmentMapDiffuseDeferredShading.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Deferred\EnvironmentMapSpecularDeferredShading.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>EnvironmentMapSpecularDeferredShading.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Deferred\MaterialReflectanceGBuffer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialReflectanceGBuffer.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Images\ImageEffectBase.cs" />
+    <Compile Include="Images\ImageEffectBaseExtensions.cs" />
+    <Compile Include="Images\ImageEffectContext.cs" />
+    <Compile Include="Images\ImageEffectShader.cs" />
+    <Compile Include="Images\Shaders\ImageEffectShader.cs">
+      <DependentUpon>ImageEffectShader.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Renderers\DirectLightData.cs" />
+    <Compile Include="Renderers\LightForwardModelRendererExtensions.cs" />
+    <Compile Include="Renderers\LightingGroupInfo.cs" />
+    <Compile Include="Renderers\LightingUpdateInfo.cs" />
+    <Compile Include="Renderers\LightingUpdateType.cs" />
+    <Compile Include="Renderers\LightParamSemantic.cs" />
+    <Compile Include="Renderers\PointLightData.cs" />
+    <Compile Include="Renderers\ShadowUpdateInfo.cs" />
+    <Compile Include="Renderers\SpotLightData.cs" />
+    <Compile Include="LightPrepass\DeferredSpotShadowLighting.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>DeferredSpotShadowLighting.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="LightPrepass\DeferredTiledShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>DeferredTiledShader.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Shading\MaterialReflectance.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialReflectance.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Shading\MaterialReflectanceBase.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialReflectanceBase.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Shading\MaterialRoughness.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialRoughness.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Shading\MaterialRoughnessBase.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialRoughnessBase.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Deferred\MaterialRoughnessGBuffer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialRoughnessGBuffer.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Geometry\CameraCube.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CameraCube.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="MRT\LinearDepth.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>LinearDepth.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="MRT\NormalColor.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>NormalColor.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="PostEffect\PostEffectBack.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>PostEffectBack.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Processors\CubemapBlendProcessor.cs" />
+    <Compile Include="Processors\CubemapSourceProcessor.cs" />
+    <Compile Include="Renderers\CubemapBlendRenderer.cs" />
+    <Compile Include="Processors\DynamicLightShadowProcessor.cs" />
+    <Compile Include="Processors\EntityLightShadow.cs" />
+    <Compile Include="Processors\GuillotinePacker.cs" />
+    <Compile Include="Processors\LightingProcessorHelpers.cs" />
+    <Compile Include="Processors\LightShadowProcessor.cs" />
+    <Compile Include="Processors\LightShadowProcessorDefaultBudget.cs" />
+    <Compile Include="Processors\LightShadowProcessorWithBudget.cs" />
+    <Compile Include="Processors\ShadowMap.cs" />
+    <Compile Include="Processors\ShadowMapTexture.cs" />
+    <Compile Include="Renderers\CubeMapRenderer.cs" />
+    <Compile Include="Renderers\LightForwardModelRenderer.cs" />
+    <Compile Include="Renderers\LightingIBLRenderer.cs" />
+    <Compile Include="Renderers\LightingPrepassRenderer.cs" />
+    <Compile Include="Renderers\ShadowMapRenderer.cs" />
+    <Compile Include="Renderers\SkyboxRenderer.cs" />
     <Compile Include="Shading\AmbientMapShading.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -327,6 +688,12 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeBRDFColorSpecularBase.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Shading\ComputeBRDFColorSpecularCookTorrance.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ComputeBRDFColorSpecularCookTorrance.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Shading\SpecularPower.cs">
       <AutoGen>True</AutoGen>
@@ -352,12 +719,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>DefaultForwardEffect.pdxfx</DependentUpon>
     </Compile>
-    <Compile Include="Deferred\GBufferMRT.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>GBufferMRT.pdxsl</DependentUpon>
-    </Compile>
     <Compile Include="Deferred\GBufferPack.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -370,8 +731,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>NormalVSGBufferPack.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="EntityLightShadow.cs" />
-    <Compile Include="LightingProcessorHelpers.cs" />
     <Compile Include="LightPrepass\DeferredDirectionalLighting.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -396,9 +755,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>DeferredShadowLightingShader.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="LightShadowProcessor.cs" />
-    <Compile Include="LightShadowProcessorDefaultBudget.cs" />
-    <Compile Include="LightShadowProcessorWithBudget.cs" />
     <Compile Include="Particle\ParticleBase.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -417,12 +773,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>DiscardTransparentThreshold.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="PostEffect\PostEffectBase.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>PostEffectBase.pdxsl</DependentUpon>
-    </Compile>
     <Compile Include="PostEffect\PostEffectVsmBlur.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -435,104 +785,13 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ShadowMapBase.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="LightPrepass\DeferredShadowMapCascadeBase.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>DeferredShadowMapCascadeBase.pdxsl</DependentUpon>
-    </Compile>
     <Compile Include="LightPrepass\DeferredSpotLighting.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>DeferredSpotLighting.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="ComputeColor\ComputeColorStream.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorStream.pdxsl</DependentUpon>
-    </Compile>
     <Compile Include="Deferred\GBufferRenderProcessor.cs" />
-    <Compile Include="GuillotinePacker.cs" />
-    <Compile Include="ComputeColor\ComputeColorSubstituteAlpha.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorSubstituteAlpha.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="ComputeColor\ComputeColorSubstituteAlphaWithColor.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorSubstituteAlphaWithColor.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="ComputeColor\ComputeColorSynthetic.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorSynthetic.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="ComputeColor\ComputeColorTexture.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorTexture.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="ComputeColor\ComputeColorTextureDisplacement.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorTextureDisplacement.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="ComputeColor\ComputeColorTextureDynamicScaledOffset.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorTextureDynamicScaledOffset.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="ComputeColor\ComputeColorTextureRepeat.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorTextureRepeat.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="ComputeColor\ComputeColorTextureSampler.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorTextureSampler.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="ComputeColor\ComputeColorTextureScaled.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorTextureScaled.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="ComputeColor\ComputeColorTextureScaledOffset.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorTextureScaledOffset.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="ComputeColor\ComputeColorTextureScaledOffsetSampler.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorTextureScaledOffsetSampler.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="ComputeColor\ComputeColorTextureScaledSampler.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorTextureScaledSampler.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="ComputeColor\ComputeColorValue.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorValue.pdxsl</DependentUpon>
-    </Compile>
     <Compile Include="ComputeShader\ComputeShaderBase.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -683,7 +942,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>SpecularPowerGBuffer.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="LightPrepass\LightingPrepassRenderer.cs" />
     <Compile Include="LightPrepass\DeferredLightingShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -696,7 +954,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>DeferredPointLighting.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="DynamicLightShadowProcessor.cs" />
     <Compile Include="Shading\DirectionalShading.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -708,12 +965,6 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>PointShading.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="Shading\PointShadingBase.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>PointShadingBase.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Shading\ShadingDiffuse.cs">
       <AutoGen>True</AutoGen>
@@ -811,9 +1062,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>SpotShading.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Shading\LightForwardModelRenderer.cs" />
     <Compile Include="RenderPipelineLightingFactory.cs" />
-    <Compile Include="Shadowmap\ShadowMap.cs" />
     <Compile Include="Shadowmap\ShadowMapCascadeInfo.cs" />
     <Compile Include="Shadowmap\ShadowMapCascadeReceiverInfo.cs" />
     <Compile Include="Shadowmap\ShadowMapCasterVsm.cs">
@@ -823,14 +1072,12 @@
       <DependentUpon>ShadowMapCasterVsm.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Shadowmap\ShadowMapReceiverInfo.cs" />
-    <Compile Include="Shadowmap\ShadowMapRenderer.cs" />
     <Compile Include="Shadowmap\ShadowMaps.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ShadowMaps.pdxfx</DependentUpon>
     </Compile>
-    <Compile Include="Shadowmap\ShadowMapTexture.cs" />
     <Compile Include="LightPrepass\LightPrepass.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -845,48 +1092,6 @@
     </Compile>
     <Compile Include="MaterialKeys.cs" />
     <Compile Include="LightKeys.cs" />
-    <Compile Include="ComputeColor\Maya\ComputeColorAddMaya.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorAddMaya.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="ComputeColor\Maya\ComputeColorDarkenMaya.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorDarkenMaya.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="ComputeColor\Maya\ComputeColorDifferenceMaya.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorDifferenceMaya.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="ComputeColor\Maya\ComputeColorLightenMaya.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorLightenMaya.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="ComputeColor\Maya\ComputeColorMultiplyMaya.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorMultiplyMaya.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="ComputeColor\Maya\ComputeColorOverMaya.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorOverMaya.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="ComputeColor\Maya\ComputeColorSubtractMaya.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorSubtractMaya.pdxsl</DependentUpon>
-    </Compile>
     <Compile Include="ParticleBaseKeys.cs" />
     <Compile Include="Deferred\GBufferKeys.cs" />
     <Compile Include="PostEffect\DiscardTransparent.cs">
@@ -1101,6 +1306,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>TransformationSkinning.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="SkyboxEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SkyboxEffect.pdxfx</DependentUpon>
+    </Compile>
     <Compile Include="SSAOKeys.cs" />
     <Compile Include="PostEffectKeys.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -1219,6 +1430,18 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Utilities.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="World\NormalWSBase.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>NormalWSBase.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="World\NormalWSStream.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>NormalWSStream.pdxsl</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\common\core\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj">
@@ -1272,6 +1495,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="BasicShaders.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>BasicShaders.cs</LastGenOutput>
+    </None>
     <None Include="ComputeColor\3dsMax\ComputeColorAdd3ds.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorAdd3ds.cs</LastGenOutput>
@@ -1307,10 +1534,6 @@
     <None Include="ComputeColor\3dsMax\ComputeColorSubtract3ds.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorSubtract3ds.cs</LastGenOutput>
-    </None>
-    <None Include="BasicShaders.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>BasicShaders.cs</LastGenOutput>
     </None>
     <None Include="ComputeColor\ComputeColor.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -1524,6 +1747,50 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorValue.cs</LastGenOutput>
     </None>
+    <None Include="ComputeColor\Maya\ComputeColorAddMaya.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorAddMaya.cs</LastGenOutput>
+    </None>
+    <None Include="ComputeColor\Maya\ComputeColorDarkenMaya.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorDarkenMaya.cs</LastGenOutput>
+    </None>
+    <None Include="ComputeColor\Maya\ComputeColorDifferenceMaya.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorDifferenceMaya.cs</LastGenOutput>
+    </None>
+    <None Include="ComputeColor\Maya\ComputeColorLightenMaya.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorLightenMaya.cs</LastGenOutput>
+    </None>
+    <None Include="ComputeColor\Maya\ComputeColorMultiplyMaya.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorMultiplyMaya.cs</LastGenOutput>
+    </None>
+    <None Include="ComputeColor\Maya\ComputeColorOverMaya.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorOverMaya.cs</LastGenOutput>
+    </None>
+    <None Include="ComputeColor\Maya\ComputeColorSubtractMaya.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorSubtractMaya.cs</LastGenOutput>
+    </None>
+    <None Include="CubemapBlendEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapBlendEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\ComputeColorTextureCube.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorTextureCube.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\ComputeColorTextureCubeBasic.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorTextureCubeBasic.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\ComputeColorTextureCubeReflect.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorTextureCubeReflect.cs</LastGenOutput>
+    </None>
     <None Include="ComputeShader\ComputeShaderBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeShaderBase.cs</LastGenOutput>
@@ -1588,6 +1855,122 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadingBase.cs</LastGenOutput>
     </None>
+    <None Include="Cubemap\ComputeColorTextureCubeLod.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorTextureCubeLod.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\ComputeColorTextureCubeParallax.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorTextureCubeParallax.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapBlender.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapBlender.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapBlenderBase.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapBlenderBase.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapBlenderMRT.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapBlenderMRT.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapFace.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapFace.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapFaceBase.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapFaceBase.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapFaceDisplay.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapFaceDisplay.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapFaceDisplayNoFlip.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapFaceDisplayNoFlip.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapIBLBase.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapIBLBase.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapIBLSpecular.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapIBLSpecular.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapIBLDiffuse.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapIBLDiffuse.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapIBLWithRoughness.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapIBLWithRoughness.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapSkybox.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapSkybox.cs</LastGenOutput>
+    </None>
+    <None Include="Cubemap\CubemapUtils.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapUtils.cs</LastGenOutput>
+    </None>
+    <None Include="Deferred\EnvironmentMapDiffuseDeferredShading.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>EnvironmentMapDiffuseDeferredShading.cs</LastGenOutput>
+    </None>
+    <None Include="Deferred\EnvironmentMapSpecularDeferredShading.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>EnvironmentMapSpecularDeferredShading.cs</LastGenOutput>
+    </None>
+    <None Include="Deferred\MaterialReflectanceGBuffer.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialReflectanceGBuffer.cs</LastGenOutput>
+    </None>
+    <None Include="LightPrepass\DeferredSpotShadowLighting.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>DeferredSpotShadowLighting.cs</LastGenOutput>
+    </None>
+    <None Include="LightPrepass\DeferredTiledShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>DeferredTiledShader.cs</LastGenOutput>
+    </None>
+    <None Include="Images\Shaders\ImageEffectShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ImageEffectShader.cs</LastGenOutput>
+    </None>
+    <None Include="Shading\MaterialReflectance.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialReflectance.cs</LastGenOutput>
+    </None>
+    <None Include="Shading\MaterialReflectanceBase.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialReflectanceBase.cs</LastGenOutput>
+    </None>
+    <None Include="Shading\MaterialRoughness.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialRoughness.cs</LastGenOutput>
+    </None>
+    <None Include="Shading\MaterialRoughnessBase.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialRoughnessBase.cs</LastGenOutput>
+    </None>
+    <None Include="Deferred\MaterialRoughnessGBuffer.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialRoughnessGBuffer.cs</LastGenOutput>
+    </None>
+    <None Include="Geometry\CameraCube.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CameraCube.cs</LastGenOutput>
+    </None>
+    <None Include="MRT\LinearDepth.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>LinearDepth.cs</LastGenOutput>
+    </None>
+    <None Include="MRT\NormalColor.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>NormalColor.cs</LastGenOutput>
+    </None>
     <None Include="Core\ShadingColor.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadingColor.cs</LastGenOutput>
@@ -1600,6 +1983,10 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>TextureStream.cs</LastGenOutput>
     </None>
+    <None Include="PostEffect\PostEffectBack.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>PostEffectBack.cs</LastGenOutput>
+    </None>
     <None Include="Shading\AmbientMapShading.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>AmbientMapShading.cs</LastGenOutput>
@@ -1607,6 +1994,10 @@
     <None Include="Shading\ComputeBRDFColorSpecularBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeBRDFColorSpecularBase.cs</LastGenOutput>
+    </None>
+    <None Include="Shading\ComputeBRDFColorSpecularCookTorrance.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeBRDFColorSpecularCookTorrance.cs</LastGenOutput>
     </None>
     <None Include="Shading\SpecularPower.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -1631,10 +2022,6 @@
     <None Include="Deferred\GBufferBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>GBufferBase.cs</LastGenOutput>
-    </None>
-    <None Include="Deferred\GBufferMRT.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>GBufferMRT.cs</LastGenOutput>
     </None>
     <None Include="Deferred\GBufferPack.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -1688,10 +2075,6 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>DiscardTransparentThreshold.cs</LastGenOutput>
     </None>
-    <None Include="PostEffect\PostEffectBase.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>PostEffectBase.cs</LastGenOutput>
-    </None>
     <None Include="PostEffect\PostEffectVsmBlur.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>PostEffectVsmBlur.cs</LastGenOutput>
@@ -1699,10 +2082,6 @@
     <None Include="Shadowmap\ShadowMapBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadowMapBase.cs</LastGenOutput>
-    </None>
-    <None Include="LightPrepass\DeferredShadowMapCascadeBase.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>DeferredShadowMapCascadeBase.cs</LastGenOutput>
     </None>
     <None Include="LightPrepass\DeferredSpotLighting.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -1715,34 +2094,6 @@
     <None Include="LightPrepass\LightPrepassDebug.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LightPrepassDebug.cs</LastGenOutput>
-    </None>
-    <None Include="ComputeColor\Maya\ComputeColorAddMaya.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeColorAddMaya.cs</LastGenOutput>
-    </None>
-    <None Include="ComputeColor\Maya\ComputeColorDarkenMaya.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeColorDarkenMaya.cs</LastGenOutput>
-    </None>
-    <None Include="ComputeColor\Maya\ComputeColorDifferenceMaya.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeColorDifferenceMaya.cs</LastGenOutput>
-    </None>
-    <None Include="ComputeColor\Maya\ComputeColorLightenMaya.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeColorLightenMaya.cs</LastGenOutput>
-    </None>
-    <None Include="ComputeColor\Maya\ComputeColorMultiplyMaya.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeColorMultiplyMaya.cs</LastGenOutput>
-    </None>
-    <None Include="ComputeColor\Maya\ComputeColorOverMaya.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeColorOverMaya.cs</LastGenOutput>
-    </None>
-    <None Include="ComputeColor\Maya\ComputeColorSubtractMaya.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeColorSubtractMaya.cs</LastGenOutput>
     </None>
     <None Include="PostEffect\DiscardTransparent.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -1767,10 +2118,6 @@
     <None Include="Shading\PointShading.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>PointShading.cs</LastGenOutput>
-    </None>
-    <None Include="Shading\PointShadingBase.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>PointShadingBase.cs</LastGenOutput>
     </None>
     <None Include="Shading\ShadingDiffuse.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -1976,6 +2323,10 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>TransformationSkinning.cs</LastGenOutput>
     </None>
+    <None Include="SkyboxEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>SkyboxEffect.cs</LastGenOutput>
+    </None>
     <None Include="Tessellation\ShaderBaseTessellation.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShaderBaseTessellation.cs</LastGenOutput>
@@ -2051,6 +2402,14 @@
     <None Include="Utils\Utilities.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>Utilities.cs</LastGenOutput>
+    </None>
+    <None Include="World\NormalWSBase.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>NormalWSBase.cs</LastGenOutput>
+    </None>
+    <None Include="World\NormalWSStream.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>NormalWSStream.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />

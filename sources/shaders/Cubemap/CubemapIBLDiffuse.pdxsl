@@ -1,0 +1,35 @@
+﻿// Copyright (c) 2014 Silicon Studio Corporation (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Computes the diffuse lighting from the cubemap in a deferred pass.
+/// </summary>
+class CubemapIBLDiffuse : CubemapIBLBase, ShadingBase, TransformationWAndVP, Transformation, PositionVSGBuffer, NormalVSGBuffer, Texturing
+{
+    override stage float4 Shading()
+    {
+        float3 positionVS = PositionVS();
+        float3 normalVS = NormalVS();
+        float4 cubemapPositionVS4 = mul(float4(CubemapPosition, 1), View);
+
+        // Should we really do parallax correction
+        // parallax correction done in view space
+        float3 samplingDirVS = CubemapUtils.ParallaxCorrectionCube(normalVS, positionVS, cubemapPositionVS4.xyz / cubemapPositionVS4.w, CubemapRadius);
+        float3 samplingDir = mul(float4(samplingDirVS, 0), ViewInverse).xyz;
+
+        // always flip z
+        samplingDir.z = -samplingDir.z;
+        // no need for mip level choice
+        float4 color = Cubemap.SampleLevel(Texturing.LinearSampler, samplingDir, 6);
+
+        // TODO: support distance for a cube or a box?
+        // distance for a sphere.
+        float alpha = max(1 - (distance(cubemapPositionVS4.xyz / cubemapPositionVS4.w, positionVS) / CubemapRadius), 0);
+
+        if (alpha == 0)
+            discard;
+
+        color.a = alpha;
+
+        return color;
+    }
+};

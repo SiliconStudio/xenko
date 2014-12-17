@@ -1,0 +1,15 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Retrieves the roughness from a ComputeColor.
+/// </summary>
+class MaterialRoughness : MaterialRoughnessBase
+{
+    // The roughness of the material.
+    compose ComputeColor RoughnessMap;
+
+    stage override float GetRoughness()
+    {
+        return RoughnessMap.Compute().x;
+    }
+};

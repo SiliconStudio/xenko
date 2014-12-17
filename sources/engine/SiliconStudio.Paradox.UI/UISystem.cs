@@ -174,13 +174,13 @@ namespace SiliconStudio.Paradox.UI
                         StencilFunction = CompareFunction.Equal
                     },
                 };
-            KeepStencilValueState = new DepthStencilState(GraphicsDevice, depthStencilDescription);
+            KeepStencilValueState = DepthStencilState.New(GraphicsDevice, depthStencilDescription);
 
             depthStencilDescription.FrontFace.StencilPass = StencilOperation.Increment;
-            IncreaseStencilValueState = new DepthStencilState(GraphicsDevice, depthStencilDescription);
+            IncreaseStencilValueState = DepthStencilState.New(GraphicsDevice, depthStencilDescription);
 
             depthStencilDescription.FrontFace.StencilPass = StencilOperation.Decrement;
-            DecreaseStencilValueState = new DepthStencilState(GraphicsDevice, depthStencilDescription);
+            DecreaseStencilValueState = DepthStencilState.New(GraphicsDevice, depthStencilDescription);
 
             // set the default design of the UI elements.
             var designsTexture = TextureExtensions.CreateTextureFromFileData(GraphicsDevice, DefaultDesigns.Designs);
@@ -194,10 +194,10 @@ namespace SiliconStudio.Paradox.UI
             ToggleButton.UncheckedImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default toggle button unchecked design", designsTexture) { Borders = 8 * Vector4.One, Region = new RectangleF(3, 3, 32, 32) });
             ToggleButton.IndeterminateImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default toggle button indeterminate design", designsTexture) { Borders = 8 * Vector4.One, Region = new RectangleF(37, 3, 32, 32) });
             Slider.TrackBackgroundImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default slider track background design", designsTexture) { Borders = 14 * Vector4.One, Region = new RectangleF(207, 3, 32, 32) });
-            Slider.TrackForegroundImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default slider track foreground design", designsTexture) { Borders = 0 * Vector4.One, Region = new RectangleF(5, 37, 24, 20) });
-            Slider.ThumbImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default slider thumb design", designsTexture) { Borders = 4 * Vector4.One, Region = new RectangleF(22, 59, 16, 32) });
-            Slider.MouseOverThumbImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default slider thumb overred design", designsTexture) { Borders = 4 * Vector4.One, Region = new RectangleF(4, 59, 16, 32) });
-            Slider.TickImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default slider track foreground design", designsTexture) { Region = new RectangleF(32, 44, 3, 6) });
+            Slider.TrackForegroundImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default slider track foreground design", designsTexture) { Borders = 0 * Vector4.One, Region = new RectangleF(3, 37, 32, 32) });
+            Slider.ThumbImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default slider thumb design", designsTexture) { Borders = 4 * Vector4.One, Region = new RectangleF(37, 37, 16, 32) });
+            Slider.MouseOverThumbImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default slider thumb overred design", designsTexture) { Borders = 4 * Vector4.One, Region = new RectangleF(71, 37, 16, 32) });
+            Slider.TickImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default slider track foreground design", designsTexture) { Region = new RectangleF(245, 3, 3, 6) });
             Slider.TickOffsetPropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(13f);
             Slider.TrackStartingOffsetsrPropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new Vector2(3));
         }

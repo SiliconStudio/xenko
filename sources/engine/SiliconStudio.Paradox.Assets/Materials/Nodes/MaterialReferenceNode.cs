@@ -30,6 +30,9 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
         /// Gets or sets the name this instance is linked to.
         /// </summary>
         /// <value>The name.</value>
+        /// <userdoc>
+        /// The name of the referenced node.
+        /// </userdoc>
         [DataMember(10)]
         public string Name { get; set; }
 

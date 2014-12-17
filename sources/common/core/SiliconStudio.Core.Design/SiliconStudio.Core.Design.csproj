@@ -43,6 +43,7 @@
     <Compile Include="IO\UFileSerializer.cs" />
     <Compile Include="IO\UPath.cs" />
     <Compile Include="IO\UPathType.cs" />
+    <Compile Include="IO\UPathTypeConverter.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="NamingHelper.cs" />
@@ -93,6 +94,11 @@
     <Compile Include="VisualStudio\SolutionWriter.cs" />
     <Compile Include="Windows\AppHelper.cs" />
     <Compile Include="Yaml\AssetScalarSerializerBase.cs" />
+    <Compile Include="Yaml\DynamicYamlArray.cs" />
+    <Compile Include="Yaml\DynamicYamlEmpty.cs" />
+    <Compile Include="Yaml\DynamicYamlMapping.cs" />
+    <Compile Include="Yaml\DynamicYamlObject.cs" />
+    <Compile Include="Yaml\DynamicYamlScalar.cs" />
     <Compile Include="Yaml\GuidSerializer.cs" />
     <Compile Include="Yaml\ObjectIdSerializer.cs" />
     <Compile Include="Yaml\OverrideKeyMappingTransform.cs" />

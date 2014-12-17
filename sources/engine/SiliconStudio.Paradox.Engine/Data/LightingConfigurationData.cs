@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Generic;
 
+using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Effects.Data
@@ -59,8 +60,9 @@ namespace SiliconStudio.Paradox.Effects.Data
                         if (configs.Groups[i].ShadowCount > 0)
                         {
                             var configData = new ShadowConfigurationData();
+                            configData.LightType = configs.Groups[i].LightType;
                             configData.ShadowCount = configs.Groups[i].ShadowCount;
-                            configData.CascadeCount = configs.Groups[i].CascadeCount;
+                            configData.CascadeCount = configData.LightType == LightType.Directional ? configs.Groups[i].CascadeCount : 1;
                             configData.FilterType = configs.Groups[i].FilterType;
                             ShadowConfigurations.Groups.Add(configData);
                         }
@@ -89,8 +91,9 @@ namespace SiliconStudio.Paradox.Effects.Data
                 foreach (var shadowConfig in ShadowConfigurations.Groups)
                 {
                     var shadowParams = new ShadowMapParameters();
+                    shadowParams.Set(ShadowMapParameters.LightType, shadowConfig.LightType);
                     shadowParams.Set(ShadowMapParameters.ShadowMapCount, shadowConfig.ShadowCount);
-                    shadowParams.Set(ShadowMapParameters.ShadowMapCascadeCount, shadowConfig.CascadeCount);
+                    shadowParams.Set(ShadowMapParameters.ShadowMapCascadeCount, shadowConfig.LightType == LightType.Directional ? shadowConfig.CascadeCount : 1);
                     shadowParams.Set(ShadowMapParameters.FilterType, shadowConfig.FilterType);
                     shadow.Add(shadowParams);
                 }

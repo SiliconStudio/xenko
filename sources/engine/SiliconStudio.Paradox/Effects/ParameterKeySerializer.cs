@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox.Effects
                 {
                     var metadata = new ParameterKeyMetadata<T>();
                     obj = new ParameterKey<T>(parameterName, parameterLength, metadata);
-                    ParameterKeys.Merge(obj, parameterName);
+                    ParameterKeys.Merge(obj, null, parameterName);
                 }
             }
         }

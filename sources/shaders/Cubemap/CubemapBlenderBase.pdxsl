@@ -1,0 +1,16 @@
+﻿// Copyright (c) 2014 Silicon Studio Corporation (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Base class to blend cubemaps. Only contains definitions.
+/// </summary>
+/// <remarks>
+/// TEXTURECUBE_BLEND_COUNT: Macro - Number of cubemaps to blend.
+/// </remarks>
+#ifndef TEXTURECUBE_BLEND_COUNT
+# define TEXTURECUBE_BLEND_COUNT 1
+#endif
+class CubemapBlenderBase
+{
+    compose CubemapFaceBase Cubemaps[];
+    float BlendIndices[TEXTURECUBE_BLEND_COUNT];
+};

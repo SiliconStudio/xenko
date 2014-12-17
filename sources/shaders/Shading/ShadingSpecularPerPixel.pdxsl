@@ -5,8 +5,8 @@
 /// </summary>
 class ShadingSpecularPerPixel : ShadingPerPixel
 {
-    BRDFSpecularBase brdfSpecular = stage;
-    AlbedoSpecularBase albedoSpecularBase = stage;
+    compose BRDFSpecularBase brdfSpecular = stage;
+    compose AlbedoSpecularBase albedoSpecularBase = stage;
     
     override float3 ComputeSpecularAlbedo()
     {

@@ -11,6 +11,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions) --generate-user-doc</SiliconStudioAssemblyProcessorOptions>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="SharpYaml, Version=1.0.2.26673, Culture=neutral, PublicKeyToken=1ced8108e942bc02, processorArchitecture=MSIL">
@@ -27,6 +28,9 @@
     <Reference Include="SharpDX.Direct2D1">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(ParadoxSharpDXSdkBinDir)\SharpDX.Direct2D1.dll</HintPath>
+    </Reference>
+    <Reference Include="VHACDSharp">
+      <HintPath>..\..\..\deps\VHACD\VHACDSharp.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -65,6 +69,10 @@
       <Name>SiliconStudio.Paradox.Games</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Paradox.Physics\SiliconStudio.Paradox.Physics.csproj">
+      <Project>{dd592516-b341-40fe-9100-1b0fa784a060}</Project>
+      <Name>SiliconStudio.Paradox.Physics</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Paradox.Shaders.Parser\SiliconStudio.Paradox.Shaders.Parser.csproj">
       <Project>{14A47447-2A24-4ECD-B24D-6571499DCD4C}</Project>
       <Name>SiliconStudio.Paradox.Shaders.Parser</Name>
@@ -85,16 +93,6 @@
     <ProjectReference Include="..\SiliconStudio.Paradox.Graphics\SiliconStudio.Paradox.Graphics.csproj">
       <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
       <Name>SiliconStudio.Paradox.Graphics</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj">
-      <Project>{1de01410-22c9-489b-9796-1addab1f64e5}</Project>
-      <Name>SiliconStudio.Core.IO</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.MicroThreading\SiliconStudio.Core.MicroThreading.csproj">
-      <Project>{1320f627-ee43-4115-8e89-19d1753e51f2}</Project>
-      <Name>SiliconStudio.Core.MicroThreading</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
@@ -144,7 +142,6 @@
     <Compile Include="Effect\EffectShaderAsset.cs" />
     <Compile Include="Effect\EffectByteCodeToSourceCodeWriter.cs" />
     <Compile Include="Effect\EffectKeys.cs" />
-    <Compile Include="Effect\EffectSourceCodeKeys.cs" />
     <Compile Include="Effect\Generators\DefaultCompilerParametersGenerator.cs" />
     <Compile Include="Effect\EffectCompileCommand.cs" />
     <Compile Include="Effect\EffectCompileGeneratorBuildStep.cs" />

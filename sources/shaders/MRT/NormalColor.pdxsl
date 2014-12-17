@@ -1,0 +1,15 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Outputs the normals in view space.
+/// </summary>
+class NormalColor : ComputeColor
+{
+    compose NormalVSBase normalVS = stage;
+
+    override float4 Compute()
+    {
+        float3 normal = normalVS.NormalVS();
+        return float4(normal, 1.0f);
+    }
+};

@@ -1,0 +1,15 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Computes the linear depth in [0,1].
+/// </summary>
+class LinearDepth : ComputeColor, Camera
+{
+    compose PositionVSBase positionVS = stage;
+
+    override float4 Compute()
+    {
+        float3 pos = positionVS.PositionVS();
+        return -(pos.z + NearClipPlane) / (FarClipPlane - NearClipPlane);
+    }
+};

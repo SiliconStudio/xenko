@@ -5,10 +5,10 @@
 /// </summary>
 class AmbientMapShading : ShadingBase, Material
 {
-    ComputeColor AmbientMap;
+    compose ComputeColor AmbientMap;
 
     override stage float4 Shading()
     {
-        return base.Shading() + AmbientMap.Compute();
+        return base.Shading() + float4(this.DiffuseAlbedo(), 0) * AmbientMap.Compute();
     }
 };

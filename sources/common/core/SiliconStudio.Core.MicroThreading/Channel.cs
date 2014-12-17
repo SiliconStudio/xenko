@@ -85,6 +85,9 @@ namespace SiliconStudio.Core.MicroThreading
             if (senders.Count == 0)
             {
                 var microThread = MicroThread.Current;
+                if (microThread == null)
+                    throw new Exception("Cannot receive out of micro-thread context.");
+
                 var waitingMicroThread = ChannelMicroThreadAwaiter<T>.New(microThread);
                 receivers.Enqueue(waitingMicroThread);
                 return waitingMicroThread;

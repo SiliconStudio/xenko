@@ -1,7 +1,6 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections.Generic;
 
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.References;
@@ -13,7 +12,6 @@ namespace SiliconStudio.Quantum.Contents
     /// </summary>
     public abstract class ContentBase : IContent
     {
-        private readonly Dictionary<string, object> associatedData = new Dictionary<string, object>();
         private readonly IReference reference;
 
         protected ContentBase(Type type, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
@@ -46,9 +44,6 @@ namespace SiliconStudio.Quantum.Contents
         public IReference Reference { get { return reference; } }
 
         /// <inheritdoc/>
-        public IReadOnlyDictionary<string, object> AssociatedData { get { return associatedData; } }
-
-        /// <inheritdoc/>
         public virtual ViewModelContentState LoadState { get; set; }
 
         /// <inheritdoc/>
@@ -56,13 +51,6 @@ namespace SiliconStudio.Quantum.Contents
 
         /// <inheritdoc/>
         public ViewModelContentSerializeFlags SerializeFlags { get; set; }
-
-        /// <inheritdoc/>
-        public void AddAssociatedData(string name, object data)
-        {
-            if (name == null) throw new ArgumentNullException("name");
-            associatedData.Add(name, data);
-        }
 
         /// <inheritdoc/>
         public override string ToString()

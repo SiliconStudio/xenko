@@ -16,6 +16,12 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 {
     internal class ParadoxStreamCreator
     {
+        #region private static members
+
+        private readonly static string[] GeometryShaderUnOptimizedSemantics = { "SV_RenderTargetArrayIndex" };
+
+        #endregion
+
         #region Private members
 
         /// <summary>
