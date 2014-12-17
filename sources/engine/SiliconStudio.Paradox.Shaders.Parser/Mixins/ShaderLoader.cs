@@ -109,7 +109,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     shaderClassSource.GenericArguments = new string[shaderClassType.ShaderGenerics.Count];
                     for (int i = 0; i < shaderClassSource.GenericArguments.Length; i++)
                     {
-                        shaderClassSource.GenericArguments[i] = string.Empty;
+                        var variableGeneric = shaderClassType.ShaderGenerics[i];
+                        shaderClassSource.GenericArguments[i] = GetDefaultConstValue(variableGeneric);
                     }
                 }
 
@@ -148,6 +149,22 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             }
             return shaderClassType;
         }
+
+        private static string GetDefaultConstValue(Variable variable)
+        {
+            var variableType = variable.Type;
+            if (variableType == ScalarType.Bool)
+            {
+                return "false";
+            }
+            if (variableType != TypeBase.Void && variableType != TypeBase.String)
+            {
+                return "0";
+            }
+
+            return string.Empty;
+        }
+
 
         Dictionary<string, object> CreateGenericAssociation(List<Variable> genericParameters, object[] genericArguments)
         {
