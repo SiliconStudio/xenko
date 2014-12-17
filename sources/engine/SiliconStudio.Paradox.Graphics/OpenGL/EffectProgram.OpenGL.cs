@@ -154,14 +154,17 @@ namespace SiliconStudio.Paradox.Graphics
                         inputSignature.Attributes.Add(attribName, attribIndex);
                     }
                 }
+
+                // Register "NoSampler", required by HLSL=>GLSL translation to support HLSL such as texture.Load().
+                var noSampler = new EffectParameterResourceData { Param = { RawName = "NoSampler", KeyName = "NoSampler", Class = EffectParameterClass.Sampler } };
+                effectBytecode.Reflection.ResourceBindings.Add(noSampler);
+
                 CreateReflection(effectBytecode.Reflection, effectBytecode.Stages[0].Stage); // need to regenerate the Uniforms on OpenGL ES
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 // Allocate a buffer that can cache all the bound parameters
                 BoundUniforms = new byte[effectBytecode.Reflection.ConstantBuffers[0].Size];
 #endif
-
-                // TODO: Register "NoSampler", required by HLSL=>GLSL translation to support HLSL such as texture.Load().
             }
 
             // output the gathered errors
