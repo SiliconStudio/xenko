@@ -16,7 +16,7 @@ namespace SiliconStudio.Core.Reflection
         Base,
 
         /// <summary>
-        /// The value is new and overriden locally. Base value is ignored.
+        /// The value is new and overridden locally. Base value is ignored.
         /// </summary>
         New = 1,
 
