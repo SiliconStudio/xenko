@@ -50,6 +50,7 @@
     <Compile Include="Ast\ShaderClassType.cs" />
     <Compile Include="Ast\ShaderRootClassType.cs" />
     <Compile Include="Ast\ShaderTypeName.cs" />
+    <Compile Include="Ast\MemberName.cs" />
     <Compile Include="Ast\TypelIdentifier.cs" />
     <Compile Include="Ast\UsingParametersStatement.cs" />
     <Compile Include="Ast\UsingStatement.cs" />
@@ -61,7 +62,7 @@
     <Compile Include="Mixins\ModuleMixin.cs" />
     <Compile Include="Mixins\ModuleMixinInfo.cs" />
     <Compile Include="Mixins\ParadoxAssignmentCloner.cs" />
-    <Compile Include="Mixins\ParadoxClassInstanciator.cs" />
+    <Compile Include="Mixins\ParadoxClassInstantiator.cs" />
     <Compile Include="Mixins\ParadoxReplaceAppend.cs" />
     <Compile Include="Mixins\ParadoxReplaceExtern.cs" />
     <Compile Include="Mixins\ParadoxReplaceVisitor.cs" />

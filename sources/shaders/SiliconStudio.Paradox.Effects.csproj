@@ -782,6 +782,30 @@
     <Compile Include="Pipelines\PipelineBuilder.cs" />
     <Compile Include="Pipelines\PipelineBuilders.cs" />
     <Compile Include="Pipelines\SimpleRendererPipelineBuilder.cs" />
+    <Compile Include="Materials\MaterialLayerBlender.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialLayerBlender.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Materials\MaterialLayerFloatBlend.cs">
+      <DependentUpon>MaterialLayerFloatBlend.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Materials\MaterialLayerFloat3Blend.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialLayerFloat3Blend.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Materials\MaterialStreams.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialStreams.pdxsl</DependentUpon>
+    </Compile>
     <Compile Include="Renderers\DirectLightData.cs" />
     <Compile Include="Renderers\LightForwardModelRendererExtensions.cs" />
     <Compile Include="Renderers\LightingGroupInfo.cs" />
@@ -2236,6 +2260,22 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ImageEffectShader.cs</LastGenOutput>
     </None>
+    <None Include="Materials\MaterialLayerBlender.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialLayerBlender.cs</LastGenOutput>
+    </None>
+    <None Include="Materials\MaterialLayerFloatBlend.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialLayerFloatBlend.cs</LastGenOutput>
+    </None>
+    <None Include="Materials\MaterialLayerFloat3Blend.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialLayerFloat3Blend.cs</LastGenOutput>
+    </None>
+    <None Include="Materials\MaterialStreams.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialStreams.cs</LastGenOutput>
+    </None>
     <None Include="Shading\MaterialReflectance.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialReflectance.cs</LastGenOutput>
@@ -2709,7 +2749,6 @@
       <LastGenOutput>NormalWSStream.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

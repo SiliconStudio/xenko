@@ -1,0 +1,10 @@
+﻿class MaterialLayerFloat3Blend<MemberName TStream> : MaterialStreams, MaterialLayerBlender
+{
+    compose ComputeColor Float3Source;
+
+    override void Compute()
+    {
+        float3 value = Float3Source.Compute().xyz;
+        streams.TStream = lerp(streams.TStream, value, streams.matBlend);
+    }
+};

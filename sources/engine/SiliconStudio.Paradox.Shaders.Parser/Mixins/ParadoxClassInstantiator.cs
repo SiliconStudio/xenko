@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 using SiliconStudio.Paradox.Shaders.Parser.Ast;
@@ -15,7 +16,7 @@ using StorageQualifier = SiliconStudio.Shaders.Ast.StorageQualifier;
 
 namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 {
-    internal class ParadoxClassInstanciator : ShaderVisitor
+    internal class ParadoxClassInstantiator : ShaderVisitor
     {
         private ShaderClassType shaderClassType;
 
@@ -29,7 +30,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
         private Dictionary<string, string> stringGenerics;
 
-        private ParadoxClassInstanciator(ShaderClassType classType, Dictionary<string, Expression> expressions, Dictionary<string, Identifier> identifiers, LoggerResult log)
+        private ParadoxClassInstantiator(ShaderClassType classType, Dictionary<string, Expression> expressions, Dictionary<string, Identifier> identifiers, LoggerResult log)
             : base(false, false)
         {
             shaderClassType = classType;
@@ -39,10 +40,10 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             variableGenerics = shaderClassType.ShaderGenerics.ToDictionary(x => x.Name.Text, x => x);
         }
 
-        public static void Instanciate(ShaderClassType classType, Dictionary<string, Expression> expressions, Dictionary<string, Identifier> identifiers, LoggerResult log)
+        public static void Instantiate(ShaderClassType classType, Dictionary<string, Expression> expressions, Dictionary<string, Identifier> identifiers, LoggerResult log)
         {
-            var instanciator = new ParadoxClassInstanciator(classType, expressions, identifiers, log);
-            instanciator.Run();
+            var instantiator = new ParadoxClassInstantiator(classType, expressions, identifiers, log);
+            instantiator.Run();
         }
 
         private void Run()
@@ -55,11 +56,12 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             foreach (var member in shaderClassType.Members)
                 VisitDynamic(member); // look for IdentifierGeneric and Variable
 
+            int insertIndex = 0;
             foreach (var variable in shaderClassType.ShaderGenerics)
             {
                 variable.InitialValue = expressionGenerics[variable.Name.Text];
 
-                if (variable.Type is SemanticType || variable.Type is LinkType)
+                if (variable.Type is SemanticType || variable.Type is LinkType || variable.Type is MemberName)
                     continue;
                 
                 // TODO: be more precise
@@ -69,7 +71,31 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     variable.Qualifiers |= StorageQualifier.Const;
                     variable.Qualifiers |= SiliconStudio.Shaders.Ast.Hlsl.StorageQualifier.Static;
                 }
-                shaderClassType.Members.Add(variable);
+                // Because FindDeclaration is broken for variable declared at the scope of the class, make sure  to
+                // put const at the beginning of the class to allow further usage of the variable to work
+                shaderClassType.Members.Insert(insertIndex++, variable);
+            }
+        }
+
+        [Visit]
+        protected void Visit(MemberReferenceExpression memberReferenceExpression)
+        {
+            Visit((Node)memberReferenceExpression);
+
+            // Try to find usage of all MemberName 'yyy' in reference expressions like "xxx.yyy" and replace by their
+            // generic instantiation
+            var memberVariableName = memberReferenceExpression.Member.Text;
+            if (variableGenerics.ContainsKey(memberVariableName) && variableGenerics[memberVariableName].Type is MemberName)
+            {
+                string memberName;
+                if (stringGenerics.TryGetValue(memberVariableName, out memberName) && !string.IsNullOrWhiteSpace(memberName))
+                {
+                    memberReferenceExpression.Member = new Identifier(memberName);
+                }
+                else
+                {
+                    memberReferenceExpression.TypeInference.Declaration = variableGenerics[memberVariableName];
+                }
             }
         }
 

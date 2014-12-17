@@ -344,8 +344,8 @@ namespace NShader
                             Category = TaskCategory.BuildCompile,
                             Text = messageText,
                             Document = filePath,
-                            Line = message.Span.Line - 1,
-                            Column = message.Span.Column - 1,
+                            Line = Math.Max(0, message.Span.Line - 1),
+                            Column = Math.Max(0, message.Span.Column - 1),
                             // HierarchyItem = hierarchyItem // TODO Add hierarchy the file is associated to
                         };
 
@@ -375,10 +375,10 @@ namespace NShader
         {
             return new TextSpan()
             {
-                iStartIndex = span.Column-1,
-                iStartLine = span.Line-1,
-                iEndIndex = span.EndColumn-1,
-                iEndLine = span.EndLine-1
+                iStartIndex = Math.Max(0, span.Column-1),
+                iStartLine = Math.Max(0, span.Line-1),
+                iEndIndex = Math.Max(0, span.EndColumn-1),
+                iEndLine = Math.Max(0, span.EndLine-1)
             };
         }
 

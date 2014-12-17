@@ -249,6 +249,11 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
             // TODO: Maybe move it in some common class somewhere? (in this case it would be included with "Add as link" in VSPackage)
             var paradoxSdkDir = Environment.GetEnvironmentVariable("SiliconStudioParadoxDir");
 
+            if (paradoxSdkDir == null)
+            {
+                return null;
+            }
+
             // Check if it is a dev directory
             if (File.Exists(Path.Combine(paradoxSdkDir, "build\\Paradox.sln")))
                 return paradoxSdkDir;

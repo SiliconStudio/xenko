@@ -1,0 +1,25 @@
+﻿class MaterialStreams
+{
+    stage stream float3 matBlend;
+
+    stage stream float3 matNormal;
+
+    stage stream float3 matDiffuseColor;
+    stage stream float  matDiffuseLighting;
+    stage stream float3 matDiffuse;
+
+    stage stream float  matMetalness;
+    stage stream float3 matSpecularColor;
+    stage stream float  matSpecularIntensity;
+    stage stream float  matSpecularPower;
+    stage stream float  matRoughness;
+    stage stream float  matSpecularLighting;
+    stage stream float3 matSpecular;
+
+    stage stream float  matAmbientOcclusion;
+    stage stream float  matCavityOcclusion;
+    stage stream float  matCavityDiffuseFactor;
+    stage stream float  matCavitySpecularFactor;
+};
+
+
