@@ -143,7 +143,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 var genericAssociation = CreateGenericAssociation(shaderClassType.ShaderGenerics, shaderClassSource.GenericArguments);
                 var identifierGenerics = GenerateIdentifierFromGenerics(genericAssociation);
                 var expressionGenerics = GenerateGenericsExpressionValues(shaderClassType.ShaderGenerics, shaderClassSource.GenericArguments);
-                ParadoxClassInstanciator.Instanciate(shaderClassType, expressionGenerics, identifierGenerics, log);
+                ParadoxClassInstantiator.Instantiate(shaderClassType, expressionGenerics, identifierGenerics, log);
                 shaderClassType.ShaderGenerics.Clear();
                 shaderClassType.IsInstanciated = true;
             }
