@@ -117,30 +117,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
         }
 
         /// <summary>
-        /// Create a reference to a node.
-        /// </summary>
-        /// <param name="node">The material node.</param>
-        /// <param name="referenceName">The name of the reference.</param>
-        public void MakeReference(IMaterialNode node, string referenceName)
-        {
-            IMaterialNode prevNode;
-            if (Nodes.TryGetValue(referenceName, out prevNode))
-            {
-                if (!ReferenceEquals(node, prevNode))
-                    throw new Exception("Unable to create a reference with the name " + referenceName + " because there is already a reference with that name.");
-            }
-            else
-            {
-                var matReference = new MaterialReferenceNode(referenceName);
-                foreach (var tree in Nodes.Select(x => x.Value))
-                {
-                    //var replacer = new MaterialNodeReplacer.
-                }
-                Nodes.Add(referenceName, node);
-            }
-        }
-
-        /// <summary>
         /// Set the value of a compilation parameter. Creates a new entry if necessary.
         /// </summary>
         /// <param name="parameterKey">The ParameterKey.</param>

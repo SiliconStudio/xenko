@@ -3,6 +3,8 @@
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
+using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Materials.Nodes
 {
@@ -31,6 +33,17 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
         public override string ToString()
         {
             return "Float4";
+        }
+
+        public override ShaderSource GenerateShaderSource(MaterialContext context)
+        {
+            if (Key != null)
+            {
+                // TODO: constantValues.Set(Key, Value); 
+                return new ShaderClassSource("ComputeColorConstantLink", Key);
+            }
+
+            return new ShaderClassSource("ComputeColorFixed", MaterialUtil.GetAsShaderString(Value));
         }
     }
 }

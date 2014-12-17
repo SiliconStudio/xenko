@@ -7,9 +7,11 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
 using SiliconStudio.Paradox.Assets.Textures;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Materials.Nodes
 {
@@ -200,6 +202,28 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
         public override string ToString()
         {
             return "Texture";
+        }
+
+        public override ShaderSource GenerateShaderSource(MaterialContext context)
+        {
+            string usedTexcoord;
+            //if (shaderForReduction)
+            //    usedTexcoord = "TEXCOORD0";
+            //else
+                usedTexcoord = "TEXCOORD" + MaterialUtil.GetTextureIndex(TexcoordIndex);
+
+            // "TTEXTURE", "TStream"
+            ShaderClassSource shaderSource;
+            //if (displacementShader)
+            //    shaderSource = new ShaderClassSource("ComputeColorTextureDisplacement", UsedParameterKey, usedTexcoord);
+            if (Offset != Vector2.Zero)
+                shaderSource = new ShaderClassSource("ComputeColorTextureScaledOffsetSampler", UsedParameterKey, usedTexcoord, MaterialUtil.GetAsShaderString(Scale), MaterialUtil.GetAsShaderString(Offset), Sampler.SamplerParameterKey);
+            else if (Scale != Vector2.One)
+                shaderSource = new ShaderClassSource("ComputeColorTextureScaledSampler", UsedParameterKey, usedTexcoord, MaterialUtil.GetAsShaderString(Scale), Sampler.SamplerParameterKey);
+            else
+                shaderSource = new ShaderClassSource("ComputeColorTextureSampler", UsedParameterKey, usedTexcoord, Sampler.SamplerParameterKey);
+
+            return shaderSource;            
         }
     }
 }

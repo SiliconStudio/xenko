@@ -77,13 +77,13 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 }
 
                 // Reduce trees on CPU
-                var materialReducer = new MaterialTreeReducer(material);
-                materialReducer.ReduceTrees();
+                //var materialReducer = new MaterialTreeReducer(material);
+                //materialReducer.ReduceTrees();
 
-                foreach (var reducedTree in materialReducer.ReducedTrees)
-                {
-                    material.Nodes[reducedTree.Key] = reducedTree.Value;
-                }
+                //foreach (var reducedTree in materialReducer.ReducedTrees)
+                //{
+                //    material.Nodes[reducedTree.Key] = reducedTree.Value;
+                //}
 
                 // Reduce on GPU 
                 // TODO: Adapt GPU reduction so that it is compatible Android color/alpha separation

@@ -20,8 +20,6 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
         
         //private const string BackgroundCompositionName = "backgroundName";
         //private const string ForegroundCompositionName = "foregroundName";
-        private const string BackgroundCompositionName = "color1";
-        private const string ForegroundCompositionName = "color2";
 
         #endregion
         
@@ -82,7 +80,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
             var textureVisitor = new MaterialTextureVisitor(Material);
             var allTextures  = textureVisitor.GetAllTextureValues(materialNode);
             textureVisitor.AssignDefaultTextureKeys(allTextures.Distinct(), null);
-            return GetShaderMixinSource(GetShaderSource(materialNode));
+            return MaterialUtil.GetShaderMixinSource(GetShaderSource(materialNode));
         }
 
         /// <summary>
@@ -108,7 +106,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
                         ShaderSource shaderSource;
                         if (ModelShaderSources.TryGetValue(reference.Value, out shaderSource))
                         {
-                            var sms = GetShaderMixinSource(shaderSource);
+                            var sms = MaterialUtil.GetShaderMixinSource(shaderSource);
                             if (sms != null)
                             {
                                 result.Add(reference.Key, sms);
@@ -196,240 +194,30 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
             if (node == null)
                 return new ShaderClassSource("ComputeColor");
 
-            if (node is MaterialFloatNode)
-                return GetShaderSource(node as MaterialFloatNode);
-            if (node is MaterialFloat4Node)
-                return GetShaderSource(node as MaterialFloat4Node);
-            if (node is MaterialColorNode)
-                return GetShaderSource(node as MaterialColorNode);
-            if (node is MaterialTextureNode)
-                return GetShaderSource(node as MaterialTextureNode);
-            if (node is MaterialShaderClassNode)
-                return GetShaderSource(node as MaterialShaderClassNode);
-            if (node is MaterialBinaryNode)
-                return GetShaderSource(node as MaterialBinaryNode);
-            if (node is MaterialReferenceNode)
-            {
-                var referenceName = (node as MaterialReferenceNode).Name;
-                if (shaderForReduction)
-                {
-                    var refNode = Material.FindNode(referenceName);
-                    return GetShaderSource(refNode);
-                }
-                else
-                {
-                    if (referenceName == null)
-                    {
-                        Logger.Warning("[Material] The MaterialReferenceNode [" + node + "] doesn't reference anything.");
-                        return null;
-                    }
-
-                    BeginShaderCreation(referenceName, displacementShader);
-
-                    ShaderSource shaderSource;
-                    if (!ModelShaderSources.TryGetValue(referenceName, out shaderSource))
-                        return null;
-
-                    return shaderSource;
-                }
-            }
-
-            // TODO: error?
-            throw new Exception("[Material] An unsupported material node was encountered during shader creation.");
-        }
-
-        /// <summary>
-        /// Build the ShaderMixinSource to evaluate the binaryNode.
-        /// </summary>
-        /// <param name="node">The MaterialFloatNode binaryNode used as source to find the ShaderMixinSource.</param>
-        /// <returns>The corresponding ShaderMixinSource.</returns>
-        private ShaderSource GetShaderSource(MaterialFloatNode node)
-        {
-            if (!node.IsReducible && node.Key != null)
-            {
-                constantValues.Set(node.Key, node.Value);
-                return new ShaderClassSource("ComputeColorConstantFloatLink", node.Key);
-            }
-
-            return new ShaderClassSource("ComputeColorFixed", GetAsShaderString(node.Value));
-        }
-
-        /// <summary>
-        /// Build the ShaderMixinSource to evaluate the binaryNode.
-        /// </summary>
-        /// <param name="node">The MaterialFloat4Node binaryNode used as source to find the ShaderMixinSource.</param>
-        /// <returns>The corresponding ShaderMixinSource.</returns>
-        private ShaderSource GetShaderSource(MaterialColorNode node)
-        {
-            if (!node.IsReducible && node.Key != null)
-            {
-                constantValues.Set(node.Key, node.Value);
-                return new ShaderClassSource("ComputeColorConstantColorLink", node.Key);
-            }
-
-            return new ShaderClassSource("ComputeColorFixed", GetAsShaderString(node.Value));
-        }
-
-        /// <summary>
-        /// Build the ShaderMixinSource to evaluate the binaryNode.
-        /// </summary>
-        /// <param name="node">The MaterialFloat4Node binaryNode used as source to find the ShaderMixinSource.</param>
-        /// <returns>The corresponding ShaderMixinSource.</returns>
-        private ShaderSource GetShaderSource(MaterialFloat4Node node)
-        {
-            if (!node.IsReducible && node.Key != null)
-            {
-                constantValues.Set(node.Key, node.Value);
-                return new ShaderClassSource("ComputeColorConstantLink", node.Key);
-            }
-
-            return new ShaderClassSource("ComputeColorFixed", GetAsShaderString(node.Value));
-        }
-
-        /// <summary>
-        /// Build the ShaderMixinSource to evaluate the binaryNode.
-        /// </summary>
-        /// <param name="node">The MaterialTextureNode binaryNode used as source to find the ShaderMixinSource.</param>
-        /// <returns>The corresponding ShaderMixinSource.</returns>
-        private ShaderSource GetShaderSource(MaterialTextureNode node)
-        {
-            string usedTexcoord;
-            if (shaderForReduction)
-                usedTexcoord = "TEXCOORD0";
-            else
-                usedTexcoord = "TEXCOORD" + GetTextureIndex(node.TexcoordIndex);
-
-            // "TTEXTURE", "TStream"
-            ShaderClassSource shaderSource;
-            if (displacementShader)
-                shaderSource = new ShaderClassSource("ComputeColorTextureDisplacement", node.UsedParameterKey, usedTexcoord);
-            else if (node.Offset != Vector2.Zero)
-                shaderSource = new ShaderClassSource("ComputeColorTextureScaledOffsetSampler", node.UsedParameterKey, usedTexcoord, GetAsShaderString(node.Scale), GetAsShaderString(node.Offset), node.Sampler.SamplerParameterKey);
-            else if (node.Scale != Vector2.One)
-                shaderSource = new ShaderClassSource("ComputeColorTextureScaledSampler", node.UsedParameterKey, usedTexcoord, GetAsShaderString(node.Scale), node.Sampler.SamplerParameterKey);
-            else
-                shaderSource = new ShaderClassSource("ComputeColorTextureSampler", node.UsedParameterKey, usedTexcoord, node.Sampler.SamplerParameterKey);
-
-            return shaderSource;
-        }
-
-        /// <summary>
-        /// Build the ShaderMixinSource to evaluate the binaryNode.
-        /// </summary>
-        /// <param name="node">The MaterialShaderClassNode binaryNode used as source to find the ShaderMixinSource.</param>
-        /// <returns>The corresponding ShaderMixinSource.</returns>
-        private ShaderSource GetShaderSource(MaterialShaderClassNode node)
-        {
-            if (!node.MixinReference.HasLocation())
-                return new ShaderClassSource("ComputeColor");
-            var mixinName = Path.GetFileNameWithoutExtension(node.MixinReference.Location);
-
-            object[] generics = null;
-            if (node.Generics.Count > 0)
-            {
-                // TODO: correct generic order
-                var mixinGenerics = new List<object>();
-                foreach (var genericKey in node.Generics.Keys)
-                {
-                    var generic = node.Generics[genericKey];
-                    if (generic is NodeParameterTexture)
-                    {
-                        var textureReference = ((NodeParameterTexture)generic).Reference;
-                        var foundNode = Material.FindNode(textureReference);
-                        while (foundNode != null && !(foundNode is MaterialTextureNode))
-                        {
-                            var refNode = foundNode as MaterialReferenceNode;
-                            if (refNode == null)
-                                break;
-
-                            foundNode = Material.FindNode(refNode.Name);
-                        }
-
-                        var foundTextureNode = foundNode as MaterialTextureNode;
-                        if (foundTextureNode == null || foundTextureNode.UsedParameterKey == null)
-                        {
-                            Logger.Warning("[Material] The generic texture reference in node [" + node + "] is incorrect.");
-                            mixinGenerics.Add("Texturing.Texture0");
-                        }
-                        else
-                            mixinGenerics.Add(foundTextureNode.UsedParameterKey.ToString());
-                    }
-                    else if (generic is NodeParameterSampler)
-                    {
-                        var pk = ((NodeParameterSampler)generic).SamplerParameterKey;
-                        if (pk == null)
-                        {
-                            Logger.Warning("[Material] The generic sampler reference in node [" + node + "] is incorrect.");
-                            mixinGenerics.Add("Texturing.Sampler");
-                        }
-                        else
-                            mixinGenerics.Add(pk.ToString());
-                    }
-                    else if (generic is NodeParameterFloat)
-                        mixinGenerics.Add(((NodeParameterFloat)generic).Value.ToString(CultureInfo.InvariantCulture));
-                    else if (generic is NodeParameterInt)
-                        mixinGenerics.Add(((NodeParameterInt)generic).Value.ToString(CultureInfo.InvariantCulture));
-                    else if (generic is NodeParameterFloat2)
-                        mixinGenerics.Add(GetAsShaderString(((NodeParameterFloat2)generic).Value));
-                    else if (generic is NodeParameterFloat3)
-                        mixinGenerics.Add(GetAsShaderString(((NodeParameterFloat3)generic).Value));
-                    else if (generic is NodeParameterFloat4)
-                        mixinGenerics.Add(GetAsShaderString(((NodeParameterFloat4)generic).Value));
-                    else if (generic is NodeParameter)
-                        mixinGenerics.Add(((NodeParameter)generic).Reference);
-                    else
-                        throw new Exception("[Material] Unknown node type: " + generic.GetType());
-                }
-                generics = mixinGenerics.ToArray();
-            }
-            
-            var shaderClassSource = new ShaderClassSource(mixinName, generics);
-
-            if (node.CompositionNodes.Count == 0)
-                return shaderClassSource;
-            
-            var mixin = new ShaderMixinSource();
-            mixin.Mixins.Add(shaderClassSource);
-
-            foreach (var comp in node.CompositionNodes)
-            {
-                if (comp.Value != null)
-                {
-                    var compShader = GetShaderSource(comp.Value);
-                    if (compShader != null)
-                        mixin.Compositions.Add(comp.Key, compShader);
-                }
-            }
-
-            return mixin;
-        }
-
-        /// <summary>
-        /// Build the ShaderMixinSource to evaluate the binaryNode.
-        /// </summary>
-        /// <param name="binaryNode">The MaterialBinaryNode binaryNode used as source to find the ShaderMixinSource.</param>
-        /// <returns>The corresponding ShaderMixinSource.</returns>
-        private ShaderSource GetShaderSource(MaterialBinaryNode binaryNode)
-        {
-            var leftShaderSource = GetShaderSource(binaryNode.LeftChild);
-            var rightShaderSource = GetShaderSource(binaryNode.RightChild);
-
-            var shaderSource = new ShaderClassSource(GetCorrespondingShaderSourceName(binaryNode.Operand));
-            var mixin = new ShaderMixinSource();
-            mixin.Mixins.Add(shaderSource);
-            if (leftShaderSource != null)
-                mixin.AddComposition(BackgroundCompositionName, leftShaderSource);
-            if (binaryNode.Operand != MaterialBinaryOperand.None && binaryNode.Operand != MaterialBinaryOperand.Opaque && rightShaderSource != null)
-                mixin.AddComposition(ForegroundCompositionName, rightShaderSource);
-
-            return mixin;
+            return node.GenerateShaderSource(null);
         }
 
         #endregion
 
         #region Private static methods
 
-        private static int GetTextureIndex(TextureCoordinate texcoord)
+        #endregion
+
+        private enum ShaderBuildStatus
+        {
+            None,
+            InProgress,
+            Completed
+        }
+    }
+
+    internal class MaterialUtil
+    {
+        public const string BackgroundCompositionName = "color1";
+
+        public const string ForegroundCompositionName = "color2";
+
+        public static int GetTextureIndex(TextureCoordinate texcoord)
         {
             switch (texcoord)
             {
@@ -459,110 +247,32 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
             }
         }
 
-        /// <summary>
-        /// Get the name of the ShaderClassSource corresponding to the operation
-        /// </summary>
-        /// <param name="materialBinaryOperand">The operand.</param>
-        /// <returns>The name of the ShaderClassSource.</returns>
-        private static string GetCorrespondingShaderSourceName(MaterialBinaryOperand materialBinaryOperand)
-        {
-            switch (materialBinaryOperand)
-            {
-                case MaterialBinaryOperand.Add:
-                    return "ComputeColorAdd3ds"; //TODO: change this (ComputeColorAdd?)
-                case MaterialBinaryOperand.Average:
-                    return "ComputeColorAverage";
-                case MaterialBinaryOperand.Color:
-                    return "ComputeColorColor";
-                case MaterialBinaryOperand.ColorBurn:
-                    return "ComputeColorColorBurn";
-                case MaterialBinaryOperand.ColorDodge:
-                    return "ComputeColorColorDodge";
-                case MaterialBinaryOperand.Darken:
-                    return "ComputeColorDarken3ds"; //"ComputeColorDarkenMaya" //TODO: change this
-                case MaterialBinaryOperand.Desaturate:
-                    return "ComputeColorDesaturate";
-                case MaterialBinaryOperand.Difference:
-                    return "ComputeColorDifference3ds"; //"ComputeColorDifferenceMaya" //TODO: change this
-                case MaterialBinaryOperand.Divide:
-                    return "ComputeColorDivide";
-                case MaterialBinaryOperand.Exclusion:
-                    return "ComputeColorExclusion";
-                case MaterialBinaryOperand.HardLight:
-                    return "ComputeColorHardLight";
-                case MaterialBinaryOperand.HardMix:
-                    return "ComputeColorHardMix";
-                case MaterialBinaryOperand.Hue:
-                    return "ComputeColorHue";
-                case MaterialBinaryOperand.Illuminate:
-                    return "ComputeColorIlluminate";
-                case MaterialBinaryOperand.In:
-                    return "ComputeColorIn";
-                case MaterialBinaryOperand.Lighten:
-                    return "ComputeColorLighten3ds"; //"ComputeColorLightenMaya" //TODO: change this
-                case MaterialBinaryOperand.LinearBurn:
-                    return "ComputeColorLinearBurn";
-                case MaterialBinaryOperand.LinearDodge:
-                    return "ComputeColorLinearDodge";
-                case MaterialBinaryOperand.Mask:
-                    return "ComputeColorMask";
-                case MaterialBinaryOperand.Multiply:
-                    return "ComputeColorMultiply"; //return "ComputeColorMultiply3ds"; //"ComputeColorMultiplyMaya" //TODO: change this
-                case MaterialBinaryOperand.None:
-                    return "ComputeColorNone";
-                case MaterialBinaryOperand.Opaque:
-                    return "ComputeColorOpaque";
-                case MaterialBinaryOperand.Out:
-                    return "ComputeColorOut";
-                case MaterialBinaryOperand.Over:
-                    return "ComputeColorOver3ds"; //TODO: change this to "ComputeColorLerpAlpha"
-                case MaterialBinaryOperand.Overlay:
-                    return "ComputeColorOverlay3ds"; //"ComputeColorOverlayMaya" //TODO: change this
-                case MaterialBinaryOperand.PinLight:
-                    return "ComputeColorPinLight";
-                case MaterialBinaryOperand.Saturate:
-                    return "ComputeColorSaturate";
-                case MaterialBinaryOperand.Saturation:
-                    return "ComputeColorSaturation";
-                case MaterialBinaryOperand.Screen:
-                    return "ComputeColorScreen";
-                case MaterialBinaryOperand.SoftLight:
-                    return "ComputeColorSoftLight";
-                case MaterialBinaryOperand.Subtract:
-                    return "ComputeColorSubtract3ds"; //"ComputeColorOverlayMaya" //TODO: change this
-                case MaterialBinaryOperand.SubstituteAlpha:
-                    return "ComputeColorSubstituteAlpha";
-                default:
-                    throw new ArgumentOutOfRangeException("materialBinaryOperand");
-            }
-        }
-
-        private static string GetAsShaderString(Vector2 v)
+        public static string GetAsShaderString(Vector2 v)
         {
             return String.Format(CultureInfo.InvariantCulture, "float2({0}, {1})", v.X, v.Y);
         }
 
-        private static string GetAsShaderString(Vector3 v)
+        public static string GetAsShaderString(Vector3 v)
         {
             return String.Format(CultureInfo.InvariantCulture, "float3({0}, {1}, {2})", v.X, v.Y, v.Z);
         }
 
-        private static string GetAsShaderString(Vector4 v)
+        public static string GetAsShaderString(Vector4 v)
         {
             return String.Format(CultureInfo.InvariantCulture, "float4({0}, {1}, {2}, {3})", v.X, v.Y, v.Z, v.W);
         }
 
-        private static string GetAsShaderString(Color4 c)
+        public static string GetAsShaderString(Color4 c)
         {
             return String.Format(CultureInfo.InvariantCulture, "float4({0}, {1}, {2}, {3})", c.R, c.G, c.B, c.A);
         }
 
-        private static string GetAsShaderString(float f)
+        public static string GetAsShaderString(float f)
         {
             return String.Format(CultureInfo.InvariantCulture, "float4({0}, {0}, {0}, {0})", f);
         }
 
-        private static string GetAsShaderString(object obj)
+        public static string GetAsShaderString(object obj)
         {
             return obj.ToString();
         }
@@ -572,7 +282,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
         /// </summary>
         /// <param name="shaderSource">The input ShaderSource.</param>
         /// <returns>A ShaderMixinSource</returns>
-        private static ShaderMixinSource GetShaderMixinSource(ShaderSource shaderSource)
+        public static ShaderMixinSource GetShaderMixinSource(ShaderSource shaderSource)
         {
             if (shaderSource is ShaderClassSource)
             {
@@ -584,15 +294,6 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
                 return (ShaderMixinSource)shaderSource;
 
             return null;
-        }
-
-        #endregion
-
-        private enum ShaderBuildStatus
-        {
-            None,
-            InProgress,
-            Completed
         }
     }
 }

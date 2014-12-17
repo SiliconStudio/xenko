@@ -2,6 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
+using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Materials.Nodes
 {
@@ -30,6 +32,17 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
         public override string ToString()
         {
             return "Float";
+        }
+
+        public override ShaderSource GenerateShaderSource(MaterialContext context)
+        {
+            if (Key != null)
+            {
+                // TODO constantValues.Set(Key, Value);
+                return new ShaderClassSource("ComputeColorConstantFloatLink", Key);
+            }
+
+            return new ShaderClassSource("ComputeColorFixed", MaterialUtil.GetAsShaderString(Value));
         }
     }
 }

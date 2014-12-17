@@ -180,7 +180,6 @@
     <Compile Include="Materials\Nodes\MaterialConstantNode.cs" />
     <Compile Include="Materials\Nodes\MaterialFloat4Node.cs" />
     <Compile Include="Materials\Nodes\MaterialFloatNode.cs" />
-    <Compile Include="Materials\Nodes\MaterialReferenceNode.cs" />
     <Compile Include="Materials\Nodes\MaterialShaderClassNode.cs" />
     <Compile Include="Materials\Nodes\MaterialTextureNode.cs" />
     <Compile Include="Materials\Processor\Flattener\MaterialTextureLayerFlattener.cs" />

@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using SiliconStudio.Assets;
@@ -10,9 +11,11 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Paradox.Assets.Effect;
+using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Data;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Paradox.Shaders.Parser.Ast;
 using SiliconStudio.Shaders.Ast;
 
@@ -118,6 +121,92 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
                     }
                 }
             }
+        }
+
+        public override ShaderSource GenerateShaderSource(MaterialContext context)
+        {
+            if (!MixinReference.HasLocation())
+                return new ShaderClassSource("ComputeColor");
+            var mixinName = Path.GetFileNameWithoutExtension(MixinReference.Location);
+
+            object[] generics = null;
+            if (Generics.Count > 0)
+            {
+                // TODO: correct generic order
+                var mixinGenerics = new List<object>();
+                foreach (var genericKey in Generics.Keys)
+                {
+                    var generic = Generics[genericKey];
+                    if (generic is NodeParameterTexture)
+                    {
+                        var textureReference = ((NodeParameterTexture)generic).Reference;
+                        IMaterialNode foundNode = null;  //= Material.FindNode(textureReference);
+                        //while (foundNode != null && !(foundNode is MaterialTextureNode))
+                        //{
+                        //    var refNode = foundNode as MaterialReferenceNode;
+                        //    if (refNode == null)
+                        //        break;
+
+                        //    foundNode = Material.FindNode(refNode.Name);
+                        //}
+
+                        var foundTextureNode = foundNode as MaterialTextureNode;
+                        if (foundTextureNode == null || foundTextureNode.UsedParameterKey == null)
+                        {
+                            context.Log.Warning("[Material] The generic texture reference in node [" + this + "] is incorrect.");
+                            mixinGenerics.Add("Texturing.Texture0");
+                        }
+                        else
+                            mixinGenerics.Add(foundTextureNode.UsedParameterKey.ToString());
+                    }
+                    else if (generic is NodeParameterSampler)
+                    {
+                        var pk = ((NodeParameterSampler)generic).SamplerParameterKey;
+                        if (pk == null)
+                        {
+                            context.Log.Warning("[Material] The generic sampler reference in node [" + this + "] is incorrect.");
+                            mixinGenerics.Add("Texturing.Sampler");
+                        }
+                        else
+                            mixinGenerics.Add(pk.ToString());
+                    }
+                    else if (generic is NodeParameterFloat)
+                        mixinGenerics.Add(((NodeParameterFloat)generic).Value.ToString(CultureInfo.InvariantCulture));
+                    else if (generic is NodeParameterInt)
+                        mixinGenerics.Add(((NodeParameterInt)generic).Value.ToString(CultureInfo.InvariantCulture));
+                    else if (generic is NodeParameterFloat2)
+                        mixinGenerics.Add(MaterialUtil.GetAsShaderString(((NodeParameterFloat2)generic).Value));
+                    else if (generic is NodeParameterFloat3)
+                        mixinGenerics.Add(MaterialUtil.GetAsShaderString(((NodeParameterFloat3)generic).Value));
+                    else if (generic is NodeParameterFloat4)
+                        mixinGenerics.Add(MaterialUtil.GetAsShaderString(((NodeParameterFloat4)generic).Value));
+                    else if (generic is NodeParameter)
+                        mixinGenerics.Add(((NodeParameter)generic).Reference);
+                    else
+                        throw new Exception("[Material] Unknown node type: " + generic.GetType());
+                }
+                generics = mixinGenerics.ToArray();
+            }
+
+            var shaderClassSource = new ShaderClassSource(mixinName, generics);
+
+            if (CompositionNodes.Count == 0)
+                return shaderClassSource;
+
+            var mixin = new ShaderMixinSource();
+            mixin.Mixins.Add(shaderClassSource);
+
+            foreach (var comp in CompositionNodes)
+            {
+                if (comp.Value != null)
+                {
+                    var compShader = comp.Value.GenerateShaderSource(context);
+                    if (compShader != null)
+                        mixin.Compositions.Add(comp.Key, compShader);
+                }
+            }
+
+            return mixin;
         }
 
         /// <summary>

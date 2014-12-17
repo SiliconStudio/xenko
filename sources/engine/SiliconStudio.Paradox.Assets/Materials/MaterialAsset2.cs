@@ -353,7 +353,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// A material blend layer
     /// </summary>
     [DataContract("MaterialBlendLayer")]
-    [Display("Blend Layer")]
+    [Display("Material Layer")]
     [ObjectFactory(typeof(Factory))]
     public class MaterialBlendLayer
     {

@@ -2,6 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Generic;
 
+using SiliconStudio.Paradox.Shaders;
+
 namespace SiliconStudio.Paradox.Assets.Materials
 {
     /// <summary>
@@ -10,16 +12,16 @@ namespace SiliconStudio.Paradox.Assets.Materials
     public interface IMaterialNode
     {
         /// <summary>
-        /// Gets or sets a value indicating whether this node is reducible.
-        /// </summary>
-        /// <value><c>true</c> if this instance is reducible; otherwise, <c>false</c>.</value>
-        bool IsReducible { get; set; }
-
-        /// <summary>
         /// Gets the children.
         /// </summary>
         /// <param name="context">The context to get the children.</param>
         /// <returns>The list of children.</returns>
         IEnumerable<MaterialNodeEntry> GetChildren(object context = null);
+
+        /// <summary>
+        /// Generates the shader source equivalent for this node
+        /// </summary>
+        /// <returns>ShaderSource.</returns>
+        ShaderSource GenerateShaderSource(MaterialContext context); // TODO: We may have to pass a context
     }
 }
