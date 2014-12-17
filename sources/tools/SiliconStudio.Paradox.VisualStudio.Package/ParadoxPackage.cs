@@ -76,7 +76,7 @@ namespace SiliconStudio.Paradox.VisualStudio
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
     public sealed class ParadoxPackage : Package, IOleComponent
     {
-        public const string Version = "1.151";
+        public const string Version = "1.152";
 
         private DTE2 dte2;
         private AppDomain buildMonitorDomain;
@@ -189,7 +189,20 @@ namespace SiliconStudio.Paradox.VisualStudio
             }
 
             // Preinitialize the parser in a separate thread
-            var thread = new System.Threading.Thread(() => ParadoxCommandsProxy.GetProxy().Initialize());
+            var thread = new System.Threading.Thread(
+                () =>
+                {
+                    try
+                    {
+                        ParadoxCommandsProxy.GetProxy().Initialize();
+                    }
+                    catch (Exception ex)
+                    {
+                        generalOutputPane.OutputStringThreadSafe(string.Format("Error Initializing Paradox Language Service: {0}\r\n", ex.InnerException ?? ex));
+                        generalOutputPane.Activate();
+                        errorListProvider.Tasks.Add(new ErrorTask(ex.InnerException ?? ex));
+                    }
+                });
             thread.Start();
 
             // Register a timer to call our language service during

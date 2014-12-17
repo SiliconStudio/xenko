@@ -788,6 +788,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>MaterialLayerBlender.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Materials\MaterialLayerFloatInit.cs">
+      <DependentUpon>MaterialLayerFloatInit.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Materials\MaterialLayerFloatBlend.cs">
       <DependentUpon>MaterialLayerFloatBlend.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -2263,6 +2269,10 @@
     <None Include="Materials\MaterialLayerBlender.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialLayerBlender.cs</LastGenOutput>
+    </None>
+    <None Include="Materials\MaterialLayerFloatInit.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialLayerFloatInit.cs</LastGenOutput>
     </None>
     <None Include="Materials\MaterialLayerFloatBlend.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
