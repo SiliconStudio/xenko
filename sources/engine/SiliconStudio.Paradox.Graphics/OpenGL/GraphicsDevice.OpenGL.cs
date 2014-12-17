@@ -1000,10 +1000,11 @@ namespace SiliconStudio.Paradox.Graphics
 
                 if (depthStencilBuffer != null)
                 {
+                    // TODO: merge code between OpenGL and ES
 #if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                     FramebufferAttachment attachmentType;
                     if (depthStencilBuffer.IsDepthBuffer && depthStencilBuffer.IsStencilBuffer)
-                        attachmentType = FramebufferAttachment.DepthStencilAttachment;
+                        attachmentType = FramebufferAttachment.DepthStencilAttachment; // This enum does not exists in ES 2
                     else if(depthStencilBuffer.IsDepthBuffer)
                         attachmentType = FramebufferAttachment.DepthAttachment;
                     else
