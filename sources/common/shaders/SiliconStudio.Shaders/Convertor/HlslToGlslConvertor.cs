@@ -1061,6 +1061,12 @@ namespace SiliconStudio.Shaders.Convertor
                 textureSizeCall.Arguments.Add(new VariableReferenceExpression(glslSampler.Name));
                 textureSizeCall.Arguments.Add(new LiteralExpression(0));
 
+                // TODO: Support all the versions of GetDimensions based on texture type and parameter count
+                // GetDimensions signature can be (uint mipLevel, uint width, uint height) or (uint width, uint height)
+                var startArgIndex = 0;
+                if (methodInvocationExpression.Arguments.Count > 2)
+                    startArgIndex = 1;
+
                 // TODO: Support for sampler size other than 2D
                 var textureSizeVariable = new Variable(VectorType.Int2, "tempTextureSize", textureSizeCall);
                 resultBlock.Statements.Add(new DeclarationStatement(textureSizeVariable));
@@ -1068,13 +1074,13 @@ namespace SiliconStudio.Shaders.Convertor
                     new ExpressionStatement(
                         new AssignmentExpression(
                             AssignmentOperator.Default,
-                            methodInvocationExpression.Arguments[0],
+                            methodInvocationExpression.Arguments[startArgIndex],
                             new MemberReferenceExpression(new VariableReferenceExpression(textureSizeVariable.Name), "x"))));
                 resultBlock.Statements.Add(
                     new ExpressionStatement(
                         new AssignmentExpression(
                             AssignmentOperator.Default,
-                            methodInvocationExpression.Arguments[1],
+                            methodInvocationExpression.Arguments[startArgIndex + 1],
                             new MemberReferenceExpression(new VariableReferenceExpression(textureSizeVariable.Name), "y"))));
 
                 return resultBlock;
@@ -2267,13 +2273,28 @@ namespace SiliconStudio.Shaders.Convertor
                 targetIterator = ((IndexerExpression)targetIterator).Target;
             }
 
+            Variable variable = null;
+            Identifier varName = null;
             // Check that index apply to an array variable
-            var variableReferenceExpression = targetIterator as VariableReferenceExpression;
-            MatrixType matrixType = null;
-            if (variableReferenceExpression != null)
+            if (targetIterator is VariableReferenceExpression)
             {
-                var variable = FindDeclaration(variableReferenceExpression.Name) as Variable;
+                varName = ((VariableReferenceExpression)targetIterator).Name;
+                variable = FindDeclaration(varName) as Variable;
+            }
+            else if (targetIterator is MemberReferenceExpression) // Also check arrays inside structures
+            {
+                varName = ((MemberReferenceExpression)targetIterator).Member;
 
+                var target = ((MemberReferenceExpression)targetIterator).Target;
+                var targetType = target.TypeInference.TargetType as StructType;
+
+                if (targetType != null)
+                    variable = targetType.Fields.FirstOrDefault(x => x.Name.Text == varName.Text);
+            }
+
+            MatrixType matrixType = null;
+            if (varName != null)
+            {
                 // If array is a multidimension array
                 var variableType = variable != null ? variable.Type.ResolveType() : null;
                 var arrayType = variableType as ArrayType;
@@ -2291,7 +2312,7 @@ namespace SiliconStudio.Shaders.Convertor
                     for (int i = 0; i < indices.Count; i++)
                     {
                         Expression indexExpression = indices[i];
-                        for (int j = i + 1; j < indices.Count; j++)
+                        for (int j = i - 1; j >= 0; --j)
                         {
                             var nextExpression = arrayType.Dimensions[j];
                             indexExpression = new BinaryExpression(BinaryOperator.Multiply, indexExpression, nextExpression);
@@ -2319,7 +2340,7 @@ namespace SiliconStudio.Shaders.Convertor
                     // float4x3[0][1] -> mat4x3[1][0]
                     for (int i = 0; i < indices.Count; i++)
                     {
-                        nextExpression = nextExpression == null ? new IndexerExpression(variableReferenceExpression, indices[i]) : new IndexerExpression(nextExpression, indices[i]);
+                        nextExpression = nextExpression == null ? new IndexerExpression(targetIterator, indices[i]) : new IndexerExpression(nextExpression, indices[i]);
                     }
                     return nextExpression;
                 }
