@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
@@ -234,7 +234,7 @@ namespace SiliconStudio.Core.Reflection
             }
             catch (Exception)
             {
-                // If an exception occured, we cannot resolve this member path to a valid property/field
+                // If an exception occurred, we cannot resolve this member path to a valid property/field
                 return false;
             }
             finally
@@ -270,7 +270,7 @@ namespace SiliconStudio.Core.Reflection
             }
             catch (Exception)
             {
-                // If an exception occured, we cannot resolve this member path to a valid property/field
+                // If an exception occurred, we cannot resolve this member path to a valid property/field
                 return false;
             }
             return true;
@@ -310,7 +310,7 @@ namespace SiliconStudio.Core.Reflection
             }
             catch (Exception)
             {
-                // If an exception occured, we cannot resolve this member path to a valid property/field
+                // If an exception occurred, we cannot resolve this member path to a valid property/field
                 return false;
             }
             return true;
