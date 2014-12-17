@@ -36,7 +36,7 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
     {
         stream float4 vShadowMapPos[SHADOWMAP_TOTAL_COUNT];
         stream float4 vShadowMapTexPos[SHADOWMAP_TOTAL_COUNT];
-        stream float4 vShadowMapDepth[SHADOWMAP_COUNT];
+        stream float4 vShadowMapDepth[SHADOWMAP_TOTAL_COUNT];
 
         compose NormalVSBase normal = stage;
         compose PositionVSBase position = stage;
@@ -66,7 +66,7 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
                 for(int j = 0; j < SHADOWMAP_CASCADE_COUNT; j++)
                 {
                     streams.vShadowMapPos[i * SHADOWMAP_CASCADE_COUNT + j] = mul(vPositionWS, shadowMapLevels[i][j].ShadowMapWVP);
-                    streams.vShadowMapDepth[i][j] = dot(shadowMaps[i].ShadowLightDirection, vPositionWS.xyz - shadowMapLevels[i][j].ShadowLightOffset) / shadowMaps[i].ShadowMapDistance;
+                    streams.vShadowMapDepth[i * SHADOWMAP_CASCADE_COUNT + j] = dot(shadowMaps[i].ShadowLightDirection, vPositionWS.xyz - shadowMapLevels[i][j].ShadowLightOffset) / shadowMaps[i].ShadowMapDistance;
                 }
             }
         }
@@ -105,13 +105,13 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
                 return 1.0f;
         
             // Calculate shadows with lerp between cascades
-            float shadowMapDistance = streams.vShadowMapDepth[i][foundCascadeIndex];
+            float shadowMapDistance = streams.vShadowMapDepth[i * SHADOWMAP_CASCADE_COUNT + foundCascadeIndex];
             float shadow = FilterShadow(shadowMapTexture, shadowMapSampler, shadowMapPos0, shadowMapDistance, i);
             int nextCascade = foundCascadeIndex + 1;
             // Only lerp when 
             if (shadowLERP > 0.0 && shadowLERP < 1.0f && nextCascade < SHADOWMAP_CASCADE_COUNT)
             {
-                shadowMapDistance = streams.vShadowMapDepth[i][nextCascade];
+                shadowMapDistance = streams.vShadowMapDepth[i * SHADOWMAP_CASCADE_COUNT + nextCascade];
                 float2 shadowMapPos1 = streams.vShadowMapPos[i * SHADOWMAP_CASCADE_COUNT + nextCascade].xy / streams.vShadowMapPos[i * SHADOWMAP_CASCADE_COUNT + nextCascade].w;
                 shadow = lerp(FilterShadow(shadowMapTexture, shadowMapSampler, shadowMapPos1, shadowMapDistance, i), shadow, shadowLERP);
             }
