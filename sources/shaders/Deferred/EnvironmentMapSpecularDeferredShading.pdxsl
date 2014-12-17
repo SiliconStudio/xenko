@@ -14,7 +14,7 @@ class EnvironmentMapSpecularDeferredShading : ShadingBase, Texturing, AlbedoSpec
         // Get specular ambient from prepass
         float2 IBLTextureDimensions;
         SpecularIBLMap.GetDimensions(IBLTextureDimensions.x, IBLTextureDimensions.y);
-        float4 IBLValue = SpecularIBLMap.Sample(Sampler, streams.ShadingPosition.xy / IBLTextureDimensions);
+        float4 IBLValue = SpecularIBLMap.Sample(Sampler, Utilities.ConvertTexCoord(streams.ShadingPosition.xy / IBLTextureDimensions));
         
         if (IBLValue.w > 0)
         {

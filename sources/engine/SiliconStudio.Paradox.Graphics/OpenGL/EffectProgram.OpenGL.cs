@@ -339,7 +339,8 @@ namespace SiliconStudio.Paradox.Graphics
                     var variable = constantBufferDescription.Members[variableIndex];
                     variable.Param.Type = GetTypeFromActiveUniformType(variableIndexGroup.Type);
                     variable.Offset = variableIndexGroup.Offset;
-                    variable.Size = variable.Count * variable.RowCount * variable.ColumnCount * 4; // TODO: is there another possible value than 4?
+                    variable.Size = variableIndexGroup.NextOffset - variableIndexGroup.Offset;
+                    //variable.Size = variable.Count * variable.RowCount * variable.ColumnCount * 4; // TODO: is there another possible value than 4?
 
                     constantBufferDescription.Members[variableIndex] = variable;
                 }

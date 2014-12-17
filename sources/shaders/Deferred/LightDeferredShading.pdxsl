@@ -14,7 +14,7 @@ class LightDeferredShading : ShadingBase, Texturing, AlbedoDiffuseBase, AlbedoSp
         // Get diffuseLight and specularLuminance from prepass
         float2 lightTextureDimensions;
         LightTexture.GetDimensions(lightTextureDimensions.x, lightTextureDimensions.y);
-        float4 lightBufferValue = LightTexture.Sample(Sampler, streams.ShadingPosition.xy / lightTextureDimensions);
+        float4 lightBufferValue = LightTexture.Sample(Sampler, Utilities.ConvertTexCoord(streams.ShadingPosition.xy / lightTextureDimensions));
         float3 diffuseLight = lightBufferValue.xyz;
         float specularLuminance = lightBufferValue.w;
 

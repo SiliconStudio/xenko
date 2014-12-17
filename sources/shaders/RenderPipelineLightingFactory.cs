@@ -144,16 +144,21 @@ namespace SiliconStudio.Paradox.Effects
             // Create G-buffer pass
             var gbufferPipeline = new RenderPipeline("GBuffer");
 
+            // create depth buffer
+            var width = graphicsService.GraphicsDevice.DepthStencilBuffer.Width;
+            var height = graphicsService.GraphicsDevice.DepthStencilBuffer.Height;
+            var depthBuffer = Texture.New2D(graphicsService.GraphicsDevice, width, height, PixelFormat.D32_Float, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
+
             // Renders the G-buffer for opaque geometry.
             gbufferPipeline.Renderers.Add(new ModelRenderer(serviceRegistry, effectName + ".ParadoxGBufferShaderPass").AddOpaqueFilter());
-            var gbufferProcessor = new GBufferRenderProcessor(serviceRegistry, gbufferPipeline, graphicsService.GraphicsDevice.DepthStencilBuffer, false);
+            var gbufferProcessor = new GBufferRenderProcessor(serviceRegistry, gbufferPipeline, depthBuffer, false);
 
             // Add sthe G-buffer pass to the pipeline.
             mainPipeline.Renderers.Add(gbufferProcessor);
 
             // Performs the light prepass on opaque geometry.
             // Adds this pass to the pipeline.
-            var lightDeferredProcessor = new LightingPrepassRenderer(serviceRegistry, prepassEffectName, graphicsService.GraphicsDevice.DepthStencilBuffer, gbufferProcessor.GBufferTexture);
+            var lightDeferredProcessor = new LightingPrepassRenderer(serviceRegistry, prepassEffectName, depthBuffer, gbufferProcessor.GBufferTexture);
             mainPipeline.Renderers.Add(lightDeferredProcessor);
 
             // Sets the render targets and clear them. Also sets the viewport.
@@ -171,7 +176,11 @@ namespace SiliconStudio.Paradox.Effects
                 mainPipeline.Renderers.Add(new BackgroundRenderer(serviceRegistry, backgroundName));
 
             // Prevents depth write since depth was already computed in G-buffer pas.
-            mainPipeline.Renderers.Add(new RenderStateSetter(serviceRegistry) { DepthStencilState = graphicsService.GraphicsDevice.DepthStencilStates.DepthRead });
+            // TODO: use z-prepass on OpenGL.
+            // TODO: Issues:
+            // TODO:     - cannot create a framebuffer with a texture and a default rt/depth
+            // TODO:     - used depth buffer is flipped (was a shader resource)
+            //mainPipeline.Renderers.Add(new RenderStateSetter(serviceRegistry) { DepthStencilState = graphicsService.GraphicsDevice.DepthStencilStates.DepthRead });
             mainPipeline.Renderers.Add(new ModelRenderer(serviceRegistry, effectName).AddOpaqueFilter());
             mainPipeline.Renderers.Add(new RenderTargetSetter(serviceRegistry)
             {
