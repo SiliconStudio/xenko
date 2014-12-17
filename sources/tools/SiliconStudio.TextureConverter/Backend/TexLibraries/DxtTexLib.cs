@@ -375,13 +375,13 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             // Freeing Memory
             if (image.DisposingLibrary != null) image.DisposingLibrary.Dispose(image);
             
-            // adapt the image format based on desired output format
-            ChangeDxtImageType(libraryData, (DXGI_FORMAT)request.DecompressedFormat);
-
             libraryData.Image = scratchImage;
             libraryData.DxtImages = libraryData.Image.GetImages();
             libraryData.Metadata = libraryData.Image.metadata;
             image.DisposingLibrary = this;
+
+            // adapt the image format based on desired output format
+            ChangeDxtImageType(libraryData, (DXGI_FORMAT)request.DecompressedFormat);
 
             UpdateImage(image, libraryData);
         }
