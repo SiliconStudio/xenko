@@ -91,7 +91,7 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
 
             for (var maxBlendCount = 2; maxBlendCount < 5; ++maxBlendCount)
             {
-                var compilerParameter = new CompilerParameters();
+                var compilerParameter = GetDefaultCompilerParameters();
                 var compilerParameterChild = new ShaderMixinParameters[maxBlendCount];
                 for (var i = 0; i < maxBlendCount; ++i)
                 {

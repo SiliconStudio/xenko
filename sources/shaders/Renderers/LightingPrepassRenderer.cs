@@ -209,10 +209,11 @@ namespace SiliconStudio.Paradox.Effects.Renderers
             for (int i = 0; i < tilesGroups.Length; ++i)
                 tilesGroups[i] = new List<PointLightData>();
 
-            pointLightingPrepassEffect = EffectSystem.LoadEffect(effectName + ".ParadoxPointPrepassLighting");
+            var compilerParameters = GetDefaultCompilerParameters();
+            pointLightingPrepassEffect = EffectSystem.LoadEffect(effectName + ".ParadoxPointPrepassLighting", compilerParameters);
             CreateLightingUpdateInfo(pointLightingPrepassEffect);
 
-            spotLightingPrepassEffect = EffectSystem.LoadEffect(effectName + ".ParadoxSpotPrepassLighting");
+            spotLightingPrepassEffect = EffectSystem.LoadEffect(effectName + ".ParadoxSpotPrepassLighting", compilerParameters);
             CreateLightingUpdateInfo(spotLightingPrepassEffect);
 
             // TODO: find a way to enumerate available shaders
@@ -228,16 +229,15 @@ namespace SiliconStudio.Paradox.Effects.Renderers
             }*/
 
             // directional lights
-            directLightingPrepassEffect = EffectSystem.LoadEffect(effectName + ".ParadoxDirectPrepassLighting");
+            directLightingPrepassEffect = EffectSystem.LoadEffect(effectName + ".ParadoxDirectPrepassLighting", compilerParameters);
             CreateLightingUpdateInfo(directLightingPrepassEffect);
 
             // shadow lights
-            var parameters = new CompilerParameters();
             for (var cascadeCount = 1; cascadeCount < 5; ++cascadeCount)
             {
-                AddShadowEffect(cascadeCount, ShadowMapFilterType.Nearest, parameters);
-                AddShadowEffect(cascadeCount, ShadowMapFilterType.PercentageCloserFiltering, parameters);
-                AddShadowEffect(cascadeCount, ShadowMapFilterType.Variance, parameters);
+                AddShadowEffect(cascadeCount, ShadowMapFilterType.Nearest, compilerParameters);
+                AddShadowEffect(cascadeCount, ShadowMapFilterType.PercentageCloserFiltering, compilerParameters);
+                AddShadowEffect(cascadeCount, ShadowMapFilterType.Variance, compilerParameters);
             }
 
             // Create lighting accumulation texture
@@ -305,7 +305,7 @@ namespace SiliconStudio.Paradox.Effects.Renderers
 
         #region Private methods
 
-        private void AddShadowEffect(int cascadeCount, ShadowMapFilterType filterType, CompilerParameters  parameters)
+        private void AddShadowEffect(int cascadeCount, ShadowMapFilterType filterType, CompilerParameters parameters)
         {
             parameters.Set(ShadowMapParameters.ShadowMapCascadeCount.ComposeWith("shadows[0]"), cascadeCount);
             parameters.Set(ShadowMapParameters.FilterType.ComposeWith("shadows[0]"), filterType);

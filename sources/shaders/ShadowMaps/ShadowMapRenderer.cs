@@ -71,8 +71,9 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
         public ShadowMapRenderer(IServiceRegistry services, RenderPipeline recursivePipeline) : base(services, recursivePipeline)
         {
             // Build blur effects for VSM
-            vsmHorizontalBlur = EffectSystem.LoadEffect("HorizontalVsmBlur");
-            vsmVerticalBlur = EffectSystem.LoadEffect("VerticalVsmBlur");
+            var compilerParameters = GetDefaultCompilerParameters();
+            vsmHorizontalBlur = EffectSystem.LoadEffect("HorizontalVsmBlur", compilerParameters);
+            vsmVerticalBlur = EffectSystem.LoadEffect("VerticalVsmBlur", compilerParameters);
             blurParameters = new ParameterCollection();
         }
 
