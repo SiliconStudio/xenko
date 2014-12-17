@@ -383,19 +383,6 @@ namespace SiliconStudio.Paradox.Graphics
                     type = PixelType.Float;
                     pixelSize = 12;
                     break;
-                case PixelFormat.R32G32B32A32_Float:
-                    internalFormat = PixelInternalFormat.Rgba32f;
-                    format = PixelFormatGl.Rgba;
-                    type = PixelType.Float;
-                    pixelSize = 16;
-                    break;
-                // TODO: Temporary depth format (need to decide relation between RenderTarget1D and Texture)
-                case PixelFormat.D32_Float:
-                    internalFormat = PixelInternalFormat.DepthComponent32f;
-                    format = PixelFormatGl.DepthComponent;
-                    type = PixelType.Float;
-                    pixelSize = 4;
-                    break;
 #endif
 #if SILICONSTUDIO_PLATFORM_ANDROID
                 case PixelFormat.ETC1:
@@ -446,8 +433,29 @@ namespace SiliconStudio.Paradox.Graphics
                     type = PixelType.UnsignedInt248;
                     pixelSize = 4;
                     break;
+                case PixelFormat.R32G32B32A32_Float:
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                    internalFormat = PixelInternalFormat.Rgba;
+#else
+                    internalFormat = PixelInternalFormat.Rgba32f;
+#endif
+                    format = PixelFormatGl.Rgba;
+                    type = PixelType.Float;
+                    pixelSize = 16;
+                    break;
+                // TODO: Temporary depth format (need to decide relation between RenderTarget1D and Texture)
+                case PixelFormat.D32_Float:
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                    internalFormat = PixelInternalFormat.Rgba;
+#else
+                    internalFormat = PixelInternalFormat.DepthComponent32f;
+#endif
+                    format = PixelFormatGl.DepthComponent;
+                    type = PixelType.Float;
+                    pixelSize = 4;
+                    break;
                 default:
-                    throw new InvalidOperationException("Unsupported pixel format");
+                    throw new InvalidOperationException("Unsupported texture format");
             }
         }
     }
