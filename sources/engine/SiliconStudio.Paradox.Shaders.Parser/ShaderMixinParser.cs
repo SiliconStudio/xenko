@@ -59,14 +59,6 @@ namespace SiliconStudio.Paradox.Shaders.Parser
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderMixinParser"/> class.
         /// </summary>
-        public ShaderMixinParser() :
-            this(AssetManager.FileProvider)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ShaderMixinParser"/> class.
-        /// </summary>
         public ShaderMixinParser(DatabaseFileProvider fileProvider)
         {
             SourceManager = new ShaderSourceManager(fileProvider);

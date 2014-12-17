@@ -69,7 +69,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser
 
         private void AnalyzeAndGoToDefinition(string shaderSource, SiliconStudio.Shaders.Ast.SourceLocation location, List<string> shaderDirectories, ShaderNavigationResult result)
         {
-            var mixer = new ShaderMixinParser();
+            // We are not using the storage when loading shaders from VS but directly the filesystem
+            var mixer = new ShaderMixinParser(null);
             mixer.SourceManager.UseFileSystem = true;
             mixer.AllowNonInstantiatedGenerics = true;
             mixer.SourceManager.LookupDirectoryList.AddRange(shaderDirectories);
