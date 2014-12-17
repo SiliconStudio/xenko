@@ -180,7 +180,7 @@ namespace SiliconStudio.Paradox.Graphics
             if (this.ArraySize > 1)
             {
                 // If texture cube
-                if (this.Dimension == TextureDimension.TextureCube)
+                if (this.Dimension == TextureDimension.TextureCube && viewType == ViewType.Full)
                 {
                     srvDescription.Dimension = ShaderResourceViewDimension.TextureCube;
                     srvDescription.TextureCube.MipLevels = mipCount;
@@ -203,13 +203,7 @@ namespace SiliconStudio.Paradox.Graphics
                     }
                     else
                     {
-                        if (Dimension == TextureDimension.Texture3D)
-                        {
-                            throw new NotSupportedException("Texture Array is not supported for Texture3D");
-                        }
-
-                        // TODO: Throw an exception if dimension != Texture && Texture
-                        srvDescription.Dimension = Dimension == TextureDimension.Texture2D ? ShaderResourceViewDimension.Texture2DArray : ShaderResourceViewDimension.Texture1DArray;
+                        srvDescription.Dimension = Dimension == TextureDimension.Texture2D || Dimension == TextureDimension.TextureCube ? ShaderResourceViewDimension.Texture2DArray : ShaderResourceViewDimension.Texture1DArray;
                         srvDescription.Texture2DArray.ArraySize = arrayCount;
                         srvDescription.Texture2DArray.FirstArraySlice = arrayOrDepthSlice;
                         srvDescription.Texture2DArray.MipLevels = mipCount;
