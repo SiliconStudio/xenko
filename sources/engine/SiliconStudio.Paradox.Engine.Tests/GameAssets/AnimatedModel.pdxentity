@@ -1,32 +1,30 @@
 !Entity
-Id: 79b77b2f-70b1-496c-83d0-3828d780795e
+Id: 344605d8-4e22-407b-b834-5b16793d9301
+SerializedVersion: 1
 Tags: []
-Data:
-    Name: knight
-    Components:
-        ModelComponent.Key: !ModelComponentData
-            DrawOrder: 0
-            Enabled: true
-            Model: a7567f41-33f5-4253-8ddf-397f6cfacbb0:knight_model
-            Parameters:
-                Capacity: 0
-                ~Items: {}
-        AnimationComponent.Key: !AnimationComponentData
-            Animations:
-                Idle: 27999019-8210-4e22-bf08-36c0bed86b22:KnightIdle
-                Run: 05c427ea-1a26-4ffa-bff6-9d3c7dc7e85e:KnightRun
-~Base:
-    Location: --import--
-    Asset: !Entity
-        Id: 00000000-0000-0000-0000-000000000000
-        Tags: []
-        Data:
-            Name: knight
-            Components:
-                ModelComponent.Key: !ModelComponentData
-                    DrawOrder: 0
-                    Enabled: true
-                    Model: a7567f41-33f5-4253-8ddf-397f6cfacbb0:knight_model
-                    Parameters:
-                        Capacity: 0
-                        ~Items: {}
+Hierarchy:
+    RootEntity: e5867f8f-f79a-4066-bc5b-2f2c6ff6707c
+    Entities:
+        SyncRoot: null
+        ~Items:
+            -   Id: e5867f8f-f79a-4066-bc5b-2f2c6ff6707c
+                Name: Root
+                Components:
+                    TransformationComponent.Key: !TransformationComponentData
+                        Children: []
+                        Rotation: {W: 1, X: 0, Y: 0, Z: 0}
+                        Scaling: {X: 1, Y: 1, Z: 1}
+                        Translation: {X: 0, Y: 0, Z: 0}
+                        UseTRS: true
+                    ModelComponent.Key: !ModelComponentData
+                        DrawOrder: 0
+                        Enabled: true
+                        Model: 10d4f06c-ee97-402d-bdb4-21ff1f69bacb:knight_model
+                        Parameters:
+                            Capacity: 0
+                            ~Items: {}
+                    AnimationComponent.Key: !AnimationComponentData
+                        Animations:
+                            Idle: 27999019-8210-4e22-bf08-36c0bed86b22:KnightIdle
+                            Run: 05c427ea-1a26-4ffa-bff6-9d3c7dc7e85e:KnightRun
+AssetBases: {}

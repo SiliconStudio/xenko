@@ -1,24 +1,26 @@
 !Entity
-Id: e2a6651c-003c-47c3-a792-0b7473f05190
+Id: e424a8db-d1db-4277-8a25-f243f0e389ee
+SerializedVersion: 1
 Tags: []
-Data:
-    Name: cube
-    Components:
-        ModelComponent.Key: !ModelComponentData
-            DrawOrder: 0
-            Enabled: true
-            Model: 5e417f79-0561-42a6-bd6c-248665a3e4f8:Cube/cube_model
-            Parameters: null
-~Base:
-    Location: --import--
-    Asset: !Entity
-        Id: 00000000-0000-0000-0000-000000000000
-        Tags: []
-        Data:
-            Name: cube
-            Components:
-                ModelComponent.Key: !ModelComponentData
-                    DrawOrder: 0
-                    Enabled: true
-                    Model: 5e417f79-0561-42a6-bd6c-248665a3e4f8:cube_model
-                    Parameters: null
+Hierarchy:
+    RootEntity: 3dab8d09-1bcc-4bf3-9469-1c0f970b27df
+    Entities:
+        SyncRoot: null
+        ~Items:
+            -   Id: 3dab8d09-1bcc-4bf3-9469-1c0f970b27df
+                Name: Root
+                Components:
+                    TransformationComponent.Key: !TransformationComponentData
+                        Children: []
+                        Rotation: {W: 1, X: 0, Y: 0, Z: 0}
+                        Scaling: {X: 1, Y: 1, Z: 1}
+                        Translation: {X: 0, Y: 0, Z: 0}
+                        UseTRS: true
+                    ModelComponent.Key: !ModelComponentData
+                        DrawOrder: 0
+                        Enabled: true
+                        Model: 8a7c3a26-18fd-4881-a539-29b025238a7b:Cube/cube_model
+                        Parameters:
+                            Capacity: 0
+                            ~Items: {}
+AssetBases: {}
