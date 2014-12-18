@@ -126,10 +126,10 @@ namespace SiliconStudio.Paradox.Effects
             var renderSystem = serviceRegistry.GetSafeServiceAs<RenderSystem>();
             var graphicsService = serviceRegistry.GetSafeServiceAs<IGraphicsDeviceService>();
 
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
             var width = graphicsService.GraphicsDevice.DepthStencilBuffer.Width;
             var height = graphicsService.GraphicsDevice.DepthStencilBuffer.Height;
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
             // On OpenGL, intermediate texture are flipped and we cannot create a framebuffer with a user-generated attachment and a default one.
             // So we will render everything into a intermediate texture and draw it on screen at the end.
             var finalRenderTexture = Texture.New2D(graphicsService.GraphicsDevice, width, height, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
@@ -139,7 +139,6 @@ namespace SiliconStudio.Paradox.Effects
             var finalRenderTexture = graphicsService.GraphicsDevice.BackBuffer;
             var finalDepthBuffer = graphicsService.GraphicsDevice.DepthStencilBuffer;
 #endif
-
 
             // Adds a light processor that will track all the entities that have a light component.
             // This will also handle the shadows (allocation, activation etc.).
@@ -222,11 +221,6 @@ namespace SiliconStudio.Paradox.Effects
                 mainPipeline.Renderers.Add(new UIRenderer(serviceRegistry));
 
             graphicsService.GraphicsDevice.Parameters.Set(RenderingParameters.UseDeferred, true);
-        }
-
-        private static void RenderDelegate(RenderContext context)
-        {
-            
         }
 
         /// <summary>
