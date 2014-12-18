@@ -344,9 +344,6 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
-        
-
-
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
         private static TextureTarget2d GetTextureTargetForDataSet(TextureTarget target, int arrayIndex)
         {
