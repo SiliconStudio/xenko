@@ -91,13 +91,15 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// Determine the output format of the texture depending on the platform and asset properties.
         /// </summary>
         /// <param name="textureFormat">The desired texture output format type</param>
-        /// <param name="graphicsPlatform">The graphics platform</param>
         /// <param name="alphaFormat">The alpha format desired in output</param>
         /// <param name="platform">The platform type</param>
+        /// <param name="graphicsPlatform">The graphics platform</param>
+        /// <param name="graphicsProfile">The graphics profile</param>
         /// <param name="imageSize">The texture output size</param>
         /// <param name="inputImageFormat">The pixel format of the input image</param>
         /// <returns>The pixel format to use as output</returns>
-        public static PixelFormat DetermineOutputFormat(TextureFormat textureFormat, AlphaFormat alphaFormat, PlatformType platform, GraphicsPlatform graphicsPlatform, Int2 imageSize, PixelFormat inputImageFormat)
+        public static PixelFormat DetermineOutputFormat(TextureFormat textureFormat, AlphaFormat alphaFormat, PlatformType platform, GraphicsPlatform graphicsPlatform,
+            GraphicsProfile graphicsProfile, Int2 imageSize, PixelFormat inputImageFormat)
         {
             PixelFormat outputFormat;
             switch (textureFormat)
@@ -106,9 +108,25 @@ namespace SiliconStudio.Paradox.Assets.Textures
                     switch (platform)
                     {
                         case PlatformType.Android:
-                            outputFormat = alphaFormat == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.R8G8B8A8_UNorm;
+                            switch (graphicsProfile)
+                            {
+                                case GraphicsProfile.Level_9_1:
+                                case GraphicsProfile.Level_9_2:
+                                case GraphicsProfile.Level_9_3:
+                                    outputFormat = alphaFormat == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.R8G8B8A8_UNorm;
+                                    break;
+                                case GraphicsProfile.Level_10_0:
+                                case GraphicsProfile.Level_10_1:
+                                case GraphicsProfile.Level_11_0:
+                                case GraphicsProfile.Level_11_1:
+                                case GraphicsProfile.Level_11_2:
+                                    // GLES3.0 starting from Level_10_0, this profile enables ETC2 compression on Android
+                                    outputFormat = alphaFormat == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.ETC2_RGBA;
+                                    break;
+                                default:
+                                    throw new ArgumentOutOfRangeException("graphicsProfile");
+                            }
                             break;
-
                         case PlatformType.iOS:
                             // PVRTC works only for square POT textures
                             if (SupportPVRTC(imageSize))
@@ -254,7 +272,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
 
                 // Convert/Compress to output format
                 // TODO: Change alphaFormat depending on actual image content (auto-detection)?
-                var outputFormat = DetermineOutputFormat(textureAsset.Format, textureAsset.Alpha, parameters.Platform, parameters.GraphicsPlatform, textureSize, texImage.Format);
+                var outputFormat = DetermineOutputFormat(textureAsset.Format, textureAsset.Alpha, parameters.Platform, parameters.GraphicsPlatform, parameters.GraphicsProfile, textureSize, texImage.Format);
                 texTool.Compress(texImage, outputFormat, (TextureConverter.Requests.TextureQuality)parameters.TextureQuality);
 
                 if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded

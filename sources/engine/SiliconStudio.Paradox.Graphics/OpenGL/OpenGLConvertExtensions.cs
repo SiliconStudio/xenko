@@ -49,7 +49,7 @@ namespace SiliconStudio.Paradox.Graphics
                 case PixelInternalFormat.LuminanceAlpha:
                     return TextureComponentCount.LuminanceAlpha;
                 default:
-                    throw new ArgumentOutOfRangeException("format");
+                    throw new ArgumentOutOfRangeException("format " + format);
             }
         }
 
@@ -383,6 +383,13 @@ namespace SiliconStudio.Paradox.Graphics
                     // TODO: Runtime check for extension?
                     internalFormat = (PixelInternalFormat)OesCompressedEtc1Rgb8Texture.Etc1Rgb8Oes;
                     format = (PixelFormatGl)OesCompressedEtc1Rgb8Texture.Etc1Rgb8Oes;
+                    compressed = true;
+                    pixelSize = 2;
+                    type = PixelType.UnsignedByte;
+                    break;
+                case PixelFormat.ETC2_RGBA:
+                    internalFormat = (PixelInternalFormat)CompressedInternalFormat.CompressedRgba8Etc2Eac;
+                    format = (PixelFormatGl)CompressedInternalFormat.CompressedRgba8Etc2Eac;
                     compressed = true;
                     pixelSize = 2;
                     type = PixelType.UnsignedByte;
