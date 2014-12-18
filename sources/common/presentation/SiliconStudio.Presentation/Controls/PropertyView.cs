@@ -17,6 +17,11 @@ namespace SiliconStudio.Presentation.Controls
         private readonly ObservableList<PropertyViewItem> properties = new ObservableList<PropertyViewItem>();
 
         /// <summary>
+        /// Identifies the <see cref="HighlightedItem"/> dependency property.
+        /// </summary>
+        public static readonly DependencyPropertyKey HighlightedItemPropertyKey = DependencyProperty.RegisterReadOnly("HighlightedItem", typeof(PropertyViewItem), typeof(PropertyView), new PropertyMetadata(null));
+
+        /// <summary>
         /// Identifies the <see cref="HoveredItem"/> dependency property.
         /// </summary>
         public static readonly DependencyPropertyKey HoveredItemPropertyKey = DependencyProperty.RegisterReadOnly("HoveredItem", typeof(PropertyViewItem), typeof(PropertyView), new PropertyMetadata(null));
@@ -52,6 +57,11 @@ namespace SiliconStudio.Presentation.Controls
         public IReadOnlyCollection<PropertyViewItem> Properties { get { return properties; } }
 
         /// <summary>
+        /// Gets the <see cref="PropertyViewItem"/> that is currently highlighted by the mouse cursor.
+        /// </summary>
+        public PropertyViewItem HighlightedItem { get { return (PropertyViewItem)GetValue(HighlightedItemPropertyKey.DependencyProperty); } private set { SetValue(HighlightedItemPropertyKey, value); } }
+
+        /// <summary>
         /// Gets the <see cref="PropertyViewItem"/> that is currently hovered by the mouse cursor.
         /// </summary>
         public PropertyViewItem HoveredItem { get { return (PropertyViewItem)GetValue(HoveredItemPropertyKey.DependencyProperty); } private set { SetValue(HoveredItemPropertyKey, value); } }
@@ -76,8 +86,11 @@ namespace SiliconStudio.Presentation.Controls
         internal void ItemMouseMove(object sender, MouseEventArgs e)
         {
             var item = sender as PropertyViewItem;
-            if (item != null && item.CanBeHovered)
+            if (item != null)
             {
+                if (item.Highlightable)
+                    HighlightItem(item);
+
                 HoverItem(item);
             }
         }
@@ -106,6 +119,7 @@ namespace SiliconStudio.Presentation.Controls
         {
             base.OnMouseLeave(e);
             HoverItem(null);
+            HighlightItem(null);
         }
 
         protected override DependencyObject GetContainerForItemOverride()
@@ -159,6 +173,21 @@ namespace SiliconStudio.Presentation.Controls
                 HoveredItem.SetValue(PropertyViewItem.IsHoveredPropertyKey, true);
             }
         }
+
+        private void HighlightItem(PropertyViewItem item)
+        {
+            if (HighlightedItem != null)
+            {
+                HighlightedItem.SetValue(PropertyViewItem.IsHighlightedPropertyKey, false);
+            }
+            HighlightedItem = item;
+            if (HighlightedItem != null)
+            {
+                HighlightedItem.SetValue(PropertyViewItem.IsHighlightedPropertyKey, true);
+            }
+        }
+
+        
         //protected override AutomationPeer OnCreateAutomationPeer()
         //{
         //    return (AutomationPeer)new TreeViewAutomationPeer(this);

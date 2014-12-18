@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 
 using SiliconStudio.Presentation.Collections;
 using SiliconStudio.Presentation.Extensions;
@@ -20,8 +19,10 @@ namespace SiliconStudio.Presentation.Controls
 
         public static readonly DependencyProperty IsExpandedProperty = DependencyProperty.Register("IsExpanded", typeof(bool), typeof(PropertyViewItem), new FrameworkPropertyMetadata(false, OnIsExpandedChanged));
 
-        public static readonly DependencyProperty CanBeHoveredProperty = DependencyProperty.Register("CanBeHovered", typeof(bool), typeof(PropertyViewItem), new FrameworkPropertyMetadata(true));
+        public static readonly DependencyProperty HighlightableProperty = DependencyProperty.Register("Highlightable", typeof(bool), typeof(PropertyViewItem), new FrameworkPropertyMetadata(true));
 
+        public static readonly DependencyPropertyKey IsHighlightedPropertyKey = DependencyProperty.RegisterReadOnly("IsHighlighted", typeof(bool), typeof(PropertyViewItem), new FrameworkPropertyMetadata(false));
+       
         public static readonly DependencyPropertyKey IsHoveredPropertyKey = DependencyProperty.RegisterReadOnly("IsHovered", typeof(bool), typeof(PropertyViewItem), new FrameworkPropertyMetadata(false));
 
         public static readonly DependencyPropertyKey IsKeyboardActivePropertyKey = DependencyProperty.RegisterReadOnly("IsKeyboardActive", typeof(bool), typeof(PropertyViewItem), new FrameworkPropertyMetadata(false));
@@ -53,11 +54,13 @@ namespace SiliconStudio.Presentation.Controls
 
         public bool IsExpanded { get { return (bool)GetValue(IsExpandedProperty); } set { SetValue(IsExpandedProperty, value); } }
 
-        public bool CanBeHovered { get { return (bool)GetValue(CanBeHoveredProperty); } set { SetValue(CanBeHoveredProperty, value); } }
+        public bool Highlightable { get { return (bool)GetValue(HighlightableProperty); } set { SetValue(HighlightableProperty, value); } }
 
-        public bool IsHovered { get { return (bool)GetValue(IsHoveredPropertyKey.DependencyProperty); } private set { SetValue(IsHoveredPropertyKey, value); } }
+        public bool IsHighlighted { get { return (bool)GetValue(IsHighlightedPropertyKey.DependencyProperty); } }
 
-        public bool IsKeyboardActive { get { return (bool)GetValue(IsKeyboardActivePropertyKey.DependencyProperty); } private set { SetValue(IsKeyboardActivePropertyKey, value); } }
+        public bool IsHovered { get { return (bool)GetValue(IsHoveredPropertyKey.DependencyProperty); } }
+
+        public bool IsKeyboardActive { get { return (bool)GetValue(IsKeyboardActivePropertyKey.DependencyProperty); } }
 
         public double Offset { get { return (double)GetValue(OffsetPropertyKey.DependencyProperty); } private set { SetValue(OffsetPropertyKey, value); } }
 
