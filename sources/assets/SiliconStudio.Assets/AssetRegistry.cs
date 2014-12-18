@@ -29,6 +29,7 @@ namespace SiliconStudio.Assets
         private static readonly SolutionPlatformCollection supportedPlatforms = new SolutionPlatformCollection();
         private static readonly Dictionary<Type, string> RegisteredDefaultAssetExtension = new Dictionary<Type, string>();
         private static readonly Dictionary<Type, bool> RegisteredDynamicThumbnails = new Dictionary<Type, bool>();
+        private static readonly HashSet<Type> AssetTypes = new HashSet<Type>();
 
         private static readonly Dictionary<Guid, IAssetImporter> RegisteredImportersInternal = new Dictionary<Guid, IAssetImporter>();
         private static readonly Dictionary<Type, int> RegisteredFormatVersions = new Dictionary<Type, int>();
@@ -180,7 +181,7 @@ namespace SiliconStudio.Assets
         /// <returns>An array of <see cref="Type"/> elements.</returns>
         public static Type[] GetInstantiableTypes()
         {
-            return ObjectFactory.FindRegisteredFactories().Where(type => typeof(Asset).IsAssignableFrom(type)).ToArray();
+            return ObjectFactory.FindRegisteredFactories().Where(type => typeof(Asset).IsAssignableFrom(type) && type.IsPublic).ToArray();
         }
 
         /// <summary>
@@ -202,7 +203,7 @@ namespace SiliconStudio.Assets
         /// <returns>An array of <see cref="Type"/> elements.</returns>
         public static Type[] GetDescribedTypes()
         {
-            return RegisteredDynamicThumbnails.Keys.ToArray();
+            return AssetTypes.ToArray();
         }
 
         /// <summary>
@@ -401,6 +402,12 @@ namespace SiliconStudio.Assets
                 if (!typeof(Asset).IsAssignableFrom(assetType) || !assetType.IsClass)
                 {
                     continue;
+                }
+
+                // Store in a list all asset types loaded
+                if (assetType.IsPublic)
+                {
+                    AssetTypes.Add(assetType);
                 }
 
                 var isSourceCodeAsset = typeof(SourceCodeAsset).IsAssignableFrom(assetType);
