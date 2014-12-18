@@ -194,8 +194,8 @@ namespace SiliconStudio.Paradox.Graphics
         {
             switch (addressMode)
             {
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 case TextureAddressMode.Border:
+#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                     return TextureWrapMode.ClampToBorder;
 #endif
                 case TextureAddressMode.Clamp:
@@ -359,12 +359,6 @@ namespace SiliconStudio.Paradox.Graphics
                     type = PixelType.UnsignedInt;
                     pixelSize = 4;
                     break;
-                case PixelFormat.R16G16B16A16_Float:
-                    internalFormat = PixelInternalFormat.Rgba16f;
-                    format = PixelFormatGl.Rgba;
-                    type = PixelType.HalfFloat;
-                    pixelSize = 8;
-                    break;
                 case PixelFormat.R32_Float:
                     internalFormat = PixelInternalFormat.R32f;
                     format = PixelFormatGl.Red;
@@ -433,6 +427,16 @@ namespace SiliconStudio.Paradox.Graphics
                     type = PixelType.UnsignedInt248;
                     pixelSize = 4;
                     break;
+                case PixelFormat.R16G16B16A16_Float:
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                    internalFormat = PixelInternalFormat.Rgba;
+#else
+                    internalFormat = PixelInternalFormat.Rgba16f;
+#endif
+                    format = PixelFormatGl.Rgba;
+                    type = PixelType.HalfFloat;
+                    pixelSize = 8;
+                    break;
                 case PixelFormat.R32G32B32A32_Float:
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                     internalFormat = PixelInternalFormat.Rgba;
@@ -453,6 +457,12 @@ namespace SiliconStudio.Paradox.Graphics
                     format = PixelFormatGl.DepthComponent;
                     type = PixelType.Float;
                     pixelSize = 4;
+                    break;
+                case PixelFormat.None: // TODO: remove this
+                    internalFormat = PixelInternalFormat.Rgba;
+                    format = PixelFormatGl.Red;
+                    type = PixelType.UnsignedByte;
+                    pixelSize = 1;
                     break;
                 default:
                     throw new InvalidOperationException("Unsupported texture format");
