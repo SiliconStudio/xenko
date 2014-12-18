@@ -84,6 +84,16 @@ namespace SiliconStudio.Core.Reflection
         /// <summary>
         /// Creates a default instance for an object type.
         /// </summary>
+        /// <typeparam name="T">Type of the object to create</typeparam>
+        /// <returns>A new instance of T</returns>
+        public static T NewInstance<T>()
+        {
+            return (T)NewInstance(typeof(T));
+        }
+
+        /// <summary>
+        /// Creates a default instance for an object type.
+        /// </summary>
         /// <param name="objectType">Type of the object .</param>
         /// <returns>A new default instance of an object.</returns>
         public static object NewInstance(Type objectType)

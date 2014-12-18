@@ -17,18 +17,14 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
 {
     [ContentSerializer(typeof(DataContentSerializer<MaterialTextureNode>))]
     [DataContract("MaterialTextureNode")]
+    [Display("Texture")]
     public class MaterialTextureNode : MaterialNodeBase
     {
         /// <summary>
         /// Constructor
         /// </summary>
         public MaterialTextureNode()
-            : this("", TextureCoordinate.Texcoord0, Vector2.One, Vector2.Zero)
-        {
-        }
-
-        public MaterialTextureNode(string texturePath, int texcoordIndex, Vector2 scale, Vector2 offset)
-            : this(texturePath, (TextureCoordinate)texcoordIndex, scale, offset)
+            : this(null, TextureCoordinate.Texcoord0, Vector2.One, Vector2.Zero)
         {
         }
 
@@ -41,15 +37,15 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
         /// <param name="offset">The offset.</param>
         public MaterialTextureNode(string texturePath, TextureCoordinate texcoordIndex, Vector2 scale, Vector2 offset)
         {
-            if (texturePath == null)
-                throw new ArgumentNullException("texturePath");
-
-            TextureReference = new AssetReference<TextureAsset>(Guid.Empty, new UFile(texturePath));
+            if (!string.IsNullOrEmpty(texturePath))
+            {
+                TextureReference = new AssetReference<TextureAsset>(Guid.Empty, new UFile(texturePath));
+            }
+            Channel = TextureChannel.RGBA;
             TexcoordIndex = texcoordIndex;
             Sampler = new NodeParameterSampler();
             Scale = scale;
             Offset = offset;
-            AutoAssignKey = true;
             Key = null;
             UsedParameterKey = null;
         }
@@ -62,7 +58,17 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
         /// </userdoc>
         [DataMember(10)] 
         [DefaultValue(null)]
+        [Display("Texture")]
         public AssetReference<TextureAsset> TextureReference { get; set; }
+
+        /// <summary>
+        /// Gets or sets the channel.
+        /// </summary>
+        /// <value>The channel.</value>
+        /// <userdoc>Selects the RGBA channel to sample from the texture.</userdoc>
+        [DataMember(20)]
+        [DefaultValue(TextureChannel.RGBA)]
+        public TextureChannel Channel { get; set; }
 
         /// <summary>
         /// The texture coordinate used to sample the texture.
@@ -81,7 +87,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
         /// The sampler of the texture.
         /// </userdoc>
         [DataMemberIgnore]
-        public NodeParameterSampler Sampler { get; set; }
+        internal NodeParameterSampler Sampler { get; private set; }
 
         /// <summary>
         /// The texture filtering mode.
@@ -162,20 +168,10 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
         public Vector2 Offset { get; set; }
 
         /// <summary>
-        /// A flag stating if the paramater key is automatically assigned.
-        /// </summary>
-        /// <userdoc>
-        /// If not checked, you can define the key to access the texture at runtime for dynamic changes.
-        /// </userdoc>
-        [DataMember(70)]
-        [DefaultValue(true)]
-        public bool AutoAssignKey { get; set; }
-
-        /// <summary>
         /// The desired parameter key.
         /// </summary>
         /// <userdoc>
-        /// The key to access the texture at runtime. AutoAssignKey should be checked.
+        /// The key to access the texture at runtime. 
         /// </userdoc>
         [DataMember(80)]
         [DefaultValue(null)]
@@ -185,7 +181,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
         /// The parameter key used in the shader.
         /// </summary>
         [DataMemberIgnore]
-        public ParameterKey<Graphics.Texture> UsedParameterKey { get; set; }
+        internal ParameterKey<Graphics.Texture> UsedParameterKey { get; set; }
 
         /// <summary>
         /// The name of the texture;
@@ -204,24 +200,19 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
             return "Texture";
         }
 
-        public override ShaderSource GenerateShaderSource(MaterialContext context)
+        public override ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext)
         {
-            string usedTexcoord;
-            //if (shaderForReduction)
-            //    usedTexcoord = "TEXCOORD0";
-            //else
-                usedTexcoord = "TEXCOORD" + MaterialUtil.GetTextureIndex(TexcoordIndex);
+            // TODO: Use a generated UsedTexcoordIndex when backing textures
+            var usedTexcoord = "TEXCOORD" + MaterialUtility.GetTextureIndex(TexcoordIndex);
 
             // "TTEXTURE", "TStream"
             ShaderClassSource shaderSource;
-            //if (displacementShader)
-            //    shaderSource = new ShaderClassSource("ComputeColorTextureDisplacement", UsedParameterKey, usedTexcoord);
             if (Offset != Vector2.Zero)
-                shaderSource = new ShaderClassSource("ComputeColorTextureScaledOffsetSampler", UsedParameterKey, usedTexcoord, MaterialUtil.GetAsShaderString(Scale), MaterialUtil.GetAsShaderString(Offset), Sampler.SamplerParameterKey);
+                shaderSource = new ShaderClassSource("ComputeColorTextureScaledOffsetSampler", UsedParameterKey, usedTexcoord, MaterialUtility.GetAsShaderString(Scale), MaterialUtility.GetAsShaderString(Offset), Sampler.SamplerParameterKey, MaterialUtility.GetAsShaderString(Channel));
             else if (Scale != Vector2.One)
-                shaderSource = new ShaderClassSource("ComputeColorTextureScaledSampler", UsedParameterKey, usedTexcoord, MaterialUtil.GetAsShaderString(Scale), Sampler.SamplerParameterKey);
+                shaderSource = new ShaderClassSource("ComputeColorTextureScaledSampler", UsedParameterKey, usedTexcoord, MaterialUtility.GetAsShaderString(Scale), Sampler.SamplerParameterKey, MaterialUtility.GetAsShaderString(Channel));
             else
-                shaderSource = new ShaderClassSource("ComputeColorTextureSampler", UsedParameterKey, usedTexcoord, Sampler.SamplerParameterKey);
+                shaderSource = new ShaderClassSource("ComputeColorTextureSampler", UsedParameterKey, usedTexcoord, Sampler.SamplerParameterKey, MaterialUtility.GetAsShaderString(Channel));
 
             return shaderSource;            
         }

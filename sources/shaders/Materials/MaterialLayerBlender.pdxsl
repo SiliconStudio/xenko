@@ -1,6 +1,0 @@
-﻿class MaterialLayerBlender
-{
-    void Compute()
-    {
-    }
-};

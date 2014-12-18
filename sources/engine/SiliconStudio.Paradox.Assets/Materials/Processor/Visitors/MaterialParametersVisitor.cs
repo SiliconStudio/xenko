@@ -45,7 +45,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
                     foreach (var member in shaderNode.GetParameters(context))
                         parameters.Set(member.Key, member.Value);
                 }
-            }, new MaterialContext { Material = Material, ExploreGenerics = false });
+            }, new MaterialShaderGeneratorContext { Material = Material, ExploreGenerics = false });
         }
     }
 }

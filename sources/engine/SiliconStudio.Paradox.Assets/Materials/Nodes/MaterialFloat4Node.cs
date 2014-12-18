@@ -10,6 +10,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
 {
     [ContentSerializer(typeof(DataContentSerializer<MaterialFloat4Node>))]
     [DataContract("MaterialFloat4Node")]
+    [Display("Constant Vector")]
     public class MaterialFloat4Node : MaterialConstantNode<Vector4>
     {
         /// <summary>
@@ -35,7 +36,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
             return "Float4";
         }
 
-        public override ShaderSource GenerateShaderSource(MaterialContext context)
+        public override ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext)
         {
             if (Key != null)
             {
@@ -43,7 +44,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
                 return new ShaderClassSource("ComputeColorConstantLink", Key);
             }
 
-            return new ShaderClassSource("ComputeColorFixed", MaterialUtil.GetAsShaderString(Value));
+            return new ShaderClassSource("ComputeColorFixed", MaterialUtility.GetAsShaderString(Value));
         }
     }
 }

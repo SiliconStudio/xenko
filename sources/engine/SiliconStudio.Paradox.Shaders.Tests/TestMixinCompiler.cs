@@ -5,8 +5,11 @@ using System.Linq;
 using NUnit.Framework;
 
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
+using SiliconStudio.Paradox.Assets.Materials;
+using SiliconStudio.Paradox.Assets.Materials.Nodes;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders.Compiler;
@@ -20,6 +23,41 @@ namespace SiliconStudio.Paradox.Shaders.Tests
     [TestFixture]
     public partial class TestMixinCompiler
     {
+        /// <summary>
+        /// Tests mixin and compose keys with compilation.
+        /// </summary>
+        [Test]
+        public void TestMaterial()
+        {
+            var compiler = new EffectCompiler { UseFileSystem = true };
+            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Paradox.Graphics\Shaders");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Materials");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\ComputeColor");
+            var compilerParameters = new CompilerParameters { Platform = GraphicsPlatform.Direct3D11 };
+
+            var materialAsset = new MaterialAsset
+            {
+                Composition = new MaterialAttributes()
+                {
+                    Surface = new MaterialNormalMapAttribute()
+                    {
+                        NormalMap = new MaterialColorNode(Color4.White)
+                    }
+                }
+            };
+
+            var classSource = MaterialShaderGenerator.Generate(materialAsset);
+
+            var mixin = new ShaderMixinSource();
+            mixin.Mixins.Add(new ShaderClassSource("MaterialLayerRoot"));
+            mixin.AddComposition("composition", classSource);
+
+            var results = compiler.Compile(mixin, compilerParameters);
+
+            Assert.IsFalse(results.HasErrors);
+        }
+
+
         /// <summary>
         /// Tests mixin and compose keys with compilation.
         /// </summary>

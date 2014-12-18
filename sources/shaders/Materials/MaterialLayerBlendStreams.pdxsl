@@ -1,0 +1,7 @@
+﻿class MaterialLayerBlendStreams<MemberName TStream> : IMaterialLayer
+{
+    override void Compute(Streams input1Stream, Streams input2Stream, Streams outputStream)
+    {
+        outputStream.TStream = lerp(input1Stream.TStream, input2Stream.TStream, input1Stream.matBlend);
+    }
+};

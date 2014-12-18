@@ -10,28 +10,35 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
         /// <summary>
         /// The material to process.
         /// </summary>
-        protected MaterialDescription Material { get; private set; }
+        private readonly MaterialAsset material;
 
-        public MaterialBaseVisitor(MaterialDescription mat)
+        protected MaterialAsset Material
         {
-            if (mat == null)
-                throw new ArgumentNullException();
-            Material = mat;
+            get
+            {
+                return material;
+            }
+        }
+
+        public MaterialBaseVisitor(MaterialAsset material)
+        {
+            if (material == null) throw new ArgumentNullException("material");
+            this.material = material;
         }
     }
 
     public static class MaterialExtensions
     {
-        public static void VisitNodes(this MaterialDescription material, Action<object, MaterialNodeEntry> callback, object context = null)
-        {
-            if (callback == null) throw new ArgumentNullException("callback");
-            var nodes = material.Nodes.ToList();
-            foreach (var nodeIt in nodes)
-            {
-                var key = nodeIt.Key;
-                VisitNode(new MaterialNodeEntry(nodeIt.Value, node => material.Nodes[key] = node), callback, context);
-            }
-        }
+        //public static void VisitNodes(this MaterialDescription material, Action<object, MaterialNodeEntry> callback, object context = null)
+        //{
+        //    if (callback == null) throw new ArgumentNullException("callback");
+        //    var nodes = material.Nodes.ToList();
+        //    foreach (var nodeIt in nodes)
+        //    {
+        //        var key = nodeIt.Key;
+        //        VisitNode(new MaterialNodeEntry(nodeIt.Value, node => material.Nodes[key] = node), callback, context);
+        //    }
+        //}
 
         public static void VisitNodes(this IMaterialNode node, Action<object, MaterialNodeEntry> callback, object context = null)
         {

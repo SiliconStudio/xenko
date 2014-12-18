@@ -1,0 +1,6 @@
+﻿class IMaterialLayer : MaterialStreams
+{
+    void Compute(Streams input1Stream, Streams input2Stream, Streams outputStream)
+    {
+    }
+};

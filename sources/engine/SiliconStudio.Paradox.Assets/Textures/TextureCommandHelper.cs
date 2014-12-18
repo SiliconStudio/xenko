@@ -264,7 +264,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                 // Save the texture
                 if (separateAlpha)
                 {
-                    TextureAlphaComponentSplitter.CreateAndSaveSeparateTextures(texTool, texImage, outputUrl, textureAsset.GenerateMipmaps);
+                    //TextureAlphaComponentSplitter.CreateAndSaveSeparateTextures(texTool, texImage, outputUrl, textureAsset.GenerateMipmaps);
                 }
                 else
                 {

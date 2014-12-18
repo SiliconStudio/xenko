@@ -6,10 +6,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Assets.Materials.Nodes;
 using SiliconStudio.Paradox.Effects.Data;
+using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
@@ -18,7 +20,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// <summary>
     /// Base interface for a material attribute.
     /// </summary>
-    public interface IMaterialAttribute
+    public interface IMaterialAttribute : IMaterialShaderGenerator
     {
     }
 
@@ -102,7 +104,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// <summary>
     /// A material composition.
     /// </summary>
-    public interface IMaterialComposition
+    public interface IMaterialComposition : IMaterialShaderGenerator
     {
     }
 
@@ -129,6 +131,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 return new MaterialSmoothnessMapAttribute() { SmoothnessMap = new MaterialTextureNode() };
             }
         }
+
+        public void GenerateShader(MaterialShaderGeneratorContext context)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     /// <summary>
@@ -153,6 +160,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
             {
                 return new MaterialDiffuseMapAttribute() { DiffuseMap = new MaterialTextureNode() };
             }
+        }
+
+        public void GenerateShader(MaterialShaderGeneratorContext context)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -198,6 +210,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 };
             }
         }
+
+        public void GenerateShader(MaterialShaderGeneratorContext context)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     /// <summary>
@@ -222,6 +239,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
             {
                 return new MaterialMetalnessMapAttribute() { MetalnessMap = new MaterialTextureNode() };
             }
+        }
+
+        public void GenerateShader(MaterialShaderGeneratorContext context)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -291,6 +313,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 };
             }
         }
+
+        public void GenerateShader(MaterialShaderGeneratorContext context)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     /// <summary>
@@ -300,6 +327,10 @@ namespace SiliconStudio.Paradox.Assets.Materials
     [Display("Lamtertian")]
     public class MaterialDiffuseLambertianModelAttribute : IMaterialDiffuseModelAttribute
     {
+        public virtual void GenerateShader(MaterialShaderGeneratorContext context)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     /// <summary>
@@ -325,6 +356,20 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 return new MaterialNormalMapAttribute() { NormalMap = new MaterialTextureNode() };
             }
         }
+
+        public virtual void GenerateShader(MaterialShaderGeneratorContext context)
+        {
+            if (NormalMap != null)
+            {
+                var normalMapNode = NormalMap.GenerateShaderSource(context);
+
+                var mixin = new ShaderMixinSource();
+                mixin.Mixins.Add(new ShaderClassSource("MaterialLayerComputeColorFloat3Blend", "matNormal"));
+                mixin.AddComposition("Float3Source", normalMapNode);
+                context.PushStream("matNormal");
+                context.Operations.Add(mixin);
+            }
+        }
     }
 
     /// <summary>
@@ -332,6 +377,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// </summary>
     [DataContract("MaterialBlendLayerStack")]
     [Display("Material Layers")]
+    [ObjectFactory(typeof(Factory))]
     public class MaterialBlendLayerStack : IMaterialComposition
     {
         /// <summary>
@@ -347,6 +393,24 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// </summary>
         /// <value>The layers.</value>
         public List<MaterialBlendLayer> Layers { get; private set; }
+
+        private class Factory : IObjectFactory
+        {
+            public object New(Type type)
+            {
+                var stack = new MaterialBlendLayerStack();
+                stack.Layers.Add(ObjectFactory.NewInstance<MaterialBlendLayer>());
+                return stack;
+            }
+        }
+
+        public virtual void GenerateShader(MaterialShaderGeneratorContext context)
+        {
+            foreach (var layer in Layers)
+            {
+                layer.GenerateShader(context);
+            }
+        }
     }
 
     /// <summary>
@@ -355,7 +419,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     [DataContract("MaterialBlendLayer")]
     [Display("Material Layer")]
     [ObjectFactory(typeof(Factory))]
-    public class MaterialBlendLayer
+    public class MaterialBlendLayer : IMaterialShaderGenerator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialBlendLayer"/> class.
@@ -388,7 +452,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The material.</value>
         [DefaultValue(null)]
         [DataMember(30)]
-        public AssetReference<MaterialAsset2> Material { get; set; }
+        public AssetReference<MaterialAsset> Material { get; set; }
 
         /// <summary>
         /// Gets or sets the blend map.
@@ -415,6 +479,25 @@ namespace SiliconStudio.Paradox.Assets.Materials
                     BlendMap = new MaterialTextureNode(),
                 };
             }
+        }
+
+        public virtual void GenerateShader(MaterialShaderGeneratorContext context)
+        {
+            if (!Enabled || Material == null)
+            {
+                return;
+            }
+
+            var material = context.FindMaterial(Material);
+            if (material == null)
+            {
+                context.Log.Error("Unable to find material [{0}]", Material);
+                return;
+            }
+
+            // TODO: push blend into the context
+            // TODO: handle overrides
+            material.GenerateShader(context);
         }
     }
 
@@ -629,19 +712,46 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [DefaultValue(null)]
         [DataMember(110)]
         public IMaterialTransparencyAttribute Transparency { get; set; }
+
+        public virtual void GenerateShader(MaterialShaderGeneratorContext context)
+        {
+            if (context.PendingOperations.Count > 0)
+            {
+                context.Operations.Add(context.PendingOperations.Pop());
+            }
+
+            var attributesMeta = TypeDescriptorFactory.Default.Find(GetType());
+            foreach (var member in attributesMeta.Members)
+            {
+                var memberShaderGen = member.Get(this) as IMaterialShaderGenerator;
+                if (memberShaderGen != null)
+                {
+                    memberShaderGen.GenerateShader(context);
+                }
+            }
+        }
     }
 
     /// <summary>
     /// The material asset.
     /// </summary>
     [DataContract("MaterialAsset2")]
-    [Display("Material Asset", "A material asset")]
-    public class MaterialAsset2 : Asset
+    [AssetFileExtension(FileExtension)]
+    [ThumbnailCompiler(PreviewerCompilerNames.MaterialThumbnailCompilerQualifiedName, true)]
+    [AssetCompiler(typeof(MaterialAssetCompiler))]
+    [ObjectFactory(typeof(MaterialFactory))]
+    [Display("Material", "A material")]
+    public class MaterialAsset : Asset, IMaterialShaderGenerator
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MaterialAsset2"/> class.
+        /// The default file extension used by the <see cref="MaterialAsset"/>.
         /// </summary>
-        public MaterialAsset2()
+        public const string FileExtension = ".pdxmat";
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MaterialAsset"/> class.
+        /// </summary>
+        public MaterialAsset()
         {
             Parameters = new ParameterCollectionData();
         }
@@ -659,5 +769,22 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The parameters.</value>
         [DataMember(20)]
         public ParameterCollectionData Parameters { get; private set; }
+
+        private class MaterialFactory : IObjectFactory
+        {
+            public object New(Type type)
+            {
+                var newMaterial = new MaterialAsset { Composition = new MaterialAttributes() };
+                return newMaterial;
+            }
+        }
+
+        public virtual void GenerateShader(MaterialShaderGeneratorContext context)
+        {
+            if (Composition != null)
+            {
+                Composition.GenerateShader(context);
+            }
+        }
     }
 }

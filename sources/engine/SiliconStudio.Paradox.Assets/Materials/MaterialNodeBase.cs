@@ -26,6 +26,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
             return Enumerable.Empty<MaterialNodeEntry>();
         }
 
-        public abstract ShaderSource GenerateShaderSource(MaterialContext context);
+        public abstract ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext);
     }
 }

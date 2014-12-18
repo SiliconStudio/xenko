@@ -1,0 +1,10 @@
+﻿class MaterialLayerRoot : ShaderBase, MaterialStreams
+{
+    compose IMaterialLayer composition;
+
+    override void PSMain()
+    {
+        composition.Compute(streams, streams, streams);
+        streams.ColorTarget = streams.matNormal;
+    }
+};

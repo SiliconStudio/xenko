@@ -20,17 +20,17 @@ namespace SiliconStudio.Paradox.Assets.Materials
     [AssetCompiler(typeof(MaterialAssetCompiler))]
     [ObjectFactory(typeof(MaterialFactory))]
     [Display("Material", "A material")]
-    public sealed class MaterialAsset : Asset
+    public sealed class MaterialAssetOld : Asset
     {
         /// <summary>
-        /// The default file extension used by the <see cref="MaterialAsset"/>.
+        /// The default file extension used by the <see cref="MaterialAssetOld"/>.
         /// </summary>
         public const string FileExtension = ".pdxmat";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MaterialAsset"/> class.
+        /// Initializes a new instance of the <see cref="MaterialAssetOld"/> class.
         /// </summary>
-        public MaterialAsset()
+        public MaterialAssetOld()
         {
             BuildOrder = 250;
         }
@@ -51,7 +51,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         {
             public object New(Type type)
             {
-                var newMaterial = new MaterialAsset { Material = new MaterialDescription() };
+                var newMaterial = new MaterialAssetOld { Material = new MaterialDescription() };
                 return newMaterial;
             }
         }

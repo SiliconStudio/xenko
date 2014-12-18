@@ -1,0 +1,10 @@
+﻿class MaterialLayerComputeColorFloatBlend<MemberName TStream, MemberName TChannel> : IMaterialLayer
+{
+    compose ComputeColor FloatSource;
+
+    override void Compute(Streams input1Stream, Streams input2Stream, Streams outputStream)
+    {
+        float value = FloatSource.Compute().TChannel;
+        outputStream.TStream = lerp(input1Stream.TStream, value, outputStream.matBlend);
+    }
+};

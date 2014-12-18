@@ -1,0 +1,12 @@
+﻿class MaterialLayerArray : IMaterialLayer
+{
+    compose IMaterialLayer layers[];
+
+    override void Compute(Streams input1Stream, Streams input2Stream, Streams outputStream)
+    {
+        foreach(var layer in layers)
+        {
+            layer.Compute(input1Stream, input2Stream, outputStream);
+        }
+    }
+};

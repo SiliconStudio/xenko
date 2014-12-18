@@ -14,6 +14,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
     /// </summary>
     [ContentSerializer(typeof(DataContentSerializer<MaterialBinaryNode>))]
     [DataContract("MaterialBinaryNode")]
+    [Display("Binary Operator")]
     public class MaterialBinaryNode : MaterialNodeBase
     {
         /// <summary>
@@ -75,10 +76,10 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
         private const string BackgroundCompositionName = "color1";
         private const string ForegroundCompositionName = "color2";
 
-        public override ShaderSource GenerateShaderSource(MaterialContext context)
+        public override ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext)
         {
-            var leftShaderSource = LeftChild.GenerateShaderSource(context);
-            var rightShaderSource = RightChild.GenerateShaderSource(context);
+            var leftShaderSource = LeftChild.GenerateShaderSource(shaderGeneratorContext);
+            var rightShaderSource = RightChild.GenerateShaderSource(shaderGeneratorContext);
 
             var shaderSource = new ShaderClassSource(GetCorrespondingShaderSourceName(Operand));
             var mixin = new ShaderMixinSource();

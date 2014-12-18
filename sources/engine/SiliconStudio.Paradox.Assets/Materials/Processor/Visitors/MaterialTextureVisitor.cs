@@ -12,8 +12,6 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
 {
     public class MaterialTextureVisitor : MaterialBaseVisitor
     {
-        #region Private static members
-
         /// <summary>
         /// Available default texture keys.
         /// </summary>
@@ -69,10 +67,6 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
                 MaterialTexturingKeys.DisplacementTexture0
             };
 
-        #endregion
-
-        #region Private members
-
         /// <summary>
         /// Generic method to get a texture key
         /// </summary>
@@ -107,10 +101,6 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
         /// List of already used texture keys.
         /// </summary>
         private List<ParameterKey<Graphics.Texture>> usedTextureKeys = new List<ParameterKey<Graphics.Texture>>();
-
-        #endregion
-
-        #region Public methods
 
         public MaterialTextureVisitor(MaterialDescription mat) : base(mat)
         {
@@ -288,10 +278,6 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
             return returnList.Distinct().ToList();
         }
 
-        #endregion
-
-        #region Private methods
-
         /// <summary>
         /// Assign the Keys to the textures in the tree.
         /// </summary>
@@ -334,7 +320,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
             // assign the predefined keys
             foreach (var texSlot in nodes.Distinct())
             {
-                if (!texSlot.AutoAssignKey && texSlot.Key != null)
+                if (texSlot.Key != null)
                 {
                     texSlot.UsedParameterKey = (ParameterKey<Graphics.Texture>)texSlot.Key;
                     textureKeys.Add(texSlot, texSlot.UsedParameterKey);
@@ -376,7 +362,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
             ParameterKey<SamplerState> samplerParameterKey;
             if (!samplerKeys.TryGetValue(state, out samplerParameterKey))
             {
-                samplerParameterKey = GetDefaultSamplerKey(samplerIndex);
+                samplerParameterKey = MaterialUtility.GetDefaultSamplerKey(samplerIndex);
                 ++samplerIndex;
                 samplerKeys.Add(state, samplerParameterKey);
             }
@@ -409,7 +395,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
         /// <returns>A collection of MaterialTextureNode.</returns>
         private IEnumerable<MaterialTextureNode> GatherTextureValues(IMaterialNode node)
         {
-            var materialContext = new MaterialContext { Material = Material, ExploreGenerics = false };
+            var materialContext = new MaterialShaderGeneratorContext { ExploreGenerics = false };
             return GatherTextures(node, materialContext);
         }
 
@@ -420,7 +406,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
         /// <returns>A collection of MaterialTextureNode.</returns>
         private IEnumerable<MaterialTextureNode> GatherTextureValuesWithGenerics(IMaterialNode node)
         {
-            var materialContext = new MaterialContext { Material = Material, ExploreGenerics = true };
+            var materialContext = new MaterialShaderGeneratorContext { ExploreGenerics = true };
             return GatherTextures(node, materialContext);
         }
 
@@ -428,9 +414,9 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
         /// Common gather texture function.
         /// </summary>
         /// <param name="node">The node to look into.</param>
-        /// <param name="materialContext">The visitor context.</param>
+        /// <param name="materialShaderGeneratorContext">The visitor shaderGeneratorContext.</param>
         /// <returns>A collection of MaterialTextureNode.</returns>
-        private IEnumerable<MaterialTextureNode> GatherTextures(IMaterialNode node, MaterialContext materialContext)
+        private IEnumerable<MaterialTextureNode> GatherTextures(IMaterialNode node, MaterialShaderGeneratorContext materialShaderGeneratorContext)
         {
             var textureValues = new List<MaterialTextureNode>();
             node.VisitNodes((context, nodeEntry) =>
@@ -440,7 +426,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
                 {
                     textureValues.Add(textureValue);
                 }
-            }, materialContext);
+            }, materialShaderGeneratorContext);
             return textureValues;
         }
 
@@ -466,13 +452,9 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
                         }
                     }
                 }
-            }, new MaterialContext { Material = Material, ExploreGenerics = false });
+            }, new MaterialShaderGeneratorContext { ExploreGenerics = false });
             return samplerValues;
         }
-
-        #endregion
-
-        #region Private static methods
 
         /// <summary>
         /// Get the next texture parameter key from the default pool.
@@ -518,42 +500,6 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
         {
             return textureVisitor.GetNextTextureKey(DisplacementTextureKeys, ref textureVisitor.nextDisplacementIndex);
         }
-
-        /// <summary>
-        /// Get the ParameterKey of generic sampler.
-        /// </summary>
-        /// <param name="i">The id of the texture.</param>
-        /// <returns>The corresponding ParameterKey.</returns>
-        private static ParameterKey<SamplerState> GetDefaultSamplerKey(int i)
-        {
-            switch (i)
-            {
-                case 0:
-                    return TexturingKeys.Sampler0;
-                case 1:
-                    return TexturingKeys.Sampler1;
-                case 2:
-                    return TexturingKeys.Sampler2;
-                case 3:
-                    return TexturingKeys.Sampler3;
-                case 4:
-                    return TexturingKeys.Sampler4;
-                case 5:
-                    return TexturingKeys.Sampler5;
-                case 6:
-                    return TexturingKeys.Sampler6;
-                case 7:
-                    return TexturingKeys.Sampler7;
-                case 8:
-                    return TexturingKeys.Sampler8;
-                case 9:
-                    return TexturingKeys.Sampler9;
-                default:
-                    throw new ArgumentOutOfRangeException("Asked for " + i + " but no more than 10 default textures are currently supported");
-            }
-        }
-
-        #endregion
 
         private struct SamplerDescription
         {

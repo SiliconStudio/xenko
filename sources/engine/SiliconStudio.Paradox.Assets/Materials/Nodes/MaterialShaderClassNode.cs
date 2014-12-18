@@ -23,6 +23,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
 {
     [ContentSerializer(typeof(DataContentSerializer<MaterialShaderClassNode>))]
     [DataContract("MaterialShaderClassNode")]
+    [Display("Shader")]
     public class MaterialShaderClassNode : MaterialNodeBase
     {
         #region Public properties
@@ -108,14 +109,14 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
                 }
             }
 
-            var materialContext = context as MaterialContext;
+            var materialContext = context as MaterialShaderGeneratorContext;
             if (materialContext != null && materialContext.ExploreGenerics)
             {
                 foreach (var gen in Generics)
                 {
                     if (gen.Value is NodeParameterTexture)
                     {
-                        var foundNode = materialContext.Material.FindNode(((NodeParameterTexture)gen.Value).Reference);
+                        var foundNode = ((NodeParameterTexture)gen.Value).Texture;
                         if (foundNode != null) 
                             yield return new MaterialNodeEntry(foundNode, node => { }); // TODO: change the callback
                     }
@@ -123,7 +124,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
             }
         }
 
-        public override ShaderSource GenerateShaderSource(MaterialContext context)
+        public override ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext)
         {
             if (!MixinReference.HasLocation())
                 return new ShaderClassSource("ComputeColor");
@@ -139,32 +140,15 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
                     var generic = Generics[genericKey];
                     if (generic is NodeParameterTexture)
                     {
-                        var textureReference = ((NodeParameterTexture)generic).Reference;
-                        IMaterialNode foundNode = null;  //= Material.FindNode(textureReference);
-                        //while (foundNode != null && !(foundNode is MaterialTextureNode))
-                        //{
-                        //    var refNode = foundNode as MaterialReferenceNode;
-                        //    if (refNode == null)
-                        //        break;
-
-                        //    foundNode = Material.FindNode(refNode.Name);
-                        //}
-
-                        var foundTextureNode = foundNode as MaterialTextureNode;
-                        if (foundTextureNode == null || foundTextureNode.UsedParameterKey == null)
-                        {
-                            context.Log.Warning("[Material] The generic texture reference in node [" + this + "] is incorrect.");
-                            mixinGenerics.Add("Texturing.Texture0");
-                        }
-                        else
-                            mixinGenerics.Add(foundTextureNode.UsedParameterKey.ToString());
+                        var textureParameter = ((NodeParameterTexture)generic);
+                        mixinGenerics.Add(textureParameter.Texture.UsedParameterKey.ToString());
                     }
                     else if (generic is NodeParameterSampler)
                     {
                         var pk = ((NodeParameterSampler)generic).SamplerParameterKey;
                         if (pk == null)
                         {
-                            context.Log.Warning("[Material] The generic sampler reference in node [" + this + "] is incorrect.");
+                            shaderGeneratorContext.Log.Warning("[Material] The generic sampler reference in node [" + this + "] is incorrect.");
                             mixinGenerics.Add("Texturing.Sampler");
                         }
                         else
@@ -175,13 +159,13 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
                     else if (generic is NodeParameterInt)
                         mixinGenerics.Add(((NodeParameterInt)generic).Value.ToString(CultureInfo.InvariantCulture));
                     else if (generic is NodeParameterFloat2)
-                        mixinGenerics.Add(MaterialUtil.GetAsShaderString(((NodeParameterFloat2)generic).Value));
+                        mixinGenerics.Add(MaterialUtility.GetAsShaderString(((NodeParameterFloat2)generic).Value));
                     else if (generic is NodeParameterFloat3)
-                        mixinGenerics.Add(MaterialUtil.GetAsShaderString(((NodeParameterFloat3)generic).Value));
+                        mixinGenerics.Add(MaterialUtility.GetAsShaderString(((NodeParameterFloat3)generic).Value));
                     else if (generic is NodeParameterFloat4)
-                        mixinGenerics.Add(MaterialUtil.GetAsShaderString(((NodeParameterFloat4)generic).Value));
-                    else if (generic is NodeParameter)
-                        mixinGenerics.Add(((NodeParameter)generic).Reference);
+                        mixinGenerics.Add(MaterialUtility.GetAsShaderString(((NodeParameterFloat4)generic).Value));
+                    else if (generic is NodeStringParameter)
+                        mixinGenerics.Add(((NodeStringParameter)generic).Value);
                     else
                         throw new Exception("[Material] Unknown node type: " + generic.GetType());
                 }
@@ -200,7 +184,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
             {
                 if (comp.Value != null)
                 {
-                    var compShader = comp.Value.GenerateShaderSource(context);
+                    var compShader = comp.Value.GenerateShaderSource(shaderGeneratorContext);
                     if (compShader != null)
                         mixin.Compositions.Add(comp.Key, compShader);
                 }
@@ -401,10 +385,10 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
                     }
                     else if (expectedType == typeof(NodeParameterTexture))
                     {
-                        var matContext = context as MaterialContext;
+                        var matContext = context as MaterialShaderGeneratorContext;
                         if (matContext != null)
                         {
-                            var textureNode = matContext.Material.FindNode(((NodeParameterTexture)keyValue.Value).Reference);
+                            var textureNode = ((NodeParameterTexture)keyValue.Value).Texture;
                             if (textureNode != null)
                                 AddToCollection<Graphics.Texture>(keyValue.Key, textureNode, collection);
                         }
@@ -478,9 +462,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
         {
             INodeParameter nodeParameter;
             var typeT = typeof(T);
-            if (typeT == typeof(string))
-                nodeParameter = new NodeParameter();
-            else if (typeT == typeof(Graphics.Texture))
+            if (typeT == typeof(Texture))
                 nodeParameter = new NodeParameterTexture();
             else if (typeT == typeof(float))
                 nodeParameter = new NodeParameterFloat();

@@ -4,6 +4,7 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Assets.Materials.Nodes;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
 
@@ -13,36 +14,36 @@ namespace SiliconStudio.Paradox.Assets.Materials
     {
     }
 
-    public interface ITextureNodeReference
-    {
-        string Reference { get; set; }
-    }
-
     [DataContract("NodeParameter")]
-    public class NodeParameter : INodeParameter
+    public abstract class NodeParameter : INodeParameter
     {
-        [DataMember(10)]
-        public string Reference { get; set; }
-
-        public NodeParameter()
-        {
-            Reference = "";
-        }
     }
 
     [DataContract("NodeParameterTexture")]
-    public class NodeParameterTexture : NodeParameter, ITextureNodeReference
+    public class NodeParameterTexture : NodeParameter
     {
+        public NodeParameterTexture()
+        {
+            Texture = new MaterialTextureNode();
+        }
+
+        public MaterialTextureNode Texture { get; private set; }
     }
 
-    [DataContract("")]
+    [DataContract()]
     public abstract class NodeParameterValue<T> : INodeParameter
     {
         [DataMember(10)]
         public T Value { get; set; }
-        
-        protected NodeParameterValue()
+    }
+
+    [DataContract("NodeStringParameter")]
+    public class NodeStringParameter : NodeParameterValue<string>
+    {
+        public NodeStringParameter()
+            : base()
         {
+            Value = string.Empty;
         }
     }
 
