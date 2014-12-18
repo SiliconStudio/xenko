@@ -4,6 +4,7 @@ using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Serializers;
 
 namespace SiliconStudio.Assets
 {
@@ -197,6 +198,7 @@ namespace SiliconStudio.Assets
     /// <typeparam name="T"></typeparam>
     [DataContract("aref")]
     [DataStyle(DataStyle.Compact)]
+    [DataSerializer(typeof(AssetReferenceDataSerializer<>), Mode = DataSerializerGenericMode.GenericArguments)]
     public sealed class AssetReference<T> : AssetReference where T : Asset
     {
         /// <summary>

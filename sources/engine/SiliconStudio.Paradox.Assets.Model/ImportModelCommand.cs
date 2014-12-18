@@ -5,8 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SiliconStudio.Assets;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Assets.Materials;
 using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Data;
@@ -36,9 +38,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         public string EffectName { get; set; }
         public AnimationRepeatMode AnimationRepeatMode { get; set; }
 
-        public Dictionary<string, Tuple<Guid, string>> Materials { get; set; }
-        public Dictionary<string, Tuple<Guid, string>> Lightings { get; set; }
-        public Dictionary<string, ParameterCollectionData> Parameters;
+        public List<ModelMaterial> Materials { get; set; }
 
         public bool Compact { get; set; }
         public List<string> PreservedNodes { get; set; }
@@ -102,6 +102,12 @@ namespace SiliconStudio.Paradox.Assets.Model
                     // Read from model file
                     var model = LoadModel(commandContext, assetManager);
 
+                    // Apply materials
+                    foreach (var modelMaterial in Materials)
+                    {
+                        model.Materials.Add(new ContentReference<MaterialData>(modelMaterial.Material.Id, modelMaterial.Material.Location));
+                    }
+
                     model.BoundingBox = BoundingBox.Empty;
                     var hierarchyUpdater = new ModelViewHierarchyUpdater(model.Hierarchy.Nodes);
                     hierarchyUpdater.UpdateMatrices();
@@ -117,31 +123,15 @@ namespace SiliconStudio.Paradox.Assets.Model
                             continue;
                         }
 
-                        if (!Materials.ContainsKey(mesh.Name))
-                        {
-                            commandContext.Logger.Error("Mesh material [{0}] was not found in {1}", mesh.Name, ContextAsString);
-                            hasErrors = true;
-                            continue;
-                        }
+                        // For now, make sure the mesh parameters list exists.
+                        // Not sure if we should allow it being null or not.
+                        if (mesh.Parameters == null)
+                            mesh.Parameters = new ParameterCollectionData();
 
-                        // set the material
-                        var materialReference = Materials[mesh.Name];
-                        mesh.Material = new ContentReference<MaterialData>(materialReference.Item1, materialReference.Item2);
-
-                        // set the parameters
-                        if (Parameters.ContainsKey(mesh.Name) && Parameters[mesh.Name] != null)
-                        {
-                            if (mesh.Parameters == null)
-                                mesh.Parameters = new ParameterCollectionData();
-                            foreach (var keyValue in Parameters[mesh.Name])
-                                mesh.Parameters.Set(keyValue.Key, keyValue.Value);
-                        }
-
+                        // TODO: Regression: Lighting configuration is currently unsupported in new material model
                         // TODO: remove this when Lighting configuration will be behind a key in mesh parameters. This case will be handled by the code just above
                         // set the lighting configuration description
-                        Tuple<Guid, string> lightingReference;
-                        if (Lightings.TryGetValue(mesh.Name, out lightingReference))
-                            mesh.Parameters.Set(LightingKeys.LightingConfigurations, new ContentReference<LightingConfigurationsSetData>(lightingReference.Item1, lightingReference.Item2));
+                        //mesh.Parameters.Set(LightingKeys.LightingConfigurations, new ContentReference<LightingConfigurationsSetData>(materialReference.LightingParameters.Id, materialReference.LightingParameters.Location));
                     }
 
                     // split the meshes if necessary
@@ -217,7 +207,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                                 foreach (var generatedMesh in newMeshList)
                                 {
                                     finalMeshes.Add(new MeshData {
-                                            Material = baseMesh.Material,
+                                            MaterialIndex = baseMesh.MaterialIndex,
                                             Parameters = baseMesh.Parameters,
                                             Name = baseMesh.Name,
                                             Draw = generatedMesh,
@@ -433,11 +423,11 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <param name="meshes">The meshes and their node index.</param>
         /// <param name="finalLists">List of mergeable meshes and their root node.</param>
         /// <returns>A list of mergeable meshes in progress.</returns>
-        private Dictionary<Guid, List<MeshData>> GroupFromIndex(ModelData model, int index, HashSet<int> nodeBlackList, List<MeshData> meshes, List<GroupList<int, MeshData>> finalLists)
+        private Dictionary<int, List<MeshData>> GroupFromIndex(ModelData model, int index, HashSet<int> nodeBlackList, List<MeshData> meshes, List<GroupList<int, MeshData>> finalLists)
         {
             var children = GetChildren(model.Hierarchy.Nodes, index);
             
-            var materialGroups = new Dictionary<Guid, List<MeshData>>();
+            var materialGroups = new Dictionary<int, List<MeshData>>();
 
             // Get the group from each child
             foreach (var child in children)
@@ -455,7 +445,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             // Add the current node if it has a mesh
             foreach (var nodeMesh in meshes.Where(x => x.NodeIndex == index))
             {
-                var matId = nodeMesh.Material.Id;
+                var matId = nodeMesh.MaterialIndex;
                 if (!materialGroups.ContainsKey(matId))
                     materialGroups.Add(matId, new List<MeshData>());
                 materialGroups[matId].Add(nodeMesh);
@@ -597,8 +587,8 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <returns>True</returns>
         private static bool CompareKeyValue<T>(ParameterCollectionData parameters0, ParameterCollectionData parameters1, ParameterKey<T> key)
         {
-            var value0 = parameters0.ContainsKey(key) ? parameters0[key] : key.DefaultValueMetadataT.DefaultValue;
-            var value1 = parameters1.ContainsKey(key) ? parameters1[key] : key.DefaultValueMetadataT.DefaultValue;
+            var value0 = parameters0 != null && parameters0.ContainsKey(key) ? parameters0[key] : key.DefaultValueMetadataT.DefaultValue;
+            var value1 = parameters1 != null && parameters1.ContainsKey(key) ? parameters1[key] : key.DefaultValueMetadataT.DefaultValue;
             return value0 == value1;
         }
 

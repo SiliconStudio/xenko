@@ -73,6 +73,7 @@
     <Compile Include="AssetItemCollection.cs" />
     <Compile Include="AssetMemberValue.cs" />
     <Compile Include="AssetPropertyKeyNameResolver.cs" />
+    <Compile Include="AssetReferenceDataSerializer.cs" />
     <Compile Include="AssetSelector.cs" />
     <Compile Include="AssetFormatVersionAttribute.cs" />
     <Compile Include="AssetToImportMergeGroup.cs" />

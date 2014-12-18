@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.Effects
             // TODO: share parameter collection or copy parameters in a new one?
             Parameters = mesh.Parameters;
             
-            Material = mesh.Material;
+            MaterialIndex = mesh.MaterialIndex;
             NodeIndex = mesh.NodeIndex;
             Name = mesh.Name;
             BoundingBox = mesh.BoundingBox;
@@ -41,7 +41,7 @@ namespace SiliconStudio.Paradox.Effects
         public MeshDraw Draw { get; set; }
 
         [DataMemberConvert]
-        public Material Material { get; set; }
+        public int MaterialIndex { get; set; }
         
         [DataMemberConvert]
         public ParameterCollection Parameters { get; set; }

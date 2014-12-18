@@ -23,6 +23,7 @@ namespace SiliconStudio.Paradox.Effects
     public class Model : IEnumerable
     {
         private readonly List<Mesh> meshes = new List<Mesh>();
+        private readonly List<Material> materials = new List<Material>();
         private IList<Model> children;
         private Model parent;
 
@@ -37,6 +38,19 @@ namespace SiliconStudio.Paradox.Effects
         {
             get { return children; }
             set { children = value; }
+        }
+
+        /// <summary>
+        /// Gets the materials.
+        /// </summary>
+        /// <value>
+        /// The materials.
+        /// </value>
+        [DataMemberConvert]
+        [DataMemberCustomSerializer]
+        public List<Material> Materials
+        {
+            get { return materials; }
         }
 
         /// <summary>
@@ -92,6 +106,15 @@ namespace SiliconStudio.Paradox.Effects
         public void Add(Mesh mesh)
         {
             Meshes.Add(mesh);
+        }
+
+        /// <summary>
+        /// Adds the specified material (for collection initializers).
+        /// </summary>
+        /// <param name="material">The mesh.</param>
+        public void Add(Material material)
+        {
+            Materials.Add(material);
         }
 
         IEnumerator IEnumerable.GetEnumerator()

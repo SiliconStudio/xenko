@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.ComponentModel;
 
 using SiliconStudio.Assets;
@@ -12,22 +13,14 @@ using SiliconStudio.Paradox.Effects.Data;
 
 namespace SiliconStudio.Paradox.Assets.Model
 {
-    [DataContract("MeshMaterialParameters")]
-    public class MeshMaterialParameters
+    [DataContract("ModelMaterialParameters")]
+    [Obsolete]
+    public class MaterialInstance
     {
-        public MeshMaterialParameters()
+        public MaterialInstance()
         {
             Parameters = new ParameterCollectionData();
         }
-
-        /// <summary>
-        /// The name of the node the mesh is attached to.
-        /// </summary>
-        /// <userdoc>
-        /// The node the mesh is linked to in the hierarchy.
-        /// </userdoc>
-        [DataMember(10)]
-        public string NodeName;
 
         /// <summary>
         /// The reference to the material.

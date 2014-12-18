@@ -118,7 +118,7 @@ public:
 	   return elem1.second > elem2.second;
 	}
 
-	void ProcessMesh(FbxMesh* pMesh, std::map<FbxMesh*, std::string> meshNames)
+	void ProcessMesh(FbxMesh* pMesh, std::map<FbxMesh*, std::string> meshNames, std::map<FbxSurfaceMaterial*, int> materials)
 	{
 		FbxVector4* controlPoints = pMesh->GetControlPoints();
 		FbxGeometryElementNormal* normalElement = pMesh->GetElementNormal();
@@ -533,6 +533,9 @@ public:
 				meshData->Skinning = gcnew MeshSkinningDefinition();
 				meshData->Skinning->Bones = bones->ToArray();
 			}
+
+			auto materialIndex = materials.find(lMaterial);
+			meshData->MaterialIndex = (materialIndex != materials.end()) ? materialIndex->second : 0;
 
 			// Dump materials/textures
 			FbxGeometryElementMaterial* lMaterialElement = pMesh->GetElementMaterial();
@@ -1194,13 +1197,13 @@ public:
 		lights->Add(lightInfo);
 	}
 
-	void ProcessAttribute(FbxNode* pNode, FbxNodeAttribute* pAttribute, std::map<FbxMesh*, std::string> meshNames)
+	void ProcessAttribute(FbxNode* pNode, FbxNodeAttribute* pAttribute, std::map<FbxMesh*, std::string> meshNames, std::map<FbxSurfaceMaterial*, int> materials)
 	{
 		if(!pAttribute) return;
  
 		if (pAttribute->GetAttributeType() == FbxNodeAttribute::eMesh)
 		{
-			ProcessMesh((FbxMesh*)pAttribute, meshNames);
+			ProcessMesh((FbxMesh*)pAttribute, meshNames, materials);
 		}
 	}
 
@@ -1228,7 +1231,7 @@ public:
 		}
 	}
 
-	void ProcessNode(FbxNode* pNode, std::map<FbxMesh*, std::string> meshNames)
+	void ProcessNode(FbxNode* pNode, std::map<FbxMesh*, std::string> meshNames, std::map<FbxSurfaceMaterial*, int> materials)
 	{
 		auto resultNode = nodeMapping[(IntPtr)pNode];
 		auto node = &modelData->Hierarchy->Nodes[resultNode];
@@ -1262,12 +1265,12 @@ public:
 
 		// Process the node's attributes.
 		for(int i = 0; i < pNode->GetNodeAttributeCount(); i++)
-			ProcessAttribute(pNode, pNode->GetNodeAttributeByIndex(i), meshNames);
+			ProcessAttribute(pNode, pNode->GetNodeAttributeByIndex(i), meshNames, materials);
 
 		// Recursively process the children nodes.
 		for(int j = 0; j < pNode->GetChildCount(); j++)
 		{
-			ProcessNode(pNode->GetChild(j), meshNames);
+			ProcessNode(pNode->GetChild(j), meshNames, materials);
 		}
 	}
 
@@ -2588,7 +2591,7 @@ public:
 		return nullptr;
 	}
 
-	ModelData^ Convert(String^ inputFilename, String^ vfsOutputFilename)
+	ModelData^ Convert(String^ inputFilename, String^ vfsOutputFilename, Dictionary<System::String^, int>^ materialIndices)
 	{
 		try
 		{
@@ -2613,8 +2616,26 @@ public:
 			std::map<FbxMesh*, std::string> meshNames;
 			GenerateMeshesName(meshNames);
 
+			std::map<FbxSurfaceMaterial*, std::string> materialNames;
+			GenerateMaterialNames(materialNames);
+
+			std::map<FbxSurfaceMaterial*, int> materials;
+			for (auto it = materialNames.begin(); it != materialNames.end(); ++it)
+			{
+				auto materialName = gcnew String(it->second.c_str());
+				int materialIndex;
+				if (materialIndices->TryGetValue(materialName, materialIndex))
+				{
+					materials[it->first] = materialIndex;
+				}
+				else
+				{
+					logger->Warning("Model references material '{0}', but it was not defined in the ModelAsset.", materialName);
+				}
+			}
+
 			// Process and add root entity
-			ProcessNode(scene->GetRootNode(), meshNames);
+			ProcessNode(scene->GetRootNode(), meshNames, materials);
 
 			// Process animation
 			//sceneData->Animation = ProcessAnimation(scene);
