@@ -2308,11 +2308,12 @@ namespace SiliconStudio.Shaders.Convertor
                     // Transform multi-dimensionnal array to single dimension
                     // float myarray[s1][s2][s3]...[sn] = {{.{..{...}}};
                     // float value = myarray[i1][i2][i3]...[in]    => float value = myarray[(i1)*(s2)*(s3)*...*(sn) + (i2)*(s3)*...*(sn) + (i#)*(s#+1)*(s#+2)*...*(sn)];
+                    // The indice list is in reversed order => <[sn]...[s3][s2][s1]>
                     Expression finalIndex = null;
                     for (int i = 0; i < indices.Count; i++)
                     {
                         Expression indexExpression = indices[i];
-                        for (int j = i - 1; j >= 0; --j)
+                        for (int j = indices.Count - i; j < indices.Count; ++j)
                         {
                             var nextExpression = arrayType.Dimensions[j];
                             indexExpression = new BinaryExpression(BinaryOperator.Multiply, indexExpression, nextExpression);
