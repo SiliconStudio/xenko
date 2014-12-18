@@ -28,6 +28,12 @@ namespace SiliconStudio.Paradox.Shaders
         /// <value>The generic parameters.</value>
         public string[] GenericArguments { get; set; }
 
+        /// <summary>
+        /// Gets or sets the inline source.
+        /// </summary>
+        /// <value>The inline.</value>
+        public string Inline { get; set; }
+
         public Dictionary<string, string> GenericParametersArguments { get; set; }
 
         /// <summary>

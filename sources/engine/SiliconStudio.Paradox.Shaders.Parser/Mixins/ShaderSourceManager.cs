@@ -90,6 +90,16 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             return LoadShaderSource(type).Hash;
         }
 
+        public static ShaderSourceWithHash CreateShaderSourceWithHash(string type, string source)
+        {
+            return new ShaderSourceWithHash()
+            {
+                Path = type,
+                Source = source,
+                Hash = CalculateHashFromSource(source)
+            };
+        }
+
         /// <summary>
         /// Loads the shader source with the specified type name.
         /// </summary>
@@ -158,7 +168,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                         // If the file was loaded from the database, use the ObjectId returned by the database, otherwise compute it directly
                         if (shaderSource.Hash == ObjectId.Empty)
                         {
-                            shaderSource.Hash = ObjectId.FromBytes(Encoding.UTF8.GetBytes(shaderSource.Source));
+                            shaderSource.Hash = CalculateHashFromSource(shaderSource.Source);
                         }
 
                         loadedShaderSources[type] = shaderSource;
@@ -170,6 +180,11 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 }
                 return shaderSource;
             }
+        }
+
+        private static ObjectId CalculateHashFromSource(string source)
+        {
+            return ObjectId.FromBytes(Encoding.UTF8.GetBytes(source));
         }
 
         /// <summary>

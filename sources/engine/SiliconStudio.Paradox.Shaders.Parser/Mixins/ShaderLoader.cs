@@ -264,8 +264,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             return (Expression)result.Root.AstNode;
         }
 
-        private ShaderClassType LoadShaderClass(string type, string generics, LoggerResult log, SiliconStudio.Shaders.Parser.ShaderMacro[] macros = null)
+        private ShaderClassType LoadShaderClass(ShaderClassSource classSource, string generics, LoggerResult log, SiliconStudio.Shaders.Parser.ShaderMacro[] macros = null)
         {
+            var type = classSource.ClassName;
             if (type == null) throw new ArgumentNullException("type");
             var shaderSourceKey = new ShaderSourceKey(type, generics, macros);
 
@@ -280,7 +281,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 }
 
                 // Load file
-                var shaderSource = SourceManager.LoadShaderSource(type);
+                var shaderSource = string.IsNullOrWhiteSpace(classSource.Inline)
+                    ? SourceManager.LoadShaderSource(type)
+                    : ShaderSourceManager.CreateShaderSourceWithHash(classSource.ClassName, classSource.Inline);
 
                 string preprocessedSource;
                 try
