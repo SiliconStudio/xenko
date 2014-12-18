@@ -106,8 +106,9 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="rootObject">The data object.</param>
         /// <param name="type">The type of the data object.</param>
+        /// <param name="updateReferencesIfExists">Update references contained in the result node, if it already exists.</param>
         /// <returns>The <see cref="IModelNode"/> associated to the given object.</returns>
-        public IModelNode GetOrCreateModelNode(object rootObject, Type type)
+        public IModelNode GetOrCreateModelNode(object rootObject, Type type, bool updateReferencesIfExists = true)
         {
             lock (lockObject)
             {
@@ -115,6 +116,8 @@ namespace SiliconStudio.Quantum
                 if (guidContainer != null && (rootObject == null || !rootObject.GetType().IsValueType))
                 {
                     result = GetModelNode(rootObject);
+                    if (result != null)
+                        UpdateReferences(result);
                 }
 
                 return result ?? CreateModelNode(rootObject, type);
