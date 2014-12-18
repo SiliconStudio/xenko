@@ -197,6 +197,11 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
 
             if (isOpenGLES)
             {
+                if (isOpenGLES3)
+                    glslShaderCode
+                        .AppendLine("#version 300 es")
+                        .AppendLine();
+
                 if (glslShaderWriter.GenerateUniformBlocks)
                     glslShaderCode
                         .AppendLine("#extension GL_ARB_gpu_shader5 : enable")
