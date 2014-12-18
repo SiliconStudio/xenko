@@ -151,7 +151,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             public MergeResult MergeResult;
         }
 
-        public static EntityData ImportScene(UFile sourceUrl, EntityAsset source, Guid sourceRootEntity, out EntityBase entityBase)
+        public static EntityHierarchyData ImportScene(UFile sourceUrl, EntityAsset source, Guid sourceRootEntity, out EntityBase entityBase)
         {
             if (source == null) throw new ArgumentNullException("source");
 
@@ -181,13 +181,10 @@ namespace SiliconStudio.Paradox.Assets.Model
             // Should we nullify invalid references?
             EntityAnalysis.RemapEntitiesId(newAsset.Hierarchy, reverseEntityMapping);
 
-            // Find new root
-            var newClonedRoot = newAsset.Hierarchy.Entities[reverseEntityMapping[sourceRootEntity]];
-
             // Add asset base
             entityBase = new EntityBase { Base = new AssetBase(sourceUrl, clonedSource), SourceRoot = sourceRootEntity, IdMapping = entityMapping };
 
-            return newClonedRoot;
+            return newAsset.Hierarchy;
         }
     }
 }
