@@ -2052,7 +2052,7 @@ namespace SiliconStudio.Paradox.Graphics
 
         internal void UpdateViewport(Viewport viewport)
         {
-            GL.Viewport((int)viewport.X, boundFBOHeight - (int)viewport.Y - (int)viewport.Height, (int)viewport.Width, (int)viewport.Height);
+            GL.Viewport((int)viewport.X, (int)GetViewportY(viewport), (int)viewport.Width, (int)viewport.Height);
         }
 
 #if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
@@ -2064,13 +2064,21 @@ namespace SiliconStudio.Paradox.Graphics
             {
                 var currViewport = _currentViewports[i];
                 viewports[4 * i] = currViewport.X;
-                viewports[4 * i + 1] = currViewport.Height - currViewport.Y;
+                viewports[4 * i + 1] = GetViewportY(currViewport);
                 viewports[4 * i + 2] = currViewport.Width;
                 viewports[4 * i + 3] = currViewport.Height;
             }
             GL.ViewportArray(0, nbViewports, viewports);
         }
 #endif
+
+        private float GetViewportY(Viewport viewport)
+        {
+            // if we flip the render target, we should modify the viewport accordingly
+            if (flipRenderTarget)
+                return viewport.Y;
+            return boundFBOHeight - viewport.Y - viewport.Height;
+        }
 
         protected void InitializePlatformDevice(GraphicsProfile[] graphicsProfile, DeviceCreationFlags deviceCreationFlags, WindowHandle windowHandle)
         {
