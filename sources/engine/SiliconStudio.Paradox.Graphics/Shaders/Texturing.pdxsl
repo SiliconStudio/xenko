@@ -30,6 +30,12 @@ class Texturing
     stage TextureCube TextureCube2;
     stage TextureCube TextureCube3;
 
+    // Default texture 3D slots
+    stage Texture3D Texture3D0;
+    stage Texture3D Texture3D1;
+    stage Texture3D Texture3D2;
+    stage Texture3D Texture3D3;
+
     // Default sampler
     stage SamplerState Sampler;
 
