@@ -34,6 +34,7 @@
     <Compile Include="Ast\ClassIdentifierGeneric.cs" />
     <Compile Include="Ast\EnumType.cs" />
     <Compile Include="Ast\ForEachStatement.cs" />
+    <Compile Include="Ast\IGenericStringArgument.cs" />
     <Compile Include="Ast\ImportBlockStatement.cs" />
     <Compile Include="Ast\LinkType.cs" />
     <Compile Include="Ast\LiteralIdentifier.cs" />

@@ -143,7 +143,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 var genericAssociation = CreateGenericAssociation(shaderClassType.ShaderGenerics, shaderClassSource.GenericArguments);
                 var identifierGenerics = GenerateIdentifierFromGenerics(genericAssociation);
                 var expressionGenerics = GenerateGenericsExpressionValues(shaderClassType.ShaderGenerics, shaderClassSource.GenericArguments);
-                ParadoxClassInstantiator.Instantiate(shaderClassType, expressionGenerics, identifierGenerics, log);
+                ParadoxClassInstantiator.Instantiate(shaderClassType, expressionGenerics, identifierGenerics, autoGenericInstances, log);
                 shaderClassType.ShaderGenerics.Clear();
                 shaderClassType.IsInstanciated = true;
             }
@@ -157,12 +157,11 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             {
                 return "false";
             }
-            if (variableType != TypeBase.Void && variableType != TypeBase.String)
+            else if (variableType is IGenericStringArgument)
             {
-                return "0";
+                return "\"\""; // to allow parsing of string
             }
-
-            return string.Empty;
+            return "0";
         }
 
 

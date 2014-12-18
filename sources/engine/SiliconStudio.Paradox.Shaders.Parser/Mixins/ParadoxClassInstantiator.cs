@@ -22,6 +22,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
         private LoggerResult logger;
 
+        private bool autoGenericInstances;
+
         private Dictionary<string, Variable> variableGenerics;
 
         private Dictionary<string, Expression> expressionGenerics;
@@ -30,19 +32,20 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
         private Dictionary<string, string> stringGenerics;
 
-        private ParadoxClassInstantiator(ShaderClassType classType, Dictionary<string, Expression> expressions, Dictionary<string, Identifier> identifiers, LoggerResult log)
+        private ParadoxClassInstantiator(ShaderClassType classType, Dictionary<string, Expression> expressions, Dictionary<string, Identifier> identifiers, bool autoGenericInstances, LoggerResult log)
             : base(false, false)
         {
             shaderClassType = classType;
             expressionGenerics = expressions;
             identifiersGenerics = identifiers;
+            this.autoGenericInstances = autoGenericInstances;
             logger = log;
             variableGenerics = shaderClassType.ShaderGenerics.ToDictionary(x => x.Name.Text, x => x);
         }
 
-        public static void Instantiate(ShaderClassType classType, Dictionary<string, Expression> expressions, Dictionary<string, Identifier> identifiers, LoggerResult log)
+        public static void Instantiate(ShaderClassType classType, Dictionary<string, Expression> expressions, Dictionary<string, Identifier> identifiers, bool autoGenericInstances, LoggerResult log)
         {
-            var instantiator = new ParadoxClassInstantiator(classType, expressions, identifiers, log);
+            var instantiator = new ParadoxClassInstantiator(classType, expressions, identifiers, autoGenericInstances, log);
             instantiator.Run();
         }
 
@@ -59,10 +62,11 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             int insertIndex = 0;
             foreach (var variable in shaderClassType.ShaderGenerics)
             {
-                variable.InitialValue = expressionGenerics[variable.Name.Text];
-
-                if (variable.Type is SemanticType || variable.Type is LinkType || variable.Type is MemberName)
+                // For all string generic argument, don't try to assign an initial value as they are replaced directly at visit time. 
+                if (variable.Type is IGenericStringArgument)
                     continue;
+
+                variable.InitialValue = expressionGenerics[variable.Name.Text];
                 
                 // TODO: be more precise
 
@@ -88,7 +92,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             if (variableGenerics.ContainsKey(memberVariableName) && variableGenerics[memberVariableName].Type is MemberName)
             {
                 string memberName;
-                if (stringGenerics.TryGetValue(memberVariableName, out memberName) && !string.IsNullOrWhiteSpace(memberName))
+                if (stringGenerics.TryGetValue(memberVariableName, out memberName) && !autoGenericInstances)
                 {
                     memberReferenceExpression.Member = new Identifier(memberName);
                 }
@@ -104,6 +108,12 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         {
             Visit((Node)variable);
             //TODO: check types
+
+            // Don't perform any replacement if we are just auto instancing shaders
+            if (autoGenericInstances)
+            {
+                return;
+            }
 
             // no call on base
             foreach (var sem in variable.Qualifiers.Values.OfType<Semantic>())

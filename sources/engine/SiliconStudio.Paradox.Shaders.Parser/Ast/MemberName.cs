@@ -2,7 +2,7 @@
 
 namespace SiliconStudio.Paradox.Shaders.Parser.Ast
 {
-    public class MemberName : TypeBase, IDeclaration, IScopeContainer
+    public class MemberName : TypeBase, IDeclaration, IScopeContainer, IGenericStringArgument
     {
         #region Constructors and Destructors
         /// <summary>
