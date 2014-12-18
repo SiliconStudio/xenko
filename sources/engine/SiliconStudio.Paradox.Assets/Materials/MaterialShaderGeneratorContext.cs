@@ -31,6 +31,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         public List<ShaderSource> Operations { get; private set; }
 
+        public bool HasStream(string stream)
+        {
+            if (stream == null) throw new ArgumentNullException("stream");
+            return Streams.Peek().Contains(stream);
+        }
         public void PushStream(string stream)
         {
             if (stream == null) throw new ArgumentNullException("stream");

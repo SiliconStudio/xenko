@@ -2,11 +2,11 @@
 {
     compose IMaterialLayer layers[];
 
-    override void Compute(Streams input1Stream, Streams input2Stream, Streams outputStream)
+    override void Compute()
     {
         foreach(var layer in layers)
         {
-            layer.Compute(input1Stream, input2Stream, outputStream);
+            layer.Compute();
         }
     }
 };

@@ -767,14 +767,14 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Images\ColorTransforms\ToneMap\ToneMap.cs" />
-    <Compile Include="Materials\MaterialLayerRoot.cs">
-      <DependentUpon>MaterialLayerRoot.pdxsl</DependentUpon>
+    <Compile Include="Materials\MaterialLayerStreamReset.cs">
+      <DependentUpon>MaterialLayerStreamReset.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Materials\MaterialLayerBlendStreams.cs">
-      <DependentUpon>MaterialLayerBlendStreams.pdxsl</DependentUpon>
+    <Compile Include="Materials\MaterialLayerRoot.cs">
+      <DependentUpon>MaterialLayerRoot.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -785,20 +785,14 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Materials\MaterialLayerInnerOuter.cs">
-      <DependentUpon>MaterialLayerInnerOuter.pdxsl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Materials\IMaterialLayer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>IMaterialLayer.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Materials\MaterialLayerComputeColorFloatInit.cs">
-      <DependentUpon>MaterialLayerComputeColorFloatInit.pdxsl</DependentUpon>
+    <Compile Include="Materials\MaterialLayerComputeColorInit.cs">
+      <DependentUpon>MaterialLayerComputeColorInit.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -2271,29 +2265,25 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ImageEffectShader.cs</LastGenOutput>
     </None>
+    <None Include="Materials\MaterialLayerStreamReset.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialLayerStreamReset.cs</LastGenOutput>
+    </None>
     <None Include="Materials\MaterialLayerRoot.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialLayerRoot.cs</LastGenOutput>
-    </None>
-    <None Include="Materials\MaterialLayerBlendStreams.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialLayerBlendStreams.cs</LastGenOutput>
     </None>
     <None Include="Materials\MaterialLayerArray.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialLayerArray.cs</LastGenOutput>
     </None>
-    <None Include="Materials\MaterialLayerInnerOuter.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialLayerInnerOuter.cs</LastGenOutput>
-    </None>
     <None Include="Materials\IMaterialLayer.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>IMaterialLayer.cs</LastGenOutput>
     </None>
-    <None Include="Materials\MaterialLayerComputeColorFloatInit.pdxsl">
+    <None Include="Materials\MaterialLayerComputeColorInit.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialLayerComputeColorFloatInit.cs</LastGenOutput>
+      <LastGenOutput>MaterialLayerComputeColorInit.cs</LastGenOutput>
     </None>
     <None Include="Materials\MaterialLayerComputeColorFloatBlend.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

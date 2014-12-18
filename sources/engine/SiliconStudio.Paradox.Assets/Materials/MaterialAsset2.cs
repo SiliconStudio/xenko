@@ -341,6 +341,8 @@ namespace SiliconStudio.Paradox.Assets.Materials
     [ObjectFactory(typeof(Factory))]
     public class MaterialNormalMapAttribute : IMaterialSurfaceAttribute
     {
+        private const string matNormalStream = "matNormal";
+
         /// <summary>
         /// Gets or sets the normal map.
         /// </summary>
@@ -363,10 +365,17 @@ namespace SiliconStudio.Paradox.Assets.Materials
             {
                 var normalMapNode = NormalMap.GenerateShaderSource(context);
 
+                if (!context.HasStream(matNormalStream))
+                {
+                    var prepareMixin = new ShaderMixinSource();
+                    prepareMixin.Mixins.Add(new ShaderClassSource("MaterialLayerStreamReset", matNormalStream));
+                    context.Operations.Add(prepareMixin);
+                }
+
                 var mixin = new ShaderMixinSource();
-                mixin.Mixins.Add(new ShaderClassSource("MaterialLayerComputeColorFloat3Blend", "matNormal"));
+                mixin.Mixins.Add(new ShaderClassSource("MaterialLayerComputeColorFloat3Blend", matNormalStream));
                 mixin.AddComposition("Float3Source", normalMapNode);
-                context.PushStream("matNormal");
+                context.PushStream(matNormalStream);
                 context.Operations.Add(mixin);
             }
         }
@@ -720,6 +729,9 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 context.Operations.Add(context.PendingOperations.Pop());
             }
 
+            var mixin = new ShaderMixinSource();
+            mixin.Mixins.Add(new ShaderClassSource("MaterialLayerArray"));
+
             var attributesMeta = TypeDescriptorFactory.Default.Find(GetType());
             foreach (var member in attributesMeta.Members)
             {
@@ -729,6 +741,14 @@ namespace SiliconStudio.Paradox.Assets.Materials
                     memberShaderGen.GenerateShader(context);
                 }
             }
+
+            // Squash all operations into MaterialLayerArray
+            foreach (var operation in context.Operations)
+            {
+                mixin.AddCompositionToArray("layers", operation);
+            }
+            context.Operations.Clear();
+            context.Operations.Add(mixin);
         }
     }
 

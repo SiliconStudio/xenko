@@ -2,9 +2,9 @@
 {
     compose ComputeColor FloatSource;
 
-    override void Compute(Streams input1Stream, Streams input2Stream, Streams outputStream)
+    override void Compute()
     {
         float value = FloatSource.Compute().TChannel;
-        outputStream.TStream = lerp(input1Stream.TStream, value, outputStream.matBlend);
+        streams.TStream = lerp(streams.TStream, value, streams.matBlend);
     }
 };

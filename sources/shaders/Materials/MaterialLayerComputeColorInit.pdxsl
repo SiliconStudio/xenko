@@ -1,0 +1,9 @@
+﻿class MaterialLayerComputeColorInit<MemberName TStream, MemberName TChannel> : IMaterialLayer
+{
+    compose ComputeColor Source;
+
+    override void Compute()
+    {
+        streams.TStream = Source.Compute().TChannel;
+    }
+};

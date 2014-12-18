@@ -46,12 +46,11 @@ namespace SiliconStudio.Paradox.Shaders.Tests
                 }
             };
 
-            var classSource = MaterialShaderGenerator.Generate(materialAsset);
+            var shaderClassSource = MaterialShaderGenerator.Generate(materialAsset);
 
             var mixin = new ShaderMixinSource();
             mixin.Mixins.Add(new ShaderClassSource("MaterialLayerRoot"));
-            mixin.AddComposition("composition", classSource);
-
+            mixin.AddComposition("composition", shaderClassSource);
             var results = compiler.Compile(mixin, compilerParameters);
 
             Assert.IsFalse(results.HasErrors);
