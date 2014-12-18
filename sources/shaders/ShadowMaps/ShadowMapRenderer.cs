@@ -314,12 +314,12 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
                 cascades[cascadeLevel].CascadeTextureCoords = cascadeTextureCoords;
 
                 // Add border (avoid using edges due to bilinear filtering and blur)
-                var boderSizeU = VsmBlurSize / shadowMap.Texture.ShadowMapDepthTexture.ViewWidth;
-                var boderSizeV = VsmBlurSize / shadowMap.Texture.ShadowMapDepthTexture.ViewHeight;
-                cascadeTextureCoords.X += boderSizeU;
-                cascadeTextureCoords.Y += boderSizeV;
-                cascadeTextureCoords.Z -= boderSizeU;
-                cascadeTextureCoords.W -= boderSizeV;
+                var borderSizeU = VsmBlurSize / shadowMap.Texture.ShadowMapDepthTexture.ViewWidth;
+                var borderSizeV = VsmBlurSize / shadowMap.Texture.ShadowMapDepthTexture.ViewHeight;
+                cascadeTextureCoords.X += borderSizeU;
+                cascadeTextureCoords.Y += borderSizeV;
+                cascadeTextureCoords.Z -= borderSizeU;
+                cascadeTextureCoords.W -= borderSizeV;
 
                 float leftX = (float)shadowMap.ShadowMapSize / (float)shadowMap.Texture.ShadowMapDepthTexture.ViewWidth * 0.5f;
                 float leftY = (float)shadowMap.ShadowMapSize / (float)shadowMap.Texture.ShadowMapDepthTexture.ViewHeight * 0.5f;

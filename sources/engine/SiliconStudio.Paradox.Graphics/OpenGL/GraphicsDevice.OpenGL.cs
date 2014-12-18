@@ -1446,7 +1446,46 @@ namespace SiliconStudio.Paradox.Graphics
         public void SetDepthAndRenderTarget(Texture depthStencilBuffer, Texture renderTarget)
         {
             SetDepthAndRenderTargets(depthStencilBuffer, (renderTarget == null) ? null : new[] { renderTarget });
+        }
 
+        public void SetDepthAndRenderTargets(Texture depthStencilBuffer, params Texture[] renderTargets)
+        {
+            var renderTargetsLength = 0;
+            if (renderTargets != null && renderTargets.Length > 0)
+            {
+                renderTargetsLength = renderTargets.Length;
+                // ensure size is coherent
+                var expectedWidth = renderTargets[0].Width;
+                var expectedHeight = renderTargets[0].Height;
+                if (depthStencilBuffer != null)
+                {
+                    if (expectedWidth != depthStencilBuffer.Width || expectedHeight != depthStencilBuffer.Height)
+                        throw new Exception("Depth buffer is not the same size as the render target");
+                }
+                for (int i = 1; i < renderTargets.Length; ++i)
+                {
+                    if (expectedWidth != renderTargets[i].Width || expectedHeight != renderTargets[i].Height)
+                        throw new Exception("Render targets do nt have the same size");
+                }
+            }
+
+            flipRenderTarget = ChooseFlipRenderTarget(depthStencilBuffer, renderTargets);
+
+#if DEBUG
+            EnsureContextActive();
+#endif
+            for (int i = 0; i < renderTargetsLength; ++i)
+                boundRenderTargets[i] = renderTargets[i];
+            for (int i = renderTargetsLength; i < boundRenderTargets.Length; ++i)
+                boundRenderTargets[i] = null;
+
+            boundDepthStencilBuffer = depthStencilBuffer;
+
+            needUpdateFBO = true;
+
+            SetupTargets();
+
+            var renderTarget = renderTargetsLength > 0 ? renderTargets[0] : null;
             if (renderTarget != null)
             {
                 SetViewport(new Viewport(0, 0, renderTarget.Width, renderTarget.Height));
@@ -1457,61 +1496,29 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
-        public void SetDepthAndRenderTargets(Texture depthStencilBuffer, params Texture[] renderTargets)
+        /// <summary>
+        /// Check if rendering has to be flipped.
+        /// </summary>
+        /// <param name="depthStencilBuffer">The depth buffer.</param>
+        /// <param name="renderTargets">The render targets.</param>
+        /// <returns>The value of flipRenderTarget.</returns>
+        private bool ChooseFlipRenderTarget(Texture depthStencilBuffer, params Texture[] renderTargets)
         {
-            if (renderTargets == null)
+            if (renderTargets != null && renderTargets.Length > 0)
             {
-                throw new ArgumentNullException("renderTargets");
-            }
-
-            // ensure size is coherent
-            var expectedWidth = renderTargets[0].Width;
-            var expectedHeight = renderTargets[0].Height;
-            if (depthStencilBuffer != null)
-            {
-                if (expectedWidth != depthStencilBuffer.Width || expectedHeight != depthStencilBuffer.Height)
-                    throw new Exception("Depth buffer is not the same size as the render target");
-            }
-            for (int i = 1; i < renderTargets.Length; ++i)
-            {
-                if (expectedWidth != renderTargets[i].Width || expectedHeight != renderTargets[i].Height)
-                    throw new Exception("Render targets do nt have the same size");
-            }
-
-            flipRenderTarget = true;
-            foreach (var rt in renderTargets)
-            {
-                if (rt == BackBuffer)
+                foreach (var rt in renderTargets)
                 {
-                    flipRenderTarget = false;
-                    break;
+                    if (rt == BackBuffer)
+                    {
+                        return false;
+                    }
                 }
             }
-
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-            for (int i = 0; i < renderTargets.Length; ++i)
-                boundRenderTargets[i] = renderTargets[i];
-            for (int i = renderTargets.Length; i < boundRenderTargets.Length; ++i)
-                boundRenderTargets[i] = null;
-
-            boundDepthStencilBuffer = depthStencilBuffer;
-
-            needUpdateFBO = true;
-
-            SetupTargets();
-
-            var renderTarget = renderTargets.Length > 0 ? renderTargets[0] : null;
-            if (renderTarget != null)
+            if (depthStencilBuffer == DepthStencilBuffer)
             {
-                SetViewport(new Viewport(0, 0, renderTarget.Width, renderTarget.Height));
+                return false;
             }
-            else if (depthStencilBuffer != null)
-            {
-                SetViewport(new Viewport(0, 0, depthStencilBuffer.Description.Width, depthStencilBuffer.Description.Height));
-            }
+            return true;
         }
 
         /// <summary>
