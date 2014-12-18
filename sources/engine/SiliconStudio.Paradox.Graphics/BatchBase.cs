@@ -179,8 +179,16 @@ namespace SiliconStudio.Paradox.Graphics
             texture1Updater = null;
             if (Effect.HasParameter(TexturingKeys.Texture0))
                 texture0Updater = Effect.GetParameterFastUpdater(TexturingKeys.Texture0);
+            if (Effect.HasParameter(TexturingKeys.TextureCube0))
+                texture0Updater = Effect.GetParameterFastUpdater(TexturingKeys.TextureCube0);
+            if (Effect.HasParameter(TexturingKeys.Texture3D0))
+                texture0Updater = Effect.GetParameterFastUpdater(TexturingKeys.Texture3D0);
             if (Effect.HasParameter(TexturingKeys.Texture1))
                 texture1Updater = Effect.GetParameterFastUpdater(TexturingKeys.Texture1);
+            if (Effect.HasParameter(TexturingKeys.TextureCube1))
+                texture1Updater = Effect.GetParameterFastUpdater(TexturingKeys.TextureCube1);
+            if (Effect.HasParameter(TexturingKeys.Texture3D1))
+                texture1Updater = Effect.GetParameterFastUpdater(TexturingKeys.Texture3D1);
 
             // Immediate mode, then prepare for rendering here instead of End()
             if (sessionSortMode == SpriteSortMode.Immediate)
