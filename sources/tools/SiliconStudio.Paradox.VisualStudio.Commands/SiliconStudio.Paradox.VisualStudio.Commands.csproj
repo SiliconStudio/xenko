@@ -63,14 +63,7 @@
     <Compile Include="PackageBuildMonitorRemote.cs" />
     <Compile Include="ParadoxCommands.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Shaders\ShaderKeyClass.cs" />
     <Compile Include="Shaders\ShaderKeyFileHelper.cs" />
-    <Compile Include="Shaders\ShaderKeySourceGenerator.cs">
-      <DependentUpon>ShaderKeySourceGenerator.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Shaders\ShaderKeySourceGenerator.Partial.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\assets\SiliconStudio.Assets\SiliconStudio.Assets.csproj">
@@ -158,10 +151,6 @@
     <None Include="DataGenerator\DataConverterGenerator.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>DataConverterGenerator.cs</LastGenOutput>
-    </None>
-    <None Include="Shaders\ShaderKeySourceGenerator.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>ShaderKeySourceGenerator.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
