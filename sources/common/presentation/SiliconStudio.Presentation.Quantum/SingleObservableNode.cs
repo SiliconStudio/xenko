@@ -14,6 +14,8 @@ namespace SiliconStudio.Presentation.Quantum
     public abstract class SingleObservableNode : ObservableNode
     {
         public static readonly string[] ReservedNames = { "Owner", "Name", "DisplayName", "Path", "Parent", "Root", "Type", "IsPrimitive", "IsVisible", "IsReadOnly", "Value", "TypedValue", "Index", "Guid", "Children", "Commands", "AssociatedData", "HasList", "HasDictionary", "CombinedNodes", "HasMultipleValues", "HasMultipleInitialValues", "ResetInitialValues", "DistinctInitialValues" };
+        private string[] displayNameDependentProperties;
+        private Func<string> displayNameProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SingleObservableNode"/> class.
@@ -37,6 +39,20 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         public CombineMode CombineMode { get; set; }
 
+        /// <summary>
+        /// Registers a function that can compute the display name of this node. If the function uses some children of this node to compute
+        /// the display name, the name of these children can be passed so the function is re-evaluated each time one of these children value changes.
+        /// </summary>
+        /// <param name="provider">A function that can compute the display name of this node.</param>
+        /// <param name="dependentProperties">The names of children that should trigger the re-evaluation of the display name when they are modified.</param>
+        public void SetDisplayNameProvider(Func<string> provider, params string[] dependentProperties)
+        {
+            displayNameProvider = provider;
+            displayNameDependentProperties = dependentProperties;
+            if (provider != null)
+                DisplayName = provider();
+        }
+
         public VirtualObservableNode CreateVirtualChild(string name, Type contentType, int? order, object initialValue, NodeCommandWrapperBase valueChangedCommand = null, IReadOnlyDictionary<string, object> nodeAssociatedData = null)
         {
             var observableChild = VirtualObservableNode.Create(Owner, name, this, order, contentType, initialValue, valueChangedCommand);
@@ -55,6 +71,18 @@ namespace SiliconStudio.Presentation.Quantum
         public override string ToString()
         {
             return string.Format("{0}: [{1}]", Name, Value);
+        }
+
+        protected override void OnPropertyChanged(params string[] propertyNames)
+        {
+            base.OnPropertyChanged(propertyNames);
+            if (displayNameProvider != null && displayNameDependentProperties != null)
+            {
+                if (propertyNames.Any(x => displayNameDependentProperties.Contains(x)))
+                {
+                    DisplayName = displayNameProvider();
+                }
+            }
         }
 
         private void SetName(string nodeName)

@@ -388,8 +388,11 @@ namespace SiliconStudio.Presentation.Quantum
                 AssertInit();
                 var previousValue = (T)GetModelContentValue();
                 bool hasChanged = !Equals(previousValue, value);
+                var parent = Parent;
                 if (hasChanged)
                 {
+                    if (parent != null)
+                        ((ObservableNode)Parent).NotifyPropertyChanging(Name);
                     OnPropertyChanging("TypedValue");
                 }
                 
@@ -399,6 +402,8 @@ namespace SiliconStudio.Presentation.Quantum
                 if (hasChanged)
                 {
                     OnPropertyChanged("TypedValue");
+                    if (parent != null)
+                        ((ObservableNode)Parent).NotifyPropertyChanged(Name);
                     string displayName = Owner.FormatSingleUpdateMessage(this, value);
                     var dirtiables = Owner.GetDirtiableViewModels(this);
                     Owner.RegisterAction(displayName, SourceNodePath, Path, Index, dirtiables, value, previousValue);
