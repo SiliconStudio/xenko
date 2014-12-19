@@ -16,6 +16,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Grammar
         protected readonly NonTerminal link_type = T("link_type", CreateLinkTypeAst);
         protected readonly NonTerminal member_name = T("member_name", CreateStreamNameAst);
         protected readonly NonTerminal var_type = T("var_type", CreateVarTypeAst);
+        protected readonly NonTerminal streams_type = T("streams_type", CreateTypeFromTokenAst<StreamsType>);
         protected readonly NonTerminal foreach_statement = T("foreach_statement", CreateForEachStatementAst);
         protected readonly NonTerminal foreach_params_statement = T("foreach_params_statement", CreateForEachParamsStatementAst);
         protected readonly NonTerminal class_type = T("class_type", CreateClassTypeAst); // TODO: look if really needed
@@ -50,8 +51,6 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Grammar
         {
             SnippetRoots.Add(expression);
 
-            //object_type.Rule |= shader_class_specifier;
-
             semantic_type.Rule = Keyword("Semantic");
             type.Rule |= semantic_type;
 
@@ -63,6 +62,10 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Grammar
 
             var_type.Rule = Keyword("var");
             object_type.Rule |= var_type;
+
+            // Add all Streams types
+            streams_type.Rule = CreateRuleFromObjectTypes(StreamsType.GetStreams());
+            object_type.Rule |= streams_type;
 
             identifier_extended.Rule |= Keyword("stage");
 

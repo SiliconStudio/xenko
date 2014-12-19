@@ -44,7 +44,6 @@
     <Compile Include="Ast\ParadoxAttributes.cs" />
     <Compile Include="Ast\ParadoxStorageQualifier.cs" />
     <Compile Include="Ast\ParadoxTags.cs" />
-    <Compile Include="Ast\ParadoxType.cs" />
     <Compile Include="Ast\ParametersBlock.cs" />
     <Compile Include="Ast\SemanticType.cs" />
     <Compile Include="Ast\ShaderBlock.cs" />
@@ -52,6 +51,7 @@
     <Compile Include="Ast\ShaderRootClassType.cs" />
     <Compile Include="Ast\ShaderTypeName.cs" />
     <Compile Include="Ast\MemberName.cs" />
+    <Compile Include="Ast\StreamsType.cs" />
     <Compile Include="Ast\TypelIdentifier.cs" />
     <Compile Include="Ast\UsingParametersStatement.cs" />
     <Compile Include="Ast\UsingStatement.cs" />
