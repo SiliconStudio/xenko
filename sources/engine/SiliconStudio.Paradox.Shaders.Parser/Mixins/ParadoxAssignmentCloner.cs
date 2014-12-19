@@ -82,7 +82,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         private static IndexerExpression Clone(IndexerExpression expression)
         {
             var ire = new IndexerExpression(Clone(expression.Target), Clone(expression.Index));
-            if (expression.TypeInference.TargetType is ParadoxType)
+            if (expression.TypeInference.TargetType is StreamsType)
                 ire.TypeInference.TargetType = expression.TypeInference.TargetType;
             return ire;
         }
@@ -100,7 +100,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         private static MemberReferenceExpression Clone(MemberReferenceExpression expression)
         {
             var mre = new MemberReferenceExpression(Clone(expression.Target), expression.Member);
-            if (expression.TypeInference.TargetType is ParadoxType)
+            if (expression.TypeInference.TargetType is StreamsType)
                 mre.TypeInference.TargetType = expression.TypeInference.TargetType;
             return mre;
         }
@@ -131,7 +131,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         private static VariableReferenceExpression Clone(VariableReferenceExpression expression)
         {
             var vre = new VariableReferenceExpression(expression.Name);
-            if (expression.TypeInference.TargetType is ParadoxType)
+            if (expression.TypeInference.TargetType is StreamsType)
                 vre.TypeInference.TargetType = expression.TypeInference.TargetType;
             return vre;
         }

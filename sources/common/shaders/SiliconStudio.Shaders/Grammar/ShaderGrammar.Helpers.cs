@@ -76,12 +76,12 @@ namespace SiliconStudio.Shaders.Grammar
             return value;
         }
 
-        protected BnfExpression CreateRuleFromObjectTypes(params ObjectType [] types)
+        protected BnfExpression CreateRuleFromObjectTypes(params ObjectType[] types)
         {
             return CreateRuleFromObjectTypes(types.AsEnumerable());
         }
 
-        protected BnfExpression CreateRuleFromObjectTypes(IEnumerable<ObjectType> types)
+        protected BnfExpression CreateRuleFromObjectTypes<T>(IEnumerable<T> types) where T : ObjectType
         {
             BnfExpression rule = null;
 
