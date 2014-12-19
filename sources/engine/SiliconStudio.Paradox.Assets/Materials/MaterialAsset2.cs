@@ -21,84 +21,84 @@ namespace SiliconStudio.Paradox.Assets.Materials
     // TODO: Move all these interfaces/classes to single file once the design is stabilized
 
     /// <summary>
-    /// Base interface for a material attribute.
+    /// Base interface for a material feature.
     /// </summary>
     public interface IMaterialFeature : IMaterialShaderGenerator
     {
     }
 
     /// <summary>
-    /// Base interface for a tessellation material attribute.
+    /// Base interface for a tessellation material feature.
     /// </summary>
     public interface IMaterialTessellationFeature : IMaterialFeature
     {
     }
 
     /// <summary>
-    /// Base interface for a displacement material attribute.
+    /// Base interface for a displacement material feature.
     /// </summary>
     public interface IMaterialDisplacementFeature : IMaterialFeature
     {
     }
 
     /// <summary>
-    /// Base interface for the surface material attribute (normals...etc.)
+    /// Base interface for the surface material feature (normals...etc.)
     /// </summary>
     public interface IMaterialSurfaceFeature : IMaterialFeature
     {
     }
 
     /// <summary>
-    /// Base interface for a diffuse material attribute.
+    /// Base interface for a diffuse material feature.
     /// </summary>
     public interface IMaterialDiffuseFeature : IMaterialFeature
     {
     }
 
     /// <summary>
-    /// Base interface for a specular material attribute.
+    /// Base interface for a specular material feature.
     /// </summary>
     public interface IMaterialSpecularFeature : IMaterialFeature
     {
     }
 
     /// <summary>
-    /// Base interface for a micro-surface material attribute.
+    /// Base interface for a micro-surface material feature.
     /// </summary>
     public interface IMaterialMicroSurfaceFeature : IMaterialFeature
     {
     }
 
     /// <summary>
-    /// Base interface for the diffuse model material attribute.
+    /// Base interface for the diffuse model material feature.
     /// </summary>
     public interface IMaterialDiffuseModelFeature : IMaterialFeature
     {
     }
 
     /// <summary>
-    /// Base interface for the specular model material attribute.
+    /// Base interface for the specular model material feature.
     /// </summary>
     public interface IMaterialSpecularModelFeature : IMaterialFeature
     {
     }
 
     /// <summary>
-    /// Base interface for the occlusion material attribute.
+    /// Base interface for the occlusion material feature.
     /// </summary>
     public interface IMaterialOcclusionFeature : IMaterialFeature
     {
     }
 
     /// <summary>
-    /// Base interface for the emissive material attribute.
+    /// Base interface for the emissive material feature.
     /// </summary>
     public interface IMaterialEmissiveFeature : IMaterialFeature
     {
     }
 
     /// <summary>
-    /// Base interface for the transparency material attribute.
+    /// Base interface for the transparency material feature.
     /// </summary>
     public interface IMaterialTransparencyFeature : IMaterialFeature
     {
@@ -227,7 +227,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     }
 
     /// <summary>
-    /// A smoothness map for the micro-surface material attribute.
+    /// A smoothness map for the micro-surface material feature.
     /// </summary>
     [DataContract("MaterialSmoothnessMapFeature")]
     [Display("Smoothness Map")]
@@ -253,7 +253,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     }
 
     /// <summary>
-    /// A Diffuse map for the diffuse material attribute.
+    /// A Diffuse map for the diffuse material feature.
     /// </summary>
     [DataContract("MaterialDiffuseMapFeature")]
     [Display("Diffuse Map")]
@@ -279,7 +279,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     }
 
     /// <summary>
-    /// A Specular map for the specular material attribute.
+    /// A Specular map for the specular material feature.
     /// </summary>
     [DataContract("MaterialSpecularMapFeature")]
     [Display("Specular Map")]
@@ -326,7 +326,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     }
 
     /// <summary>
-    /// A Metalness map for the specular material attribute.
+    /// A Metalness map for the specular material feature.
     /// </summary>
     [DataContract("MaterialMetalnessMapFeature")]
     [Display("Metalness Map")]
@@ -352,7 +352,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     }
 
     /// <summary>
-    /// An occlusion map for the occlusion material attribute.
+    /// An occlusion map for the occlusion material feature.
     /// </summary>
     [DataContract("MaterialOcclusionMapFeature")]
     [Display("Occlusion Map")]
@@ -430,7 +430,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     }
 
     /// <summary>
-    /// The normal map for a surface material attribute.
+    /// The normal map for a surface material feature.
     /// </summary>
     [DataContract("MaterialNormalMapFeature")]
     [Display("Normal Map")]
