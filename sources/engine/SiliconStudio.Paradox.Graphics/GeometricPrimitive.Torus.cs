@@ -84,7 +84,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// A Torus primitive.
         /// </summary>
-        public struct Torus
+        public static class Torus
         {
             /// <summary>
             /// Creates a torus primitive.

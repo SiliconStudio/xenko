@@ -83,7 +83,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// A sphere primitive.
         /// </summary>
-        public struct Capsule
+        public static class Capsule
         {
             /// <summary>
             /// Creates a sphere primitive.
