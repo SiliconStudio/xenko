@@ -21,20 +21,19 @@ namespace SiliconStudio.Paradox.Effects.Images
         // The radius of the blur to apply around the considered fragment
         float Radius;
 
+        // Weights of each tap
+        float TapWeights[BlurCount];
+
         // Gets the blur result for the current pixel.
         override float4 Compute()
         {
             // Offset between 2 consecutive taps
             float2 tapOffset =  Radius / (BlurCount - 1) * Texture0TexelSize;
 
-            // Default weight for a tap
-            // (It's better than assuming a weight of 1.0 and risking to overflow before arriving at the final normalization)
-            float uniformWeight = 1.0 / (2.0 * BlurCount - 1.0);
-
             // Initializes with the center point
-            float totalWeight = uniformWeight;
+            float totalWeight = TapWeights[0];
             float3 resultColor = Texture0.Sample(LinearSampler, streams.TexCoord).rgb;
-            resultColor *= uniformWeight;
+            resultColor *= TapWeights[0];
             float centerDepth = Texture1.Sample(LinearSampler, streams.TexCoord).x;
 
             // Treats all the taps in the 2 directions from the center
@@ -51,8 +50,8 @@ namespace SiliconStudio.Paradox.Effects.Images
                     // tap's weight is recalculated to prevent artifacts
                     float contribution = (depthCoC.x >= centerDepth);
                     contribution += depthCoC.y;
-                    contribution = saturate(contribution);
-                    float tapWeight = contribution * uniformWeight;
+                    contribution = saturate(contribution * sign(depthCoC.y));
+                    float tapWeight = contribution * TapWeights[i];
 
                     float3 tapColor = Texture0.Sample(LinearSampler, tapUV).rgb;
                     resultColor += tapColor * tapWeight;

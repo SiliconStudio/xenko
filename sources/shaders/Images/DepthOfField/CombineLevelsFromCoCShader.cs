@@ -6,4 +6,18 @@
 // and re-save the associated .pdxfx.
 // </auto-generated>
 
-// Nothing to generate
+using System;
+using SiliconStudio.Core;
+using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Core.Mathematics;
+using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
+
+namespace SiliconStudio.Paradox.Effects.Images
+{
+    public static partial class CombineLevelsFromCoCShaderKeys
+    {
+        public static readonly ParameterKey<float[]> CoCLevelValues = ParameterKeys.New<float[]>();
+    }
+}

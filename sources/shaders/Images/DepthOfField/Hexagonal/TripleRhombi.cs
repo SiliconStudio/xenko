@@ -24,6 +24,8 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         private int tapCount;
 
+        private float[] tapWeights;
+
         // Simple flag to switch between the debug version or the optimized version
         private bool useOptimizedPath = false;
 
@@ -119,6 +121,12 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         protected override void DrawCore()
         {
+            // Make sure we keep our uniform weights in synchronization with the number of taps
+            if (tapWeights == null || tapWeights.Length != tapCount)
+            {
+                tapWeights = DoFUtil.GetUniformWeightBlurArray(tapCount);
+            }
+
             if (!useOptimizedPath)
             {
                 DrawCoreNaive();
@@ -140,6 +148,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             directionalBlurEffect.Parameters.Set(DepthAwareUniformBlurKeys.Count, tapCount);
             directionalBlurEffect.Parameters.Set(DepthAwareUniformBlurUtilKeys.Radius, radius);
+            directionalBlurEffect.Parameters.Set(DepthAwareUniformBlurUtilKeys.TapWeights, tapWeights);
             var tapNumber = 2 * tapCount - 1;
 
             // Vertical blur

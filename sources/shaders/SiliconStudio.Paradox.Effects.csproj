@@ -641,6 +641,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>DepthAwareUniformBlurShader.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Images\DepthOfField\DoFUtil.cs" />
     <Compile Include="Images\DepthOfField\Hexagonal\McIntoshOptimizedEffect.cs">
       <DependentUpon>McIntoshOptimizedEffect.pdxfx</DependentUpon>
       <AutoGen>True</AutoGen>

@@ -1,6 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+// Define to visualize debug colors for the different CoC levels.
+#define DEBUG_COC_LEVEL_COLOR 1
+
 namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
@@ -12,23 +15,84 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// - Texture1 ~ TextureX: the different blur levels. (0 == no blur)
     /// </summary>
 
-    internal class CombineLevelsFromCoCShader<int LevelCount> : ImageEffectShader
+    class CombineLevelsFromCoCShader<int LevelCount> : ImageEffectShader
     {
+        // The CoC corresponding to each level of blur
+        stage float CoCLevelValues[LevelCount];
+
         stage override float4 Shading()
         {
-            //TODO support more than 2 levels
+            // Need to be able to access blur textures by index
+            Texture2D dofTextureLevels[9] = 
+            {
+                Texture1,
+                Texture2,
+                Texture3,
+                Texture4,
+                Texture5,
+                Texture6,
+                Texture7,
+                Texture8,
+                Texture9
+            };
 
-            // Gets CoC
+#if DEBUG_COC_LEVEL_COLOR
+            // Some debug colors to visualize each layer
+            float3 debugColors[9] = 
+            {
+                float3(1.0, 1.0, 1.0),
+                float3(0.5, 0.5, 1.0),
+                float3(0.5, 1.0, 0.5),
+                float3(1.0, 0.5, 0.5),
+                // Set more colors here
+                float3(1.0, 0.0, 0.0),
+                float3(1.0, 0.0, 0.0),
+                float3(1.0, 0.0, 0.0),
+                float3(1.0, 0.0, 0.0),
+                float3(1.0, 0.0, 0.0)
+            };
+#endif
+
+            // Fetch all our levels
+            float3 colorLevels[LevelCount];
+
+            [unroll]
+            for (int k = 0; k < LevelCount; k++) 
+            {
+                colorLevels[k] = dofTextureLevels[k].Sample(LinearSampler, streams.TexCoord).rgb;
+#if DEBUG_COC_LEVEL_COLOR
+                colorLevels[k] *= debugColors[k];
+#endif
+            }
+
+            // Gets the CoC of the current pixel
             float CoC = Texture0.Sample(LinearSampler, streams.TexCoord).y;
 
-            // Sample the color
-            float3 color = Texture1.Sample(LinearSampler, streams.TexCoord).rgb;
+            float3 result = float3(0.0, 0.0, 0.0);
 
-            // Sample full-blur texture
-            float3 blurColor = Texture2.Sample(LinearSampler, streams.TexCoord).rgb;
+            // We now find the 2 levels closest to the pixel CoC.
+            // We go down the levels, starting at the blurriest version. Once we find a level pair 
+            // whose range contains our CoC, we keep the lerp between these 2 levels. 
+            // (This part also supports a branch-less version.)
+            [unroll]
+            for (int i = LevelCount - 2; i >= 0; i--) 
+            {
+                // Current range we consider
+                float rangeMin = CoCLevelValues[i];
+                float rangeMax = CoCLevelValues[i + 1];
 
-            // Interpolates between original and blurred image
-            float3 result = lerp(color, blurColor, CoC);
+                // Does our CoC belong to this range?
+                float cocInRange = ((rangeMin < CoC && CoC <= rangeMax) || (rangeMin == CoC && rangeMin == 0))? 1.0 : 0.0;
+                // Here is the same test in a branch-less version for reference:
+                // float cocInRange = step(rangeMin, CoC) * step(CoC, rangeMax) * sign( abs(CoC - rangeMin));
+                // cocInRange += (1.0 - sign(rangeMin)) * (1.0 - sign(CoC)); //Special edge-case for CoC 0
+
+                // We calculate the lerp factor between the 2 levels.
+                float lerpFactor = clamp( (CoC - rangeMin) / (rangeMax - rangeMin), 0.0, 1.0 ); // try smoothstep()?
+
+                // We keep the lerp result only if the current level pair contains our CoC
+                result += cocInRange * lerp(colorLevels[i], colorLevels[i+1], lerpFactor);
+            }
 
             return float4( result, 1.0 );
         }
