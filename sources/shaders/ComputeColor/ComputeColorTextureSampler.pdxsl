@@ -8,12 +8,16 @@
 /// TStream: generic Semantic - the texcoord index semantic used to sample the texture.
 /// TSampler: generic SamplerState - the sampler.
 /// </remarks>
-class ComputeColorTextureSampler<Texture2D TTexture, Semantic TStream, SamplerState TSampler, MemberName TRgba> : ComputeColor
+class ComputeColorTextureSampler<LinkType TTextureName, 
+                                 Semantic TStream, 
+                                 LinkType TSampler, 
+                                 MemberName TRgba> : ComputeColor, 
+                                                     DynamicTexture<TTextureName>, 
+                                                     DynamicSampler<TSampler>, 
+                                                     DynamicTextureStream<TStream>
 {
-    stream float2 TexCoord : TStream;
-
     override float4 Compute()
     {
-        return TTexture.Sample(TSampler, streams.TexCoord).TRgba;
+        return Texture.Sample(Sampler, streams.TexCoord).TRgba;
     }
 };

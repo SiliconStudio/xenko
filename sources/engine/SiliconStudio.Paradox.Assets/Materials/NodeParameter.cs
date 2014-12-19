@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Assets.Materials.Nodes;
+using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
 
@@ -24,10 +24,10 @@ namespace SiliconStudio.Paradox.Assets.Materials
     {
         public NodeParameterTexture()
         {
-            Texture = new MaterialTextureNode();
+            Texture = new MaterialTextureComputeColor();
         }
 
-        public MaterialTextureNode Texture { get; private set; }
+        public MaterialTextureComputeColor Texture { get; private set; }
     }
 
     [DataContract()]
@@ -120,12 +120,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [DataMember(30)]
         [DefaultValue(TextureAddressMode.Wrap)]
         public TextureAddressMode AddressModeV { get; set; }
-
-        /// <summary>
-        /// The sampler key used in the shader.
-        /// </summary>
-        [DataMemberIgnore]
-        public ParameterKey<SamplerState> SamplerParameterKey { get; set; }
 
         public NodeParameterSampler()
         {

@@ -12,7 +12,7 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Assets.Materials;
-using SiliconStudio.Paradox.Assets.Materials.Nodes;
+using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
 using SiliconStudio.Paradox.Assets.Model;
 using SiliconStudio.Paradox.Effects;
@@ -78,7 +78,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
             var reducedTrees = materialReducer.ReducedTrees;
 
-            Assert.IsTrue(reducedTrees["diffuse"] is MaterialFloat4Node);
+            Assert.IsTrue(reducedTrees["diffuse"] is MaterialFloat4ComputeColor);
         }
 
         [Test]

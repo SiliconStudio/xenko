@@ -436,6 +436,13 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
     </Compile>
+    <Compile Include="Core\DynamicSampler.cs">
+      <DependentUpon>DynamicSampler.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Core\MaterialKeys.cs" />
     <Compile Include="Cubemap\CubemapBlendComponent.cs" />
     <Compile Include="Cubemap\CubemapBlendEffect.cs">
       <AutoGen>True</AutoGen>
@@ -1125,17 +1132,17 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ShadingColor.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Core\TextureKey.cs">
+    <Compile Include="Core\DynamicTexture.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>TextureKey.pdxsl</DependentUpon>
+      <DependentUpon>DynamicTexture.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Core\TextureStream.cs">
+    <Compile Include="Core\DynamicTextureStream.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>TextureStream.pdxsl</DependentUpon>
+      <DependentUpon>DynamicTextureStream.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Deferred\GBuffer.cs">
       <AutoGen>True</AutoGen>
@@ -1321,7 +1328,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LightPrepassDebug.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="MaterialKeys.cs" />
     <Compile Include="LightKeys.cs" />
     <Compile Include="ParticleBaseKeys.cs" />
     <Compile Include="Deferred\GBufferKeys.cs" />
@@ -2001,6 +2007,10 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorSubtractMaya.cs</LastGenOutput>
     </None>
+    <None Include="Core\DynamicSampler.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>DynamicSampler.cs</LastGenOutput>
+    </None>
     <None Include="Cubemap\CubemapBlendEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CubemapBlendEffect.cs</LastGenOutput>
@@ -2333,13 +2343,13 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadingColor.cs</LastGenOutput>
     </None>
-    <None Include="Core\TextureKey.pdxsl">
+    <None Include="Core\DynamicTexture.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>TextureKey.cs</LastGenOutput>
+      <LastGenOutput>DynamicTexture.cs</LastGenOutput>
     </None>
-    <None Include="Core\TextureStream.pdxsl">
+    <None Include="Core\DynamicTextureStream.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>TextureStream.cs</LastGenOutput>
+      <LastGenOutput>DynamicTextureStream.cs</LastGenOutput>
     </None>
     <None Include="PostEffect\PostEffectBack.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

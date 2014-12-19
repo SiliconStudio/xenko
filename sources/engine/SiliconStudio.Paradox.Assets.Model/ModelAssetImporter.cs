@@ -12,7 +12,7 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Assets.Materials;
-using SiliconStudio.Paradox.Assets.Materials.Nodes;
+using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
 using SiliconStudio.Paradox.Assets.Textures;
 using SiliconStudio.Paradox.Data;
@@ -326,7 +326,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                     {
                         if (foundTextureDiffuse != foundTextureTransparent)
                         {
-                            var alphaMixNode = new MaterialBinaryNode(diffuseNode, transparentNode, MaterialBinaryOperand.SubstituteAlpha);
+                            var alphaMixNode = new MaterialBinaryComputeColor(diffuseNode, transparentNode, MaterialBinaryOperand.SubstituteAlpha);
                             material.AddColorNode(MaterialParameters.AlbedoDiffuse, "pdx_diffuseWithAlpha", alphaMixNode);
                         }
                     }
@@ -348,7 +348,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                         material.Nodes.Remove(diffuseName);
 
                         // add the new one
-                        var opaqueNode = new MaterialBinaryNode(diffuseNode, null, MaterialBinaryOperand.Opaque);
+                        var opaqueNode = new MaterialBinaryComputeColor(diffuseNode, null, MaterialBinaryOperand.Opaque);
                         material.AddColorNode(MaterialParameters.AlbedoDiffuse, "pdx_diffuseOpaque", opaqueNode);
                     }
                 }
@@ -361,7 +361,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <param name="material">The material.</param>
         /// <param name="startNode">The name of the stating node.</param>
         /// <returns>The MaterialTextureNode if found.</returns>
-        private static MaterialTextureNode FindTextureNode(MaterialDescription material, string startNode)
+        private static MaterialTextureComputeColor FindTextureNode(MaterialDescription material, string startNode)
         {
             var currentNode = material.FindNode(startNode);
             while (currentNode is MaterialReferenceNode)
@@ -370,7 +370,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                 currentNode = material.FindNode(currentReferenceNode.Name);
             }
 
-            return currentNode as MaterialTextureNode;
+            return currentNode as MaterialTextureComputeColor;
         }
 
         private static string GenerateFinalMaterialName(UFile localPath, string materialId)

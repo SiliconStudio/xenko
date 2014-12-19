@@ -3,11 +3,17 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Security.Policy;
 
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
+using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Effects.Data;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Materials
@@ -15,10 +21,19 @@ namespace SiliconStudio.Paradox.Assets.Materials
     public class MaterialShaderGeneratorContext
     {
         private int idCounter;
+
+        private int textureKeyIndex;
+
+        private readonly Dictionary<SamplerStateDescription, ParameterKey<SamplerState>> declaredSamplerStates;
+
         public MaterialShaderGeneratorContext()
         {
             Stack = new Stack<StackOperations>();
+            Parameters = new ParameterCollectionData();
+            declaredSamplerStates = new Dictionary<SamplerStateDescription, ParameterKey<SamplerState>>();
         }
+
+        public ParameterCollectionData Parameters { get; private set; }
 
         public MaterialAsset FindMaterial(AssetReference<MaterialAsset> materialReference)
         {
@@ -54,6 +69,53 @@ namespace SiliconStudio.Paradox.Assets.Materials
         public int NextId()
         {
             return idCounter++;
+        }
+
+        public ParameterKey<Texture> GetTextureKey(MaterialTextureComputeColor textureComputeColor)
+        {
+            ParameterKey<Texture> key = null;
+            ContentReference keyReference = null;
+
+            if (textureComputeColor.Key != null)
+            {
+                key = textureComputeColor.Key;
+            }
+            else
+            {
+                key = MaterialKeys.Texture.ComposeWith(textureKeyIndex.ToString(CultureInfo.InvariantCulture));
+                textureKeyIndex++;
+
+                if (textureComputeColor.TextureReference != null)
+                {
+                    keyReference = new ContentReference<Texture>(textureComputeColor.TextureReference.Id, textureComputeColor.TextureReference.Location);
+                }
+            }
+
+            Parameters.Set(key, keyReference);
+            return key;
+        }
+
+        public ParameterKey<SamplerState> GetSamplerKey(NodeParameterSampler sampler)
+        {
+            if (sampler == null) throw new ArgumentNullException("sampler");
+
+            var samplerStateDesc = new SamplerStateDescription(sampler.Filtering, sampler.AddressModeU)
+            {
+                AddressV = sampler.AddressModeV,
+                AddressW = TextureAddressMode.Wrap
+            };
+
+            ParameterKey<SamplerState> key;
+
+            if (!declaredSamplerStates.TryGetValue(samplerStateDesc, out key))
+            {
+                key = MaterialKeys.Sampler.ComposeWith(declaredSamplerStates.Count.ToString(CultureInfo.InvariantCulture));
+                declaredSamplerStates.Add(samplerStateDesc, key);
+            }
+
+            var samplerState = new FakeSamplerState(samplerStateDesc);
+            Parameters.Set(key, ContentReference.Create((SamplerState)samplerState));
+            return key;
         }
 
         public class StackOperations
@@ -103,9 +165,13 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 Operations.Add(mixin);
             }
 
-
-            public ShaderSource SquashOperations()
+            public ShaderSource GenerateMixin()
             {
+                if (Operations.Count == 0)
+                {
+                    return null;
+                }
+
                 var mixin = new ShaderMixinSource();
                 mixin.Mixins.Add(new ShaderClassSource("MaterialLayerArray"));
 
@@ -119,8 +185,5 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 return mixin;
             }
         }
-
-
-
     }
 }

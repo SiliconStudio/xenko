@@ -4,23 +4,39 @@
 using System;
 
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Effects.Data;
 using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
+    public class MaterialShaderResult : LoggerResult
+    {
+        public ShaderSource ShaderSource { get; set; }
+
+        public ParameterCollectionData Parameters { get; set; }
+    }
+
     public class MaterialShaderGenerator
     {
-        public static ShaderSource Generate(MaterialAsset material)
+        public static MaterialShaderResult Generate(MaterialAsset material)
         {
             if (material == null) throw new ArgumentNullException("material");
+            var result = new MaterialShaderResult();
+
             var context = new MaterialShaderGeneratorContext()
             {
-                Log = new LoggerResult()
+                Log = result
             };
 
+            result.Parameters = context.Parameters;
             material.GenerateShader(context);
 
-            return context.CurrentStack.SquashOperations();
+            // Squash all operations into a single mixin
+            result.ShaderSource = context.CurrentStack.GenerateMixin();
+            result.Parameters.Set(MaterialKeys.Material, result.ShaderSource);
+
+            return result;
         }
     }
 }

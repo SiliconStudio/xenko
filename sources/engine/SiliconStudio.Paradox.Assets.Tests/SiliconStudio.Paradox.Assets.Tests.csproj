@@ -146,7 +146,6 @@
     <Compile Include="TestCommon.cs" />
     <Compile Include="TestDependencyResolver.cs" />
     <Compile Include="TestMaterialTree.cs" />
-    <Compile Include="TestTextureAlphaSplitter.cs" />
     <Compile Include="TestTreeFlattener.cs" />
   </ItemGroup>
   <ItemGroup>

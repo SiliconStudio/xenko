@@ -9,7 +9,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Paradox.Assets.Materials;
-using SiliconStudio.Paradox.Assets.Materials.Nodes;
+using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders.Compiler;
@@ -37,20 +37,20 @@ namespace SiliconStudio.Paradox.Shaders.Tests
 
             var materialAsset = new MaterialAsset
             {
-                Composition = new MaterialFeatures()
+                Composition = new MaterialAttributes()
                 {
                     Surface = new MaterialNormalMapFeature()
                     {
-                        NormalMap = new MaterialColorNode(Color4.White)
+                        NormalMap = new MaterialColorComputeColor(Color4.White)
                     }
                 }
             };
 
-            var shaderClassSource = MaterialShaderGenerator.Generate(materialAsset);
+            var result = MaterialShaderGenerator.Generate(materialAsset);
 
             var mixin = new ShaderMixinSource();
             mixin.Mixins.Add(new ShaderClassSource("MaterialLayerRoot"));
-            mixin.AddComposition("composition", shaderClassSource);
+            mixin.AddComposition("composition", result.ShaderSource);
             var results = compiler.Compile(mixin, compilerParameters);
 
             Assert.IsFalse(results.HasErrors);
