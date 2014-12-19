@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -281,9 +282,9 @@ namespace SiliconStudio.Paradox.Effects.Renderers
             // choose configuration
             var configurations = renderMesh.Parameters.Get(LightingKeys.LightingConfigurations);
             var lastConfigWithoutShadow = -1;
+            LightingConfiguration foundConfiguration;
             if (configurations != null)
             {
-                LightingConfiguration foundConfiguration;
                 foundConfiguration.MaxNumDirectionalLight = 0;
                 foundConfiguration.MaxNumPointLight = 0;
                 foundConfiguration.MaxNumSpotLight = 0;
@@ -314,41 +315,63 @@ namespace SiliconStudio.Paradox.Effects.Renderers
 
                 foundConfiguration = configurations.Configs[configurationIndex];
 
-                var maxNumDirectionalLights = foundConfiguration.MaxNumDirectionalLight;
-                var maxNumPointLights = foundConfiguration.MaxNumPointLight;
-                var maxNumSpotLights = foundConfiguration.MaxNumSpotLight;
-
                 //create the parameters to get the correct shader
                 if (configurationIndex != renderMesh.Parameters.Get(LightKeys.ConfigurationIndex))
                 {
                     CreateParametersFromLightingConfiguration(foundConfiguration, renderMesh.Parameters);
                     renderMesh.Parameters.Set(LightKeys.ConfigurationIndex, configurationIndex);
                 }
+            }
+            else
+            {
+                // set the configuration that perfectly matches the actual scene
+                foundConfiguration = new LightingConfiguration();
+                foundConfiguration.MaxNumPointLight = numPointLights;
+                foundConfiguration.MaxNumDirectionalLight = numDirectionalLights;
+                foundConfiguration.MaxNumSpotLight = numSpotLights;
+                foundConfiguration.UnrollPointLightLoop = true;
+                foundConfiguration.UnrollDirectionalLightLoop = true;
+                foundConfiguration.UnrollSpotLightLoop = true;
 
-                // assign the shadow ligths to a specific group
-                if (foundConfiguration.ShadowConfigurations != null)
-                    AssignGroups(foundConfiguration);
-
-                var finalDirectionalLightCount = Math.Min(numDirectionalLights, maxNumDirectionalLights);
-                var finalPointLightCount = Math.Min(numPointLights, maxNumPointLights);
-                var finalSpotLightCount = Math.Min(numSpotLights, maxNumSpotLights);
-
-                var maxLights = finalDirectionalLightCount;
-                if (maxLights > finalPointLightCount)
-                    maxLights = finalPointLightCount;
-                if (maxLights > finalSpotLightCount)
-                    maxLights = finalSpotLightCount;
-
-                if (maxLights > maximumSupportedLights)
+                if (directionalLightsWithShadowForMesh.Count > 0
+                    || spotLightsWithShadowForMesh.Count > 0)
                 {
-                    maximumSupportedLights = maxLights;
-                    arrayFloat = new float[4 * maxLights];
-                    arrayVector3 = new Vector3[2 * maxLights];
-                    arrayColor3 = new Color3[maxLights];
+                    foundConfiguration.ShadowConfigurations = new ShadowConfigurationArray();
+                    foundConfiguration.ShadowConfigurations.Groups = new List<ShadowConfiguration>();
+                    foundConfiguration.ShadowConfigurations.Groups.AddRange(CreateShadowConfiguration(directionalLightsWithShadowForMesh, LightType.Directional));
+                    foundConfiguration.ShadowConfigurations.Groups.AddRange(CreateShadowConfiguration(spotLightsWithShadowForMesh, LightType.Spot));
                 }
 
-                lastConfiguration = foundConfiguration;
+                CreateParametersFromLightingConfiguration(foundConfiguration, renderMesh.Parameters);
             }
+            
+            var maxNumDirectionalLights = foundConfiguration.MaxNumDirectionalLight;
+            var maxNumPointLights = foundConfiguration.MaxNumPointLight;
+            var maxNumSpotLights = foundConfiguration.MaxNumSpotLight;
+
+            // assign the shadow ligths to a specific group
+            if (foundConfiguration.ShadowConfigurations != null)
+                AssignGroups(foundConfiguration);
+
+            var finalDirectionalLightCount = Math.Min(numDirectionalLights, maxNumDirectionalLights);
+            var finalPointLightCount = Math.Min(numPointLights, maxNumPointLights);
+            var finalSpotLightCount = Math.Min(numSpotLights, maxNumSpotLights);
+
+            var maxLights = finalDirectionalLightCount;
+            if (maxLights > finalPointLightCount)
+                maxLights = finalPointLightCount;
+            if (maxLights > finalSpotLightCount)
+                maxLights = finalSpotLightCount;
+
+            if (maxLights > maximumSupportedLights)
+            {
+                maximumSupportedLights = maxLights;
+                arrayFloat = new float[4 * maxLights];
+                arrayVector3 = new Vector3[2 * maxLights];
+                arrayColor3 = new Color3[maxLights];
+            }
+
+            lastConfiguration = foundConfiguration;
         }
 
         /// <summary>
@@ -857,7 +880,32 @@ namespace SiliconStudio.Paradox.Effects.Renderers
             //mesh.SharedParameters.Set(LightingKeys.UnrollPointLightLoop, foundConfiguration.UnrollPointLightLoop);
             //mesh.SharedParameters.Set(LightingKeys.UnrollSpotLightLoop, foundConfiguration.UnrollSpotLightLoop);
         }
-        
+
+        private struct ShadowMapGroup
+        {
+            public ShadowMapTexture Texture;
+            public int CascadeCount;
+            public ShadowMapFilterType FilterType;
+        }
+
+        private static List<ShadowConfiguration> CreateShadowConfiguration(List<EntityLightShadow> lights, LightType lightType)
+        {
+            var resultList = new List<ShadowConfiguration>();
+            var groupedShadowLights = lights.GroupBy(x => new ShadowMapGroup() { Texture = x.ShadowMap.Texture, CascadeCount = x.ShadowMap.CascadeCount, FilterType = x.ShadowMap.Filter });
+            foreach (var lightGroup in groupedShadowLights)
+            {
+                var shadowGroup = new ShadowConfiguration()
+                {
+                    CascadeCount = lightGroup.Key.CascadeCount,
+                    FilterType = lightGroup.Key.FilterType,
+                    LightType = lightType,
+                    ShadowCount = lightGroup.Count()
+                };
+                resultList.Add(shadowGroup);
+            }
+            return resultList;
+        }
+
         #endregion
     }
 
