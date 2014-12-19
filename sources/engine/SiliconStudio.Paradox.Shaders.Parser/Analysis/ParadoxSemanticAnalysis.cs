@@ -300,7 +300,14 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
                 else if (variable.InitialValue.TypeInference.TargetType == null)
                     Error(ParadoxMessageCode.ErrorVarNoTypeFound, variable.Span, variable, analyzedModuleMixin.MixinName);
                 else
+                {
                     variable.Type = variable.InitialValue.TypeInference.TargetType.ResolveType();
+                    // If we have a var type referencing a generic type, try to use the non-generic version of it
+                    if (variable.Type is GenericType)
+                    {
+                        variable.Type = ((GenericType)variable.Type).ToNonGenericType();
+                    }
+                }
             }
 
             if (variable.ContainsTag(ParadoxTags.ShaderScope))

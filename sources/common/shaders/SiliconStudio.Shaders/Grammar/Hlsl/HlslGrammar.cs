@@ -204,13 +204,13 @@ namespace SiliconStudio.Shaders.Grammar.Hlsl
                 for (var dim = 1; dim <= 4; dim++)
                 {
                     var vectorTypeInstance = new VectorType(scalarTypeIt, dim);
-                    var name = string.Format("{0}{1}", scalarType.Name, dim);
+                    var nonGenericType = vectorTypeInstance.ToNonGenericType();
+                    var name = nonGenericType.Name.Text;
                     vector_type_list.Rule |= new NonTerminal(name,
                         (ctx, node) =>
-                            {
-                                var typeName = Ast<TypeName>(node);
-                                typeName.Name = new Identifier(name) { Span = SpanConverter.Convert(node.Span) };
-                                typeName.TypeInference.TargetType = vectorTypeInstance;
+                        {
+                                var typeName = vectorTypeInstance.ToNonGenericType(SpanConverter.Convert(node.Span));
+                                node.AstNode = typeName;
                             }) { Rule = Keyword(name) };
                 }
             }
@@ -236,17 +236,16 @@ namespace SiliconStudio.Shaders.Grammar.Hlsl
                     for (var dimY = 1; dimY <= 4; dimY++)
                     {
                         var matrixTypeInstance = new MatrixType(scalarTypeIt, dimY, dimX);
-
-                        var name = string.Format("{0}{1}x{2}", scalarType.Name, dimY, dimX);
+                        var nonGenericType = matrixTypeInstance.ToNonGenericType();
+                        var name = nonGenericType.Name.Text;
 
                         // var typeName = new TypeName(name) { Alias = matrixTypeInstance };
                         matrix_type_list.Rule |= new NonTerminal(
                             name,
                             (ctx, node) =>
                                 {
-                                    var typeName = Ast<TypeName>(node);
-                                    typeName.Name = new Identifier(name) { Span = SpanConverter.Convert(node.Span) };
-                                    typeName.TypeInference.TargetType = matrixTypeInstance;
+                                    var typeName = matrixTypeInstance.ToNonGenericType(SpanConverter.Convert(node.Span));
+                                    node.AstNode = typeName;
                                 }) { Rule = Keyword(name) };
                     }
             }
