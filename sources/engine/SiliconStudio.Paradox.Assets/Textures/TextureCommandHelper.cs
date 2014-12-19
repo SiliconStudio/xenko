@@ -88,6 +88,40 @@ namespace SiliconStudio.Paradox.Assets.Textures
         }
 
         /// <summary>
+        /// Determines if alpha channel should be separated from a given texture's attribute and graphics profile
+        /// </summary>
+        /// <param name="alphaFormat">Alpha format for a texture</param>
+        /// <param name="textureFormat">Texture format</param>
+        /// <param name="platform">Platform</param>
+        /// <param name="graphicsProfile">Level of graphics</param>
+        /// <returns></returns>
+        public static bool ShouldSeparateAlpha(AlphaFormat alphaFormat, TextureFormat textureFormat, PlatformType platform, GraphicsProfile graphicsProfile)
+        {
+            if (alphaFormat != AlphaFormat.None && textureFormat == TextureFormat.Compressed && platform == PlatformType.Android)
+            {
+                switch (graphicsProfile)
+                {
+                    case GraphicsProfile.Level_9_1:
+                    case GraphicsProfile.Level_9_2:
+                    case GraphicsProfile.Level_9_3:
+                        // Android with OpenGLES < 3.0 require alpha splitting if the image is compressed since ETC1 compresses only RGB
+                        return true;
+                    case GraphicsProfile.Level_10_0:
+                    case GraphicsProfile.Level_10_1:
+                    case GraphicsProfile.Level_11_0:
+                    case GraphicsProfile.Level_11_1:
+                    case GraphicsProfile.Level_11_2:
+                        // Since OpenGLES 3.0, ETC2 RGBA is used instead of ETC1 RGB so alpha is compressed along with RGB; therefore, no need to split alpha
+                        return false;
+                    default:
+                        throw new ArgumentOutOfRangeException("graphicsProfile");
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Determine the output format of the texture depending on the platform and asset properties.
         /// </summary>
         /// <param name="textureFormat">The desired texture output format type</param>

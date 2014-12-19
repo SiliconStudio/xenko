@@ -40,7 +40,7 @@ namespace SiliconStudio.Paradox.Assets
             result.BuildSteps = new ListBuildStep();
             
             // Evaluate if we need to use a separate the alpha texture
-            SeparateAlphaTexture = context.Platform == PlatformType.Android && asset.Alpha != AlphaFormat.None && asset.Format == TextureFormat.Compressed;
+            SeparateAlphaTexture = TextureCommandHelper.ShouldSeparateAlpha(asset.Alpha, asset.Format, context.Platform, context.GetGraphicsProfile());
 
             // create the registry containing the sprite assets texture index association
             SpriteToTextureIndex = new Dictionary<TImageInfo, int>();
