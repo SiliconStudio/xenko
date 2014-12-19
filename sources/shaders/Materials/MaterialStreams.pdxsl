@@ -17,9 +17,9 @@
     stage stream float3 matSpecular;
 
     stage stream float  matAmbientOcclusion;
-    stage stream float  matCavityOcclusion;
-    stage stream float  matCavityDiffuseFactor;
-    stage stream float  matCavitySpecularFactor;
+    stage stream float  matCavity;
+    stage stream float  matCavityDiffuse;
+    stage stream float  matCavitySpecular;
 };
 
 

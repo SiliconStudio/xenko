@@ -3,21 +3,21 @@
 
 using System;
 using System.Collections.Generic;
+using System.Security.Policy;
 
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
     public class MaterialShaderGeneratorContext
     {
+        private int idCounter;
         public MaterialShaderGeneratorContext()
         {
-            PendingOperations = new Stack<ShaderSource>();
-            Operations = new List<ShaderSource>();
-            Streams = new Stack<HashSet<string>>();
-            Streams.Push(new HashSet<string>());
+            Stack = new Stack<StackOperations>();
         }
 
         public MaterialAsset FindMaterial(AssetReference<MaterialAsset> materialReference)
@@ -25,25 +25,102 @@ namespace SiliconStudio.Paradox.Assets.Materials
             throw new NotImplementedException();
         }
 
-        public Stack<ShaderSource> PendingOperations { get; private set; }
+        public Stack<StackOperations> Stack { get; private set; } 
 
-        public Stack<HashSet<string>> Streams { get; private set; } 
-
-        public List<ShaderSource> Operations { get; private set; }
-
-        public bool HasStream(string stream)
+        public StackOperations PushStack()
         {
-            if (stream == null) throw new ArgumentNullException("stream");
-            return Streams.Peek().Contains(stream);
+            var stack = new StackOperations();
+            Stack.Push(stack);
+            return stack;
         }
-        public void PushStream(string stream)
+
+        public StackOperations CurrentStack
         {
-            if (stream == null) throw new ArgumentNullException("stream");
-            Streams.Peek().Add(stream);
+            get
+            {
+                return Stack.Peek();
+            }
+        }
+
+        public void PopStack()
+        {
+            Stack.Pop();
         }
 
         public bool ExploreGenerics = false;
 
         public LoggerResult Log;
+
+        public int NextId()
+        {
+            return idCounter++;
+        }
+
+        public class StackOperations
+        {
+            public StackOperations()
+            {
+                Operations = new List<ShaderSource>();
+                Streams = new HashSet<string>();
+            }
+
+            public List<ShaderSource> Operations { get; private set; }
+
+            public HashSet<string> Streams { get; private set; }
+
+            public void UseStream(string stream)
+            {
+                if (!Streams.Contains(stream))
+                {
+                    var prepareMixin = new ShaderMixinSource();
+                    prepareMixin.Mixins.Add(new ShaderClassSource("MaterialLayerStreamReset", stream));
+                    Operations.Add(prepareMixin);
+                }
+                Streams.Add(stream);
+            }
+
+            public void AddBlendColor3(string stream, ShaderSource classSource)
+            {
+                // Use Stream before adding operations
+                UseStream(stream);
+
+                var mixin = new ShaderMixinSource();
+                mixin.Mixins.Add(new ShaderClassSource("MaterialLayerComputeColorFloat3Blend", stream));
+                mixin.AddComposition("Float3Source", classSource);
+
+                Operations.Add(mixin);
+            }
+
+            public void AddBlendColor(string stream, ShaderSource classSource)
+            {
+                // Use Stream before adding operations
+                UseStream(stream);
+
+                var mixin = new ShaderMixinSource();
+                mixin.Mixins.Add(new ShaderClassSource("MaterialLayerComputeColorFloatBlend", stream));
+                mixin.AddComposition("FloatSource", classSource);
+
+                Operations.Add(mixin);
+            }
+
+
+            public ShaderSource SquashOperations()
+            {
+                var mixin = new ShaderMixinSource();
+                mixin.Mixins.Add(new ShaderClassSource("MaterialLayerArray"));
+
+                // Squash all operations into MaterialLayerArray
+                foreach (var operation in Operations)
+                {
+                    mixin.AddCompositionToArray("layers", operation);
+                }
+                Operations.Clear();
+                Streams.Clear();
+                return mixin;
+            }
+        }
+
+
+
     }
 }

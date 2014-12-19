@@ -4,6 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
+using System.Text;
 
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
@@ -20,101 +23,216 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// <summary>
     /// Base interface for a material attribute.
     /// </summary>
-    public interface IMaterialAttribute : IMaterialShaderGenerator
+    public interface IMaterialFeature : IMaterialShaderGenerator
     {
     }
 
     /// <summary>
     /// Base interface for a tessellation material attribute.
     /// </summary>
-    public interface IMaterialTessellationAttribute : IMaterialAttribute
+    public interface IMaterialTessellationFeature : IMaterialFeature
     {
     }
 
     /// <summary>
     /// Base interface for a displacement material attribute.
     /// </summary>
-    public interface IMaterialDisplacementAttribute : IMaterialAttribute
+    public interface IMaterialDisplacementFeature : IMaterialFeature
     {
     }
 
     /// <summary>
     /// Base interface for the surface material attribute (normals...etc.)
     /// </summary>
-    public interface IMaterialSurfaceAttribute : IMaterialAttribute
+    public interface IMaterialSurfaceFeature : IMaterialFeature
     {
     }
 
     /// <summary>
     /// Base interface for a diffuse material attribute.
     /// </summary>
-    public interface IMaterialDiffuseAttribute : IMaterialAttribute
+    public interface IMaterialDiffuseFeature : IMaterialFeature
     {
     }
 
     /// <summary>
     /// Base interface for a specular material attribute.
     /// </summary>
-    public interface IMaterialSpecularAttribute : IMaterialAttribute
+    public interface IMaterialSpecularFeature : IMaterialFeature
     {
     }
 
     /// <summary>
     /// Base interface for a micro-surface material attribute.
     /// </summary>
-    public interface IMaterialMicroSurfaceAttribute : IMaterialAttribute
+    public interface IMaterialMicroSurfaceFeature : IMaterialFeature
     {
     }
 
     /// <summary>
     /// Base interface for the diffuse model material attribute.
     /// </summary>
-    public interface IMaterialDiffuseModelAttribute : IMaterialAttribute
+    public interface IMaterialDiffuseModelFeature : IMaterialFeature
     {
     }
 
     /// <summary>
     /// Base interface for the specular model material attribute.
     /// </summary>
-    public interface IMaterialSpecularModelAttribute : IMaterialAttribute
+    public interface IMaterialSpecularModelFeature : IMaterialFeature
     {
     }
 
     /// <summary>
     /// Base interface for the occlusion material attribute.
     /// </summary>
-    public interface IMaterialOcclusionAttribute : IMaterialAttribute
+    public interface IMaterialOcclusionFeature : IMaterialFeature
     {
     }
 
     /// <summary>
     /// Base interface for the emissive material attribute.
     /// </summary>
-    public interface IMaterialEmissiveAttribute : IMaterialAttribute
+    public interface IMaterialEmissiveFeature : IMaterialFeature
     {
     }
 
     /// <summary>
     /// Base interface for the transparency material attribute.
     /// </summary>
-    public interface IMaterialTransparencyAttribute : IMaterialAttribute
+    public interface IMaterialTransparencyFeature : IMaterialFeature
     {
     }
 
     /// <summary>
     /// A material composition.
     /// </summary>
-    public interface IMaterialComposition : IMaterialShaderGenerator
+    public interface IMaterialComposition : IMaterialFeature
     {
+    }
+
+    /// <summary>
+    /// Type of a stream used by <see cref="MaterialStreamAttribute"/>
+    /// </summary>
+    public enum MaterialStreamType
+    {
+        Float3,
+
+        Float
+    }
+
+    /// <summary>
+    /// An attribute used to identify associate a shader stream with a property
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Property)]
+    public class MaterialStreamAttribute : Attribute
+    {
+        private readonly string stream;
+        private readonly MaterialStreamType type;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MaterialStreamAttribute"/> class.
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        /// <param name="type">The type.</param>
+        public MaterialStreamAttribute(string stream, MaterialStreamType type)
+        {
+            this.stream = stream;
+            this.type = type;
+        }
+
+        /// <summary>
+        /// Gets the stream.
+        /// </summary>
+        /// <value>The stream.</value>
+        public string Stream
+        {
+            get
+            {
+                return stream;
+            }
+        }
+
+        /// <summary>
+        /// Gets the type.
+        /// </summary>
+        /// <value>The type.</value>
+        public MaterialStreamType Type
+        {
+            get
+            {
+                return type;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Base class for <see cref="IMaterialFeature"/>.
+    /// </summary>
+    /// <remarks>
+    /// This base class automatically iterates on properties to generate the shader
+    /// </remarks>
+    public abstract class MaterialFeatureBase : IMaterialFeature
+    {
+        public virtual void GenerateShader(MaterialShaderGeneratorContext context)
+        {
+            var typeDescriptor = TypeDescriptorFactory.Default.Find(this.GetType());
+
+            foreach (var member in typeDescriptor.Members.OfType<MemberDescriptorBase>())
+            {
+                var memberValue = member.Get(this);
+
+                // TODO: Should we log an error if a property/field is not supported?
+                // TODO: Handle list/collection of IMaterialFeature?
+
+                var memberShaderGen = memberValue as IMaterialFeature;
+                if (memberShaderGen != null)
+                {
+                    memberShaderGen.GenerateShader(context);
+                }
+                else
+                {
+                    var materialStreamAttribute = member.MemberInfo.GetCustomAttribute<MaterialStreamAttribute>();
+                    if (materialStreamAttribute != null)
+                    {
+                        if (string.IsNullOrWhiteSpace(materialStreamAttribute.Stream))
+                        {
+                            context.Log.Error("Material stream cannot be null for member [{0}.{1}]", member.DeclaringType, member.MemberInfo.Name);
+                            continue;
+                        }
+
+                        var materialNode = memberValue as IMaterialNode;
+                        if (materialNode != null)
+                        {
+                            var classSource = materialNode.GenerateShaderSource(context);
+                            switch (materialStreamAttribute.Type)
+                            {
+                                case MaterialStreamType.Float3:
+                                    context.CurrentStack.AddBlendColor3(materialStreamAttribute.Stream, classSource);
+                                    break;
+
+                                case MaterialStreamType.Float:
+                                    context.CurrentStack.AddBlendColor(materialStreamAttribute.Stream, classSource);
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            context.Log.Error("Error in [{0}.{1}] support only IMaterialNode instead of [{2}]", member.DeclaringType, member.MemberInfo.Name, member.Type);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /// <summary>
     /// A smoothness map for the micro-surface material attribute.
     /// </summary>
-    [DataContract("MaterialSmoothnessMapAttribute")]
+    [DataContract("MaterialSmoothnessMapFeature")]
     [Display("Smoothness Map")]
     [ObjectFactory(typeof(Factory))]
-    public class MaterialSmoothnessMapAttribute : IMaterialMicroSurfaceAttribute
+    public class MaterialSmoothnessMapFeature : MaterialFeatureBase, IMaterialMicroSurfaceFeature
     {
         /// <summary>
         /// Gets or sets the smoothness map.
@@ -122,29 +240,25 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The smoothness map.</value>
         [Display("Smoothness Map")]
         [DefaultValue(null)]
+        [MaterialStreamAttribute("matSmoothness", MaterialStreamType.Float)]
         public IMaterialNode SmoothnessMap { get; set; }
 
         private class Factory : IObjectFactory
         {
             public object New(Type type)
             {
-                return new MaterialSmoothnessMapAttribute() { SmoothnessMap = new MaterialTextureNode() };
+                return new MaterialSmoothnessMapFeature() { SmoothnessMap = new MaterialTextureNode() };
             }
-        }
-
-        public void GenerateShader(MaterialShaderGeneratorContext context)
-        {
-            throw new NotImplementedException();
         }
     }
 
     /// <summary>
     /// A Diffuse map for the diffuse material attribute.
     /// </summary>
-    [DataContract("MaterialDiffuseMapAttribute")]
+    [DataContract("MaterialDiffuseMapFeature")]
     [Display("Diffuse Map")]
     [ObjectFactory(typeof(Factory))]
-    public class MaterialDiffuseMapAttribute : IMaterialDiffuseAttribute
+    public class MaterialDiffuseMapFeature : MaterialFeatureBase, IMaterialDiffuseFeature
     {
         /// <summary>
         /// Gets or sets the diffuse map.
@@ -152,29 +266,25 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The diffuse map.</value>
         [Display("Diffuse Map")]
         [DefaultValue(null)]
+        [MaterialStreamAttribute("matDiffuse", MaterialStreamType.Float3)]
         public IMaterialNode DiffuseMap { get; set; }
 
         private class Factory : IObjectFactory
         {
             public object New(Type type)
             {
-                return new MaterialDiffuseMapAttribute() { DiffuseMap = new MaterialTextureNode() };
+                return new MaterialDiffuseMapFeature() { DiffuseMap = new MaterialTextureNode() };
             }
-        }
-
-        public void GenerateShader(MaterialShaderGeneratorContext context)
-        {
-            throw new NotImplementedException();
         }
     }
 
     /// <summary>
     /// A Specular map for the specular material attribute.
     /// </summary>
-    [DataContract("MaterialSpecularMapAttribute")]
+    [DataContract("MaterialSpecularMapFeature")]
     [Display("Specular Map")]
     [ObjectFactory(typeof(Factory))]
-    public class MaterialSpecularMapAttribute : IMaterialSpecularAttribute
+    public class MaterialSpecularMapFeature : MaterialFeatureBase, IMaterialSpecularFeature
     {
         /// <summary>
         /// Gets or sets the specular map.
@@ -182,6 +292,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The specular map.</value>
         [Display("Specular Map")]
         [DefaultValue(null)]
+        [MaterialStreamAttribute("matSpecular", MaterialStreamType.Float3)]
         public IMaterialNode SpecularMap { get; set; }
 
         /// <summary>
@@ -189,6 +300,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// </summary>
         /// <value>The intensity.</value>
         [DefaultValue(null)]
+        [MaterialStreamAttribute("matSpecularIntensity", MaterialStreamType.Float)]
         public IMaterialNode Intensity { get; set; }
 
         /// <summary>
@@ -196,13 +308,14 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// </summary>
         /// <value>The fresnel.</value>
         [DefaultValue(null)]
+        [MaterialStreamAttribute("matSpecularFresnel", MaterialStreamType.Float)]
         public IMaterialNode Fresnel { get; set; }
 
         private class Factory : IObjectFactory
         {
             public object New(Type type)
             {
-                return new MaterialSpecularMapAttribute()
+                return new MaterialSpecularMapFeature()
                 {
                     SpecularMap = new MaterialTextureNode(),
                     Intensity = new MaterialFloatNode(1.0f),
@@ -210,20 +323,15 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 };
             }
         }
-
-        public void GenerateShader(MaterialShaderGeneratorContext context)
-        {
-            throw new NotImplementedException();
-        }
     }
 
     /// <summary>
     /// A Metalness map for the specular material attribute.
     /// </summary>
-    [DataContract("MaterialMetalnessMapAttribute")]
+    [DataContract("MaterialMetalnessMapFeature")]
     [Display("Metalness Map")]
     [ObjectFactory(typeof(Factory))]
-    public class MaterialMetalnessMapAttribute : IMaterialSpecularAttribute
+    public class MaterialMetalnessMapFeature : MaterialFeatureBase, IMaterialSpecularFeature
     {
         /// <summary>
         /// Gets or sets the metalness map.
@@ -231,37 +339,26 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The metalness map.</value>
         [Display("Metalness Map")]
         [DefaultValue(null)]
+        [MaterialStreamAttribute("matMetalnessMap", MaterialStreamType.Float)]
         public IMaterialNode MetalnessMap { get; set; }
 
         private class Factory : IObjectFactory
         {
             public object New(Type type)
             {
-                return new MaterialMetalnessMapAttribute() { MetalnessMap = new MaterialTextureNode() };
+                return new MaterialMetalnessMapFeature() { MetalnessMap = new MaterialTextureNode() };
             }
-        }
-
-        public void GenerateShader(MaterialShaderGeneratorContext context)
-        {
-            throw new NotImplementedException();
         }
     }
 
     /// <summary>
     /// An occlusion map for the occlusion material attribute.
     /// </summary>
-    [DataContract("MaterialOcclusionMapAttribute")]
+    [DataContract("MaterialOcclusionMapFeature")]
     [Display("Occlusion Map")]
     [ObjectFactory(typeof(Factory))]
-    public class MaterialOcclusionMapAttribute : IMaterialOcclusionAttribute
+    public class MaterialOcclusionMapFeature : MaterialFeatureBase, IMaterialOcclusionFeature
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MaterialOcclusionMapAttribute"/> class.
-        /// </summary>
-        public MaterialOcclusionMapAttribute()
-        {
-        }
-
         /// <summary>
         /// Gets or sets the occlusion map.
         /// </summary>
@@ -269,7 +366,8 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [Display("Occlusion Map")]
         [DefaultValue(null)]
         [DataMember(10)]
-        public IMaterialNode OcclusionMap { get; set; }
+        [MaterialStreamAttribute("matAmbientOcclusion", MaterialStreamType.Float)]
+        public IMaterialNode AmbientOcclusionMap { get; set; }
 
         /// <summary>
         /// Gets or sets the cavity map.
@@ -278,6 +376,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [Display("Cavity Map")]
         [DefaultValue(null)]
         [DataMember(20)]
+        [MaterialStreamAttribute("matCavity", MaterialStreamType.Float)]
         public IMaterialNode CavityMap { get; set; }
 
         /// <summary>
@@ -288,6 +387,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [DefaultValue(null)]
         [DataMember(30)]
         [DataRangeAttribute(0.0f, 1.0f, 0.01f)]
+        [MaterialStreamAttribute("matCavityDiffuse", MaterialStreamType.Float)]
         public IMaterialNode DiffuseCavity { get; set; }
 
         /// <summary>
@@ -298,34 +398,30 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [DefaultValue(null)]
         [DataMember(40)]
         [DataRangeAttribute(0.0f, 1.0f, 0.01f)]
+        [MaterialStreamAttribute("matCavitySpecular", MaterialStreamType.Float)]
         public IMaterialNode SpecularCavity { get; set; }
 
         private class Factory : IObjectFactory
         {
             public object New(Type type)
             {
-                return new MaterialOcclusionMapAttribute()
+                return new MaterialOcclusionMapFeature()
                 {
-                    OcclusionMap = new MaterialTextureNode(),
+                    AmbientOcclusionMap = new MaterialTextureNode(),
                     CavityMap = new MaterialTextureNode(),
                     DiffuseCavity = new MaterialFloatNode(1.0f),
                     SpecularCavity = new MaterialFloatNode(1.0f),
                 };
             }
         }
-
-        public void GenerateShader(MaterialShaderGeneratorContext context)
-        {
-            throw new NotImplementedException();
-        }
     }
 
     /// <summary>
     /// The diffuse Lambertian for the diffuse material model attribute.
     /// </summary>
-    [DataContract("MaterialDiffuseLambertianModelAttribute")]
+    [DataContract("MaterialDiffuseLambertianModelFeature")]
     [Display("Lamtertian")]
-    public class MaterialDiffuseLambertianModelAttribute : IMaterialDiffuseModelAttribute
+    public class MaterialDiffuseLambertianModelFeature : IMaterialDiffuseModelFeature
     {
         public virtual void GenerateShader(MaterialShaderGeneratorContext context)
         {
@@ -336,47 +432,25 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// <summary>
     /// The normal map for a surface material attribute.
     /// </summary>
-    [DataContract("MaterialNormalMapAttribute")]
+    [DataContract("MaterialNormalMapFeature")]
     [Display("Normal Map")]
     [ObjectFactory(typeof(Factory))]
-    public class MaterialNormalMapAttribute : IMaterialSurfaceAttribute
+    public class MaterialNormalMapFeature : MaterialFeatureBase, IMaterialSurfaceFeature
     {
-        private const string matNormalStream = "matNormal";
-
         /// <summary>
         /// Gets or sets the normal map.
         /// </summary>
         /// <value>The normal map.</value>
         [Display("Normal Map")]
         [DefaultValue(null)]
+        [MaterialStreamAttribute("matNormal", MaterialStreamType.Float3)]
         public IMaterialNode NormalMap { get; set; }
 
         private class Factory : IObjectFactory
         {
             public object New(Type type)
             {
-                return new MaterialNormalMapAttribute() { NormalMap = new MaterialTextureNode() };
-            }
-        }
-
-        public virtual void GenerateShader(MaterialShaderGeneratorContext context)
-        {
-            if (NormalMap != null)
-            {
-                var normalMapNode = NormalMap.GenerateShaderSource(context);
-
-                if (!context.HasStream(matNormalStream))
-                {
-                    var prepareMixin = new ShaderMixinSource();
-                    prepareMixin.Mixins.Add(new ShaderClassSource("MaterialLayerStreamReset", matNormalStream));
-                    context.Operations.Add(prepareMixin);
-                }
-
-                var mixin = new ShaderMixinSource();
-                mixin.Mixins.Add(new ShaderClassSource("MaterialLayerComputeColorFloat3Blend", matNormalStream));
-                mixin.AddComposition("Float3Source", normalMapNode);
-                context.PushStream(matNormalStream);
-                context.Operations.Add(mixin);
+                return new MaterialNormalMapFeature() { NormalMap = new MaterialTextureNode() };
             }
         }
     }
@@ -430,6 +504,8 @@ namespace SiliconStudio.Paradox.Assets.Materials
     [ObjectFactory(typeof(Factory))]
     public class MaterialBlendLayer : IMaterialShaderGenerator
     {
+        private const string BlendStream = "matBlend";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialBlendLayer"/> class.
         /// </summary>
@@ -504,10 +580,58 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 return;
             }
 
-            // TODO: push blend into the context
-            // TODO: handle overrides
+            var stack = context.PushStack();
             material.GenerateShader(context);
+
+            // Backup stream variables that will be modified by the materials
+            var backupStreamBuilder = new StringBuilder();
+            foreach (var stream in stack.Streams)
+            {
+                backupStreamBuilder.AppendFormat("        var __backup__{0} = streams.{0};", stream).AppendLine();
+            }
+
+            // Blend stream variables modified by the material with the previous backup
+            var copyFromLayerBuilder = new StringBuilder();
+            foreach (var stream in stack.Streams)
+            {
+                copyFromLayerBuilder.AppendFormat("        streams.{0} = lerp(__backup__{0}, streams.{0}, streams.matBlend;", stream).AppendLine();
+            }
+
+            // Generate a dynamic shader
+            var shaderName = string.Format("MaterialBlendLayer{0}", context.NextId());
+            var shaderClassSource = new ShaderClassSource(shaderName)
+            {
+                Inline = string.Format(DynamicBlendingShader, shaderName, backupStreamBuilder, copyFromLayerBuilder)
+            };
+
+            // Blend setup
+            var blendSetup = new ShaderMixinSource();
+            blendSetup.Mixins.Add(new ShaderClassSource("MaterialLayerComputeColorInit", BlendStream, "r"));
+            var blendMapSource = BlendMap.GenerateShaderSource(context);
+            blendSetup.AddComposition("Source", blendMapSource);
+
+            // Create a mixin
+            var shaderMixinSource = new ShaderMixinSource();
+            shaderMixinSource.Mixins.Add(shaderClassSource);
+            stack.Operations.Add(blendSetup);
+            var materialOperations = stack.SquashOperations();
+            shaderMixinSource.AddComposition("subLayer", materialOperations);
+            context.PopStack();
+
+            context.CurrentStack.Operations.Add(shaderMixinSource);
         }
+
+        private const string DynamicBlendingShader = @"
+class {0} : IMaterialLayer
+{{
+    compose IMaterialLayer subLayer;
+
+    override void Compute()
+    {{
+{1}        subLayer.Compute();
+{2}}}
+}};
+";
     }
 
     /// <summary>
@@ -625,9 +749,9 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// <summary>
     /// Common material attributes.
     /// </summary>
-    [DataContract("MaterialAttributes")]
-    [Display("Material Attributes")]
-    public class MaterialAttributes : IMaterialComposition
+    [DataContract("MaterialFeatures")]
+    [Display("Material Features")]
+    public class MaterialFeatures : MaterialFeatureBase, IMaterialComposition
     {
         /// <summary>
         /// Gets or sets the tessellation.
@@ -636,7 +760,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [Display("Tessellation", "Geometry")]
         [DefaultValue(null)]
         [DataMember(10)]
-        public IMaterialTessellationAttribute Tessellation { get; set; }
+        public IMaterialTessellationFeature Tessellation { get; set; }
 
         /// <summary>
         /// Gets or sets the displacement.
@@ -645,7 +769,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [Display("Displacement", "Geometry")]
         [DefaultValue(null)]
         [DataMember(20)]
-        public IMaterialDisplacementAttribute Displacement { get; set; }
+        public IMaterialDisplacementFeature Displacement { get; set; }
 
         /// <summary>
         /// Gets or sets the surface.
@@ -654,7 +778,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [Display("Surface", "Geometry")]
         [DefaultValue(null)]
         [DataMember(30)]
-        public IMaterialSurfaceAttribute Surface { get; set; }
+        public IMaterialSurfaceFeature Surface { get; set; }
 
         /// <summary>
         /// Gets or sets the micro surface.
@@ -662,7 +786,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The micro surface.</value>
         [DefaultValue(null)]
         [DataMember(40)]
-        public IMaterialMicroSurfaceAttribute MicroSurface { get; set; }
+        public IMaterialMicroSurfaceFeature MicroSurface { get; set; }
 
         /// <summary>
         /// Gets or sets the diffuse.
@@ -670,7 +794,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The diffuse.</value>
         [DefaultValue(null)]
         [DataMember(50)]
-        public IMaterialDiffuseAttribute Diffuse { get; set; }
+        public IMaterialDiffuseFeature Diffuse { get; set; }
 
         /// <summary>
         /// Gets or sets the diffuse model.
@@ -679,7 +803,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [Display("Diffuse Model")]
         [DefaultValue(null)]
         [DataMember(60)]
-        public IMaterialDiffuseModelAttribute DiffuseModel { get; set; }
+        public IMaterialDiffuseModelFeature DiffuseModel { get; set; }
 
         /// <summary>
         /// Gets or sets the specular.
@@ -687,7 +811,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The specular.</value>
         [DefaultValue(null)]
         [DataMember(70)]
-        public IMaterialSpecularAttribute Specular { get; set; }
+        public IMaterialSpecularFeature Specular { get; set; }
 
         /// <summary>
         /// Gets or sets the specular model.
@@ -696,7 +820,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [Display("Specular Model")]
         [DefaultValue(null)]
         [DataMember(80)]
-        public IMaterialSpecularModelAttribute SpecularModel { get; set; }
+        public IMaterialSpecularModelFeature SpecularModel { get; set; }
 
         /// <summary>
         /// Gets or sets the occlusion.
@@ -704,7 +828,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The occlusion.</value>
         [DefaultValue(null)]
         [DataMember(90)]
-        public IMaterialOcclusionAttribute Occlusion { get; set; }
+        public IMaterialOcclusionFeature Occlusion { get; set; }
 
         /// <summary>
         /// Gets or sets the emissive.
@@ -712,7 +836,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The emissive.</value>
         [DefaultValue(null)]
         [DataMember(100)]
-        public IMaterialEmissiveAttribute Emissive { get; set; }
+        public IMaterialEmissiveFeature Emissive { get; set; }
 
         /// <summary>
         /// Gets or sets the transparency.
@@ -720,36 +844,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The transparency.</value>
         [DefaultValue(null)]
         [DataMember(110)]
-        public IMaterialTransparencyAttribute Transparency { get; set; }
-
-        public virtual void GenerateShader(MaterialShaderGeneratorContext context)
-        {
-            if (context.PendingOperations.Count > 0)
-            {
-                context.Operations.Add(context.PendingOperations.Pop());
-            }
-
-            var mixin = new ShaderMixinSource();
-            mixin.Mixins.Add(new ShaderClassSource("MaterialLayerArray"));
-
-            var attributesMeta = TypeDescriptorFactory.Default.Find(GetType());
-            foreach (var member in attributesMeta.Members)
-            {
-                var memberShaderGen = member.Get(this) as IMaterialShaderGenerator;
-                if (memberShaderGen != null)
-                {
-                    memberShaderGen.GenerateShader(context);
-                }
-            }
-
-            // Squash all operations into MaterialLayerArray
-            foreach (var operation in context.Operations)
-            {
-                mixin.AddCompositionToArray("layers", operation);
-            }
-            context.Operations.Clear();
-            context.Operations.Add(mixin);
-        }
+        public IMaterialTransparencyFeature Transparency { get; set; }
     }
 
     /// <summary>
@@ -774,6 +869,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         public MaterialAsset()
         {
             Parameters = new ParameterCollectionData();
+            Overrides = new Dictionary<string, IMaterialNode>();
         }
         /// <summary>
         /// Gets or sets the material composition.
@@ -784,17 +880,26 @@ namespace SiliconStudio.Paradox.Assets.Materials
         public IMaterialComposition Composition { get; set; }
 
         /// <summary>
+        /// XXXX
+        /// </summary>
+        /// <userdoc>
+        /// All the color mapping nodes of the materials. They are map descriptions (texture or values) and operations on them.
+        /// </userdoc>
+        [DataMember(20)]
+        public Dictionary<string, IMaterialNode> Overrides { get; private set; }
+
+        /// <summary>
         /// Gets the parameters.
         /// </summary>
         /// <value>The parameters.</value>
-        [DataMember(20)]
+        [DataMember(30)]
         public ParameterCollectionData Parameters { get; private set; }
 
         private class MaterialFactory : IObjectFactory
         {
             public object New(Type type)
             {
-                var newMaterial = new MaterialAsset { Composition = new MaterialAttributes() };
+                var newMaterial = new MaterialAsset { Composition = new MaterialFeatures() };
                 return newMaterial;
             }
         }
