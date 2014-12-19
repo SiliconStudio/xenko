@@ -131,53 +131,63 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
             if (shaderBytecodeResult.HasErrors)
                 return null;
 
-            // Convert from HLSL to GLSL
-            // Note that for now we parse from shader as a string, but we could simply clone effectPass.Shader to avoid multiple parsing.
-            var glslConvertor = new ShaderConverter(isOpenGLES, isOpenGLES3);
-            var glslShader = glslConvertor.Convert(shaderSource, entryPoint, pipelineStage, sourceFilename, shaderBytecodeResult);
+            string shaderString = null;
+            var generateUniformBlocks = isOpenGLES && isOpenGLES3;
 
-            if (glslShader == null || shaderBytecodeResult.HasErrors)
-                return null;
-
-            // Add std140 layout
-            foreach (var constantBuffer in glslShader.Declarations.OfType<ConstantBuffer>())
+            // null entry point for pixel shader means no pixel shader. In that case, we return a default function.
+            if (entryPoint == null && stage == ShaderStage.Pixel && isOpenGLES)
             {
-                constantBuffer.Qualifiers |= new LayoutQualifier(new LayoutKeyValue("std140"));
+                shaderString = "void main(){}";
             }
-
-            // Output the result
-            var glslShaderWriter = new HlslToGlslWriter();
-
-            if (isOpenGLES)
+            else
             {
-                glslShaderWriter.TrimFloatSuffix = true;
+                // Convert from HLSL to GLSL
+                // Note that for now we parse from shader as a string, but we could simply clone effectPass.Shader to avoid multiple parsing.
+                var glslConvertor = new ShaderConverter(isOpenGLES, isOpenGLES3);
+                var glslShader = glslConvertor.Convert(shaderSource, entryPoint, pipelineStage, sourceFilename, shaderBytecodeResult);
 
-                if (isOpenGLES3)
-                    glslShaderWriter.GenerateUniformBlocks = true;
-                else
-                    glslShaderWriter.GenerateUniformBlocks = false;
+                if (glslShader == null || shaderBytecodeResult.HasErrors)
+                    return null;
 
-                foreach (var variable in glslShader.Declarations.OfType<Variable>())
+                // Add std140 layout
+                foreach (var constantBuffer in glslShader.Declarations.OfType<ConstantBuffer>())
                 {
-                    if (variable.Qualifiers.Contains(ParameterQualifier.In))
+                    constantBuffer.Qualifiers |= new LayoutQualifier(new LayoutKeyValue("std140"));
+                }
+
+                // Output the result
+                var glslShaderWriter = new HlslToGlslWriter();
+
+                if (isOpenGLES)
+                {
+                    glslShaderWriter.TrimFloatSuffix = true;
+
+                    glslShaderWriter.GenerateUniformBlocks = generateUniformBlocks;
+
+                    foreach (var variable in glslShader.Declarations.OfType<Variable>())
                     {
-                        variable.Qualifiers.Values.Remove(ParameterQualifier.In);
-                        // "in" becomes "attribute" in VS, "varying" in other stages
-                        variable.Qualifiers.Values.Add(
-                            pipelineStage == PipelineStage.Vertex
-                                ? global::SiliconStudio.Shaders.Ast.Glsl.ParameterQualifier.Attribute
-                                : global::SiliconStudio.Shaders.Ast.Glsl.ParameterQualifier.Varying);
-                    }
-                    if (variable.Qualifiers.Contains(ParameterQualifier.Out))
-                    {
-                        variable.Qualifiers.Values.Remove(ParameterQualifier.Out);
-                        variable.Qualifiers.Values.Add(global::SiliconStudio.Shaders.Ast.Glsl.ParameterQualifier.Varying);
+                        if (variable.Qualifiers.Contains(ParameterQualifier.In))
+                        {
+                            variable.Qualifiers.Values.Remove(ParameterQualifier.In);
+                            // "in" becomes "attribute" in VS, "varying" in other stages
+                            variable.Qualifiers.Values.Add(
+                                pipelineStage == PipelineStage.Vertex
+                                    ? global::SiliconStudio.Shaders.Ast.Glsl.ParameterQualifier.Attribute
+                                    : global::SiliconStudio.Shaders.Ast.Glsl.ParameterQualifier.Varying);
+                        }
+                        if (variable.Qualifiers.Contains(ParameterQualifier.Out))
+                        {
+                            variable.Qualifiers.Values.Remove(ParameterQualifier.Out);
+                            variable.Qualifiers.Values.Add(global::SiliconStudio.Shaders.Ast.Glsl.ParameterQualifier.Varying);
+                        }
                     }
                 }
-            }
 
-            // Write shader
-            glslShaderWriter.Visit(glslShader);
+                // Write shader
+                glslShaderWriter.Visit(glslShader);
+
+                shaderString = glslShaderWriter.Text;
+            }
 
             // Build shader source
             var glslShaderCode = new StringBuilder();
@@ -187,6 +197,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
             {
                 glslShaderCode
                     .AppendLine("#version 420")
+                    .AppendLine("#pragma optionNV unroll all")
                     .AppendLine();
 
                 if (pipelineStage == PipelineStage.Pixel)
@@ -202,7 +213,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
                         .AppendLine("#version 300 es")
                         .AppendLine();
 
-                if (glslShaderWriter.GenerateUniformBlocks)
+                if (generateUniformBlocks)
                     glslShaderCode
                         .AppendLine("#extension GL_ARB_gpu_shader5 : enable")
                         .AppendLine();
@@ -213,7 +224,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
                         .AppendLine();
             }
 
-            glslShaderCode.Append(glslShaderWriter.Text);
+            glslShaderCode.Append(shaderString);
 
             var realShaderSource = glslShaderCode.ToString();
 
