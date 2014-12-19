@@ -3,10 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Presentation.Core;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum
@@ -65,7 +65,7 @@ namespace SiliconStudio.Presentation.Quantum
             if (!string.IsNullOrWhiteSpace(nodeName))
             {
                 Name = nodeName;
-                DisplayName = Regex.Replace(nodeName, "([a-z](?=[A-Z])|[A-Z](?=[A-Z][a-z]))", "$1 ");
+                DisplayName = Utils.SplitCamelCase(nodeName);
             }
             else if (index != null)
             {
