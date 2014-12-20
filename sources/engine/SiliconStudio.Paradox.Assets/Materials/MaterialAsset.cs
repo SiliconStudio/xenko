@@ -35,15 +35,25 @@ namespace SiliconStudio.Paradox.Assets.Materials
         public MaterialAsset()
         {
             Parameters = new ParameterCollectionData();
-            Overrides = new Dictionary<string, IMaterialComputeColor>();
+            //Overrides = new Dictionary<string, IMaterialComputeColor>();
         }
+
         /// <summary>
-        /// Gets or sets the material composition.
+        /// Gets or sets the material attributes.
         /// </summary>
-        /// <value>The material composition.</value>
+        /// <value>The material attributes.</value>
         [DefaultValue(null)]
         [DataMember(10)]
-        public IMaterialComposition Composition { get; set; }
+        public IMaterialAttributes Attributes { get; set; }
+
+
+        /// <summary>
+        /// Gets or sets the material compositor.
+        /// </summary>
+        /// <value>The material compositor.</value>
+        [DefaultValue(null)]
+        [DataMember(20)]
+        public IMaterialLayers Layers { get; set; }
 
         /// <summary>
         /// XXXX
@@ -51,31 +61,32 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <userdoc>
         /// All the color mapping nodes of the materials. They are map descriptions (texture or values) and operations on them.
         /// </userdoc>
-        [DataMember(20)]
-        public Dictionary<string, IMaterialComputeColor> Overrides { get; private set; }
+        //[DataMember(30)]
+        //public Dictionary<string, IMaterialComputeColor> Overrides { get; private set; }
 
         /// <summary>
         /// Gets the parameters.
         /// </summary>
         /// <value>The parameters.</value>
-        [DataMember(30)]
+        [DataMember(40)]
         public ParameterCollectionData Parameters { get; private set; }
 
         private class MaterialFactory : IObjectFactory
         {
             public object New(Type type)
             {
-                var newMaterial = new MaterialAsset { Composition = new MaterialAttributes() };
+                var newMaterial = new MaterialAsset
+                {
+                    Attributes = ObjectFactory.NewInstance<MaterialAttributes>(),
+                    Layers = ObjectFactory.NewInstance<MaterialBlendLayers>(),
+                };
                 return newMaterial;
             }
         }
 
         public void GenerateShader(MaterialShaderGeneratorContext context)
         {
-            if (Composition != null)
-            {
-                Composition.GenerateShader(context);
-            }
+            MaterialFeatureBase.GenerateShader(this, context);
         }
     }
 }

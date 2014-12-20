@@ -164,7 +164,8 @@
     <Compile Include="ImageGroupCompiler.cs" />
     <Compile Include="ImageInfo.cs" />
     <Compile Include="Materials\GenericDictionary.cs" />
-    <Compile Include="Materials\IMaterialComposition.cs" />
+    <Compile Include="Materials\IMaterialAttributes.cs" />
+    <Compile Include="Materials\IMaterialLayers.cs" />
     <Compile Include="Materials\IMaterialDiffuseFeature.cs" />
     <Compile Include="Materials\IMaterialDiffuseModelFeature.cs" />
     <Compile Include="Materials\IMaterialDisplacementFeature.cs" />
@@ -178,10 +179,11 @@
     <Compile Include="Materials\IMaterialSurfaceFeature.cs" />
     <Compile Include="Materials\IMaterialTessellationFeature.cs" />
     <Compile Include="Materials\IMaterialTransparencyFeature.cs" />
+    <Compile Include="Materials\IMaterialFeatureVisitor.cs" />
     <Compile Include="Materials\MaterialAsset.cs" />
     <Compile Include="Materials\MaterialAttributes.cs" />
     <Compile Include="Materials\MaterialBlendLayer.cs" />
-    <Compile Include="Materials\MaterialBlendLayerStack.cs" />
+    <Compile Include="Materials\MaterialBlendLayers.cs" />
     <Compile Include="Materials\MaterialBlendOverrides.cs" />
     <Compile Include="Materials\MaterialDiffuseLambertianModelFeature.cs" />
     <Compile Include="Materials\MaterialDiffuseMapFeature.cs" />

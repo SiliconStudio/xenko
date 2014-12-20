@@ -4,9 +4,9 @@
 namespace SiliconStudio.Paradox.Assets.Materials
 {
     /// <summary>
-    /// A material composition.
+    /// An interface for defining layers of material.
     /// </summary>
-    public interface IMaterialComposition : IMaterialFeature
+    public interface IMaterialLayers : IMaterialFeature
     {
     }
 }

@@ -10,17 +10,17 @@ using SiliconStudio.Core.Reflection;
 namespace SiliconStudio.Paradox.Assets.Materials
 {
     /// <summary>
-    /// A composition material to blend different materials.
+    /// A composition material to blend different materials in a stack based manner.
     /// </summary>
-    [DataContract("MaterialBlendLayerStack")]
+    [DataContract("MaterialBlendLayers")]
     [Display("Material Layers")]
     [ObjectFactory(typeof(Factory))]
-    public class MaterialBlendLayerStack : IMaterialComposition
+    public class MaterialBlendLayers : IMaterialLayers
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MaterialBlendLayerStack"/> class.
+        /// Initializes a new instance of the <see cref="MaterialBlendLayers"/> class.
         /// </summary>
-        public MaterialBlendLayerStack()
+        public MaterialBlendLayers()
         {
             Layers = new List<MaterialBlendLayer>();
         }
@@ -35,8 +35,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         {
             public object New(Type type)
             {
-                var stack = new MaterialBlendLayerStack();
-                stack.Layers.Add(ObjectFactory.NewInstance<MaterialBlendLayer>());
+                var stack = new MaterialBlendLayers();
                 return stack;
             }
         }

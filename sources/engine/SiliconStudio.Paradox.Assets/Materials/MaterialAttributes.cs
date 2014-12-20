@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// </summary>
     [DataContract("MaterialAttributes")]
     [Display("Material Attributes")]
-    public class MaterialAttributes : MaterialFeatureBase, IMaterialComposition
+    public class MaterialAttributes : MaterialFeatureBase, IMaterialAttributes
     {
         /// <summary>
         /// Gets or sets the tessellation.
