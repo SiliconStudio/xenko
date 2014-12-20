@@ -263,13 +263,13 @@ namespace SiliconStudio.Paradox.Assets.Tests
             orderedNames.Add("thirdValue");
             orderedNames.Add("fourthValue");
 
-            var orderedGen = new List<INodeParameter>();
-            orderedGen.Add(new NodeParameter());
-            orderedGen.Add(new NodeParameterFloat());
-            orderedGen.Add(new NodeParameterSampler());
-            orderedGen.Add(new NodeParameterFloat4());
+            var orderedGen = new List<IComputeColorParameter>();
+            orderedGen.Add(new ComputeColorParameter());
+            orderedGen.Add(new ComputeColorParameterFloat());
+            orderedGen.Add(new ComputeColorParameterSampler());
+            orderedGen.Add(new ComputeColorParameterFloat4());
 
-            var testDict = new GenericDictionary();
+            var testDict = new ComputeColorParameters();
             testDict.Add(orderedNames[0], orderedGen[0]);
             testDict.Add(orderedNames[1], orderedGen[1]);
             testDict.Add(orderedNames[2], orderedGen[2]);
@@ -286,9 +286,9 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
             //test serialization
             var clonedObject = AssetCloner.Clone(testDict);
-            Assert.IsTrue(clonedObject is GenericDictionary);
+            Assert.IsTrue(clonedObject is ComputeColorParameters);
             counter = 0;
-            foreach (var dictElem in (GenericDictionary)clonedObject)
+            foreach (var dictElem in (ComputeColorParameters)clonedObject)
             {
                 Assert.AreEqual(dictElem.Key, orderedNames[counter]);
                 counter++;

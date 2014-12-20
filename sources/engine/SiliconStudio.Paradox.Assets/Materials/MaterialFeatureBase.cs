@@ -17,6 +17,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// </remarks>
     public abstract class MaterialFeatureBase : IMaterialFeature
     {
+        public virtual void GenerateShader(MaterialShaderGeneratorContext context)
+        {
+            GenerateShader(this, context);
+        }
+
         /// <summary>
         /// Automatically introspect a material feature and look for all members (field or properties) containing a <see cref="IMaterialFeature"/>
         /// or a <see cref="IMaterialComputeColor"/> attribute.
@@ -28,7 +33,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// or
         /// context
         /// </exception>
-        public static void GenerateShader(IMaterialFeature instance, MaterialShaderGeneratorContext context)
+        private static void GenerateShader(IMaterialFeature instance, MaterialShaderGeneratorContext context)
         {
             if (instance == null) throw new ArgumentNullException("instance");
             if (context == null) throw new ArgumentNullException("context");
@@ -93,11 +98,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
                     }
                 }
             }
-        }
-
-        public virtual void GenerateShader(MaterialShaderGeneratorContext context)
-        {
-            GenerateShader(this, context);
         }
     }
 }

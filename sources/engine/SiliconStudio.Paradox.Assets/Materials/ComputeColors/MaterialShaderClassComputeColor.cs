@@ -57,7 +57,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// The generics of the shader. There is no need to edit the list, it is automatically filled when the shader is loaded.
         /// </userdoc>
         [DataMember(30)]
-        public GenericDictionary Generics { get; set; }
+        public ComputeColorParameters Generics { get; set; }
         
         /// <summary>
         /// The compositions of this class.
@@ -94,20 +94,19 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         public MaterialShaderClassComputeColor()
             : base()
         {
-            Generics = new GenericDictionary();
+            Generics = new ComputeColorParameters();
             CompositionNodes = new Dictionary<string, IMaterialComputeColor>();
             Members = new Dictionary<ParameterKey, object>();
         }
 
         /// <inheritdoc/>
-        public override IEnumerable<MaterialNodeEntry> GetChildren(object context = null)
+        public override IEnumerable<IMaterialComputeColor> GetChildren(object context = null)
         {
             foreach (var composition in CompositionNodes)
             {
                 if (composition.Value != null)
                 {
-                    KeyValuePair<string, IMaterialComputeColor> composition1 = composition;
-                    yield return new MaterialNodeEntry(composition.Value, node => CompositionNodes[composition1.Key] = node);
+                    yield return composition.Value;
                 }
             }
 
@@ -116,11 +115,11 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
             {
                 foreach (var gen in Generics)
                 {
-                    if (gen.Value is NodeParameterTexture)
+                    if (gen.Value is ComputeColorParameterTexture)
                     {
-                        var foundNode = ((NodeParameterTexture)gen.Value).Texture;
+                        var foundNode = ((ComputeColorParameterTexture)gen.Value).Texture;
                         if (foundNode != null) 
-                            yield return new MaterialNodeEntry(foundNode, node => { }); // TODO: change the callback
+                            yield return foundNode;
                     }
                 }
             }
@@ -140,29 +139,29 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
                 foreach (var genericKey in Generics.Keys)
                 {
                     var generic = Generics[genericKey];
-                    if (generic is NodeParameterTexture)
+                    if (generic is ComputeColorParameterTexture)
                     {
-                        var textureParameter = ((NodeParameterTexture)generic);
+                        var textureParameter = ((ComputeColorParameterTexture)generic);
                         var textureKey = shaderGeneratorContext.GetTextureKey(textureParameter.Texture);
                         mixinGenerics.Add(textureKey.ToString());
                     }
-                    else if (generic is NodeParameterSampler)
+                    else if (generic is ComputeColorParameterSampler)
                     {
-                        var pk = shaderGeneratorContext.GetSamplerKey((NodeParameterSampler)generic);
+                        var pk = shaderGeneratorContext.GetSamplerKey((ComputeColorParameterSampler)generic);
                         mixinGenerics.Add(pk.ToString());
                     }
-                    else if (generic is NodeParameterFloat)
-                        mixinGenerics.Add(((NodeParameterFloat)generic).Value.ToString(CultureInfo.InvariantCulture));
-                    else if (generic is NodeParameterInt)
-                        mixinGenerics.Add(((NodeParameterInt)generic).Value.ToString(CultureInfo.InvariantCulture));
-                    else if (generic is NodeParameterFloat2)
-                        mixinGenerics.Add(MaterialUtility.GetAsShaderString(((NodeParameterFloat2)generic).Value));
-                    else if (generic is NodeParameterFloat3)
-                        mixinGenerics.Add(MaterialUtility.GetAsShaderString(((NodeParameterFloat3)generic).Value));
-                    else if (generic is NodeParameterFloat4)
-                        mixinGenerics.Add(MaterialUtility.GetAsShaderString(((NodeParameterFloat4)generic).Value));
-                    else if (generic is NodeStringParameter)
-                        mixinGenerics.Add(((NodeStringParameter)generic).Value);
+                    else if (generic is ComputeColorParameterFloat)
+                        mixinGenerics.Add(((ComputeColorParameterFloat)generic).Value.ToString(CultureInfo.InvariantCulture));
+                    else if (generic is ComputeColorParameterInt)
+                        mixinGenerics.Add(((ComputeColorParameterInt)generic).Value.ToString(CultureInfo.InvariantCulture));
+                    else if (generic is ComputeColorParameterFloat2)
+                        mixinGenerics.Add(MaterialUtility.GetAsShaderString(((ComputeColorParameterFloat2)generic).Value));
+                    else if (generic is ComputeColorParameterFloat3)
+                        mixinGenerics.Add(MaterialUtility.GetAsShaderString(((ComputeColorParameterFloat3)generic).Value));
+                    else if (generic is ComputeColorParameterFloat4)
+                        mixinGenerics.Add(MaterialUtility.GetAsShaderString(((ComputeColorParameterFloat4)generic).Value));
+                    else if (generic is ComputeColorStringParameter)
+                        mixinGenerics.Add(((ComputeColorStringParameter)generic).Value);
                     else
                         throw new Exception("[Material] Unknown node type: " + generic.GetType());
                 }
@@ -200,7 +199,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
                 return;
             }
 
-            var newGenerics = new GenericDictionary();
+            var newGenerics = new ComputeColorParameters();
             var newCompositionNodes = new Dictionary<string, IMaterialComputeColor>();
             var newMembers = new Dictionary<ParameterKey, object>();
 
@@ -380,17 +379,17 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
                     {
                         AddToCollection<Vector4>(keyValue.Key, (Vector4)keyValue.Value, collection);
                     }
-                    else if (expectedType == typeof(NodeParameterTexture))
+                    else if (expectedType == typeof(ComputeColorParameterTexture))
                     {
                         var matContext = context as MaterialShaderGeneratorContext;
                         if (matContext != null)
                         {
-                            var textureNode = ((NodeParameterTexture)keyValue.Value).Texture;
+                            var textureNode = ((ComputeColorParameterTexture)keyValue.Value).Texture;
                             if (textureNode != null)
                                 AddToCollection<Graphics.Texture>(keyValue.Key, textureNode, collection);
                         }
                     }
-                    else if (expectedType == typeof(NodeParameterSampler))
+                    else if (expectedType == typeof(ComputeColorParameterSampler))
                     {
                         AddToCollection<Graphics.SamplerState>(keyValue.Key, keyValue.Value, collection);
                     }
@@ -424,13 +423,13 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
                 object defaultValue;
                 if (pk.PropertyType == typeof(Graphics.Texture))
                 {
-                    expectedType = typeof(NodeParameterTexture);
-                    defaultValue = new NodeParameterTexture();
+                    expectedType = typeof(ComputeColorParameterTexture);
+                    defaultValue = new ComputeColorParameterTexture();
                 }
                 else if (pk.PropertyType == typeof(Graphics.SamplerState))
                 {
-                    expectedType = typeof(NodeParameterSampler);
-                    defaultValue = new NodeParameterSampler();
+                    expectedType = typeof(ComputeColorParameterSampler);
+                    defaultValue = new ComputeColorParameterSampler();
                 }
                 else
                 {
@@ -454,38 +453,38 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// </summary>
         /// <typeparam name="T">The type of the generic.</typeparam>
         /// <param name="keyName">The name of the generic.</param>
-        /// <param name="generics">The target GenericDictionary.</param>
-        private void AddKey<T>(string keyName, GenericDictionary generics)
+        /// <param name="generics">The target ComputeColorParameters.</param>
+        private void AddKey<T>(string keyName, ComputeColorParameters generics)
         {
-            INodeParameter nodeParameter;
+            IComputeColorParameter computeColorParameter;
             var typeT = typeof(T);
             if (typeT == typeof(Texture))
-                nodeParameter = new NodeParameterTexture();
+                computeColorParameter = new ComputeColorParameterTexture();
             else if (typeT == typeof(float))
-                nodeParameter = new NodeParameterFloat();
+                computeColorParameter = new ComputeColorParameterFloat();
             else if (typeT == typeof(int))
-                nodeParameter = new NodeParameterInt();
+                computeColorParameter = new ComputeColorParameterInt();
             else if (typeT == typeof(Vector2))
-                nodeParameter = new NodeParameterFloat2();
+                computeColorParameter = new ComputeColorParameterFloat2();
             else if (typeT == typeof(Vector3))
-                nodeParameter = new NodeParameterFloat3();
+                computeColorParameter = new ComputeColorParameterFloat3();
             else if (typeT == typeof(Vector4))
-                nodeParameter = new NodeParameterFloat4();
+                computeColorParameter = new ComputeColorParameterFloat4();
             else if (typeT == typeof(SamplerState))
-                nodeParameter = new NodeParameterSampler();
+                computeColorParameter = new ComputeColorParameterSampler();
             else
                 throw new Exception("Unsupported generic format");
 
             if (Generics.ContainsKey(keyName))
             {
                 var gen = Generics[keyName];
-                if (gen == null || gen.GetType() != nodeParameter.GetType())
-                    generics[keyName] = nodeParameter;
+                if (gen == null || gen.GetType() != computeColorParameter.GetType())
+                    generics[keyName] = computeColorParameter;
                 else
                     generics[keyName] = gen;
             }
             else
-                generics.Add(keyName, nodeParameter);
+                generics.Add(keyName, computeColorParameter);
         }
 
         /// <summary>

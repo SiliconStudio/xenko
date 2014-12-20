@@ -95,7 +95,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             return key;
         }
 
-        public ParameterKey<SamplerState> GetSamplerKey(NodeParameterSampler sampler)
+        public ParameterKey<SamplerState> GetSamplerKey(ComputeColorParameterSampler sampler)
         {
             if (sampler == null) throw new ArgumentNullException("sampler");
 

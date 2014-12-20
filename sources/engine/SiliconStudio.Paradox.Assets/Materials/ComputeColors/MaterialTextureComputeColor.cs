@@ -45,7 +45,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
             }
             Channel = TextureChannel.RGBA;
             TexcoordIndex = texcoordIndex;
-            Sampler = new NodeParameterSampler();
+            Sampler = new ComputeColorParameterSampler();
             Scale = scale;
             Offset = offset;
             Key = null;
@@ -88,7 +88,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// The sampler of the texture.
         /// </userdoc>
         [DataMemberIgnore]
-        private NodeParameterSampler Sampler { get; set; }
+        private ComputeColorParameterSampler Sampler { get; set; }
 
         /// <summary>
         /// The texture filtering mode.

@@ -75,7 +75,7 @@ namespace SiliconStudio.Paradox.Assets.Serializers
 
         public void Visit(ref VisitorContext context)
         {
-            // Visit a GenericDictionary without visiting properties
+            // Visit a ComputeColorParameters without visiting properties
             context.Visitor.VisitObject(context.Instance, context.Descriptor, false);
         }
     }

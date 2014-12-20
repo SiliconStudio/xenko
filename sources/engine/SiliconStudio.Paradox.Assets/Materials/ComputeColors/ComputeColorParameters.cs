@@ -1,31 +1,33 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
 
-namespace SiliconStudio.Paradox.Assets.Materials
+namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
 {
     /// <summary>
     /// A custom dictionary to keep track of the order the elements were inserted.
     /// </summary>
-    [DataSerializer(typeof(GenericDictionary.Serializer))]
-    [DataContract("GenericDictionary")]
-    public class GenericDictionary : IDictionary<string, INodeParameter>
+    [DataSerializer(typeof(ComputeColorParameters.Serializer))]
+    [DataContract("ComputeColorParameters")]
+    public class ComputeColorParameters : IDictionary<string, IComputeColorParameter>
     {
-        private List<KeyValuePair<string, INodeParameter>> internalDictionary;
+        private readonly List<KeyValuePair<string, IComputeColorParameter>> internalDictionary;
 
-        public GenericDictionary()
+        public ComputeColorParameters()
         {
-            internalDictionary = new List<KeyValuePair<string, INodeParameter>>();
+            internalDictionary = new List<KeyValuePair<string, IComputeColorParameter>>();
         }
 
         //TODO: custom enumerator?
-        public IEnumerator<KeyValuePair<string, INodeParameter>> GetEnumerator()
+        public IEnumerator<KeyValuePair<string, IComputeColorParameter>> GetEnumerator()
         {
             return internalDictionary.GetEnumerator();
         }
@@ -35,7 +37,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             return GetEnumerator();
         }
 
-        public void Add(KeyValuePair<string, INodeParameter> item)
+        public void Add(KeyValuePair<string, IComputeColorParameter> item)
         {
             internalDictionary.Add(item);
         }
@@ -45,12 +47,12 @@ namespace SiliconStudio.Paradox.Assets.Materials
             internalDictionary.Clear();
         }
 
-        public bool Contains(KeyValuePair<string, INodeParameter> item)
+        public bool Contains(KeyValuePair<string, IComputeColorParameter> item)
         {
             return internalDictionary.Contains(item);
         }
 
-        public void CopyTo(KeyValuePair<string, INodeParameter>[] array, int arrayIndex)
+        public void CopyTo(KeyValuePair<string, IComputeColorParameter>[] array, int arrayIndex)
         {
             var copyCount = Math.Min(array.Length - arrayIndex, internalDictionary.Count);
             for (var i = 0; i < copyCount; ++i)
@@ -59,7 +61,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             }
         }
 
-        public bool Remove(KeyValuePair<string, INodeParameter> item)
+        public bool Remove(KeyValuePair<string, IComputeColorParameter> item)
         {
             return internalDictionary.Remove(item);
         }
@@ -85,9 +87,9 @@ namespace SiliconStudio.Paradox.Assets.Materials
             return internalDictionary.Any(x => x.Key == key);
         }
 
-        public void Add(string key, INodeParameter value)
+        public void Add(string key, IComputeColorParameter value)
         {
-            internalDictionary.Add(new KeyValuePair<string, INodeParameter>(key, value));
+            internalDictionary.Add(new KeyValuePair<string, IComputeColorParameter>(key, value));
         }
 
         public bool Remove(string key)
@@ -100,7 +102,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             return false;
         }
 
-        public bool TryGetValue(string key, out INodeParameter value)
+        public bool TryGetValue(string key, out IComputeColorParameter value)
         {
             if (ContainsKey(key))
             {
@@ -111,7 +113,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             return false;
         }
 
-        public INodeParameter this[string key]
+        public IComputeColorParameter this[string key]
         {
             get
             {
@@ -122,7 +124,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             }
             set
             {
-                var newValue = new KeyValuePair<string, INodeParameter>(key, value);
+                var newValue = new KeyValuePair<string, IComputeColorParameter>(key, value);
                 var foundIndex = internalDictionary.FindIndex(x => x.Key == key);
                 if (foundIndex >= 0)
                     internalDictionary[foundIndex] = newValue;
@@ -139,7 +141,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             }
         }
 
-        public ICollection<INodeParameter> Values
+        public ICollection<IComputeColorParameter> Values
         {
             get
             {
@@ -147,31 +149,31 @@ namespace SiliconStudio.Paradox.Assets.Materials
             }
         }
 
-        internal class Serializer : DataSerializer<GenericDictionary>, IDataSerializerInitializer, IDataSerializerGenericInstantiation
+        internal class Serializer : DataSerializer<ComputeColorParameters>, IDataSerializerInitializer, IDataSerializerGenericInstantiation
         {
 
-            private DataSerializer<KeyValuePair<string, INodeParameter>> itemDataSerializer;
+            private DataSerializer<KeyValuePair<string, IComputeColorParameter>> itemDataSerializer;
 
             /// <inheritdoc/>
             public void Initialize(SerializerSelector serializerSelector)
             {
-                itemDataSerializer = serializerSelector.GetSerializer<KeyValuePair<string, INodeParameter>>();
+                itemDataSerializer = serializerSelector.GetSerializer<KeyValuePair<string, IComputeColorParameter>>();
             }
 
-            public override void PreSerialize(ref GenericDictionary obj, ArchiveMode mode, SerializationStream stream)
+            public override void PreSerialize(ref ComputeColorParameters obj, ArchiveMode mode, SerializationStream stream)
             {
                 if (mode == ArchiveMode.Deserialize)
                 {
                     // TODO: Peek the dictionary size
                     if (obj == null)
-                        obj = new GenericDictionary();
+                        obj = new ComputeColorParameters();
                     else
                         obj.Clear();
                 }
             }
 
             /// <inheritdoc/>
-            public override void Serialize(ref GenericDictionary obj, ArchiveMode mode, SerializationStream stream)
+            public override void Serialize(ref ComputeColorParameters obj, ArchiveMode mode, SerializationStream stream)
             {
                 if (mode == ArchiveMode.Deserialize)
                 {
@@ -179,7 +181,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
                     int count = stream.ReadInt32();
                     for (int i = 0; i < count; ++i)
                     {
-                        var value = new KeyValuePair<string, INodeParameter>();
+                        var value = new KeyValuePair<string, IComputeColorParameter>();
                         itemDataSerializer.Serialize(ref value, mode, stream);
                         obj.Add(value.Key, value.Value);
                     }
@@ -196,7 +198,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
             public void EnumerateGenericInstantiations(SerializerSelector serializerSelector, IList<Type> genericInstantiations)
             {
-                genericInstantiations.Add(typeof(KeyValuePair<string, INodeParameter>));
+                genericInstantiations.Add(typeof(KeyValuePair<string, IComputeColorParameter>));
             }
         }
     }

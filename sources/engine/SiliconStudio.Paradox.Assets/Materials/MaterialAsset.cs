@@ -86,7 +86,15 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         public void GenerateShader(MaterialShaderGeneratorContext context)
         {
-            MaterialFeatureBase.GenerateShader(this, context);
+            if (Attributes != null)
+            {
+                Attributes.GenerateShader(context);
+            }
+
+            if (Layers != null)
+            {
+                Layers.GenerateShader(context);
+            }
         }
     }
 }

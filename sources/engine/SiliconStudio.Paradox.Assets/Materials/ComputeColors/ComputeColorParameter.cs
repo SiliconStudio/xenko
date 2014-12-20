@@ -1,28 +1,26 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
-using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.Assets.Materials
+namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
 {
-    public interface INodeParameter
+    /// <summary>
+    /// Base class for a Color compute color parameter.
+    /// </summary>
+    [DataContract("ComputeColorParameter")]
+    public abstract class ComputeColorParameter : IComputeColorParameter
     {
     }
 
-    [DataContract("NodeParameter")]
-    public abstract class NodeParameter : INodeParameter
+    [DataContract("ComputeColorParameterTexture")]
+    public class ComputeColorParameterTexture : ComputeColorParameter
     {
-    }
-
-    [DataContract("NodeParameterTexture")]
-    public class NodeParameterTexture : NodeParameter
-    {
-        public NodeParameterTexture()
+        public ComputeColorParameterTexture()
         {
             Texture = new MaterialTextureComputeColor();
         }
@@ -31,74 +29,74 @@ namespace SiliconStudio.Paradox.Assets.Materials
     }
 
     [DataContract()]
-    public abstract class NodeParameterValue<T> : INodeParameter
+    public abstract class ComputeColorParameterValue<T> : IComputeColorParameter
     {
         [DataMember(10)]
         public T Value { get; set; }
     }
 
-    [DataContract("NodeStringParameter")]
-    public class NodeStringParameter : NodeParameterValue<string>
+    [DataContract("ComputeColorStringParameter")]
+    public class ComputeColorStringParameter : ComputeColorParameterValue<string>
     {
-        public NodeStringParameter()
+        public ComputeColorStringParameter()
             : base()
         {
             Value = string.Empty;
         }
     }
 
-    [DataContract("NodeParameterFloat")]
-    public class NodeParameterFloat : NodeParameterValue<float>
+    [DataContract("ComputeColorParameterFloat")]
+    public class ComputeColorParameterFloat : ComputeColorParameterValue<float>
     {
-        public NodeParameterFloat()
+        public ComputeColorParameterFloat()
             : base()
         {
             Value = 0.0f;
         }
     }
 
-    [DataContract("NodeParameterInt")]
-    public class NodeParameterInt : NodeParameterValue<int>
+    [DataContract("ComputeColorParameterInt")]
+    public class ComputeColorParameterInt : ComputeColorParameterValue<int>
     {
-        public NodeParameterInt()
+        public ComputeColorParameterInt()
             : base()
         {
             Value = 0;
         }
     }
 
-    [DataContract("NodeParameterFloat2")]
-    public class NodeParameterFloat2 : NodeParameterValue<Vector2>
+    [DataContract("ComputeColorParameterFloat2")]
+    public class ComputeColorParameterFloat2 : ComputeColorParameterValue<Vector2>
     {
-        public NodeParameterFloat2()
+        public ComputeColorParameterFloat2()
             : base()
         {
             Value = Vector2.Zero;
         }
     }
 
-    [DataContract("NodeParameterFloat3")]
-    public class NodeParameterFloat3 : NodeParameterValue<Vector3>
+    [DataContract("ComputeColorParameterFloat3")]
+    public class ComputeColorParameterFloat3 : ComputeColorParameterValue<Vector3>
     {
-        public NodeParameterFloat3()
+        public ComputeColorParameterFloat3()
             : base()
         {
             Value = Vector3.Zero;
         }
     }
 
-    [DataContract("NodeParameterFloat4")]
-    public class NodeParameterFloat4 : NodeParameterValue<Vector4>
+    [DataContract("ComputeColorParameterFloat4")]
+    public class ComputeColorParameterFloat4 : ComputeColorParameterValue<Vector4>
     {
-        public NodeParameterFloat4()
+        public ComputeColorParameterFloat4()
             : base()
         {
             Value = Vector4.Zero;
         }
     }
 
-    [DataContract("NodeParameterSampler")]
-    public class NodeParameterSampler : INodeParameter
+    [DataContract("ComputeColorParameterSampler")]
+    public class ComputeColorParameterSampler : IComputeColorParameter
     {
         /// <summary>
         /// The texture filtering mode.
@@ -121,7 +119,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [DefaultValue(TextureAddressMode.Wrap)]
         public TextureAddressMode AddressModeV { get; set; }
 
-        public NodeParameterSampler()
+        public ComputeColorParameterSampler()
         {
             Filtering = TextureFilter.Linear;
             AddressModeU = TextureAddressMode.Wrap;

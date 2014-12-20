@@ -66,12 +66,12 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         public IMaterialComputeColor RightChild { get; set; }
 
         /// <inheritdoc/>
-        public override IEnumerable<MaterialNodeEntry> GetChildren(object context = null)
+        public override IEnumerable<IMaterialComputeColor> GetChildren(object context = null)
         {
             if (LeftChild != null)
-            	yield return new MaterialNodeEntry(LeftChild, node => LeftChild = node);
+            	yield return LeftChild;
             if (RightChild != null)
-           	yield return new MaterialNodeEntry(RightChild, node => RightChild = node);
+           	    yield return RightChild;
         }
 
         private const string BackgroundCompositionName = "color1";
