@@ -59,6 +59,15 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
 
             var shaderDirectories = CollectShadersDirectories(null);
 
+            if (span.File != null)
+            {
+                var dirName = Path.GetDirectoryName(span.File);
+                if (dirName != null)
+                {
+                    shaderDirectories.Add(dirName);
+                }
+            }
+
             var resultAnalysis = navigation.AnalyzeAndGoToDefinition(sourceCode, new SiliconStudio.Shaders.Ast.SourceLocation(span.File, 0, span.Line, span.Column), shaderDirectories);
 
             if (resultAnalysis.DefinitionLocation.Location.FileSource != null)
