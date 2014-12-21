@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The specular map.</value>
         [Display("Specular Map")]
         [DefaultValue(null)]
-        [MaterialStream("matSpecular", MaterialStreamType.Float3)]
+        [MaterialStream("matSpecular", MaterialStreamType.Float3, "Material.SpecularMap")]
         public IMaterialComputeColor SpecularMap { get; set; }
 
         /// <summary>

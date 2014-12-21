@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 /// <summary>
-/// Retrieves the reflectance from a constant buffer.
+/// Base interface of a compute step
 /// </summary>
-class MaterialReflectanceBase
+class IComputeStep
 {
-    stage float GetReflectance()
+    void Compute()
     {
-        return Material.Reflectance;
     }
 };

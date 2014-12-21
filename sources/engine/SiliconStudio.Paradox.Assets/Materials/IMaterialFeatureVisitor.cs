@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
@@ -20,7 +21,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         void Visit(object instance, IMemberDescriptor member, IMaterialFeature feature);
 
         /// <summary>
-        /// Visits a <see cref="IMaterialComputeColor"/> defined in the specified instance.
+        /// Visits a <see cref="IMaterialComputeColor" /> defined in the specified instance.
         /// </summary>
         /// <param name="instance">The instance.</param>
         /// <param name="member">The member.</param>

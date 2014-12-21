@@ -9,6 +9,8 @@ using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
+using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Materials
@@ -21,7 +23,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     [ObjectFactory(typeof(Factory))]
     public class MaterialBlendLayer : IMaterialShaderGenerator
     {
-        private const string BlendStream = "matBlend";
+        internal const string BlendStream = "matBlend";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialBlendLayer"/> class.
@@ -130,17 +132,18 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 Inline = string.Format(DynamicBlendingShader, shaderName, backupStreamBuilder, copyFromLayerBuilder)
             };
 
-            // Blend setup
-            var blendSetup = new ShaderMixinSource();
-            blendSetup.Mixins.Add(new ShaderClassSource("MaterialLayerComputeColorInit", BlendStream, "r"));
-            var blendMapSource = BlendMap.GenerateShaderSource(context);
-            blendSetup.AddComposition("Source", blendMapSource);
+            // Blend setup for this layer
+            var blendMapSource = BlendMap.GenerateShaderSource(context, MaterialKeys.BlendMap);
+            stack.SetStream(BlendStream, MaterialStreamType.Float, blendMapSource);
 
             // Create a mixin
             var shaderMixinSource = new ShaderMixinSource();
             shaderMixinSource.Mixins.Add(shaderClassSource);
-            stack.Operations.Add(blendSetup);
+            
+            // Generate the shader class source for the stack
             var materialBlendLayerMixin = stack.GenerateMixin();
+
+            // Add the shader to the mixin
             shaderMixinSource.AddComposition("subLayer", materialBlendLayerMixin);
 
             // Pop the stack

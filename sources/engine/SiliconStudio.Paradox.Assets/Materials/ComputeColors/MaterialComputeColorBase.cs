@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using SiliconStudio.Core;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
@@ -28,6 +29,6 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
             return Enumerable.Empty<IMaterialComputeColor>();
         }
 
-        public abstract ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext);
+        public abstract ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext, ParameterKey baseKey);
     }
 }

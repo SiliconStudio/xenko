@@ -2,16 +2,13 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 namespace SiliconStudio.Paradox.Effects.Materials
 {
-    class MaterialLayerArray : IMaterialLayer
+    class MaterialLayerSetStreamFromComputeColor<MemberName TStream, MemberName TChannel> : IMaterialLayer
     {
-        compose IMaterialLayer layers[];
+        compose ComputeColor computeColorSource;
 
         override void Compute()
         {
-            foreach(var layer in layers)
-            {
-                layer.Compute();
-            }
+            streams.TStream = computeColorSource.Compute().TChannel;
         }
     };
 }

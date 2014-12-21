@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The smoothness map.</value>
         [Display("Smoothness Map")]
         [DefaultValue(null)]
-        [MaterialStream("matSmoothness", MaterialStreamType.Float)]
+        [MaterialStream("matSmoothness", MaterialStreamType.Float, "Material.SmoothnessMap")]
         public IMaterialComputeColor SmoothnessMap { get; set; }
 
         private class Factory : IObjectFactory

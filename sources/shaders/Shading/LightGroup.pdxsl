@@ -1,0 +1,25 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+/// <summary>
+/// Defines a group of similar lights (directional, spot...etc.)
+/// </summary>
+class LightGroup : LightParameters
+{
+    /// <summary>
+    /// Gets the number of lights of this group
+    /// </summary>
+    int GetLightCount()
+    {
+        return LightCount;
+    }
+
+    /// <summary>
+    /// Compute the light color/direction for the specified index within this group
+    /// </summary>
+    void ComputeLight(int lightIndex)
+    {
+        streams.lightColor = 0;
+        streams.lightDirection = 0;
+    }
+};

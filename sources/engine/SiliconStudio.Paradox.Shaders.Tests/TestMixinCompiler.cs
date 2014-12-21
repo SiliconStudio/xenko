@@ -37,7 +37,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
 
             var materialAsset = new MaterialAsset
             {
-                Composition = new MaterialAttributes()
+                Attributes = new MaterialAttributes()
                 {
                     Surface = new MaterialNormalMapFeature()
                     {

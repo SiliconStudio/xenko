@@ -18,13 +18,15 @@ namespace SiliconStudio.Paradox.Assets.Materials
     [ObjectFactory(typeof(Factory))]
     public class MaterialNormalMapFeature : MaterialFeatureBase, IMaterialSurfaceFeature
     {
+        internal const string NormalStream = "matNormal";
+
         /// <summary>
         /// Gets or sets the normal map.
         /// </summary>
         /// <value>The normal map.</value>
         [Display("Normal Map")]
         [DefaultValue(null)]
-        [MaterialStream("matNormal", MaterialStreamType.Float3)]
+        [MaterialStream(NormalStream, MaterialStreamType.Float3, "Material.NormalMap")]
         public IMaterialComputeColor NormalMap { get; set; }
 
         private class Factory : IObjectFactory

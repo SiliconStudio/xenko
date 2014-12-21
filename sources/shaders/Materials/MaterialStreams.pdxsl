@@ -1,25 +1,52 @@
-﻿class MaterialStreams
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Paradox.Effects.Materials
 {
-    stage stream float3 matBlend;
+    class MaterialStreams
+    {
+        /// <summary>
+        /// The blending applied between the current and previous material attributes
+        /// </summary>
+        stage stream float matBlend;
+    
+        // Surface attributes
+        stage stream float3 matNormal;
 
-    stage stream float3 matNormal;
+        // Diffuse attributes
+        stage stream float3 matDiffuse;
 
-    stage stream float3 matDiffuseColor;
-    stage stream float  matDiffuseLighting;
-    stage stream float3 matDiffuse;
+        // Microsurface attributes
+        stage stream float  matSmoothness;
 
-    stage stream float  matMetalness;
-    stage stream float3 matSpecularColor;
-    stage stream float  matSpecularIntensity;
-    stage stream float  matSpecularPower;
-    stage stream float  matRoughness;
-    stage stream float  matSpecularLighting;
-    stage stream float3 matSpecular;
+        // Specular attributes
+        stage stream float  matMetalness;
+        stage stream float3 matSpecular;
+        stage stream float  matSpecularIntensity;
+        stage stream float  matSpecularPower;
 
-    stage stream float  matAmbientOcclusion;
-    stage stream float  matCavity;
-    stage stream float  matCavityDiffuse;
-    stage stream float  matCavitySpecular;
-};
+        // Occlusion attributes
+        stage stream float  matAmbientOcclusion;
+        stage stream float  matCavity;
+        stage stream float  matCavityDiffuse;
+        stage stream float  matCavitySpecular;
 
+        void ResetStreams()
+        {
+            // Reset all values for material stream to avoid pulling from a different stage (VS...etc.)
+            // TODO: It might be interesting to support pulling from VS, but this should be done from the IMaterialLayer and dedicated ComputerColors
+            streams.matBlend = 0.0f;
+            streams.matNormal = float3(0, 0, 1);
+            streams.matDiffuse = 0.0f;       
+            streams.matMetalness = 0.0f;
+            streams.matSpecular = 0.0f;        
+            streams.matSpecularIntensity = 0.0f;
+            streams.matSpecularPower = 0.0f;
+            streams.matSmoothness = 0.0f;
+            streams.matAmbientOcclusion = 0.0f;
+            streams.matCavity = 0.0f;
+            streams.matCavityDiffuse = 0.0f;
+            streams.matCavitySpecular = 0.0f;
+        }
+    };
+}
 

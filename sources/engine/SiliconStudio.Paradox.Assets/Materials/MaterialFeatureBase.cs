@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
@@ -74,22 +75,15 @@ namespace SiliconStudio.Paradox.Assets.Materials
                         var computeColor = memberValue as IMaterialComputeColor;
                         if (computeColor != null)
                         {
+                            var key = ParameterKeys.TryFindByName(materialStreamAttribute.ParameterKey);
+
                             if (instanceVisitor != null)
                             {
                                 instanceVisitor.Visit(instance, member, computeColor, materialStreamAttribute);
                             }
 
-                            var classSource = computeColor.GenerateShaderSource(context);
-                            switch (materialStreamAttribute.Type)
-                            {
-                                case MaterialStreamType.Float3:
-                                    context.CurrentStack.AddBlendColor3(materialStreamAttribute.Stream, classSource);
-                                    break;
-
-                                case MaterialStreamType.Float:
-                                    context.CurrentStack.AddBlendColor(materialStreamAttribute.Stream, classSource);
-                                    break;
-                            }
+                            var classSource = computeColor.GenerateShaderSource(context, key);
+                            context.CurrentStack.SetStream(materialStreamAttribute.Stream, materialStreamAttribute.Type, classSource);
                         }
                         else
                         {

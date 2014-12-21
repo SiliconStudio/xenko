@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Generic;
 
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Materials
@@ -22,6 +23,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// Generates the shader source equivalent for this node
         /// </summary>
         /// <returns>ShaderSource.</returns>
-        ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext);
+        ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext, ParameterKey baseKey);
     }
 }

@@ -1,0 +1,27 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Computes a specular color based on Phong model.
+/// </summary>
+class BRDFPhong
+{
+    float Compute(float3 L, float3 N, float3 V, float specularPower) 
+    {
+        // Precalculates NH
+        float NdotH = GetNdotH(L, N, V);
+        
+        // Lighting equation - Phong
+        // nf = NormalizedFactor = (n+2)(n+4) / 8.PI.(2^(-n/2)+n) ~= n + 8 / 8.PI
+        // Remove PI as it is cancelled by integral over the hemisphere
+        float normalizedFactor = (specularPower + 8.0f) / 8.0f;
+
+        // SpecularLight = BL * nf * [E.R]^n * [N.L]
+        return normalizedFactor * pow(NdotH, specularPower + 1e-5f); // avoid undefined 0^0 
+    }
+
+    float GetNdotH(float3 L, float3 N, float3 V)
+    {
+        float3 refl = normalize(reflect(-L, N));
+        return saturate(dot(V, refl));
+    }
+};

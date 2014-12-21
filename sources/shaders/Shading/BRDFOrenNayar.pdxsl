@@ -3,41 +3,40 @@
 /// <summary>
 /// Computes a diffuse color based on Oren-Nayar model.
 /// </summary>
-class ComputeBRDFDiffuseOrenNayar : ComputeBRDFColor, MaterialRoughnessBase
+class BRDFOrenNayar
 {
     // suppose normalized vectors
-    override float3 Compute(float3 lightColor, float3 lightDir, float3 normal, float3 eye)
+    float Compute(float3 L, float3 N, float3 V, float roughness)
     {
-        float roughness = GetRoughness();
         float squaredRough = roughness * roughness;
         float A = 1 - (0.5 * squaredRough / (squaredRough + 0.33));
         float B = 0.45 * squaredRough / (squaredRough + 0.09);
         
         // force in [-1,1] -> clamp
         // saturate should be enough because a negative cosine means a back face
-        float cosThetaI = saturate(dot(normal, lightDir));
-        float cosThetaR = saturate(dot(normal, eye));
-        float sinThetaI = saturate(length(cross(normal, eye)));
-        float sinThetaR = saturate(length(cross(normal, lightDir)));
+        float NdotL = saturate(dot(N, L));
+        float NdotV = saturate(dot(N, V));
+        float sinThetaI = saturate(length(cross(N, V)));
+        float sinThetaR = saturate(length(cross(N, L)));
         float sinAlpha = 0;
         float tanBeta = 0;
         
-        float3 dI = lightDir - cosThetaI * normal;
-        float3 dR = eye - cosThetaR * normal;
+        float3 dI = L - NdotL * N;
+        float3 dR = V - NdotV * N;
         float cosPhi = max(0, dot(dI,dR));
         
         // ThetaI and ThetaR in [0, PI] where cosine is a decreasing function
-        if (cosThetaI < cosThetaR)
+        if (NdotL < NdotV)
         {
             sinAlpha = sinThetaI;
-            tanBeta = sinThetaR / cosThetaR;
+            tanBeta = sinThetaR / NdotV;
         }
         else
         {
             sinAlpha = sinThetaR;
-            tanBeta = sinThetaI / cosThetaI;
+            tanBeta = sinThetaI / NdotL;
         }
         
-        return cosThetaI * (A + (B * cosPhi * sinAlpha * tanBeta)) * lightColor;
+        return (A + (B * cosPhi * sinAlpha * tanBeta));
     }
 };

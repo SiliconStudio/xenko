@@ -1,12 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 /// <summary>
-/// Adds an ambient color.
+/// An array of light groups
 /// </summary>
-class AmbientShading : ShadingBase, Material
+class LightGroupArray
 {
-    override stage float4 Shading()
-    {
-        return base.Shading() + AmbientColorValue;
-    }
+    stage compose LightGroup lightGroups[];
 };

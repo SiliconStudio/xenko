@@ -184,12 +184,12 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
             return "Texture";
         }
 
-        public override ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext)
+        public override ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext, ParameterKey baseKey)
         {
             // TODO: Use a generated UsedTexcoordIndex when backing textures
             var usedTexcoord = "TEXCOORD" + MaterialUtility.GetTextureIndex(TexcoordIndex);
 
-            var textureKey = shaderGeneratorContext.GetTextureKey(this);
+            var textureKey = shaderGeneratorContext.GetTextureKey(this, baseKey as ParameterKey<Texture>);
             var samplerKey = shaderGeneratorContext.GetSamplerKey(Sampler);
 
             var scaleStr = MaterialUtility.GetAsShaderString(Scale);

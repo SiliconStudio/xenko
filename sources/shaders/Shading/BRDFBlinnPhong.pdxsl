@@ -1,0 +1,13 @@
+﻿/// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Computes a specular color based on Blinn-Phong model.
+/// </summary>
+class BRDFBlinnPhong : BRDFPhong
+{
+    override float GetNdotH(float3 L, float3 N, float3 V)
+    {
+        float3 H = normalize(L + V);
+        return saturate(dot(N, H));
+    }
+};

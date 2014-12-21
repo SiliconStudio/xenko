@@ -1,0 +1,30 @@
+﻿// Copyright (c) 2014 Silicon Studio Corporation (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+/// <summary>
+/// Computes the specular part of the BRDF using the Cook-Torrance model.
+/// </summary>
+class BRDFCookTorrance
+{
+    float Compute(float3 L, float3 N, float3 V, float roughness, float reflection) 
+    {
+        float3 H = normalize(V + L);
+        float VdotH = saturate(dot(V, H));
+        float HdotN = saturate(dot(H, N));
+        float LdotN = saturate(dot(L, N));
+        float VdotN = saturate(dot(V, N));
+
+        // Compute G (Geometry)
+        float G = min (1, 2 * HdotN * VdotN / VdotH);
+        G = min(G, 2 * HdotN * LdotN / VdotH);
+
+        // Compute Fresnel (Shlick)
+        float F = reflection + ((1 - reflection) * pow(VdotH, 5));
+
+        // Compute 
+        float HN2 = HdotN * HdotN;
+        float HN2_R2 = HN2 * roughness * roughness;
+        float D = exp((HN2 - 1) / HN2_R2) / (HN2_R2 * HN2);
+        
+        return D * F * G / (4 * dot(V, N) * LdotN);
+    }
+};

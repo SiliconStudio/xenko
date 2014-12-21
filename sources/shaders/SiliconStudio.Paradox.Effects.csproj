@@ -436,13 +436,19 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
     </Compile>
+    <Compile Include="Core\IComputeStep.cs">
+      <DependentUpon>IComputeStep.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Core\DynamicSampler.cs">
       <DependentUpon>DynamicSampler.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Core\MaterialKeys.cs" />
+    <Compile Include="Materials\MaterialKeys.cs" />
     <Compile Include="Cubemap\CubemapBlendComponent.cs" />
     <Compile Include="Cubemap\CubemapBlendEffect.cs">
       <AutoGen>True</AutoGen>
@@ -774,8 +780,8 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Images\ColorTransforms\ToneMap\ToneMap.cs" />
-    <Compile Include="Materials\MaterialLayerStreamReset.cs">
-      <DependentUpon>MaterialLayerStreamReset.pdxsl</DependentUpon>
+    <Compile Include="Materials\MaterialLayerShading.cs">
+      <DependentUpon>MaterialLayerShading.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -798,23 +804,11 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>IMaterialLayer.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Materials\MaterialLayerComputeColorInit.cs">
-      <DependentUpon>MaterialLayerComputeColorInit.pdxsl</DependentUpon>
+    <Compile Include="Materials\MaterialLayerSetStreamFromComputeColor.cs">
+      <DependentUpon>MaterialLayerSetStreamFromComputeColor.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Materials\MaterialLayerComputeColorFloatBlend.cs">
-      <DependentUpon>MaterialLayerComputeColorFloatBlend.pdxsl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Materials\MaterialLayerComputeColorFloat3Blend.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>MaterialLayerComputeColorFloat3Blend.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Materials\MaterialStreams.cs">
       <AutoGen>True</AutoGen>
@@ -823,12 +817,29 @@
       <DependentUpon>MaterialStreams.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Renderers\DirectLightData.cs" />
-    <Compile Include="Renderers\LightForwardModelRendererExtensions.cs" />
     <Compile Include="Renderers\LightingGroupInfo.cs" />
     <Compile Include="Renderers\LightingUpdateInfo.cs" />
     <Compile Include="Renderers\LightingUpdateType.cs" />
     <Compile Include="Renderers\LightParamSemantic.cs" />
     <Compile Include="Renderers\PointLightData.cs" />
+    <Compile Include="Shading\LightGroupArray.cs">
+      <DependentUpon>LightGroupArray.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Shading\LightGroup.cs">
+      <DependentUpon>LightGroup.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Shading\LightStreams.cs">
+      <DependentUpon>LightStreams.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="ShadowMaps\ShadowUpdateInfo.cs" />
     <Compile Include="Renderers\SpotLightData.cs" />
     <Compile Include="LightPrepass\DeferredSpotShadowLighting.cs">
@@ -842,30 +853,6 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>DeferredTiledShader.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="Shading\MaterialReflectance.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>MaterialReflectance.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="Shading\MaterialReflectanceBase.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>MaterialReflectanceBase.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="Shading\MaterialRoughness.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>MaterialRoughness.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="Shading\MaterialRoughnessBase.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>MaterialRoughnessBase.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Deferred\MaterialRoughnessGBuffer.cs">
       <AutoGen>True</AutoGen>
@@ -910,28 +897,14 @@
     <Compile Include="ShadowMaps\ShadowMap.cs" />
     <Compile Include="ShadowMaps\ShadowMapTexture.cs" />
     <Compile Include="Cubemap\CubeMapRenderer.cs" />
-    <Compile Include="Renderers\LightForwardModelRenderer.cs" />
     <Compile Include="Renderers\LightingIBLRenderer.cs" />
-    <Compile Include="Renderers\LightingPrepassRenderer.cs" />
     <Compile Include="ShadowMaps\ShadowMapRenderer.cs" />
     <Compile Include="Skybox\SkyboxRenderer.cs" />
-    <Compile Include="Shading\AmbientMapShading.cs">
+    <Compile Include="Shading\BRDFCookTorrance.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>AmbientMapShading.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="Shading\ComputeBRDFColorSpecularBase.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeBRDFColorSpecularBase.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="Shading\ComputeBRDFColorSpecularCookTorrance.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeBRDFColorSpecularCookTorrance.pdxsl</DependentUpon>
+      <DependentUpon>BRDFCookTorrance.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Shading\SpecularPower.cs">
       <AutoGen>True</AutoGen>
@@ -1041,18 +1014,6 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ColorBase.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="Core\Material.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Material.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="Core\MaterialTexturing.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>MaterialTexturing.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Core\NormalMapTexture.cs">
       <AutoGen>True</AutoGen>
@@ -1204,12 +1165,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>PointShading.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Shading\ShadingDiffuse.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ShadingDiffuse.pdxsl</DependentUpon>
-    </Compile>
     <Compile Include="Shading\ShadingEyeNormalBase.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1252,18 +1207,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ShadingDiffusePerVertex.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Shading\ShadingDiffusePerVertexSpecularPerPixel.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ShadingDiffusePerVertexSpecularPerPixel.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="Shading\ShadingDiffuseSpecularPerPixel.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ShadingDiffuseSpecularPerPixel.pdxsl</DependentUpon>
-    </Compile>
     <Compile Include="Shading\ShadingGroup.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1300,7 +1243,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>SpotShading.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="RenderPipelineLightingFactory.cs" />
     <Compile Include="ShadowMaps\ShadowMapCascadeInfo.cs" />
     <Compile Include="ShadowMaps\ShadowMapCascadeReceiverInfo.cs" />
     <Compile Include="ShadowMaps\ShadowMapCasterVsm.cs">
@@ -1343,83 +1285,23 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>TransparentShading.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Shading\AlbedoDiffuseBase.cs">
+    <Compile Include="Shading\BRDFBlinnPhong.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>AlbedoDiffuseBase.pdxsl</DependentUpon>
+      <DependentUpon>BRDFBlinnPhong.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Shading\AlbedoFlatShading.cs">
+    <Compile Include="Shading\BRDFPhong.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>AlbedoFlatShading.pdxsl</DependentUpon>
+      <DependentUpon>BRDFPhong.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Shading\AlbedoSpecularBase.cs">
+    <Compile Include="Shading\BRDFOrenNayar.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>AlbedoSpecularBase.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="Shading\AmbientLightShading.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>AmbientLightShading.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="Shading\AmbientShading.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>AmbientShading.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="Shading\BRDFDiffuseBase.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>BRDFDiffuseBase.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="Shading\BRDFSpecularBase.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>BRDFSpecularBase.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="Shading\ComputeBRDFColor.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeBRDFColor.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="Shading\ComputeBRDFColorFresnel.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeBRDFColorFresnel.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="Shading\ComputeBRDFColorSpecularBlinnPhong.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeBRDFColorSpecularBlinnPhong.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="Shading\ComputeBRDFColorSpecularPhong.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeBRDFColorSpecularPhong.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="Shading\ComputeBRDFDiffuseLambert.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeBRDFDiffuseLambert.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="Shading\ComputeBRDFDiffuseOrenNayar.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeBRDFDiffuseOrenNayar.pdxsl</DependentUpon>
+      <DependentUpon>BRDFOrenNayar.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Shading\LightMultiDirectionalShadingPerPixel.cs">
       <AutoGen>True</AutoGen>
@@ -2007,6 +1889,10 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorSubtractMaya.cs</LastGenOutput>
     </None>
+    <None Include="Core\IComputeStep.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>IComputeStep.cs</LastGenOutput>
+    </None>
     <None Include="Core\DynamicSampler.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>DynamicSampler.cs</LastGenOutput>
@@ -2034,14 +1920,6 @@
     <None Include="Core\ColorBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ColorBase.cs</LastGenOutput>
-    </None>
-    <None Include="Core\Material.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>Material.cs</LastGenOutput>
-    </None>
-    <None Include="Core\MaterialTexturing.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialTexturing.cs</LastGenOutput>
     </None>
     <None Include="Core\NormalMapTexture.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -2275,9 +2153,9 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ImageEffectShader.cs</LastGenOutput>
     </None>
-    <None Include="Materials\MaterialLayerStreamReset.pdxsl">
+    <None Include="Materials\MaterialLayerShading.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialLayerStreamReset.cs</LastGenOutput>
+      <LastGenOutput>MaterialLayerShading.cs</LastGenOutput>
     </None>
     <None Include="Materials\MaterialLayerRoot.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -2291,37 +2169,21 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>IMaterialLayer.cs</LastGenOutput>
     </None>
-    <None Include="Materials\MaterialLayerComputeColorInit.pdxsl">
+    <None Include="Materials\MaterialLayerSetStreamFromComputeColor.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialLayerComputeColorInit.cs</LastGenOutput>
-    </None>
-    <None Include="Materials\MaterialLayerComputeColorFloatBlend.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialLayerComputeColorFloatBlend.cs</LastGenOutput>
-    </None>
-    <None Include="Materials\MaterialLayerComputeColorFloat3Blend.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialLayerComputeColorFloat3Blend.cs</LastGenOutput>
+      <LastGenOutput>MaterialLayerSetStreamFromComputeColor.cs</LastGenOutput>
     </None>
     <None Include="Materials\MaterialStreams.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialStreams.cs</LastGenOutput>
     </None>
-    <None Include="Shading\MaterialReflectance.pdxsl">
+    <None Include="Shading\LightGroupArray.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialReflectance.cs</LastGenOutput>
+      <LastGenOutput>LightGroupArray.cs</LastGenOutput>
     </None>
-    <None Include="Shading\MaterialReflectanceBase.pdxsl">
+    <None Include="Shading\LightGroup.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialReflectanceBase.cs</LastGenOutput>
-    </None>
-    <None Include="Shading\MaterialRoughness.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialRoughness.cs</LastGenOutput>
-    </None>
-    <None Include="Shading\MaterialRoughnessBase.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialRoughnessBase.cs</LastGenOutput>
+      <LastGenOutput>LightGroup.cs</LastGenOutput>
     </None>
     <None Include="Deferred\MaterialRoughnessGBuffer.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -2355,17 +2217,13 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>PostEffectBack.cs</LastGenOutput>
     </None>
-    <None Include="Shading\AmbientMapShading.pdxsl">
+    <None Include="Shading\BRDFCookTorrance.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>AmbientMapShading.cs</LastGenOutput>
+      <LastGenOutput>BRDFCookTorrance.cs</LastGenOutput>
     </None>
-    <None Include="Shading\ComputeBRDFColorSpecularBase.pdxsl">
+    <None Include="Shading\LightStreams.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeBRDFColorSpecularBase.cs</LastGenOutput>
-    </None>
-    <None Include="Shading\ComputeBRDFColorSpecularCookTorrance.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeBRDFColorSpecularCookTorrance.cs</LastGenOutput>
+      <LastGenOutput>LightStreams.cs</LastGenOutput>
     </None>
     <None Include="Shading\SpecularPower.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -2487,10 +2345,6 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>PointShading.cs</LastGenOutput>
     </None>
-    <None Include="Shading\ShadingDiffuse.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ShadingDiffuse.cs</LastGenOutput>
-    </None>
     <None Include="Shading\ShadingEyeNormalBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadingEyeNormalBase.cs</LastGenOutput>
@@ -2519,14 +2373,6 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadingDiffusePerVertex.cs</LastGenOutput>
     </None>
-    <None Include="Shading\ShadingDiffuseSpecularPerPixel.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ShadingDiffuseSpecularPerPixel.cs</LastGenOutput>
-    </None>
-    <None Include="Shading\ShadingDiffusePerVertexSpecularPerPixel.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ShadingDiffusePerVertexSpecularPerPixel.cs</LastGenOutput>
-    </None>
     <None Include="Shading\ShadingGroup.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadingGroup.cs</LastGenOutput>
@@ -2551,57 +2397,17 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>SpotShading.cs</LastGenOutput>
     </None>
-    <None Include="Shading\AlbedoDiffuseBase.pdxsl">
+    <None Include="Shading\BRDFBlinnPhong.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>AlbedoDiffuseBase.cs</LastGenOutput>
+      <LastGenOutput>BRDFBlinnPhong.cs</LastGenOutput>
     </None>
-    <None Include="Shading\AlbedoFlatShading.pdxsl">
+    <None Include="Shading\BRDFPhong.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>AlbedoFlatShading.cs</LastGenOutput>
+      <LastGenOutput>BRDFPhong.cs</LastGenOutput>
     </None>
-    <None Include="Shading\AlbedoSpecularBase.pdxsl">
+    <None Include="Shading\BRDFOrenNayar.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>AlbedoSpecularBase.cs</LastGenOutput>
-    </None>
-    <None Include="Shading\AmbientLightShading.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>AmbientLightShading.cs</LastGenOutput>
-    </None>
-    <None Include="Shading\AmbientShading.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>AmbientShading.cs</LastGenOutput>
-    </None>
-    <None Include="Shading\BRDFDiffuseBase.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>BRDFDiffuseBase.cs</LastGenOutput>
-    </None>
-    <None Include="Shading\BRDFSpecularBase.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>BRDFSpecularBase.cs</LastGenOutput>
-    </None>
-    <None Include="Shading\ComputeBRDFColor.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeBRDFColor.cs</LastGenOutput>
-    </None>
-    <None Include="Shading\ComputeBRDFColorFresnel.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeBRDFColorFresnel.cs</LastGenOutput>
-    </None>
-    <None Include="Shading\ComputeBRDFColorSpecularBlinnPhong.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeBRDFColorSpecularBlinnPhong.cs</LastGenOutput>
-    </None>
-    <None Include="Shading\ComputeBRDFColorSpecularPhong.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeBRDFColorSpecularPhong.cs</LastGenOutput>
-    </None>
-    <None Include="Shading\ComputeBRDFDiffuseLambert.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeBRDFDiffuseLambert.cs</LastGenOutput>
-    </None>
-    <None Include="Shading\ComputeBRDFDiffuseOrenNayar.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeBRDFDiffuseOrenNayar.cs</LastGenOutput>
+      <LastGenOutput>BRDFOrenNayar.cs</LastGenOutput>
     </None>
     <None Include="Shading\LightMultiDirectionalShadingPerPixel.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

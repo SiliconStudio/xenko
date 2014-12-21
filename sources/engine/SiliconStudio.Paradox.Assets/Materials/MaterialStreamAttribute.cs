@@ -13,16 +13,19 @@ namespace SiliconStudio.Paradox.Assets.Materials
     {
         private readonly string stream;
         private readonly MaterialStreamType type;
+        private readonly string parameterKey;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MaterialStreamAttribute"/> class.
+        /// Initializes a new instance of the <see cref="MaterialStreamAttribute" /> class.
         /// </summary>
         /// <param name="stream">The stream.</param>
         /// <param name="type">The type.</param>
-        public MaterialStreamAttribute(string stream, MaterialStreamType type)
+        /// <param name="parameterKey">The parameter key.</param>
+        public MaterialStreamAttribute(string stream, MaterialStreamType type, string parameterKey = null)
         {
             this.stream = stream;
             this.type = type;
+            this.parameterKey = parameterKey;
         }
 
         /// <summary>
@@ -36,6 +39,15 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 return stream;
             }
         }
+
+        public string ParameterKey
+        {
+            get
+            {
+                return parameterKey;
+            }
+        }
+
 
         /// <summary>
         /// Gets the type.

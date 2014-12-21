@@ -25,7 +25,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [Display("Occlusion Map")]
         [DefaultValue(null)]
         [DataMember(10)]
-        [MaterialStream("matAmbientOcclusion", MaterialStreamType.Float)]
+        [MaterialStream("matAmbientOcclusion", MaterialStreamType.Float, "Material.AmbientOcclusionMap")]
         public IMaterialComputeColor AmbientOcclusionMap { get; set; }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [Display("Cavity Map")]
         [DefaultValue(null)]
         [DataMember(20)]
-        [MaterialStream("matCavity", MaterialStreamType.Float)]
+        [MaterialStream("matCavity", MaterialStreamType.Float, "Material.CavityMap")]
         public IMaterialComputeColor CavityMap { get; set; }
 
         /// <summary>

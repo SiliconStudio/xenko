@@ -1,7 +1,0 @@
-﻿class MaterialLayerStreamReset<MemberName TStream> : IMaterialLayer
-{
-    override void Compute()
-    {
-        streams.TStream = 0;
-    }
-};

@@ -59,7 +59,7 @@ namespace SiliconStudio.Paradox.Effects
                 mainPipeline.Renderers.Add(new BackgroundRenderer(serviceRegistry, backgroundName));
 
             // Renders all the meshes with the correct lighting.
-            mainPipeline.Renderers.Add(new ModelRenderer(serviceRegistry, effectName).AddLightForwardSupport());
+            //mainPipeline.Renderers.Add(new ModelRenderer(serviceRegistry, effectName).AddLightForwardSupport());
 
             // Renders the UI.
             if (ui)

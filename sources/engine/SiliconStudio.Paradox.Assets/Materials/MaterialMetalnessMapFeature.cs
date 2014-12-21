@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The metalness map.</value>
         [Display("Metalness Map")]
         [DefaultValue(null)]
-        [MaterialStream("matMetalnessMap", MaterialStreamType.Float)]
+        [MaterialStream("matMetalnessMap", MaterialStreamType.Float, "Material.MetalnessMap")]
         public IMaterialComputeColor MetalnessMap { get; set; }
 
         private class Factory : IObjectFactory

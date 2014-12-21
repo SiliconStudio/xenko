@@ -3,12 +3,12 @@
 /// <summary>
 /// Retrieves the normals from a normal map.
 /// </summary>
-class NormalMapTexture : Transformation, Texturing, NormalVSBase, NormalStream, TangentToViewBase
+class NormalMapTexture : Transformation, NormalVSBase, NormalStream, TangentToViewBase
 {
     // The source of the normals (usually a texture sampling)
     compose ComputeColor normalMap;
 
-    override void GenerateNormalVS_PS()
+    override stage void GenerateNormalVS_PS()
     {
         base.GenerateNormalVS_PS();
 

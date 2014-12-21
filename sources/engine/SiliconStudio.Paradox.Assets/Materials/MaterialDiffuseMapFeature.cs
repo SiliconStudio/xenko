@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The diffuse map.</value>
         [Display("Diffuse Map")]
         [DefaultValue(null)]
-        [MaterialStream("matDiffuse", MaterialStreamType.Float3)]
+        [MaterialStream("matDiffuse", MaterialStreamType.Float3, "Material.DiffuseMap")]
         public IMaterialComputeColor DiffuseMap { get; set; }
 
         private class Factory : IObjectFactory

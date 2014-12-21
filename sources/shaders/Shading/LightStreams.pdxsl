@@ -1,8 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 /// <summary>
-/// Enables per-vertex diffuse and per-pixel specular shading.
+/// Defines light streams variable.
 /// </summary>
-class ShadingDiffusePerVertexSpecularPerPixel : ShadingDiffusePerVertex, ShadingSpecularPerPixel
+class LightStreams
 {
+    stage stream float3 lightDirection;
+    stage stream float3 lightColor;
 };

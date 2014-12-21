@@ -125,7 +125,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
             }
         }
 
-        public override ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext)
+        public override ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext, ParameterKey baseKey)
         {
             if (!MixinReference.HasLocation())
                 return new ShaderClassSource("ComputeColor");
@@ -142,7 +142,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
                     if (generic is ComputeColorParameterTexture)
                     {
                         var textureParameter = ((ComputeColorParameterTexture)generic);
-                        var textureKey = shaderGeneratorContext.GetTextureKey(textureParameter.Texture);
+                        var textureKey = shaderGeneratorContext.GetTextureKey(textureParameter.Texture, null);
                         mixinGenerics.Add(textureKey.ToString());
                     }
                     else if (generic is ComputeColorParameterSampler)
@@ -180,7 +180,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
             {
                 if (comp.Value != null)
                 {
-                    var compShader = comp.Value.GenerateShaderSource(shaderGeneratorContext);
+                    var compShader = comp.Value.GenerateShaderSource(shaderGeneratorContext, baseKey);
                     if (compShader != null)
                         mixin.Compositions.Add(comp.Key, compShader);
                 }
