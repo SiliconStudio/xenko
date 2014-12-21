@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// <summary>
     /// The material asset.
     /// </summary>
-    [DataContract("MaterialAsset2")]
+    [DataContract("MaterialAsset")]
     [AssetFileExtension(FileExtension)]
     [ThumbnailCompiler(PreviewerCompilerNames.MaterialThumbnailCompilerQualifiedName, true)]
     [AssetCompiler(typeof(MaterialAssetCompiler))]

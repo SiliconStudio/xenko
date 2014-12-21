@@ -2,18 +2,25 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 namespace SiliconStudio.Paradox.Effects.Materials
 {
+
+#ifndef LIGHTING_MAX_LIGHT_COUNT
+#define LIGHTING_MAX_LIGHT_COUNT 1
+#endif 
     /// <summary>
-    /// Performs the shading of a material
+    /// Performs the shading of a material according to the lights
     /// </summary>
-    class MaterialLayerShading<int maxLightCount> : MaterialLayerArray, LightGroupArray, LightStreams
+    class MaterialLayerShading : IMaterialLayer, LightGroupArray, LightStreams
     {
+        compose IMaterialLayerShading shadings[];
+
         override void Compute()
         {
             foreach(var lightGroup in lightGroups)
             {
                 int count = lightGroup.GetLightCount();
-                [unroll]
-                for(int i = 0; i < maxLightCount; i++)
+
+                [unroll(LIGHTING_MAX_LIGHT_COUNT)]
+                for(int i = 0; i < LIGHTING_MAX_LIGHT_COUNT; i++)
                 {
                     if (i >= count)
                     {
@@ -23,8 +30,11 @@ namespace SiliconStudio.Paradox.Effects.Materials
                     // Compute the light color and direction
                     lightGroup.ComputeLight(i);
 
-                    // Compute the shading (diffuse, specular)
-                    base.Compute();
+                    // Calculate shading for diffuse, specular, emissive...etc.
+                    foreach(var shading in shadings)
+                    {
+                        shading.Compute();
+                    }
                 }
             }
         }

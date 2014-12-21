@@ -3,12 +3,9 @@
 namespace SiliconStudio.Paradox.Effects.Materials
 {
     /// <summary>
-    /// Base interface for a material layer
+    /// Base interface for a material layer shading.
     /// </summary>
-    class IMaterialLayer : MaterialStreams     // TODO: provide a way to extend MaterialStreams easily
+    class IMaterialLayerShading : IMaterialLayer
     {
-        void Compute()
-        {
-        }
     };
 }

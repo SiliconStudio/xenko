@@ -2,11 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 /// <summary>
-/// Defines light streams variable.
+/// Variable used for shading a surface
 /// </summary>
-class LightStreams
+class ShadingStreams
 {
-    stage stream float3 lightDirection;
-    stage stream float3 lightColor;
-    stage stream float3 lightColorNdotL;
+    stage stream float3 shadingNormal;
+    stage stream float3 shadingColor;
+    stage stream float3 shadingView;
 };

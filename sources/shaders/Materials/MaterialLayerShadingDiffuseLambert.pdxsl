@@ -1,0 +1,16 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Paradox.Effects.Materials
+{
+    /// <summary>
+    /// Performs a Lambert shading
+    /// </summary>
+    class MaterialLayerShadingDiffuseLambert : IMaterialLayerShading, LightStreams, ShadingStreams
+    {
+        override void Compute()
+        {
+            // TODO: integrate AO/Cavity...etc.
+            streams.shadingColor += streams.matDiffuse * streams.lightColorNdotL;
+        }
+    };
+}

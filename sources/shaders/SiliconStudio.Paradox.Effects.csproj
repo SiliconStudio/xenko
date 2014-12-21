@@ -448,6 +448,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Materials\IMaterialLayerShading.cs">
+      <DependentUpon>IMaterialLayerShading.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Materials\MaterialKeys.cs" />
     <Compile Include="Cubemap\CubemapBlendComponent.cs" />
     <Compile Include="Cubemap\CubemapBlendEffect.cs">
@@ -780,6 +786,18 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Images\ColorTransforms\ToneMap\ToneMap.cs" />
+    <Compile Include="Materials\MaterialLayerShadingSpecularBlinnPhong.cs">
+      <DependentUpon>MaterialLayerShadingSpecularBlinnPhong.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Materials\MaterialLayerShadingDiffuseLambert.cs">
+      <DependentUpon>MaterialLayerShadingDiffuseLambert.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Materials\MaterialLayerShading.cs">
       <DependentUpon>MaterialLayerShading.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -830,6 +848,12 @@
     </Compile>
     <Compile Include="Shading\LightGroup.cs">
       <DependentUpon>LightGroup.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Shading\ShadingStreams.cs">
+      <DependentUpon>ShadingStreams.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -2153,6 +2177,18 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ImageEffectShader.cs</LastGenOutput>
     </None>
+    <None Include="Materials\IMaterialLayerShading.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>IMaterialLayerShading.cs</LastGenOutput>
+    </None>
+    <None Include="Materials\MaterialLayerShadingSpecularBlinnPhong.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialLayerShadingSpecularBlinnPhong.cs</LastGenOutput>
+    </None>
+    <None Include="Materials\MaterialLayerShadingDiffuseLambert.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialLayerShadingDiffuseLambert.cs</LastGenOutput>
+    </None>
     <None Include="Materials\MaterialLayerShading.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialLayerShading.cs</LastGenOutput>
@@ -2220,6 +2256,10 @@
     <None Include="Shading\BRDFCookTorrance.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>BRDFCookTorrance.cs</LastGenOutput>
+    </None>
+    <None Include="Shading\ShadingStreams.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ShadingStreams.cs</LastGenOutput>
     </None>
     <None Include="Shading\LightStreams.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
