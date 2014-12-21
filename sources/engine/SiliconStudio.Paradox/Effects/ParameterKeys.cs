@@ -177,6 +177,21 @@ namespace SiliconStudio.Paradox.Effects
             return newKey;
         }
 
+        public static ParameterKey TryFindByName(string name)
+        {
+            if (name == null)
+            {
+                return null;
+            }
+
+            lock (keyByNames)
+            {
+                ParameterKey key;
+                keyByNames.TryGetValue(name, out key);
+                return key;
+            }
+        }
+
         public static ParameterKey FindByName(string name)
         {
             // name must be XXX.YYY{.ZZZ}
