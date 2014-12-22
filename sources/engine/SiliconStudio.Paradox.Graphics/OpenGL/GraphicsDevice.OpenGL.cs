@@ -178,6 +178,12 @@ namespace SiliconStudio.Paradox.Graphics
             1.0f, 1.0f,
         };
 #endif
+
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
+        private const TextureTarget2d TextureTargetTexture2D = TextureTarget2d.Texture2D;
+#else
+        private const TextureTarget TextureTargetTexture2D = TextureTarget.Texture2D;
+#endif
         /// <summary>
         /// Gets the status of this device.
         /// </summary>
@@ -970,11 +976,7 @@ namespace SiliconStudio.Paradox.Graphics
                         if (renderTargets[i] != null)
                         {
                             lastRenderTargetIndex = i;
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
-                            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0 + i, TextureTarget2d.Texture2D, renderTargets[i].ResourceId, 0);
-#else
-                            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0 + i, TextureTarget.Texture2D, renderTargets[i].ResourceId, 0);
-#endif
+                            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0 + i, TextureTargetTexture2D, renderTargets[i].ResourceId, 0);
                         }
                     }
                 }
@@ -983,46 +985,47 @@ namespace SiliconStudio.Paradox.Graphics
                 if (!IsOpenGLES2)
 #endif
                 {
-                    if (lastRenderTargetIndex > 0)
+#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                    if (lastRenderTargetIndex <= 0)
+                    {
+                        GL.DrawBuffer(lastRenderTargetIndex != -1 ? DrawBufferMode.ColorAttachment0 : DrawBufferMode.None);
+                    }
+                    else
+#endif
                     {
                         var drawBuffers = new DrawBuffersEnum[lastRenderTargetIndex + 1];
                         for (var i = 0; i <= lastRenderTargetIndex; ++i)
                             drawBuffers[i] = DrawBuffersEnum.ColorAttachment0 + i;
                         GL.DrawBuffers(lastRenderTargetIndex + 1, drawBuffers);
                     }
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                    else
-                    {
-                        GL.DrawBuffer(lastRenderTargetIndex != -1 ? DrawBufferMode.ColorAttachment0 : DrawBufferMode.None);
-                    }
-#endif
                 }
 
                 if (depthStencilBuffer != null)
                 {
-                    // TODO: merge code between OpenGL and ES
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                     FramebufferAttachment attachmentType;
-                    if (depthStencilBuffer.IsDepthBuffer && depthStencilBuffer.IsStencilBuffer)
+                    if (depthStencilBuffer.IsDepthBuffer && depthStencilBuffer.IsStencilBuffer && depthStencilBuffer.ResourceIdStencil != 0)
                         attachmentType = FramebufferAttachment.DepthStencilAttachment; // This enum does not exists in ES 2
-                    else if(depthStencilBuffer.IsDepthBuffer)
+                    else if (depthStencilBuffer.IsDepthBuffer)
                         attachmentType = FramebufferAttachment.DepthAttachment;
                     else
                         attachmentType = FramebufferAttachment.StencilAttachment;
 
-                    // TODO: use renderbuffer if the depthStencil buffer is not a shader resource
                     if (depthStencilBuffer.IsRenderbuffer)
+                    {
                         GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, attachmentType, RenderbufferTarget.Renderbuffer, depthStencilBuffer.ResourceId);
-                    else
-                        GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, attachmentType, TextureTarget.Texture2D, depthStencilBuffer.ResourceId, 0);
-#else
-                    if (depthStencilBuffer.IsDepthBuffer)
-                        GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, depthStencilBuffer.ResourceId);
 
-                    // If stencil buffer is separate, it's resource id might be stored in depthStencilBuffer.Texture.ResouceIdStencil
-                    if(depthStencilBuffer.IsStencilBuffer)
-                        GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.StencilAttachment, RenderbufferTarget.Renderbuffer, depthStencilBuffer.ResourceIdStencil != 0 ? depthStencilBuffer.ResourceIdStencil : depthStencilBuffer.ResourceId);
-#endif
+                        // If stencil buffer is separate, it's resource id might be stored in depthStencilBuffer.Texture.ResouceIdStencil
+                        if (depthStencilBuffer.ResourceIdStencil != 0)
+                            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.StencilAttachment, RenderbufferTarget.Renderbuffer, depthStencilBuffer.ResourceIdStencil);
+                    }
+                    else
+                    {
+                        GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, attachmentType, TextureTargetTexture2D, depthStencilBuffer.ResourceId, 0);
+
+                        // If stencil buffer is separate, it's resource id might be stored in depthStencilBuffer.Texture.ResouceIdStencil
+                        if (depthStencilBuffer.ResourceIdStencil != 0)
+                            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.StencilAttachment, TextureTargetTexture2D, depthStencilBuffer.ResourceIdStencil, 0);
+                    }
                 }
 
                 var framebufferStatus = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
@@ -1804,11 +1807,7 @@ namespace SiliconStudio.Paradox.Graphics
                                 break;
 #endif
                             case TextureTarget.Texture2D:
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
-                                GL.TexSubImage2D(TextureTarget2d.Texture2D, 0, 0, 0, texture.Width, texture.Height, texture.FormatGl, texture.Type, IntPtr.Zero);
-#else
-                                GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, texture.Width, texture.Height, texture.FormatGl, texture.Type, IntPtr.Zero);
-#endif
+                                GL.TexSubImage2D(TextureTargetTexture2D, 0, 0, 0, texture.Width, texture.Height, texture.FormatGl, texture.Type, IntPtr.Zero);
                                 GL.BindTexture(TextureTarget.Texture2D, 0);
                                 break;
                             case TextureTarget.Texture3D:
@@ -1928,11 +1927,7 @@ namespace SiliconStudio.Paradox.Graphics
                     var desc = texture.Description;
                     GL.BindTexture(TextureTarget.Texture2D, texture.ResourceId);
                     boundTextures[0] = null;
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
-                    GL.TexImage2D(TextureTarget2d.Texture2D, subResourceIndex, texture.InternalFormat.ToOpenGL(), desc.Width, desc.Height, 0, texture.FormatGl, texture.Type, databox.DataPointer);
-#else
-                    GL.TexImage2D(TextureTarget.Texture2D, subResourceIndex, texture.InternalFormat, desc.Width, desc.Height, 0, texture.FormatGl, texture.Type, databox.DataPointer);
-#endif
+                    GL.TexImage2D(TextureTargetTexture2D, subResourceIndex, texture.InternalFormat.ToOpenGL(), desc.Width, desc.Height, 0, texture.FormatGl, texture.Type, databox.DataPointer);
                 }
                 else // neither texture nor buffer
                 {
