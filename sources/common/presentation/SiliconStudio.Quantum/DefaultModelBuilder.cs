@@ -30,6 +30,7 @@ namespace SiliconStudio.Quantum
         {
             PrimitiveTypes = new List<Type>();
             AvailableCommands = new List<INodeCommand>();
+            ContentFactory = new DefaultContentFactory();
         }
 
         /// <inheritdoc/>
@@ -40,6 +41,8 @@ namespace SiliconStudio.Quantum
 
         /// <inheritdoc/>
         public IEnumerable<IContent> ReferenceContents { get { return referenceContents; } }
+
+        public IContentFactory ContentFactory { get; set; }
 
         /// <inheritdoc/>
         public event EventHandler<NodeConstructingArgs> NodeConstructing;
@@ -81,9 +84,8 @@ namespace SiliconStudio.Quantum
 
                 // If we are in the case of a collection of collections, we might have a root node that is actually an enumerable reference
                 // This would be the case for each collection within the base collection.
-                IReference reference = CreateReferenceForNode(descriptor.Type, obj);
-                reference = reference is ReferenceEnumerable ? reference : null;
-                IContent content = descriptor.Type.IsStruct() ? new BoxedContent(obj, descriptor, IsPrimitiveType(descriptor.Type)) : new ObjectContent(obj, descriptor, IsPrimitiveType(descriptor.Type), reference);
+                var reference = CreateReferenceForNode(descriptor.Type, obj) as ReferenceEnumerable;
+                IContent content = descriptor.Type.IsStruct() ? ContentFactory.CreateBoxedContent(obj, descriptor, IsPrimitiveType(descriptor.Type)) : ContentFactory.CreateObjectContent(obj, descriptor, IsPrimitiveType(descriptor.Type), reference);
                 rootNode = new ModelNode(descriptor.Type.Name, content, rootGuid);
                 if (reference != null && descriptor.Type.IsStruct())
                     throw new QuantumConsistencyException("A collection type", "A structure type", rootNode);
@@ -199,7 +201,7 @@ namespace SiliconStudio.Quantum
             IReference reference = CreateReferenceForNode(member.Type, value);
             ModelNode containerNode = GetContextNode();
             ITypeDescriptor typeDescriptor = TypeDescriptorFactory.Find(member.Type);
-            IContent content = new MemberContent(containerNode.Content, member, typeDescriptor, IsPrimitiveType(member.Type), reference);
+            IContent content = ContentFactory.CreateMemberContent(containerNode.Content, member, typeDescriptor, IsPrimitiveType(member.Type), reference);
             var node = new ModelNode(member.Name, content, Guid.NewGuid());
             containerNode.AddChild(node);
 

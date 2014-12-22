@@ -29,6 +29,8 @@
     <Compile Include="Commands\RenameStringKeyCommand.cs" />
     <Compile Include="Commands\SetToNullCommand.cs" />
     <Compile Include="Commands\UncancellableCommand.cs" />
+    <Compile Include="DefaultContentFactory.cs" />
+    <Compile Include="IContentFactory.cs" />
     <Compile Include="IGuidContainer.cs" />
     <Compile Include="INodeBuilder.cs" />
     <Compile Include="NodeConstructedArgs.cs" />
