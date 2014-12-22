@@ -65,6 +65,8 @@
     <Compile Include="Reflection\MemberDescriptiorExtensions.cs" />
     <Compile Include="Reflection\MemberPathAction.cs" />
     <Compile Include="Reflection\MemberDescriptorBase.cs" />
+    <Compile Include="Reflection\MemberPathExtensions.cs" />
+    <Compile Include="Reflection\MemberPathNode.cs" />
     <Compile Include="Reflection\NullableDescriptor.cs" />
     <Compile Include="Reflection\ObjectDescriptor.cs" />
     <Compile Include="Reflection\Override.cs" />
@@ -74,6 +76,7 @@
     <Compile Include="Reflection\MemberPath.cs" />
     <Compile Include="Reflection\ShadowAttributes.cs" />
     <Compile Include="Reflection\ShadowContainer.cs" />
+    <Compile Include="Reflection\ShadowId.cs" />
     <Compile Include="Reflection\ShadowObject.cs" />
     <Compile Include="Reflection\TypeDescriptorFactory.cs" />
     <Compile Include="Reflection\TypeExtensions.cs" />

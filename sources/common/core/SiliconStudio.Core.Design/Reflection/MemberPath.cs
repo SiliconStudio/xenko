@@ -2,7 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace SiliconStudio.Core.Reflection
@@ -43,8 +45,10 @@ namespace SiliconStudio.Core.Reflection
         private MemberPath(List<MemberPathItem> items)
         {
             if (items == null) throw new ArgumentNullException("items");
+
             this.items = new List<MemberPathItem>(items.Capacity);
-            this.items.AddRange(items);
+            foreach (var item in items)
+                this.items.Add(item.Clone(this.items.LastOrDefault()));
         }
 
         /// <summary>
@@ -317,6 +321,128 @@ namespace SiliconStudio.Core.Reflection
         }
 
         /// <summary>
+        /// Get the nodes of the path of <paramref name="rootObject"/>
+        /// </summary>
+        /// <param name="rootObject">The root of the object to visit</param>
+        /// <returns>the path nodes</returns>
+        public IEnumerable<MemberPathNode> GetNodes(object rootObject)
+        {
+            if (rootObject == null) throw new ArgumentNullException("rootObject");
+            if (items.Count == 0) throw new InvalidOperationException("No items pushed via Push methods");
+
+                var node = new MemberPathNode
+                {
+                    Object = rootObject,
+                };
+
+                for (var i = 0; i < items.Count; i++)
+                {
+                    var item = items[i];
+
+                    node.Descriptor = item.MemberDescriptor;
+                    yield return node;
+
+                    try
+                    {
+                        node.Object = item.GetValue(node.Object);
+                    }
+                    catch (Exception)
+                    {
+                        yield break;
+                    }
+                }
+        }
+
+        /// <summary>
+        /// Find all the member path in the <paramref name="dual"/> object corresponding to this path in <paramref name="reference"/> object.
+        /// </summary>
+        /// <param name="reference">The reference root element</param>
+        /// <param name="dual">The dual root element</param>
+        /// <returns><value>True</value> if a corresponding path could be found, <value>False</value> otherwise</returns>
+        public IEnumerable<MemberPath> Resolve(object reference, object dual)
+        {
+            if (reference == null) throw new ArgumentNullException("reference");
+            if (dual == null) throw new ArgumentNullException("dual");
+
+            if (items.Count == 0)
+                return Enumerable.Empty<MemberPath>();
+
+            var dualPaths = new List<MemberPath> { new MemberPath() };
+
+            for (var i = 0; i < items.Count; i++)
+            {
+                var referenceItem = items[i];
+                var nextReference = reference;
+                for (var j = 0; j < i; ++j)
+                    nextReference = items[j].GetValue(nextReference);
+
+                var dualsCount = dualPaths.Count;
+                for(var c = 0; c < dualsCount; ++c)
+                {
+                    var dualPath = dualPaths[c];
+
+                    var nextDual = dual;
+                    for (var j = 0; j < i; ++j)
+                        nextDual = dualPath.items[j].GetValue(nextDual);
+
+                    if (referenceItem is ArrayPathItem || referenceItem is CollectionPathItem)
+                    {
+                        dualPaths.RemoveAt(c--);
+                        --dualsCount;
+
+                        try
+                        {
+                            nextReference = referenceItem.GetValue(nextReference); // id is set on element itself
+
+                            Guid referenceId;
+                            if (!nextReference.GetId(out referenceId))
+                                continue;
+
+                            for (var k = 0; k < Int32.MaxValue; ++k)
+                            {
+                                var dualItem = (referenceItem is ArrayPathItem) ? (MemberPathItem) new ArrayPathItem(k) : new CollectionPathItem(((CollectionPathItem)referenceItem).Descriptor, k);
+                                dualItem.Parent = dualPath.items.LastOrDefault();
+
+                                Guid dualId;
+                                var dualElt = dualItem.GetValue(nextDual);
+                                if (dualElt.GetId(out dualId) && referenceId == dualId)
+                                {
+                                    var path = dualPath.Clone();
+                                    path.AddItem(dualItem);
+                                    dualPaths.Add(path);
+                                }
+                            }
+                        }
+                        catch (Exception)
+                        {
+                        }
+                    }
+                    else
+                    {
+                        var dualItem = referenceItem.Clone(dualPath.items.LastOrDefault());
+
+                        try
+                        {
+                            var refElement = referenceItem.GetValue(nextReference);
+                            var dualElement = dualItem.GetValue(nextDual);
+                        }
+                        catch (Exception)
+                        {
+                            dualPaths.RemoveAt(c--);
+                            --dualsCount;
+
+                            continue;
+                        }
+
+                        dualPath.AddItem(dualItem);
+                    }
+                }
+            }
+
+            return dualPaths;
+        }
+
+        /// <summary>
         /// Clones this instance, cloning the current path.
         /// </summary>
         /// <returns>A clone of this instance.</returns>
@@ -359,17 +485,19 @@ namespace SiliconStudio.Core.Reflection
             public abstract void SetValue(List<object> stack, int objectIndex, object thisObject, object value);
 
             public abstract string GetName(bool isFirst);
+
+            public abstract MemberPathItem Clone(MemberPathItem parent);
         }
 
         private sealed class PropertyPathItem : MemberPathItem
         {
-            private readonly PropertyDescriptor Descriptor;
+            private readonly PropertyDescriptor descriptor;
 
             private readonly bool isValueType;
 
             public PropertyPathItem(PropertyDescriptor descriptor)
             {
-                this.Descriptor = descriptor;
+                this.descriptor = descriptor;
                 isValueType = descriptor.DeclaringType.IsValueType;
             }
 
@@ -377,18 +505,18 @@ namespace SiliconStudio.Core.Reflection
             {
                 get
                 {
-                    return Descriptor;
+                    return descriptor;
                 }
             }
 
             public override object GetValue(object thisObj)
             {
-                return Descriptor.Get(thisObj);
+                return descriptor.Get(thisObj);
             }
 
             public override void SetValue(List<object> stack, int objectIndex, object thisObject, object value)
             {
-                Descriptor.Set(thisObject, value);
+                descriptor.Set(thisObject, value);
 
                 if (isValueType && Parent != null)
                 {
@@ -398,18 +526,23 @@ namespace SiliconStudio.Core.Reflection
 
             public override string GetName(bool isFirst)
             {
-                return isFirst ? Descriptor.Name : "." + Descriptor.Name;
+                return isFirst ? descriptor.Name : "." + descriptor.Name;
+            }
+
+            public override MemberPathItem Clone(MemberPathItem parent)
+            {
+                return new PropertyPathItem(descriptor) { Parent = parent };
             }
         }
 
         private sealed class FieldPathItem : MemberPathItem
         {
-            private readonly FieldDescriptor Descriptor;
+            private readonly FieldDescriptor descriptor;
             private readonly bool isValueType;
  
             public FieldPathItem(FieldDescriptor descriptor)
             {
-                this.Descriptor = descriptor;
+                this.descriptor = descriptor;
                 isValueType = descriptor.DeclaringType.IsValueType;
             }
 
@@ -417,18 +550,18 @@ namespace SiliconStudio.Core.Reflection
             {
                 get
                 {
-                    return Descriptor;
+                    return descriptor;
                 }
             }
 
             public override object GetValue(object thisObj)
             {
-                return Descriptor.Get(thisObj);
+                return descriptor.Get(thisObj);
             }
 
             public override void SetValue(List<object> stack, int objectIndex, object thisObject, object value)
             {
-                Descriptor.Set(thisObject, value);
+                descriptor.Set(thisObject, value);
 
                 if (isValueType && Parent != null)
                 {
@@ -438,7 +571,12 @@ namespace SiliconStudio.Core.Reflection
 
             public override string GetName(bool isFirst)
             {
-                return "." + Descriptor.Name;
+                return "." + descriptor.Name;
+            }
+
+            public override MemberPathItem Clone(MemberPathItem parent)
+            {
+                return new FieldPathItem(descriptor) { Parent = parent };
             }
         }
 
@@ -477,6 +615,11 @@ namespace SiliconStudio.Core.Reflection
             {
                 return "[" + index + "]";
             }
+
+            public override MemberPathItem Clone(MemberPathItem parent)
+            {
+                return new ArrayPathItem(index) { Parent = parent };
+            }
         }
 
         private sealed class CollectionPathItem : SpecialMemberPathItemBase
@@ -487,8 +630,8 @@ namespace SiliconStudio.Core.Reflection
 
             public CollectionPathItem(CollectionDescriptor descriptor, int index)
             {
-                this.Descriptor = descriptor;
-                this.Index = index;
+                Descriptor = descriptor;
+                Index = index;
             }
 
             public override object GetValue(object thisObj)
@@ -505,6 +648,11 @@ namespace SiliconStudio.Core.Reflection
             {
                 return "[" + Index + "]";
             }
+
+            public override MemberPathItem Clone(MemberPathItem parent)
+            {
+                return new CollectionPathItem(Descriptor, Index) { Parent = parent };
+            }
         }
 
         private sealed class DictionaryPathItem : SpecialMemberPathItemBase
@@ -515,8 +663,8 @@ namespace SiliconStudio.Core.Reflection
 
             public DictionaryPathItem(DictionaryDescriptor descriptor, object key)
             {
-                this.Descriptor = descriptor;
-                this.Key = key;
+                Descriptor = descriptor;
+                Key = key;
             }
 
             public override object GetValue(object thisObj)
@@ -532,6 +680,11 @@ namespace SiliconStudio.Core.Reflection
             public override string GetName(bool isFirst)
             {
                 return "[" + Key + "]";
+            }
+
+            public override MemberPathItem Clone(MemberPathItem parent)
+            {
+                return new DictionaryPathItem(Descriptor, Key) { Parent = parent };
             }
         }
     }
