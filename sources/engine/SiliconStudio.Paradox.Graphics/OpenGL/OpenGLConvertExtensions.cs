@@ -36,6 +36,7 @@ namespace SiliconStudio.Paradox.Graphics
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
         public static TextureComponentCount ToOpenGL(this PixelInternalFormat format)
         {
+            // TODO: depth formats
             switch (format)
             {
                 case PixelInternalFormat.Alpha:
@@ -289,6 +290,21 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
+        // Define missing constants
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+        private const PixelInternalFormat DepthComponent16 = (PixelInternalFormat)33189;
+        private const PixelInternalFormat DepthComponent24 = (PixelInternalFormat)35056; // TODO: this is 24_8. Use 24 ?
+        private const PixelInternalFormat DepthComponent32f = (PixelInternalFormat)36012;
+        private const PixelInternalFormat Rgba16f = (PixelInternalFormat)34842;
+        private const PixelInternalFormat Rgba32f = (PixelInternalFormat)34836;
+#else
+        private const PixelInternalFormat DepthComponent16 = PixelInternalFormat.DepthComponent16;
+        private const PixelInternalFormat DepthComponent24 = PixelInternalFormat.DepthComponent24; // TODO: use 24_8 ?
+        private const PixelInternalFormat DepthComponent32f = PixelInternalFormat.DepthComponent32f;
+        private const PixelInternalFormat Rgba16f = PixelInternalFormat.Rgba16f;
+        private const PixelInternalFormat Rgba32f = PixelInternalFormat.Rgba32f;
+#endif
+
         public static void ConvertPixelFormat(GraphicsDevice graphicsDevice, PixelFormat inputFormat, out PixelInternalFormat internalFormat, out PixelFormatGl format, out PixelType type, out int pixelSize, out bool compressed)
         {
             compressed = false;
@@ -302,11 +318,7 @@ namespace SiliconStudio.Paradox.Graphics
                     pixelSize = 4;
                     break;
                 case PixelFormat.D16_UNorm:
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                    internalFormat = PixelInternalFormat.Rgba;
-#else
-                    internalFormat = PixelInternalFormat.DepthComponent16;
-#endif
+                    internalFormat = DepthComponent16;
                     format = PixelFormatGl.DepthComponent;
                     type = PixelType.UnsignedShort;
                     pixelSize = 2;
@@ -425,42 +437,26 @@ namespace SiliconStudio.Paradox.Graphics
                     break;
 #endif
                 case PixelFormat.D24_UNorm_S8_UInt:
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                    internalFormat = PixelInternalFormat.Rgba;
-#else
-                    internalFormat = PixelInternalFormat.DepthComponent24;
-#endif
+                    internalFormat = DepthComponent24;
                     format = PixelFormatGl.DepthComponent;
                     type = PixelType.UnsignedInt248;
                     pixelSize = 4;
                     break;
                 case PixelFormat.R16G16B16A16_Float:
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                    internalFormat = PixelInternalFormat.Rgba;
-#else
-                    internalFormat = PixelInternalFormat.Rgba16f;
-#endif
+                    internalFormat = Rgba16f;
                     format = PixelFormatGl.Rgba;
                     type = PixelType.HalfFloat;
                     pixelSize = 8;
                     break;
                 case PixelFormat.R32G32B32A32_Float:
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                    internalFormat = PixelInternalFormat.Rgba;
-#else
-                    internalFormat = PixelInternalFormat.Rgba32f;
-#endif
+                    internalFormat = Rgba32f;
                     format = PixelFormatGl.Rgba;
                     type = PixelType.Float;
                     pixelSize = 16;
                     break;
                 // TODO: Temporary depth format (need to decide relation between RenderTarget1D and Texture)
                 case PixelFormat.D32_Float:
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                    internalFormat = PixelInternalFormat.Rgba;
-#else
-                    internalFormat = PixelInternalFormat.DepthComponent32f;
-#endif
+                    internalFormat = DepthComponent32f;
                     format = PixelFormatGl.DepthComponent;
                     type = PixelType.Float;
                     pixelSize = 4;
