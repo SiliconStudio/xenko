@@ -78,6 +78,8 @@ namespace SiliconStudio.Paradox.Graphics
         internal bool HasDepth24;
         internal bool HasPackedDepthStencilExtension;
         internal bool HasExtTextureFormatBGRA8888;
+        internal bool HasRenderTargetFloat;
+        internal bool HasRenderTargetHalf;
 #endif
 
         private int windowProvidedFrameBuffer;
