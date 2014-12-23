@@ -721,8 +721,8 @@ namespace SiliconStudio.Paradox.Graphics
 #if DEBUG
             EnsureContextActive();
 #endif
-
             PreDraw();
+
             GL.DrawArrays(primitiveType.ToOpenGL(), startVertex, vertexCount);
         }
 
@@ -732,6 +732,7 @@ namespace SiliconStudio.Paradox.Graphics
             EnsureContextActive();
 #endif
             PreDraw();
+
             //GL.DrawArraysIndirect(primitiveType.ToOpenGL(), (IntPtr)0);
             throw new NotImplementedException();
         }
@@ -789,13 +790,14 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="alignedByteOffsetForArgs">Offset in <em>pBufferForArgs</em> to the start of the GPU generated primitives.</param>
         public void DrawIndexedInstanced(PrimitiveType primitiveType, Buffer argumentsBuffer, int alignedByteOffsetForArgs = 0)
         {
+            throw new NotImplementedException();
+
             if (argumentsBuffer == null) throw new ArgumentNullException("argumentsBuffer");
 
 #if DEBUG
             EnsureContextActive();
 #endif
             PreDraw();
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -831,14 +833,24 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="alignedByteOffsetForArgs">Offset in <em>pBufferForArgs</em> to the start of the GPU generated primitives.</param>
         public void DrawInstanced(PrimitiveType primitiveType, Buffer argumentsBuffer, int alignedByteOffsetForArgs = 0)
         {
-            if (argumentsBuffer == null) throw new ArgumentNullException("argumentsBuffer");
-            throw new NotImplementedException();
-            /*
+            if (argumentsBuffer == null) 
+                throw new ArgumentNullException("argumentsBuffer");
+
 #if DEBUG
             EnsureContextActive();
 #endif
+
             PreDraw();
-            */
+
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+            throw new NotImplementedException();
+#else
+            GL.BindBuffer(BufferTarget.DrawIndirectBuffer, argumentsBuffer.resourceId);
+
+            GL.DrawArraysIndirect(primitiveType.ToOpenGL(), (IntPtr)alignedByteOffsetForArgs);
+
+            GL.BindBuffer(BufferTarget.DrawIndirectBuffer, 0);
+#endif
         }
 
         public void EnableProfile(bool enabledFlag)
