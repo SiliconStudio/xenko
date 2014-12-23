@@ -692,7 +692,11 @@ namespace SiliconStudio.Paradox.Graphics
             EnsureContextActive();
 #endif
 
+#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+            GL.DispatchCompute(threadCountX, threadCountY, threadCountZ);
+#else
             throw new NotImplementedException();
+#endif
         }
 
         public void Dispatch(Buffer indirectBuffer, int offsetInBytes)
@@ -701,7 +705,15 @@ namespace SiliconStudio.Paradox.Graphics
             EnsureContextActive();
 #endif
 
+#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+            GL.BindBuffer(BufferTarget.DispatchIndirectBuffer, indirectBuffer.resourceId);
+
+            GL.DispatchComputeIndirect((IntPtr)offsetInBytes);
+
+            GL.BindBuffer(BufferTarget.DispatchIndirectBuffer, 0);
+#else
             throw new NotImplementedException();
+#endif
         }
 
         public void Draw(PrimitiveType primitiveType, int vertexCount, int startVertex = 0)
