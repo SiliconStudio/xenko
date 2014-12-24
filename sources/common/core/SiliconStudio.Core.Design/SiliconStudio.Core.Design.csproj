@@ -78,6 +78,7 @@
     <Compile Include="Reflection\ShadowContainer.cs" />
     <Compile Include="Reflection\ShadowId.cs" />
     <Compile Include="Reflection\ShadowObject.cs" />
+    <Compile Include="Reflection\ThisDescriptor.cs" />
     <Compile Include="Reflection\TypeDescriptorFactory.cs" />
     <Compile Include="Reflection\TypeExtensions.cs" />
     <Compile Include="Reflection\VisitorContext.cs" />

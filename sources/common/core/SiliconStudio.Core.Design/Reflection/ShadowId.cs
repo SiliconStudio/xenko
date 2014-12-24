@@ -15,8 +15,6 @@ namespace SiliconStudio.Core.Reflection
         /// </summary>
         public static readonly PropertyKey<Guid> IdKey = new PropertyKey<Guid>("ID", typeof(ShadowId), DefaultValueMetadata.Static(Guid.Empty));
 
-        private static readonly object MemberKey = new object();
-
         /// <summary>
         /// Gets the ID for the specified member.
         /// </summary>
@@ -32,7 +30,7 @@ namespace SiliconStudio.Core.Reflection
         {
             if (instance == null) throw new ArgumentNullException("instance");
 
-            return instance.TryGetDynamicProperty(MemberKey, IdKey, out id);
+            return instance.TryGetDynamicProperty(ThisDescriptor.Default, IdKey, out id);
         }
 
         /// <summary>
@@ -49,7 +47,7 @@ namespace SiliconStudio.Core.Reflection
         {
             if (instance == null) throw new ArgumentNullException("instance");
 
-            instance.SetDynamicProperty(MemberKey, IdKey, id);
+            instance.SetDynamicProperty(ThisDescriptor.Default, IdKey, id);
         }
     }
 }
