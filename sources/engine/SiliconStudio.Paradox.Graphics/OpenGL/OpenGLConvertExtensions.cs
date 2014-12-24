@@ -292,17 +292,26 @@ namespace SiliconStudio.Paradox.Graphics
 
         // Define missing constants
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+        // values taken form https://www.khronos.org/registry/gles/api/GLES3/gl3.h
         private const PixelInternalFormat DepthComponent16 = (PixelInternalFormat)33189;
         private const PixelInternalFormat DepthComponent24 = (PixelInternalFormat)35056; // TODO: this is 24_8. Use 24 ?
         private const PixelInternalFormat DepthComponent32f = (PixelInternalFormat)36012;
         private const PixelInternalFormat Rgba16f = (PixelInternalFormat)34842;
         private const PixelInternalFormat Rgba32f = (PixelInternalFormat)34836;
+        private const PixelInternalFormat R32ui = (PixelInternalFormat)33334;
+        private const PixelInternalFormat R32f = (PixelInternalFormat)33326;
+        private const PixelInternalFormat Rg32f = (PixelInternalFormat)33328;
+        private const PixelInternalFormat Rgb32f = (PixelInternalFormat)34837;
 #else
         private const PixelInternalFormat DepthComponent16 = PixelInternalFormat.DepthComponent16;
         private const PixelInternalFormat DepthComponent24 = PixelInternalFormat.DepthComponent24; // TODO: use 24_8 ?
         private const PixelInternalFormat DepthComponent32f = PixelInternalFormat.DepthComponent32f;
         private const PixelInternalFormat Rgba16f = PixelInternalFormat.Rgba16f;
         private const PixelInternalFormat Rgba32f = PixelInternalFormat.Rgba32f;
+        private const PixelInternalFormat R32ui = PixelInternalFormat.R32ui;
+        private const PixelInternalFormat R32f = PixelInternalFormat.R32f;
+        private const PixelInternalFormat Rg32f = PixelInternalFormat.Rg32f;
+        private const PixelInternalFormat Rgb32f = PixelInternalFormat.Rgb32f;
 #endif
 
         public static void ConvertPixelFormat(GraphicsDevice graphicsDevice, PixelFormat inputFormat, out PixelInternalFormat internalFormat, out PixelFormatGl format, out PixelType type, out int pixelSize, out bool compressed)
@@ -364,32 +373,30 @@ namespace SiliconStudio.Paradox.Graphics
                     type = PixelType.UnsignedByte;
                     pixelSize = 4;
                     break;
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 case PixelFormat.R32_UInt:
-                    internalFormat = PixelInternalFormat.R32ui;
+                    internalFormat = R32ui;
                     format = PixelFormatGl.RedInteger;
                     type = PixelType.UnsignedInt;
                     pixelSize = 4;
                     break;
                 case PixelFormat.R32_Float:
-                    internalFormat = PixelInternalFormat.R32f;
+                    internalFormat = R32f;
                     format = PixelFormatGl.Red;
                     type = PixelType.Float;
                     pixelSize = 4;
                     break;
                 case PixelFormat.R32G32_Float:
-                    internalFormat = PixelInternalFormat.Rg32f;
+                    internalFormat = Rg32f;
                     format = PixelFormatGl.Rg;
                     type = PixelType.Float;
                     pixelSize = 8;
                     break;
                 case PixelFormat.R32G32B32_Float:
-                    internalFormat = PixelInternalFormat.Rgb32f;
+                    internalFormat = Rgb32f;
                     format = PixelFormatGl.Rgb;
                     type = PixelType.Float;
                     pixelSize = 12;
                     break;
-#endif
 #if SILICONSTUDIO_PLATFORM_ANDROID
                 case PixelFormat.ETC1:
                     // TODO: Runtime check for extension?

@@ -321,13 +321,21 @@ namespace SiliconStudio.Paradox.Graphics
                 case PixelFormat.D32_Float:
                     if (graphicsDevice.IsOpenGLES2)
                         throw new NotSupportedException("Only 16 bits depth buffer or 24-8 bits depth-stencil buffer is supported on OpenGLES2");
+#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
+                    depthFormat = RenderbufferInternalFormat.DepthComponent32F;
+#else
                     depthFormat = RenderbufferInternalFormat.DepthComponent32f;
+#endif
                     break;
                 case PixelFormat.D32_Float_S8X24_UInt:
                     if (graphicsDevice.IsOpenGLES2)
                         throw new NotSupportedException("Only 16 bits depth buffer or 24-8 bits depth-stencil buffer is supported on OpenGLES2");
                     // no need to check graphicsDevice.HasPackedDepthStencilExtension since supported 32F depth means OpenGL ES 3, so packing is available.
+#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
+                    depthFormat = RenderbufferInternalFormat.Depth32FStencil8;
+#else
                     depthFormat = RenderbufferInternalFormat.Depth32fStencil8;
+#endif
                     break;
 #endif
                 default:
