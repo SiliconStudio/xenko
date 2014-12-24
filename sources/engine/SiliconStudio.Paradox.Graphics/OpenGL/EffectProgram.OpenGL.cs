@@ -228,7 +228,7 @@ namespace SiliconStudio.Paradox.Graphics
             {
                 // TODO: get previous name to find te actual constant buffer in the reflexion
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                const int sbCapacity = 64;
+                const int sbCapacity = 128;
                 int length;
                 var sb = new StringBuilder(sbCapacity);
                 GL.GetActiveUniformBlockName(resourceId, uniformBlockIndex, sbCapacity, out length, sb);
