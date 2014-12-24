@@ -216,8 +216,28 @@ namespace SiliconStudio.Paradox.Assets.Textures
                                             throw new ArgumentOutOfRangeException();
                                     }
                                     break;
+                                case GraphicsPlatform.OpenGLES: // OpenGLES on Windows
+                                    switch (graphicsProfile)
+                                    {
+                                        case GraphicsProfile.Level_9_1:
+                                        case GraphicsProfile.Level_9_2:
+                                        case GraphicsProfile.Level_9_3:
+                                            outputFormat = alphaFormat == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.R8G8B8A8_UNorm;
+                                            break;
+                                        case GraphicsProfile.Level_10_0:
+                                        case GraphicsProfile.Level_10_1:
+                                        case GraphicsProfile.Level_11_0:
+                                        case GraphicsProfile.Level_11_1:
+                                        case GraphicsProfile.Level_11_2:
+                                            // GLES3.0 starting from Level_10_0, this profile enables ETC2 compression on Android
+                                            outputFormat = alphaFormat == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.ETC2_RGBA;
+                                            break;
+                                        default:
+                                            throw new ArgumentOutOfRangeException("graphicsProfile");
+                                    }
+                                    break;
                                 default:
-                                    // OpenGL & OpenGL ES on Windows
+                                    // OpenGL on Windows
                                     // TODO: Need to handle OpenGL Desktop compression
                                     outputFormat = PixelFormat.R8G8B8A8_UNorm;
                                     break;

@@ -397,23 +397,7 @@ namespace SiliconStudio.Paradox.Graphics
                     type = PixelType.Float;
                     pixelSize = 12;
                     break;
-#if SILICONSTUDIO_PLATFORM_ANDROID
-                case PixelFormat.ETC1:
-                    // TODO: Runtime check for extension?
-                    internalFormat = (PixelInternalFormat)OesCompressedEtc1Rgb8Texture.Etc1Rgb8Oes;
-                    format = (PixelFormatGl)OesCompressedEtc1Rgb8Texture.Etc1Rgb8Oes;
-                    compressed = true;
-                    pixelSize = 2;
-                    type = PixelType.UnsignedByte;
-                    break;
-                case PixelFormat.ETC2_RGBA:
-                    internalFormat = (PixelInternalFormat)CompressedInternalFormat.CompressedRgba8Etc2Eac;
-                    format = (PixelFormatGl)CompressedInternalFormat.CompressedRgba8Etc2Eac;
-                    compressed = true;
-                    pixelSize = 2;
-                    type = PixelType.UnsignedByte;
-                    break;
-#elif SILICONSTUDIO_PLATFORM_IOS
+#if SILICONSTUDIO_PLATFORM_IOS
                 case PixelFormat.PVRTC_4bpp_RGB:
                     internalFormat = (PixelInternalFormat)ImgTextureCompressionPvrtc.CompressedRgbPvrtc4Bppv1Img;
                     format = (PixelFormatGl)ImgTextureCompressionPvrtc.CompressedRgbPvrtc4Bppv1Img;
@@ -441,7 +425,24 @@ namespace SiliconStudio.Paradox.Graphics
                     compressed = true;
                     pixelSize = 2;
                     type = PixelType.UnsignedByte;
+                    break;  
+#elif SILICONSTUDIO_PLATFORM_ANDROID || !SILICONSTUDIO_PLATFORM_MONO_MOBILE && SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+// Desktop OpenGLES
+                case PixelFormat.ETC1:
+                    // TODO: Runtime check for extension?
+                    internalFormat = (PixelInternalFormat)OesCompressedEtc1Rgb8Texture.Etc1Rgb8Oes;
+                    format = (PixelFormatGl)OesCompressedEtc1Rgb8Texture.Etc1Rgb8Oes;
+                    compressed = true;
+                    pixelSize = 2;
+                    type = PixelType.UnsignedByte;
                     break;
+                case PixelFormat.ETC2_RGBA:
+                    internalFormat = (PixelInternalFormat)CompressedInternalFormat.CompressedRgba8Etc2Eac;
+                    format = (PixelFormatGl)CompressedInternalFormat.CompressedRgba8Etc2Eac;
+                    compressed = true;
+                    pixelSize = 2;
+                    type = PixelType.UnsignedByte;
+                    break;     
 #endif
                 case PixelFormat.D24_UNorm_S8_UInt:
                     internalFormat = DepthComponent24;

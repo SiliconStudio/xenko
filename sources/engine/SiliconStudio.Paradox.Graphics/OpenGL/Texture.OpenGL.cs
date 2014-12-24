@@ -222,7 +222,8 @@ namespace SiliconStudio.Paradox.Graphics
                         if (compressed)
                         {
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
-                            throw new NotSupportedException("Can't use compressed textures on desktop OpenGL ES.");
+                            GL.CompressedTexImage2D(dataSetTarget, i, (CompressedInternalFormat)internalFormat,
+                                width, height, 0, dataBoxes[offsetArray + i].SlicePitch, data);
 #else
                             GL.CompressedTexImage2D(dataSetTarget, i, internalFormat,
                                 width, height, 0, dataBoxes[offsetArray + i].SlicePitch, data);
