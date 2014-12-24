@@ -25,22 +25,22 @@ namespace SiliconStudio.Paradox.Effects.Renderers
         /// <summary>
         /// The key linking the parameters of each point light.
         /// </summary>
-        public static readonly ParameterKey<PointLightData[]> PointLightInfos = ParameterKeys.New(new PointLightData[64]);
+        public static readonly ParameterKey<PointLightData[]> PointLightInfos = ParameterKeys.New(new PointLightData[LightingKeys.MaxDeferredPointLights]);
 
         /// <summary>
         /// The key linking the parameters of each directional light.
         /// </summary>
-        public static readonly ParameterKey<DirectLightData[]> DirectLightInfos = ParameterKeys.New(new DirectLightData[64]);
+        public static readonly ParameterKey<DirectLightData[]> DirectLightInfos = ParameterKeys.New(new DirectLightData[LightingKeys.MaxDeferredPointLights]);
 
         /// <summary>
         /// The key linking the parameters of each spot light.
         /// </summary>
-        public static readonly ParameterKey<SpotLightData[]> SpotLightInfos = ParameterKeys.New(new SpotLightData[64]);
+        public static readonly ParameterKey<SpotLightData[]> SpotLightInfos = ParameterKeys.New(new SpotLightData[LightingKeys.MaxDeferredPointLights]);
 
         /// <summary>
         /// The key setting the number of lights.
         /// </summary>
-        public static readonly ParameterKey<int> LightCount = ParameterKeys.New(64);
+        public static readonly ParameterKey<int> LightCount = ParameterKeys.New(LightingKeys.MaxDeferredPointLights);
 
         #endregion
 
@@ -66,7 +66,7 @@ namespace SiliconStudio.Paradox.Effects.Renderers
         public const float AttenuationCutoff = 0.1f;
 
         // TODO: make this configurable or extract from the effect
-        public const int MaxPointLightsPerTileDrawCall = 64;
+        public const int MaxPointLightsPerTileDrawCall = LightingKeys.MaxDeferredPointLights;
         
         public const int MaxDirectLightsPerTileDrawCall = 1;
 
@@ -210,23 +210,13 @@ namespace SiliconStudio.Paradox.Effects.Renderers
                 tilesGroups[i] = new List<PointLightData>();
 
             var compilerParameters = GetDefaultCompilerParameters();
+            // point lights
             pointLightingPrepassEffect = EffectSystem.LoadEffect(effectName + ".ParadoxPointPrepassLighting", compilerParameters);
             CreateLightingUpdateInfo(pointLightingPrepassEffect);
 
+            // spot lights
             spotLightingPrepassEffect = EffectSystem.LoadEffect(effectName + ".ParadoxSpotPrepassLighting", compilerParameters);
             CreateLightingUpdateInfo(spotLightingPrepassEffect);
-
-            // TODO: find a way to enumerate available shaders
-            /*var parameters = new CompilerParameters();
-            for (var i = 2; i <= 64; i = i + 62)
-            {
-                parameters.Set(LightingKeys.MaxDeferredLights, i);
-                var effect = EffectSystem.LoadEffect("LightPrepassEffect", parameters);
-                lightPrepassEffects.Add(i, effect);
-                lightConfigurations.Add(i);
-
-                CreateLightingUpdateInfo(effect);
-            }*/
 
             // directional lights
             directLightingPrepassEffect = EffectSystem.LoadEffect(effectName + ".ParadoxDirectPrepassLighting", compilerParameters);

@@ -7,7 +7,7 @@
 /// DEFERRED_MAX_POINT_LIGHT_COUNT: Macro - Maximum number of supported point lights.
 /// </remarks>
 #ifndef DEFERRED_MAX_POINT_LIGHT_COUNT
-# define DEFERRED_MAX_POINT_LIGHT_COUNT 64
+# define DEFERRED_MAX_POINT_LIGHT_COUNT 32
 #endif
 class DeferredPointLighting : DeferredLightingBase
 {
@@ -23,7 +23,7 @@ class DeferredPointLighting : DeferredLightingBase
     };
 
     [Link("LightingPrepassRenderer.LightCount")]
-    int LightCount = 64;
+    int LightCount = DEFERRED_MAX_POINT_LIGHT_COUNT;
     
     float LightAttenuationCutoff;
 
