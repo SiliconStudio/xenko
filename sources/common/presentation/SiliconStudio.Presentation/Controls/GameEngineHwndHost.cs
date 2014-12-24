@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
-using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -70,6 +69,32 @@ namespace SiliconStudio.Presentation.Controls
             {
                 case NativeHelper.WM_RBUTTONDOWN:
                     mouseMoveCount = 0;
+                    Dispatcher.Invoke(() =>
+                        {
+                            RaiseMouseButtonEvent(Mouse.PreviewMouseDownEvent, MouseButton.Right);
+                            RaiseMouseButtonEvent(Mouse.MouseDownEvent, MouseButton.Right);
+                        });
+                    break;
+                case NativeHelper.WM_RBUTTONUP:
+                    Dispatcher.Invoke(() =>
+                        {
+                            RaiseMouseButtonEvent(Mouse.PreviewMouseUpEvent, MouseButton.Right);
+                            RaiseMouseButtonEvent(Mouse.MouseUpEvent, MouseButton.Right);
+                        });
+                    break;
+                case NativeHelper.WM_LBUTTONDOWN:
+                    Dispatcher.Invoke(() =>
+                        {
+                            RaiseMouseButtonEvent(Mouse.PreviewMouseDownEvent, MouseButton.Left);
+                            RaiseMouseButtonEvent(Mouse.MouseDownEvent, MouseButton.Left);
+                        });
+                    break;
+                case NativeHelper.WM_LBUTTONUP:
+                    Dispatcher.Invoke(() =>
+                        {
+                            RaiseMouseButtonEvent(Mouse.PreviewMouseUpEvent, MouseButton.Left);
+                            RaiseMouseButtonEvent(Mouse.MouseUpEvent, MouseButton.Left);
+                        });
                     break;
                 case NativeHelper.WM_MOUSEMOVE:
                     ++mouseMoveCount;
@@ -112,6 +137,15 @@ namespace SiliconStudio.Presentation.Controls
                     NativeHelper.PostMessage(parent, msg, wParam, lParam);
                     break;
             }
+        }
+
+        private void RaiseMouseButtonEvent(RoutedEvent routedEvent, MouseButton button)
+        {
+            RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, button)
+            {
+                RoutedEvent = routedEvent,
+                Source = this,
+            });
         }
 
         private IntPtr ContextMenuWndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
