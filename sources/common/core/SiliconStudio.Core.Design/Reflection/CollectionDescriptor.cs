@@ -13,7 +13,7 @@ namespace SiliconStudio.Core.Reflection
     public class CollectionDescriptor : ObjectDescriptor
     {
         private static readonly object[] EmptyObjects = new object[0];
-        private static readonly List<string> ListOfMembersToRemove = new List<string> { "Capacity", "Count", "IsReadOnly", "IsFixedSize", "IsSynchronized", "SyncRoot" };
+        private static readonly List<string> ListOfMembersToRemove = new List<string> { "Capacity", "Count", "IsReadOnly", "IsFixedSize", "IsSynchronized", "SyncRoot", "Comparer" };
 
         private readonly Func<object, bool> IsReadOnlyFunction;
         private readonly Func<object, int> GetCollectionCountFunction;
@@ -21,7 +21,7 @@ namespace SiliconStudio.Core.Reflection
         private readonly Action<object, int, object> CollectionInsertFunction;
         private readonly Action<object, int> CollectionRemoveAtFunction;
         private readonly Action<object> CollectionClearFunction;
-        private readonly bool hasIndexerSetter;
+        private readonly bool hasIndexerAccessors;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CollectionDescriptor" /> class.
@@ -72,7 +72,7 @@ namespace SiliconStudio.Core.Reflection
                 CollectionRemoveAtFunction = (obj, index) => ((IList)obj).RemoveAt(index);
                 GetCollectionCountFunction = o => ((IList)o).Count;
                 IsReadOnlyFunction = obj => ((IList)obj).IsReadOnly;
-                hasIndexerSetter = true;
+                hasIndexerAccessors = true;
                 typeSupported = true;
             }
 
@@ -125,14 +125,15 @@ namespace SiliconStudio.Core.Reflection
         }
 
         /// <summary>
-        /// Gets a value indicating whether this collection type has a valid indexer setter. If so, <see cref="SetValue"/> can be invoked.
+        /// Gets a value indicating whether this collection type has valid indexer accessors.
+        /// If so, <see cref="SetValue"/> and <see cref="GetValue"/> can be invoked.
         /// </summary>
         /// <value><c>true</c> if this instance has a valid indexer setter; otherwise, <c>false</c>.</value>
-        public bool HasIndexerSetter
+        public bool HasIndexerAccessors
         {
             get
             {
-                return hasIndexerSetter;
+                return hasIndexerAccessors;
             }
         }
 
