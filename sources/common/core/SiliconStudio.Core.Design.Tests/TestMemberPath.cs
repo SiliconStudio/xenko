@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 using NUnit.Framework;
@@ -15,64 +14,15 @@ namespace SiliconStudio.Core.Design.Tests
     /// Tests for the <see cref="MemberPath"/> class.
     /// </summary>
     [TestFixture]
-    public class TestMemberPath
+    public class TestMemberPath : TestMemberPathBase
     {
-        private IMemberDescriptor memberValue;
-        private IMemberDescriptor memberSub;
-        private IMemberDescriptor memberStruct;
-        private IMemberDescriptor memberSubs;
-        private IMemberDescriptor memberMaps;
-        private IMemberDescriptor memberX;
-        private IMemberDescriptor memberClass;
-
-        private CollectionDescriptor listClassDesc;
-        private DictionaryDescriptor mapClassDesc;
-
-        public struct MyStruct
-        {
-            public int X { get; set; }
-
-            public MyClass Class { get; set; }
-        }
-
-        public class MyClass
-        {
-            public MyClass()
-            {
-                Subs = new List<MyClass>();
-                Maps = new Dictionary<string, MyClass>();
-            }
-
-            public int Value { get; set; }
-
-            public MyClass Sub { get; set; }
-
-            public MyStruct Struct { get; set; }
-
-            public List<MyClass> Subs { get; set; }
-
-            public Dictionary<string, MyClass> Maps { get; set; }
-        }
-
         /// <summary>
         /// Initialize the tests.
         /// </summary>
         [TestFixtureSetUp]
-        public void Initializer()
+        public override void Initialize()
         {
-            var typeFactory = new TypeDescriptorFactory();
-            var myClassDesc = typeFactory.Find(typeof(MyClass));
-            var myStructDesc = typeFactory.Find(typeof(MyStruct));
-            listClassDesc = (CollectionDescriptor)typeFactory.Find(typeof(List<MyClass>));
-            mapClassDesc = (DictionaryDescriptor)typeFactory.Find(typeof(Dictionary<string, MyClass>));
-
-            memberValue = myClassDesc.Members.FirstOrDefault(member => member.Name == "Value");
-            memberSub = myClassDesc.Members.FirstOrDefault(member => member.Name == "Sub");
-            memberStruct = myClassDesc.Members.FirstOrDefault(member => member.Name == "Struct");
-            memberSubs = myClassDesc.Members.FirstOrDefault(member => member.Name == "Subs");
-            memberMaps = myClassDesc.Members.FirstOrDefault(member => member.Name == "Maps");
-            memberX = myStructDesc.Members.FirstOrDefault(member => member.Name == "X");
-            memberClass = myStructDesc.Members.FirstOrDefault(member => member.Name == "Class");
+            base.Initialize();
         }
 
         [Test]
@@ -84,7 +34,7 @@ namespace SiliconStudio.Core.Design.Tests
 
             // 1) MyClass.Value = 1
             var memberPath = new MemberPath();
-            memberPath.Push(memberValue);
+            memberPath.Push(MemberValue);
 
             object value;
             Assert.IsTrue(memberPath.Apply(testClass, MemberPathAction.ValueSet, 1));
@@ -94,8 +44,8 @@ namespace SiliconStudio.Core.Design.Tests
 
             // 2) MyClass.Sub.Value = 1
             memberPath.Clear();
-            memberPath.Push(memberSub);
-            memberPath.Push(memberValue);
+            memberPath.Push(MemberSub);
+            memberPath.Push(MemberValue);
 
             Assert.IsTrue(memberPath.Apply(testClass, MemberPathAction.ValueSet, 1));
             Assert.IsTrue(memberPath.TryGetValue(testClass, out value));
@@ -104,8 +54,8 @@ namespace SiliconStudio.Core.Design.Tests
 
             // 3) MyClass.Struct.X = 1
             memberPath.Clear();
-            memberPath.Push(memberStruct);
-            memberPath.Push(memberX);
+            memberPath.Push(MemberStruct);
+            memberPath.Push(MemberX);
 
             Assert.IsTrue(memberPath.Apply(testClass, MemberPathAction.ValueSet, 1));
             Assert.IsTrue(memberPath.TryGetValue(testClass, out value));
@@ -114,9 +64,9 @@ namespace SiliconStudio.Core.Design.Tests
 
             // 3) MyClass.Maps["XXX"].Value = 1
             memberPath.Clear();
-            memberPath.Push(memberMaps);
-            memberPath.Push(mapClassDesc, "XXX");
-            memberPath.Push(memberValue);
+            memberPath.Push(MemberMaps);
+            memberPath.Push(MapClassDesc, "XXX");
+            memberPath.Push(MemberValue);
 
             Assert.IsTrue(memberPath.Apply(testClass, MemberPathAction.ValueSet, 1));
             Assert.IsTrue(memberPath.TryGetValue(testClass, out value));
@@ -125,9 +75,9 @@ namespace SiliconStudio.Core.Design.Tests
 
             // 4) MyClass.Subs[0].Value = 1
             memberPath.Clear();
-            memberPath.Push(memberSubs);
-            memberPath.Push(listClassDesc, 0);
-            memberPath.Push(memberValue);
+            memberPath.Push(MemberSubs);
+            memberPath.Push(ListClassDesc, 0);
+            memberPath.Push(MemberValue);
 
             Assert.IsTrue(memberPath.Apply(testClass, MemberPathAction.ValueSet, 1));
             Assert.IsTrue(memberPath.TryGetValue(testClass, out value));
@@ -136,17 +86,17 @@ namespace SiliconStudio.Core.Design.Tests
 
             // 5) MyClass.Subs[0].X (invalid)
             memberPath.Clear();
-            memberPath.Push(memberSubs);
-            memberPath.Push(listClassDesc, 0);
-            memberPath.Push(memberX);
+            memberPath.Push(MemberSubs);
+            memberPath.Push(ListClassDesc, 0);
+            memberPath.Push(MemberX);
 
             Assert.IsFalse(memberPath.TryGetValue(testClass, out value));
             Assert.IsFalse(memberPath.Apply(testClass, MemberPathAction.ValueSet, 1));
 
             // 6) Remove key MyClass.Maps.Remove("XXX")
             memberPath.Clear();
-            memberPath.Push(memberMaps);
-            memberPath.Push(mapClassDesc, "XXX");
+            memberPath.Push(MemberMaps);
+            memberPath.Push(MapClassDesc, "XXX");
             Assert.IsTrue(memberPath.Apply(testClass, MemberPathAction.DictionaryRemove, null));
             Assert.IsFalse(testClass.Maps.ContainsKey("XXX"));
 
@@ -156,15 +106,15 @@ namespace SiliconStudio.Core.Design.Tests
 
             // 8) Remove key MyClass.Subs.Remove(0)
             memberPath.Clear();
-            memberPath.Push(memberSubs);
-            memberPath.Push(listClassDesc, 0);
+            memberPath.Push(MemberSubs);
+            memberPath.Push(ListClassDesc, 0);
             Assert.IsTrue(memberPath.Apply(testClass, MemberPathAction.CollectionRemove, null));
             Assert.AreEqual(0, testClass.Subs.Count);
 
             // 9) Add a key MyClass.Subs.Add(new MyClass())
             memberPath.Clear();
-            memberPath.Push(memberSubs);
-            memberPath.Push(listClassDesc, 0);
+            memberPath.Push(MemberSubs);
+            memberPath.Push(ListClassDesc, 0);
             Assert.IsTrue(memberPath.Apply(testClass, MemberPathAction.CollectionAdd, new MyClass()));
             Assert.AreEqual(1, testClass.Subs.Count);
         }
@@ -176,13 +126,13 @@ namespace SiliconStudio.Core.Design.Tests
         public void TestGetNodes()
         {
             var memberPath = new MemberPath();
-            memberPath.Push(memberSubs);
-            memberPath.Push(listClassDesc, 2);
-            memberPath.Push(memberMaps);
-            memberPath.Push(mapClassDesc, "toto");
-            memberPath.Push(memberStruct);
-            memberPath.Push(memberClass);
-            memberPath.Push(memberValue);
+            memberPath.Push(MemberSubs);
+            memberPath.Push(ListClassDesc, 2);
+            memberPath.Push(MemberMaps);
+            memberPath.Push(MapClassDesc, "toto");
+            memberPath.Push(MemberStruct);
+            memberPath.Push(MemberClass);
+            memberPath.Push(MemberValue);
 
             var obj = new MyClass();
             obj.Subs.Add(new MyClass());
@@ -193,7 +143,7 @@ namespace SiliconStudio.Core.Design.Tests
 
             var nodes = memberPath.GetNodes(obj).ToList();
 
-            Assert.AreEqual(7, nodes.Count);
+            Assert.AreEqual(8, nodes.Count);
 
             Assert.AreEqual(obj, nodes[0].Object);
             Assert.AreEqual(obj.Subs, nodes[1].Object);
@@ -202,14 +152,16 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.AreEqual(obj.Subs[2].Maps["toto"], nodes[4].Object);
             Assert.AreEqual(obj.Subs[2].Maps["toto"].Struct, nodes[5].Object);
             Assert.AreEqual(obj.Subs[2].Maps["toto"].Struct.Class, nodes[6].Object);
+            Assert.AreEqual(obj.Subs[2].Maps["toto"].Struct.Class.Value, nodes[7].Object);
 
-            Assert.AreEqual(memberSubs, nodes[0].Descriptor);
+            Assert.AreEqual(MemberSubs, nodes[0].Descriptor);
             Assert.AreEqual(null, nodes[1].Descriptor);
-            Assert.AreEqual(memberMaps, nodes[2].Descriptor);
+            Assert.AreEqual(MemberMaps, nodes[2].Descriptor);
             Assert.AreEqual(null, nodes[3].Descriptor);
-            Assert.AreEqual(memberStruct, nodes[4].Descriptor);
-            Assert.AreEqual(memberClass, nodes[5].Descriptor);
-            Assert.AreEqual(memberValue, nodes[6].Descriptor);
+            Assert.AreEqual(MemberStruct, nodes[4].Descriptor);
+            Assert.AreEqual(MemberClass, nodes[5].Descriptor);
+            Assert.AreEqual(MemberValue, nodes[6].Descriptor);
+            Assert.AreEqual(null, nodes[7].Descriptor);
         }
 
         /// <summary>
@@ -219,13 +171,13 @@ namespace SiliconStudio.Core.Design.Tests
         public void TestGetNodeAttributes()
         {
             var memberPath = new MemberPath();
-            memberPath.Push(memberSubs);
-            memberPath.Push(listClassDesc, 2);
-            memberPath.Push(memberMaps);
-            memberPath.Push(mapClassDesc, "toto");
-            memberPath.Push(memberStruct);
-            memberPath.Push(memberClass);
-            memberPath.Push(memberValue);
+            memberPath.Push(MemberSubs);
+            memberPath.Push(ListClassDesc, 2);
+            memberPath.Push(MemberMaps);
+            memberPath.Push(MapClassDesc, "toto");
+            memberPath.Push(MemberStruct);
+            memberPath.Push(MemberClass);
+            memberPath.Push(MemberValue);
 
             var obj = new MyClass();
             obj.Subs.Add(new MyClass());
@@ -234,18 +186,36 @@ namespace SiliconStudio.Core.Design.Tests
             obj.Subs[2].Maps["toto"] = new MyClass();
             obj.Subs[2].Maps["toto"].Struct = new MyStruct { Class = new MyClass() };
 
-            obj.SetOverride(memberSubs, OverrideType.New | OverrideType.Sealed);
-            obj.Subs[2].SetOverride(memberMaps, OverrideType.New);
-            obj.Subs[2].Maps["toto"].SetOverride(memberStruct, OverrideType.Sealed);
-            obj.Subs[2].Maps["toto"].Struct.SetOverride(memberClass, OverrideType.New);
-            obj.Subs[2].Maps["toto"].Struct.Class.SetOverride(memberValue, OverrideType.Sealed);
+            obj.SetOverride(MemberSubs, OverrideType.New | OverrideType.Sealed);
+            obj.Subs[2].SetOverride(ThisDescriptor.Default, OverrideType.Sealed);
+            obj.Subs[2].SetOverride(MemberMaps, OverrideType.New);
+            obj.Subs[2].Maps["toto"].SetOverride(ThisDescriptor.Default, OverrideType.Base);
+            obj.Subs[2].Maps["toto"].SetOverride(MemberStruct, OverrideType.Sealed);
+            obj.Subs[2].Maps["toto"].Struct.SetOverride(MemberClass, OverrideType.New);
+            obj.Subs[2].Maps["toto"].Struct.Class.SetOverride(MemberValue, OverrideType.Sealed);
 
             var overrides = memberPath.GetNodeOverrides(obj).ToList();
+            Assert.AreEqual(6, overrides.Count);
+            Assert.AreEqual(OverrideType.New | OverrideType.Sealed, overrides[0]);
+            Assert.AreEqual(OverrideType.Sealed, overrides[1]);
+            Assert.AreEqual(OverrideType.New, overrides[2]);
+            Assert.AreEqual(OverrideType.Base, overrides[3]);
+            Assert.AreEqual(OverrideType.Sealed, overrides[4]);
+            Assert.AreEqual(OverrideType.Sealed, overrides[5]);
+
+            // check that override from leaf is correctly returned too (special case)
+            var pathToToto = new MemberPath();
+            pathToToto.Push(MemberSubs);
+            pathToToto.Push(ListClassDesc, 2);
+            pathToToto.Push(MemberMaps);
+            pathToToto.Push(MapClassDesc, "toto");
+
+            overrides = pathToToto.GetNodeOverrides(obj).ToList();
             Assert.AreEqual(4, overrides.Count);
             Assert.AreEqual(OverrideType.New | OverrideType.Sealed, overrides[0]);
-            Assert.AreEqual(OverrideType.New, overrides[1]);
-            Assert.AreEqual(OverrideType.Sealed, overrides[2]);
-            Assert.AreEqual(OverrideType.Sealed, overrides[3]);
+            Assert.AreEqual(OverrideType.Sealed, overrides[1]);
+            Assert.AreEqual(OverrideType.New, overrides[2]);
+            Assert.AreEqual(OverrideType.Base, overrides[3]);
         }
 
         /// <summary>
@@ -256,12 +226,12 @@ namespace SiliconStudio.Core.Design.Tests
         public void TestResolveSimple()
         {
             var memberPath = new MemberPath();
-            memberPath.Push(memberSub);
-            memberPath.Push(memberStruct);
-            memberPath.Push(memberClass);
-            memberPath.Push(memberMaps);
-            memberPath.Push(mapClassDesc, "toto");
-            memberPath.Push(memberValue);
+            memberPath.Push(MemberSub);
+            memberPath.Push(MemberStruct);
+            memberPath.Push(MemberClass);
+            memberPath.Push(MemberMaps);
+            memberPath.Push(MapClassDesc, "toto");
+            memberPath.Push(MemberValue);
 
             var reference = new MyClass { Sub = new MyClass { Struct = new MyStruct { Class = new MyClass { Maps = { {"toto", new MyClass { Value = 1 } } } } } } };
             var dual = new MyClass { Sub = new MyClass { Struct = new MyStruct { Class = new MyClass { Maps = { { "toto", new MyClass { Value = 2 } } } } } } };
@@ -282,10 +252,10 @@ namespace SiliconStudio.Core.Design.Tests
         public void TestResolveBroken()
         {
             var memberPath = new MemberPath();
-            memberPath.Push(memberSub);
-            memberPath.Push(memberStruct);
-            memberPath.Push(memberClass);
-            memberPath.Push(memberValue);
+            memberPath.Push(MemberSub);
+            memberPath.Push(MemberStruct);
+            memberPath.Push(MemberClass);
+            memberPath.Push(MemberValue);
 
             var reference = new MyClass { Sub = new MyClass { Struct = new MyStruct { Class = new MyClass { Value = 1 } } } };
             var dual = new MyClass { Sub = new MyClass { Struct = new MyStruct { Class = null } } };
@@ -302,8 +272,8 @@ namespace SiliconStudio.Core.Design.Tests
         public void TestResolveCollectionBroken()
         {
             var memberPath = new MemberPath();
-            memberPath.Push(memberSubs);
-            memberPath.Push(listClassDesc, 0);
+            memberPath.Push(MemberSubs);
+            memberPath.Push(ListClassDesc, 0);
 
             var referenceElt = new MyClass();
             referenceElt.SetId(Guid.NewGuid());
@@ -317,8 +287,8 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.AreEqual(0, resolvedPaths.Count);
 
             memberPath = new MemberPath();
-            memberPath.Push(memberSubs);
-            memberPath.Push(listClassDesc, 1);
+            memberPath.Push(MemberSubs);
+            memberPath.Push(ListClassDesc, 1);
             
             resolvedPaths = memberPath.Resolve(reference, dual).ToList();
             Assert.AreEqual(0, resolvedPaths.Count);
@@ -332,10 +302,10 @@ namespace SiliconStudio.Core.Design.Tests
         public void TestResolveComplex()
         {
             var memberPath = new MemberPath();
-            memberPath.Push(memberSubs);
-            memberPath.Push(listClassDesc, 1);
-            memberPath.Push(memberSub);
-            memberPath.Push(memberValue);
+            memberPath.Push(MemberSubs);
+            memberPath.Push(ListClassDesc, 1);
+            memberPath.Push(MemberSub);
+            memberPath.Push(MemberValue);
 
             var id = Guid.NewGuid();
             var referenceElt = new MyClass { Sub = new MyClass { Value = 1 } };
