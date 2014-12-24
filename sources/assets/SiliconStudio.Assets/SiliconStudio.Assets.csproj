@@ -69,9 +69,8 @@
     <Compile Include="AssetImportSessionStepType.cs" />
     <Compile Include="AssetImportSessionEventType.cs" />
     <Compile Include="AssetImportTracked.cs" />
-    <Compile Include="AssetItemAccessor.cs" />
     <Compile Include="AssetItemCollection.cs" />
-    <Compile Include="AssetMemberValue.cs" />
+    <Compile Include="AssetMember.cs" />
     <Compile Include="AssetPropertyKeyNameResolver.cs" />
     <Compile Include="AssetReferenceDataSerializer.cs" />
     <Compile Include="AssetSelector.cs" />
@@ -79,6 +78,7 @@
     <Compile Include="AssetToImportMergeGroup.cs" />
     <Compile Include="AssetToImportMerge.cs" />
     <Compile Include="AssetToImportByImporter.cs" />
+    <Compile Include="AssetUpdater.cs" />
     <Compile Include="AssetUpgraderBase.cs" />
     <Compile Include="Bundle.cs" />
     <Compile Include="BundleCollection.cs" />
