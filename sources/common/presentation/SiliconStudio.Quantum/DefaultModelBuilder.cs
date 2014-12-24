@@ -119,6 +119,9 @@ namespace SiliconStudio.Quantum
         /// <inheritdoc/>
         public override void VisitCollection(IEnumerable collection, CollectionDescriptor descriptor)
         {
+            if (!descriptor.HasIndexerAccessors)
+                throw new NotSupportedException("Collections that do not have indexer accessors are not supported in Quantum.");
+
             // Don't visit items unless they are primitive or enumerable (collections within collections)
             if (IsPrimitiveType(descriptor.ElementType, false) || IsEnumerable(descriptor.ElementType))
             {
