@@ -22,11 +22,17 @@ namespace SiliconStudio.Core.Reflection
         {
             foreach (var node in memberPath.GetNodes(rootObject))
             {
-                if(node.Descriptor == null || node.Object == null)
+                if(node.Object == null)
                     continue;
 
                 T value;
-                if(node.Object.TryGetDynamicProperty(node.Descriptor, attributeKey, out value))
+
+                // first return the attribute on the referencing object itself.
+                if (node.Object.TryGetDynamicProperty(ThisDescriptor.Default, attributeKey, out value))
+                    yield return value;
+
+                // then return the attribute on its member.
+                if (node.Descriptor != null && node.Object.TryGetDynamicProperty(node.Descriptor, attributeKey, out value))
                     yield return value;
             }
         }
