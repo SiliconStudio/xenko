@@ -351,6 +351,10 @@ namespace SiliconStudio.Core.Reflection
                         yield break;
                     }
                 }
+
+            // return the last object (leaf) with null descriptor
+            node.Descriptor = null;
+            yield return node;
         }
 
         /// <summary>
@@ -669,6 +673,9 @@ namespace SiliconStudio.Core.Reflection
 
             public override object GetValue(object thisObj)
             {
+                if (!Descriptor.ContainsKey(thisObj, Key))
+                    throw new KeyNotFoundException();
+
                 return Descriptor.GetValue(thisObj, Key);
             }
 
