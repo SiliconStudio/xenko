@@ -40,6 +40,12 @@ namespace SiliconStudio.Paradox.Graphics
                 }
                 else
                 {
+                    // Make a local copy of the render targets (ideally, should be ImmutableArray)
+                    var renderTargets = blendStateDescription.RenderTargets;
+                    blendStateDescription.RenderTargets = new BlendStateRenderTargetDescription[renderTargets.Length];
+                    for (int i = 0; i < renderTargets.Length; ++i)
+                        blendStateDescription.RenderTargets[i] = renderTargets[i];
+
                     blendState = new BlendState(graphicsDevice, blendStateDescription);
                     graphicsDevice.CachedBlendStates.Add(blendStateDescription, blendState);
                 }
