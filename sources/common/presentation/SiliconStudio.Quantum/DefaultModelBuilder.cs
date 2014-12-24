@@ -224,8 +224,8 @@ namespace SiliconStudio.Quantum
 
         private IReference CreateReferenceForNode(Type type, object value)
         {
-            // Is it a reference?
-            if ((!type.IsClass && !type.IsInterface) || IsPrimitiveType(type))
+            // We don't create references for primitive types
+            if (IsPrimitiveType(type))
                 return null;
 
             ITypeDescriptor descriptor = value != null ? TypeDescriptorFactory.Find(value.GetType()) : null;
