@@ -185,10 +185,6 @@ namespace SiliconStudio.Paradox.Effects
                 mainPipeline.Renderers.Add(new BackgroundRenderer(serviceRegistry, backgroundName));
 
             // Prevents depth write since depth was already computed in G-buffer pas.
-            // TODO: use z-prepass on OpenGL.
-            // TODO: Issues:
-            // TODO:     - cannot create a framebuffer with a texture and a default rt/depth
-            // TODO:     - used depth buffer is flipped (was a shader resource)
             mainPipeline.Renderers.Add(new RenderStateSetter(serviceRegistry) { DepthStencilState = graphicsService.GraphicsDevice.DepthStencilStates.DepthRead });
             mainPipeline.Renderers.Add(new ModelRenderer(serviceRegistry, effectName).AddOpaqueFilter());
             mainPipeline.Renderers.Add(new RenderTargetSetter(serviceRegistry)
@@ -205,13 +201,16 @@ namespace SiliconStudio.Paradox.Effects
             mainPipeline.Renderers.Add(new ModelRenderer(serviceRegistry, effectName).AddTransparentFilter());
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
+            // on OpenGL, draw the final texture in the framebuffer
             mainPipeline.Renderers.Add(new RenderStateSetter(serviceRegistry) { DepthStencilState = graphicsService.GraphicsDevice.DepthStencilStates.None });
             mainPipeline.Renderers.Add(new RenderTargetSetter(serviceRegistry)
             {
                 ClearColor = clearColor,
                 EnableClearDepth = false,
+                EnableClearStencil = false,
+                EnableClearTarget = false,
                 RenderTarget = graphicsService.GraphicsDevice.BackBuffer,
-                DepthStencil = graphicsService.GraphicsDevice.DepthStencilBuffer,
+                DepthStencil = null,
                 Viewport = new Viewport(0, 0, graphicsService.GraphicsDevice.BackBuffer.ViewWidth, graphicsService.GraphicsDevice.BackBuffer.ViewHeight)
             });
             mainPipeline.Renderers.Add(new DelegateRenderer(serviceRegistry) { Render = (context => graphicsService.GraphicsDevice.DrawTexture(finalRenderTexture))});
