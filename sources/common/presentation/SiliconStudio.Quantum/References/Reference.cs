@@ -2,8 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
-using SiliconStudio.Core;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Quantum.References
 {
@@ -24,6 +25,10 @@ namespace SiliconStudio.Quantum.References
 
             IReference reference;
             var enumerableValue = objectValue as IEnumerable;
+
+            // Make sure it either implements IEnumerable<T> or ICollection (IEnumerable alone is often used for collection initializer on non-collection)
+            if (!(enumerableValue is ICollection || objectType.GetInterface(typeof(IEnumerable<>)) != null))
+                enumerableValue = null;
 
             if (enumerableValue != null && index == NotInCollection)
             {
