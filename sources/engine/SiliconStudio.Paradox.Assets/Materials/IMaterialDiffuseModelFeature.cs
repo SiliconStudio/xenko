@@ -6,7 +6,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// <summary>
     /// Base interface for the diffuse model material feature.
     /// </summary>
-    public interface IMaterialDiffuseModelFeature : IMaterialFeature
+    public interface IMaterialDiffuseModelFeature : IMaterialShadingModelFeature
     {
     }
 }

@@ -4,7 +4,7 @@
 namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
 {
     /// <summary>
-    /// Interface defining a parameter for a <see cref="IMaterialComputeColor"/>
+    /// Interface defining a parameter for a <see cref="Materials.MaterialComputeColor"/>
     /// </summary>
     public interface IComputeColorParameter
     {

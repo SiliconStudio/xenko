@@ -1,18 +1,23 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Diagnostics;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
 {
+    /// <summary>
+    /// A float compute color.
+    /// </summary>
     [ContentSerializer(typeof(DataContentSerializer<MaterialFloatComputeColor>))]
     [DataContract("MaterialFloatNode")]
     [Display("Constant Float")]
-    public class MaterialFloatComputeColor : MaterialConstantComputeColor<float>
+    [DebuggerDisplay("CompputeColor Float")]
+    public class MaterialFloatComputeColor : MaterialValueComputeColor<float>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialFloatComputeColor"/> class.
@@ -31,21 +36,9 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         {
         }
 
-        /// <inheritdoc/>
-        public override string ToString()
+        public override ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext, MaterialComputeColorKeys baseKeys)
         {
-            return "Float";
-        }
-
-        public override ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext, ParameterKey baseKey)
-        {
-            if (Key != null)
-            {
-                // TODO constantValues.Set(Key, Value);
-                return new ShaderClassSource("ComputeColorConstantFloatLink", Key);
-            }
-
-            return new ShaderClassSource("ComputeColorFixed", MaterialUtility.GetAsShaderString(Value));
+            return new ShaderClassSource("ComputeColorConstantFloatLink", Key ?? baseKeys.ValueBaseKey);
         }
     }
 }

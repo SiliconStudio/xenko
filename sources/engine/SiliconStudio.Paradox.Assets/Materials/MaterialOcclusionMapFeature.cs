@@ -7,6 +7,7 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
+using SiliconStudio.Paradox.Effects.Materials;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
@@ -16,7 +17,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     [DataContract("MaterialOcclusionMapFeature")]
     [Display("Occlusion Map")]
     [ObjectFactory(typeof(Factory))]
-    public class MaterialOcclusionMapFeature : MaterialFeatureBase, IMaterialOcclusionFeature
+    public class MaterialOcclusionMapFeature : IMaterialOcclusionFeature
     {
         /// <summary>
         /// Gets or sets the occlusion map.
@@ -25,8 +26,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [Display("Occlusion Map")]
         [DefaultValue(null)]
         [DataMember(10)]
-        [MaterialStream("matAmbientOcclusion", MaterialStreamType.Float, "Material.AmbientOcclusionMap")]
-        public IMaterialComputeColor AmbientOcclusionMap { get; set; }
+        public MaterialComputeColor AmbientOcclusionMap { get; set; }
 
         /// <summary>
         /// Gets or sets the cavity map.
@@ -35,8 +35,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [Display("Cavity Map")]
         [DefaultValue(null)]
         [DataMember(20)]
-        [MaterialStream("matCavity", MaterialStreamType.Float, "Material.CavityMap")]
-        public IMaterialComputeColor CavityMap { get; set; }
+        public MaterialComputeColor CavityMap { get; set; }
 
         /// <summary>
         /// Gets or sets the diffuse cavity influence.
@@ -46,8 +45,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [DefaultValue(null)]
         [DataMember(30)]
         [DataRange(0.0f, 1.0f, 0.01f)]
-        [MaterialStream("matCavityDiffuse", MaterialStreamType.Float)]
-        public IMaterialComputeColor DiffuseCavity { get; set; }
+        public MaterialComputeColor DiffuseCavity { get; set; }
 
         /// <summary>
         /// Gets or sets the specular cavity.
@@ -57,8 +55,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [DefaultValue(null)]
         [DataMember(40)]
         [DataRange(0.0f, 1.0f, 0.01f)]
-        [MaterialStream("matCavitySpecular", MaterialStreamType.Float)]
-        public IMaterialComputeColor SpecularCavity { get; set; }
+        public MaterialComputeColor SpecularCavity { get; set; }
 
         private class Factory : IObjectFactory
         {
@@ -72,6 +69,14 @@ namespace SiliconStudio.Paradox.Assets.Materials
                     SpecularCavity = new MaterialFloatComputeColor(1.0f),
                 };
             }
+        }
+
+        public void GenerateShader(MaterialShaderGeneratorContext context)
+        {
+            context.SetStream("matAmbientOcclusion", AmbientOcclusionMap, MaterialKeys.AmbientOcclusionMap, MaterialKeys.AmbientOcclusionValue);
+            context.SetStream("matCavity", CavityMap, MaterialKeys.CavityMap, MaterialKeys.CavityValue);
+            context.SetStream("matCavityDiffuse", DiffuseCavity, null, MaterialKeys.CavityDiffuseValue);
+            context.SetStream("matCavitySpecular", SpecularCavity, null, MaterialKeys.CavitySpecularValue);
         }
     }
 }

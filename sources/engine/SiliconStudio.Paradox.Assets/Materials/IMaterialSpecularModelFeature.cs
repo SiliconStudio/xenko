@@ -6,7 +6,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// <summary>
     /// Base interface for the specular model material feature.
     /// </summary>
-    public interface IMaterialSpecularModelFeature : IMaterialFeature
+    public interface IMaterialSpecularModelFeature : IMaterialShadingModelFeature
     {
     }
 }

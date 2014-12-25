@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
         stage stream float3 matDiffuse;
 
         // Microsurface attributes
-        stage stream float  matSmoothness;
+        stage stream float  matGlossiness;
 
         // Specular attributes
         stage stream float  matMetalness;
@@ -30,6 +30,10 @@ namespace SiliconStudio.Paradox.Effects.Materials
         stage stream float  matCavityDiffuse;
         stage stream float  matCavitySpecular;
 
+        // Emissive attributes
+        stage stream float3  matEmissive;
+        stage stream float   matEmissiveIntensity;
+
         void ResetStreams()
         {
             // Reset all values for material stream to avoid pulling from a different stage (VS...etc.)
@@ -41,7 +45,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
             streams.matSpecular = 0.0f;        
             streams.matSpecularIntensity = 0.0f;
             streams.matSpecularPower = 0.0f;
-            streams.matSmoothness = 0.0f;
+            streams.matGlossiness = 0.0f;
             streams.matAmbientOcclusion = 0.0f;
             streams.matCavity = 0.0f;
             streams.matCavityDiffuse = 0.0f;

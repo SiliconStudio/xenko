@@ -7,6 +7,7 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
+using SiliconStudio.Paradox.Effects.Materials;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
@@ -16,7 +17,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     [DataContract("MaterialDiffuseMapFeature")]
     [Display("Diffuse Map")]
     [ObjectFactory(typeof(Factory))]
-    public class MaterialDiffuseMapFeature : MaterialFeatureBase, IMaterialDiffuseFeature
+    public class MaterialDiffuseMapFeature : IMaterialDiffuseFeature
     {
         /// <summary>
         /// Gets or sets the diffuse map.
@@ -24,8 +25,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The diffuse map.</value>
         [Display("Diffuse Map")]
         [DefaultValue(null)]
-        [MaterialStream("matDiffuse", MaterialStreamType.Float3, "Material.DiffuseMap")]
-        public IMaterialComputeColor DiffuseMap { get; set; }
+        public MaterialComputeColor DiffuseMap { get; set; }
 
         private class Factory : IObjectFactory
         {
@@ -33,6 +33,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
             {
                 return new MaterialDiffuseMapFeature() { DiffuseMap = new MaterialTextureComputeColor() };
             }
+        }
+
+        public void GenerateShader(MaterialShaderGeneratorContext context)
+        {
+            context.SetStream("matDiffuse", DiffuseMap, MaterialKeys.DiffuseMap, MaterialKeys.DiffuseValue);
         }
     }
 }

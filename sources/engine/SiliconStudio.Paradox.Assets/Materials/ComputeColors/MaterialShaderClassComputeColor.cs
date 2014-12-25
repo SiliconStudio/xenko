@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
     [ContentSerializer(typeof(DataContentSerializer<MaterialShaderClassComputeColor>))]
     [DataContract("MaterialShaderClassNode")]
     [Display("Shader")]
-    public class MaterialShaderClassComputeColor : MaterialComputeColorBase
+    public class MaterialShaderClassComputeColor : MaterialComputeColor
     {
         #region Public properties
 
@@ -66,7 +66,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// The compositions of the shader where material nodes can be attached. There is no need to edit the list, it is automatically filled when the shader is loaded.
         /// </userdoc>
         [DataMember(40)]
-        public Dictionary<string, IMaterialComputeColor> CompositionNodes { get; set; }
+        public Dictionary<string, Materials.MaterialComputeColor> CompositionNodes { get; set; }
 
         /// <summary>
         /// The members of this class.
@@ -95,12 +95,12 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
             : base()
         {
             Generics = new ComputeColorParameters();
-            CompositionNodes = new Dictionary<string, IMaterialComputeColor>();
+            CompositionNodes = new Dictionary<string, Materials.MaterialComputeColor>();
             Members = new Dictionary<ParameterKey, object>();
         }
 
         /// <inheritdoc/>
-        public override IEnumerable<IMaterialComputeColor> GetChildren(object context = null)
+        public override IEnumerable<Materials.MaterialComputeColor> GetChildren(object context = null)
         {
             foreach (var composition in CompositionNodes)
             {
@@ -125,7 +125,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
             }
         }
 
-        public override ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext, ParameterKey baseKey)
+        public override ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext, MaterialComputeColorKeys baseKeys)
         {
             if (!MixinReference.HasLocation())
                 return new ShaderClassSource("ComputeColor");
@@ -180,7 +180,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
             {
                 if (comp.Value != null)
                 {
-                    var compShader = comp.Value.GenerateShaderSource(shaderGeneratorContext, baseKey);
+                    var compShader = comp.Value.GenerateShaderSource(shaderGeneratorContext, baseKeys);
                     if (compShader != null)
                         mixin.Compositions.Add(comp.Key, compShader);
                 }
@@ -200,7 +200,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
             }
 
             var newGenerics = new ComputeColorParameters();
-            var newCompositionNodes = new Dictionary<string, IMaterialComputeColor>();
+            var newCompositionNodes = new Dictionary<string, Materials.MaterialComputeColor>();
             var newMembers = new Dictionary<ParameterKey, object>();
 
             var localMixinName = Path.GetFileNameWithoutExtension(MixinReference.Location);

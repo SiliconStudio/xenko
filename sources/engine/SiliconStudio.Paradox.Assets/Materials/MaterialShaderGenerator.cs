@@ -4,7 +4,6 @@
 using System;
 
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Data;
 using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Shaders;
@@ -34,7 +33,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             material.GenerateShader(context);
 
             // Squash all operations into a single mixin
-            result.ShaderSource = context.CurrentStack.GenerateMixin();
+            result.ShaderSource = context.GenerateMixin();
             result.Parameters.Set(MaterialKeys.Material, result.ShaderSource);
 
             return result;

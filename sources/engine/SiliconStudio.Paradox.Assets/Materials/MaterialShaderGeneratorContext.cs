@@ -30,14 +30,14 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         public MaterialShaderGeneratorContext()
         {
-            Stack = new Stack<StackOperations>();
+            ShaderStacks = new Stack<StackOperations>();
             Parameters = new ParameterCollectionData();
             declaredSamplerStates = new Dictionary<SamplerStateDescription, ParameterKey<SamplerState>>();
             PushStack();
-            RootStack = Stack.Peek();
+            RootStack = ShaderStacks.Peek();
         }
 
-        public StackOperations RootStack { get; private set; }
+        private StackOperations RootStack { get; set; }
 
         public ParameterCollectionData Parameters { get; private set; }
 
@@ -46,26 +46,61 @@ namespace SiliconStudio.Paradox.Assets.Materials
             throw new NotImplementedException();
         }
 
-        public Stack<StackOperations> Stack { get; private set; } 
+        private Stack<StackOperations> ShaderStacks { get; set; } 
 
-        public StackOperations PushStack()
+        public void PushStack()
         {
             var stack = new StackOperations(this);
-            Stack.Push(stack);
-            return stack;
+            ShaderStacks.Push(stack);
         }
 
-        public StackOperations CurrentStack
+        private StackOperations Current
         {
             get
             {
-                return Stack.Peek();
+                return ShaderStacks.Peek();
             }
+        }
+
+        public bool IsSameShadingModelAsParent
+        {
+            get
+            {
+                return Current.IsSameShadingModelAsParent;
+            }
+        }
+
+        public HashSet<string> Streams
+        {
+            get
+            {
+                return Current.Streams;
+            }
+        }
+
+        public void AddSurfaceShader(ShaderSource shaderSource)
+        {
+            if (shaderSource == null) throw new ArgumentNullException("shaderSource");
+            Current.SurfaceShaders.Add(shaderSource);
         }
 
         public void PopStack()
         {
-            Stack.Pop();
+            var parentStack = ShaderStacks.Peek();
+            // If shading model on current stack is same as parent (or parent doesn't have a model), copy shading models to parent
+            if (Current.IsSameShadingModelAsParent && Current != ShaderStacks.Peek())
+            {
+                if (Current.DiffuseModel.Key != null)
+                {
+                    parentStack.DiffuseModel = Current.DiffuseModel;
+                }
+                if (Current.SpecularModel.Key != null)
+                {
+                    parentStack.SpecularModel = Current.SpecularModel;
+                }
+            }
+
+            ShaderStacks.Pop();
         }
 
         public bool ExploreGenerics = false;
@@ -79,14 +114,10 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         public ParameterKey<Texture> GetTextureKey(MaterialTextureComputeColor textureComputeColor, ParameterKey<Texture> baseKey)
         {
-            ParameterKey<Texture> key = null;
+            var key = textureComputeColor.Key as ParameterKey<Texture>;
             ContentReference keyReference = null;
 
-            if (textureComputeColor.Key != null)
-            {
-                key = textureComputeColor.Key;
-            }
-            else
+            if (key == null)
             {
                 baseKey = baseKey ?? MaterialKeys.Texture;
                 int textureKeyIndex;
@@ -130,20 +161,69 @@ namespace SiliconStudio.Paradox.Assets.Materials
             return key;
         }
 
-        public class StackOperations
+        public void Visit(IMaterialFeature feature)
+        {
+            if (feature != null)
+            {
+                feature.GenerateShader(this);
+            }
+        }
+
+        public ShaderSource GenerateMixin()
+        {
+            return Current.GenerateMixin();
+        }
+
+
+        public void SetStream(string stream, MaterialComputeColor computeColor, ParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey)
+        {
+            Current.SetStream(stream, computeColor, defaultTexturingKey, defaultValueKey);
+        }
+
+        public KeyValuePair<IMaterialDiffuseModelFeature, ShaderSource> DiffuseModel
+        {
+            get
+            {
+                return Current.DiffuseModel;
+            }
+            set
+            {
+                Current.DiffuseModel = value;
+            }
+        }
+
+        public KeyValuePair<IMaterialSpecularModelFeature, ShaderSource> SpecularModel
+        {
+            get
+            {
+                return Current.SpecularModel;
+            }
+            set
+            {
+                Current.SpecularModel = value;
+            }
+        }
+
+        private class StackOperations
         {
             private readonly MaterialShaderGeneratorContext context;
+
+            private bool isShadingModelGenerated;
 
             public StackOperations(MaterialShaderGeneratorContext context)
             {
                 this.context = context;
-                Operations = new List<ShaderSource>();
+                SurfaceShaders = new List<ShaderSource>();
                 Streams = new HashSet<string>();
             }
 
-            public List<ShaderSource> Operations { get; private set; }
+            public List<ShaderSource> SurfaceShaders { get; private set; }
 
             public HashSet<string> Streams { get; private set; }
+
+            public KeyValuePair<IMaterialDiffuseModelFeature, ShaderSource> DiffuseModel { get; set; }
+
+            public KeyValuePair<IMaterialSpecularModelFeature, ShaderSource> SpecularModel { get; set; }
 
             // TODO: Not used anymore. Reset streams directly from MaterialStreams.ResetStreams
             private void ResetStream<T>(string stream, T value, bool force = false) where T : struct
@@ -198,12 +278,64 @@ namespace SiliconStudio.Paradox.Assets.Materials
                     mixin.Mixins.Add(new ShaderClassSource("MaterialLayerSetStreamFromComputeColor", stream, channel));
                     mixin.AddComposition("computeColorSource", new ShaderClassSource("ComputeColorFixed", valueStr));
 
-                    Operations.Add(mixin);
+                    SurfaceShaders.Add(mixin);
                 }
                 Streams.Add(stream);
             }
 
-            public void SetStream(string stream, MaterialStreamType streamType, ShaderSource classSource)
+            public bool IsSameShadingModelAsParent
+            {
+                get
+                {
+                    var parentStack = context.ShaderStacks.Peek();
+                    if (parentStack == this)
+                    {
+                        return true;
+                    }
+
+                    if (parentStack.DiffuseModel.Key != null && DiffuseModel.Key != null && !parentStack.DiffuseModel.Key.Equals(DiffuseModel.Key))
+                    {
+                        return false;
+                    }
+                    if (parentStack.SpecularModel.Key != null && SpecularModel.Key != null && !parentStack.SpecularModel.Key.Equals(SpecularModel.Key))
+                    {
+                        return false;
+                    }
+                    return true;
+                }
+            }
+
+            public void SetStream(string stream, MaterialComputeColor computeColor, ParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey)
+            {
+                if (defaultTexturingKey == null) throw new ArgumentNullException("defaultKey");
+                if (computeColor == null)
+                {
+                    return;
+                }
+
+                var streamType = MaterialStreamType.Float;
+                if (defaultValueKey.PropertyType == typeof(Vector4) || defaultValueKey.PropertyType == typeof(Color4))
+                {
+                    streamType = MaterialStreamType.Float4;
+                }
+                else if (defaultValueKey.PropertyType == typeof(Vector3) || defaultValueKey.PropertyType == typeof(Color3))
+                {
+                    streamType = MaterialStreamType.Float3;
+                }
+                else if (defaultValueKey.PropertyType == typeof(float))
+                {
+                    streamType = MaterialStreamType.Float;
+                }
+                else
+                {
+                    throw new NotSupportedException("ParameterKey type [{0}] is not supported by SetStream".ToFormat(defaultValueKey.PropertyType));
+                }
+
+                var classSource = computeColor.GenerateShaderSource(context, new MaterialComputeColorKeys(defaultTexturingKey, defaultValueKey));
+                SetStream(stream, streamType, classSource);
+            }
+
+            private void SetStream(string stream, MaterialStreamType streamType, ShaderSource classSource)
             {
                 string channel;
                 switch (streamType)
@@ -222,21 +354,41 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 mixin.Mixins.Add(new ShaderClassSource("MaterialLayerSetStreamFromComputeColor", stream, channel));
                 mixin.AddComposition("computeColorSource", classSource);
 
-                Operations.Add(mixin);
+                SurfaceShaders.Add(mixin);
             }
 
             public ShaderSource GenerateMixin()
             {
-                if (Operations.Count == 0)
+                if (!isShadingModelGenerated)
+                {
+                    if (!IsSameShadingModelAsParent || context.ShaderStacks.Peek() == this)
+                    {
+                        var mixin = new ShaderMixinSource();
+                        mixin.Mixins.Add(new ShaderClassSource("MaterialLayerShading"));
+                        if (DiffuseModel.Value != null)
+                        {
+                            mixin.AddCompositionToArray("shadings", DiffuseModel.Value);
+                        }
+                        if (SpecularModel.Value != null)
+                        {
+                            mixin.AddCompositionToArray("shadings", SpecularModel.Value);
+                        }
+
+                        SurfaceShaders.Add(mixin);
+                    }
+                    isShadingModelGenerated = true;
+                }
+
+                if (SurfaceShaders.Count == 0)
                 {
                     return null;
                 }
 
                 ShaderSource result;
                 // If there is only a single op, don't generate a mixin
-                if (Operations.Count == 1)
+                if (SurfaceShaders.Count == 1)
                 {
-                    result = Operations[0];
+                    result = SurfaceShaders[0];
                 }
                 else
                 {
@@ -245,13 +397,13 @@ namespace SiliconStudio.Paradox.Assets.Materials
                     mixin.Mixins.Add(new ShaderClassSource("MaterialLayerArray"));
 
                     // Squash all operations into MaterialLayerArray
-                    foreach (var operation in Operations)
+                    foreach (var operation in SurfaceShaders)
                     {
                         mixin.AddCompositionToArray("layers", operation);
                     }
                 }
 
-                Operations.Clear();
+                SurfaceShaders.Clear();
                 Streams.Clear();
                 return result;
             }

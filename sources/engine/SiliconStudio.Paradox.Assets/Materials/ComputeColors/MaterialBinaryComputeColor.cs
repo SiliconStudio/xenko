@@ -12,12 +12,12 @@ using SiliconStudio.Paradox.Shaders;
 namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
 {
     /// <summary>
-    /// A node that describe a binary operation between two <see cref="IMaterialComputeColor"/>
+    /// A node that describe a binary operation between two <see cref="Materials.MaterialComputeColor"/>
     /// </summary>
     [ContentSerializer(typeof(DataContentSerializer<MaterialBinaryComputeColor>))]
     [DataContract("MaterialBinaryNode")]
     [Display("Binary Operator")]
-    public class MaterialBinaryComputeColor : MaterialComputeColorBase
+    public class MaterialBinaryComputeColor : MaterialComputeColor
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialBinaryComputeColor"/> class.
@@ -32,7 +32,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// <param name="leftChild">The left child.</param>
         /// <param name="rightChild">The right child.</param>
         /// <param name="materialBinaryOperand">The material binary operand.</param>
-        public MaterialBinaryComputeColor(IMaterialComputeColor leftChild, IMaterialComputeColor rightChild, MaterialBinaryOperand materialBinaryOperand)
+        public MaterialBinaryComputeColor(Materials.MaterialComputeColor leftChild, Materials.MaterialComputeColor rightChild, MaterialBinaryOperand materialBinaryOperand)
         {
             LeftChild = leftChild;
             RightChild = rightChild;
@@ -55,7 +55,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// The background color mapping.
         /// </userdoc>
         [DataMember(20)]
-        public IMaterialComputeColor LeftChild { get; set; }
+        public Materials.MaterialComputeColor LeftChild { get; set; }
 
         /// <summary>
         /// The right (foreground) child node.
@@ -64,10 +64,10 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// The foreground color mapping.
         /// </userdoc>
         [DataMember(30)]
-        public IMaterialComputeColor RightChild { get; set; }
+        public Materials.MaterialComputeColor RightChild { get; set; }
 
         /// <inheritdoc/>
-        public override IEnumerable<IMaterialComputeColor> GetChildren(object context = null)
+        public override IEnumerable<Materials.MaterialComputeColor> GetChildren(object context = null)
         {
             if (LeftChild != null)
             	yield return LeftChild;
@@ -78,10 +78,10 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         private const string BackgroundCompositionName = "color1";
         private const string ForegroundCompositionName = "color2";
 
-        public override ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext, ParameterKey baseKey)
+        public override ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext, MaterialComputeColorKeys baseKeys)
         {
-            var leftShaderSource = LeftChild.GenerateShaderSource(shaderGeneratorContext, baseKey);
-            var rightShaderSource = RightChild.GenerateShaderSource(shaderGeneratorContext, baseKey);
+            var leftShaderSource = LeftChild.GenerateShaderSource(shaderGeneratorContext, baseKeys);
+            var rightShaderSource = RightChild.GenerateShaderSource(shaderGeneratorContext, baseKeys);
 
             var shaderSource = new ShaderClassSource(GetCorrespondingShaderSourceName(Operand));
             var mixin = new ShaderMixinSource();

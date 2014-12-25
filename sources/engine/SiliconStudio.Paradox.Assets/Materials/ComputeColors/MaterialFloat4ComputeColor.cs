@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
     [ContentSerializer(typeof(DataContentSerializer<MaterialFloat4ComputeColor>))]
     [DataContract("MaterialFloat4Node")]
     [Display("Constant Vector")]
-    public class MaterialFloat4ComputeColor : MaterialConstantComputeColor<Vector4>
+    public class MaterialFloat4ComputeColor : MaterialValueComputeColor<Vector4>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialFloat4ComputeColor"/> class.
@@ -38,7 +38,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
             return "Float4";
         }
 
-        public override ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext, ParameterKey baseKey)
+        public override ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext, MaterialComputeColorKeys baseKeys)
         {
             if (Key != null)
             {

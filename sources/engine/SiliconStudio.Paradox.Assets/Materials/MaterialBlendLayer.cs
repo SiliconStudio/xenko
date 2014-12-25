@@ -31,7 +31,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         public MaterialBlendLayer()
         {
             Enabled = true;
-            Overrides = new MaterialBlendOverrides();
+            // Overrides = new MaterialBlendOverrides();
         }
 
         /// <summary>
@@ -65,14 +65,14 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [Display("Blend Map")]
         [DefaultValue(null)]
         [DataMember(40)]
-        public IMaterialComputeColor BlendMap { get; set; }
+        public MaterialComputeColor BlendMap { get; set; }
 
-        /// <summary>
-        /// Gets or sets the material overrides.
-        /// </summary>
-        /// <value>The overrides.</value>
-        [DataMember(50)]
-        public MaterialBlendOverrides Overrides { get; private set; }
+        ///// <summary>
+        ///// Gets or sets the material overrides.
+        ///// </summary>
+        ///// <value>The overrides.</value>
+        //[DataMember(50)]
+        //public MaterialBlendOverrides Overrides { get; private set; }
 
         private class Factory : IObjectFactory
         {
@@ -105,23 +105,50 @@ namespace SiliconStudio.Paradox.Assets.Materials
             // TODO: Handle MaterialOverrides
 
             // Push a new stream stack for the sub-material
-            var stack = context.PushStack();
+            context.PushStack();
 
             // Generate the material shaders into the current context
             material.GenerateShader(context);
 
+
+            var isSameShadingModel = context.IsSameShadingModelAsParent;
+
+
             // Backup stream variables that will be modified by the materials
             var backupStreamBuilder = new StringBuilder();
-            foreach (var stream in stack.Streams)
+            
+            // Blend stream variables modified by the material with the previous backup
+            var copyFromLayerBuilder = new StringBuilder();
+
+            foreach (var stream in context.Streams)
             {
                 backupStreamBuilder.AppendFormat("        var __backup__{0} = streams.{0};", stream).AppendLine();
             }
 
-            // Blend stream variables modified by the material with the previous backup
-            var copyFromLayerBuilder = new StringBuilder();
-            foreach (var stream in stack.Streams)
+            // TODO: Hardcoded shading models is not good
+            if (!isSameShadingModel)
             {
-                copyFromLayerBuilder.AppendFormat("        streams.{0} = lerp(__backup__{0}, streams.{0}, streams.matBlend;", stream).AppendLine();
+                // If the shading model of this layer is different from its parent, we are only blending the result of shading
+                // Diffuse and Specular, instead of blending 
+                backupStreamBuilder.AppendFormat("        var __backup__shadingDiffuse = streams.shadingDiffuse;").AppendLine();
+                backupStreamBuilder.AppendFormat("        var __backup__shadingSpecular = streams.shadingSpecular;").AppendLine();
+                backupStreamBuilder.AppendFormat("        streams.shadingDiffuse = 0;").AppendLine();
+                backupStreamBuilder.AppendFormat("        streams.shadingSpecular = 0;").AppendLine();
+
+                copyFromLayerBuilder.AppendFormat("        streams.shadingDiffuse = lerp(__backup__shadingDiffuse, streams.shadingDiffuse, streams.matBlend;").AppendLine();
+                copyFromLayerBuilder.AppendFormat("        streams.shadingSpecular = lerp(__backup__shadingSpecular, streams.shadingSpecular, streams.matBlend;").AppendLine();
+            }
+
+            foreach (var stream in context.Streams)
+            {
+                if (isSameShadingModel)
+                {
+                    copyFromLayerBuilder.AppendFormat("        streams.{0} = lerp(__backup__{0}, streams.{0}, streams.matBlend;", stream).AppendLine();
+                }
+                else
+                {
+                    copyFromLayerBuilder.AppendFormat("        streams.{0} = __backup__{0};", stream).AppendLine();
+                }
             }
 
             // Generate a dynamic shader name
@@ -133,24 +160,23 @@ namespace SiliconStudio.Paradox.Assets.Materials
             };
 
             // Blend setup for this layer
-            var blendMapSource = BlendMap.GenerateShaderSource(context, MaterialKeys.BlendMap);
-            stack.SetStream(BlendStream, MaterialStreamType.Float, blendMapSource);
-
-            // Create a mixin
-            var shaderMixinSource = new ShaderMixinSource();
-            shaderMixinSource.Mixins.Add(shaderClassSource);
-            
-            // Generate the shader class source for the stack
-            var materialBlendLayerMixin = stack.GenerateMixin();
-
-            // Add the shader to the mixin
-            shaderMixinSource.AddComposition("subLayer", materialBlendLayerMixin);
+            context.SetStream(BlendStream, BlendMap, MaterialKeys.BlendMap, MaterialKeys.BlendValue);
+          
+            // Generate the shader class source for the current stack
+            var materialBlendLayerMixin = context.GenerateMixin();
 
             // Pop the stack
             context.PopStack();
 
+            // Create a mixin
+            var shaderMixinSource = new ShaderMixinSource();
+            shaderMixinSource.Mixins.Add(shaderClassSource);
+
+            // Add the shader to the mixin
+            shaderMixinSource.AddComposition("subLayer", materialBlendLayerMixin);
+            
             // Push the result of the shader mixin into the current stack
-            context.CurrentStack.Operations.Add(shaderMixinSource);
+            context.AddSurfaceShader(shaderMixinSource);
         }
 
         private const string DynamicBlendingShader = @"

@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
     [ContentSerializer(typeof(DataContentSerializer<MaterialTextureComputeColor>))]
     [DataContract("MaterialTextureNode")]
     [Display("Texture")]
-    public class MaterialTextureComputeColor : MaterialComputeColorBase
+    public class MaterialTextureComputeColor : MaterialKeyedComputeColor
     {
         /// <summary>
         /// Constructor
@@ -168,28 +168,18 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         [DataMember(60)]
         public Vector2 Offset { get; set; }
 
-        /// <summary>
-        /// The desired parameter key.
-        /// </summary>
-        /// <userdoc>
-        /// The key to access the texture at runtime. 
-        /// </userdoc>
-        [DataMember(80)]
-        [DefaultValue(null)]
-        public ParameterKey<Graphics.Texture> Key { get; set; }
-
         /// <inheritdoc/>
         public override string ToString()
         {
             return "Texture";
         }
 
-        public override ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext, ParameterKey baseKey)
+        public override ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext, MaterialComputeColorKeys baseKeys)
         {
             // TODO: Use a generated UsedTexcoordIndex when backing textures
             var usedTexcoord = "TEXCOORD" + MaterialUtility.GetTextureIndex(TexcoordIndex);
 
-            var textureKey = shaderGeneratorContext.GetTextureKey(this, baseKey as ParameterKey<Texture>);
+            var textureKey = shaderGeneratorContext.GetTextureKey(this, baseKeys.TextureBaseKey);
             var samplerKey = shaderGeneratorContext.GetSamplerKey(Sampler);
 
             var scaleStr = MaterialUtility.GetAsShaderString(Scale);

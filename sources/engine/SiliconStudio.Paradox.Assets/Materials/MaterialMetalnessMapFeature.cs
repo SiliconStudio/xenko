@@ -7,6 +7,7 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
+using SiliconStudio.Paradox.Effects.Materials;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
@@ -16,7 +17,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     [DataContract("MaterialMetalnessMapFeature")]
     [Display("Metalness Map")]
     [ObjectFactory(typeof(Factory))]
-    public class MaterialMetalnessMapFeature : MaterialFeatureBase, IMaterialSpecularFeature
+    public class MaterialMetalnessMapFeature : IMaterialSpecularFeature
     {
         /// <summary>
         /// Gets or sets the metalness map.
@@ -24,8 +25,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The metalness map.</value>
         [Display("Metalness Map")]
         [DefaultValue(null)]
-        [MaterialStream("matMetalnessMap", MaterialStreamType.Float, "Material.MetalnessMap")]
-        public IMaterialComputeColor MetalnessMap { get; set; }
+        public MaterialComputeColor MetalnessMap { get; set; }
 
         private class Factory : IObjectFactory
         {
@@ -33,6 +33,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
             {
                 return new MaterialMetalnessMapFeature() { MetalnessMap = new MaterialTextureComputeColor() };
             }
+        }
+
+        public void GenerateShader(MaterialShaderGeneratorContext context)
+        {
+            context.SetStream("matMetalnessMap", MetalnessMap, MaterialKeys.MetalnessMap, MaterialKeys.MetalnessValue);
         }
     }
 }

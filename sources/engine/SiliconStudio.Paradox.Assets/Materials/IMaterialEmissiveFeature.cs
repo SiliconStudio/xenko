@@ -4,9 +4,9 @@
 namespace SiliconStudio.Paradox.Assets.Materials
 {
     /// <summary>
-    /// Base interface for the emissive material feature.
+    /// Base interface for the emissive model material feature.
     /// </summary>
-    public interface IMaterialEmissiveFeature : IMaterialFeature
+    public interface IMaterialEmissiveFeature : IMaterialShadingModelFeature
     {
     }
 }

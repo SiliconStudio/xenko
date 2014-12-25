@@ -25,11 +25,11 @@ namespace SiliconStudio.Paradox.Effects.Materials
         public static readonly ParameterKey<Texture> SpecularMap = ParameterKeys.New<Texture>();
         public static readonly ParameterKey<Vector3> SpecularValue = ParameterKeys.New<Vector3>();
 
-        public static readonly ParameterKey<Vector3> SpecularIntensityValue = ParameterKeys.New<Vector3>();
-        public static readonly ParameterKey<Vector3> SpecularPowerValue = ParameterKeys.New<Vector3>();
+        public static readonly ParameterKey<float> SpecularIntensityValue = ParameterKeys.New<float>();
+        public static readonly ParameterKey<float> SpecularFresnelValue = ParameterKeys.New<float>();
         
-        public static readonly ParameterKey<Texture> SmoothnessMap = ParameterKeys.New<Texture>();
-        public static readonly ParameterKey<float> SmoothnessValue = ParameterKeys.New<float>();
+        public static readonly ParameterKey<Texture> GlossinessMap = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<float> GlossinessValue = ParameterKeys.New<float>();
 
         public static readonly ParameterKey<Texture> AmbientOcclusionMap = ParameterKeys.New<Texture>();
         public static readonly ParameterKey<float> AmbientOcclusionValue = ParameterKeys.New<float>();
@@ -37,8 +37,16 @@ namespace SiliconStudio.Paradox.Effects.Materials
         public static readonly ParameterKey<Texture> CavityMap = ParameterKeys.New<Texture>();
         public static readonly ParameterKey<float> CavityValue = ParameterKeys.New<float>();
 
+        public static readonly ParameterKey<float> CavityDiffuseValue = ParameterKeys.New<float>();
+        public static readonly ParameterKey<float> CavitySpecularValue = ParameterKeys.New<float>();
+
         public static readonly ParameterKey<Texture> MetalnessMap = ParameterKeys.New<Texture>();
         public static readonly ParameterKey<float> MetalnessValue = ParameterKeys.New<float>();
+
+        public static readonly ParameterKey<Texture> EmissiveMap = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<float> EmissiveValue = ParameterKeys.New<float>();
+
+        public static readonly ParameterKey<float> EmissiveIntensity = ParameterKeys.New<float>();
 
         /// <summary>
         /// Generic texture key used by a material

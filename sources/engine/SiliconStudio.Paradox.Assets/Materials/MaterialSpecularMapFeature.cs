@@ -7,6 +7,7 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
+using SiliconStudio.Paradox.Effects.Materials;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
@@ -16,7 +17,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     [DataContract("MaterialSpecularMapFeature")]
     [Display("Specular Map")]
     [ObjectFactory(typeof(Factory))]
-    public class MaterialSpecularMapFeature : MaterialFeatureBase, IMaterialSpecularFeature
+    public class MaterialSpecularMapFeature : IMaterialSpecularFeature
     {
         /// <summary>
         /// Gets or sets the specular map.
@@ -24,24 +25,21 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The specular map.</value>
         [Display("Specular Map")]
         [DefaultValue(null)]
-        [MaterialStream("matSpecular", MaterialStreamType.Float3, "Material.SpecularMap")]
-        public IMaterialComputeColor SpecularMap { get; set; }
+        public MaterialComputeColor SpecularMap { get; set; }
 
         /// <summary>
         /// Gets or sets the intensity.
         /// </summary>
         /// <value>The intensity.</value>
         [DefaultValue(null)]
-        [MaterialStream("matSpecularIntensity", MaterialStreamType.Float)]
-        public IMaterialComputeColor Intensity { get; set; }
+        public MaterialComputeColor Intensity { get; set; }
 
         /// <summary>
         /// Gets or sets the fresnel.
         /// </summary>
         /// <value>The fresnel.</value>
         [DefaultValue(null)]
-        [MaterialStream("matSpecularFresnel", MaterialStreamType.Float)]
-        public IMaterialComputeColor Fresnel { get; set; }
+        public MaterialComputeColor Fresnel { get; set; }
 
         private class Factory : IObjectFactory
         {
@@ -54,6 +52,13 @@ namespace SiliconStudio.Paradox.Assets.Materials
                     Fresnel = new MaterialFloatComputeColor(1.0f),
                 };
             }
+        }
+
+        public void GenerateShader(MaterialShaderGeneratorContext context)
+        {
+            context.SetStream("matSpecular", SpecularMap, MaterialKeys.SpecularMap, MaterialKeys.SpecularValue);
+            context.SetStream("matSpecularIntensity", Intensity, null, MaterialKeys.SpecularIntensityValue);
+            context.SetStream("matSpecularFresnel", Fresnel, null, MaterialKeys.SpecularFresnelValue);
         }
     }
 }

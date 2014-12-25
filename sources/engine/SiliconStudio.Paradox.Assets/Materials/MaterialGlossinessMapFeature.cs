@@ -7,32 +7,40 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
+using SiliconStudio.Paradox.Effects.Materials;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
     /// <summary>
     /// A smoothness map for the micro-surface material feature.
     /// </summary>
-    [DataContract("MaterialSmoothnessMapFeature")]
-    [Display("Smoothness Map")]
+    [DataContract("MaterialGlossinessMapFeature")]
+    [Display("Glossiness Map")]
     [ObjectFactory(typeof(Factory))]
-    public class MaterialSmoothnessMapFeature : MaterialFeatureBase, IMaterialMicroSurfaceFeature
+    public class MaterialGlossinessMapFeature : IMaterialMicroSurfaceFeature
     {
         /// <summary>
         /// Gets or sets the smoothness map.
         /// </summary>
         /// <value>The smoothness map.</value>
-        [Display("Smoothness Map")]
+        [Display("Glossiness Map")]
         [DefaultValue(null)]
-        [MaterialStream("matSmoothness", MaterialStreamType.Float, "Material.SmoothnessMap")]
-        public IMaterialComputeColor SmoothnessMap { get; set; }
+        public MaterialComputeColor GlossinessMap { get; set; }
 
         private class Factory : IObjectFactory
         {
             public object New(Type type)
             {
-                return new MaterialSmoothnessMapFeature() { SmoothnessMap = new MaterialTextureComputeColor() };
+                return new MaterialGlossinessMapFeature()
+                {
+                    GlossinessMap = new MaterialTextureComputeColor() { Channel = TextureChannel.R }
+                };
             }
+        }
+
+        public void GenerateShader(MaterialShaderGeneratorContext context)
+        {
+            context.SetStream("matGlossiness", GlossinessMap, MaterialKeys.GlossinessMap, MaterialKeys.GlossinessValue);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// </summary>
     [DataContract("MaterialAttributes")]
     [Display("Material Attributes")]
-    public class MaterialAttributes : MaterialFeatureBase, IMaterialAttributes
+    public class MaterialAttributes : IMaterialAttributes
     {
         /// <summary>
         /// Gets or sets the tessellation.
@@ -108,5 +108,27 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [DefaultValue(null)]
         [DataMember(110)]
         public IMaterialTransparencyFeature Transparency { get; set; }
+
+        public void GenerateShader(MaterialShaderGeneratorContext context)
+        {
+            // Surface Geometry
+            context.Visit(Tessellation);
+            context.Visit(Displacement);
+            context.Visit(Surface);
+            context.Visit(MicroSurface);
+
+            // Diffuse
+            context.Visit(Diffuse);
+            context.Visit(DiffuseModel);
+
+            // Specular 
+            context.Visit(Specular);
+            context.Visit(SpecularModel);
+
+            // Misc
+            context.Visit(Occlusion);
+            context.Visit(Emissive);
+            context.Visit(Transparency);
+        }
     }
 }

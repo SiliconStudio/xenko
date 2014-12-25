@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
     [ContentSerializer(typeof(DataContentSerializer<MaterialColorComputeColor>))]
     [DataContract("MaterialColorNode")]
     [Display("Constant Color")]
-    public class MaterialColorComputeColor : MaterialConstantComputeColor<Color4>
+    public class MaterialColorComputeColor : MaterialValueComputeColor<Color4>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialColorComputeColor"/> class.
@@ -38,7 +38,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
             return "Color";
         }
 
-        public override ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext, ParameterKey baseKey)
+        public override ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext, MaterialComputeColorKeys baseKeys)
         {
             if (Key != null)
             {
