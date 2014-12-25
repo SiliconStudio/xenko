@@ -24,6 +24,36 @@ namespace SiliconStudio.Paradox.Graphics
 {
     public static class OpenGLConvertExtensions
     {
+        // Define missing constants
+        // values taken form https://www.khronos.org/registry/gles/api/GLES3/gl3.h
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+        private const PixelInternalFormat DepthComponent16 = (PixelInternalFormat)0x81A5;
+        private const PixelInternalFormat DepthComponent24 = (PixelInternalFormat)0x81A6; // TODO: this is 24_8. Use 24 ?
+        private const PixelInternalFormat DepthComponent32f = (PixelInternalFormat)0x8CAC;
+        private const PixelInternalFormat Rgba16f = (PixelInternalFormat)0x881A;
+        private const PixelInternalFormat Rgba32f = (PixelInternalFormat)0x8814;
+        private const PixelInternalFormat R32ui = (PixelInternalFormat)0x8236;
+        private const PixelInternalFormat R32f = (PixelInternalFormat)0x822E;
+        private const PixelInternalFormat Rg32f = (PixelInternalFormat)0x8230;
+        private const PixelInternalFormat Rgb32f = (PixelInternalFormat)0x8815;
+#else
+        private const PixelInternalFormat DepthComponent16 = PixelInternalFormat.DepthComponent16;
+        private const PixelInternalFormat DepthComponent24 = PixelInternalFormat.DepthComponent24; // TODO: use 24_8 ?
+        private const PixelInternalFormat DepthComponent32f = PixelInternalFormat.DepthComponent32f;
+        private const PixelInternalFormat Rgba16f = PixelInternalFormat.Rgba16f;
+        private const PixelInternalFormat Rgba32f = PixelInternalFormat.Rgba32f;
+        private const PixelInternalFormat R32ui = PixelInternalFormat.R32ui;
+        private const PixelInternalFormat R32f = PixelInternalFormat.R32f;
+        private const PixelInternalFormat Rg32f = PixelInternalFormat.Rg32f;
+        private const PixelInternalFormat Rgb32f = PixelInternalFormat.Rgb32f;
+#endif
+
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
+        private const TextureWrapMode TextureWrapModeMirroredRepeat = (TextureWrapMode)0x8370;
+#else
+        private const TextureWrapMode TextureWrapModeMirroredRepeat = TextureWrapMode.MirroredRepeat;
+#endif
+
         public static ErrorCode GetErrorCode()
         {
 #if SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS
@@ -202,12 +232,7 @@ namespace SiliconStudio.Paradox.Graphics
                 case TextureAddressMode.Clamp:
                     return TextureWrapMode.ClampToEdge;
                 case TextureAddressMode.Mirror:
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
-                    // TextureWrapMode.MirroredRepeat enum not available in OpenTK.Graphics.ES30
-                    return TextureWrapMode.Repeat;
-#else
-                    return TextureWrapMode.MirroredRepeat;
-#endif
+                    return TextureWrapModeMirroredRepeat;
                 case TextureAddressMode.Wrap:
                     return TextureWrapMode.Repeat;
                 default:
@@ -289,30 +314,6 @@ namespace SiliconStudio.Paradox.Graphics
                     throw new ArgumentOutOfRangeException("operation");
             }
         }
-
-        // Define missing constants
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-        // values taken form https://www.khronos.org/registry/gles/api/GLES3/gl3.h
-        private const PixelInternalFormat DepthComponent16 = (PixelInternalFormat)33189;
-        private const PixelInternalFormat DepthComponent24 = (PixelInternalFormat)35056; // TODO: this is 24_8. Use 24 ?
-        private const PixelInternalFormat DepthComponent32f = (PixelInternalFormat)36012;
-        private const PixelInternalFormat Rgba16f = (PixelInternalFormat)34842;
-        private const PixelInternalFormat Rgba32f = (PixelInternalFormat)34836;
-        private const PixelInternalFormat R32ui = (PixelInternalFormat)33334;
-        private const PixelInternalFormat R32f = (PixelInternalFormat)33326;
-        private const PixelInternalFormat Rg32f = (PixelInternalFormat)33328;
-        private const PixelInternalFormat Rgb32f = (PixelInternalFormat)34837;
-#else
-        private const PixelInternalFormat DepthComponent16 = PixelInternalFormat.DepthComponent16;
-        private const PixelInternalFormat DepthComponent24 = PixelInternalFormat.DepthComponent24; // TODO: use 24_8 ?
-        private const PixelInternalFormat DepthComponent32f = PixelInternalFormat.DepthComponent32f;
-        private const PixelInternalFormat Rgba16f = PixelInternalFormat.Rgba16f;
-        private const PixelInternalFormat Rgba32f = PixelInternalFormat.Rgba32f;
-        private const PixelInternalFormat R32ui = PixelInternalFormat.R32ui;
-        private const PixelInternalFormat R32f = PixelInternalFormat.R32f;
-        private const PixelInternalFormat Rg32f = PixelInternalFormat.Rg32f;
-        private const PixelInternalFormat Rgb32f = PixelInternalFormat.Rgb32f;
-#endif
 
         public static void ConvertPixelFormat(GraphicsDevice graphicsDevice, PixelFormat inputFormat, out PixelInternalFormat internalFormat, out PixelFormatGl format, out PixelType type, out int pixelSize, out bool compressed)
         {
