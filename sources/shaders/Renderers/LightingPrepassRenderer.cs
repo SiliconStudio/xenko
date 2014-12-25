@@ -633,7 +633,10 @@ namespace SiliconStudio.Paradox.Effects.Renderers
             context.Parameters.Set(shadowUpdateInfo.ShadowMapLightCountKey, lightCount);
             // TODO: change texture set when multiple shadow maps will be handled.
             if (varianceShadowMap)
+            {
+                context.Parameters.Set((ParameterKey<ShadowMapReceiverVsmInfo[]>)shadowUpdateInfo.ShadowMapReceiverVsmInfoKey, receiverVsmInfos, 0, cascadeCount);
                 context.Parameters.Set(shadowUpdateInfo.ShadowMapTextureKey, lights[startLightIndex].ShadowMap.Texture.ShadowMapTargetTexture);
+            }
             else
                 context.Parameters.Set(shadowUpdateInfo.ShadowMapTextureKey, lights[startLightIndex].ShadowMap.Texture.ShadowMapDepthTexture);
 
