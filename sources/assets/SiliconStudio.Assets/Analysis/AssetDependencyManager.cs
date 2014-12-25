@@ -1466,6 +1466,13 @@ namespace SiliconStudio.Assets.Analysis
             {
                 // references and base
                 var reference = obj as IContentReference;
+                if (reference == null)
+                {
+                    var urlInfo = UrlServices.GetUrlInfo(obj);
+                    if (urlInfo != null && urlInfo.IsProxy)
+                        reference = new UrlInfoContentReference(urlInfo);
+                }
+
                 if (reference != null)
                 {
                     var isBase = reference is AssetBase;

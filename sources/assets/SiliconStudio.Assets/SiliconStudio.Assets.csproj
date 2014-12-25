@@ -61,6 +61,7 @@
     <Compile Include="Analysis\PackageAnalysis.cs" />
     <Compile Include="Analysis\PackageAnalysisParameters.cs" />
     <Compile Include="Analysis\PackageSessionAnalysisBase.cs" />
+    <Compile Include="Analysis\UrlInfoContentReference.cs" />
     <Compile Include="AssetCloner.cs" />
     <Compile Include="Analysis\AssetCollision.cs" />
     <Compile Include="AssetImport.cs" />
