@@ -298,7 +298,7 @@ namespace SiliconStudio.Paradox.Effects.Renderers
         private void AddShadowEffect(int cascadeCount, ShadowMapFilterType filterType, CompilerParameters parameters)
         {
             parameters.Set(ShadowMapParameters.ShadowMapCascadeCount.ComposeWith("shadows[0]"), cascadeCount);
-            parameters.Set(ShadowMapParameters.FilterType.ComposeWith("shadows[0]"), filterType);
+            parameters.Set(ShadowMapParameters.FilterType, filterType);
 
             //////////////////////////////////////////////
             // DIRECTIONAL LIGHT
