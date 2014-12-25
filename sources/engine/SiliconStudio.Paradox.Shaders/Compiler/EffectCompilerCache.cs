@@ -135,7 +135,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     var memoryStream = new MemoryStream();
                     bytecode.WriteTo(memoryStream);
                     memoryStream.Position = 0;
-                    database.ObjectDatabase.Write(memoryStream, newBytecodeId);
+                    database.ObjectDatabase.Write(memoryStream, newBytecodeId, true);
                     database.AssetIndexMap[compiledUrl] = newBytecodeId;
 
                     // Save bytecode Id to the database cache as well
@@ -181,6 +181,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             // Always check that the bytecode is in sync with hash sources on all platforms
             if (bytecode != null && IsBytecodeObsolete(bytecode))
             {
+                bytecodes.Remove(bytecodeId);
                 bytecode = null;
             }
 

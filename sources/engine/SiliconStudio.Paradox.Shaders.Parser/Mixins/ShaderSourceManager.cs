@@ -130,6 +130,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                                     {
                                         // Replace path with a local path
                                         shaderSource.Path = Path.Combine(Environment.CurrentDirectory, shaderSourcePath);
+
+                                        // Optimization: It currently reads the source file twice
+                                        shaderSource.Hash = ObjectId.FromBytes(File.ReadAllBytes(shaderSourcePath));
                                         using (var sourceStream = File.Open(shaderSourcePath, FileMode.Open, FileAccess.Read, FileShare.Read))
                                         {
                                             using (var sr = new StreamReader(sourceStream))
@@ -142,23 +145,24 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
                         if (shaderSource.Source == null)
                         {
-                            using (var fileStream = OpenStream(sourceUrl))
+                            using (var sourceStream = OpenStream(sourceUrl))
                             {
-                                using (var sr = new StreamReader(fileStream))
-                                    shaderSource.Source = sr.ReadToEnd();
-
-                                var databaseStream = fileStream as IDatabaseStream;
-                                if (databaseStream != null)
+                                var databaseStream = sourceStream as IDatabaseStream;
+                                var fileStream = sourceStream as FileStream;
+                                if (databaseStream != null || fileStream != null)
                                 {
-                                    shaderSource.Hash = databaseStream.ObjectId;
+                                    using (var sr = new StreamReader(sourceStream))
+                                        shaderSource.Source = sr.ReadToEnd();
+
+                                    if (databaseStream != null)
+                                        shaderSource.Hash = databaseStream.ObjectId;
+                                    else
+                                        shaderSource.Hash = ObjectId.FromBytes(File.ReadAllBytes(sourceUrl));
+                                }
+                                {
+                                    throw new Exception(string.Format("Unsupported Stream type to load shader [{0}.pdxsl]", type));
                                 }
                             }
-                        }
-
-                        // If the file was loaded from the database, use the ObjectId returned by the database, otherwise compute it directly
-                        if (shaderSource.Hash == ObjectId.Empty)
-                        {
-                            shaderSource.Hash = ObjectId.FromBytes(Encoding.UTF8.GetBytes(shaderSource.Source));
                         }
 
                         loadedShaderSources[type] = shaderSource;
