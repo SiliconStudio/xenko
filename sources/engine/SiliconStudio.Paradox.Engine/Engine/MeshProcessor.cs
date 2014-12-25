@@ -244,8 +244,8 @@ namespace SiliconStudio.Paradox.Engine
             // Collect models for this frame
             foreach (var matchingEntity in enabledEntities)
             {
-                // Skip model not enabled
-                if (!matchingEntity.Value.ModelComponent.Enabled)
+                // Skip disabled model components, or model components without a proper model set
+                if (!matchingEntity.Value.ModelComponent.Enabled || matchingEntity.Value.ModelComponent.ModelViewHierarchy == null)
                 {
                     continue;
                 }
