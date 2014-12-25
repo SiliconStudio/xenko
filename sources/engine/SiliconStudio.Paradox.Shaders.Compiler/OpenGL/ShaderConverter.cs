@@ -132,7 +132,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
                 var convertor = new HlslToGlslConvertor(hlslEntryPoint, stage, ShaderModel.Model40) // TODO HARDCODED VALUE to change
                 {
                     KeepConstantBuffer = !isOpenGLES || isOpenGLES3,
-                    TextureFunctionsCompatibilityProfile = isOpenGLES,
+                    TextureFunctionsCompatibilityProfile = isOpenGLES && !isOpenGLES3,
                     NoSwapForBinaryMatrixOperation = true,
                     UseBindingLayout = false,
                     UseLocationLayout = false,

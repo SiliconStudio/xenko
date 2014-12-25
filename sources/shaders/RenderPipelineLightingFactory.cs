@@ -134,7 +134,6 @@ namespace SiliconStudio.Paradox.Effects
             // So we will render everything into a intermediate texture and draw it on screen at the end.
             var finalRenderTexture = Texture.New2D(graphicsService.GraphicsDevice, width, height, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
             var finalDepthBuffer = Texture.New2D(graphicsService.GraphicsDevice, width, height, PixelFormat.D32_Float, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
-            // TODO: change depth format
 #else
             var finalRenderTexture = graphicsService.GraphicsDevice.BackBuffer;
             var finalDepthBuffer = graphicsService.GraphicsDevice.DepthStencilBuffer;
