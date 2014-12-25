@@ -193,24 +193,11 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
             var glslShaderCode = new StringBuilder();
 
             // Append some header depending on target
-            if (!isOpenGLES)
-            {
-                glslShaderCode
-                    .AppendLine("#version 420")
-                    .AppendLine("#pragma optionNV unroll all")
-                    .AppendLine();
-
-                if (pipelineStage == PipelineStage.Pixel)
-                    glslShaderCode
-                        .AppendLine("out vec4 gl_FragData[" + renderTargetCount + "];")
-                        .AppendLine();
-            }
-
             if (isOpenGLES)
             {
                 if (isOpenGLES3)
                     glslShaderCode
-                        .AppendLine("#version 300 es")
+                        .AppendLine("#version 300 es") // TODO: 310 version?
                         .AppendLine();
 
                 if (generateUniformBlocks)
@@ -221,6 +208,17 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
                 if (pipelineStage == PipelineStage.Pixel)
                     glslShaderCode
                         .AppendLine("precision highp float;")
+                        .AppendLine();
+            }
+            else
+            {
+                glslShaderCode
+                    .AppendLine("#version 420")
+                    .AppendLine();
+
+                if (pipelineStage == PipelineStage.Pixel)
+                    glslShaderCode
+                        .AppendLine("out vec4 gl_FragData[" + renderTargetCount + "];")
                         .AppendLine();
             }
 
