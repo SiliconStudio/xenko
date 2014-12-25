@@ -318,6 +318,28 @@ namespace SiliconStudio.Paradox.Graphics
         {
             compressed = false;
 
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+            // check formats is the device is initialized with OpenGL ES 2
+            if (graphicsDevice.IsOpenGLES2)
+            {
+                switch (inputFormat)
+                {
+                    case PixelFormat.R32_UInt:
+                    case PixelFormat.R32_Float:
+                    case PixelFormat.R32G32_Float:
+                    case PixelFormat.R32G32B32_Float:
+                    case PixelFormat.R16G16B16A16_Float:
+                    case PixelFormat.R32G32B32A32_Float:
+                    case PixelFormat.D32_Float:
+                        throw new NotSupportedException(String.Format("Texture format {0} not supported", inputFormat));
+                    case PixelFormat.D24_UNorm_S8_UInt:
+                        if (!(graphicsDevice.HasDepth24 && graphicsDevice.HasPackedDepthStencilExtension))
+                            throw new NotSupportedException(String.Format("Texture format {0} not supported", inputFormat));
+                        break;
+                }
+            }
+#endif
+
             switch (inputFormat)
             {
                 case PixelFormat.R8G8B8A8_UNorm:
