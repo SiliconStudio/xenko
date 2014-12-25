@@ -146,6 +146,29 @@ namespace SiliconStudio.Core
         /// </returns>
         public bool ContainsKey(PropertyKey key)
         {
+            // If it's a key with AccessorMetadata, check if it has been registered to this type
+            // Not very efficient... hopefully it should be rarely used. If not, it should be quite easy to optimize.
+            if (key.AccessorMetadata != null && Owner != null)
+            {
+                var currentType = Owner.GetType();
+                while (currentType != null)
+                {
+                    List<PropertyKey> typeAccessorProperties;
+                    if (accessorProperties.TryGetValue(currentType, out typeAccessorProperties))
+                    {
+                        foreach (var accessorProperty in typeAccessorProperties)
+                        {
+                            if (accessorProperty == key)
+                                return true;
+                        }
+                    }
+
+                    currentType = currentType.GetTypeInfo().BaseType;
+                }
+
+                return false;
+            }
+
             return properties != null && properties.ContainsKey(key);
         }
 
