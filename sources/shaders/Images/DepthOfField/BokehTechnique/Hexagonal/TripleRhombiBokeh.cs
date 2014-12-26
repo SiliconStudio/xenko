@@ -15,12 +15,10 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// This is a technique based on DICE's presentation at Siggraph 2011. 
     /// http://advances.realtimerendering.com/s2011/White,%20BarreBrisebois-%20Rendering%20in%20BF3%20%28Siggraph%202011%20Advances%20in%20Real-Time%20Rendering%20Course%29.pdf
     /// </remarks>
-    public class TripleRhombi : ImageEffect
+    public class TripleRhombiBokeh : BokehBlur
     {
         private ImageEffect directionalBlurEffect;
         private ImageEffect finalCombineEffect;
-
-        private float radius;
 
         private int tapCount;
 
@@ -31,6 +29,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         // Tap offset for each of the 3 rhombis
         private Vector2[] rhombiTapOffsets = new Vector2[3];
+        // Dirty flag to tell if offsets need to be recalculated.
         private bool rhombiTapOffsetsDirty = true;
 
         /// <summary>
@@ -39,41 +38,25 @@ namespace SiliconStudio.Paradox.Effects.Images
         public float Phase { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TripleRhombi"/> class.
+        /// Initializes a new instance of the <see cref="TripleRhombiBokeh"/> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        public TripleRhombi(ImageEffectContext context)
+        public TripleRhombiBokeh(ImageEffectContext context)
             : base(context)
         {
             directionalBlurEffect = new ImageEffectShader(context, "DepthAwareUniformBlurEffect");
             finalCombineEffect = new ImageEffectShader(context, "TripleRhombiCombineShader");
-            Radius = 2f;
             Phase = 0f;
         }
 
-        /// <summary>
-        /// Gets or sets the radius.
-        /// </summary>
-        /// <value>The radius.</value>
-        public float Radius
+        /// <inheritdoc/>
+        public override void SetRadius(float value)
         {
-            get
-            {
-                return radius;
-            }
-            set
-            {
-                if (value < 0)
-                {
-                    throw new ArgumentOutOfRangeException("Radius cannot be < 0");
-                }
+            base.SetRadius(value);
 
-                radius = value;
-                //Tap number is directly linked to the radius.
-                //We can't lower the count for higher performance because artifacts will appear immediately. 
-                tapCount = (int)radius + 1;
-                rhombiTapOffsetsDirty = true;
-            }
+            // Our actual total number of tap
+            tapCount = (int)radius + 1;
+            rhombiTapOffsetsDirty = true;
         }
 
         // Updates the texture tap offsets for the final combination pass
@@ -84,9 +67,9 @@ namespace SiliconStudio.Paradox.Effects.Images
             var texture = GetSafeInput(0);
             var textureSize = new Vector2( 1f/ (texture.Width), 1f / (texture.Height));
             // Half-radius of the hexagon
-            float halfRadius = Radius * 0.5f; 
+            float halfRadius = radius * 0.5f; 
             // Half-width of an hexagon pointing up (altitude of an equilateral triangle)
-            float hexagonalHalfWidth = Radius * (float)Math.Sqrt(3f) / 2f;
+            float hexagonalHalfWidth = radius * (float)Math.Sqrt(3f) / 2f;
 
             // TODO Looks fine in LDR, confirm all these offsets are correct with a real HDR scene.
 
@@ -100,7 +83,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             { 
                 new Vector2( -hexagonalHalfWidth,   halfRadius), // top left rhombi
                 new Vector2(  hexagonalHalfWidth,   halfRadius), // top right rhombi
-                new Vector2(                  0f,  -Radius    )  // bottom rhombi
+                new Vector2(                  0f,  -radius    )  // bottom rhombi
             };
 
             // Apply some bias to avoid the "upside-down" Y artifacts caused by rhombi overlapping.

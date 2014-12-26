@@ -15,17 +15,16 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// This is a 3-pass (+1 final gathering) technique based on the paper of McIntosh from the Simon Fraser University. (2012)
     /// http://ivizlab.sfu.ca/papers/cgf2012.pdf
     /// </remarks>
-    public class McIntoshBokeh : ImageEffect
+    public class McIntoshBokeh : BokehBlur
     {
         private ImageEffect directionalBlurEffect;
         private ImageEffect finalCombineEffect;
-
         private ImageEffect optimizedEffect;
 
-        private float radius;
-
+        // Number of tap required along one direction. (Not the total number of tap.)
         private int tapCount;
 
+        // Weight of each tap
         private float[] tapWeights;
 
         // Simple flag to switch between the debug version or the optimized version
@@ -46,37 +45,22 @@ namespace SiliconStudio.Paradox.Effects.Images
             directionalBlurEffect = new ImageEffectShader(context, "DepthAwareUniformBlurEffect");
             finalCombineEffect = new ImageEffectShader(context, "McIntoshCombineShader");
             optimizedEffect = new ImageEffectShader(context, "McIntoshOptimizedEffect");
-            Radius = 5;
             Phase = 0f;
         }
 
-        /// <summary>
-        /// Gets or sets the radius.
-        /// </summary>
-        /// <value>The radius.</value>
-        public float Radius
+        /// <inheritdoc/>
+        public override void SetRadius(float value)
         {
-            get
-            {
-                return radius;
-            }
-            set
-            {
-                if (value < 0)
-                {
-                    throw new ArgumentOutOfRangeException("Radius cannot be < 0");
-                }
+            base.SetRadius(value);
 
-                radius = value;
-                //Tap number is directly linked to the radius.
-                //We can't lower the count for higher performance because artifacts will appear immediately. 
-                tapCount = (int)radius + 1;
-            }
+            //Special case for McIntosh blur: we need to apply a radius double of the final result radius.
+            radius *= 2f;
+            // Our actual total number of tap
+            tapCount = (int)radius + 1;
         }
 
         protected override void DrawCore()
         {
-
             // Make sure we keep our uniform weights in synchronization with the number of taps
             if (tapWeights == null || tapWeights.Length != tapCount)
             {
