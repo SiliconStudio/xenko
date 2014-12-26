@@ -30,7 +30,7 @@ namespace SiliconStudio.Quantum
         {
             PrimitiveTypes = new List<Type>();
             AvailableCommands = new List<INodeCommand>();
-            ContentFactory = new DefaultContentFactory(this);
+            ContentFactory = new DefaultContentFactory();
         }
 
         /// <inheritdoc/>
@@ -84,7 +84,7 @@ namespace SiliconStudio.Quantum
 
                 // If we are in the case of a collection of collections, we might have a root node that is actually an enumerable reference
                 // This would be the case for each collection within the base collection.
-                IContent content = descriptor.Type.IsStruct() ? ContentFactory.CreateBoxedContent(obj, descriptor, IsPrimitiveType(descriptor.Type)) : ContentFactory.CreateObjectContent(obj, descriptor, IsPrimitiveType(descriptor.Type));
+                IContent content = descriptor.Type.IsStruct() ? ContentFactory.CreateBoxedContent(this, obj, descriptor, IsPrimitiveType(descriptor.Type)) : ContentFactory.CreateObjectContent(this, obj, descriptor, IsPrimitiveType(descriptor.Type));
                 rootNode = new ModelNode(descriptor.Type.Name, content, rootGuid);
                 if (content.IsReference && descriptor.Type.IsStruct())
                     throw new QuantumConsistencyException("A collection type", "A structure type", rootNode);
@@ -198,7 +198,7 @@ namespace SiliconStudio.Quantum
 
             // If this member should contains a reference, create it now.
             ModelNode containerNode = GetContextNode();
-            IContent content = ContentFactory.CreateMemberContent(containerNode.Content, member, IsPrimitiveType(member.Type), value);
+            IContent content = ContentFactory.CreateMemberContent(this, containerNode.Content, member, IsPrimitiveType(member.Type), value);
             var node = new ModelNode(member.Name, content, Guid.NewGuid());
             containerNode.AddChild(node);
 
