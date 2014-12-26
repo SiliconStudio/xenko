@@ -52,11 +52,12 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <inheritdoc/>
         public override void SetRadius(float value)
         {
+            float oldRadius = radius;
             base.SetRadius(value);
 
             // Our actual total number of tap
             tapCount = (int)radius + 1;
-            rhombiTapOffsetsDirty = true;
+            rhombiTapOffsetsDirty = (oldRadius != radius);
         }
 
         // Updates the texture tap offsets for the final combination pass
