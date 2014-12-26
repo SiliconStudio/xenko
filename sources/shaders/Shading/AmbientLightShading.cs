@@ -18,6 +18,6 @@ namespace SiliconStudio.Paradox.Effects
 {
     public static partial class AmbientLightShadingKeys
     {
-        public static readonly ParameterKey<Vector4> AmbientLight = ParameterKeys.New<Vector4>();
+        public static readonly ParameterKey<Color4> AmbientLight = ParameterKeys.New<Color4>();
     }
 }

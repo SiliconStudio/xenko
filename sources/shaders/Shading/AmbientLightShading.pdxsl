@@ -5,6 +5,7 @@
 /// </summary>
 class AmbientLightShading : ShadingBase, AlbedoDiffuseBase, AlbedoSpecularBase
 {
+    [Color]
     stage float4 AmbientLight;
     
     override stage float4 Shading() {
