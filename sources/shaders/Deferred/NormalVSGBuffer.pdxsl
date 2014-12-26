@@ -3,16 +3,10 @@
 /// <summary>
 /// Retrives view space normals from a Gbuffer.
 /// </summary>
-class NormalVSGBuffer : NormalVSBase, GBufferBase, ShaderBase
+class NormalVSGBuffer : NormalVSBase, GBufferBase
 {
     override stage void GenerateNormalVS_PS()
     {
-        if (ParadoxFlipRendertarget > 0)
-        {
-            int3 loadCoords = int3(streams.ShadingPosition.x, 720 - streams.ShadingPosition.y, 0);
-            streams.vNormalVS = normalize(GBufferTexture.Load(loadCoords, 0).xyz);
-        }
-        else
-           streams.vNormalVS = normalize(GBufferTexture.Load(int3(streams.ShadingPosition.xy, 0), 0).xyz);
+        streams.vNormalVS = normalize(GBufferTexture.Load(int3(streams.ShadingPosition.xy, 0), 0).xyz);
     }
 };
