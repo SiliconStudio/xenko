@@ -557,6 +557,8 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                                 image.DataSize);                    // Size
 
             image.Data = libraryData.Texture.GetDataPtr();
+
+            Marshal.FreeHGlobal(destPtr);
         }
 
         /// <summary>
