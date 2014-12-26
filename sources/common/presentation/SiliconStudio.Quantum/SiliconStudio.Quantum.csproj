@@ -29,10 +29,13 @@
     <Compile Include="Commands\RenameStringKeyCommand.cs" />
     <Compile Include="Commands\SetToNullCommand.cs" />
     <Compile Include="Commands\UncancellableCommand.cs" />
+    <Compile Include="Contents\TransformContent.cs" />
     <Compile Include="DefaultContentFactory.cs" />
     <Compile Include="IContentFactory.cs" />
+    <Compile Include="IModelBuilderPlugin.cs" />
     <Compile Include="IGuidContainer.cs" />
     <Compile Include="INodeBuilder.cs" />
+    <Compile Include="ModelNodeFlags.cs" />
     <Compile Include="NodeConstructedArgs.cs" />
     <Compile Include="NodeConstructingArgs.cs" />
     <Compile Include="QuantumConsistencyException.cs" />

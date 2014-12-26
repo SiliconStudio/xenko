@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
@@ -19,7 +18,6 @@ using SiliconStudio.Paradox.Assets.Textures;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.EntityModel.Data;
 using SiliconStudio.Paradox.Importer.Common;
 
 namespace SiliconStudio.Paradox.Assets.Model
@@ -188,7 +186,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 
             rootEntityData.Name = entityUrl;
             // Use modelUrl.Path to get the url without the extension
-            rootEntityData.Add(ModelComponent.Key, new ModelComponent { Model = UrlServices.CreateSerializableVersion<Effects.Model>(modelItem.Id, modelItem.Location), Enabled = true });
+            rootEntityData.Add(ModelComponent.Key, new ModelComponent { Model = AttachedReferenceManager.CreateSerializableVersion<Effects.Model>(modelItem.Id, modelItem.Location), Enabled = true });
 
             var assetReference = new AssetItem(entityUrl, asset);
             assetReferences.Add(assetReference);

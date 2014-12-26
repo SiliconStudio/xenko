@@ -9,8 +9,6 @@ using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Serialization.Serializers;
-using SiliconStudio.Paradox.Data;
-using SiliconStudio.Paradox.EntityModel.Data;
 
 namespace SiliconStudio.Paradox.EntityModel
 {

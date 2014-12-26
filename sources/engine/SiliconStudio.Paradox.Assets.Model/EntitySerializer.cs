@@ -5,16 +5,20 @@ using System;
 using SharpYaml.Serialization;
 using SharpYaml.Serialization.Serializers;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Yaml;
 using SiliconStudio.Paradox.Assets.Model.Analysis;
 using SiliconStudio.Paradox.EntityModel;
 using ITypeDescriptor = SharpYaml.Serialization.ITypeDescriptor;
 
 namespace SiliconStudio.Paradox.Assets.Model
 {
-    public class EntitySerializer : ObjectSerializer, IDataCustomVisitor
+    //[YamlSerializerFactory]
+    public class EntitySerializer : ObjectSerializer //, IDataCustomVisitor
     {
         [ThreadStatic]
         private static int recursionLevel;
+
+        private static int recursionMaxExpectedDepth;
 
         public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
@@ -26,8 +30,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 
         protected override void CreateOrTransformObject(ref ObjectContext objectContext)
         {
-            // Level 1 is EntityHierarchyData, Level 2 is Entity, Level 3 is EntityComponent
-            if (recursionLevel >= 4)
+            if (recursionLevel >= recursionMaxExpectedDepth)
             {
                 if (objectContext.SerializerContext.IsSerializing)
                 {
@@ -56,8 +59,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 
         protected override void TransformObjectAfterRead(ref ObjectContext objectContext)
         {
-            // Level 1 is EntityHierarchyData, Level 2 is Entity, Level 3 is EntityComponent
-            if (recursionLevel >= 4)
+            if (recursionLevel >= recursionMaxExpectedDepth)
             {
                 if (!objectContext.SerializerContext.IsSerializing)
                 {
@@ -80,36 +82,40 @@ namespace SiliconStudio.Paradox.Assets.Model
 
         public override void WriteYaml(ref ObjectContext objectContext)
         {
-            // Make sure we start with 0 (in case previous serialization failed with an exception)
-            if (objectContext.Descriptor.Type == typeof(EntityHierarchyData))
-                recursionLevel = 0;
+            if (recursionLevel++ == 0)
+                SetupMaxExpectedDepth(objectContext);
 
-            recursionLevel++;
-
-            base.WriteYaml(ref objectContext);
-
-            recursionLevel--;
+            try
+            {
+                base.WriteYaml(ref objectContext);
+            }
+            finally
+            {
+                recursionLevel--;
+            }
         }
 
         public override object ReadYaml(ref ObjectContext objectContext)
         {
-            // Make sure we start with 0 (in case previous serialization failed with an exception)
-            if (objectContext.Descriptor.Type == typeof(EntityHierarchyData))
-                recursionLevel = 0;
+            if (recursionLevel++ == 0)
+                SetupMaxExpectedDepth(objectContext);
 
-            recursionLevel++;
-
-            var result = base.ReadYaml(ref objectContext);
-
-            recursionLevel--;
-
-            if (objectContext.Descriptor.Type == typeof(EntityHierarchyData))
+            try
             {
-                // Let's fixup entity references after serialization
-                EntityAnalysis.FixupEntityReferences((EntityHierarchyData)objectContext.Instance);
-            }
+                var result = base.ReadYaml(ref objectContext);
 
-            return result;
+                if (objectContext.Descriptor.Type == typeof(EntityHierarchyData))
+                {
+                    // Let's fixup entity references after serialization
+                    EntityAnalysis.FixupEntityReferences((EntityHierarchyData)objectContext.Instance);
+                }
+
+                return result;
+            }
+            finally
+            {
+                recursionLevel--;
+            }
         }
 
         public bool CanVisit(Type type)
@@ -117,10 +123,25 @@ namespace SiliconStudio.Paradox.Assets.Model
             return type == typeof(EntityHierarchyData) || type == typeof(Entity) || typeof(EntityComponent).IsAssignableFrom(type);
         }
 
-        public void Visit(ref VisitorContext context)
+        //public void Visit(ref VisitorContext context)
+        //{
+        //    // Only visit the instance without visiting childrens
+        //    context.Visitor.VisitObject(context.Instance, context.Descriptor, true);
+        //}
+
+        private static void SetupMaxExpectedDepth(ObjectContext objectContext)
         {
-            // Only visit the instance without visiting childrens
-            context.Visitor.VisitObject(context.Instance, context.Descriptor, false);
+            // Make sure we start with 0 (in case previous serialization failed with an exception)
+            if (objectContext.Descriptor.Type == typeof(EntityHierarchyData))
+            {
+                // Level 1 is EntityHierarchyData, Level 2 is Entity, Level 3 is EntityComponent
+                recursionMaxExpectedDepth = 4;
+            }
+            else
+            {
+                // Level 1 is current object (Entity or EntityComponent)
+                recursionMaxExpectedDepth = 2;
+            }
         }
     }
 }

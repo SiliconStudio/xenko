@@ -20,14 +20,17 @@ namespace SiliconStudio.Quantum
     {
         private readonly Stack<ModelNode> contextStack = new Stack<ModelNode>();
         private readonly HashSet<IContent> referenceContents = new HashSet<IContent>();
+        private readonly List<IModelBuilderPlugin> plugins;
         private ModelNode rootNode;
         private Guid rootGuid;
+        private IModelNode referencerNode;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultModelBuilder"/> class that can be used to construct a model for a data object.
         /// </summary>
-        public DefaultModelBuilder()
+        public DefaultModelBuilder(List<IModelBuilderPlugin> plugins)
         {
+            this.plugins = plugins;
             PrimitiveTypes = new List<Type>();
             AvailableCommands = new List<INodeCommand>();
             ContentFactory = new DefaultContentFactory();
@@ -43,6 +46,9 @@ namespace SiliconStudio.Quantum
         public IEnumerable<IContent> ReferenceContents { get { return referenceContents; } }
 
         public IContentFactory ContentFactory { get; set; }
+
+        /// <inheritdoc/>
+        public IModelNode Referencer { get { return referencerNode;} }
 
         /// <inheritdoc/>
         public event EventHandler<NodeConstructingArgs> NodeConstructing;
@@ -63,9 +69,10 @@ namespace SiliconStudio.Quantum
         }
 
         /// <inheritdoc/>
-        public IModelNode Build(object obj, Type type, Guid guid)
+        public IModelNode Build(IModelNode referencer, object obj, Type type, Guid guid)
         {
             Reset();
+            referencerNode = referencer;
             rootGuid = guid;
             var typeDescriptor = TypeDescriptorFactory.Find(obj != null ? obj.GetType() : type);
             VisitObject(obj, typeDescriptor as ObjectDescriptor, true);
@@ -76,6 +83,8 @@ namespace SiliconStudio.Quantum
         /// <inheritdoc/>
         public override void VisitObject(object obj, ObjectDescriptor descriptor, bool visitMembers)
         {
+            ITypeDescriptor currentDescriptor = descriptor;
+
             bool isRootNode = contextStack.Count == 0;
             if (isRootNode)
             {
@@ -85,14 +94,15 @@ namespace SiliconStudio.Quantum
                 // If we are in the case of a collection of collections, we might have a root node that is actually an enumerable reference
                 // This would be the case for each collection within the base collection.
                 IContent content = descriptor.Type.IsStruct() ? ContentFactory.CreateBoxedContent(this, obj, descriptor, IsPrimitiveType(descriptor.Type)) : ContentFactory.CreateObjectContent(this, obj, descriptor, IsPrimitiveType(descriptor.Type));
-                rootNode = new ModelNode(descriptor.Type.Name, content, rootGuid);
-                if (content.IsReference && descriptor.Type.IsStruct())
+                currentDescriptor = content.Descriptor;
+                rootNode = new ModelNode(currentDescriptor.Type.Name, content, rootGuid);
+                if (content.IsReference && currentDescriptor.Type.IsStruct())
                     throw new QuantumConsistencyException("A collection type", "A structure type", rootNode);
 
                 if (content.IsReference)
                     referenceContents.Add(content);
 
-                AvailableCommands.Where(x => x.CanAttach(rootNode.Content.Descriptor, null)).ForEach(rootNode.AddCommand);
+                AvailableCommands.Where(x => x.CanAttach(currentDescriptor, null)).ForEach(rootNode.AddCommand);
                 NotifyNodeConstructed(content);
 
                 if (obj == null)
@@ -103,15 +113,24 @@ namespace SiliconStudio.Quantum
                 PushContextNode(rootNode);
             }
 
-            if (!IsPrimitiveType(descriptor.Type))
+            if (!IsPrimitiveType(currentDescriptor.Type))
             {
-                base.VisitObject(obj, descriptor, true);
+                ProcessModelNode();
+                base.VisitObject(obj, descriptor, (GetContextNode().Flags & ModelNodeFlags.DoNotVisitMembers) == 0);
             }
 
             if (isRootNode)
             {
                 PopContextNode();
                 rootNode.Seal();
+            }
+        }
+
+        private void ProcessModelNode()
+        {
+            foreach (var plugin in plugins)
+            {
+                plugin.Process(this, GetContextNode());
             }
         }
 
@@ -205,13 +224,17 @@ namespace SiliconStudio.Quantum
             if (content.IsReference)
                 referenceContents.Add(content);
 
+            PushContextNode(node);
             if (!(content.Reference is ObjectReference))
             {
                 // For enumerable references, we visit the member to allow VisitCollection or VisitDictionary to enrich correctly the node.
-                PushContextNode(node);
                 Visit(content.Value);
-                PopContextNode();
             }
+            else
+            {
+                ProcessModelNode();
+            }
+            PopContextNode();
 
             AvailableCommands.Where(x => x.CanAttach(node.Content.Descriptor, (MemberDescriptorBase)member)).ForEach(node.AddCommand);
             NotifyNodeConstructed(content);

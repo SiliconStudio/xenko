@@ -407,8 +407,8 @@ namespace SiliconStudio.Core.Serialization.Assets
             {
                 if (contentReference.ObjectValue != null)
                 {
-                    var urlInfo = UrlServices.GetUrlInfo(contentReference.ObjectValue);
-                    if (urlInfo == null || urlInfo.IsProxy)
+                    var attachedReference = AttachedReferenceManager.GetAttachedReference(contentReference.ObjectValue);
+                    if (attachedReference == null || attachedReference.IsProxy)
                         continue;
 
                     serializeOperations.Enqueue(new SerializeOperation(contentReference.Location, contentReference.ObjectValue, false));
@@ -456,7 +456,7 @@ namespace SiliconStudio.Core.Serialization.Assets
 
                 // TODO: Currently here so that ContentReference.ObjectValue later keeps its Url.
                 // Need some reorganization?
-                UrlServices.SetUrl(obj, assetReference.Url);
+                AttachedReferenceManager.SetUrl(obj, assetReference.Url);
             }
         }
     }

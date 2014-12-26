@@ -165,7 +165,7 @@ namespace SiliconStudio.Core.Tests
             // b3.A should be default initialized
             Assert.That(b3.A.I, Is.EqualTo(0));
 
-            Assert.That(UrlServices.GetUrl(b3.A), Is.Not.Null);
+            Assert.That(AttachedReferenceManager.GetUrl(b3.A), Is.Not.Null);
         }
 
         [Test]
@@ -179,13 +179,13 @@ namespace SiliconStudio.Core.Tests
 
             assetManager1.Save("test", b1);
 
-            Assert.That(UrlServices.GetUrl(b1.A), Is.Not.Null);
+            Assert.That(AttachedReferenceManager.GetUrl(b1.A), Is.Not.Null);
             
             var b2 = new B();
             b2.A = new A();
-            var urlInfo = UrlServices.GetOrCreateUrlInfo(b2.A);
-            urlInfo.Url = UrlServices.GetUrl(b1.A);
-            urlInfo.IsProxy = true;
+            var attachedReference = AttachedReferenceManager.GetOrCreateAttachedReference(b2.A);
+            attachedReference.Url = AttachedReferenceManager.GetUrl(b1.A);
+            attachedReference.IsProxy = true;
             assetManager1.Save("test2", b2);
             
             var b3 = assetManager2.Load<B>("test2");
@@ -200,7 +200,7 @@ namespace SiliconStudio.Core.Tests
             c1.Child = new C { I = 32 };
             c2.Child = c1.Child;
 
-            UrlServices.SetUrl(c1.Child, "cchild");
+            AttachedReferenceManager.SetUrl(c1.Child, "cchild");
 
             var assetManager1 = new AssetManager();
             var assetManager2 = new AssetManager();

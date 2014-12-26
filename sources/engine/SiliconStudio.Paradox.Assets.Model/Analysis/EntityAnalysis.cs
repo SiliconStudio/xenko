@@ -3,11 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using SiliconStudio.Assets.Visitors;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.EntityModel.Data;
 
 namespace SiliconStudio.Paradox.Assets.Model.Analysis
 {

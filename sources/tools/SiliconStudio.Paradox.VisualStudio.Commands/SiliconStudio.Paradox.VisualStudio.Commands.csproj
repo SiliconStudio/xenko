@@ -53,13 +53,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataGenerator\DataCodeGeneratorHelper.cs" />
-    <Compile Include="DataGenerator\DataConverterGenerator.cs">
-      <DependentUpon>DataConverterGenerator.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="DataGenerator\DataConverterGenerator.Members.cs" />
     <Compile Include="PackageBuildMonitorRemote.cs" />
     <Compile Include="ParadoxCommands.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -199,10 +192,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="DataGenerator\DataConverterGenerator.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>DataConverterGenerator.cs</LastGenOutput>
-    </None>
     <None Include="Shaders\ShaderKeySourceGenerator.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>ShaderKeySourceGenerator.cs</LastGenOutput>

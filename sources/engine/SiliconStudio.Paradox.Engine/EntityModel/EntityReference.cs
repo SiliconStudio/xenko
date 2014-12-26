@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Serializers;
-using SiliconStudio.Paradox.EntityModel.Data;
 
 namespace SiliconStudio.Paradox.EntityModel
 {
@@ -24,16 +22,16 @@ namespace SiliconStudio.Paradox.EntityModel
         }
 
         [DataMemberIgnore]
-        public EntityData Value { get; set; }
+        public Entity Value { get; set; }
 
-        public static explicit operator EntityData(EntityReference contentReference)
+        public static explicit operator Entity(EntityReference contentReference)
         {
             if (contentReference == null)
                 return null;
             return contentReference.Value;
         }
 
-        public static implicit operator EntityReference(EntityData value)
+        public static implicit operator EntityReference(Entity value)
         {
             return new EntityReference { Value = value, Id = value.Id };
         }

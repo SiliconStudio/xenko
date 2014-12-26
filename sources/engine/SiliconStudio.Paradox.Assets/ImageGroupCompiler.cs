@@ -148,12 +148,12 @@ namespace SiliconStudio.Paradox.Assets
                 if (UseSeparateAlphaTexture)
                 {
                     var baseLocation = ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]);
-                    newImage.Texture = UrlServices.CreateSerializableVersion<Texture>(Guid.Empty, TextureAlphaComponentSplitter.GenerateColorTextureURL(baseLocation));
-                    newImage.TextureAlpha = UrlServices.CreateSerializableVersion<Texture>(Guid.Empty, TextureAlphaComponentSplitter.GenerateAlphaTextureURL(baseLocation));
+                    newImage.Texture = AttachedReferenceManager.CreateSerializableVersion<Texture>(Guid.Empty, TextureAlphaComponentSplitter.GenerateColorTextureURL(baseLocation));
+                    newImage.TextureAlpha = AttachedReferenceManager.CreateSerializableVersion<Texture>(Guid.Empty, TextureAlphaComponentSplitter.GenerateAlphaTextureURL(baseLocation));
                 }
                 else
                 {
-                    newImage.Texture = UrlServices.CreateSerializableVersion<Texture>(Guid.Empty, ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]));
+                    newImage.Texture = AttachedReferenceManager.CreateSerializableVersion<Texture>(Guid.Empty, ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]));
                 }
 
                 SetImageSpecificFields(uiImage, newImage);

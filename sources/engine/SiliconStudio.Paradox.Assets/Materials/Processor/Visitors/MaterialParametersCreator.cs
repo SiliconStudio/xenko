@@ -103,7 +103,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
                 else
                 {
                     // TODO: Factorize (Texture extension?)
-                    var textureGpu = UrlServices.CreateSerializableVersion<Texture>(texture.TextureReference.Id, texture.TextureReference.Location);
+                    var textureGpu = AttachedReferenceManager.CreateSerializableVersion<Texture>(texture.TextureReference.Id, texture.TextureReference.Location);
                     Parameters.Set(texture.UsedParameterKey, textureGpu);
                     AddSampler(texture.Sampler);
                 }
@@ -132,7 +132,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
                         else
                         {
                             // TODO: Factorize (Texture extension?)
-                            var textureGpu = UrlServices.CreateSerializableVersion<Texture>(textureNode.TextureReference.Id, textureNode.TextureReference.Location);
+                            var textureGpu = AttachedReferenceManager.CreateSerializableVersion<Texture>(textureNode.TextureReference.Id, textureNode.TextureReference.Location);
                             Parameters.Set((ParameterKey<Texture>)keyValue.Key, textureGpu);
                         }
                     }

@@ -105,7 +105,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                     // Apply materials
                     foreach (var modelMaterial in Materials)
                     {
-                        model.Materials.Add(UrlServices.CreateSerializableVersion<Material>(modelMaterial.Material.Id, modelMaterial.Material.Location));
+                        model.Materials.Add(AttachedReferenceManager.CreateSerializableVersion<Material>(modelMaterial.Material.Id, modelMaterial.Material.Location));
                     }
 
                     model.BoundingBox = BoundingBox.Empty;

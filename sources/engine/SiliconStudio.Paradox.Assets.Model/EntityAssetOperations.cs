@@ -11,7 +11,6 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Paradox.Assets.Model.Analysis;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.EntityModel.Data;
 
 namespace SiliconStudio.Paradox.Assets.Model
 {

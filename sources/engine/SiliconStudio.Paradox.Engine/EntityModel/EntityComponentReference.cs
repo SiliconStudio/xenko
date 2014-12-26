@@ -2,11 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Serializers;
-using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.EntityModel.Data;
 
 namespace SiliconStudio.Paradox.EntityModel
 {
@@ -17,7 +12,6 @@ namespace SiliconStudio.Paradox.EntityModel
 
     [DataContract]
     [DataStyle(DataStyle.Compact)]
-    [DataSerializerGlobal(typeof(EntityComponentReferenceSerializer), typeof(EntityComponentReference))]
     public sealed class EntityComponentReference : IEntityComponentReference
     {
         // TODO: implement a serializer and pass these fields readonly (and their related properties)
@@ -44,7 +38,7 @@ namespace SiliconStudio.Paradox.EntityModel
             this.value = entityComponent;
         }
 
-        PropertyKey IEntityComponentReference.Component { get { return Component; } set { Component = value; } }
+        PropertyKey IEntityComponentReference.Component { get { return Component; } }
 
         [DataMemberIgnore]
         public Type ComponentType { get { return component.PropertyType; } }
@@ -62,35 +56,9 @@ namespace SiliconStudio.Paradox.EntityModel
             set { this.value = value; }
         }
 
-        public static EntityComponentReference New(EntityData entityData, PropertyKey component)
-        {
-            return new EntityComponentReference(entityData, component);
-        }
-
         public static EntityComponentReference New(EntityComponent entityComponent)
         {
             return new EntityComponentReference(entityComponent);
-        }
-    }
-
-    internal class EntityComponentReferenceSerializer : DataSerializer<EntityComponentReference>
-    {
-        public override void Serialize(ref EntityComponentReference obj, ArchiveMode mode, SerializationStream stream)
-        {
-            if (obj == null)
-                obj = new EntityComponentReference();
-
-            if (mode == ArchiveMode.Deserialize)
-            {
-                var entityReferenceContext = stream.Context.Get(EntityReference.EntityAnalysisResultKey);
-                if (entityReferenceContext != null)
-                {
-                    entityReferenceContext.EntityComponentReferences.Add(obj);
-                }
-            }
-
-            stream.Serialize(ref obj.entity, mode);
-            stream.Serialize(ref obj.component, mode);
         }
     }
 }

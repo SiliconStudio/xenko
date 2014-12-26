@@ -75,23 +75,17 @@
     <Compile Include="DataModel\AnimationCurveEvaluatorOptimizedQuaternionGroup.cs" />
     <Compile Include="DataModel\Interpolator.cs" />
     <Compile Include="EntityModel\EntityComponentReference.cs" />
-    <None Include="EntityModel\EntityComponentReferenceDataConverter.cs" />
-    <None Include="EntityModel\EntityDataConverter.cs" />
     <Compile Include="Data\GeometricPrimitiveExtension.cs" />
-    <None Include="EntityModel\EntityHierarchyDataConverter.cs" />
     <Compile Include="EntityModel\EntityReference.cs" />
-    <Compile Include="EntityModel\EntityReferenceDataConverter.cs" />
     <Compile Include="EntityModel\IEntityComponentReference.cs" />
     <Compile Include="Data\LightingConfigurationData.cs" />
     <Compile Include="Data\SimpleExtensions.cs" />
     <Compile Include="Data\MergeExtensions.cs" />
     <Compile Include="Data\SplitExtensions.cs" />
-    <None Include="Data\SpriteComponentData.cs" />
     <Compile Include="Data\TransformExtensions.cs" />
     <Compile Include="DataModel\KeyFrameData.cs" />
     <Compile Include="DataModel\LightType.cs" />
     <Compile Include="DataModel\NodePropertyData.cs" />
-    <Compile Include="Data\EntityComponentDataConverter.cs" />
     <Compile Include="DelegateHolder.cs" />
     <Compile Include="Effects\BackgroundRenderer.cs" />
     <Compile Include="Effects\CameraSetter.cs" />
@@ -225,10 +219,8 @@
     <Compile Include="Engine\LightComponent.cs" />
     <Compile Include="Engine\LightShaftsComponent.cs" />
     <Compile Include="Engine\ParticleEmitterType.cs" />
-    <Compile Include="EntityModel\EntityComponentData.cs" />
     <Compile Include="EntityModel\EntityComponentProperty.cs" />
     <Compile Include="EntityModel\EntityComponentPropertyType.cs" />
-    <Compile Include="EntityModel\EntityData.cs" />
     <Compile Include="EntityModel\EntityGroup.cs" />
     <Compile Include="EntityModel\ParameterContainerExtensions.cs" />
     <Compile Include="Diffs\ThreeWayMergeOrdered.cs" />
@@ -309,7 +301,6 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Effects\Data\" />
     <Folder Include="Meshes\" />
     <Folder Include="OpenGL\Effects\" />
     <Folder Include="OpenGL\Input\" />

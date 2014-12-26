@@ -163,11 +163,6 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
             return remote.GenerateShaderKeys(inputFileName, inputFileContent);
         }
 
-        public byte[] GenerateDataClasses(string assemblyOutput, string projectFullName, string intermediateAssembly)
-        {
-            return remote.GenerateDataClasses(assemblyOutput, projectFullName, intermediateAssembly);
-        }
-
         public RawShaderNavigationResult AnalyzeAndGoToDefinition(string sourceCode, RawSourceSpan span)
         {
             // TODO: We need to know which package is currently selected in order to query all valid shaders

@@ -36,15 +36,15 @@ namespace SiliconStudio.Assets.Serializers
                 throw new YamlException(fromScalar.Start, fromScalar.End, "Unable to decode asset reference [{0}]. Expecting format GUID:LOCATION".ToFormat(fromScalar.Value));
             }
 
-            return UrlServices.CreateSerializableVersion(context.Descriptor.Type, guid, location);
+            return AttachedReferenceManager.CreateSerializableVersion(context.Descriptor.Type, guid, location);
         }
         public override string ConvertTo(ref ObjectContext objectContext)
         {
-            var urlInfo = UrlServices.GetUrlInfo(objectContext.Instance);
-            if (urlInfo == null)
+            var attachedReference = AttachedReferenceManager.GetAttachedReference(objectContext.Instance);
+            if (attachedReference == null)
                 throw new YamlException(string.Format("Unable to extract asset reference from object [{0}]", objectContext.Instance));
 
-            return string.Format("{0}:{1}", urlInfo.Id, urlInfo.Url);
+            return string.Format("{0}:{1}", attachedReference.Id, attachedReference.Url);
         }
     }
 }

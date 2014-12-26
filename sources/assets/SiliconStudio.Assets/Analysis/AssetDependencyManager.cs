@@ -1468,9 +1468,9 @@ namespace SiliconStudio.Assets.Analysis
                 var reference = obj as IContentReference;
                 if (reference == null)
                 {
-                    var urlInfo = UrlServices.GetUrlInfo(obj);
-                    if (urlInfo != null && urlInfo.IsProxy)
-                        reference = new UrlInfoContentReference(urlInfo);
+                    var attachedReference = AttachedReferenceManager.GetAttachedReference(obj);
+                    if (attachedReference != null && attachedReference.IsProxy)
+                        reference = new AttachedContentReference(attachedReference);
                 }
 
                 if (reference != null)

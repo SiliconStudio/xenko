@@ -70,7 +70,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
                                 ContentFilter = AssetManagerLoaderSettings.NewContentFilterByType(typeof(Mesh))
                             };
 
-                            var modelAsset = assetManager.Load<Model>(UrlServices.GetUrl(convexHullDesc.Model), loadSettings);
+                            var modelAsset = assetManager.Load<Model>(AttachedReferenceManager.GetUrl(convexHullDesc.Model), loadSettings);
                             if (modelAsset != null)
                             {
                                 convexHullDesc.ConvexHulls = new List<List<List<Vector3>>>();
@@ -123,7 +123,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
                                         var indexOffset = (uint)combinedVerts.Count / 3;
 
                                         var stride = meshData.Draw.VertexBuffers[0].Declaration.VertexStride;
-                                        var vertexDataAsset = assetManager.Load<BufferData>(UrlServices.GetUrl(meshData.Draw.VertexBuffers[0].Buffer));
+                                        var vertexDataAsset = assetManager.Load<BufferData>(AttachedReferenceManager.GetUrl(meshData.Draw.VertexBuffers[0].Buffer));
 
                                         var vertexData = vertexDataAsset.Content;
                                         var vertexIndex = meshData.Draw.VertexBuffers[0].Offset;
@@ -142,7 +142,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
                                             vertexIndex += stride;
                                         }
 
-                                        var indexDataAsset = assetManager.Load<BufferData>(UrlServices.GetUrl(meshData.Draw.IndexBuffer.Buffer));
+                                        var indexDataAsset = assetManager.Load<BufferData>(AttachedReferenceManager.GetUrl(meshData.Draw.IndexBuffer.Buffer));
 
                                         var indexData = indexDataAsset.Content;
                                         var indexIndex = meshData.Draw.IndexBuffer.Offset;                                 

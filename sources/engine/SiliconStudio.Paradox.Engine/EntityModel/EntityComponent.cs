@@ -8,7 +8,7 @@ using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Paradox.EntityModel
 {
-    //[DataSerializer(typeof(CloneEntityComponentSerializer<>), Mode = DataSerializerGenericMode.Type)]
+    [DataSerializer(typeof(EntityComponent.Serializer))]
     [DataContract]
     public class EntityComponent
     {
@@ -70,6 +70,16 @@ namespace SiliconStudio.Paradox.EntityModel
         struct EntityComponentHelper<T> where T : EntityComponent, new()
         {
             public static readonly PropertyKey DefaultKey = new T().DefaultKey;
+        }
+
+        internal class Serializer : DataSerializer<EntityComponent>
+        {
+            public override void Serialize(ref EntityComponent obj, ArchiveMode mode, SerializationStream stream)
+            {
+                var entity = obj.Entity;
+                stream.Serialize(ref entity, mode);
+                obj.Entity = entity;
+            }
         }
     }
 }

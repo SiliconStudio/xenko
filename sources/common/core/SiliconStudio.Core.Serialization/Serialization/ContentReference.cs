@@ -1,80 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Runtime.CompilerServices;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Serializers;
 using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Core.Serialization
 {
-    public static class UrlServices
-    {
-        private static ConditionalWeakTable<object, UrlInfo> urls = new ConditionalWeakTable<object, UrlInfo>();
-
-        public static string GetUrl(object obj)
-        {
-            UrlInfo urlInfo;
-            return urls.TryGetValue(obj, out urlInfo) ? urlInfo.Url : null;
-        }
-
-        public static void SetUrl(object obj, string url)
-        {
-            var urlInfo = urls.GetValue(obj, x => new UrlInfo());
-            urlInfo.Url = url;
-        }
-
-        public static UrlInfo GetUrlInfo(object obj)
-        {
-            UrlInfo urlInfo;
-            urls.TryGetValue(obj, out urlInfo);
-            return urlInfo;
-        }
-
-        public static UrlInfo GetOrCreateUrlInfo(object obj)
-        {
-            return urls.GetValue(obj, x => new UrlInfo());
-        }
-
-        public static T CreateSerializableVersion<T>(Guid id, string location) where T : class, new()
-        {
-            var result = new T();
-            var urlInfo = GetOrCreateUrlInfo(result);
-            urlInfo.Id = id;
-            urlInfo.Url = location;
-            urlInfo.IsProxy = true;
-            return result;
-        }
-
-        public static object CreateSerializableVersion(Type type, Guid id, string location)
-        {
-            var result = Activator.CreateInstance(type);
-            var urlInfo = GetOrCreateUrlInfo(result);
-            urlInfo.Id = id;
-            urlInfo.Url = location;
-            urlInfo.IsProxy = true;
-            return result;
-        }
-
-        public class UrlInfo
-        {
-            public string Url;
-
-            public Guid Id;
-
-            /// <summary>
-            /// If yes, it won't be recursively saved.
-            /// Use this if you only care about the Url.
-            /// </summary>
-            public bool IsProxy;
-
-            /// <summary>
-            /// Data representation.
-            /// </summary>
-            public object Data;
-        }
-    }
-
     public abstract class ContentReference : ITypedContentReference, IEquatable<ContentReference>
     {
         internal const int NullIdentifier = -1;
@@ -224,7 +156,7 @@ namespace SiliconStudio.Core.Serialization
                 if (value == null)
                     return url;
 
-                return UrlServices.GetUrl(value);
+                return AttachedReferenceManager.GetUrl(value);
             }
             set
             {
@@ -234,7 +166,7 @@ namespace SiliconStudio.Core.Serialization
                 }
                 else
                 {
-                    UrlServices.SetUrl(this.value, value);
+                    AttachedReferenceManager.SetUrl(this.value, value);
                 }
             }
         }

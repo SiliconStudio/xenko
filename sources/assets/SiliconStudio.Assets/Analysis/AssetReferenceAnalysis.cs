@@ -113,15 +113,15 @@ namespace SiliconStudio.Assets.Analysis
                 }
                 else
                 {
-                    var urlInfo = UrlServices.GetUrlInfo(obj);
-                    if (urlInfo != null)
+                    var attachedReference = AttachedReferenceManager.GetAttachedReference(obj);
+                    if (attachedReference != null)
                     {
                         AddLink(obj, (guid, location) =>
                         {
                             if (guid.HasValue)
-                                urlInfo.Id = guid.Value;
-                            urlInfo.Url = location;
-                            return urlInfo;
+                                attachedReference.Id = guid.Value;
+                            attachedReference.Url = location;
+                            return attachedReference;
                         });
                     }
                 }

@@ -3,7 +3,6 @@
 using System.Reflection;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Paradox.Data;
 
 namespace SiliconStudio.Paradox.Engine
 {

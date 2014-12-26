@@ -38,7 +38,7 @@ namespace SiliconStudio.Core.Serialization
                     if (obj == null)
                     {
                         // First time, let's create it
-                        obj = (T)UrlServices.CreateSerializableVersion(typeof(T), contentReference.Id, contentReference.Location);
+                        obj = (T)AttachedReferenceManager.CreateSerializableVersion(typeof(T), contentReference.Id, contentReference.Location);
                         contentSerializerContext.AssetManager.RegisterDeserializedObject(contentReference.Location, obj);
                         contentReference.Value = obj;
                     }
@@ -50,11 +50,11 @@ namespace SiliconStudio.Core.Serialization
                 if (mode == ArchiveMode.Serialize)
                 {
                     // This case will happen when serializing build engine command hashes: we still want Location to still be written
-                    var urlInfo = UrlServices.GetUrlInfo(obj);
-                    if (urlInfo == null || urlInfo.Url == null)
+                    var attachedReference = AttachedReferenceManager.GetAttachedReference(obj);
+                    if (attachedReference == null || attachedReference.Url == null)
                         throw new InvalidOperationException("Error when serializing reference.");
 
-                    stream.Write(urlInfo.Url);
+                    stream.Write(attachedReference.Url);
                 }
                 else
                 {

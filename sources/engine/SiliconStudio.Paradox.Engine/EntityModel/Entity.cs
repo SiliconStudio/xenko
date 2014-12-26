@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.EntityModel
     //[ContentSerializer(typeof(DataContentSerializer<Entity>))]
     [DebuggerTypeProxy(typeof(EntityDebugView))]
     [DataSerializer(typeof(EntitySerializer))]
-    [ContentSerializer(typeof(DataContentSerializer<Entity>))]
+    [ContentSerializer(typeof(DataContentSerializerWithReuse<Entity>))]
     [DataStyle(DataStyle.Normal)]
     public class Entity : ComponentBase, IEnumerable
     {
@@ -36,11 +36,8 @@ namespace SiliconStudio.Paradox.EntityModel
         public PropertyContainer Components;
 
         /// <summary>
-        /// The identifier, loaded from <see cref="Data.EntityData.Id"/>.
+        /// The entity identifier.
         /// </summary>
-        /// <remarks>
-        /// This might be removed later if we have a better tracking/mapping of Data/non-Data objects.
-        /// </remarks>
         public new Guid Id;
 
         static Entity()
@@ -60,19 +57,24 @@ namespace SiliconStudio.Paradox.EntityModel
         /// Create a new <see cref="Entity"/> instance having the provided name.
         /// </summary>
         /// <param name="name">The name to give to the entity</param>
-        public Entity(string name)
-            : this(Vector3.Zero, name)
+        /// <param name="generateId">if set to <c>true</c> use <see cref="Guid.NewGuid()"/> to initialize <see cref="Entity.Id"/>.</param>
+        public Entity(string name, bool generateId = true)
+            : this(Vector3.Zero, name, generateId)
         {
         }
 
         /// <summary>
-        /// Create a new <see cref="Entity"/> instance having the provided name and initial position.
+        /// Create a new <see cref="Entity" /> instance having the provided name and initial position.
         /// </summary>
         /// <param name="position">The initial position of the entity</param>
         /// <param name="name">The name to give to the entity</param>
-        public Entity(Vector3 position, string name = null)
+        /// <param name="generateId">if set to <c>true</c> use <see cref="Guid.NewGuid()"/> to initialize <see cref="Entity.Id"/>.</param>
+        public Entity(Vector3 position, string name = null, bool generateId = true)
             : base(name)
         {
+            if (generateId)
+                Id = Guid.NewGuid();
+
             Components = new PropertyContainer(this);
             Components.PropertyUpdated += EntityPropertyUpdated;
 

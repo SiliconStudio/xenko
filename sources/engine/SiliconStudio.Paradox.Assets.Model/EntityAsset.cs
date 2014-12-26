@@ -19,7 +19,6 @@ using SiliconStudio.Core.Yaml;
 using SiliconStudio.Paradox.Assets.Model.Analysis;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.EntityModel.Data;
 using IObjectFactory = SiliconStudio.Core.Reflection.IObjectFactory;
 
 namespace SiliconStudio.Paradox.Assets.Model
@@ -155,7 +154,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         public Guid SourceRoot;
 
         /// <summary>
-        /// Maps <see cref="EntityData.Id"/> from this asset to base asset one.
+        /// Maps <see cref="Entity.Id"/> from this asset to base asset one.
         /// </summary>
         public Dictionary<Guid, Guid> IdMapping;
     }

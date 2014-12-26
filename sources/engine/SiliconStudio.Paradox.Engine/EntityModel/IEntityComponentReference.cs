@@ -12,10 +12,10 @@ namespace SiliconStudio.Paradox.EntityModel
     {
         EntityReference Entity { get; }
 
-        PropertyKey Component { get; set; }
+        PropertyKey Component { get; }
 
         Type ComponentType { get; }
 
-        EntityComponent Value { get; set; }
+        EntityComponent Value { get; }
     }
 }

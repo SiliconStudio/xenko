@@ -30,8 +30,8 @@ namespace SiliconStudio.Paradox.Graphics.Data
         /// <returns></returns>
         public static BufferData GetSerializationData(this Buffer buffer)
         {
-            var urlInfo = UrlServices.GetUrlInfo(buffer);
-            return urlInfo != null ? (BufferData)urlInfo.Data : null;
+            var attachedReference = AttachedReferenceManager.GetAttachedReference(buffer);
+            return attachedReference != null ? (BufferData)attachedReference.Data : null;
         }
 
         /// <summary>
@@ -41,8 +41,8 @@ namespace SiliconStudio.Paradox.Graphics.Data
         /// <param name="bufferData">The buffer data.</param>
         public static void SetSerializationData(this Buffer buffer, BufferData bufferData)
         {
-            var urlInfo = UrlServices.GetOrCreateUrlInfo(buffer);
-            urlInfo.Data = bufferData;
+            var attachedReference = AttachedReferenceManager.GetOrCreateAttachedReference(buffer);
+            attachedReference.Data = bufferData;
         }
 
         /// <summary>
@@ -61,12 +61,12 @@ namespace SiliconStudio.Paradox.Graphics.Data
         /// <summary>
         /// Gets the serialized data version of this <see cref="Texture"/>.
         /// </summary>
-        /// <param name="Texture">The texture.</param>
+        /// <param name="texture">The texture.</param>
         /// <returns></returns>
         public static Image GetSerializationData(this Texture texture)
         {
-            var urlInfo = UrlServices.GetUrlInfo(texture);
-            return urlInfo != null ? (Image)urlInfo.Data : null;
+            var attachedReference = AttachedReferenceManager.GetAttachedReference(texture);
+            return attachedReference != null ? (Image)attachedReference.Data : null;
         }
 
         /// <summary>
@@ -76,8 +76,8 @@ namespace SiliconStudio.Paradox.Graphics.Data
         /// <param name="image">The image.</param>
         public static void SetSerializationData(this Texture texture, Image image)
         {
-            var urlInfo = UrlServices.GetOrCreateUrlInfo(texture);
-            urlInfo.Data = image;
+            var attachedReference = AttachedReferenceManager.GetOrCreateAttachedReference(texture);
+            attachedReference.Data = image;
         }
     }
 }
