@@ -209,7 +209,7 @@ namespace SiliconStudio.Quantum
             {
                 // For enumerable references, we visit the member to allow VisitCollection or VisitDictionary to enrich correctly the node.
                 PushContextNode(node);
-                Visit(value);
+                Visit(content.Value);
                 PopContextNode();
             }
 
