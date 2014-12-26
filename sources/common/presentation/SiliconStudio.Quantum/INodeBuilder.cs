@@ -2,9 +2,10 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Commands;
 using SiliconStudio.Quantum.Contents;
+using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
 {
@@ -18,6 +19,12 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <remarks>Default .NET primitive types, string and enum are always considered to be primitive type.</remarks>
         ICollection<Type> PrimitiveTypes { get; }
+
+        /// <summary>
+        /// Gets the type descriptor factory.
+        /// </summary>
+        /// <value>The type descriptor factory.</value>
+        ITypeDescriptorFactory TypeDescriptorFactory { get; }
 
         /// <summary>
         /// Gets the collection of available commands to attach to nodes.
@@ -47,5 +54,13 @@ namespace SiliconStudio.Quantum
         /// <param name="rootGuid">The <see cref="Guid"/> To assign to the root node.</param>
         /// <returns>The root node of the node hierarchy corresponding to the given object.</returns>
         IModelNode Build(object obj, Type type, Guid rootGuid);
+
+        /// <summary>
+        /// Creates a reference for the specified type/value node.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        IReference CreateReferenceForNode(Type type, object value);
     }
 }

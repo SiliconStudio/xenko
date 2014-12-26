@@ -10,22 +10,35 @@ namespace SiliconStudio.Quantum
     /// </summary>
     public class DefaultContentFactory : IContentFactory
     {
-        /// <inheritdoc/>
-        public virtual IContent CreateObjectContent(object obj, ITypeDescriptor descriptor, bool isPrimitive, ReferenceEnumerable reference)
+        private readonly INodeBuilder nodeBuilder;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultContentFactory"/> class.
+        /// </summary>
+        /// <param name="nodeBuilder">The node builder.</param>
+        public DefaultContentFactory(INodeBuilder nodeBuilder)
         {
-            return new ObjectContent(obj, descriptor, isPrimitive, reference);
+            this.nodeBuilder = nodeBuilder;
+        }
+
+        /// <inheritdoc/>
+        public virtual IContent CreateObjectContent(object obj, ITypeDescriptor descriptor, bool isPrimitive)
+        {
+            var reference = nodeBuilder.CreateReferenceForNode(descriptor.Type, obj) as ReferenceEnumerable;
+            return new ObjectContent(nodeBuilder, obj, descriptor, isPrimitive, reference);
         }
 
         /// <inheritdoc/>
         public virtual IContent CreateBoxedContent(object structure, ITypeDescriptor descriptor, bool isPrimitive)
         {
-            return new BoxedContent(structure, descriptor, isPrimitive);
+            return new BoxedContent(nodeBuilder, structure, descriptor, isPrimitive);
         }
 
         /// <inheritdoc/>
-        public virtual IContent CreateMemberContent(IContent container, IMemberDescriptor member, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
+        public virtual IContent CreateMemberContent(IContent container, IMemberDescriptor member, bool isPrimitive, object value)
         {
-            return new MemberContent(container, member, descriptor, isPrimitive, reference);
+            var reference = nodeBuilder.CreateReferenceForNode(member.Type, value);
+            return new MemberContent(nodeBuilder, container, member, isPrimitive, reference);
         }
     }
 }

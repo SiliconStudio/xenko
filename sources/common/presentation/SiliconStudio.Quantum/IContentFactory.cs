@@ -18,7 +18,7 @@ namespace SiliconStudio.Quantum
         /// <param name="isPrimitive">Indicates if this object should be considered as a primitive type. This is only <c>true</c> if the object type has been added to the <see cref="INodeBuilder.PrimitiveTypes"/> collection.</param>
         /// <param name="reference">Indicates that the object is containing an enumerable reference. This may happens in some specific case, such as when the object is a collection of class objects within a collection.</param>
         /// <returns>A new <see cref="IContent"/> instance representing the given class object.</returns>
-        IContent CreateObjectContent(object obj, ITypeDescriptor descriptor, bool isPrimitive, ReferenceEnumerable reference);
+        IContent CreateObjectContent(object obj, ITypeDescriptor descriptor, bool isPrimitive);
 
         /// <summary>
         /// Creates an <see cref="IContent"/> instance that represents a boxed structure object.
@@ -34,10 +34,9 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="container">The <see cref="IContent"/> instance of the container (parent) object.</param>
         /// <param name="member">The <see cref="IMemberDescriptor"/> of the member.</param>
-        /// <param name="descriptor">The <see cref="ITypeDescriptor"/> of the member type represented by the <see cref="IContent"/> instance to create.</param>
         /// <param name="isPrimitive">Indicates if this object should be considered as a primitive type. This is <c>true</c> if the member type is a primitve .NET type, or if it is a type that has been added to the <see cref="INodeBuilder.PrimitiveTypes"/> collection.</param>
-        /// <param name="reference">The reference containined in this member. If the member type is a class, or if it is a collection of class object, the reference allows to reach the actual value of this member.</param>
+        /// <param name="value">The value of this object.</param>
         /// <returns>A new <see cref="IContent"/> instance representing the given member property.</returns>
-        IContent CreateMemberContent(IContent container, IMemberDescriptor member, ITypeDescriptor descriptor, bool isPrimitive, IReference reference);
+        IContent CreateMemberContent(IContent container, IMemberDescriptor member, bool isPrimitive, object value);
     }
 }

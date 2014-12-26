@@ -14,19 +14,17 @@ namespace SiliconStudio.Quantum.Contents
     {
         private readonly IReference reference;
 
-        protected ContentBase(Type type, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
+        protected ContentBase(INodeBuilder nodeBuilder, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
         {
-            if (type == null) throw new ArgumentNullException("type");
             if (descriptor == null) throw new ArgumentNullException("descriptor");
             this.reference = reference;
             Descriptor = descriptor;
-            Type = type;
             IsPrimitive = isPrimitive;
             SerializeFlags = ViewModelContentSerializeFlags.SerializeValue;
         }
 
         /// <inheritdoc/>
-        public Type Type { get; set; }
+        public Type Type { get { return Descriptor.Type; } }
 
         /// <inheritdoc/>
         public abstract object Value { get; set; }
