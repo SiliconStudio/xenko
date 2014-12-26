@@ -51,7 +51,7 @@ namespace SiliconStudio.Paradox.Graphics
 
         public static bool IsDepthStencilReadOnlySupported(GraphicsDevice device)
         {
-            // TODO: check that
+            // always true on OpenGL
             return true;
         }
 
@@ -72,6 +72,20 @@ namespace SiliconStudio.Paradox.Graphics
             if (ParentTexture != null)
             {
                 resourceId = ParentTexture.ResourceId;
+
+                // copy parameters
+                InternalFormat = ParentTexture.InternalFormat;
+                FormatGl = ParentTexture.FormatGl;
+                Type = ParentTexture.Type;
+                Target = ParentTexture.Target;
+                DepthPitch = ParentTexture.DepthPitch;
+                RowPitch = ParentTexture.RowPitch;
+                IsDepthBuffer = ParentTexture.IsDepthBuffer;
+                IsStencilBuffer = ParentTexture.IsStencilBuffer;
+                IsRenderbuffer = ParentTexture.IsRenderbuffer;
+
+                ResourceIdStencil = ParentTexture.ResourceIdStencil;
+                PixelBufferObjectId = ParentTexture.PixelBufferObjectId;
             }
 
             if (resourceId == 0)
