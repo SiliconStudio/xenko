@@ -44,7 +44,7 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
             // Light bleeding reduction (See http://http.developer.nvidia.com/GPUGems3/gpugems3_ch08.html  Light Bleeding 8.4.3)
             pMax = saturate((pMax - currentVsmInfo.BleedingFactor) / (1.0 - currentVsmInfo.BleedingFactor));
             float p = shadowMapDistance <= moments.x;
-            return max(p, pMax);        
+            return max(p, pMax);
         }
     };
 }

@@ -12,15 +12,13 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
         /// --------------------------------------------------------------------------------
         override stage void PSMain()
         {
-            float depth = streams.ShadingPosition.z / streams.ShadingPosition.w;
+            float depth = streams.ShadingPosition.z;
 
             // Compute partial derivatives of depth.
             float dx = ddx(depth);
             float dy = ddy(depth);
             // Compute second moment over the pixel extents.
             streams.ColorTarget = float4(depth, depth * depth + 0.25*(dx*dx + dy*dy), 0, 0);
-            // Compute second moment over the pixel extents.
-            //streams.ColorTarget = float4(streams.ShadingPosition.z, streams.ShadingPosition.z * streams.ShadingPosition.z , 0, 0);
         }
     };
 }
