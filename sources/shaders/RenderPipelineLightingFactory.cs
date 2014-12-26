@@ -139,6 +139,8 @@ namespace SiliconStudio.Paradox.Effects
             var finalDepthBuffer = graphicsService.GraphicsDevice.DepthStencilBuffer;
 #endif
 
+            var readOnlyDepthBuffer = finalDepthBuffer.ToDepthStencilReadOnlyTexture();
+
             // Adds a light processor that will track all the entities that have a light component.
             // This will also handle the shadows (allocation, activation etc.).
             AddLightProcessor(serviceRegistry, graphicsService.GraphicsDevice, useShadows);
@@ -166,7 +168,7 @@ namespace SiliconStudio.Paradox.Effects
 
             // Performs the light prepass on opaque geometry.
             // Adds this pass to the pipeline.
-            var lightDeferredProcessor = new LightingPrepassRenderer(serviceRegistry, prepassEffectName, finalDepthBuffer, gbufferProcessor.GBufferTexture);
+            var lightDeferredProcessor = new LightingPrepassRenderer(serviceRegistry, prepassEffectName, readOnlyDepthBuffer, gbufferProcessor.GBufferTexture);
             mainPipeline.Renderers.Add(lightDeferredProcessor);
 
             // Sets the render targets and clear them. Also sets the viewport.
