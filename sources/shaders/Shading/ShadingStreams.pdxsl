@@ -7,7 +7,6 @@
 class ShadingStreams
 {
     stage stream float3 shadingNormal;
-    stage stream float3 shadingDiffuse;
-    stage stream float3 shadingSpecular;
+    stage stream float3 shadingColor;
     stage stream float3 shadingView;
 };

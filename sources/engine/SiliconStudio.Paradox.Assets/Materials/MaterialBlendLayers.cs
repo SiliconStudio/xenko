@@ -40,11 +40,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
             }
         }
 
-        public virtual void GenerateShader(MaterialShaderGeneratorContext context)
+        public virtual void Visit(MaterialGeneratorContext context)
         {
             foreach (var layer in Layers)
             {
-                layer.GenerateShader(context);
+                layer.Visit(context);
             }
         }
     }

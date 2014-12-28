@@ -109,7 +109,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [DataMember(110)]
         public IMaterialTransparencyFeature Transparency { get; set; }
 
-        public void GenerateShader(MaterialShaderGeneratorContext context)
+        public void Visit(MaterialGeneratorContext context)
         {
             // Surface Geometry
             context.Visit(Tessellation);

@@ -71,7 +71,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             }
         }
 
-        public void GenerateShader(MaterialShaderGeneratorContext context)
+        public void Visit(MaterialGeneratorContext context)
         {
             context.SetStream("matAmbientOcclusion", AmbientOcclusionMap, MaterialKeys.AmbientOcclusionMap, MaterialKeys.AmbientOcclusionValue);
             context.SetStream("matCavity", CavityMap, MaterialKeys.CavityMap, MaterialKeys.CavityValue);

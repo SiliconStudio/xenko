@@ -5,12 +5,18 @@ namespace SiliconStudio.Paradox.Effects.Materials
     /// <summary>
     /// Performs a Lambert shading
     /// </summary>
-    class MaterialLayerShadingDiffuseLambert : IMaterialLayerShading, LightStreams, ShadingStreams
+    class MaterialLayerShadingDiffuseLambert<bool TIsEnergyConservative> : IMaterialLayerShading, LightStreams, ShadingStreams
     {
         override void Compute()
         {
             // TODO: integrate AO/Cavity...etc.
-            streams.shadingColor += streams.matDiffuse * streams.lightColorNdotL;
+            var diffuseColor = streams.matDiffuse;
+            if (TIsEnergyConservative)
+            {
+                // Approximation see: http://research.tri-ace.com/Data/course_note_practical_implementation_at_triace.pdf
+                diffuseColor *= (1 - streams.matSpecular);
+            }
+            streams.shadingColor += diffuseColor * streams.lightColorNdotL;
         }
     };
 }

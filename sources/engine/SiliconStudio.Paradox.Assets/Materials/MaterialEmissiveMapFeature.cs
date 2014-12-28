@@ -8,6 +8,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Effects.Materials;
+using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
@@ -32,10 +33,20 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [DefaultValue(null)]
         public MaterialComputeColor Intensity { get; set; }
 
-        public void GenerateShader(MaterialShaderGeneratorContext context)
+        public bool IsLightDependent
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        public void Visit(MaterialGeneratorContext context)
         {
             context.SetStream("matEmissive", EmissiveMap, MaterialKeys.EmissiveMap, MaterialKeys.EmissiveValue);
             context.SetStream("matEmissiveIntensity", Intensity, null, MaterialKeys.EmissiveIntensity);
+            // TODO: Add shading model
+            context.AddShading(this, new ShaderClassSource("TODOEmissive"));
         }
 
         public bool Equals(IMaterialShadingModelFeature other)

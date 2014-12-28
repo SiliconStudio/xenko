@@ -85,7 +85,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             }
         }
 
-        public virtual void GenerateShader(MaterialShaderGeneratorContext context)
+        public virtual void Visit(MaterialGeneratorContext context)
         {
             // If not enabled, or Material or BlendMap are null, skip this layer
             if (!Enabled || Material == null || BlendMap == null)
@@ -104,19 +104,28 @@ namespace SiliconStudio.Paradox.Assets.Materials
             // TODO: Because we are not fully supporting Streams declaration in shaders, we have to workaround this limitation by using a dynamic shader (inline)
             // TODO: Handle MaterialOverrides
 
-            // Push a new stream stack for the sub-material
-            context.PushStack();
+            // Push a layer for the sub-material
+            context.PushLayer();
 
             // Generate the material shaders into the current context
-            material.GenerateShader(context);
+            material.Visit(context);
+          
+            // Blend setup for this layer
+            context.SetStream(BlendStream, BlendMap, MaterialKeys.BlendMap, MaterialKeys.BlendValue);
 
+            var shaderSource = Generate(context);
+            context.ResetSurfaceShaders();
+            context.AddSurfaceShader(shaderSource);
 
-            var isSameShadingModel = context.IsSameShadingModelAsParent;
+            // Pop the stack
+            context.PopLayer();
+        }
 
-
+        private ShaderSource Generate(MaterialGeneratorContext context)
+        {
             // Backup stream variables that will be modified by the materials
             var backupStreamBuilder = new StringBuilder();
-            
+
             // Blend stream variables modified by the material with the previous backup
             var copyFromLayerBuilder = new StringBuilder();
 
@@ -125,30 +134,9 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 backupStreamBuilder.AppendFormat("        var __backup__{0} = streams.{0};", stream).AppendLine();
             }
 
-            // TODO: Hardcoded shading models is not good
-            if (!isSameShadingModel)
-            {
-                // If the shading model of this layer is different from its parent, we are only blending the result of shading
-                // Diffuse and Specular, instead of blending 
-                backupStreamBuilder.AppendFormat("        var __backup__shadingDiffuse = streams.shadingDiffuse;").AppendLine();
-                backupStreamBuilder.AppendFormat("        var __backup__shadingSpecular = streams.shadingSpecular;").AppendLine();
-                backupStreamBuilder.AppendFormat("        streams.shadingDiffuse = 0;").AppendLine();
-                backupStreamBuilder.AppendFormat("        streams.shadingSpecular = 0;").AppendLine();
-
-                copyFromLayerBuilder.AppendFormat("        streams.shadingDiffuse = lerp(__backup__shadingDiffuse, streams.shadingDiffuse, streams.matBlend;").AppendLine();
-                copyFromLayerBuilder.AppendFormat("        streams.shadingSpecular = lerp(__backup__shadingSpecular, streams.shadingSpecular, streams.matBlend;").AppendLine();
-            }
-
             foreach (var stream in context.Streams)
             {
-                if (isSameShadingModel)
-                {
-                    copyFromLayerBuilder.AppendFormat("        streams.{0} = lerp(__backup__{0}, streams.{0}, streams.matBlend;", stream).AppendLine();
-                }
-                else
-                {
-                    copyFromLayerBuilder.AppendFormat("        streams.{0} = __backup__{0};", stream).AppendLine();
-                }
+                copyFromLayerBuilder.AppendFormat("        streams.{0} = lerp(__backup__{0}, streams.{0}, streams.matBlend);", stream).AppendLine();
             }
 
             // Generate a dynamic shader name
@@ -159,24 +147,17 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 Inline = string.Format(DynamicBlendingShader, shaderName, backupStreamBuilder, copyFromLayerBuilder)
             };
 
-            // Blend setup for this layer
-            context.SetStream(BlendStream, BlendMap, MaterialKeys.BlendMap, MaterialKeys.BlendValue);
-          
-            // Generate the shader class source for the current stack
-            var materialBlendLayerMixin = context.GenerateMixin();
-
-            // Pop the stack
-            context.PopStack();
-
             // Create a mixin
             var shaderMixinSource = new ShaderMixinSource();
             shaderMixinSource.Mixins.Add(shaderClassSource);
 
+            var materialBlendLayerMixin = context.GenerateMixin();
+
             // Add the shader to the mixin
             shaderMixinSource.AddComposition("subLayer", materialBlendLayerMixin);
-            
+
             // Push the result of the shader mixin into the current stack
-            context.AddSurfaceShader(shaderMixinSource);
+            return shaderMixinSource;
         }
 
         private const string DynamicBlendingShader = @"

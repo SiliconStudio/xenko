@@ -24,13 +24,13 @@ namespace SiliconStudio.Paradox.Assets.Materials
             if (material == null) throw new ArgumentNullException("material");
             var result = new MaterialShaderResult();
 
-            var context = new MaterialShaderGeneratorContext()
+            var context = new MaterialGeneratorContext()
             {
                 Log = result
             };
 
             result.Parameters = context.Parameters;
-            material.GenerateShader(context);
+            material.Visit(context);
 
             // Squash all operations into a single mixin
             result.ShaderSource = context.GenerateMixin();

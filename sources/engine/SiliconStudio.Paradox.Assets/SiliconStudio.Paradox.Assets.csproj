@@ -200,7 +200,7 @@
     <Compile Include="Materials\MaterialStreamType.cs" />
     <Compile Include="Materials\ComputeColors\ComputeColorParameter.cs" />
     <Compile Include="Materials\MaterialComputeColor.cs" />
-    <Compile Include="Materials\MaterialShaderGeneratorContext.cs" />
+    <Compile Include="Materials\MaterialGeneratorContext.cs" />
     <Compile Include="Materials\MaterialNodeClassLoader.cs" />
     <Compile Include="Materials\ComputeColors\MaterialBinaryComputeColor.cs" />
     <Compile Include="Materials\ComputeColors\MaterialBinaryOperand.cs" />

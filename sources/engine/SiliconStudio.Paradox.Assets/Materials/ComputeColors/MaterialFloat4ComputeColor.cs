@@ -6,6 +6,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
@@ -38,15 +39,13 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
             return "Float4";
         }
 
-        public override ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext, MaterialComputeColorKeys baseKeys)
+        public override ShaderSource GenerateShaderSource(MaterialGeneratorContext context, MaterialComputeColorKeys baseKeys)
         {
-            if (Key != null)
-            {
-                // TODO: constantValues.Set(Key, Value); 
-                return new ShaderClassSource("ComputeColorConstantLink", Key);
-            }
-
-            return new ShaderClassSource("ComputeColorFixed", MaterialUtility.GetAsShaderString(Value));
+            var key = context.GetParameterKey(Key ?? baseKeys.ValueBaseKey ?? MaterialKeys.GenericValueVector4);
+            context.Parameters.Set(key, Value);
+            return new ShaderClassSource("ComputeColorConstantLink", Key);
+            // TODO: 
+            // return new ShaderClassSource("ComputeColorFixed", MaterialUtility.GetAsShaderString(Value));
         }
     }
 }

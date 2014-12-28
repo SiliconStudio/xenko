@@ -8,6 +8,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Effects.Materials;
+using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
@@ -35,9 +36,17 @@ namespace SiliconStudio.Paradox.Assets.Materials
             }
         }
 
-        public void GenerateShader(MaterialShaderGeneratorContext context)
+        public void Visit(MaterialGeneratorContext context)
         {
-            context.SetStream("matMetalnessMap", MetalnessMap, MaterialKeys.MetalnessMap, MaterialKeys.MetalnessValue);
+            if (MetalnessMap != null)
+            {
+                var computeColorSource = MetalnessMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.MetalnessMap, MaterialKeys.MetalnessValue));
+                var mixin = new ShaderMixinSource();
+                mixin.Mixins.Add(new ShaderClassSource("MaterialLayerMetalness"));
+                mixin.AddComposition("metalnessMap", computeColorSource);
+                context.UseStream("matSpecular");
+                context.AddSurfaceShader(mixin);
+            }
         }
     }
 }

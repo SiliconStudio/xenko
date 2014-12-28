@@ -83,16 +83,16 @@ namespace SiliconStudio.Paradox.Assets.Materials
             }
         }
 
-        public void GenerateShader(MaterialShaderGeneratorContext context)
+        public void Visit(MaterialGeneratorContext context)
         {
             if (Attributes != null)
             {
-                Attributes.GenerateShader(context);
+                Attributes.Visit(context);
             }
 
             if (Layers != null)
             {
-                Layers.GenerateShader(context);
+                Layers.Visit(context);
             }
         }
     }

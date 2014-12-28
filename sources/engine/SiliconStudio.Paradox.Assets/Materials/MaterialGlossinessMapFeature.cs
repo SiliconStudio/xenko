@@ -38,7 +38,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             }
         }
 
-        public void GenerateShader(MaterialShaderGeneratorContext context)
+        public void Visit(MaterialGeneratorContext context)
         {
             context.SetStream("matGlossiness", GlossinessMap, MaterialKeys.GlossinessMap, MaterialKeys.GlossinessValue);
         }

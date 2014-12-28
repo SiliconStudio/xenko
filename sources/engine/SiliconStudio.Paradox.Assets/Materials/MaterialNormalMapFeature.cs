@@ -38,7 +38,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             }
         }
 
-        public void GenerateShader(MaterialShaderGeneratorContext context)
+        public void Visit(MaterialGeneratorContext context)
         {
             // handle xy vs xyz shaders
             context.SetStream("matNormal", NormalMap, MaterialKeys.NormalMap, MaterialKeys.NormalValue);

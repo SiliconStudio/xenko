@@ -786,6 +786,18 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Images\ColorTransforms\ToneMap\ToneMap.cs" />
+    <Compile Include="Materials\MaterialLayerBlendShading.cs">
+      <DependentUpon>MaterialLayerBlendShading.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Materials\MaterialLayerMetalness.cs">
+      <DependentUpon>MaterialLayerMetalness.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Materials\MaterialLayerShadingSpecularBlinnPhong.cs">
       <DependentUpon>MaterialLayerShadingSpecularBlinnPhong.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -2180,6 +2192,14 @@
     <None Include="Materials\IMaterialLayerShading.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>IMaterialLayerShading.cs</LastGenOutput>
+    </None>
+    <None Include="Materials\MaterialLayerBlendShading.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialLayerBlendShading.cs</LastGenOutput>
+    </None>
+    <None Include="Materials\MaterialLayerMetalness.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialLayerMetalness.cs</LastGenOutput>
     </None>
     <None Include="Materials\MaterialLayerShadingSpecularBlinnPhong.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

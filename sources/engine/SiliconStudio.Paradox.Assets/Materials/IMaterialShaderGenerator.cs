@@ -11,6 +11,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// Generates the shader.
         /// </summary>
         /// <param name="context">The context.</param>
-        void GenerateShader(MaterialShaderGeneratorContext context);
+        void Visit(MaterialGeneratorContext context);
     }
 }

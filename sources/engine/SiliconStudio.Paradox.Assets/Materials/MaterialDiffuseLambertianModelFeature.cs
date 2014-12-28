@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
+using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Shaders;
@@ -15,10 +16,28 @@ namespace SiliconStudio.Paradox.Assets.Materials
     [Display("Lamtertian")]
     public class MaterialDiffuseLambertianModelFeature : IMaterialDiffuseModelFeature
     {
-        public virtual void GenerateShader(MaterialShaderGeneratorContext context)
+        public MaterialDiffuseLambertianModelFeature()
         {
-            var shaderSource = new ShaderClassSource("MaterialLayerShadingDiffuseLambert");
-            context.DiffuseModel = new KeyValuePair<IMaterialDiffuseModelFeature, ShaderSource>(this, shaderSource);
+            IsEnergyConservative = true;
+        }
+
+        public bool IsLightDependent
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+        [DataMember(10)]
+        [DefaultValue(true)]
+        [Display("Conserve Energy?")]
+        public bool IsEnergyConservative { get; set; }
+
+        public virtual void Visit(MaterialGeneratorContext context)
+        {
+            var shaderSource = new ShaderClassSource("MaterialLayerShadingDiffuseLambert", IsEnergyConservative);
+            context.AddShading(this, shaderSource);
         }
 
         public bool Equals(IMaterialShadingModelFeature other)

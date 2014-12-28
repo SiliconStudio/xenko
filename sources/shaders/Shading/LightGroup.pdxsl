@@ -6,6 +6,12 @@
 /// </summary>
 class LightGroup : LightParameters
 {
+    // TODO: Handle inline
+    inline int GetMaxLightCount()
+    {
+        return 0;
+    }
+
     /// <summary>
     /// Gets the number of lights of this group
     /// </summary>

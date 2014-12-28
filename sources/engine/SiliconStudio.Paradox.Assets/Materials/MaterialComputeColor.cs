@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <summary>
         /// Gets the children.
         /// </summary>
-        /// <param name="context">The shaderGeneratorContext to get the children.</param>
+        /// <param name="context">The context to get the children.</param>
         /// <returns>The list of children.</returns>
         public virtual IEnumerable<MaterialComputeColor> GetChildren(object context = null)
         {
@@ -38,7 +38,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// Generates the shader source equivalent for this node
         /// </summary>
         /// <returns>ShaderSource.</returns>
-        public abstract ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext, MaterialComputeColorKeys baseKeys);
+        public abstract ShaderSource GenerateShaderSource(MaterialGeneratorContext context, MaterialComputeColorKeys baseKeys);
     }
 
 }

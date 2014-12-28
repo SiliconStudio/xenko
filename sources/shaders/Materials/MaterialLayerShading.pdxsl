@@ -2,10 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 namespace SiliconStudio.Paradox.Effects.Materials
 {
-
-#ifndef LIGHTING_MAX_LIGHT_COUNT
-#define LIGHTING_MAX_LIGHT_COUNT 1
-#endif 
     /// <summary>
     /// Performs the shading of a material according to the lights
     /// </summary>
@@ -17,10 +13,11 @@ namespace SiliconStudio.Paradox.Effects.Materials
         {
             foreach(var lightGroup in lightGroups)
             {
+                const int maxLightCount = lightGroup.GetMaxLightCount();
                 int count = lightGroup.GetLightCount();
 
-                [unroll(LIGHTING_MAX_LIGHT_COUNT)]
-                for(int i = 0; i < LIGHTING_MAX_LIGHT_COUNT; i++)
+                [unroll]
+                for(int i = 0; i < maxLightCount; i++)
                 {
                     if (i >= count)
                     {

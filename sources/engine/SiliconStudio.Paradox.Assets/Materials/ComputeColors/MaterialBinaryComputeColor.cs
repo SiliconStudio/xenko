@@ -78,10 +78,10 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         private const string BackgroundCompositionName = "color1";
         private const string ForegroundCompositionName = "color2";
 
-        public override ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext, MaterialComputeColorKeys baseKeys)
+        public override ShaderSource GenerateShaderSource(MaterialGeneratorContext context, MaterialComputeColorKeys baseKeys)
         {
-            var leftShaderSource = LeftChild.GenerateShaderSource(shaderGeneratorContext, baseKeys);
-            var rightShaderSource = RightChild.GenerateShaderSource(shaderGeneratorContext, baseKeys);
+            var leftShaderSource = LeftChild.GenerateShaderSource(context, baseKeys);
+            var rightShaderSource = RightChild.GenerateShaderSource(context, baseKeys);
 
             var shaderSource = new ShaderClassSource(GetCorrespondingShaderSourceName(Operand));
             var mixin = new ShaderMixinSource();

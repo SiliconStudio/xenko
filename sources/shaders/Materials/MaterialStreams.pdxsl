@@ -19,7 +19,6 @@ namespace SiliconStudio.Paradox.Effects.Materials
         stage stream float  matGlossiness;
 
         // Specular attributes
-        stage stream float  matMetalness;
         stage stream float3 matSpecular;
         stage stream float  matSpecularIntensity;
         stage stream float  matSpecularPower;
@@ -41,7 +40,6 @@ namespace SiliconStudio.Paradox.Effects.Materials
             streams.matBlend = 0.0f;
             streams.matNormal = float3(0, 0, 1);
             streams.matDiffuse = 0.0f;       
-            streams.matMetalness = 0.0f;
             streams.matSpecular = 0.0f;        
             streams.matSpecularIntensity = 0.0f;
             streams.matSpecularPower = 0.0f;

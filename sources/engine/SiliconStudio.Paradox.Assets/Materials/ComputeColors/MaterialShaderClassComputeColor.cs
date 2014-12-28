@@ -11,11 +11,13 @@ using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Paradox.Assets.Effect;
 using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Data;
+using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Paradox.Shaders.Parser.Ast;
@@ -110,8 +112,8 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
                 }
             }
 
-            var materialContext = context as MaterialShaderGeneratorContext;
-            if (materialContext != null && materialContext.ExploreGenerics)
+            var materialContext = context as MaterialGeneratorContext;
+            if (materialContext != null)
             {
                 foreach (var gen in Generics)
                 {
@@ -125,7 +127,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
             }
         }
 
-        public override ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext, MaterialComputeColorKeys baseKeys)
+        public override ShaderSource GenerateShaderSource(MaterialGeneratorContext context, MaterialComputeColorKeys baseKeys)
         {
             if (!MixinReference.HasLocation())
                 return new ShaderClassSource("ComputeColor");
@@ -142,12 +144,12 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
                     if (generic is ComputeColorParameterTexture)
                     {
                         var textureParameter = ((ComputeColorParameterTexture)generic);
-                        var textureKey = shaderGeneratorContext.GetTextureKey(textureParameter.Texture, null);
+                        var textureKey = context.GetTextureKey(textureParameter.Texture, baseKeys);
                         mixinGenerics.Add(textureKey.ToString());
                     }
                     else if (generic is ComputeColorParameterSampler)
                     {
-                        var pk = shaderGeneratorContext.GetSamplerKey((ComputeColorParameterSampler)generic);
+                        var pk = context.GetSamplerKey((ComputeColorParameterSampler)generic);
                         mixinGenerics.Add(pk.ToString());
                     }
                     else if (generic is ComputeColorParameterFloat)
@@ -180,7 +182,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
             {
                 if (comp.Value != null)
                 {
-                    var compShader = comp.Value.GenerateShaderSource(shaderGeneratorContext, baseKeys);
+                    var compShader = comp.Value.GenerateShaderSource(context, baseKeys);
                     if (compShader != null)
                         mixin.Compositions.Add(comp.Key, compShader);
                 }
@@ -381,7 +383,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
                     }
                     else if (expectedType == typeof(ComputeColorParameterTexture))
                     {
-                        var matContext = context as MaterialShaderGeneratorContext;
+                        var matContext = context as MaterialGeneratorContext;
                         if (matContext != null)
                         {
                             var textureNode = ((ComputeColorParameterTexture)keyValue.Value).Texture;

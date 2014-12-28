@@ -8,10 +8,12 @@ using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
 using SiliconStudio.Paradox.Assets.Textures;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 
@@ -174,13 +176,13 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
             return "Texture";
         }
 
-        public override ShaderSource GenerateShaderSource(MaterialShaderGeneratorContext shaderGeneratorContext, MaterialComputeColorKeys baseKeys)
+        public override ShaderSource GenerateShaderSource(MaterialGeneratorContext context, MaterialComputeColorKeys baseKeys)
         {
             // TODO: Use a generated UsedTexcoordIndex when backing textures
             var usedTexcoord = "TEXCOORD" + MaterialUtility.GetTextureIndex(TexcoordIndex);
 
-            var textureKey = shaderGeneratorContext.GetTextureKey(this, baseKeys.TextureBaseKey);
-            var samplerKey = shaderGeneratorContext.GetSamplerKey(Sampler);
+            var textureKey = context.GetTextureKey(this, baseKeys);
+            var samplerKey = context.GetSamplerKey(Sampler);
 
             var scaleStr = MaterialUtility.GetAsShaderString(Scale);
             var offsetStr = MaterialUtility.GetAsShaderString(Offset);

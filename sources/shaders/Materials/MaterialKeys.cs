@@ -51,7 +51,22 @@ namespace SiliconStudio.Paradox.Effects.Materials
         /// <summary>
         /// Generic texture key used by a material
         /// </summary>
-        public static readonly ParameterKey<Texture> Texture = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<Texture> GenericTexture = ParameterKeys.New<Texture>();
+
+        /// <summary>
+        /// Generic texture key used by a material
+        /// </summary>
+        public static readonly ParameterKey<Color4> GenericValueColor4 = ParameterKeys.New<Color4>();
+
+        /// <summary>
+        /// Generic texture key used by a material
+        /// </summary>
+        public static readonly ParameterKey<Vector4> GenericValueVector4 = ParameterKeys.New<Vector4>();
+
+        /// <summary>
+        /// Generic texture key used by a material
+        /// </summary>
+        public static readonly ParameterKey<float> GenericValueFloat = ParameterKeys.New<float>();
 
         /// <summary>
         /// Generic sampler key used by a material

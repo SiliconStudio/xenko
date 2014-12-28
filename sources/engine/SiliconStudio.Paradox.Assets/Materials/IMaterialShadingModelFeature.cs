@@ -10,5 +10,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// </summary>
     public interface IMaterialShadingModelFeature : IMaterialFeature, IEquatable<IMaterialShadingModelFeature>
     {
+        bool IsLightDependent { get; }
     }
 }
