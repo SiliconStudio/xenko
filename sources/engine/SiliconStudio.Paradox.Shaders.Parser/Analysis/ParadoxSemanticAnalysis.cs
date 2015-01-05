@@ -996,6 +996,18 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
             }
         }
 
+        [Visit]
+        protected override TypeBase Visit(TypeName typeName)
+        {
+            var newTypeName = base.Visit(typeName);
+
+            if (newTypeName.TypeInference.Declaration != null)
+            {
+                parsingInfo.NavigableNodes.Add(typeName);
+            }
+            return newTypeName;
+        }
+
         /// <summary>
         /// Visits the ForEachStatement Node and collects information from it.
         /// </summary>
