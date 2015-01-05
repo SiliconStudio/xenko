@@ -72,6 +72,46 @@ namespace SiliconStudio.Core.Mathematics
         public static readonly Vector3 One = new Vector3(1.0f, 1.0f, 1.0f);
 
         /// <summary>
+        /// The Up direction <see cref="SiliconStudio.Core.Mathematics.Vector3"/> (0, 1, 0).
+        /// </summary>
+        public static readonly Vector3 Up = new Vector3( 0.0f, 1f, 0.0f );
+
+        /// <summary>
+        /// The Down direction <see cref="SiliconStudio.Core.Mathematics.Vector3"/> (0, -1, 0).
+        /// </summary>
+        public static readonly Vector3 Down = new Vector3( 0.0f, -1f, 0.0f );
+
+        /// <summary>
+        /// The Right direction <see cref="SiliconStudio.Core.Mathematics.Vector3"/> (1, 0, 0).
+        /// </summary>
+        public static readonly Vector3 Right = new Vector3( 1f, 0.0f, 0.0f );
+
+        /// <summary>
+        /// The Left direction <see cref="SiliconStudio.Core.Mathematics.Vector3"/> (-1, 0, 0).
+        /// </summary>
+        public static readonly Vector3 Left = new Vector3( -1f, 0.0f, 0.0f );
+
+        /// <summary>
+        /// The Forward direction <see cref="SiliconStudio.Core.Mathematics.Vector3"/> (0, 0, -1).
+        /// </summary>
+        public static readonly Vector3 Forward = new Vector3( 0.0f, 0.0f, -1f );
+
+        /// <summary>
+        /// The Backward direction <see cref="SiliconStudio.Core.Mathematics.Vector3"/> (0, 0, 1).
+        /// </summary>
+        public static readonly Vector3 Backward = new Vector3( 0.0f, 0.0f, 1f );
+
+        /// <summary>
+        /// The Maximum Value for <see cref="SiliconStudio.Core.Mathematics.Vector3"/> (float.MaxValue, float.MaxValue, float.MaxValue).
+        /// </summary>
+        public static readonly Vector3 MaxValue = new Vector3( float.MaxValue, float.MaxValue, float.MaxValue );
+
+        /// <summary>
+        /// The Minimum Value for <see cref="SiliconStudio.Core.Mathematics.Vector3"/> (float.MinValue, float.MinValue, float.MinValue).
+        /// </summary>
+        public static readonly Vector3 MinValue = new Vector3( float.MinValue, float.MinValue, float.MinValue );
+
+        /// <summary>
         /// The X component of the vector.
         /// </summary>
         [DataMember(0)]
@@ -1545,7 +1585,7 @@ namespace SiliconStudio.Core.Mathematics
         /// </summary>
         /// <param name="other">The <see cref="SiliconStudio.Core.Mathematics.Vector3"/> to compare with this instance.</param>
         /// <returns>
-        /// 	<c>true</c> if the specified <see cref="SiliconStudio.Core.Mathematics.Vector3"/> is equal to this instance; otherwise, <c>false</c>.
+        ///     <c>true</c> if the specified <see cref="SiliconStudio.Core.Mathematics.Vector3"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         public bool Equals(Vector3 other)
         {
@@ -1559,7 +1599,7 @@ namespace SiliconStudio.Core.Mathematics
         /// </summary>
         /// <param name="value">The <see cref="System.Object"/> to compare with this instance.</param>
         /// <returns>
-        /// 	<c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+        ///     <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         public override bool Equals(object value)
         {
