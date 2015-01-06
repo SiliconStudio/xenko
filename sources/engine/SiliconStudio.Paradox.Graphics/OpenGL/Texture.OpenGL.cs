@@ -415,7 +415,6 @@ namespace SiliconStudio.Paradox.Graphics
 
             GL.BindBuffer(target, PixelBufferObjectId);
             GL.BufferData(target, (IntPtr)DepthPitch, IntPtr.Zero, bufferUsage);
-            GL.BufferData(target, (IntPtr)DepthPitch, IntPtr.Zero, bufferUsage);
             GL.BindBuffer(target, 0);
         }
     }
