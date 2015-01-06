@@ -202,8 +202,12 @@ namespace SiliconStudio.Paradox.Effects
             mainPipeline.Renderers.Add(new ModelRenderer(serviceRegistry, effectName).AddTransparentFilter());
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
-            // on OpenGL, draw the final texture in the framebuffer
-            mainPipeline.Renderers.Add(new RenderStateSetter(serviceRegistry) { DepthStencilState = graphicsService.GraphicsDevice.DepthStencilStates.None });
+            // on OpenGL, draw the final texture to the framebuffer
+            mainPipeline.Renderers.Add(new RenderStateSetter(serviceRegistry)
+            {
+                DepthStencilState = graphicsService.GraphicsDevice.DepthStencilStates.None,
+                BlendState = graphicsService.GraphicsDevice.BlendStates.Opaque
+            });
             mainPipeline.Renderers.Add(new RenderTargetSetter(serviceRegistry)
             {
                 ClearColor = clearColor,
@@ -214,7 +218,7 @@ namespace SiliconStudio.Paradox.Effects
                 DepthStencil = null,
                 Viewport = new Viewport(0, 0, graphicsService.GraphicsDevice.BackBuffer.ViewWidth, graphicsService.GraphicsDevice.BackBuffer.ViewHeight)
             });
-            mainPipeline.Renderers.Add(new DelegateRenderer(serviceRegistry) { Render = (context => graphicsService.GraphicsDevice.DrawTexture(finalRenderTexture))});
+            mainPipeline.Renderers.Add(new DelegateRenderer(serviceRegistry) { Render = (context => graphicsService.GraphicsDevice.DrawTexture(finalRenderTexture, true))});
 #endif
             // Renders the UI.
             if (ui)

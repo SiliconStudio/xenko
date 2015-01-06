@@ -263,26 +263,30 @@ namespace SiliconStudio.Paradox.Effects
 
         private void PrepareModelForRendering(RenderModel renderModel)
         {
-            // Register mesh for rendering
-            if (renderModel.RenderMeshes[meshPassSlot] == null)
+            // TODO: this is obviously wrong since a pipeline can have several ModelRenderer with the same effect.
+            // In that case, a Mesh may be added several times to the list and as a result rendered several time in a single ModelRenderer.
+            // We keep it that way for now since we only have two ModelRenderer with the same effect in the deferrent pipeline (splitting between opaque and transparent objects) and their acceptance tests are exclusive.
+
+            // Create the list of RenderMesh objects
+            var renderMeshes = renderModel.RenderMeshes[meshPassSlot];
+            if (renderMeshes == null)
             {
-                foreach (var mesh in renderModel.Model.Meshes)
+                renderMeshes = new List<RenderMesh>();
+                renderModel.RenderMeshes[meshPassSlot] = renderMeshes;
+            }
+
+            foreach (var mesh in renderModel.Model.Meshes)
+            {
+                if (acceptPrepareMeshForRenderings.Count > 0 && !OnAcceptPrepareMeshForRendering(renderModel, mesh))
                 {
-                    if (acceptPrepareMeshForRenderings.Count > 0 && !OnAcceptPrepareMeshForRendering(renderModel, mesh))
-                    {
-                        continue;
-                    }
-
-                    var renderMesh = new RenderMesh(renderModel, mesh);
-                    UpdateEffect(renderMesh);
-
-                    // Register mesh for rendering
-                    if (renderModel.RenderMeshes[meshPassSlot] == null)
-                    {
-                        renderModel.RenderMeshes[meshPassSlot] = new List<RenderMesh>();
-                    }
-                    renderModel.RenderMeshes[meshPassSlot].Add(renderMesh);
+                    continue;
                 }
+
+                var renderMesh = new RenderMesh(renderModel, mesh);
+                UpdateEffect(renderMesh);
+
+                // Register mesh for rendering
+                renderMeshes.Add(renderMesh);
             }
         }
 

@@ -72,9 +72,10 @@ namespace SiliconStudio.Paradox.Graphics
         /// Draws a quad with a texture. This Draw method is using the current effect bound to this instance.
         /// </summary>
         /// <param name="texture">The texture.</param>
-        public void Draw(Texture texture)
+        /// <param name="applyEffectStates">The flag to apply effect states.</param>
+        public void Draw(Texture texture, bool applyEffectStates = false)
         {
-            Draw(texture, null, Color.White);
+            Draw(texture, null, Color.White, applyEffectStates);
         }
 
         /// <summary>
@@ -83,14 +84,15 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="texture">The texture to draw.</param>
         /// <param name="samplerState">State of the sampler. If null, default sampler is <see cref="SamplerStateFactory.LinearClamp" />.</param>
         /// <param name="color">The color.</param>
+        /// <param name="applyEffectStates">The flag to apply effect states.</param>
         /// <exception cref="System.ArgumentException">Expecting a Texture;texture</exception>
-        public void Draw(Texture texture, SamplerState samplerState, Color4 color)
+        public void Draw(Texture texture, SamplerState samplerState, Color4 color, bool applyEffectStates = false)
         {
             // Make sure that we are using our vertex shader
             parameters.Set(SpriteEffectKeys.Color, color);
             parameters.Set(TexturingKeys.Texture0, texture);
             parameters.Set(TexturingKeys.Sampler, samplerState ?? GraphicsDevice.SamplerStates.LinearClamp);
-            simpleEffect.Apply(parameters);
+            simpleEffect.Apply(parameters, applyEffectStates);
             Draw();
 
             // TODO ADD QUICK UNBIND FOR SRV
