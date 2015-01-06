@@ -5,7 +5,6 @@ using System;
 
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.Effects
 {
