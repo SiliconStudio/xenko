@@ -5,8 +5,10 @@ namespace SiliconStudio.Paradox.Effects.Materials
     /// <summary>
     /// Performs the shading of a material according to the lights
     /// </summary>
-    class MaterialSurfaceLightingAndShading : MaterialSurfaceArray, LightGroupArray, LightStreams
+    class MaterialSurfaceLightingAndShading : IMaterialSurface, LightGroupArray, LightStreams, ShadingStreams
     {
+        compose IMaterialSurfaceShading surfaces[];
+
         override void Compute()
         {
             foreach(var lightGroup in lightGroups)
@@ -26,7 +28,10 @@ namespace SiliconStudio.Paradox.Effects.Materials
                     lightGroup.ComputeLight(i);
 
                     // Iterate on shading models
-                    base.Compute();
+                    foreach(var surface in surfaces)
+                    {
+                        streams.shadingColor += surface.Shading();
+                    }
                 }
             }
         }

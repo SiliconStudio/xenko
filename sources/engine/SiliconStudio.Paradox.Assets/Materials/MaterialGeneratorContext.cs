@@ -413,7 +413,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
                             mixinSource = new ShaderMixinSource();
                             mixinSource.Mixins.Add(new ShaderClassSource("MaterialSurfaceLightingAndShading"));
                         }
-                        mixinSource.AddCompositionToArray("layers", shadingModelKeyPair.Value);
+                        mixinSource.AddCompositionToArray("surfaces", shadingModelKeyPair.Value);
                     }
                 }
                 if (mixinSource != null)

@@ -45,9 +45,9 @@ namespace SiliconStudio.Paradox.Effects.Materials
             streams.matSpecularPower = 0.0f;
             streams.matGlossiness = 0.0f;
             streams.matAmbientOcclusion = 0.0f;
-            streams.matCavity = 0.0f;
-            streams.matCavityDiffuse = 0.0f;
-            streams.matCavitySpecular = 0.0f;
+            streams.matCavity = 1.0f;
+            streams.matCavityDiffuse = 1.0f;
+            streams.matCavitySpecular = 1.0f;
         }
     };
 }

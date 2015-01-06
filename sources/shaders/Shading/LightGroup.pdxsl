@@ -7,9 +7,9 @@
 class LightGroup : LightParameters
 {
     // TODO: Handle inline
-    inline int GetMaxLightCount()
+    int GetMaxLightCount()
     {
-        return 1;
+        return 0;
     }
 
     /// <summary>
