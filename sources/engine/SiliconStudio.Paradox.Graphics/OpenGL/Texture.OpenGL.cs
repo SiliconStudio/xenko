@@ -31,6 +31,12 @@ namespace SiliconStudio.Paradox.Graphics
     /// </summary>
     public partial class Texture
     {
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && SILICONSTUDIO_PLATFORM_MONO_MOBILE
+        private const BufferUsageHint BufferUsageHintStreamRead = (BufferUsageHint)0x88E1;
+#else
+        private const BufferUsageHint BufferUsageHintStreamRead = BufferUsageHint.StreamRead;
+#endif
+
         internal SamplerState BoundSamplerState;
 
         public PixelInternalFormat InternalFormat { get; set; }
@@ -122,22 +128,6 @@ namespace SiliconStudio.Paradox.Graphics
                 Type = type;
                 DepthPitch = Description.Width * Description.Height * pixelSize;
                 RowPitch = Description.Width * pixelSize;
-
-                // TODO: review staging
-                /*
-                if (Description.Usage == GraphicsResourceUsage.Staging)
-                {
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                    GL.GenBuffers(1, out resourceId);
-                    GL.BindBuffer(BufferTarget.PixelPackBuffer, resourceId);
-                    GL.BufferData(BufferTarget.PixelPackBuffer, (IntPtr)DepthPitch, IntPtr.Zero,
-                                    BufferUsageHint.StreamRead);
-                    GL.BindBuffer(BufferTarget.PixelPackBuffer, 0);
-#else
-                    StagingData = Marshal.AllocHGlobal(DepthPitch);
-#endif
-                }
-                */
 
                 if ((Description.Flags & TextureFlags.DepthStencil) != 0)
                 {
@@ -258,13 +248,7 @@ namespace SiliconStudio.Paradox.Graphics
                 }
                 GL.BindTexture(Target, 0);
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                if (!GraphicsDevice.IsOpenGLES2)
-#endif
-                {
-                    if (Description.Usage == GraphicsResourceUsage.Dynamic)
-                        InitializePixelBufferObject();
-                }
+                InitializePixelBufferObject();
             }
         }
 
@@ -404,19 +388,35 @@ namespace SiliconStudio.Paradox.Graphics
 
         protected void InitializePixelBufferObject()
         {
-            if (Description.Usage != GraphicsResourceUsage.Dynamic)
-                throw new InvalidOperationException("Only Dynamic texture usage could initialize PBO");
+            if (Description.Usage == GraphicsResourceUsage.Staging)
+            {
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                if (GraphicsDevice.IsOpenGLES2)
+                {
+                    StagingData = Marshal.AllocHGlobal(DepthPitch);
+                }
+                else
+#endif
+                {
+                    GeneratePixelBufferObject(BufferTarget.PixelPackBuffer, BufferUsageHintStreamRead); // enum not available on some platforms
+                }
+            }
+            else if (Description.Usage == GraphicsResourceUsage.Dynamic)
+            {
+                GeneratePixelBufferObject(BufferTarget.PixelUnpackBuffer, BufferUsageHint.DynamicDraw);
+            }
+        }
 
+        private void GeneratePixelBufferObject(BufferTarget target, BufferUsageHint bufferUsage)
+        {
             int bufferId;
             GL.GenBuffers(1, out bufferId);
             PixelBufferObjectId = bufferId;
 
-            GL.BindBuffer(BufferTarget.PixelUnpackBuffer, PixelBufferObjectId);
-
-            GL.BufferData(BufferTarget.PixelUnpackBuffer, (IntPtr)DepthPitch, IntPtr.Zero,
-                BufferUsageHint.DynamicDraw);
-
-            GL.BindBuffer(BufferTarget.PixelUnpackBuffer, 0);
+            GL.BindBuffer(target, PixelBufferObjectId);
+            GL.BufferData(target, (IntPtr)DepthPitch, IntPtr.Zero, bufferUsage);
+            GL.BufferData(target, (IntPtr)DepthPitch, IntPtr.Zero, bufferUsage);
+            GL.BindBuffer(target, 0);
         }
     }
 }
