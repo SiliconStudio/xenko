@@ -72,34 +72,54 @@ namespace SiliconStudio.Core.Mathematics
         public static readonly Vector3 One = new Vector3(1.0f, 1.0f, 1.0f);
 
         /// <summary>
-        /// The Up direction <see cref="SiliconStudio.Core.Mathematics.Vector3"/> (0, 1, 0).
+        /// A unit <see cref="SiliconStudio.Core.Mathematics.Vector3"/> designating up (0, 1, 0).
         /// </summary>
         public static readonly Vector3 Up = new Vector3( 0.0f, 1f, 0.0f );
 
         /// <summary>
-        /// The Down direction <see cref="SiliconStudio.Core.Mathematics.Vector3"/> (0, -1, 0).
+        /// A unit <see cref="SiliconStudio.Core.Mathematics.Vector3"/> designating down (0, -1, 0).
         /// </summary>
         public static readonly Vector3 Down = new Vector3( 0.0f, -1f, 0.0f );
 
         /// <summary>
-        /// The Right direction <see cref="SiliconStudio.Core.Mathematics.Vector3"/> (1, 0, 0).
+        /// A unit <see cref="SiliconStudio.Core.Mathematics.Vector3"/> designating right (1, 0, 0).
         /// </summary>
         public static readonly Vector3 Right = new Vector3( 1f, 0.0f, 0.0f );
 
         /// <summary>
-        /// The Left direction <see cref="SiliconStudio.Core.Mathematics.Vector3"/> (-1, 0, 0).
+        /// A unit <see cref="SiliconStudio.Core.Mathematics.Vector3"/> designating left (-1, 0, 0).
         /// </summary>
         public static readonly Vector3 Left = new Vector3( -1f, 0.0f, 0.0f );
 
         /// <summary>
-        /// The Forward direction <see cref="SiliconStudio.Core.Mathematics.Vector3"/> (0, 0, -1).
+        /// A unit <see cref="SiliconStudio.Core.Mathematics.Vector3"/> designating forward in a right-handed coordinate system (0, 0, -1).
         /// </summary>
-        public static readonly Vector3 Forward = new Vector3( 0.0f, 0.0f, -1f );
+        public static readonly Vector3 ForwardRH = new Vector3( 0.0f, 0.0f, -1f );
+        
+        /// <summary>
+        /// A unit <see cref="SiliconStudio.Core.Mathematics.Vector3"/> designating forward (0, 0, -1).
+        /// </summary>
+        public static readonly Vector3 Forward = ForwardRH;
 
         /// <summary>
-        /// The Backward direction <see cref="SiliconStudio.Core.Mathematics.Vector3"/> (0, 0, 1).
+        /// A unit <see cref="SiliconStudio.Core.Mathematics.Vector3"/> designating forward in a left-handed coordinate system (0, 0, 1).
         /// </summary>
-        public static readonly Vector3 Backward = new Vector3( 0.0f, 0.0f, 1f );
+        public static readonly Vector3 ForwardLH = new Vector3( 0.0f, 0.0f, 1f );
+
+        /// <summary>
+        /// A unit <see cref="SiliconStudio.Core.Mathematics.Vector3"/> designating backward in a right-handed coordinate system (0, 0, 1).
+        /// </summary>
+        public static readonly Vector3 BackwardRH = new Vector3( 0.0f, 0.0f, 1f );
+        
+        /// <summary>
+        /// A unit <see cref="SiliconStudio.Core.Mathematics.Vector3"/> designating backward (0, 0, 1).
+        /// </summary>
+        public static readonly Vector3 Backward = BackwardRH;
+        
+        /// <summary>
+        /// A unit <see cref="SiliconStudio.Core.Mathematics.Vector3"/> designating backward in a right-handed coordinate system (0, 0, -1).
+        /// </summary>
+        public static readonly Vector3 BackwardLH = new Vector3( 0.0f, 0.0f, -1f );
 
         /// <summary>
         /// The Maximum Value for <see cref="SiliconStudio.Core.Mathematics.Vector3"/> (float.MaxValue, float.MaxValue, float.MaxValue).
