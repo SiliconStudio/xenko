@@ -36,7 +36,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
         void ResetStreams()
         {
             // Reset all values for material stream to avoid pulling from a different stage (VS...etc.)
-            // TODO: It might be interesting to support pulling from VS, but this should be done from the IMaterialLayer and dedicated ComputerColors
+            // TODO: It might be interesting to support pulling from VS, but this should be done from the IMaterialSurface and dedicated ComputerColors
             streams.matBlend = 0.0f;
             streams.matNormal = float3(0, 0, 1);
             streams.matDiffuse = 0.0f;       

@@ -448,8 +448,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Materials\IMaterialLayerShading.cs">
-      <DependentUpon>IMaterialLayerShading.pdxsl</DependentUpon>
+    <Compile Include="Materials\IMaterialSurfaceShading.cs">
+      <DependentUpon>IMaterialSurfaceShading.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -786,56 +786,56 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Images\ColorTransforms\ToneMap\ToneMap.cs" />
-    <Compile Include="Materials\MaterialLayerBlendShading.cs">
-      <DependentUpon>MaterialLayerBlendShading.pdxsl</DependentUpon>
+    <Compile Include="Materials\MaterialSurfaceBlendShading.cs">
+      <DependentUpon>MaterialSurfaceBlendShading.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Materials\MaterialLayerMetalness.cs">
-      <DependentUpon>MaterialLayerMetalness.pdxsl</DependentUpon>
+    <Compile Include="Materials\MaterialSurfaceMetalness.cs">
+      <DependentUpon>MaterialSurfaceMetalness.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Materials\MaterialLayerShadingSpecularBlinnPhong.cs">
-      <DependentUpon>MaterialLayerShadingSpecularBlinnPhong.pdxsl</DependentUpon>
+    <Compile Include="Materials\MaterialSurfaceShadingSpecularBlinnPhong.cs">
+      <DependentUpon>MaterialSurfaceShadingSpecularBlinnPhong.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Materials\MaterialLayerShadingDiffuseLambert.cs">
-      <DependentUpon>MaterialLayerShadingDiffuseLambert.pdxsl</DependentUpon>
+    <Compile Include="Materials\MaterialSurfaceShadingDiffuseLambert.cs">
+      <DependentUpon>MaterialSurfaceShadingDiffuseLambert.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Materials\MaterialLayerShading.cs">
-      <DependentUpon>MaterialLayerShading.pdxsl</DependentUpon>
+    <Compile Include="Materials\MaterialSurfaceLightingAndShading.cs">
+      <DependentUpon>MaterialSurfaceLightingAndShading.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Materials\MaterialLayerRoot.cs">
-      <DependentUpon>MaterialLayerRoot.pdxsl</DependentUpon>
+    <Compile Include="Materials\MaterialSurfaceRoot.cs">
+      <DependentUpon>MaterialSurfaceRoot.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Materials\MaterialLayerArray.cs">
-      <DependentUpon>MaterialLayerArray.pdxsl</DependentUpon>
+    <Compile Include="Materials\MaterialSurfaceArray.cs">
+      <DependentUpon>MaterialSurfaceArray.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Materials\IMaterialLayer.cs">
+    <Compile Include="Materials\IMaterialSurface.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>IMaterialLayer.pdxsl</DependentUpon>
+      <DependentUpon>IMaterialSurface.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Materials\MaterialLayerSetStreamFromComputeColor.cs">
-      <DependentUpon>MaterialLayerSetStreamFromComputeColor.pdxsl</DependentUpon>
+    <Compile Include="Materials\MaterialSurfaceSetStreamFromComputeColor.cs">
+      <DependentUpon>MaterialSurfaceSetStreamFromComputeColor.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -2189,45 +2189,45 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ImageEffectShader.cs</LastGenOutput>
     </None>
-    <None Include="Materials\IMaterialLayerShading.pdxsl">
+    <None Include="Materials\IMaterialSurfaceShading.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>IMaterialLayerShading.cs</LastGenOutput>
+      <LastGenOutput>IMaterialSurfaceShading.cs</LastGenOutput>
     </None>
-    <None Include="Materials\MaterialLayerBlendShading.pdxsl">
+    <None Include="Materials\MaterialSurfaceBlendShading.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialLayerBlendShading.cs</LastGenOutput>
+      <LastGenOutput>MaterialSurfaceBlendShading.cs</LastGenOutput>
     </None>
-    <None Include="Materials\MaterialLayerMetalness.pdxsl">
+    <None Include="Materials\MaterialSurfaceMetalness.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialLayerMetalness.cs</LastGenOutput>
+      <LastGenOutput>MaterialSurfaceMetalness.cs</LastGenOutput>
     </None>
-    <None Include="Materials\MaterialLayerShadingSpecularBlinnPhong.pdxsl">
+    <None Include="Materials\MaterialSurfaceShadingSpecularBlinnPhong.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialLayerShadingSpecularBlinnPhong.cs</LastGenOutput>
+      <LastGenOutput>MaterialSurfaceShadingSpecularBlinnPhong.cs</LastGenOutput>
     </None>
-    <None Include="Materials\MaterialLayerShadingDiffuseLambert.pdxsl">
+    <None Include="Materials\MaterialSurfaceShadingDiffuseLambert.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialLayerShadingDiffuseLambert.cs</LastGenOutput>
+      <LastGenOutput>MaterialSurfaceShadingDiffuseLambert.cs</LastGenOutput>
     </None>
-    <None Include="Materials\MaterialLayerShading.pdxsl">
+    <None Include="Materials\MaterialSurfaceLightingAndShading.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialLayerShading.cs</LastGenOutput>
+      <LastGenOutput>MaterialSurfaceLightingAndShading.cs</LastGenOutput>
     </None>
-    <None Include="Materials\MaterialLayerRoot.pdxsl">
+    <None Include="Materials\MaterialSurfaceRoot.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialLayerRoot.cs</LastGenOutput>
+      <LastGenOutput>MaterialSurfaceRoot.cs</LastGenOutput>
     </None>
-    <None Include="Materials\MaterialLayerArray.pdxsl">
+    <None Include="Materials\MaterialSurfaceArray.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialLayerArray.cs</LastGenOutput>
+      <LastGenOutput>MaterialSurfaceArray.cs</LastGenOutput>
     </None>
-    <None Include="Materials\IMaterialLayer.pdxsl">
+    <None Include="Materials\IMaterialSurface.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>IMaterialLayer.cs</LastGenOutput>
+      <LastGenOutput>IMaterialSurface.cs</LastGenOutput>
     </None>
-    <None Include="Materials\MaterialLayerSetStreamFromComputeColor.pdxsl">
+    <None Include="Materials\MaterialSurfaceSetStreamFromComputeColor.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialLayerSetStreamFromComputeColor.cs</LastGenOutput>
+      <LastGenOutput>MaterialSurfaceSetStreamFromComputeColor.cs</LastGenOutput>
     </None>
     <None Include="Materials\MaterialStreams.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

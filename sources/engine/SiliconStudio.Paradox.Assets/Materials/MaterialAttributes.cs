@@ -111,6 +111,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         public void Visit(MaterialGeneratorContext context)
         {
+            // Order is important, as some features are dependent on other
+            // (For example, Specular can depend on Diffuse in case of Metalness)
+            // We may be able to describe a dependency system here, but for now, assume 
+            // that it won't change much so it is hardcoded
+
             // Surface Geometry
             context.Visit(Tessellation);
             context.Visit(Displacement);

@@ -36,7 +36,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         public virtual void Visit(MaterialGeneratorContext context)
         {
-            var shaderSource = new ShaderClassSource("MaterialLayerShadingDiffuseLambert", IsEnergyConservative);
+            var shaderSource = new ShaderClassSource("MaterialSurfaceShadingDiffuseLambert", IsEnergyConservative);
             context.AddShading(this, shaderSource);
         }
 

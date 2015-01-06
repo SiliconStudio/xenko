@@ -31,26 +31,34 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         {
             var compiler = new EffectCompiler { UseFileSystem = true };
             compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Paradox.Graphics\Shaders");
+            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Paradox.Engine\Shaders");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Core");
             compiler.SourceDirectories.Add(@"..\..\sources\shaders\Materials");
             compiler.SourceDirectories.Add(@"..\..\sources\shaders\ComputeColor");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Shading");
             var compilerParameters = new CompilerParameters { Platform = GraphicsPlatform.Direct3D11 };
 
             var materialAsset = new MaterialAsset
             {
                 Attributes = new MaterialAttributes()
                 {
-                    Surface = new MaterialNormalMapFeature()
+                    Diffuse = new MaterialDiffuseMapFeature()
                     {
-                        NormalMap = new MaterialColorComputeColor(Color4.White)
-                    }
+                        DiffuseMap = new MaterialColorComputeColor(Color4.White)
+                    },
+                    DiffuseModel = new MaterialDiffuseLambertianModelFeature()
+                    {
+                        IsEnergyConservative = false
+                    },
                 }
             };
 
             var result = MaterialShaderGenerator.Generate(materialAsset);
 
             var mixin = new ShaderMixinSource();
-            mixin.Mixins.Add(new ShaderClassSource("MaterialLayerRoot"));
-            mixin.AddComposition("composition", result.ShaderSource);
+            mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceRoot"));
+            mixin.AddComposition("composition", result.ShaderSource); // Add result of material
+            mixin.AddCompositionToArray("lightGroups", new ShaderClassSource("LightGroup")); // add empty light
             var results = compiler.Compile(mixin, compilerParameters);
 
             Assert.IsFalse(results.HasErrors);

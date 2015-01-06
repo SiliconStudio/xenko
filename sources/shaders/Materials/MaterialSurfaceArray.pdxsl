@@ -2,9 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 namespace SiliconStudio.Paradox.Effects.Materials
 {
-    class MaterialLayerArray : IMaterialLayer
+    class MaterialSurfaceArray : IMaterialSurface
     {
-        compose IMaterialLayer layers[];
+        compose IMaterialSurface layers[];
 
         override void Compute()
         {

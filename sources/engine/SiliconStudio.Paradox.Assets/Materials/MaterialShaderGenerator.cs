@@ -30,7 +30,9 @@ namespace SiliconStudio.Paradox.Assets.Materials
             };
 
             result.Parameters = context.Parameters;
+            context.PushLayer();
             material.Visit(context);
+            context.PopLayer();
 
             // Squash all operations into a single mixin
             result.ShaderSource = context.GenerateMixin();

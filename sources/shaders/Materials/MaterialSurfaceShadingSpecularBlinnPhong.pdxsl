@@ -5,7 +5,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
     /// <summary>
     /// Performs a Lambert shading
     /// </summary>
-    class MaterialLayerShadingSpecularBlinnPhong : IMaterialLayerShading, LightStreams, ShadingStreams
+    class MaterialSurfaceShadingSpecularBlinnPhong : IMaterialSurfaceShading, LightStreams, ShadingStreams
     {
         override void Compute()
         {

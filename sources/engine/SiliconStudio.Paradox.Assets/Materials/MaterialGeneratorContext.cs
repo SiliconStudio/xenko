@@ -36,7 +36,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
         {
             Parameters = new ParameterCollectionData();
             declaredSamplerStates = new Dictionary<SamplerStateDescription, ParameterKey<SamplerState>>();
-            PushLayer();
         }
 
         public HashSet<string> Streams
@@ -100,7 +99,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 if (shadingModelCount > 1)
                 {
                     var shaderBlendingSource = new ShaderMixinSource();
-                    shaderBlendingSource.Mixins.Add(new ShaderClassSource("MaterialLayerBlendShading"));
+                    shaderBlendingSource.Mixins.Add(new ShaderClassSource("MaterialSurfaceBlendShading"));
 
                     foreach (var shaderSource in shadingSources)
                     {
@@ -121,7 +120,10 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 CurrentShadingModel = Current.ShadingModels;
             }
 
-            currentLayerNode = currentLayerNode.Parent;
+            if (currentLayerNode.Parent != null)
+            {
+                currentLayerNode = currentLayerNode.Parent;
+            }
         }
 
         public void ResetSurfaceShaders()
@@ -315,7 +317,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 }
 
                 var mixin = new ShaderMixinSource();
-                mixin.Mixins.Add(new ShaderClassSource("MaterialLayerSetStreamFromComputeColor", stream, channel));
+                mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceSetStreamFromComputeColor", stream, channel));
                 mixin.AddComposition("computeColorSource", classSource);
 
                 SurfaceShaders.Add(mixin);
@@ -338,7 +340,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 {
                     var mixin = new ShaderMixinSource();
                     result = mixin;
-                    mixin.Mixins.Add(new ShaderClassSource("MaterialLayerArray"));
+                    mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceArray"));
 
                     // Squash all operations into MaterialLayerArray
                     foreach (var operation in SurfaceShaders)
@@ -399,6 +401,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
             public IEnumerable<ShaderSource> Generate(MaterialGeneratorContext context)
             {
+                // Generate MaterialLayer Shading that is light dependent
                 ShaderMixinSource mixinSource = null;
                 foreach (var shadingModelKeyPair in Values)
                 {
@@ -408,9 +411,9 @@ namespace SiliconStudio.Paradox.Assets.Materials
                         if (mixinSource == null)
                         {
                             mixinSource = new ShaderMixinSource();
-                            mixinSource.Mixins.Add(new ShaderClassSource("MaterialLayerShading"));
+                            mixinSource.Mixins.Add(new ShaderClassSource("MaterialSurfaceLightingAndShading"));
                         }
-                        mixinSource.AddCompositionToArray("shadings", shadingModelKeyPair.Value);
+                        mixinSource.AddCompositionToArray("layers", shadingModelKeyPair.Value);
                     }
                 }
                 if (mixinSource != null)
@@ -418,6 +421,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
                     yield return mixinSource;
                 }
 
+                // Generate shading light independent
                 foreach (var shadingSource in Values.Where(keyPair => !keyPair.Key.IsLightDependent).Select(keyPair => keyPair.Value))
                 {
                     yield return shadingSource;

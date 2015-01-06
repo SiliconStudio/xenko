@@ -5,7 +5,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
     /// <summary>
     /// Base interface for a material layer shading.
     /// </summary>
-    class IMaterialLayerShading : IMaterialLayer
+    class IMaterialSurfaceShading : IMaterialSurface
     {
     };
 }

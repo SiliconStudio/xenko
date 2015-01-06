@@ -5,7 +5,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
     /// <summary>
     /// Performs a Lambert shading
     /// </summary>
-    class MaterialLayerShadingDiffuseLambert<bool TIsEnergyConservative> : IMaterialLayerShading, LightStreams, ShadingStreams
+    class MaterialSurfaceShadingDiffuseLambert<bool TIsEnergyConservative> : IMaterialSurfaceShading, LightStreams, ShadingStreams
     {
         override void Compute()
         {

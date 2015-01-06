@@ -5,17 +5,15 @@ namespace SiliconStudio.Paradox.Effects.Materials
     /// <summary>
     /// Performs the shading of a material according to the lights
     /// </summary>
-    class MaterialLayerShading : IMaterialLayer, LightGroupArray, LightStreams
+    class MaterialSurfaceLightingAndShading : MaterialSurfaceArray, LightGroupArray, LightStreams
     {
-        compose IMaterialLayerShading shadings[];
-
         override void Compute()
         {
             foreach(var lightGroup in lightGroups)
             {
                 const int maxLightCount = lightGroup.GetMaxLightCount();
                 int count = lightGroup.GetLightCount();
-
+                
                 [unroll]
                 for(int i = 0; i < maxLightCount; i++)
                 {
@@ -27,11 +25,8 @@ namespace SiliconStudio.Paradox.Effects.Materials
                     // Compute the light color and direction
                     lightGroup.ComputeLight(i);
 
-                    // Calculate shading for diffuse, specular, emissive...etc.
-                    foreach(var shading in shadings)
-                    {
-                        shading.Compute();
-                    }
+                    // Iterate on shading models
+                    base.Compute();
                 }
             }
         }

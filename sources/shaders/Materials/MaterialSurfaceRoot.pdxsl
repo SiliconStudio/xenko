@@ -1,0 +1,24 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Paradox.Effects.Materials
+{
+    // Temporary code for testing IMaterialSurface
+    class MaterialSurfaceRoot : ShaderBase, ShadingBase, PositionVSStream, MaterialStreams, ShadingStreams, LightGroupArray
+    {
+        compose IMaterialSurface composition;
+
+        stage override float4 Shading()
+        {
+            // Prepare global streams (temp)
+            streams.shadingNormal = float3(0,0,1);
+            streams.shadingView = -normalize(PositionVS());
+            streams.shadingColor = 0;
+
+            // Compute the shading of the surface
+            composition.Compute();
+
+            // Return the actual shading color
+            return float4(streams.shadingColor, 1);
+        }
+    };
+}
