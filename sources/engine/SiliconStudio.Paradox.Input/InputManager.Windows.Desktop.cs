@@ -90,19 +90,46 @@ namespace SiliconStudio.Paradox.Input
 
         private IntPtr WndProc(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam)
         {
-            if (msg == Win32Native.WM_KEYDOWN)
+            WinFormsKeys virtualKey;
+            switch (msg)
             {
-                var virtualKey = wParam.ToInt32();
-                OnKeyEvent((WinFormsKeys)virtualKey, false);
-            }
-            if (msg == Win32Native.WM_KEYUP)
-            {
-                var virtualKey = wParam.ToInt32();
-                OnKeyEvent((WinFormsKeys)virtualKey, true);
+                case Win32Native.WM_KEYDOWN:
+                case Win32Native.WM_SYSKEYDOWN:
+                    virtualKey = (WinFormsKeys)wParam.ToInt32();
+                    virtualKey = GetCorrectExtendedKey(virtualKey, lParam.ToInt32());
+                    OnKeyEvent(virtualKey, false);
+                    break;
+                case Win32Native.WM_KEYUP:
+                case Win32Native.WM_SYSKEYUP:
+                    virtualKey = (WinFormsKeys)wParam.ToInt32();
+                    virtualKey = GetCorrectExtendedKey(virtualKey, lParam.ToInt32());
+                    OnKeyEvent(virtualKey, true);
+                    break;
             }
 
             var result = Win32Native.CallWindowProc(defaultWndProc, hWnd, msg, wParam, lParam);
             return result;
+        }
+
+        private static WinFormsKeys GetCorrectExtendedKey(WinFormsKeys virtualKey, int lParam)
+        {
+            if (virtualKey == WinFormsKeys.ControlKey)
+            {
+                // We check if the key is an extended key. Extended keys are R-keys, non-extended are L-keys.
+                return (lParam & 0x01000000) == 0 ? WinFormsKeys.LControlKey : WinFormsKeys.RControlKey;
+            }
+            if (virtualKey == WinFormsKeys.ShiftKey)
+            {
+                // We need to check the scan code to check which SHIFT key it is.
+                var scanCode = (lParam & 0x00FF0000) >> 16;
+                return (scanCode != 36) ? WinFormsKeys.LShiftKey : WinFormsKeys.RShiftKey;
+            }
+            if (virtualKey == WinFormsKeys.Menu)
+            {
+                // We check if the key is an extended key. Extended keys are R-keys, non-extended are L-keys.
+                return (lParam & 0x01000000) == 0 ? WinFormsKeys.LMenu : WinFormsKeys.RMenu;
+            }
+            return virtualKey;
         }
 
         private void InitializeFromWindowsForms(GameContext uiContext)
