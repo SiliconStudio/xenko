@@ -9,7 +9,7 @@ class LightGroup : LightParameters
     // TODO: Handle inline
     inline int GetMaxLightCount()
     {
-        return 0;
+        return 1;
     }
 
     /// <summary>
@@ -27,5 +27,6 @@ class LightGroup : LightParameters
     {
         streams.lightColor = 0;
         streams.lightDirection = 0;
+        streams.lightColorNdotL = 0;
     }
 };

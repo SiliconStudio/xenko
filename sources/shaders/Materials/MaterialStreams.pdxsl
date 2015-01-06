@@ -33,7 +33,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
         stage stream float3  matEmissive;
         stage stream float   matEmissiveIntensity;
 
-        void ResetStreams()
+        void ResetMaterialStreams()
         {
             // Reset all values for material stream to avoid pulling from a different stage (VS...etc.)
             // TODO: It might be interesting to support pulling from VS, but this should be done from the IMaterialSurface and dedicated ComputerColors

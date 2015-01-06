@@ -14,6 +14,9 @@ namespace SiliconStudio.Paradox.Effects.Materials
             streams.shadingView = -normalize(PositionVS());
             streams.shadingColor = 0;
 
+            // Reset material streams (TODO: move this to composition)
+            ResetMaterialStreams();
+
             // Compute the shading of the surface
             composition.Compute();
 
