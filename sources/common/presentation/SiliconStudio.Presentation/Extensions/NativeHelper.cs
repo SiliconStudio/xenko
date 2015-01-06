@@ -113,7 +113,12 @@ namespace SiliconStudio.Presentation.Extensions
 
         #region Constants
 
+        public const int GWL_EXSTYLE = unchecked((int)0xFFFFFFEC);
+        public const int GWL_HINSTANCE = unchecked((int)0xFFFFFFFA);
+        public const int GWL_ID = unchecked((int)0xFFFFFFF4);
         public const int GWL_STYLE = unchecked((int)0xFFFFFFF0);
+        public const int GWL_USERDATA = unchecked((int)0xFFFFFFEB);
+        public const int GWL_WNDPROC = unchecked((int)0xFFFFFFFC);
 
         public const int MONITOR_DEFAULTTONULL = unchecked(0x00000000);
         public const int MONITOR_DEFAULTTOPRIMARY = unchecked(0x00000001);

@@ -64,6 +64,9 @@ namespace SiliconStudio.Paradox.Input
         private System.Drawing.Point capturedPosition;
         private bool wasMouseVisibleBeforeCapture;
 
+        private IntPtr defaultWndProc;
+        private Win32Native.WndProc inputWndProc;
+
         public override void LockMousePosition()
         {
             if (!IsMousePositionLocked)
@@ -85,6 +88,23 @@ namespace SiliconStudio.Paradox.Input
             }
         }
 
+        private IntPtr WndProc(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam)
+        {
+            if (msg == Win32Native.WM_KEYDOWN)
+            {
+                var virtualKey = wParam.ToInt32();
+                OnKeyEvent((WinFormsKeys)virtualKey, false);
+            }
+            if (msg == Win32Native.WM_KEYUP)
+            {
+                var virtualKey = wParam.ToInt32();
+                OnKeyEvent((WinFormsKeys)virtualKey, true);
+            }
+
+            var result = Win32Native.CallWindowProc(defaultWndProc, hWnd, msg, wParam, lParam);
+            return result;
+        }
+
         private void InitializeFromWindowsForms(GameContext uiContext)
         {
             uiControl = (Control) uiContext.Control;
@@ -98,8 +118,11 @@ namespace SiliconStudio.Paradox.Input
             else
             {
                 EnsureMapKeys();
-                uiControl.KeyDown += (_, e) => OnKeyEvent(e.KeyCode, false);
-                uiControl.KeyUp += (_, e) => OnKeyEvent(e.KeyCode, true);
+                defaultWndProc = Win32Native.GetWindowLong(new HandleRef(this, uiControl.Handle), Win32Native.WindowLongType.WndProc);
+                // This is needed to prevent garbage collection of the delegate.
+                inputWndProc = WndProc;
+                var inputWndProcPtr = Marshal.GetFunctionPointerForDelegate(inputWndProc);
+                Win32Native.SetWindowLong(new HandleRef(this, uiControl.Handle), Win32Native.WindowLongType.WndProc, inputWndProcPtr);
             }
             uiControl.LostFocus += (_, e) => OnUiControlLostFocus();
             uiControl.MouseMove += (_, e) => OnMouseMoveEvent(new Vector2(e.X, e.Y));
@@ -113,36 +136,9 @@ namespace SiliconStudio.Paradox.Input
             ControlHeight = uiControl.ClientSize.Height;
         }
 
-        [DllImport("user32.dll")]
-        private static extern short GetAsyncKeyState(WinFormsKeys vKey);
-
-        private WinFormsKeys GetCorrectModifierKey(WinFormsKeys key)
-        {
-            switch (key)
-            {
-                // TODO: if both lshift and rshift are down, lshift will always be preemptive on rshift...
-                case WinFormsKeys.ShiftKey:
-                    if (GetAsyncKeyState(WinFormsKeys.LShiftKey) != 0)
-                        return WinFormsKeys.LShiftKey;
-                    if (GetAsyncKeyState(WinFormsKeys.RShiftKey) != 0)
-                        return WinFormsKeys.RShiftKey;
-                    return key;
-                case WinFormsKeys.ControlKey:
-                    if (GetAsyncKeyState(WinFormsKeys.LControlKey) != 0)
-                        return WinFormsKeys.LControlKey;
-                    if (GetAsyncKeyState(WinFormsKeys.RControlKey) != 0)
-                        return WinFormsKeys.RControlKey;
-                    return key;
-                default:
-                    return key;
-            }
-        }
-
         private void OnKeyEvent(WinFormsKeys keyCode, bool isKeyUp)
         {
             Keys key;
-            keyCode = GetCorrectModifierKey(keyCode);
-
             if (mapKeys.TryGetValue(keyCode, out key) && key != Keys.None)
             {
                 var type = isKeyUp ? InputEventType.Up : InputEventType.Down;
