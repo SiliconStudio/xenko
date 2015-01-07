@@ -52,8 +52,13 @@ namespace SiliconStudio.Quantum
         /// <inheritdoc/>
         public IReadOnlyCollection<INodeCommand> Commands { get { return commands; } }
 
-        /// <inheritdoc/>
-        public ModelNodeFlags Flags { get; set; }
+        /// <summary>
+        /// Gets the flags.
+        /// </summary>
+        /// <value>
+        /// The flags.
+        /// </value>
+        internal ModelNodeFlags Flags { get; set; }
 
         /// <summary>
         /// Add a child to this node. The node must not have been sealed yet.

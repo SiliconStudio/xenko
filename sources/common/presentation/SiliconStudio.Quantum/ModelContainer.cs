@@ -173,7 +173,7 @@ namespace SiliconStudio.Quantum
             if (guidContainer != null && rootObject != null && !rootObject.GetType().IsValueType)
                 guid = guidContainer.GetOrCreateGuid(rootObject);
 
-            IModelNode result = NodeBuilder.Build(referencer, rootObject, type, guid);
+            var result = (ModelNode)NodeBuilder.Build(referencer, rootObject, type, guid);
 
             if (result != null && (result.Flags & ModelNodeFlags.DoNotCache) == 0)
             {

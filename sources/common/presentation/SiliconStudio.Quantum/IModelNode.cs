@@ -44,13 +44,5 @@ namespace SiliconStudio.Quantum
         /// Gets the command collection.
         /// </summary>
         IReadOnlyCollection<INodeCommand> Commands { get; }
-
-        /// <summary>
-        /// Gets the flags.
-        /// </summary>
-        /// <value>
-        /// The flags.
-        /// </value>
-        ModelNodeFlags Flags { get; }
     }
 }
