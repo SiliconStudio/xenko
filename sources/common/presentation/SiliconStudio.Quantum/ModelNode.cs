@@ -58,7 +58,7 @@ namespace SiliconStudio.Quantum
         /// <value>
         /// The flags.
         /// </value>
-        internal ModelNodeFlags Flags { get; set; }
+        public ModelNodeFlags Flags { get; set; }
 
         /// <summary>
         /// Add a child to this node. The node must not have been sealed yet.
