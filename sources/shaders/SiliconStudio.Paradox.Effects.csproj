@@ -610,6 +610,19 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>CircleOfConfusion.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Images\DepthOfField\CoCMapBlur.cs" />
+    <Compile Include="Images\DepthOfField\CoCMapBlurEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CoCMapBlurEffect.pdxfx</DependentUpon>
+    </Compile>
+    <Compile Include="Images\DepthOfField\CoCMapBlurShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CoCMapBlurShader.pdxsl</DependentUpon>
+    </Compile>
     <Compile Include="Images\DepthOfField\CombineLevelsFromCoCEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -2207,6 +2220,14 @@
     <None Include="Images\DepthOfField\CircleOfConfusion.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CircleOfConfusion.cs</LastGenOutput>
+    </None>
+    <None Include="Images\DepthOfField\CoCMapBlurEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CoCMapBlurEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Images\DepthOfField\CoCMapBlurShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CoCMapBlurShader.cs</LastGenOutput>
     </None>
     <None Include="Images\DepthOfField\CombineLevelsFromCoCEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>

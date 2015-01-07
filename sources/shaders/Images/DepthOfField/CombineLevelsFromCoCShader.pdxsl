@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 // Define to visualize debug colors for the different CoC levels.
-#define DEBUG_COC_LEVEL_COLOR 1
+#define DEBUG_COC_LEVEL_COLOR 0
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
@@ -11,7 +11,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// the final color will be an interpolation between 2 of these levels. 
     /// Level 0 is the original sharp image. The last level is the blurriest version. 
     /// Expects as input:
-    /// - Texture0: a [Linear Depth, CoC] buffer
+    /// - Texture0: a [CoC, Linear Depth] buffer
     /// - Texture1 ~ TextureX: the different blur levels. (0 == no blur)
     /// </summary>
 
@@ -23,9 +23,8 @@ namespace SiliconStudio.Paradox.Effects.Images
         stage override float4 Shading()
         {
             // Need to be able to access blur textures by index
-            Texture2D dofTextureLevels[9] = 
+            Texture2D dofTextureLevels[8] = 
             {
-                Texture1,
                 Texture2,
                 Texture3,
                 Texture4,
@@ -38,14 +37,13 @@ namespace SiliconStudio.Paradox.Effects.Images
 
 #if DEBUG_COC_LEVEL_COLOR
             // Some debug colors to visualize each layer
-            float3 debugColors[9] = 
+            float3 debugColors[8] = 
             {
                 float3(1.0, 1.0, 1.0),
                 float3(0.5, 0.5, 1.0),
                 float3(0.5, 1.0, 0.5),
                 float3(1.0, 0.5, 0.5),
                 // Set more colors here
-                float3(1.0, 0.0, 0.0),
                 float3(1.0, 0.0, 0.0),
                 float3(1.0, 0.0, 0.0),
                 float3(1.0, 0.0, 0.0),
@@ -66,7 +64,11 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
 
             // Gets the CoC of the current pixel
-            float CoC = Texture0.Sample(LinearSampler, streams.TexCoord).y;
+            float CoC = Texture0.Sample(LinearSampler, streams.TexCoord).x;
+
+            // If the pixel is not in focus, use a blur version of the CoC to avoid sharp transitions
+            float blurredCoC = Texture1.Sample(LinearSampler, streams.TexCoord).x;
+            CoC = lerp(CoC, blurredCoC, sign(blurredCoC));
 
             float3 result = float3(0.0, 0.0, 0.0);
 

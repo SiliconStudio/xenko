@@ -45,7 +45,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         protected override void DrawCore()
         {
             // Update the weight array if necessary
-            if (weightsDirty)
+            if (weightsDirty || tapCount == 0)
             {
                 weightsDirty = false;
                 Vector2[] gaussianWeights = GaussianUtil.Calculate1D((int)radius, 2f, true);

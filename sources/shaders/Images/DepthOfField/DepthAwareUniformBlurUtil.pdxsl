@@ -10,7 +10,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// artifacts such as in-focus objects bleeding into out-of-focus background objects.
     /// Expects as input: 
     /// - Texture0: color buffer
-    /// - Texture1: a [Linear Depth, CoC] buffer
+    /// - Texture1: a [CoC, Linear Depth] buffer
     /// </summary>
 
     class DepthAwareUniformBlurUtil<int BlurCount> : Texturing, ComputeColor
@@ -34,7 +34,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             float totalWeight = TapWeights[0];
             float3 resultColor = Texture0.Sample(LinearSampler, streams.TexCoord).rgb;
             resultColor *= TapWeights[0];
-            float centerDepth = Texture1.Sample(LinearSampler, streams.TexCoord).x;
+            float centerDepth = Texture1.Sample(LinearSampler, streams.TexCoord).y;
 
             // Treats all the taps in the 2 directions from the center
             [unroll]
@@ -44,13 +44,14 @@ namespace SiliconStudio.Paradox.Effects.Images
                 for (int j = -1.0; j <= 1.0; j += 2) // Backward(-1) and forward(+1) along the direction
                 {                     
                     float2 tapUV = streams.TexCoord + j * i * Direction * tapOffset;
-                    float2 depthCoC = Texture1.Sample(LinearSampler, tapUV).xy;
+                    float2 cocDepth = Texture1.Sample(LinearSampler, tapUV).xy;
 
                     // We want to avoid color-bleeding due to depth occlusion: 
                     // tap's weight is recalculated to prevent artifacts
-                    float contribution = (depthCoC.x >= centerDepth);
-                    contribution += depthCoC.y;
-                    contribution = saturate(contribution * sign(depthCoC.y));
+                    float contribution = (cocDepth.y >= centerDepth);
+                    contribution += cocDepth.x;
+                    contribution = saturate(contribution * sign(cocDepth.x));
+
                     float tapWeight = contribution * TapWeights[i];
 
                     float3 tapColor = Texture0.Sample(LinearSampler, tapUV).rgb;

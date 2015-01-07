@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             // Calculates the CoC based on the linearized depth
             float CoC = getCoCFactor(linearDepth);
 
-            return float4(linearDepth, CoC, 0.0, 0.0);
+            return float4(CoC, linearDepth, 0.0, 0.0);
         }
     };
 }
