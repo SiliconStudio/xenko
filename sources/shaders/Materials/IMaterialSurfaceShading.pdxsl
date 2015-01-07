@@ -5,7 +5,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
     /// <summary>
     /// Base interface for a material layer shading.
     /// </summary>
-    class IMaterialSurfaceShading : MaterialStreams, LightStreams, ShadingStreams
+    class IMaterialSurfaceShading : MaterialStream, LightStream
     {
         float4 Shading()
         {

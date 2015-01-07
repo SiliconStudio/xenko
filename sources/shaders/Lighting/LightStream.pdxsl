@@ -4,7 +4,7 @@
 /// <summary>
 /// Defines light streams variable.
 /// </summary>
-class LightStreams
+class LightStream
 {
     stage stream float3 lightDirection;
     stage stream float3 lightColor;

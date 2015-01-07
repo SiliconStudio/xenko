@@ -4,7 +4,7 @@
 /// <summary>
 /// Defines light parameters.
 /// </summary>
-class LightParameters : LightStreams
+class LightParameters : LightStream
 {
     cbuffer PerPass
     {

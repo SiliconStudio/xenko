@@ -5,7 +5,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
     /// <summary>
     /// Base interface for a material layer
     /// </summary>
-    class IMaterialSurface : MaterialStreams     // TODO: provide a way to extend MaterialStreams easily
+    class IMaterialSurface : MaterialStream     // TODO: provide a way to extend MaterialStream easily
     {
         void Compute()
         {

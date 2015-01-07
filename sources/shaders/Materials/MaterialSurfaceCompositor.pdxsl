@@ -3,7 +3,7 @@
 namespace SiliconStudio.Paradox.Effects.Materials
 {
     // Temporary code for testing IMaterialSurface
-    class MaterialSurfaceRoot : ShaderBase, ShadingBase, PositionVSStream, MaterialStreams, ShadingStreams, LightGroupArray
+    class MaterialSurfaceCompositor : ShaderBase, ShadingBase, PositionVSStream, MaterialStream, LightGroupArray
     {
         compose IMaterialSurface composition;
 
@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
             streams.shadingColor = 0;
 
             // Reset material streams (TODO: move this to composition)
-            ResetMaterialStreams();
+            ResetMaterialStream();
 
             // Compute the shading of the surface
             composition.Compute();

@@ -816,8 +816,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Materials\MaterialSurfaceRoot.cs">
-      <DependentUpon>MaterialSurfaceRoot.pdxsl</DependentUpon>
+    <Compile Include="Materials\MaterialSurfaceCompositor.cs">
+      <DependentUpon>MaterialSurfaceCompositor.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -840,11 +840,11 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Materials\MaterialStreams.cs">
+    <Compile Include="Materials\MaterialStream.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>MaterialStreams.pdxsl</DependentUpon>
+      <DependentUpon>MaterialStream.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Renderers\DirectLightData.cs" />
     <Compile Include="Renderers\LightingGroupInfo.cs" />
@@ -852,26 +852,20 @@
     <Compile Include="Renderers\LightingUpdateType.cs" />
     <Compile Include="Renderers\LightParamSemantic.cs" />
     <Compile Include="Renderers\PointLightData.cs" />
-    <Compile Include="Shading\LightGroupArray.cs">
+    <Compile Include="Lighting\LightGroupArray.cs">
       <DependentUpon>LightGroupArray.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Shading\LightGroup.cs">
+    <Compile Include="Lighting\LightGroup.cs">
       <DependentUpon>LightGroup.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Shading\ShadingStreams.cs">
-      <DependentUpon>ShadingStreams.pdxsl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Shading\LightStreams.cs">
-      <DependentUpon>LightStreams.pdxsl</DependentUpon>
+    <Compile Include="Lighting\LightStream.cs">
+      <DependentUpon>LightStream.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -1225,7 +1219,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>GroupShadingBase.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Shading\LightParameters.cs">
+    <Compile Include="Lighting\LightParameters.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -2213,9 +2207,9 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceLightingAndShading.cs</LastGenOutput>
     </None>
-    <None Include="Materials\MaterialSurfaceRoot.pdxsl">
+    <None Include="Materials\MaterialSurfaceCompositor.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialSurfaceRoot.cs</LastGenOutput>
+      <LastGenOutput>MaterialSurfaceCompositor.cs</LastGenOutput>
     </None>
     <None Include="Materials\MaterialSurfaceArray.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -2229,15 +2223,15 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceSetStreamFromComputeColor.cs</LastGenOutput>
     </None>
-    <None Include="Materials\MaterialStreams.pdxsl">
+    <None Include="Materials\MaterialStream.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialStreams.cs</LastGenOutput>
+      <LastGenOutput>MaterialStream.cs</LastGenOutput>
     </None>
-    <None Include="Shading\LightGroupArray.pdxsl">
+    <None Include="Lighting\LightGroupArray.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LightGroupArray.cs</LastGenOutput>
     </None>
-    <None Include="Shading\LightGroup.pdxsl">
+    <None Include="Lighting\LightGroup.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LightGroup.cs</LastGenOutput>
     </None>
@@ -2277,13 +2271,9 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>BRDFCookTorrance.cs</LastGenOutput>
     </None>
-    <None Include="Shading\ShadingStreams.pdxsl">
+    <None Include="Lighting\LightStream.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ShadingStreams.cs</LastGenOutput>
-    </None>
-    <None Include="Shading\LightStreams.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>LightStreams.cs</LastGenOutput>
+      <LastGenOutput>LightStream.cs</LastGenOutput>
     </None>
     <None Include="Shading\SpecularPower.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -2421,7 +2411,7 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>GroupShadingBase.cs</LastGenOutput>
     </None>
-    <None Include="Shading\LightParameters.pdxsl">
+    <None Include="Lighting\LightParameters.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LightParameters.cs</LastGenOutput>
     </None>
@@ -2646,6 +2636,7 @@
       <LastGenOutput>NormalWSStream.cs</LastGenOutput>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
