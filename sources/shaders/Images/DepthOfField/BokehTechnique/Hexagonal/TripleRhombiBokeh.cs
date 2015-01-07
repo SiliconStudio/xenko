@@ -44,7 +44,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         public TripleRhombiBokeh(ImageEffectContext context)
             : base(context)
         {
-            directionalBlurEffect = new ImageEffectShader(context, "DepthAwareUniformBlurEffect");
+            directionalBlurEffect = new ImageEffectShader(context, "DepthAwareDirectionalBlurEffect");
             finalCombineEffect = new ImageEffectShader(context, "TripleRhombiCombineShader");
             Phase = 0f;
         }
@@ -130,14 +130,14 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             if (rhombiTapOffsetsDirty) calculateRhombiOffsets();
 
-            directionalBlurEffect.Parameters.Set(DepthAwareUniformBlurKeys.Count, tapCount);
-            directionalBlurEffect.Parameters.Set(DepthAwareUniformBlurUtilKeys.Radius, radius);
-            directionalBlurEffect.Parameters.Set(DepthAwareUniformBlurUtilKeys.TapWeights, tapWeights);
+            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.Count, tapCount);
+            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Radius, radius);
+            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.TapWeights, tapWeights);
             var tapNumber = 2 * tapCount - 1;
 
             // Vertical blur
             var blurAngle = MathUtil.PiOverTwo + Phase;
-            directionalBlurEffect.Parameters.Set(DepthAwareUniformBlurUtilKeys.Direction, new Vector2((float)Math.Cos(blurAngle), (float)Math.Sin(blurAngle)));
+            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Direction, new Vector2((float)Math.Cos(blurAngle), (float)Math.Sin(blurAngle)));
 
             var verticalBlurTexture = NewScopedRenderTarget2D(originalTexture.Description);
             directionalBlurEffect.SetInput(0, originalTexture);
@@ -147,7 +147,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             // Rhombi A (top left)
             blurAngle = 7f * MathUtil.Pi / 6f + Phase;
-            directionalBlurEffect.Parameters.Set(DepthAwareUniformBlurUtilKeys.Direction, new Vector2((float)Math.Cos(blurAngle), (float)Math.Sin(blurAngle)));
+            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Direction, new Vector2((float)Math.Cos(blurAngle), (float)Math.Sin(blurAngle)));
 
             var rhombiA = NewScopedRenderTarget2D(originalTexture.Description);
             directionalBlurEffect.SetInput(0, verticalBlurTexture);
@@ -156,7 +156,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             // Rhombi B (top right)
             blurAngle = -MathUtil.Pi / 6f + Phase;
-            directionalBlurEffect.Parameters.Set(DepthAwareUniformBlurUtilKeys.Direction, new Vector2((float)Math.Cos(blurAngle), (float)Math.Sin(blurAngle)));
+            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Direction, new Vector2((float)Math.Cos(blurAngle), (float)Math.Sin(blurAngle)));
 
             var rhombiB = NewScopedRenderTarget2D(originalTexture.Description);
             directionalBlurEffect.SetInput(0, verticalBlurTexture);
@@ -165,7 +165,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             //Rhombi C (bottom)
             blurAngle = 7f * MathUtil.Pi / 6f + Phase;
-            directionalBlurEffect.Parameters.Set(DepthAwareUniformBlurUtilKeys.Direction, new Vector2((float)Math.Cos(blurAngle), (float)Math.Sin(blurAngle)));
+            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Direction, new Vector2((float)Math.Cos(blurAngle), (float)Math.Sin(blurAngle)));
 
             var rhombiCTmp = NewScopedRenderTarget2D(originalTexture.Description);
             directionalBlurEffect.SetInput(0, originalTexture);
@@ -173,7 +173,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             directionalBlurEffect.Draw("TripleRhombiBokeh_RhombiCTmp_tap{0}_radius{1}", tapNumber, (int)radius);
 
             blurAngle = -MathUtil.Pi / 6f + Phase;
-            directionalBlurEffect.Parameters.Set(DepthAwareUniformBlurUtilKeys.Direction, new Vector2((float)Math.Cos(blurAngle), (float)Math.Sin(blurAngle)));
+            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Direction, new Vector2((float)Math.Cos(blurAngle), (float)Math.Sin(blurAngle)));
 
             var rhombiC = NewScopedRenderTarget2D(originalTexture.Description);
             directionalBlurEffect.SetInput(0, rhombiCTmp);

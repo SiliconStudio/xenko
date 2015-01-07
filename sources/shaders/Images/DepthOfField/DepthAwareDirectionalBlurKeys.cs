@@ -6,9 +6,9 @@ using System.Linq;
 namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
-    /// Keys used by the DepthAwareUniformBlurEffect
+    /// Keys used by the DepthAwareDirectionalBlurEffect
     /// </summary>
-    public static class DepthAwareUniformBlurKeys
+    public static class DepthAwareDirectionalBlurKeys
     {
         public static readonly ParameterKey<int> Count = ParameterKeys.New<int>();
     }

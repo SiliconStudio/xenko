@@ -7,9 +7,9 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// </summary>
     shader CoCMapBlurEffect
     {
-        using params DepthAwareUniformBlurKeys;
+        using params DepthAwareDirectionalBlurKeys;
 
         // Mixin 
-        mixin CoCMapBlurShader<DepthAwareUniformBlurKeys.Count>;
+        mixin CoCMapBlurShader<DepthAwareDirectionalBlurKeys.Count>;
     };
 }

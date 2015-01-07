@@ -8,11 +8,11 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// </summary>
     partial shader McIntoshOptimizedEffect
     {
-        using params DepthAwareUniformBlurKeys;
+        using params DepthAwareDirectionalBlurKeys;
 
         // Mixin 
         mixin McIntoshOptimizedShader;
-        mixin compose directionalBlurA = DepthAwareUniformBlurUtil<DepthAwareUniformBlurKeys.Count>;
-        mixin compose directionalBlurB = DepthAwareUniformBlurUtil<DepthAwareUniformBlurKeys.Count>;
+        mixin compose directionalBlurA = DepthAwareDirectionalBlurUtil<DepthAwareDirectionalBlurKeys.Count>;
+        mixin compose directionalBlurB = DepthAwareDirectionalBlurUtil<DepthAwareDirectionalBlurKeys.Count>;
     };
 }

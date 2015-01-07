@@ -3,7 +3,7 @@
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
-    compose DepthAwareUniformBlurShader blurShader;
+    compose DepthAwareDirectionalBlurShader blurShader;
 
     /// <summary>
     /// Optimized version of the McIntosh bokeh effect. 

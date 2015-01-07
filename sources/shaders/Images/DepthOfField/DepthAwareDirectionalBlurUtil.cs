@@ -16,7 +16,7 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
-    public static partial class DepthAwareUniformBlurUtilKeys
+    public static partial class DepthAwareDirectionalBlurUtilKeys
     {
         public static readonly ParameterKey<Vector2> Direction = ParameterKeys.New<Vector2>();
         public static readonly ParameterKey<float> Radius = ParameterKeys.New<float>();

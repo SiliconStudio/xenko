@@ -74,7 +74,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             var originalTexture = GetSafeInput(0);
             var outputTexture = GetSafeOutput(0);
 
-            cocBlurEffect.Parameters.Set(DepthAwareUniformBlurKeys.Count, tapCount);
+            cocBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.Count, tapCount);
             cocBlurEffect.Parameters.Set(CoCMapBlurShaderKeys.Radius, radius);
             cocBlurEffect.Parameters.Set(CoCMapBlurShaderKeys.OffsetsWeights, tapWeights);
             var tapNumber = 2 * tapCount - 1;

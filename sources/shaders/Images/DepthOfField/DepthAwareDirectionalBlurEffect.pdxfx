@@ -5,11 +5,11 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// A directional, depth-aware, uniform-weight blur.
     /// </summary>
-    shader DepthAwareUniformBlurEffect
+    shader DepthAwareDirectionalBlurEffect
     {
-        using params DepthAwareUniformBlurKeys;
+        using params DepthAwareDirectionalBlurKeys;
 
         // Mixin 
-        mixin DepthAwareUniformBlurShader<DepthAwareUniformBlurKeys.Count>;
+        mixin DepthAwareDirectionalBlurShader<DepthAwareDirectionalBlurKeys.Count>;
     };
 }

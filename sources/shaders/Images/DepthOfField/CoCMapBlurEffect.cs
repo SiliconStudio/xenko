@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-                context.Mixin(mixin, "CoCMapBlurShader", context.GetParam(DepthAwareUniformBlurKeys.Count));
+                context.Mixin(mixin, "CoCMapBlurShader", context.GetParam(DepthAwareDirectionalBlurKeys.Count));
             }
 
             [ModuleInitializer]

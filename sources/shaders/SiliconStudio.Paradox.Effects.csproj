@@ -636,24 +636,24 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>CombineLevelsFromCoCShader.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Images\DepthOfField\DepthAwareUniformBlurEffect.cs">
+    <Compile Include="Images\DepthOfField\DepthAwareDirectionalBlurEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>DepthAwareUniformBlurEffect.pdxfx</DependentUpon>
+      <DependentUpon>DepthAwareDirectionalBlurEffect.pdxfx</DependentUpon>
     </Compile>
-    <Compile Include="Images\DepthOfField\DepthAwareUniformBlurKeys.cs" />
-    <Compile Include="Images\DepthOfField\DepthAwareUniformBlurUtil.cs">
-      <DependentUpon>DepthAwareUniformBlurUtil.pdxsl</DependentUpon>
+    <Compile Include="Images\DepthOfField\DepthAwareDirectionalBlurKeys.cs" />
+    <Compile Include="Images\DepthOfField\DepthAwareDirectionalBlurUtil.cs">
+      <DependentUpon>DepthAwareDirectionalBlurUtil.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Images\DepthOfField\DepthAwareUniformBlurShader.cs">
+    <Compile Include="Images\DepthOfField\DepthAwareDirectionalBlurShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>DepthAwareUniformBlurShader.pdxsl</DependentUpon>
+      <DependentUpon>DepthAwareDirectionalBlurShader.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Images\DepthOfField\BokehTechnique\BokehBlur.cs" />
     <Compile Include="Images\DepthOfField\DoFUtil.cs" />
@@ -2237,17 +2237,17 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CombineLevelsFromCoCShader.cs</LastGenOutput>
     </None>
-    <None Include="Images\DepthOfField\DepthAwareUniformBlurEffect.pdxfx">
+    <None Include="Images\DepthOfField\DepthAwareDirectionalBlurEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>DepthAwareUniformBlurEffect.cs</LastGenOutput>
+      <LastGenOutput>DepthAwareDirectionalBlurEffect.cs</LastGenOutput>
     </None>
-    <None Include="Images\DepthOfField\DepthAwareUniformBlurUtil.pdxsl">
+    <None Include="Images\DepthOfField\DepthAwareDirectionalBlurUtil.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>DepthAwareUniformBlurUtil.cs</LastGenOutput>
+      <LastGenOutput>DepthAwareDirectionalBlurUtil.cs</LastGenOutput>
     </None>
-    <None Include="Images\DepthOfField\DepthAwareUniformBlurShader.pdxsl">
+    <None Include="Images\DepthOfField\DepthAwareDirectionalBlurShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>DepthAwareUniformBlurShader.cs</LastGenOutput>
+      <LastGenOutput>DepthAwareDirectionalBlurShader.cs</LastGenOutput>
     </None>
     <None Include="Images\DepthOfField\BokehTechnique\Hexagonal\McIntoshOptimizedEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>

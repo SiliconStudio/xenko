@@ -18,18 +18,18 @@ namespace SiliconStudio.Paradox.Effects.Images
 {
     internal static partial class ShaderMixins
     {
-        internal partial class DepthAwareUniformBlurEffect  : IShaderMixinBuilder
+        internal partial class DepthAwareDirectionalBlurEffect  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-                context.Mixin(mixin, "DepthAwareUniformBlurShader", context.GetParam(DepthAwareUniformBlurKeys.Count));
+                context.Mixin(mixin, "DepthAwareDirectionalBlurShader", context.GetParam(DepthAwareDirectionalBlurKeys.Count));
             }
 
             [ModuleInitializer]
             internal static void __Initialize__()
 
             {
-                ShaderMixinManager.Register("DepthAwareUniformBlurEffect", new DepthAwareUniformBlurEffect());
+                ShaderMixinManager.Register("DepthAwareDirectionalBlurEffect", new DepthAwareDirectionalBlurEffect());
             }
         }
     }
