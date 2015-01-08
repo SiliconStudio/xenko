@@ -28,15 +28,17 @@ class TransformationSkinning : TransformationBase, PositionStream4, Transformati
     stage stream uint4 BlendIndices : BLENDINDICES;
 #endif
 
+    stage stream float4x4 skinningBlendMatrix;
+
     override stage void PreTransformPosition()
     {
         base.PreTransformPosition();
 
-        float4x4 blendMatrix = BlendMatrixArray[streams.BlendIndices[0]] * streams.BlendWeights[0]
+        streams.skinningBlendMatrix = BlendMatrixArray[streams.BlendIndices[0]] * streams.BlendWeights[0]
                              + BlendMatrixArray[streams.BlendIndices[1]] * streams.BlendWeights[1]
                              + BlendMatrixArray[streams.BlendIndices[2]] * streams.BlendWeights[2]
                              + BlendMatrixArray[streams.BlendIndices[3]] * streams.BlendWeights[3];
-        float4 blendPos = mul(float4(streams.Position.xyz, 1.0f), blendMatrix);
+        float4 blendPos = mul(float4(streams.Position.xyz, 1.0f), streams.skinningBlendMatrix);
         blendPos /= blendPos.w;
         streams.PositionWS = blendPos;
     }

@@ -5,11 +5,11 @@ namespace SiliconStudio.Paradox.Effects.Materials
     /// <summary>
     /// Performs a Lambert shading
     /// </summary>
-    class MaterialSurfaceShadingSpecularBlinnPhong : IMaterialSurfaceShading
+    class MaterialSurfaceShadingSpecularBlinnPhong : IMaterialSurfaceShading, NormalStream
     {
         override float4 Shading()
         {
-            float k = BRDFBlinnPhong.Compute(streams.lightDirection, streams.shadingNormal, streams.shadingView, streams.matSpecularPower);
+            float k = BRDFBlinnPhong.Compute(streams.lightDirection, streams.normalVS, streams.shadingView, streams.matSpecularPower);
 
             // TODO: integrate AO/Cavity...etc.
             // TODO: Check if we need to divide by PI

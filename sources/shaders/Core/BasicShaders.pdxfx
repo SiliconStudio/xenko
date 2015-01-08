@@ -38,16 +38,25 @@ namespace SiliconStudio.Paradox.Effects.Core
 
             if (MaterialParameters.HasSkinningNormal)
             {
-                if (MaterialParameters.NormalMap != null)
-                    mixin TangentToViewSkinning;
-                else
-                    mixin NormalVSSkinning;
-
                 mixin NormalSkinning;
             }
 
             if (MaterialParameters.HasSkinningTangent)
+            {
                 mixin TangentSkinning;
+            }
+
+            if (MaterialParameters.HasSkinningNormal)
+            {
+                if (MaterialParameters.HasNormalMap)
+                {
+                    mixin NormalVSSkinningNormalMapping;
+                }
+                else
+                {
+                    mixin NormalVSSkinningFromMesh;
+                }
+            }
         }
     };
 
@@ -77,14 +86,13 @@ namespace SiliconStudio.Paradox.Effects.Core
 
         mixin PositionVSStream;
 
-        if (MaterialParameters.NormalMap != null)
+        if (MaterialParameters.HasNormalMap)
         {
-            mixin NormalMapTexture;
-            mixin compose normalMap = MaterialParameters.NormalMap;
+            mixin NormalVSFromNormalMapping;
         }
         else
         {
-            mixin NormalVSStream;
+            mixin NormalVSFromMesh;
         }
     };
 }

@@ -27,101 +27,11 @@ namespace SiliconStudio.Paradox.Effects
                 context.Mixin(mixin, "ShaderBase");
                 context.Mixin(mixin, "TransformationWAndVP");
                 context.Mixin(mixin, "PositionVSStream");
-                var hasNormals = context.GetParam(MaterialParameters.NormalMap) != null;
-                if (hasNormals)
-                {
-                    context.Mixin(mixin, "NormalMapTexture");
-
-                    {
-                        var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-                        context.PushComposition(mixin, "normalMap", __subMixin);
-                        context.Mixin(__subMixin, context.GetParam(MaterialParameters.NormalMap));
-                        context.PopComposition();
-                    }
-                }
-                else
-                {
-                    context.Mixin(mixin, "NormalVSStream");
-                }
                 context.Mixin(mixin, "BRDFDiffuseBase");
                 context.Mixin(mixin, "BRDFSpecularBase");
                 context.Mixin(mixin, "LightMultiDirectionalShadingPerPixel", 2);
                 context.Mixin(mixin, "TransparentShading");
                 context.Mixin(mixin, "DiscardTransparent");
-                if (context.GetParam(MaterialParameters.AlbedoDiffuse) != null)
-                {
-
-                    {
-                        var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-                        context.PushComposition(mixin, "DiffuseLighting", __subMixin);
-                        context.Mixin(__subMixin, "ComputeBRDFDiffuseLambert");
-                        context.PopComposition();
-                    }
-
-                    {
-                        var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-                        context.PushComposition(mixin, "albedoDiffuse", __subMixin);
-                        context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoDiffuse));
-                        context.PopComposition();
-                    }
-                }
-                if (context.GetParam(MaterialParameters.AlbedoSpecular) != null)
-                {
-
-                    {
-                        var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-                        context.PushComposition(mixin, "SpecularLighting", __subMixin);
-                        context.Mixin(__subMixin, "ComputeBRDFColorSpecularBlinnPhong");
-                        context.PopComposition();
-                    }
-
-                    {
-                        var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-                        context.PushComposition(mixin, "albedoSpecular", __subMixin);
-                        context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoSpecular));
-                        context.PopComposition();
-                    }
-                    if (context.GetParam(MaterialParameters.SpecularPowerMap) != null)
-                    {
-                        context.Mixin(mixin, "SpecularPower");
-
-                        {
-                            var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-                            context.PushComposition(mixin, "SpecularPowerMap", __subMixin);
-                            context.Mixin(__subMixin, context.GetParam(MaterialParameters.SpecularPowerMap));
-                            context.PopComposition();
-                        }
-                    }
-                    if (context.GetParam(MaterialParameters.SpecularIntensityMap) != null)
-                    {
-
-                        {
-                            var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-                            context.PushComposition(mixin, "SpecularIntensityMap", __subMixin);
-                            context.Mixin(__subMixin, context.GetParam(MaterialParameters.SpecularIntensityMap));
-                            context.PopComposition();
-                        }
-                    }
-                }
-                if (context.GetParam(MaterialParameters.HasSkinningPosition))
-                {
-                    if (context.GetParam(MaterialParameters.SkinningBones) > context.GetParam(MaterialParameters.SkinningMaxBones))
-                    {
-                        context.SetParam(MaterialParameters.SkinningMaxBones, context.GetParam(MaterialParameters.SkinningBones));
-                    }
-                    mixin.Mixin.AddMacro("SkinningMaxBones", context.GetParam(MaterialParameters.SkinningMaxBones));
-                    context.Mixin(mixin, "TransformationSkinning");
-                    if (context.GetParam(MaterialParameters.HasSkinningNormal))
-                    {
-                        if (hasNormals)
-                            context.Mixin(mixin, "TangentToViewSkinning");
-                        else
-                            context.Mixin(mixin, "NormalVSSkinning");
-                        context.Mixin(mixin, "NormalSkinning");
-                    }
-                    if (context.GetParam(MaterialParameters.HasSkinningTangent))
-                        context.Mixin(mixin, "TangentSkinning");
-                }
             }
 
             [ModuleInitializer]

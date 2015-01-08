@@ -20,30 +20,10 @@ namespace SiliconStudio.Paradox.Effects
     {
         public static readonly ParameterKey<bool> HasSkinningPosition = ParameterKeys.New<bool>();
         public static readonly ParameterKey<bool> HasSkinningNormal = ParameterKeys.New<bool>();
+        public static readonly ParameterKey<bool> HasNormalMap = ParameterKeys.New<bool>();
         public static readonly ParameterKey<bool> HasSkinningTangent = ParameterKeys.New<bool>();
+        public static readonly ParameterKey<bool> UseTransparent = ParameterKeys.New<bool>();
         public static readonly ParameterKey<int> SkinningMaxBones = ParameterKeys.New<int>(56);
         public static readonly ParameterKey<int> SkinningBones = ParameterKeys.New<int>(0);
-        public static readonly ParameterKey<ShaderMixinSource> AlbedoMaterial = ParameterKeys.New<ShaderMixinSource>();
-        public static readonly ParameterKey<bool> UseTransparent = ParameterKeys.New<bool>();
-        public static readonly ParameterKey<bool> UseTransparentMask = ParameterKeys.New<bool>();
-        public static readonly ParameterKey<float> AlphaDiscardThreshold = ParameterKeys.New<float>();
-        public static readonly ParameterKey<bool> UseSpecularEnvironmentMapping = ParameterKeys.New<bool>();
-        public static readonly ParameterKey<bool> UseDiffuseEnvironmentMapping = ParameterKeys.New<bool>();
-        public static readonly ParameterKey<ShaderMixinSource> DiffuseShader = ParameterKeys.New<ShaderMixinSource>();
-        public static readonly ParameterKey<ShaderMixinSource> SpecularShader = ParameterKeys.New<ShaderMixinSource>();
-        public static readonly ParameterKey<ShaderMixinSource> BumpMap = ParameterKeys.New<ShaderMixinSource>();
-        public static readonly ParameterKey<ShaderMixinSource> NormalMap = ParameterKeys.New<ShaderMixinSource>();
-        public static readonly ParameterKey<ShaderMixinSource> DisplacementMap = ParameterKeys.New<ShaderMixinSource>();
-        public static readonly ParameterKey<ShaderMixinSource> TransparencyMap = ParameterKeys.New<ShaderMixinSource>();
-        public static readonly ParameterKey<ShaderMixinSource> EmissiveMap = ParameterKeys.New<ShaderMixinSource>();
-        public static readonly ParameterKey<ShaderMixinSource> ReflectionMap = ParameterKeys.New<ShaderMixinSource>();
-        public static readonly ParameterKey<ShaderMixinSource> AmbientMap = ParameterKeys.New<ShaderMixinSource>();
-        public static readonly ParameterKey<ShaderMixinSource> AlbedoDiffuse = ParameterKeys.New<ShaderMixinSource>();
-        public static readonly ParameterKey<ShaderMixinSource> AlbedoSpecular = ParameterKeys.New<ShaderMixinSource>();
-        public static readonly ParameterKey<ShaderMixinSource> SpecularPowerMap = ParameterKeys.New<ShaderMixinSource>();
-        public static readonly ParameterKey<ShaderMixinSource> SpecularIntensityMap = ParameterKeys.New<ShaderMixinSource>();
-        public static readonly ParameterKey<ShaderMixinSource> RoughnessMap = ParameterKeys.New<ShaderMixinSource>();
-        public static readonly ParameterKey<ShaderMixinSource> ReflectanceMap = ParameterKeys.New<ShaderMixinSource>();
-        public static readonly ParameterKey<ShaderMixinSource> LightMap = ParameterKeys.New<ShaderMixinSource>();
     };
 }

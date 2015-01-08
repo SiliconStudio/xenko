@@ -50,14 +50,23 @@ namespace SiliconStudio.Paradox.Effects.Core
                     context.Mixin(mixin, "TransformationSkinning");
                     if (context.GetParam(MaterialParameters.HasSkinningNormal))
                     {
-                        if (context.GetParam(MaterialParameters.NormalMap) != null)
-                            context.Mixin(mixin, "TangentToViewSkinning");
-                        else
-                            context.Mixin(mixin, "NormalVSSkinning");
                         context.Mixin(mixin, "NormalSkinning");
                     }
                     if (context.GetParam(MaterialParameters.HasSkinningTangent))
+                    {
                         context.Mixin(mixin, "TangentSkinning");
+                    }
+                    if (context.GetParam(MaterialParameters.HasSkinningNormal))
+                    {
+                        if (context.GetParam(MaterialParameters.HasNormalMap))
+                        {
+                            context.Mixin(mixin, "NormalVSSkinningNormalMapping");
+                        }
+                        else
+                        {
+                            context.Mixin(mixin, "NormalVSSkinningFromMesh");
+                        }
+                    }
                 }
             }
 
@@ -103,20 +112,13 @@ namespace SiliconStudio.Paradox.Effects.Core
                 context.Mixin(mixin, "ShadingBase");
                 context.Mixin(mixin, "TransformationWAndVP");
                 context.Mixin(mixin, "PositionVSStream");
-                if (context.GetParam(MaterialParameters.NormalMap) != null)
+                if (context.GetParam(MaterialParameters.HasNormalMap))
                 {
-                    context.Mixin(mixin, "NormalMapTexture");
-
-                    {
-                        var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-                        context.PushComposition(mixin, "normalMap", __subMixin);
-                        context.Mixin(__subMixin, context.GetParam(MaterialParameters.NormalMap));
-                        context.PopComposition();
-                    }
+                    context.Mixin(mixin, "NormalVSFromNormalMapping");
                 }
                 else
                 {
-                    context.Mixin(mixin, "NormalVSStream");
+                    context.Mixin(mixin, "NormalVSFromMesh");
                 }
             }
 

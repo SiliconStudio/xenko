@@ -5,7 +5,6 @@ namespace SiliconStudio.Paradox.Effects.Materials
     class MaterialStream
     {
         // Inputs while shading a material surface
-        stage stream float3 shadingNormal;
         stage stream float3 shadingView;
 
         // Output of shading a material surface

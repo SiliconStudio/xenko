@@ -4,9 +4,13 @@
 /// <summary>
 /// Defines a group of similar lights (directional, spot...etc.)
 /// </summary>
-class LightGroup : LightParameters
+class LightGroup : LightStream
 {
-    // TODO: Handle inline
+    cbuffer PerPass
+    {
+        int LightCount;
+    }
+
     int GetMaxLightCount()
     {
         return 0;

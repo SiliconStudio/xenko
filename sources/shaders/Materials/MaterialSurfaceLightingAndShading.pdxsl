@@ -5,12 +5,16 @@ namespace SiliconStudio.Paradox.Effects.Materials
     /// <summary>
     /// Performs the shading of a material according to the lights
     /// </summary>
-    class MaterialSurfaceLightingAndShading : IMaterialSurface, LightGroupArray, LightStream
+    class MaterialSurfaceLightingAndShading : IMaterialSurface, LightGroupArray, LightStream, NormalStream
     {
         compose IMaterialSurfaceShading surfaces[];
 
         override void Compute()
         {
+            // Before performing the shading for all lights, update the NormalVS with the latest normal
+            // In case normal mapping is not used, this is a no-op
+            UpdateNormalVSFromTangentToView(streams.matNormal);
+
             foreach(var lightGroup in lightGroups)
             {
                 const int maxLightCount = lightGroup.GetMaxLightCount();

@@ -17,6 +17,7 @@ namespace SiliconStudio.Paradox.Effects
 
         mixin PositionVSStream;
 
+        /*
         var hasNormals = MaterialParameters.NormalMap != null;
         if (hasNormals)
         {
@@ -27,13 +28,15 @@ namespace SiliconStudio.Paradox.Effects
         {
             mixin NormalVSStream;
         }
+        */
 
         mixin BRDFDiffuseBase;
         mixin BRDFSpecularBase;
         mixin LightMultiDirectionalShadingPerPixel<2>;
         mixin TransparentShading;
         mixin DiscardTransparent;
-                                 
+          
+          /*                       
         if (MaterialParameters.AlbedoDiffuse != null)
         {
             mixin compose DiffuseLighting = ComputeBRDFDiffuseLambert;
@@ -80,5 +83,6 @@ namespace SiliconStudio.Paradox.Effects
             if (MaterialParameters.HasSkinningTangent)
                 mixin TangentSkinning;
         }
+        */
     };
 }

@@ -436,12 +436,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Include="Core\IComputeStep.cs">
-      <DependentUpon>IComputeStep.pdxsl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Core\DynamicSampler.cs">
       <DependentUpon>DynamicSampler.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -948,18 +942,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>VertexColorShading.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="DefaultDeferredEffect.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>DefaultDeferredEffect.pdxfx</DependentUpon>
-    </Compile>
-    <Compile Include="DefaultForwardEffect.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>DefaultForwardEffect.pdxfx</DependentUpon>
-    </Compile>
     <Compile Include="Deferred\GBufferPack.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1045,11 +1027,11 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ColorBase.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Core\NormalMapTexture.cs">
+    <Compile Include="Core\NormalVSFromNormalMapping.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>NormalMapTexture.pdxsl</DependentUpon>
+      <DependentUpon>NormalVSFromNormalMapping.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Core\NormalStream.cs">
       <AutoGen>True</AutoGen>
@@ -1063,11 +1045,11 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>NormalVSBase.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Core\NormalVSStream.cs">
+    <Compile Include="Core\NormalVSFromMesh.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>NormalVSStream.pdxsl</DependentUpon>
+      <DependentUpon>NormalVSFromMesh.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Core\PositionHStream4.cs">
       <AutoGen>True</AutoGen>
@@ -1218,12 +1200,6 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>GroupShadingBase.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="Lighting\LightParameters.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>LightParameters.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Shading\ShadingDiffusePerPixel.cs">
       <AutoGen>True</AutoGen>
@@ -1419,35 +1395,29 @@
       <DependentUpon>ShadowMapUtils.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="ShadowMaps\ShadowMapReceiverVsmInfo.cs" />
-    <Compile Include="Skinning\NormalSkinning.cs">
+    <Compile Include="Skinning\NormalMeshSkinning.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>NormalSkinning.pdxsl</DependentUpon>
+      <DependentUpon>NormalMeshSkinning.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Skinning\NormalVSSkinning.cs">
+    <Compile Include="Skinning\NormalVSSkinningFromMesh.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>NormalVSSkinning.pdxsl</DependentUpon>
+      <DependentUpon>NormalVSSkinningFromMesh.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Skinning\TangentSkinning.cs">
+    <Compile Include="Skinning\TangentMeshSkinning.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>TangentSkinning.pdxsl</DependentUpon>
+      <DependentUpon>TangentMeshSkinning.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Skinning\TangentToViewBase.cs">
+    <Compile Include="Skinning\NormalVSSkinningNormalMapping.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>TangentToViewBase.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="Skinning\TangentToViewSkinning.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>TangentToViewSkinning.pdxsl</DependentUpon>
+      <DependentUpon>NormalVSSkinningNormalMapping.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Skinning\TransformationSkinning.cs">
       <AutoGen>True</AutoGen>
@@ -1919,10 +1889,6 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorSubtractMaya.cs</LastGenOutput>
     </None>
-    <None Include="Core\IComputeStep.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>IComputeStep.cs</LastGenOutput>
-    </None>
     <None Include="Core\DynamicSampler.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>DynamicSampler.cs</LastGenOutput>
@@ -1951,9 +1917,9 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ColorBase.cs</LastGenOutput>
     </None>
-    <None Include="Core\NormalMapTexture.pdxsl">
+    <None Include="Core\NormalVSFromNormalMapping.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>NormalMapTexture.cs</LastGenOutput>
+      <LastGenOutput>NormalVSFromNormalMapping.cs</LastGenOutput>
     </None>
     <None Include="Core\NormalStream.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -1963,9 +1929,9 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>NormalVSBase.cs</LastGenOutput>
     </None>
-    <None Include="Core\NormalVSStream.pdxsl">
+    <None Include="Core\NormalVSFromMesh.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>NormalVSStream.cs</LastGenOutput>
+      <LastGenOutput>NormalVSFromMesh.cs</LastGenOutput>
     </None>
     <None Include="Core\PositionHStream4.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -2283,14 +2249,10 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>VertexColorShading.cs</LastGenOutput>
     </None>
-    <None Include="DefaultDeferredEffect.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>DefaultDeferredEffect.cs</LastGenOutput>
+    <None Include="DefaultDeferredEffect.oldpdxfx">
+      <LastGenOutput>DefaultDeferredEffect1.cs</LastGenOutput>
     </None>
-    <None Include="DefaultForwardEffect.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>DefaultForwardEffect.cs</LastGenOutput>
-    </None>
+    <None Include="DefaultForwardEffect.oldpdxfx" />
     <None Include="Deferred\GBuffer.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>GBuffer.cs</LastGenOutput>
@@ -2411,10 +2373,6 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>GroupShadingBase.cs</LastGenOutput>
     </None>
-    <None Include="Lighting\LightParameters.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>LightParameters.cs</LastGenOutput>
-    </None>
     <None Include="Shading\ShadingDiffusePerPixel.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadingDiffusePerPixel.cs</LastGenOutput>
@@ -2523,25 +2481,21 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadowMapUtils.cs</LastGenOutput>
     </None>
-    <None Include="Skinning\NormalSkinning.pdxsl">
+    <None Include="Skinning\NormalMeshSkinning.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>NormalSkinning.cs</LastGenOutput>
+      <LastGenOutput>NormalMeshSkinning.cs</LastGenOutput>
     </None>
-    <None Include="Skinning\NormalVSSkinning.pdxsl">
+    <None Include="Skinning\NormalVSSkinningFromMesh.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>NormalVSSkinning.cs</LastGenOutput>
+      <LastGenOutput>NormalVSSkinningFromMesh.cs</LastGenOutput>
     </None>
-    <None Include="Skinning\TangentSkinning.pdxsl">
+    <None Include="Skinning\TangentMeshSkinning.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>TangentSkinning.cs</LastGenOutput>
+      <LastGenOutput>TangentMeshSkinning.cs</LastGenOutput>
     </None>
-    <None Include="Skinning\TangentToViewBase.pdxsl">
+    <None Include="Skinning\NormalVSSkinningNormalMapping.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>TangentToViewBase.cs</LastGenOutput>
-    </None>
-    <None Include="Skinning\TangentToViewSkinning.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>TangentToViewSkinning.cs</LastGenOutput>
+      <LastGenOutput>NormalVSSkinningNormalMapping.cs</LastGenOutput>
     </None>
     <None Include="Skinning\TransformationSkinning.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
