@@ -187,6 +187,11 @@ namespace SiliconStudio.Paradox.Shaders
         /// <param name="name">The name.</param>
         public void Mixin(ShaderMixinSourceTree mixinTree, string name)
         {
+            if (name == null)
+            {
+                throw new ArgumentNullException("name", "Invalid null mixin name");
+            }
+
             IShaderMixinBuilder builder;
             if (!registeredBuilders.TryGetValue(name, out builder))
             {
@@ -231,10 +236,10 @@ namespace SiliconStudio.Paradox.Shaders
             compositionIndices.Push(compositionStringBuilder.Length);
             if (compositionString != null)
             {
-                compositionStringBuilder.Append('.');
+                compositionStringBuilder.Insert(0, '.');
             }
 
-            compositionStringBuilder.Append(compositionName);
+            compositionStringBuilder.Insert(0, compositionName);
 
             compositionString = compositionStringBuilder.ToString();
         }
@@ -246,13 +251,13 @@ namespace SiliconStudio.Paradox.Shaders
             compositionIndices.Push(compositionStringBuilder.Length);
             if (compositionString != null)
             {
-                compositionStringBuilder.Append('.');
+                compositionStringBuilder.Insert(0, '.');
             }
 
-            compositionStringBuilder.Append(compositionName);
-            compositionStringBuilder.Append('[');
-            compositionStringBuilder.Append(arrayIndex);
-            compositionStringBuilder.Append(']');
+            compositionStringBuilder.Insert(0, ']');
+            compositionStringBuilder.Insert(0, arrayIndex);
+            compositionStringBuilder.Insert(0, '[');
+            compositionStringBuilder.Insert(0, compositionName);
 
             compositionString = compositionStringBuilder.ToString();
         }

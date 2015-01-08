@@ -10,7 +10,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// A tonemap effect.
     /// </summary>
-    public class ToneMap : ColorTransform, IImageEffectParameterKeyDependencies
+    public class ToneMap : ColorTransform
     {
         private readonly float[] weightedLuminances = new float[16];
         private int currentWeightedLuminanceIndex = 0;
@@ -141,12 +141,6 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
-
-        void IImageEffectParameterKeyDependencies.FillParameterKeyDependencies(HashSet<ParameterKey> dependencies)
-        {
-            dependencies.Add(ToneMapKeys.LuminanceResult);
-        }
-
         public override void UpdateParameters(ColorTransformContext context)
         {
             base.UpdateParameters(context);
@@ -155,10 +149,10 @@ namespace SiliconStudio.Paradox.Effects.Images
             var elapsedTime = timer.Elapsed;
             timer.Restart();
 
-            var luminanceResult = context.SharedParameters.Get(ToneMapKeys.LuminanceResult);
+            var luminanceResult = context.SharedParameters.Get(LuminanceEffect.LuminanceResult);
 
-            var avgLuminanceLog = 0.18f;
-            if (luminanceResult.Texture != null)
+            var avgLuminanceLog = 0.18f; // TODO: Add a parmetrized average luminance
+            if (luminanceResult.LocalTexture != null)
             {
                 // Adapt the luminance using Pattanaik's technique    
                 var currentAvgLuminance = (float)Math.Max(luminanceResult.AverageLuminance, 0.0001);
@@ -187,18 +181,18 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
 
             // Setup parameters
-            Parameters.Set(ToneMapShaderKeys.LuminanceTexture, luminanceResult.Texture);
+            Parameters.Set(ToneMapShaderKeys.LuminanceTexture, luminanceResult.LocalTexture);
             Parameters.Set(ToneMapShaderKeys.LuminanceAverageGlobal, avgLuminanceLog);
 
             // Update operator parameters
             var currentOperator = Operator ?? defaultOperator;
             currentOperator.UpdateParameters(context);
 
-            // Only change shader when actually changing (to allow compilation checks based on parameters counters not changing)
-            var newShader = currentOperator != null ? currentOperator.Shader : null;
-            if (previousShader != newShader)
+            // Copy sub parameters from composition to this transform
+            foreach (var parameterValue in currentOperator.Parameters)
             {
-                Parameters.Set(ToneMapKeys.Operator, currentOperator.Shader);
+                var key = parameterValue.Key.ComposeWith("ToneMapOperator");
+                currentOperator.Parameters.CopySharedTo(parameterValue.Key, key, Parameters);
             }
         }
     }

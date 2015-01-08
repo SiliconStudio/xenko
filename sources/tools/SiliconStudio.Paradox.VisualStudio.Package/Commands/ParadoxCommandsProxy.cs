@@ -72,45 +72,37 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
         /// <returns>ParadoxCommandsProxy.</returns>
         public static ParadoxCommandsProxy GetProxy()
         {
-            try
+            lock (paradoxCommandProxyLock)
             {
-                lock (paradoxCommandProxyLock)
+                // New instance?
+                bool shouldReload = currentInstance == null;
+                if (!shouldReload)
                 {
-                    // New instance?
-                    bool shouldReload = currentInstance == null;
-                    if (!shouldReload)
-                    {
-                        // Assemblies changed?
-                        shouldReload = currentInstance.ShouldReload();
-                    }
-
-                    // If new instance or assemblies changed, reload
-                    if (shouldReload)
-                    {
-                        currentInstance = null;
-                        if (currentAppDomain != null)
-                        {
-                            try
-                            {
-                                AppDomain.Unload(currentAppDomain);
-                            }
-                            catch (Exception ex)
-                            {
-                                Trace.WriteLine(string.Format("Unexpected exception when unloading AppDomain for ParadoxCommandsProxy: {0}", ex));
-                            }
-                        }
-
-                        currentAppDomain = CreateParadoxDomain();
-                        currentInstance = CreateProxy(currentAppDomain);
-                    }
-
-                    return currentInstance;
+                    // Assemblies changed?
+                    shouldReload = currentInstance.ShouldReload();
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(string.Format("Unexpected error while trying to initialize Paradox VisualStudio Commands: {0}", ex), "Paradox VisualStudio Plugin", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                throw;
+
+                // If new instance or assemblies changed, reload
+                if (shouldReload)
+                {
+                    currentInstance = null;
+                    if (currentAppDomain != null)
+                    {
+                        try
+                        {
+                            AppDomain.Unload(currentAppDomain);
+                        }
+                        catch (Exception ex)
+                        {
+                            Trace.WriteLine(string.Format("Unexpected exception when unloading AppDomain for ParadoxCommandsProxy: {0}", ex));
+                        }
+                    }
+
+                    currentAppDomain = CreateParadoxDomain();
+                    currentInstance = CreateProxy(currentAppDomain);
+                }
+
+                return currentInstance;
             }
         }
 
@@ -248,6 +240,11 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
 
             // TODO: Maybe move it in some common class somewhere? (in this case it would be included with "Add as link" in VSPackage)
             var paradoxSdkDir = Environment.GetEnvironmentVariable("SiliconStudioParadoxDir");
+
+            if (paradoxSdkDir == null)
+            {
+                return null;
+            }
 
             // Check if it is a dev directory
             if (File.Exists(Path.Combine(paradoxSdkDir, "build\\Paradox.sln")))

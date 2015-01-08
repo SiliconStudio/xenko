@@ -53,7 +53,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
             set
             {
-                if (frameDelayCount <= 0)
+                if (value <= 0)
                 {
                     throw new ArgumentOutOfRangeException("value", "Expecting a value > 0");
                 }

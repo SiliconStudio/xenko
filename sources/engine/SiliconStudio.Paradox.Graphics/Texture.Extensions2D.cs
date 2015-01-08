@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.Graphics
     public partial class Texture 
     {
         /// <summary>
-        /// Creates a new <see cref="Texture2D" /> with a single mipmap.
+        /// Creates a new 2D <see cref="Texture" /> with a single mipmap.
         /// </summary>
         /// <param name="device">The <see cref="GraphicsDevice"/>.</param>
         /// <param name="width">The width.</param>
@@ -39,14 +39,14 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="textureFlags">true if the texture needs to support unordered read write.</param>
         /// <param name="arraySize">Size of the texture 2D array, default to 1.</param>
         /// <param name="usage">The usage.</param>
-        /// <returns>A new instance of <see cref="Texture2D" /> class.</returns>
+        /// <returns>A new instance of 2D <see cref="Texture" /> class.</returns>
         public static Texture New2D(GraphicsDevice device, int width, int height, PixelFormat format, TextureFlags textureFlags = TextureFlags.ShaderResource, int arraySize = 1, GraphicsResourceUsage usage = GraphicsResourceUsage.Default)
         {
             return New2D(device, width, height, false, format, textureFlags, arraySize, usage);
         }
 
         /// <summary>
-        /// Creates a new <see cref="Texture2D" />.
+        /// Creates a new 2D <see cref="Texture" />.
         /// </summary>
         /// <param name="device">The <see cref="GraphicsDevice"/>.</param>
         /// <param name="width">The width.</param>
@@ -56,14 +56,14 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="textureFlags">true if the texture needs to support unordered read write.</param>
         /// <param name="arraySize">Size of the texture 2D array, default to 1.</param>
         /// <param name="usage">The usage.</param>
-        /// <returns>A new instance of <see cref="Texture2D" /> class.</returns>
+        /// <returns>A new instance of 2D <see cref="Texture" /> class.</returns>
         public static Texture New2D(GraphicsDevice device, int width, int height, MipMapCount mipCount, PixelFormat format, TextureFlags textureFlags = TextureFlags.ShaderResource, int arraySize = 1, GraphicsResourceUsage usage = GraphicsResourceUsage.Default)
         {
             return new Texture(device).InitializeFrom(TextureDescription.New2D(width, height, mipCount, format, textureFlags, arraySize, usage));
         }
 
         /// <summary>
-        /// Creates a new <see cref="Texture2D" /> with a single level of mipmap.
+        /// Creates a new 2D <see cref="Texture" /> with a single level of mipmap.
         /// </summary>
         /// <typeparam name="T">Type of the pixel data to upload to the texture.</typeparam>
         /// <param name="device">The <see cref="GraphicsDevice"/>.</param>
@@ -73,7 +73,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="usage">The usage.</param>
         /// <param name="textureFlags">true if the texture needs to support unordered read write.</param>
         /// <param name="textureData">The texture data for a single mipmap and a single array slice. See remarks</param>
-        /// <returns>A new instance of <see cref="Texture2D" /> class.</returns>
+        /// <returns>A new instance of 2D <see cref="Texture" /> class.</returns>
         /// <remarks>
         /// Each value in textureData is a pixel in the destination texture.
         /// </remarks>
@@ -83,7 +83,7 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         /// <summary>
-        /// Creates a new <see cref="Texture2D" />.
+        /// Creates a new 2D <see cref="Texture" />.
         /// </summary>
         /// <param name="device">The <see cref="GraphicsDevice"/>.</param>
         /// <param name="width">The width.</param>
@@ -94,7 +94,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="textureFlags">true if the texture needs to support unordered read write.</param>
         /// <param name="arraySize">Size of the texture 2D array, default to 1.</param>
         /// <param name="usage">The usage.</param>
-        /// <returns>A new instance of <see cref="Texture2D" /> class.</returns>
+        /// <returns>A new instance of 2D <see cref="Texture" /> class.</returns>
         public static Texture New2D(
             GraphicsDevice device,
             int width,

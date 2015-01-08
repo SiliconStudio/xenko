@@ -253,8 +253,18 @@ namespace NShader
                         var thread = new System.Threading.Thread(
                             () =>
                             {
-                                var result = ParadoxCommandsProxy.GetProxy().AnalyzeAndGoToDefinition(text, new RawSourceSpan(sourcePath, 1, 1));
-                                OutputAnalysisMessages(result, source);
+                                try
+                                {
+                                    var result = ParadoxCommandsProxy.GetProxy().AnalyzeAndGoToDefinition(text, new RawSourceSpan(sourcePath, 1, 1));
+                                    OutputAnalysisMessages(result, source);
+                                }
+                                catch (Exception ex)
+                                {
+                                    lock (errorListProvider)
+                                    {
+                                        errorListProvider.Tasks.Add(new ErrorTask(ex.InnerException ?? ex));
+                                    }
+                                }
                             });
                         thread.Start();
                     }
@@ -307,66 +317,73 @@ namespace NShader
         {
             lock (errorListProvider)
             {
-                var taskProvider = source != null ? source.GetTaskProvider() : null;
-                if (taskProvider != null)
+                try
                 {
-                    taskProvider.Tasks.Clear();
-                }
-
-                errorListProvider.Tasks.Clear(); // clear previously created
-                foreach (var message in result.Messages)
-                {
-                    var errorCategory = TaskErrorCategory.Message;
-                    if (message.Type == "warning")
+                    var taskProvider = source != null ? source.GetTaskProvider() : null;
+                    if (taskProvider != null)
                     {
-                        errorCategory = TaskErrorCategory.Warning;
-                    }
-                    else if (message.Type == "error")
-                    {
-                        errorCategory = TaskErrorCategory.Error;
+                        taskProvider.Tasks.Clear();
                     }
 
-                    // Make sure that we won't pass nay null to VS as it will crash it
-                    var filePath = message.Span.File ?? string.Empty;
-                    var messageText = message.Text ?? string.Empty;
-
-
-                    if (taskProvider != null && errorCategory == TaskErrorCategory.Error)
+                    errorListProvider.Tasks.Clear(); // clear previously created
+                    foreach (var message in result.Messages)
                     {
-                        var task = source.CreateErrorTaskItem(ConvertToTextSpan(message.Span), filePath, messageText, TaskPriority.High, TaskCategory.CodeSense, MARKERTYPE.MARKER_CODESENSE_ERROR, TaskErrorCategory.Error);
-                        taskProvider.Tasks.Add(task);
+                        var errorCategory = TaskErrorCategory.Message;
+                        if (message.Type == "warning")
+                        {
+                            errorCategory = TaskErrorCategory.Warning;
+                        }
+                        else if (message.Type == "error")
+                        {
+                            errorCategory = TaskErrorCategory.Error;
+                        }
+
+                        // Make sure that we won't pass nay null to VS as it will crash it
+                        var filePath = message.Span.File ?? string.Empty;
+                        var messageText = message.Text ?? string.Empty;
+
+
+                        if (taskProvider != null && errorCategory == TaskErrorCategory.Error)
+                        {
+                            var task = source.CreateErrorTaskItem(ConvertToTextSpan(message.Span), filePath, messageText, TaskPriority.High, TaskCategory.CodeSense, MARKERTYPE.MARKER_CODESENSE_ERROR, TaskErrorCategory.Error);
+                            taskProvider.Tasks.Add(task);
+                        }
+                        else
+                        {
+                            var newError = new ErrorTask()
+                            {
+                                ErrorCategory = errorCategory,
+                                Category = TaskCategory.BuildCompile,
+                                Text = messageText,
+                                Document = filePath,
+                                Line = Math.Max(0, message.Span.Line - 1),
+                                Column = Math.Max(0, message.Span.Column - 1),
+                                // HierarchyItem = hierarchyItem // TODO Add hierarchy the file is associated to
+                            };
+
+                            // Install our navigate to source 
+                            newError.Navigate += NavigateToSourceError;
+                            errorListProvider.Tasks.Add(newError); // add item
+                        }
+                    }
+
+                    if (result.Messages.Count > 0)
+                    {
+                        errorListProvider.Show(); // make sure it is visible 
                     }
                     else
                     {
-                        var newError = new ErrorTask()
-                        {
-                            ErrorCategory = errorCategory,
-                            Category = TaskCategory.BuildCompile,
-                            Text = messageText,
-                            Document = filePath,
-                            Line = message.Span.Line - 1,
-                            Column = message.Span.Column - 1,
-                            // HierarchyItem = hierarchyItem // TODO Add hierarchy the file is associated to
-                        };
+                        errorListProvider.Refresh();
+                    }
 
-                        // Install our navigate to source 
-                        newError.Navigate += NavigateToSourceError;
-                        errorListProvider.Tasks.Add(newError); // add item
+                    if (taskProvider != null)
+                    {
+                        taskProvider.Refresh();
                     }
                 }
-
-                if (result.Messages.Count > 0)
+                catch (Exception ex)
                 {
-                    errorListProvider.Show(); // make sure it is visible 
-                }
-                else
-                {
-                    errorListProvider.Refresh();
-                }
-
-                if (taskProvider != null)
-                {
-                    taskProvider.Refresh();
+                    errorListProvider.Tasks.Add(new ErrorTask(ex.InnerException ?? ex));
                 }
             }
         }
@@ -375,10 +392,10 @@ namespace NShader
         {
             return new TextSpan()
             {
-                iStartIndex = span.Column-1,
-                iStartLine = span.Line-1,
-                iEndIndex = span.EndColumn-1,
-                iEndLine = span.EndLine-1
+                iStartIndex = Math.Max(0, span.Column-1),
+                iStartLine = Math.Max(0, span.Line-1),
+                iEndIndex = Math.Max(0, span.EndColumn-1),
+                iEndLine = Math.Max(0, span.EndLine-1)
             };
         }
 
