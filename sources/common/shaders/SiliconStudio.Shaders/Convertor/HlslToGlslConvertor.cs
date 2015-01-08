@@ -341,6 +341,11 @@ namespace SiliconStudio.Shaders.Convertor
         public bool KeepNonUniformArrayInitializers { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the shader should be converted to ES2 target.
+        /// </summary>
+        public bool IsOpenGLES2 { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether to unroll the loops with the [unroll] annotation.
         /// </summary>
         public bool UnrollForLoops { get; set; }
@@ -1373,7 +1378,10 @@ namespace SiliconStudio.Shaders.Convertor
 
                             if (isLoad)
                             {
-                                methodName += "Lod";
+                                if (IsOpenGLES2)
+                                    methodName += "Lod";
+                                else
+                                    methodName = "texelFetch";
                             }
 
                             if (methodInvocationExpression.Arguments.Count == baseParameterCount + 1)
@@ -1404,9 +1412,10 @@ namespace SiliconStudio.Shaders.Convertor
 
                             if (isLoad)
                             {
-                                // Since Texture.Load works with integer coordinates, need to convert
-                                // texture.Load(coords, [offset]) to textureLod[Offset](texture_sampler, coords.xy / textureSize(texture_sampler), coords.z, [offset])
-
+                                // Since Texture.Load works with integer coordinates, need to convert texture.Load(coords, [offset]) to:
+                                //    - textureLod[Offset](texture_sampler, coords.xy / textureSize(texture_sampler), coords.z, [offset]) on OpenGL ES 2
+                                //    - texelFetch[Offset](texture_sampler, coords.xy, coords.z, [offset]) on OpenGL and ES 3
+                                
                                 string dimP = "??";
                                 string mipLevel = "?";
 
@@ -1429,11 +1438,19 @@ namespace SiliconStudio.Shaders.Convertor
                                         break;
                                 }
 
-                                methodInvocationExpression.Arguments.Insert(2, NewCast(ScalarType.Float, new MemberReferenceExpression(methodInvocationExpression.Arguments[1].DeepClone(), mipLevel)));
-                                methodInvocationExpression.Arguments[1] = NewCast(new VectorType(ScalarType.Float, dimP.Length), new BinaryExpression(
-                                    BinaryOperator.Divide,
-                                    new MemberReferenceExpression(methodInvocationExpression.Arguments[1], dimP),
-                                    NewCast(new VectorType(ScalarType.Float, dimP.Length), new MethodInvocationExpression("textureSize", new VariableReferenceExpression(glslSampler.Name), new LiteralExpression(0)))));
+                                if (IsOpenGLES2)
+                                {
+                                    methodInvocationExpression.Arguments.Insert(2, NewCast(ScalarType.Float, new MemberReferenceExpression(methodInvocationExpression.Arguments[1].DeepClone(), mipLevel)));
+                                    methodInvocationExpression.Arguments[1] = NewCast(new VectorType(ScalarType.Float, dimP.Length), new BinaryExpression(
+                                        BinaryOperator.Divide,
+                                        new MemberReferenceExpression(methodInvocationExpression.Arguments[1], dimP),
+                                        NewCast(new VectorType(ScalarType.Float, dimP.Length), new MethodInvocationExpression("textureSize", new VariableReferenceExpression(glslSampler.Name), new LiteralExpression(0)))));
+                                }
+                                else
+                                {
+                                    methodInvocationExpression.Arguments.Insert(2, NewCast(ScalarType.Int, new MemberReferenceExpression(methodInvocationExpression.Arguments[1].DeepClone(), mipLevel)));
+                                    methodInvocationExpression.Arguments[1] = NewCast(new VectorType(ScalarType.Int, dimP.Length), new MemberReferenceExpression(methodInvocationExpression.Arguments[1], dimP));
+                                }
                             }
 
                             methodInvocationExpression.Target = new VariableReferenceExpression(methodName);

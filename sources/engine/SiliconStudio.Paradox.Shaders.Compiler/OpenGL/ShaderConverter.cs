@@ -139,7 +139,8 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
                     UseSemanticForVariable = true,
                     IsPointSpriteShader = false,
                     ViewFrustumRemap = true,
-                    KeepNonUniformArrayInitializers = !isOpenGLES
+                    KeepNonUniformArrayInitializers = !isOpenGLES,
+                    IsOpenGLES2 = isOpenGLES && !isOpenGLES3
                 };
                 convertor.Run(result);
 
