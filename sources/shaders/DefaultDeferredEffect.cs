@@ -598,6 +598,10 @@ namespace DefaultEffects
                             context.PopComposition();
                         }
                     }
+                    else
+                    {
+                        context.Mixin(mixin, "AmbientLightShading");
+                    }
                 }
                 else
                 {

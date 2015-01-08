@@ -64,6 +64,9 @@ namespace SiliconStudio.Paradox.Input
         private System.Drawing.Point capturedPosition;
         private bool wasMouseVisibleBeforeCapture;
 
+        private IntPtr defaultWndProc;
+        private Win32Native.WndProc inputWndProc;
+
         public override void LockMousePosition()
         {
             if (!IsMousePositionLocked)
@@ -85,6 +88,50 @@ namespace SiliconStudio.Paradox.Input
             }
         }
 
+        private IntPtr WndProc(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam)
+        {
+            WinFormsKeys virtualKey;
+            switch (msg)
+            {
+                case Win32Native.WM_KEYDOWN:
+                case Win32Native.WM_SYSKEYDOWN:
+                    virtualKey = (WinFormsKeys)wParam.ToInt32();
+                    virtualKey = GetCorrectExtendedKey(virtualKey, lParam.ToInt32());
+                    OnKeyEvent(virtualKey, false);
+                    break;
+                case Win32Native.WM_KEYUP:
+                case Win32Native.WM_SYSKEYUP:
+                    virtualKey = (WinFormsKeys)wParam.ToInt32();
+                    virtualKey = GetCorrectExtendedKey(virtualKey, lParam.ToInt32());
+                    OnKeyEvent(virtualKey, true);
+                    break;
+            }
+
+            var result = Win32Native.CallWindowProc(defaultWndProc, hWnd, msg, wParam, lParam);
+            return result;
+        }
+
+        private static WinFormsKeys GetCorrectExtendedKey(WinFormsKeys virtualKey, int lParam)
+        {
+            if (virtualKey == WinFormsKeys.ControlKey)
+            {
+                // We check if the key is an extended key. Extended keys are R-keys, non-extended are L-keys.
+                return (lParam & 0x01000000) == 0 ? WinFormsKeys.LControlKey : WinFormsKeys.RControlKey;
+            }
+            if (virtualKey == WinFormsKeys.ShiftKey)
+            {
+                // We need to check the scan code to check which SHIFT key it is.
+                var scanCode = (lParam & 0x00FF0000) >> 16;
+                return (scanCode != 36) ? WinFormsKeys.LShiftKey : WinFormsKeys.RShiftKey;
+            }
+            if (virtualKey == WinFormsKeys.Menu)
+            {
+                // We check if the key is an extended key. Extended keys are R-keys, non-extended are L-keys.
+                return (lParam & 0x01000000) == 0 ? WinFormsKeys.LMenu : WinFormsKeys.RMenu;
+            }
+            return virtualKey;
+        }
+
         private void InitializeFromWindowsForms(GameContext uiContext)
         {
             uiControl = (Control) uiContext.Control;
@@ -98,8 +145,11 @@ namespace SiliconStudio.Paradox.Input
             else
             {
                 EnsureMapKeys();
-                uiControl.KeyDown += (_, e) => OnKeyEvent(e.KeyCode, false);
-                uiControl.KeyUp += (_, e) => OnKeyEvent(e.KeyCode, true);
+                defaultWndProc = Win32Native.GetWindowLong(new HandleRef(this, uiControl.Handle), Win32Native.WindowLongType.WndProc);
+                // This is needed to prevent garbage collection of the delegate.
+                inputWndProc = WndProc;
+                var inputWndProcPtr = Marshal.GetFunctionPointerForDelegate(inputWndProc);
+                Win32Native.SetWindowLong(new HandleRef(this, uiControl.Handle), Win32Native.WindowLongType.WndProc, inputWndProcPtr);
             }
             uiControl.LostFocus += (_, e) => OnUiControlLostFocus();
             uiControl.MouseMove += (_, e) => OnMouseMoveEvent(new Vector2(e.X, e.Y));
@@ -113,36 +163,9 @@ namespace SiliconStudio.Paradox.Input
             ControlHeight = uiControl.ClientSize.Height;
         }
 
-        [DllImport("user32.dll")]
-        private static extern short GetAsyncKeyState(WinFormsKeys vKey);
-
-        private WinFormsKeys GetCorrectModifierKey(WinFormsKeys key)
-        {
-            switch (key)
-            {
-                // TODO: if both lshift and rshift are down, lshift will always be preemptive on rshift...
-                case WinFormsKeys.ShiftKey:
-                    if (GetAsyncKeyState(WinFormsKeys.LShiftKey) != 0)
-                        return WinFormsKeys.LShiftKey;
-                    if (GetAsyncKeyState(WinFormsKeys.RShiftKey) != 0)
-                        return WinFormsKeys.RShiftKey;
-                    return key;
-                case WinFormsKeys.ControlKey:
-                    if (GetAsyncKeyState(WinFormsKeys.LControlKey) != 0)
-                        return WinFormsKeys.LControlKey;
-                    if (GetAsyncKeyState(WinFormsKeys.RControlKey) != 0)
-                        return WinFormsKeys.RControlKey;
-                    return key;
-                default:
-                    return key;
-            }
-        }
-
         private void OnKeyEvent(WinFormsKeys keyCode, bool isKeyUp)
         {
             Keys key;
-            keyCode = GetCorrectModifierKey(keyCode);
-
             if (mapKeys.TryGetValue(keyCode, out key) && key != Keys.None)
             {
                 var type = isKeyUp ? InputEventType.Up : InputEventType.Down;
