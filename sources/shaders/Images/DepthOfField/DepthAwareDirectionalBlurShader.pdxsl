@@ -8,7 +8,8 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// A blur with uniform weights applied along one direction. (depth-aware blur to avoid artifacts)
     /// </summary>
 
-    class DepthAwareDirectionalBlurShader<int TapCount> :  DepthAwareDirectionalBlurUtil<TapCount>, ImageEffectShader
+    class DepthAwareDirectionalBlurShader<int TapCount, int TapNumber, int ReferenceIdx> 
+        :  DepthAwareDirectionalBlurUtil<TapCount, TapNumber, ReferenceIdx>, ImageEffectShader
     {
         stage override float4 Shading()
         {

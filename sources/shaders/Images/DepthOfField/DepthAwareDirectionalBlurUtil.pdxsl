@@ -8,12 +8,13 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// A blur with weights applied along one direction. 
     /// The blurring algorithm is also depth-aware: sample weights are modified on-the-fly to avoid 
     /// artifacts such as in-focus objects bleeding into out-of-focus background objects.
+    /// You can also specify which sample should be used as a reference point to avoid bleeding. 
     /// Expects as input: 
     /// - Texture0: color buffer
     /// - Texture1: a [CoC, Linear Depth] buffer
     /// </summary>
 
-    class DepthAwareDirectionalBlurUtil<int BlurCount> : Texturing, ComputeColor
+    class DepthAwareDirectionalBlurUtil<int BlurCount, int TotalNumber, int ReferenceIndex> : Texturing, ComputeColor
     {
         // Direction to apply the blur. (normalized vector)
         float2 Direction;
@@ -29,12 +30,15 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             // Offset between 2 consecutive taps
             float2 tapOffset =  Radius / (BlurCount - 1) * Texture0TexelSize;
+            
+            // Fills arrays with all the taps
+            float3 tapColor[TotalNumber];  // All the taps colors
+            float3 tapCoCDepthWeight[TotalNumber]; // With their respective CoC, Depth, Weight
 
-            // Initializes with the center point
-            float totalWeight = TapWeights[0];
-            float3 resultColor = Texture0.Sample(LinearSampler, streams.TexCoord).rgb;
-            resultColor *= TapWeights[0];
-            float centerDepth = Texture1.Sample(LinearSampler, streams.TexCoord).y;
+            // Center tap
+            int centerIndex = BlurCount - 1;
+            tapColor[centerIndex] = Texture0.Sample(LinearSampler, streams.TexCoord).rgb;
+            tapCoCDepthWeight[centerIndex] = float3(Texture1.Sample(LinearSampler, streams.TexCoord).xy, TapWeights[0]);
 
             // Treats all the taps in the 2 directions from the center
             [unroll]
@@ -44,20 +48,39 @@ namespace SiliconStudio.Paradox.Effects.Images
                 for (int j = -1.0; j <= 1.0; j += 2) // Backward(-1) and forward(+1) along the direction
                 {                     
                     float2 tapUV = streams.TexCoord + j * i * Direction * tapOffset;
-                    float2 cocDepth = Texture1.Sample(LinearSampler, tapUV).xy;
-
-                    // We want to avoid color-bleeding due to depth occlusion: 
-                    // tap's weight is recalculated to prevent artifacts
-                    float contribution = (cocDepth.y >= centerDepth);
-                    contribution += cocDepth.x;
-                    contribution = saturate(contribution * sign(cocDepth.x));
-
-                    float tapWeight = contribution * TapWeights[i];
-
-                    float3 tapColor = Texture0.Sample(LinearSampler, tapUV).rgb;
-                    resultColor += tapColor * tapWeight;
-                    totalWeight += tapWeight;
+                    int tapIndex = centerIndex + (j * i);
+                    tapColor[tapIndex]          = Texture0.Sample(LinearSampler, tapUV).rgb;
+                    tapCoCDepthWeight[tapIndex] = float3(Texture1.Sample(LinearSampler, tapUV).xy, TapWeights[i]);
                 }
+            }
+
+            // Select our reference point for the depth (to avoid bleeding)
+            float centerDepth = tapCoCDepthWeight[ReferenceIndex].y;
+
+            // Calculate the final average color by modifying tap weights on-the-fly
+            float3 resultColor = float3(0.0, 0.0, 0.0);
+            float totalWeight = 0.0;
+
+            [unroll]
+            for(int k = 0; k < TotalNumber; k++)
+            {
+                // We want to avoid color-bleeding due to depth occlusion: 
+                // tap's weight is recalculated to prevent artifacts
+                float3 cocDepthWeight = tapCoCDepthWeight[k];
+                float contribution = 1.0; // Default to 1.0 for the reference point
+                if (k != ReferenceIndex)
+                {
+                    // Tap other than the reference point need the re-calculation
+                    contribution = (cocDepthWeight.y >= centerDepth);
+                    contribution += cocDepthWeight.x;
+                    contribution = saturate(contribution * sign(cocDepthWeight.x));
+                }
+
+                // Final weight value to use
+                float tapWeight = contribution * cocDepthWeight.z;
+
+                resultColor += tapColor[k] * tapWeight;
+                totalWeight += tapWeight;
             }
 
             // Normalizes the final result

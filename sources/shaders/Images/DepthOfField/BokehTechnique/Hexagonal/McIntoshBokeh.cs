@@ -85,10 +85,12 @@ namespace SiliconStudio.Paradox.Effects.Images
             var originalDepthBuffer = GetSafeInput(1);
             var outputTexture = GetSafeOutput(0);
 
+            var tapNumber = 2 * tapCount - 1;
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.Count, tapCount);
+            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.TotalTap, tapNumber);
+            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.ReferenceIndex, tapCount - 1);
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Radius, radius);
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.TapWeights, tapWeights);
-            var tapNumber = 2 * tapCount - 1;
 
             // Blur in one direction
             var blurAngle = Phase;
@@ -134,11 +136,12 @@ namespace SiliconStudio.Paradox.Effects.Images
             var originalDepthBuffer = GetSafeInput(1);
             var outputTexture = GetSafeOutput(0);
 
+            var tapNumber = 2 * tapCount - 1;
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.Count, tapCount);
+            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.TotalTap, tapNumber);
+            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.ReferenceIndex, tapCount - 1);
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Radius, radius);
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.TapWeights, tapWeights);
-
-            var tapNumber = 2 * tapCount - 1;
 
             // Blur in one direction
             var blurAngle = Phase;
@@ -157,6 +160,8 @@ namespace SiliconStudio.Paradox.Effects.Images
             optimizedEffect.SetInput(1, originalDepthBuffer);
             optimizedEffect.SetOutput(outputTexture);
             optimizedEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.Count, tapCount);
+            optimizedEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.TotalTap, tapNumber);
+            optimizedEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.ReferenceIndex, tapCount - 1);
             optimizedEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Radius.ComposeWith("directionalBlurA"), radius);
             optimizedEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Direction.ComposeWith("directionalBlurA"), new Vector2((float)Math.Cos(diagonalBlurAngleA), (float)Math.Sin(diagonalBlurAngleA)));
             optimizedEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.TapWeights.ComposeWith("directionalBlurA"), tapWeights);

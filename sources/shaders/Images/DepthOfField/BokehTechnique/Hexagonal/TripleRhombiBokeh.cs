@@ -130,10 +130,12 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             if (rhombiTapOffsetsDirty) calculateRhombiOffsets();
 
+            var tapNumber = 2 * tapCount - 1;
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.Count, tapCount);
+            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.TotalTap, tapNumber);
+            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.ReferenceIndex, 0);
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Radius, radius);
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.TapWeights, tapWeights);
-            var tapNumber = 2 * tapCount - 1;
 
             // Vertical blur
             var blurAngle = MathUtil.PiOverTwo + Phase;

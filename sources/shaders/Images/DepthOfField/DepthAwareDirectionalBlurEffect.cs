@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-                context.Mixin(mixin, "DepthAwareDirectionalBlurShader", context.GetParam(DepthAwareDirectionalBlurKeys.Count));
+                context.Mixin(mixin, "DepthAwareDirectionalBlurShader", context.GetParam(DepthAwareDirectionalBlurKeys.Count), context.GetParam(DepthAwareDirectionalBlurKeys.TotalTap), context.GetParam(DepthAwareDirectionalBlurKeys.ReferenceIndex));
             }
 
             [ModuleInitializer]
