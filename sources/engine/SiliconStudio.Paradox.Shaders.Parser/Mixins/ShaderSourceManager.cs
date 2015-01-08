@@ -159,6 +159,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                                     else
                                         shaderSource.Hash = ObjectId.FromBytes(File.ReadAllBytes(sourceUrl));
                                 }
+                                else
                                 {
                                     throw new Exception(string.Format("Unsupported Stream type to load shader [{0}.pdxsl]", type));
                                 }
