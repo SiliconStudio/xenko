@@ -28,24 +28,26 @@ namespace SiliconStudio.Paradox.Graphics
         // values taken form https://www.khronos.org/registry/gles/api/GLES3/gl3.h
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
         private const PixelInternalFormat DepthComponent16 = (PixelInternalFormat)0x81A5;
-        private const PixelInternalFormat DepthComponent24 = (PixelInternalFormat)0x81A6; // TODO: this is 24_8. Use 24 ?
+        private const PixelInternalFormat Depth24Stencil8 = (PixelInternalFormat)0x88F0;
         private const PixelInternalFormat DepthComponent32f = (PixelInternalFormat)0x8CAC;
+        private const PixelInternalFormat R8 = (PixelInternalFormat)0x8229;
         private const PixelInternalFormat Rgba16f = (PixelInternalFormat)0x881A;
-        private const PixelInternalFormat Rgba32f = (PixelInternalFormat)0x8814;
         private const PixelInternalFormat R32ui = (PixelInternalFormat)0x8236;
         private const PixelInternalFormat R32f = (PixelInternalFormat)0x822E;
         private const PixelInternalFormat Rg32f = (PixelInternalFormat)0x8230;
         private const PixelInternalFormat Rgb32f = (PixelInternalFormat)0x8815;
+        private const PixelInternalFormat Rgba32f = (PixelInternalFormat)0x8814;
 #else
         private const PixelInternalFormat DepthComponent16 = PixelInternalFormat.DepthComponent16;
-        private const PixelInternalFormat DepthComponent24 = PixelInternalFormat.DepthComponent24; // TODO: use 24_8 ?
+        private const PixelInternalFormat Depth24Stencil8 = PixelInternalFormat.Depth24Stencil8;
         private const PixelInternalFormat DepthComponent32f = PixelInternalFormat.DepthComponent32f;
+        private const PixelInternalFormat R8 = PixelInternalFormat.R8;
         private const PixelInternalFormat Rgba16f = PixelInternalFormat.Rgba16f;
-        private const PixelInternalFormat Rgba32f = PixelInternalFormat.Rgba32f;
         private const PixelInternalFormat R32ui = PixelInternalFormat.R32ui;
         private const PixelInternalFormat R32f = PixelInternalFormat.R32f;
         private const PixelInternalFormat Rg32f = PixelInternalFormat.Rg32f;
         private const PixelInternalFormat Rgb32f = PixelInternalFormat.Rgb32f;
+        private const PixelInternalFormat Rgba32f = PixelInternalFormat.Rgba32f;
 #endif
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
@@ -343,39 +345,33 @@ namespace SiliconStudio.Paradox.Graphics
 
             switch (inputFormat)
             {
-                case PixelFormat.R8G8B8A8_UNorm:
-                    internalFormat = PixelInternalFormat.Rgba;
-                    format = PixelFormatGl.Rgba;
-                    type = PixelType.UnsignedByte;
-                    pixelSize = 4;
-                    break;
-                case PixelFormat.D16_UNorm:
-                    internalFormat = DepthComponent16;
-                    format = PixelFormatGl.DepthComponent;
-                    type = PixelType.UnsignedShort;
-                    pixelSize = 2;
-                    break;
                 case PixelFormat.A8_UNorm:
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                     internalFormat = PixelInternalFormat.Alpha;
                     format = PixelFormatGl.Alpha;
-#else
-                    internalFormat = PixelInternalFormat.R8;
-                    format = PixelFormatGl.Red;
-#endif
                     type = PixelType.UnsignedByte;
                     pixelSize = 1;
                     break;
                 case PixelFormat.R8_UNorm:
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                    internalFormat = PixelInternalFormat.Luminance;
-                    format = PixelFormatGl.Luminance;
-#else
-                    internalFormat = PixelInternalFormat.R8;
-                    format = PixelFormatGl.Red;
+                    if (graphicsDevice.IsOpenGLES2)
+                    {
+                        internalFormat = PixelInternalFormat.Luminance;
+                        format = PixelFormatGl.Luminance;
+                    }
+                    else
 #endif
+                    {
+                        internalFormat = R8;
+                        format = PixelFormatGl.Red;
+                    }
                     type = PixelType.UnsignedByte;
                     pixelSize = 1;
+                    break;
+                case PixelFormat.R8G8B8A8_UNorm:
+                    internalFormat = PixelInternalFormat.Rgba;
+                    format = PixelFormatGl.Rgba;
+                    type = PixelType.UnsignedByte;
+                    pixelSize = 4;
                     break;
                 case PixelFormat.B8G8R8A8_UNorm:
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
@@ -395,6 +391,12 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
                     type = PixelType.UnsignedByte;
                     pixelSize = 4;
+                    break;
+                case PixelFormat.R16G16B16A16_Float:
+                    internalFormat = Rgba16f;
+                    format = PixelFormatGl.Rgba;
+                    type = PixelType.HalfFloat;
+                    pixelSize = 8;
                     break;
                 case PixelFormat.R32_UInt:
                     internalFormat = R32ui;
@@ -419,6 +421,31 @@ namespace SiliconStudio.Paradox.Graphics
                     format = PixelFormatGl.Rgb;
                     type = PixelType.Float;
                     pixelSize = 12;
+                    break;
+                case PixelFormat.R32G32B32A32_Float:
+                    internalFormat = Rgba32f;
+                    format = PixelFormatGl.Rgba;
+                    type = PixelType.Float;
+                    pixelSize = 16;
+                    break;
+                case PixelFormat.D16_UNorm:
+                    internalFormat = DepthComponent16;
+                    format = PixelFormatGl.DepthComponent;
+                    type = PixelType.UnsignedShort;
+                    pixelSize = 2;
+                    break;
+                case PixelFormat.D24_UNorm_S8_UInt:
+                    internalFormat = Depth24Stencil8;
+                    format = PixelFormatGl.DepthComponent;
+                    type = PixelType.UnsignedInt248;
+                    pixelSize = 4;
+                    break;
+                // TODO: Temporary depth format (need to decide relation between RenderTarget1D and Texture)
+                case PixelFormat.D32_Float:
+                    internalFormat = DepthComponent32f;
+                    format = PixelFormatGl.DepthComponent;
+                    type = PixelType.Float;
+                    pixelSize = 4;
                     break;
 #if SILICONSTUDIO_PLATFORM_IOS
                 case PixelFormat.PVRTC_4bpp_RGB:
@@ -467,32 +494,7 @@ namespace SiliconStudio.Paradox.Graphics
                     type = PixelType.UnsignedByte;
                     break;     
 #endif
-                case PixelFormat.D24_UNorm_S8_UInt:
-                    internalFormat = DepthComponent24;
-                    format = PixelFormatGl.DepthComponent;
-                    type = PixelType.UnsignedInt248;
-                    pixelSize = 4;
-                    break;
-                case PixelFormat.R16G16B16A16_Float:
-                    internalFormat = Rgba16f;
-                    format = PixelFormatGl.Rgba;
-                    type = PixelType.HalfFloat;
-                    pixelSize = 8;
-                    break;
-                case PixelFormat.R32G32B32A32_Float:
-                    internalFormat = Rgba32f;
-                    format = PixelFormatGl.Rgba;
-                    type = PixelType.Float;
-                    pixelSize = 16;
-                    break;
-                // TODO: Temporary depth format (need to decide relation between RenderTarget1D and Texture)
-                case PixelFormat.D32_Float:
-                    internalFormat = DepthComponent32f;
-                    format = PixelFormatGl.DepthComponent;
-                    type = PixelType.Float;
-                    pixelSize = 4;
-                    break;
-                case PixelFormat.None: // TODO: remove this
+                case PixelFormat.None: // TODO: remove this - this is only for buffers used in compute shaders
                     internalFormat = PixelInternalFormat.Rgba;
                     format = PixelFormatGl.Red;
                     type = PixelType.UnsignedByte;
