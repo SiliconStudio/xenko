@@ -6,26 +6,33 @@ using SiliconStudio.Paradox.Effects;
 namespace SiliconStudio.Paradox.Effects.Core
 {
     /// <summary>
-    /// Computes tessellation
+    /// Base shader
     /// </summary>
-    partial shader ParadoxTessellation
+    partial shader ParadoxBaseShader
     {
+        using params LightingKeys;
         using params MaterialParameters;
 
-        /*if (MaterialParameters.DisplacementMap != null)
+        mixin ShaderBase;
+        mixin ShadingBase;
+        mixin TransformationWAndVP;
+        mixin PositionVSStream;
+
+        // -----------------------------------------------
+        // Performs normal mapping (in case of no-skinning, otherwise it is overloaded below)
+        // -----------------------------------------------
+        if (MaterialParameters.HasNormalMap)
         {
-            mixin TessellationDisplacement<1, 0>;
-            mixin compose tessellationDisplacement = MaterialParameters.DisplacementMap;
-        }*/
-    };
+            mixin NormalVSFromNormalMapping;
+        }
+        else
+        {
+            mixin NormalVSFromMesh;
+        }
 
-    /// <summary>
-    /// Performs animation skinning (position, normal and tangent)
-    /// </summary>
-    partial shader ParadoxSkinning
-    {
-        using params MaterialParameters;
-
+        // -----------------------------------------------
+        // Performs animation skinning (position, normal and tangent)
+        // -----------------------------------------------
         if (MaterialParameters.HasSkinningPosition)
         {
             if (MaterialParameters.SkinningBones > MaterialParameters.SkinningMaxBones)
@@ -58,41 +65,17 @@ namespace SiliconStudio.Paradox.Effects.Core
                 }
             }
         }
-    };
 
-    /// <summary>
-    /// Creates a shader for shadow caster object.
-    /// </summary>
-    partial shader ParadoxShadowCast
-    {
-        using params LightingKeys;
+        // -----------------------------------------------
+        // Mix material and lighting shading
+        // -----------------------------------------------
+        mixin MaterialSurfaceCompositor;
 
-        // cast shadow
+        // -----------------------------------------------
+        // Mix ShadowMap caster 
+        // -----------------------------------------------
         if (LightingKeys.CastShadows)
             mixin child ShadowMapCaster;
-    };
 
-    /// <summary>
-    /// Performs vertex (from attribute) and normal (from attribute or normal map) transformation
-    /// </summary>
-    partial shader ParadoxBaseShader
-    {
-        using params MaterialParameters;
-        using params BasicShadersParameters;
-
-        mixin ShaderBase;
-        mixin ShadingBase;
-        mixin TransformationWAndVP;
-
-        mixin PositionVSStream;
-
-        if (MaterialParameters.HasNormalMap)
-        {
-            mixin NormalVSFromNormalMapping;
-        }
-        else
-        {
-            mixin NormalVSFromMesh;
-        }
     };
 }
