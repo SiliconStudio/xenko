@@ -87,7 +87,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
             // Copy shader analysis to result
             parsingResult.CopyTo(result.Messages);
 
-            if (result.Messages.HasErrors)
+            if (mixerResult == null)
             {
                 return;
             }
