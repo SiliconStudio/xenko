@@ -114,14 +114,6 @@ namespace SiliconStudio.Paradox.Assets.Model.Analysis
 
             // Sort again the EntityCollection (since ID changed)
             entityHierarchy.Entities.Sort();
-
-            // Remap entity references with new Id
-            var entityAnalysisResult = EntityAnalysis.Visit(entityHierarchy);
-            foreach (var entityLink in entityAnalysisResult.EntityReferences)
-            {
-                if (idRemapping.TryGetValue(entityLink.Entity.Id, out newId))
-                    entityLink.Entity.Id = newId;
-            }
         }
 
         private class EntityReferenceAnalysis : AssetVisitorBase
