@@ -1138,6 +1138,11 @@ namespace SiliconStudio.Paradox.Graphics
             var texture = resource as Texture;
             if (texture != null)
             {
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                if (lengthInBytes == 0)
+                    lengthInBytes = texture.DepthPitch;
+#endif
+
                 if (mapMode == MapMode.Read)
                 {
                     if (texture.Description.Usage != GraphicsResourceUsage.Staging)
@@ -1146,8 +1151,6 @@ namespace SiliconStudio.Paradox.Graphics
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                     if (IsOpenGLES2 || texture.StagingData != IntPtr.Zero)
                     {
-                        if (lengthInBytes == 0)
-                            lengthInBytes = texture.DepthPitch;
                         return new MappedResource(resource, subResourceIndex,
                             new DataBox { DataPointer = texture.StagingData + offsetInBytes, SlicePitch = texture.DepthPitch, RowPitch = texture.RowPitch }, offsetInBytes, lengthInBytes);
                     }
@@ -1173,18 +1176,20 @@ namespace SiliconStudio.Paradox.Graphics
             throw new NotImplementedException("MapSubresource not implemented for type " + resource.GetType());
         }
 
-        private MappedResource MapTexture(Texture texture, BufferTarget pixelPackUnPack, MapMode mapMode, int subResourceIndex, int offsetInBytes, int lengthInBytes)
+        private MappedResource MapTexture(Texture texture, BufferTarget pixelPackUnpack, MapMode mapMode, int subResourceIndex, int offsetInBytes, int lengthInBytes)
         {
-            GL.BindBuffer(pixelPackUnPack, texture.PixelBufferObjectId);
+            GL.BindBuffer(pixelPackUnpack, texture.PixelBufferObjectId);
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-            var mapResult = GL.MapBufferRange(BufferTarget.PixelPackBuffer, (IntPtr)offsetInBytes, (IntPtr)lengthInBytes, mapMode.ToOpenGL());
-            GL.BindBuffer(pixelPackUnPack, 0);
+            
+            var mapResult = GL.MapBufferRange(pixelPackUnpack, (IntPtr)offsetInBytes, (IntPtr)lengthInBytes, mapMode.ToOpenGL());
+            GL.BindBuffer(pixelPackUnpack, 0);
 #else
             offsetInBytes = 0;
             lengthInBytes = -1;
-            var mapResult = GL.MapBuffer(BufferTarget.PixelUnpackBuffer, mapMode.ToOpenGL());
-            GL.BindBuffer(pixelPackUnPack, 0);
+            var mapResult = GL.MapBuffer(pixelPackUnpack, mapMode.ToOpenGL());
 #endif
+            GL.BindBuffer(pixelPackUnpack, 0);
+
             return new MappedResource(texture, subResourceIndex, new DataBox { DataPointer = mapResult, SlicePitch = texture.DepthPitch, RowPitch = texture.RowPitch }, offsetInBytes, lengthInBytes);
         }
 
