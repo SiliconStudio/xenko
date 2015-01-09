@@ -19,6 +19,6 @@ class SpecularPower : SpecularPowerBase
     override float SpecularPowerValue()
     { 
         float power = SpecularPowerMap.Compute().x;
-        return exp2(SPECULAR_POWER_SCALE * power + 1);
+        return ScaleSpecularPower(power);
     }
 };
