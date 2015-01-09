@@ -13,8 +13,12 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// - Texture0: color buffer
     /// - Texture1: a [CoC, Linear Depth] buffer
     /// </summary>
+    ///
+    /// <typeparam name="TWeightCount">The number of weights along a direction.</typeparam>
+    /// <typeparam name="TTotalNumber">Total number of tpas. The value is always 2 * TWeightCount - 1.</typeparam>
+    /// <typeparam name="TReferenceIndex">Index of the tap to consider to avoid color-bleeding.</typeparam>
 
-    class DepthAwareDirectionalBlurUtil<int BlurCount, int TotalNumber, int ReferenceIndex> : Texturing, ComputeColor
+    class DepthAwareDirectionalBlurUtil<int TWeightCount, int TTotalNumber, int TReferenceIndex> : Texturing, ComputeColor
     {
         // Direction to apply the blur. (normalized vector)
         float2 Direction;
@@ -22,27 +26,27 @@ namespace SiliconStudio.Paradox.Effects.Images
         // The radius of the blur to apply around the considered fragment
         float Radius;
 
-        // Weights of each tap
-        float TapWeights[BlurCount];
+        // Weights of each tap (weights values are symmetric along each direction)
+        float TapWeights[TWeightCount];
 
         // Gets the blur result for the current pixel.
         override float4 Compute()
         {
             // Offset between 2 consecutive taps
-            float2 tapOffset =  Radius / (BlurCount - 1) * Texture0TexelSize;
+            float2 tapOffset =  Radius / (TWeightCount - 1) * Texture0TexelSize;
             
             // Fills arrays with all the taps
-            float3 tapColor[TotalNumber];  // All the taps colors
-            float3 tapCoCDepthWeight[TotalNumber]; // With their respective CoC, Depth, Weight
+            float3 tapColor[TTotalNumber];  // All the taps colors
+            float3 tapCoCDepthWeight[TTotalNumber]; // With their respective CoC, Depth, Weight
 
             // Center tap
-            int centerIndex = BlurCount - 1;
+            int centerIndex = TWeightCount - 1;
             tapColor[centerIndex] = Texture0.Sample(LinearSampler, streams.TexCoord).rgb;
             tapCoCDepthWeight[centerIndex] = float3(Texture1.Sample(LinearSampler, streams.TexCoord).xy, TapWeights[0]);
 
             // Treats all the taps in the 2 directions from the center
             [unroll]
-            for(int i = 1; i < BlurCount; i++)
+            for(int i = 1; i < TWeightCount; i++)
             {
                 [unroll]
                 for (int j = -1.0; j <= 1.0; j += 2) // Backward(-1) and forward(+1) along the direction
@@ -55,20 +59,20 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
 
             // Select our reference point for the depth (to avoid bleeding)
-            float centerDepth = tapCoCDepthWeight[ReferenceIndex].y;
+            float centerDepth = tapCoCDepthWeight[TReferenceIndex].y;
 
             // Calculate the final average color by modifying tap weights on-the-fly
             float3 resultColor = float3(0.0, 0.0, 0.0);
             float totalWeight = 0.0;
 
             [unroll]
-            for(int k = 0; k < TotalNumber; k++)
+            for(int k = 0; k < TTotalNumber; k++)
             {
                 // We want to avoid color-bleeding due to depth occlusion: 
                 // tap's weight is recalculated to prevent artifacts
                 float3 cocDepthWeight = tapCoCDepthWeight[k];
                 float contribution = 1.0; // Default to 1.0 for the reference point
-                if (k != ReferenceIndex)
+                if (k != TReferenceIndex)
                 {
                     // Tap other than the reference point need the re-calculation
                     contribution = (cocDepthWeight.y >= centerDepth);

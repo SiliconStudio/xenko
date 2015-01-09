@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
-    /// Blurs a CoC map.
+    /// Blurs a Circle of Confusion map.
     /// </summary>
     /// <remarks>
     /// This is useful to avoid strong CoC changes leading to out-of-focus silhouette outline appearing in 

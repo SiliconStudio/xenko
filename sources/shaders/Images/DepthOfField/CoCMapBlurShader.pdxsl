@@ -3,8 +3,15 @@
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
+    /// <summary>
     /// Blurs a CoC map but keeps sharp border around CoC == 0. 
-    class CoCMapBlurShader<int BlurCount> : ImageEffectShader
+    /// It prevents out-of-focus silhouette outline appearing in front of another out-of-focus object, 
+    /// due to abrupt changes in the CoC transitions.
+    /// </summary>
+    ///
+    /// <typeparam name="TBlurCount">Number of weights. (And number of taps along one direction from the center.)</typeparam>
+
+    class CoCMapBlurShader<int TBlurCount> : ImageEffectShader
     {
         // Direction to apply the blur. (normalized vector)
         float2 Direction;
@@ -13,7 +20,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         float Radius;
 
         // Weights of each tap
-        float2 OffsetsWeights[BlurCount];
+        float2 OffsetsWeights[TBlurCount];
 
         stage override float4 Shading()
         {
@@ -28,7 +35,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             // Mirrored samples
             [unroll]
-            for(int i = 1; i < BlurCount; i++)
+            for(int i = 1; i < TBlurCount; i++)
             {
 
                 [unroll]

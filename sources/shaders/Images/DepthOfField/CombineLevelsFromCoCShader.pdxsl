@@ -14,11 +14,13 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// - Texture0: a [CoC, Linear Depth] buffer
     /// - Texture1 ~ TextureX: the different blur levels. (0 == no blur)
     /// </summary>
+    ///
+    /// <typeparam name="TLevelCount">Total number of layers used, including the original non-blurred image.</typeparam>
 
-    class CombineLevelsFromCoCShader<int LevelCount> : ImageEffectShader
+    class CombineLevelsFromCoCShader<int TLevelCount> : ImageEffectShader
     {
         // The CoC corresponding to each level of blur
-        stage float CoCLevelValues[LevelCount];
+        stage float CoCLevelValues[TLevelCount];
 
         stage override float4 Shading()
         {
@@ -52,13 +54,14 @@ namespace SiliconStudio.Paradox.Effects.Images
 #endif
 
             // Fetch all our levels
-            float3 colorLevels[LevelCount];
+            float3 colorLevels[TLevelCount];
 
             [unroll]
-            for (int k = 0; k < LevelCount; k++) 
+            for (int k = 0; k < TLevelCount; k++) 
             {
                 colorLevels[k] = dofTextureLevels[k].Sample(LinearSampler, streams.TexCoord).rgb;
 #if DEBUG_COC_LEVEL_COLOR
+                // Affects a debug color
                 colorLevels[k] *= debugColors[k];
 #endif
             }
@@ -77,7 +80,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             // whose range contains our CoC, we keep the lerp between these 2 levels. 
             // (This part also supports a branch-less version.)
             [unroll]
-            for (int i = LevelCount - 2; i >= 0; i--) 
+            for (int i = TLevelCount - 2; i >= 0; i--) 
             {
                 // Current range we consider
                 float rangeMin = CoCLevelValues[i];
