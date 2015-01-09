@@ -9,7 +9,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
     {
         override float4 Shading()
         {
-            // TODO: integrate AO/Cavity...etc.
+            // TODO: check if we need only matCavityDiffuse integrated
             var diffuseColor = streams.matDiffuse * streams.matCavity * streams.matCavityDiffuse;
             if (TIsEnergyConservative)
             {

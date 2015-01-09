@@ -30,7 +30,7 @@ class LightGroup : LightStream
     void ComputeLight(int lightIndex)
     {
         streams.lightColor = 0;
-        streams.lightDirection = 0;
+        streams.lightDirectionVS = 0;
         streams.lightColorNdotL = 0;
     }
 };

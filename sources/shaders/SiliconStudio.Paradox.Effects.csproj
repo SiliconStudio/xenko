@@ -442,6 +442,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Lighting\LightDirectionalGroup.cs">
+      <DependentUpon>LightDirectionalGroup.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Materials\IMaterialSurfaceShading.cs">
       <DependentUpon>IMaterialSurfaceShading.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -2136,6 +2142,10 @@
     <None Include="Images\ColorTransforms\ToneMap\ToneMapShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ToneMapShader.cs</LastGenOutput>
+    </None>
+    <None Include="Lighting\LightDirectionalGroup.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>LightDirectionalGroup.cs</LastGenOutput>
     </None>
     <None Include="LightPrepass\DeferredSpotShadowLighting.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

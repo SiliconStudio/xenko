@@ -6,7 +6,7 @@
 /// </summary>
 class LightStream
 {
-    stage stream float3 lightDirection;
+    stage stream float3 lightDirectionVS;
     stage stream float3 lightColor;
     stage stream float3 lightColorNdotL;
 };

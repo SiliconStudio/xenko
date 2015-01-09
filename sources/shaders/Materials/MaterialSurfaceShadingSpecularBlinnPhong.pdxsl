@@ -11,9 +11,11 @@ namespace SiliconStudio.Paradox.Effects.Materials
         {
             float k = BRDFBlinnPhong.Compute(streams.lightDirection, streams.normalVS, streams.shadingView, streams.matSpecularPower);
 
+            var specularColor = streams.matSpecular * streams.matCavity * streams.matCavitySpecular;
+
             // TODO: integrate AO/Cavity...etc.
             // TODO: Check if we need to divide by PI
-            return float4(streams.matSpecular * k * streams.lightColorNdotL, 1);
+            return float4(specularColor * k * streams.lightColorNdotL, 1);
         }
     };
 }
