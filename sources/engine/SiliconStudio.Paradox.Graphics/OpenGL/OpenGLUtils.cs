@@ -9,7 +9,7 @@ namespace SiliconStudio.Paradox.Graphics.OpenGL
     /// <summary>
     /// Converts between feature level and opengl versions
     /// </summary>
-    public static class OpenGLUtils
+    internal static class OpenGLUtils
     {
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
         public static IEnumerable<int> GetGLVersions(GraphicsProfile[] graphicsProfiles)

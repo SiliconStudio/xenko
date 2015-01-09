@@ -4,6 +4,7 @@ Release date: 2015/01/??
 
 #### New Features
 - Android: Added ETC2 compression.
+- Android: Added texture compression for cubemaps.
 - Graphics: Choose best OpenGL version based on desired graphics profile.
 - Graphics: Added foundation for easily building and using post effects.
 - Graphics: Added built-in posteffect: depth-of-field (DoF), bloom, gaussian blur and exposure.

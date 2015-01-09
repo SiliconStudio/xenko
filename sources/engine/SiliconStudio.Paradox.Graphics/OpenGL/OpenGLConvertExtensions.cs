@@ -22,7 +22,7 @@ using PrimitiveTypeGl = OpenTK.Graphics.OpenGL.PrimitiveType;
 
 namespace SiliconStudio.Paradox.Graphics
 {
-    public static class OpenGLConvertExtensions
+    internal static class OpenGLConvertExtensions
     {
         // Define missing constants
         // values taken form https://www.khronos.org/registry/gles/api/GLES3/gl3.h
