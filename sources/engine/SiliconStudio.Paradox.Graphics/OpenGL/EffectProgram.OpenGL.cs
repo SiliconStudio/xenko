@@ -155,10 +155,6 @@ namespace SiliconStudio.Paradox.Graphics
                     }
                 }
 
-                // Register "NoSampler", required by HLSL=>GLSL translation to support HLSL such as texture.Load().
-                var noSampler = new EffectParameterResourceData { Param = { RawName = "NoSampler", KeyName = "NoSampler", Class = EffectParameterClass.Sampler } };
-                effectBytecode.Reflection.ResourceBindings.Add(noSampler);
-
                 CreateReflection(effectBytecode.Reflection, effectBytecode.Stages[0].Stage); // need to regenerate the Uniforms on OpenGL ES
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
@@ -360,6 +356,11 @@ namespace SiliconStudio.Paradox.Graphics
             // Register textures, samplers, etc...
             //TODO: (?) non texture/buffer uniform outside of a block
             {
+                // Register "NoSampler", required by HLSL=>GLSL translation to support HLSL such as texture.Load().
+                var noSampler = new EffectParameterResourceData { Param = { RawName = "NoSampler", KeyName = "NoSampler", Class = EffectParameterClass.Sampler } };
+                effectBytecode.Reflection.ResourceBindings.Add(noSampler);
+                bool usingSamplerNoSampler = false;
+
                 int activeUniformCount;
                 GL.GetProgram(resourceId, ProgramParameter.ActiveUniforms, out activeUniformCount);
 #if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
@@ -563,6 +564,9 @@ namespace SiliconStudio.Paradox.Graphics
                             var textureReflection = effectReflection.ResourceBindings[textureReflectionIndex];
                             var samplerReflection = effectReflection.ResourceBindings[samplerReflectionIndex];
 
+                            if (samplerReflection.Param.RawName == "NoSampler")
+                                usingSamplerNoSampler = true;
+
                             // Update texture uniform mapping
                             GL.Uniform1(uniformIndex, textureUnitCount);
                             
@@ -587,6 +591,9 @@ namespace SiliconStudio.Paradox.Graphics
                             break;
                     }
                 }
+
+                if (!usingSamplerNoSampler)
+                    effectReflection.ResourceBindings.RemoveAll(x => x.Param.RawName == "NoSampler");
             }
 
             GL.UseProgram(currentProgram);
