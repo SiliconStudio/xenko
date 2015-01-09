@@ -3,16 +3,25 @@
 Release date: 2015/01/??
 
 #### New Features
+- Android: Added ETC2 compression.
+- Graphics: Choose best OpenGL version based on desired graphics profile.
 - Graphics: Added foundation for easily building and using post effects.
 - Graphics: Added built-in posteffect: depth-of-field (DoF), bloom, gaussian blur and exposure.
+- Graphics: Added deferred rendering for OpenGL and OpenGL ES 3.0.
+- Graphics: Extended support of texture formats on OpenGL ES.
+- Graphics: Added ability to apply effect states  when drawing a texture on screen.
 - Visual Studio Package: Intellisense for shaders has been added. Use F12 to jump to referenced class/keyword. Shader errors will be highlighted in red and appear in the Error List.
 
 #### Enhancements
 - Android: Enable sticky fullscreen immersion mode (Android 4.4+) and fullscreen low profile mode (Android 4.0+) ([PR #135 from Sean Fausett](https://github.com/SiliconStudio/paradox/pull/135)).
+- Android: Support of OpenGL ES 3.0.
 - Graphics: `Texture2D`, `Texture3D`, `TextureCube`, `RenderTarget` and `DepthStencilBuffer` have now all been unified as `Texture` (which act as a Texture view).
+- Shaders: Better conversion from HLSL to GLSL.
 
 #### Issues fixed
-- Shaders: Fix code gen bug not allowing the usage of generic resources type in `pdxsl` files (like `Texture2D<int>` [#128](https://github.com/SiliconStudio/paradox/issues/128)).
+- Shaders: Fix code gen bug not allowing the usage of generic resources type in `pdxsl` files (like `Texture2D<int>` [#128](https://github.com/SiliconStudio/paradox/issues/128)).\
+- Shaders: Fix two-dimentional array linearization during conversion from HLSL to GLSL.
+- Shaders: Fix shader source change detection to get the correct precompiled shader and update existing ones.
 
 #### Breaking changes
 - Graphics: `Texture2D`, `Texture3D`, `TextureCube`, `RenderTarget` and `DepthStencilBuffer` has been merged into `Texture` class.
