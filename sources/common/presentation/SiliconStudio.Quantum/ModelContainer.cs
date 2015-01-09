@@ -232,44 +232,47 @@ namespace SiliconStudio.Quantum
             }
             else
             {
-                var singleReference = ((ObjectReference)reference);
-                if (singleReference.TargetNode != null && singleReference.TargetNode.Content.Value != reference.ObjectValue)
+                if (content.ShouldProcessReference)
                 {
-                    singleReference.Clear();
-                }
-
-                if (singleReference.TargetNode == null)
-                {
-                    IModelNode node = GetOrCreateModelNode(reference.ObjectValue, reference.Type, referencer: modelNode);
-                    if (node != null)
+                    var singleReference = ((ObjectReference)reference);
+                    if (singleReference.TargetNode != null && singleReference.TargetNode.Content.Value != reference.ObjectValue)
                     {
-                        singleReference.SetTarget(node);
-                        var structContent = node.Content as BoxedContent;
-                        if (structContent != null)
+                        singleReference.Clear();
+                    }
+
+                    if (singleReference.TargetNode == null)
+                    {
+                        IModelNode node = GetOrCreateModelNode(reference.ObjectValue, reference.Type, referencer: modelNode);
+                        if (node != null)
                         {
-                            structContent.BoxedStructureOwner = content;
-                            structContent.BoxedStructureOwnerIndices = indices != null ? indices.Reverse().ToArray() : null;
-                        }
+                            singleReference.SetTarget(node);
+                            var structContent = node.Content as BoxedContent;
+                            if (structContent != null)
+                            {
+                                structContent.BoxedStructureOwner = content;
+                                structContent.BoxedStructureOwnerIndices = indices != null ? indices.Reverse().ToArray() : null;
+                            }
 
-                        // If the node is a reference itself (that can happen for example for lists of lists)
-                        if (singleReference.TargetNode.Content.IsReference)
-                        {
-                            var targetNode = singleReference.TargetNode;
-                            var targetContent = singleReference.TargetNode.Content;
-                            // Then we refresh this reference
-                            if (refreshReferences)
-                                targetContent.Reference.Refresh(targetContent.Value);
+                            // If the node is a reference itself (that can happen for example for lists of lists)
+                            if (singleReference.TargetNode.Content.IsReference)
+                            {
+                                var targetNode = singleReference.TargetNode;
+                                var targetContent = singleReference.TargetNode.Content;
+                                // Then we refresh this reference
+                                if (refreshReferences)
+                                    targetContent.Reference.Refresh(targetContent.Value);
 
-                            UpdateOrCreateReferenceTarget(targetContent.Reference, targetNode, refreshReferences);
-                        }
+                                UpdateOrCreateReferenceTarget(targetContent.Reference, targetNode, refreshReferences);
+                            }
 
-                        // Otherwise refresh potential references in its children.
-                        foreach (var child in node.Children.SelectDeep(x => x.Children).Where(x => x.Content.IsReference))
-                        {
-                            if (refreshReferences)
-                                child.Content.Reference.Refresh(child.Content.Value);
+                            // Otherwise refresh potential references in its children.
+                            foreach (var child in node.Children.SelectDeep(x => x.Children).Where(x => x.Content.IsReference))
+                            {
+                                if (refreshReferences)
+                                    child.Content.Reference.Refresh(child.Content.Value);
 
-                            UpdateOrCreateReferenceTarget(child.Content.Reference, child, refreshReferences);
+                                UpdateOrCreateReferenceTarget(child.Content.Reference, child, refreshReferences);
+                            }
                         }
                     }
                 }

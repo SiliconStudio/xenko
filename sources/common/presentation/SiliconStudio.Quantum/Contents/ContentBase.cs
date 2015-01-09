@@ -21,6 +21,7 @@ namespace SiliconStudio.Quantum.Contents
             Descriptor = descriptor;
             IsPrimitive = isPrimitive;
             SerializeFlags = ViewModelContentSerializeFlags.SerializeValue;
+            ShouldProcessReference = true;
         }
 
         /// <inheritdoc/>
@@ -40,6 +41,9 @@ namespace SiliconStudio.Quantum.Contents
 
         /// <inheritdoc/>
         public IReference Reference { get { return reference; } }
+
+        /// <inheritdoc/>
+        public bool ShouldProcessReference { get; protected set; }
 
         /// <inheritdoc/>
         public virtual ViewModelContentState LoadState { get; set; }

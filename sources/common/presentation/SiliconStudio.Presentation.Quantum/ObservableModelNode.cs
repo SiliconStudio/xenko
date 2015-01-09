@@ -343,11 +343,11 @@ namespace SiliconStudio.Presentation.Quantum
         {
             var objectReference = sourceNode.Content.Reference as ObjectReference;
             var referenceEnumerable = sourceNode.Content.Reference as ReferenceEnumerable;
-            if (objectReference != null)
+            if (objectReference != null && sourceNode.Content.ShouldProcessReference)
             {
                 return objectReference.TargetNode;
             }
-            if (referenceEnumerable != null && index != null)
+            if (referenceEnumerable != null && sourceNode.Content.ShouldProcessReference && index != null)
             {
                 return referenceEnumerable[index].TargetNode;
             }
