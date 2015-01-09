@@ -42,9 +42,6 @@ namespace SiliconStudio.Quantum
         /// <inheritdoc/>
         public ICollection<INodeCommand> AvailableCommands { get; private set; }
 
-        /// <inheritdoc/>
-        public IEnumerable<IContent> ReferenceContents { get { return referenceContents; } }
-
         public IContentFactory ContentFactory { get; set; }
 
         /// <inheritdoc/>

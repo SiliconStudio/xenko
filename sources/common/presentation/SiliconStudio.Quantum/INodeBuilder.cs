@@ -32,11 +32,6 @@ namespace SiliconStudio.Quantum
         ICollection<INodeCommand> AvailableCommands { get; }
 
         /// <summary>
-        /// Gets the enumerable of content that have references created during the last execution of the builder visitor.
-        /// </summary>
-        IEnumerable<IContent> ReferenceContents { get; }
-
-        /// <summary>
         /// Gets the first node that referenced this one (and consequently caused its construction).
         /// </summary>
         IModelNode Referencer { get; }
@@ -52,7 +47,7 @@ namespace SiliconStudio.Quantum
         event EventHandler<NodeConstructedArgs> NodeConstructed;
 
         /// <summary>
-        /// Build the node hierarchy corresponding to the given object and fill the <see cref="ReferenceContents"/> list with references created during this process.
+        /// Build the node hierarchy corresponding to the given object.
         /// </summary>
         /// <param name="referencer">The referencer (optional, just here to help having some context when building nodes).</param>
         /// <param name="obj">The object. Can be <c>null</c>.</param>
