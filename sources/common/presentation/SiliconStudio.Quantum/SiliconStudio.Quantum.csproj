@@ -27,7 +27,6 @@
     <Compile Include="Commands\CreateNewInstanceCommand.cs" />
     <Compile Include="Commands\ModifyValueCommand.cs" />
     <Compile Include="Commands\RenameStringKeyCommand.cs" />
-    <Compile Include="Commands\SetToNullCommand.cs" />
     <Compile Include="Commands\UncancellableCommand.cs" />
     <Compile Include="Contents\TransformContent.cs" />
     <Compile Include="DefaultContentFactory.cs" />
