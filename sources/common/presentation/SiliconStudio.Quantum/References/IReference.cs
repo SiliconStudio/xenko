@@ -30,12 +30,5 @@ namespace SiliconStudio.Quantum.References
         /// Refresh this reference and its nested references.
         /// </summary>
         void Refresh(object newObjectValue);
-
-        /// <summary>
-        /// Updates the target node of this reference or its nested references from a <see cref="ModelContainer"/>.
-        /// </summary>
-        /// <param name="modelContainer">A <see cref="ModelContainer"/> in which the corresponding model node may have been registered.</param>
-        /// <returns><c>true</c> if the model node was found in the <see cref="ModelContainer"/> and the target nodes has been updated, <c>false</c> otherwise.</returns>
-        bool UpdateTarget(ModelContainer modelContainer);
     }
 }

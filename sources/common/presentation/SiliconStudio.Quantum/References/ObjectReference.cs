@@ -12,7 +12,7 @@ namespace SiliconStudio.Quantum.References
         private object orphanObject;
 
         /// <summary>
-        /// Initialize a new instance of the <see cref="ObjectReference"/> class using a data object. The model node can be retrieved later using <see cref="UpdateTarget"/>.
+        /// Initialize a new instance of the <see cref="ObjectReference"/> class using a data object.
         /// </summary>
         /// <remarks>This constructor should be used when the given <see cref="objectValue"/> has no mode node yet existing.</remarks>
         /// <param name="objectValue">A data object to reference. Can be null.</param>
@@ -76,27 +76,6 @@ namespace SiliconStudio.Quantum.References
                 throw new InvalidOperationException("TargetNode type does not match the reference type.");
             TargetNode = targetNode;
             TargetGuid = targetNode.Guid;
-        }
-
-        /// <inheritdoc/>
-        public bool UpdateTarget(ModelContainer modelContainer)
-        {
-            if (TargetNode == null)
-            {
-                var guid = modelContainer.GetGuid(ObjectValue, Type);
-                if (TargetGuid != guid)
-                    throw new InvalidOperationException("The Guid of the object value is different from the current TargetGuid. The given ModelContainer may be different.");
-
-                if (TargetGuid != Guid.Empty)
-                {
-                    TargetNode = modelContainer.GetModelNode(TargetGuid);
-                    if (TargetNode.Content.Value != null && !Type.IsInstanceOfType(TargetNode.Content.Value))
-                        throw new InvalidOperationException("The type of the node content does not match the type of this reference");
-
-                    return TargetNode != null;
-                }
-            }
-            return false;
         }
 
         /// <inheritdoc/>

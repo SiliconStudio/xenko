@@ -91,19 +91,6 @@ namespace SiliconStudio.Quantum.References
         }
 
         /// <inheritdoc/>
-        public bool UpdateTarget(ModelContainer modelContainer)
-        {
-            bool result = false;
-            foreach (var reference in references)
-            {
-                if (reference.UpdateTarget(modelContainer))
-                    result = true;
-            }
-
-            return result;
-        }
-
-        /// <inheritdoc/>
         public IEnumerator<ObjectReference> GetEnumerator()
         {
             return references.GetEnumerator();
