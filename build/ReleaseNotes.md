@@ -8,6 +8,7 @@ Release date: 2015/01/??
 - Visual Studio Package: Intellisense for shaders has been added. Use F12 to jump to referenced class/keyword. Shader errors will be highlighted in red and appear in the Error List.
 
 #### Enhancements
+- Android: Enable sticky fullscreen immersion mode (Android 4.4+) and fullscreen low profile mode (Android 4.0+) ([PR #135 from Sean Fausett](https://github.com/SiliconStudio/paradox/pull/135)).
 - Graphics: `Texture2D`, `Texture3D`, `TextureCube`, `RenderTarget` and `DepthStencilBuffer` have now all been unified as `Texture` (which act as a Texture view).
 
 #### Issues fixed
