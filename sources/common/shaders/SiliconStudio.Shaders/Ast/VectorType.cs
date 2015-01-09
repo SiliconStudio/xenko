@@ -100,6 +100,20 @@ namespace SiliconStudio.Shaders.Ast
             Dimension = dimension;
         }
 
+        public override TypeBase ToNonGenericType(SourceSpan? span = null)
+        {
+            var typeName = new TypeName();
+            var name = string.Format("{0}{1}", Type.Name, Dimension);
+            typeName.Name = new Identifier(name);
+            if (span.HasValue)
+            {
+                typeName.Span = span.Value;
+                typeName.Name.Span = span.Value;
+            };
+            typeName.TypeInference.TargetType = this;
+            return typeName;
+        }
+
         #endregion
 
         #region Public Properties

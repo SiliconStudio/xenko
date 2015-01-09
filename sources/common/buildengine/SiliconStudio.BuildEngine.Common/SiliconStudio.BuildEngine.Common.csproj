@@ -42,6 +42,7 @@
     <Compile Include="DynamicBuildStep.cs" />
     <Compile Include="FileVersionStorage.cs" />
     <Compile Include="IBuildStepProvider.cs" />
+    <Compile Include="IForwardSerializableLogRemote.cs" />
     <Compile Include="Metadata\IMetadataProvider.cs" />
     <Compile Include="Metadata\IObjectMetadata.cs" />
     <Compile Include="Metadata\MetadataKey.cs" />

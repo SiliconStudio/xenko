@@ -1068,9 +1068,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                         {
                             (varRef.Expression as MemberReferenceExpression).Member = variable.Key.Name;
 
-                            var type = (varRef.Expression as MemberReferenceExpression).Target.TypeInference.TargetType;
-                            if (!(type == ParadoxType.Input || type == ParadoxType.Input2 || type == ParadoxType.Output))
-                                (varRef.Expression as MemberReferenceExpression).Target = new VariableReferenceExpression(new Identifier("streams"));
+                            var type = (varRef.Expression as MemberReferenceExpression).Target.TypeInference.TargetType as StreamsType;
+                            if (type == null || !type.IsInputOutput)
+                                (varRef.Expression as MemberReferenceExpression).Target = new VariableReferenceExpression(StreamsType.ThisStreams);
                         }
                         else if (variable.Key.Qualifiers.Contains(ParadoxStorageQualifier.PatchStream))
                         {

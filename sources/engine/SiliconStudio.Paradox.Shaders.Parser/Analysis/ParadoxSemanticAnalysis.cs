@@ -24,16 +24,6 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
         /// </summary>
         private static readonly string[] ParadoxKeywords = { "base", "streams", "this" };
 
-        /// <summary>
-        /// List of all the stream types
-        /// </summary>
-        private static readonly string[] StreamTypes = { "Streams", "Input", "Input2", "Output", "Constants" };
-
-        /// <summary>
-        /// A fake variable of custom type stream
-        /// </summary>
-        public static Variable StreamsVariable = new Variable(ParadoxType.Streams, "streams");
-
         #endregion
 
         #region Private members
@@ -86,11 +76,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
         public ParadoxSemanticAnalysis(ParsingResult result, ModuleMixin analyzedMixin, List<ModuleMixin> moduleMixinsInCompilationGroup)
             : base(result)
         {
-            SetupHlslAnalyzer();
-
             analyzedModuleMixin = analyzedMixin;
             
-            ScopeStack.First().AddDeclaration(StreamsVariable);
+            ScopeStack.First().AddDeclaration(StreamsType.ThisStreams);
 
             var currentScope = new ScopeDeclaration(analyzedMixin.Shader);
             ScopeStack.Push(currentScope);
@@ -300,7 +288,14 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
                 else if (variable.InitialValue.TypeInference.TargetType == null)
                     Error(ParadoxMessageCode.ErrorVarNoTypeFound, variable.Span, variable, analyzedModuleMixin.MixinName);
                 else
+                {
                     variable.Type = variable.InitialValue.TypeInference.TargetType.ResolveType();
+                    // If we have a var type referencing a generic type, try to use the non-generic version of it
+                    if (variable.Type is GenericType)
+                    {
+                        variable.Type = ((GenericType)variable.Type).ToNonGenericType();
+                    }
+                }
             }
 
             if (variable.ContainsTag(ParadoxTags.ShaderScope))
@@ -755,9 +750,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
         /// <returns>true if the overload is correct, false otherwise</returns>
         protected override bool TestMethodInvocationArgument(TypeBase argTypeBase, TypeBase expectedTypeBase, TypeBase argType, TypeBase expectedType, ref int score)
         {
-            if (argTypeBase == ParadoxType.Streams && expectedTypeBase == ParadoxType.Output) // streams and output are the same
+            if (argTypeBase == StreamsType.Streams && expectedTypeBase == StreamsType.Output) // streams and output are the same
                 return true;
-            if (argTypeBase is ParadoxType && expectedType is ParadoxType)
+            if (argTypeBase is StreamsType && expectedType is StreamsType)
                 return argTypeBase == expectedType;
 
             return base.TestMethodInvocationArgument(argTypeBase, expectedTypeBase, argType, expectedType, ref score);
@@ -824,10 +819,10 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
 
                 return;
             }
-            if (name == "streams")
+            if (name == StreamsType.ThisStreams.Name.Text)
             {
-                variableReferenceExpression.TypeInference.Declaration = StreamsVariable;
-                variableReferenceExpression.TypeInference.TargetType = StreamsVariable.Type;
+                variableReferenceExpression.TypeInference.Declaration = StreamsType.ThisStreams;
+                variableReferenceExpression.TypeInference.TargetType = StreamsType.ThisStreams.Type;
             }
             
             // check if the variable is double-defined
@@ -887,6 +882,13 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
                 if (varDecl.Qualifiers.Contains(ParadoxStorageQualifier.Extern))
                     Error(ParadoxMessageCode.ErrorIndexerNotLiteral, indexerExpression.Span, indexerExpression, analyzedModuleMixin.MixinName);
             }
+        }
+
+
+        [Visit]
+        protected StreamsType Visit(StreamsType streamType)
+        {
+            return StreamsType.Parse(streamType.Name);
         }
 
 
@@ -1064,8 +1066,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
         /// </returns>
         protected override TypeBase GetBinaryImplicitConversionType(SourceSpan span, TypeBase left, TypeBase right, bool isBinaryOperator)
         {
-            if (left.ResolveType() is ParadoxType || right.ResolveType() is ParadoxType)
-                return ParadoxType.Streams;
+            if (left.ResolveType() is StreamsType || right.ResolveType() is StreamsType)
+                return StreamsType.Streams;
 
             return base.GetBinaryImplicitConversionType(span, left, right, isBinaryOperator);
         }
@@ -1079,8 +1081,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
         /// <returns>The implicit conversion between between to two types</returns>
         protected override TypeBase GetMultiplyImplicitConversionType(SourceSpan span, TypeBase left, TypeBase right)
         {
-            if (left.ResolveType() is ParadoxType || right.ResolveType() is ParadoxType)
-                return ParadoxType.Streams;
+            if (left.ResolveType() is StreamsType || right.ResolveType() is StreamsType)
+                return StreamsType.Streams;
 
             return base.GetMultiplyImplicitConversionType(span, left, right);
         }
@@ -1094,8 +1096,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
         /// <returns>The implicit conversion between between to two types</returns>
         protected override TypeBase GetDivideImplicitConversionType(SourceSpan span, TypeBase left, TypeBase right)
         {
-            if (left.ResolveType() is ParadoxType || right.ResolveType() is ParadoxType)
-                return ParadoxType.Streams;
+            if (left.ResolveType() is StreamsType || right.ResolveType() is StreamsType)
+                return StreamsType.Streams;
 
             return base.GetDivideImplicitConversionType(span, left, right);
         }
@@ -1138,13 +1140,12 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
         /// Checks if expression is a stream
         /// </summary>
         /// <param name="expression">the Expression</param>
-        /// <param name="deepSearch">flag for looking deep into the MemberReferenceExpression the keyword "streams"</param>
         /// <returns>true if it is a stream, false otherwise</returns>
         private static bool IsStreamMember(MemberReferenceExpression expression)
         {
             if (expression != null)
             {
-                if (expression.Target.TypeInference.TargetType != null && StreamTypes.Contains(expression.Target.TypeInference.TargetType.Name.Text))
+                if (expression.Target.TypeInference.TargetType is StreamsType)
                     return true;
 
                 // iterate until the base "class" is found and compare it to "streams"
@@ -1153,7 +1154,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
                     target = (target as MemberReferenceExpression).Target;
                 
                 var variableReferenceExpression = target as VariableReferenceExpression;
-                return variableReferenceExpression != null && (variableReferenceExpression.Name.Text == "streams" || variableReferenceExpression.TypeInference.TargetType is ParadoxType);
+                return variableReferenceExpression != null && (variableReferenceExpression.Name == StreamsType.ThisStreams.Name || variableReferenceExpression.TypeInference.TargetType is StreamsType);
             }
             return false;
         }
@@ -1165,14 +1166,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
         /// <returns>true if it is a member of an Input/Output type</returns>
         private static bool IsInputOutputMember(MemberReferenceExpression expression)
         {
-            var targetType = expression.Target.TypeInference.TargetType;
-            if (targetType != null)
-            {
-                var targetTypeName = targetType.Name.Text;
-                return (targetTypeName == "Input" || targetTypeName == "Input2" || targetTypeName == "Output"); // Streams & Constants too ?
-            }
-
-            return false;
+            var targetType = expression.Target.TypeInference.TargetType as StreamsType;
+            return targetType != null && targetType.IsInputOutput;
         }
 
         #endregion
