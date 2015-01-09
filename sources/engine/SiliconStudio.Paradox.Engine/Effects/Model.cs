@@ -4,6 +4,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
@@ -116,7 +118,7 @@ namespace SiliconStudio.Paradox.Effects
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new NotImplementedException();
+            return meshes.Cast<object>().Concat(materials).GetEnumerator();
         }
 
         public static Model FromGeometricMeshData(GraphicsDevice graphicsDevice, GeometricMeshData<VertexPositionNormalTexture> geometryMesh, string effectName = "Default")
