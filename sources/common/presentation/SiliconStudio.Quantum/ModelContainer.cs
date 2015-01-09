@@ -242,10 +242,9 @@ namespace SiliconStudio.Quantum
 
                     if (singleReference.TargetNode == null)
                     {
-                        IModelNode node = GetOrCreateModelNode(reference.ObjectValue, reference.Type, referencer: modelNode);
+                        IModelNode node = singleReference.SetTarget(this);
                         if (node != null)
-                        {
-                            singleReference.SetTarget(node);
+                        {                 
                             var structContent = node.Content as BoxedContent;
                             if (structContent != null)
                             {
