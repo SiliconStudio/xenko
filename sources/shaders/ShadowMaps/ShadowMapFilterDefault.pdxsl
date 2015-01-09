@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
         float FilterShadow(Texture2D shadowMapTextureArg, SamplerState shadowMapSamplerArg, float2 position, float shadowMapDistance, int shadowMapIndex)
         {
             // Default plain shadow map
-            return shadowMapTextureArg.SampleLevel(shadowMapSamplerArg, position, 0.0).x > shadowMapDistance - 0.0005f;
+            return shadowMapTextureArg.SampleLevel(shadowMapSamplerArg, position, 0.0).x > shadowMapDistance - 0.00005f;
         }
     };
 }
