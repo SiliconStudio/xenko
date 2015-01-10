@@ -16,9 +16,10 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 namespace SiliconStudio.Paradox.Effects.ShadowMaps
 {
-    public static partial class ShadowMapFilterVsmKeys
+    public static partial class ShadowMapCascadeKeys
     {
-        public static readonly ParameterKey<float> BleedingFactor = ParameterKeys.New<float>();
-        public static readonly ParameterKey<float> MinVariance = ParameterKeys.New<float>();
+        public static readonly ParameterKey<Vector3> ShadowLightDirection = ParameterKeys.New<Vector3>();
+        public static readonly ParameterKey<float> ShadowMapDistance = ParameterKeys.New<float>();
+        public static readonly ParameterKey<ShadowMapCascadeLevel[]> ShadowMapCascadeLevels = ParameterKeys.New<ShadowMapCascadeLevel[]>();
     }
 }

@@ -8,7 +8,7 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Paradox.Effects.ShadowMaps
 {
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    internal struct ShadowMapCascadeReceiverInfo
+    internal struct ShadowMapCascadeLevel
     {
         public Matrix ViewProjReceiver;
         public Vector4 CascadeTextureCoordsBorder;

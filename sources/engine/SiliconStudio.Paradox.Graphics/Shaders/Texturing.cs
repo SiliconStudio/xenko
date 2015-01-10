@@ -45,6 +45,7 @@ namespace SiliconStudio.Paradox.Effects
         public static readonly ParameterKey<SamplerState> Sampler = ParameterKeys.New<SamplerState>();
         public static readonly ParameterKey<SamplerState> PointSampler = ParameterKeys.New<SamplerState>();
         public static readonly ParameterKey<SamplerState> LinearSampler = ParameterKeys.New<SamplerState>();
+        public static readonly ParameterKey<SamplerState> LinearBorderSampler = ParameterKeys.New<SamplerState>();
         public static readonly ParameterKey<SamplerState> AnisotropicSampler = ParameterKeys.New<SamplerState>();
         public static readonly ParameterKey<SamplerState> AnisotropicRepeatSampler = ParameterKeys.New<SamplerState>();
         public static readonly ParameterKey<SamplerState> PointRepeatSampler = ParameterKeys.New<SamplerState>();

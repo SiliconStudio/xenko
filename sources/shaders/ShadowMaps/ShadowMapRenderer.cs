@@ -44,7 +44,7 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
 
         internal static readonly ParameterKey<ShadowMapReceiverInfo[]> Receivers = ParameterKeys.New(new ShadowMapReceiverInfo[1]);
         internal static readonly ParameterKey<ShadowMapReceiverVsmInfo[]> ReceiversVsm = ParameterKeys.New(new ShadowMapReceiverVsmInfo[1]);
-        internal static readonly ParameterKey<ShadowMapCascadeReceiverInfo[]> LevelReceivers = ParameterKeys.New(new ShadowMapCascadeReceiverInfo[1]);
+        internal static readonly ParameterKey<ShadowMapCascadeLevel[]> LevelReceivers = ParameterKeys.New(new ShadowMapCascadeLevel[1]);
         internal static readonly ParameterKey<int> ShadowMapLightCount = ParameterKeys.New(0);
         
         #endregion
@@ -151,7 +151,7 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
                         // Override with current shadow map parameters
                         graphicsDevice.Parameters.Set(ShadowMapKeys.DistanceMax, shadowMap.LightType == LightType.Directional ? shadowMap.ShadowFarDistance : shadowMap.ShadowFarDistance - shadowMap.ShadowNearDistance);
                         graphicsDevice.Parameters.Set(LightKeys.LightDirection, shadowMap.LightDirectionNormalized);
-                        graphicsDevice.Parameters.Set(ShadowMapKeys.LightOffset, cascade.ReceiverInfo.Offset);
+                        graphicsDevice.Parameters.Set(ShadowMapKeys.LightOffset, cascade.CascadeLevels.Offset);
 
                         // We computed ViewProjection, so let's use View = Identity & Projection = ViewProjection
                         // (ideally we should override ViewProjection dynamic)
@@ -287,7 +287,7 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
                     // Compute offset
                     Matrix shadowVInverse;
                     Matrix.Invert(ref shadowMapView, out shadowVInverse);
-                    cascades[cascadeLevel].ReceiverInfo.Offset = new Vector3(shadowVInverse.M41, shadowVInverse.M42, shadowVInverse.M43);
+                    cascades[cascadeLevel].CascadeLevels.Offset = new Vector3(shadowVInverse.M41, shadowVInverse.M42, shadowVInverse.M43);
                 }
                 else if (shadowMap.LightType == LightType.Spot)
                 {
@@ -295,7 +295,7 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
                     shadowMapProjection = Matrix.PerspectiveFovRH(shadowMap.Fov, 1, znear, zfar);
 
                     // Set offset
-                    cascades[cascadeLevel].ReceiverInfo.Offset = shadowMap.LightPosition + znear * shadowMap.LightDirectionNormalized;
+                    cascades[cascadeLevel].CascadeLevels.Offset = shadowMap.LightPosition + znear * shadowMap.LightDirectionNormalized;
                 }
 
                 // Allocate shadow map area
@@ -331,10 +331,10 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
                 // Compute receiver view proj matrix
                 // TODO: Optimize adjustment matrix computation
                 Matrix adjustmentMatrix = Matrix.Scaling(leftX, -leftY, 0.5f) * Matrix.Translation(centerX, centerY, 0.5f);
-                Matrix.Multiply(ref cascades[cascadeLevel].ViewProjCaster, ref adjustmentMatrix, out cascades[cascadeLevel].ReceiverInfo.ViewProjReceiver);
+                Matrix.Multiply(ref cascades[cascadeLevel].ViewProjCaster, ref adjustmentMatrix, out cascades[cascadeLevel].CascadeLevels.ViewProjReceiver);
 
                 // Copy texture coords with border
-                cascades[cascadeLevel].ReceiverInfo.CascadeTextureCoordsBorder = cascadeTextureCoords;
+                cascades[cascadeLevel].CascadeLevels.CascadeTextureCoordsBorder = cascadeTextureCoords;
             }
         }
 

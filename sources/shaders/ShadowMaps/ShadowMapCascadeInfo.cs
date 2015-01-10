@@ -10,7 +10,7 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
     [StructLayout(LayoutKind.Sequential)]
     internal struct ShadowMapCascadeInfo
     {
-        public ShadowMapCascadeReceiverInfo ReceiverInfo;
+        public ShadowMapCascadeLevel CascadeLevels;
         public Matrix ViewProjCaster;
         public Vector4 CascadeTextureCoords;
     }

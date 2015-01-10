@@ -5,44 +5,24 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
     /// <summary>
     /// Performs variance filtering.
     /// </summary>
-    /// <remarks>
-    /// SHADOWMAP_COUNT: Macro - Number of shadow maps.
-    /// SHADOWMAP_VSM_MIN_VARIANCE: Macro - Minimal significant variance.
-    /// </remarks>
-
-    #ifndef SHADOWMAP_COUNT
-    # define SHADOWMAP_COUNT 1
-    #endif
-
-    #ifndef SHADOWMAP_VSM_MIN_VARIANCE
-    # define SHADOWMAP_VSM_MIN_VARIANCE 0.000001f
-    #endif
-
     class ShadowMapFilterVsm : ShadowMapFilterBase
     {
-        struct VarianceShadowMapInfo
+        cbuffer PerPass
         {
             float BleedingFactor;
             float MinVariance;
         };
 
-        cbuffer PerPass
+        float FilterShadow(Texture2D shadowMapTextureArg, SamplerState shadowMapSamplerArg, float2 position, float shadowMapDistance)
         {
-            [Link("ShadowMapRenderer.ReceiversVsm")] VarianceShadowMapInfo VsmInfo[SHADOWMAP_COUNT];
-        };
-
-        float FilterShadow(Texture2D shadowMapTextureArg, SamplerState shadowMapSamplerArg, float2 position, float shadowMapDistance, int shadowMapIndex)
-        {
-            VarianceShadowMapInfo currentVsmInfo = VsmInfo[shadowMapIndex];
-
             float2 moments = (float2)shadowMapTextureArg.SampleLevel(shadowMapSamplerArg, position, 0.0);
             float variance = moments.y - moments.x * moments.x;
             // Clamp variance to min
-            variance = max(variance, currentVsmInfo.MinVariance);
+            variance = max(variance, MinVariance);
             float dist = moments.x - shadowMapDistance;
             float pMax = variance / (variance + dist * dist);
             // Light bleeding reduction (See http://http.developer.nvidia.com/GPUGems3/gpugems3_ch08.html  Light Bleeding 8.4.3)
-            pMax = saturate((pMax - currentVsmInfo.BleedingFactor) / (1.0 - currentVsmInfo.BleedingFactor));
+            pMax = saturate((pMax - BleedingFactor) / (1.0 - BleedingFactor));
             float p = shadowMapDistance <= moments.x;
             return max(p, pMax);        
         }

@@ -43,6 +43,13 @@ class Texturing
         Filter = MIN_MAG_MIP_LINEAR;
     };
 
+    stage SamplerState LinearBorderSampler
+    {
+        Filter = MIN_MAG_MIP_LINEAR;
+        AddressU = Border;
+        AddressV = Border;
+    };
+
     stage SamplerState AnisotropicSampler
     {
         Filter = ANISOTROPIC;

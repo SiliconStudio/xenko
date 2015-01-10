@@ -7,18 +7,7 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
     /// </summary>
     class ShadowBase
     {
-        [Link("ShadowMap.Sampler")]
-        stage SamplerState shadowMapSampler
-        {
-            Filter = MIN_MAG_LINEAR_MIP_POINT;
-            AddressU = Border; AddressV = Border;
-        };
-
-        void ComputeShadowMapPositions(float4 vPositionWS)
-        {
-        }
-
-        float3 ComputeShadowFactor(int i)
+        float3 ComputeShadowFactor()
         {
             return 1.0f;
         }

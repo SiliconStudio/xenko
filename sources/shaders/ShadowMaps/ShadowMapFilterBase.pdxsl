@@ -10,6 +10,6 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
         /// <summary>
         /// Calculate the shadow factor based on the shadow map texture, the position, a sampler
         // TODO: For now, shadowMapSampler will come from ShadowMapUtils. This is a workaround for OpenGL (SamplerState might not exist at all)
-        abstract float FilterShadow(Texture2D shadowMapTextureArg, SamplerState shadowMapSamplerArg, float2 position, float shadowMapDistance, int shadowMapIndex);
+        abstract float FilterShadow(Texture2D shadowMapTextureArg, float2 position, float shadowMapDistance);
     };
 }

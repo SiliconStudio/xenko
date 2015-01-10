@@ -1,0 +1,98 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Paradox.Effects.ShadowMaps
+{
+    /// <summary>
+    /// Selects the shadow map and computes the shadow factor.
+    /// </summary>
+    /// <remarks>
+    /// TCascadeCount: Number of cascades.
+    /// TCascadeDebug: Flag to enable debug mode (1 color per cascade).
+    /// </remarks>
+    class ShadowMapCascade<int TCascadeCount, bool TCascadeDebug> : ShadowMapBase, ShadowMapFilterBase, PositionStream4
+    {
+        [Link("ShadowMap.Texture")]
+        Texture2D shadowMapTexture;
+
+        struct ShadowMapCascadeLevel
+        {
+            matrix ShadowMapWVP;
+            float4 CascadeTextureCoordsBorder;
+            float3 ShadowLightOffset;
+        };
+
+        cbuffer PerPass
+        {
+            float3 ShadowLightDirection;
+            float ShadowMapDistance;
+            ShadowMapCascadeLevel ShadowMapCascadeLevels[TCascadeCount];
+        };
+
+        float2 CalculateShadowMapPosition(int cascadeIndex)
+        {
+            var shadowMapPos = mul(streams.PositionWS, ShadowMapCascadeLevels[cascadeIndex].ShadowMapWVP);
+            return shadowMapPos.xy / shadowMapPos.w;
+        }
+
+        float CalculateShadowMapDepth(int cascadeIndex)
+        {
+            return dot(ShadowLightDirection, streams.PositionWS.xyz - ShadowMapCascadeLevels[cascadeIndex].ShadowLightOffset) / ShadowMapDistance;
+        }
+
+        override float3 ComputeShadowFactor()
+        {
+            float2 shadowMapPos = 0.0;
+            float shadowLERP = 0.0f;
+
+            int foundCascadeIndex = TCascadeCount;
+
+            // [unroll] 
+            float shadowMapDepth = 0;
+            for(int cascadeIndex = 0; cascadeIndex < TCascadeCount; cascadeIndex++) 
+            {
+                shadowMapPos = CalculateShadowMapPosition(cascadeIndex);
+                shadowMapDepth = CalculateShadowMapDepth(cascadeIndex);
+
+                if (foundCascadeIndex == TCascadeCount)
+                {
+                    float4 cascadeTextureCoordBorder = ShadowMapCascadeLevels[cascadeIndex].CascadeTextureCoordsBorder;
+                    if (all(shadowMapPos > cascadeTextureCoordBorder.xy) && all(shadowMapPos < cascadeTextureCoordBorder.zw))
+                    {
+                        float2 cascadeCenter = (cascadeTextureCoordBorder.xy + cascadeTextureCoordBorder.zw) * 0.5f;
+                        shadowLERP = saturate(4.0 - max(abs(shadowMapPos.x - cascadeCenter.x),abs(shadowMapPos.y - cascadeCenter.y)*TCascadeCount/4.0) * 16.666);
+                        foundCascadeIndex = cascadeIndex;
+                        // Break inside this loop didn't work on OpenGL (very bad perf) => switched to if inside loop
+                        //break;
+                    }
+                }
+            }
+
+            // Outside of shadow maps
+            if (foundCascadeIndex == TCascadeCount)
+                return 1.0f;
+        
+            // Calculate shadows with lerp between cascades
+            float shadowMapDistance = shadowMapDepth;
+            float shadow = FilterShadow(shadowMapTexture, shadowMapPos, shadowMapDistance);
+            int nextCascade = foundCascadeIndex + 1;
+            // Only lerp when 
+            if (shadowLERP > 0.0 && shadowLERP < 1.0f && nextCascade < TCascadeCount)
+            {
+                var shadowMapPos1 = CalculateShadowMapPosition(nextCascade);
+                shadowMapDistance = CalculateShadowMapDepth(nextCascade);
+                shadow = lerp(FilterShadow(shadowMapTexture, shadowMapPos1, shadowMapDistance), shadow, shadowLERP);
+            }
+
+            // TODO: Should we multiply by base.ComputeShadow() to allow advanced class for shadow factor?
+            if (TCascadeDebug)
+            {
+                //// Display Cascade with colors in debug mode
+                ////                        PURPLE         GREEN          RED            BLUE           YELLOW           
+                static float3 colors[5] = { float3(1,0,1), float3(0,1,0), float3(1,0,0), float3(0,0,1), float3(1,1,0)};
+                return shadow * colors[foundCascadeIndex];
+            }
+
+            return shadow;
+        }
+    };
+}
