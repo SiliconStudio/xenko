@@ -98,5 +98,8 @@ namespace SiliconStudio.Paradox.Effects
         /// When checked, the deferred effect will support exactly the set number of point lights.
         /// </userdoc>
         public static readonly ParameterKey<bool> UnrollDeferredLightLoop = ParameterKeys.New(false);
+
+
+        public static readonly ParameterKey<ShaderSource[]> LightGroups = ParameterKeys.New((ShaderSource[])null);
     }
 }

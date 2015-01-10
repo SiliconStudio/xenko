@@ -65,6 +65,18 @@ namespace SiliconStudio.Paradox.Effects.Core
                     }
                 }
                 context.Mixin(mixin, "MaterialSurfaceCompositor");
+                var lightGroups = context.GetParam(LightingKeys.LightGroups);
+
+                for (int i = 0; i < lightGroups.Length; i++)
+                {
+
+                    {
+                        var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushCompositionArray(mixin, "lightGroups", __subMixin);
+                        context.Mixin(__subMixin, lightGroups[i]);
+                        context.PopComposition();
+                    }
+                }
                 if (context.GetParam(LightingKeys.CastShadows))
 
                     {
