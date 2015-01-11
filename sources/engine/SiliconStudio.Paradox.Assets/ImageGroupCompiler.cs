@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.Assets
     /// <summary>
     /// Texture asset compiler.
     /// </summary>
-    internal class ImageGroupCompiler<TGroupAsset, TImageInfo> : 
+    public class ImageGroupCompiler<TGroupAsset, TImageInfo> : 
         AssetCompilerBase<TGroupAsset> 
         where TGroupAsset : ImageGroupAsset<TImageInfo> 
         where TImageInfo: ImageInfo
