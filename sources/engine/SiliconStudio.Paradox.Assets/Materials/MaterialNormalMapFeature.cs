@@ -42,7 +42,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             {
                 return new MaterialNormalMapFeature()
                 {
-                    NormalMap = new MaterialTextureComputeColor() // TODO: handle xy vs xyz
+                    NormalMap = new MaterialTextureComputeColor()
                 };
             }
         }
