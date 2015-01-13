@@ -114,19 +114,18 @@ namespace SiliconStudio.Paradox.Assets.Model
                             // TODO: Generate AEN model view
                             commandContext.Logger.Error("TessellationAEN is not supported in {0}", ContextAsString);
                             hasErrors = true;
-                            continue;
                         }
 
-                        if (!Materials.ContainsKey(mesh.Name))
+                        if (Materials.ContainsKey(mesh.Name))
                         {
-                            commandContext.Logger.Error("Mesh material [{0}] was not found in {1}", mesh.Name, ContextAsString);
-                            hasErrors = true;
-                            continue;
+                            // set the material
+                            var materialReference = Materials[mesh.Name];
+                            mesh.Material = new ContentReference<MaterialData>(materialReference.Item1, materialReference.Item2);
                         }
-
-                        // set the material
-                        var materialReference = Materials[mesh.Name];
-                        mesh.Material = new ContentReference<MaterialData>(materialReference.Item1, materialReference.Item2);
+                        else
+                        {
+                            commandContext.Logger.Warning("Mesh material [{0}] was not found in {1}", mesh.Name, ContextAsString);
+                        }
 
                         // set the parameters
                         if (Parameters.ContainsKey(mesh.Name) && Parameters[mesh.Name] != null)
@@ -455,7 +454,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             // Add the current node if it has a mesh
             foreach (var nodeMesh in meshes.Where(x => x.NodeIndex == index))
             {
-                var matId = nodeMesh.Material.Id;
+                var matId = nodeMesh.Material == null ? Guid.Empty : nodeMesh.Material.Id;
                 if (!materialGroups.ContainsKey(matId))
                     materialGroups.Add(matId, new List<MeshData>());
                 materialGroups[matId].Add(nodeMesh);
@@ -597,8 +596,8 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <returns>True</returns>
         private static bool CompareKeyValue<T>(ParameterCollectionData parameters0, ParameterCollectionData parameters1, ParameterKey<T> key)
         {
-            var value0 = parameters0.ContainsKey(key) ? parameters0[key] : key.DefaultValueMetadataT.DefaultValue;
-            var value1 = parameters1.ContainsKey(key) ? parameters1[key] : key.DefaultValueMetadataT.DefaultValue;
+            var value0 = parameters0 != null && parameters0.ContainsKey(key) ? parameters0[key] : key.DefaultValueMetadataT.DefaultValue;
+            var value1 = parameters1 != null && parameters1.ContainsKey(key) ? parameters1[key] : key.DefaultValueMetadataT.DefaultValue;
             return value0 == value1;
         }
 

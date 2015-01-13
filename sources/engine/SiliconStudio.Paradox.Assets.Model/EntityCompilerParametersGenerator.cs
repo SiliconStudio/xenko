@@ -158,13 +158,9 @@ namespace SiliconStudio.Paradox.Assets.Effect.Generators
         /// <returns>The material parameters.</returns>
         private ParameterCollectionData GetMeshMaterialParameters(MeshData meshData)
         {
-            if (meshData != null)
+            if (meshData != null && meshData.Material != null && meshData.Material.Value != null)
             {
-                var material = meshData.Material.Value;
-                if (material != null)
-                {
-                    return material.Parameters;
-                }
+                return meshData.Material.Value.Parameters;
             }
             return null;
         }
