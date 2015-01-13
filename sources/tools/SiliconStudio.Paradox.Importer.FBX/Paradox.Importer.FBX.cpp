@@ -1818,7 +1818,7 @@ public:
 			config->ImportTextures = true;
 			config->ImportModels = false;
 			config->ImportAnimations = false;
-			config->ExtractEmbeddedData = false;
+			config->ExtractEmbeddedData = true;
 
 			return config;
 		}
@@ -1839,7 +1839,7 @@ public:
 			config->ImportTextures = true;
 			config->ImportModels = true;
 			config->ImportAnimations = true;
-			config->ExtractEmbeddedData = false;
+			config->ExtractEmbeddedData = true;
 
 			return config;
 		}
@@ -2329,11 +2329,16 @@ private:
 
 			for (int i = 0; i < buildMeshes->Count; ++i)
 			{
+				auto meshParams = gcnew MeshParameters();
+				auto meshName = meshNames[pMesh];
+				if (buildMeshes->Count > 1)
+					meshName = meshName + "_" + std::to_string(i + 1);
+				meshParams->MeshName = gcnew String(meshName.c_str());
+				meshParams->NodeName = gcnew String(nodeNames[pNode].c_str());
+
 				FbxGeometryElementMaterial* lMaterialElement = pMesh->GetElementMaterial();
 				if (lMaterialElement != NULL)
 				{
-					auto meshParams = gcnew MeshParameters();
-					
 					FbxSurfaceMaterial* lMaterial = pNode->GetMaterial(i);
 					std::map<std::string, int> uvElements;
 					auto uvNames = gcnew List<String^>();
@@ -2342,17 +2347,12 @@ private:
 						uvElements[pMesh->GetElementUV(j)->GetName()] = j;
 						uvNames->Add(gcnew String(pMesh->GetElementUV(j)->GetName()));
 					}
-					
+
 					auto material = GetOrCreateMaterial(lMaterial, uvNames, materialInstances, uvElements, materialNames);
-					auto meshName = meshNames[pMesh];
-					if (buildMeshes->Count > 1)
-						meshName = meshName + "_" + std::to_string(i+1);
-					
-					meshParams->MeshName = gcnew String(meshName.c_str());
 					meshParams->MaterialName = material->MaterialName;
-					meshParams->NodeName = gcnew String(nodeNames[pNode].c_str());
-					models->Add(meshParams);
 				}
+
+				models->Add(meshParams);
 			}
 		}
 		else if (pAttribute->GetAttributeType() == FbxNodeAttribute::eCamera)
@@ -2462,9 +2462,17 @@ private:
 				continue;
 			
 			auto texturePath = FindFilePath(texture);
-			if(!String::IsNullOrEmpty(texturePath)
+			if (!String::IsNullOrEmpty(texturePath)
 				&& File::Exists(texturePath))
+			{
+				if (texturePath->Contains(".fbm\\"))
+					logger->Info("Importer detected an embedded texture. It has been extracted at address '{0}'.", texturePath);
 				textureNames->Add(texturePath);
+			}
+			else
+			{
+				logger->Warning("Importer detected a texture not available on disk at address '{0}'", texturePath);
+			}
 		}
 
 		return textureNames;
