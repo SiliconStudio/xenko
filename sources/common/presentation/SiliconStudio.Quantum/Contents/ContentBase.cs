@@ -43,7 +43,7 @@ namespace SiliconStudio.Quantum.Contents
         public IReference Reference { get { return reference; } }
 
         /// <inheritdoc/>
-        public bool ShouldProcessReference { get; protected set; }
+        public bool ShouldProcessReference { get; internal set; }
 
         /// <inheritdoc/>
         public virtual ViewModelContentState LoadState { get; set; }

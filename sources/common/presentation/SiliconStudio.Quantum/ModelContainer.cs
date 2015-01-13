@@ -215,7 +215,7 @@ namespace SiliconStudio.Quantum
             if (reference == null) throw new ArgumentNullException("reference");
             if (modelNode == null) throw new ArgumentNullException("modelNode");
 
-            var content = modelNode.Content;
+            var content = (ContentBase)modelNode.Content;
 
             var referenceEnumerable = reference as ReferenceEnumerable;
             if (referenceEnumerable != null)
@@ -272,6 +272,10 @@ namespace SiliconStudio.Quantum
 
                                 UpdateOrCreateReferenceTarget(child.Content.Reference, child, refreshReferences);
                             }
+                        }
+                        else
+                        {
+                            content.ShouldProcessReference = false;
                         }
                     }
                 }
