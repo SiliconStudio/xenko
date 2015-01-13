@@ -10,7 +10,7 @@ Release date: 2015/01/??
 - Graphics: Added built-in posteffect: depth-of-field (DoF), bloom, gaussian blur and exposure.
 - Graphics: Added deferred rendering for OpenGL and OpenGL ES 3.0.
 - Graphics: Extended support of texture formats on OpenGL ES.
-- Graphics: Added ability to apply effect states  when drawing a texture on screen.
+- Graphics: Added ability to apply effect states (blend, depth, rasterizer etc.) when drawing a texture on screen.
 - Visual Studio Package: Intellisense for shaders has been added. Use F12 to jump to referenced class/keyword. Shader errors will be highlighted in red and appear in the Error List.
 
 #### Enhancements
