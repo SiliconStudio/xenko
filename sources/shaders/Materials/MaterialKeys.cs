@@ -20,10 +20,10 @@ namespace SiliconStudio.Paradox.Effects.Materials
         public static readonly ParameterKey<Vector3> NormalValue = ParameterKeys.New<Vector3>();
 
         public static readonly ParameterKey<Texture> DiffuseMap = ParameterKeys.New<Texture>();
-        public static readonly ParameterKey<Vector3> DiffuseValue = ParameterKeys.New<Vector3>();
+        public static readonly ParameterKey<Color3> DiffuseValue = ParameterKeys.New<Color3>();
 
         public static readonly ParameterKey<Texture> SpecularMap = ParameterKeys.New<Texture>();
-        public static readonly ParameterKey<Vector3> SpecularValue = ParameterKeys.New<Vector3>();
+        public static readonly ParameterKey<Color3> SpecularValue = ParameterKeys.New<Color3>();
 
         public static readonly ParameterKey<float> SpecularIntensityValue = ParameterKeys.New<float>();
         public static readonly ParameterKey<float> SpecularFresnelValue = ParameterKeys.New<float>();

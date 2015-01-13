@@ -18,6 +18,7 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Paradox.Assets.Model;
 using SiliconStudio.Paradox.Assets.SpriteFont;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Assets.CompilerApp
