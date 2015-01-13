@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #include "stdafx.h"
+#include "../SiliconStudio.Paradox.Importer.Common/ImporterUtils.h"
 
 #include <algorithm>
 #include <string>
@@ -2089,13 +2090,7 @@ private:
 				materialName = materialName.substr(0, materialNameSplitPosition);
 			}
 
-			// TODO: remove all bad characters
-			/*int nextCharacterPos = materialName.find(':');
-			while (nextCharacterPos != std::string::npos)
-			{
-				materialName.replace(nextCharacterPos, 1, 1, '_');
-				nextCharacterPos = materialName.find(':', nextCharacterPos);
-			}*/
+			// remove all bad characters
 			ReplaceCharacter(materialName, ':', '_');
 			RemoveCharacter(materialName, ' ');
 			tempNames[lMaterial] = materialName;
@@ -2121,26 +2116,6 @@ private:
 				materialName = materialName + "_" + std::to_string(materialNameCurrentCount[materialName]);
 
 			materialNames[lMaterial] = materialName;
-		}
-	}
-
-	void ReplaceCharacter(std::string& name, char c, char replacement)
-	{
-		int nextCharacterPos = name.find(c);
-		while (nextCharacterPos != std::string::npos)
-		{
-			name.replace(nextCharacterPos, 1, 1, replacement);
-			nextCharacterPos = name.find(c, nextCharacterPos);
-		}
-	}
-
-	void RemoveCharacter(std::string& name, char c)
-	{
-		int nextCharacterPos = name.find(c);
-		while (nextCharacterPos != std::string::npos)
-		{
-			name.erase(nextCharacterPos, 1);
-			nextCharacterPos = name.find(c, nextCharacterPos);
 		}
 	}
 
@@ -2180,6 +2155,9 @@ private:
 		{
 			auto pMesh = *iter;
 			auto meshName = std::string(pMesh->GetNode()->GetName());
+
+			// remove all bad characters
+			RemoveCharacter(meshName, ' ');
 			tempNames[pMesh] = meshName;
 
 			if (meshNameTotalCount.count(meshName) == 0)

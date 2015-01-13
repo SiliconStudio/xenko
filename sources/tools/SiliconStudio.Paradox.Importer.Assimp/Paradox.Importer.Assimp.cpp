@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #include "stdafx.h"
 #include "../SiliconStudio.Paradox.Assimp.Translation/Extension.h"
+#include "../SiliconStudio.Paradox.Importer.Common/ImporterUtils.h"
 
 #include <string>
 #include <map>
@@ -1155,13 +1156,9 @@ private:
 				itemName = itemName.substr(0, itemNameSplitPosition);
 			}
 
-			// TODO: remove all bad characters
-			int nextCharacterPos = itemName.find(':');
-			while (nextCharacterPos != std::string::npos)
-			{
-				itemName.replace(nextCharacterPos, 1, 1, '_');
-				nextCharacterPos = itemName.find(':', nextCharacterPos);
-			}
+			// remove all bad characters
+			ReplaceCharacter(itemName, ':', '_');
+			RemoveCharacter(itemName, ' ');
 			tempNames.push_back(itemName);
 
 			// count the occurences of this name

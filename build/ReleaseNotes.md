@@ -5,6 +5,7 @@ Release date: 2015/01/??
 #### New Features
 - Android: Added ETC2 compression.
 - Android: Added texture compression for cubemaps.
+- FBX: Added support for embedded textures.
 - Graphics: Choose best OpenGL version based on desired graphics profile.
 - Graphics: Added foundation for easily building and using post effects.
 - Graphics: Added built-in posteffect: depth-of-field (DoF), bloom, gaussian blur and exposure.
@@ -16,10 +17,12 @@ Release date: 2015/01/??
 #### Enhancements
 - Android: Enable sticky fullscreen immersion mode (Android 4.4+) and fullscreen low profile mode (Android 4.0+) ([PR #135 from Sean Fausett](https://github.com/SiliconStudio/paradox/pull/135)).
 - Android: Support of OpenGL ES 3.0.
+- FBX: Meshes without materials are now imported and added to the entity.
 - Graphics: `Texture2D`, `Texture3D`, `TextureCube`, `RenderTarget` and `DepthStencilBuffer` have now all been unified as `Texture` (which act as a Texture view).
 - Shaders: Better conversion from HLSL to GLSL.
 
 #### Issues fixed
+- Importers: Remove whitespaces from fbx and assimp objects' names that resulted in compilation errors (e.g. unable to find the shader in the database).
 - Shaders: Fix code gen bug not allowing the usage of generic resources type in `pdxsl` files (like `Texture2D<int>` [#128](https://github.com/SiliconStudio/paradox/issues/128)).\
 - Shaders: Fix two-dimentional array linearization during conversion from HLSL to GLSL.
 - Shaders: Fix shader source change detection to get the correct precompiled shader and update existing ones.
