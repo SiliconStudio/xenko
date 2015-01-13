@@ -14,8 +14,7 @@
     <FileAlignment>512</FileAlignment>
     <AndroidApplication>true</AndroidApplication>
     <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
-    <AndroidUseLatestPlatformSdk>
-    </AndroidUseLatestPlatformSdk>
+    <AndroidUseLatestPlatformSdk></AndroidUseLatestPlatformSdk>
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
     <AndroidSupportedAbis>armeabi,armeabi-v7a,x86</AndroidSupportedAbis>
     <AndroidStoreUncompressedFileExtensions />
@@ -87,30 +86,6 @@
     <Reference Include="Mono.Android" Label="Paradox.DoNotSync" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\CustomEffect.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>CustomEffect.pdxfx</DependentUpon>
-    </Compile>
-    <Compile Include="Assets\CustomShader.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>CustomShader.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="Assets\CustomShader2.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>CustomShader2.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="Assets\MyCustomColorTransformShader.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>MyCustomColorTransformShader.pdxsl</DependentUpon>
-    </Compile>
     <Compile Label="Paradox.DoNotSync" Include="Properties\AssemblyInfo.cs" />
     <Content Label="Paradox.DoNotSync" Include="Properties\AndroidManifest.xml" />
     <AndroidResource Label="Paradox.DoNotSync" Include="Resources\Drawable\Icon.png" />
@@ -206,6 +181,30 @@
     </ProjectReference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Compile Include="Assets\CustomEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CustomEffect.pdxfx</DependentUpon>
+    </Compile>
+    <Compile Include="Assets\MyCustomColorTransformShader.cs">
+      <DependentUpon>MyCustomColorTransformShader.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Assets\CustomShader2.cs">
+      <DependentUpon>CustomShader2.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Assets\CustomShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CustomShader.pdxsl</DependentUpon>
+    </Compile>
     <Compile Include="Compiler\CubemapEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -268,6 +267,8 @@
     <Compile Include="TestDynamicSpriteFontVarious.cs" />
     <Compile Include="TestExternSpriteFont.cs" />
     <Compile Include="TestFontManager.cs" />
+    <Compile Include="TestGraphicsResourceAllocator.cs" />
+    <Compile Include="TestImageEffect.cs" />
     <Compile Include="TestImageLoad.cs" />
     <Compile Include="TestMultipleRenderTargets.cs" />
     <Compile Include="TestSprite.cs" />
@@ -288,22 +289,22 @@
     <Compile Include="TestTexture.cs" />
     <Compile Include="TestGraphicsApiCheck.cs" />
     <Compile Include="TestTextureSampling.cs" />
-    <AndroidAsset Include="Assets\CustomEffect.pdxfx">
+    <None Include="Assets\CustomEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CustomEffect.cs</LastGenOutput>
-    </AndroidAsset>
-    <AndroidAsset Include="Assets\CustomShader.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>CustomShader.cs</LastGenOutput>
-    </AndroidAsset>
-    <AndroidAsset Include="Assets\CustomShader2.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>CustomShader2.cs</LastGenOutput>
-    </AndroidAsset>
-    <AndroidAsset Include="Assets\MyCustomColorTransformShader.pdxsl">
+    </None>
+    <None Include="Assets\MyCustomColorTransformShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MyCustomColorTransformShader.cs</LastGenOutput>
-    </AndroidAsset>
+    </None>
+    <None Include="Assets\CustomShader2.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CustomShader2.cs</LastGenOutput>
+    </None>
+    <None Include="Assets\CustomShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CustomShader.cs</LastGenOutput>
+    </None>
     <None Include="Compiler\CubemapEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CubemapEffect.cs</LastGenOutput>
