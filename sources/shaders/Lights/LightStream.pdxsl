@@ -1,12 +1,14 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-
-/// <summary>
-/// Defines light streams variable.
-/// </summary>
-class LightStream
+namespace SiliconStudio.Paradox.Effects.Lights
 {
-    stage stream float3 lightDirectionVS;
-    stage stream float3 lightColor;
-    stage stream float3 lightColorNdotL;
-};
+    /// <summary>
+    /// Defines light streams variable.
+    /// </summary>
+    class LightStream
+    {
+        stage stream float3 lightDirectionVS;
+        stage stream float3 lightColor;
+        stage stream float3 lightColorNdotL;
+    };
+}

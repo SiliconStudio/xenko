@@ -14,9 +14,9 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Effects.Lights
 {
-    public static partial class LightGroupKeys
+    internal static partial class LightGroupKeys
     {
         public static readonly ParameterKey<int> LightCount = ParameterKeys.New<int>();
     }
