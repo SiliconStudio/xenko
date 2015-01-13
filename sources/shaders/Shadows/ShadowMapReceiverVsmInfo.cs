@@ -3,7 +3,7 @@
 
 using System.Runtime.InteropServices;
 
-namespace SiliconStudio.Paradox.Effects.ShadowMaps
+namespace SiliconStudio.Paradox.Effects.Shadows
 {
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     internal struct ShadowMapReceiverVsmInfo

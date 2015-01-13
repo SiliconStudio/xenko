@@ -3,7 +3,7 @@
 
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.Effects.ShadowMaps
+namespace SiliconStudio.Paradox.Effects.Shadows
 {
     public class ShadowUpdateInfo
     {

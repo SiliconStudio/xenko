@@ -26,7 +26,7 @@ class ShadingPerPixelShadow : ShadingPerPixel, ShadowBase
             if (i >= LightCount)
                 break;
 #endif
-            float3 shadowFactor = ComputeShadowFactor(i);
+            float3 shadowFactor = ComputeShadow(i);
 
             //lighting += shadowFactor * ComputeDiffuseInfluence(diffuseAlbedo, i);
             //lighting += step(1, shadowFactor) * ComputeSpecularInfluence(specularAlbedo, i);

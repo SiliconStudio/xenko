@@ -4,7 +4,7 @@
 /// <summary>
 /// Defines a group of similar lights (directional, spot...etc.)
 /// </summary>
-class LightGroup : LightStream
+class LightGroup : LightStream, ShadowGroup, NormalStream
 {
     cbuffer PerPass
     {
@@ -29,8 +29,10 @@ class LightGroup : LightStream
     /// </summary>
     void ComputeLight(int lightIndex)
     {
-        streams.lightColor = 0;
-        streams.lightDirectionVS = 0;
-        streams.lightColorNdotL = 0;
+        // Computes the shadowColor
+        ComputeShadow(lightIndex);
+
+        // Compute the final color with NdotL
+        streams.lightColorNdotL = streams.lightColor * streams.shadowColor * dot(streams.lightDirectionVS, streams.normalVS);
     }
 };

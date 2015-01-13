@@ -5,7 +5,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.Engine;
 
-namespace SiliconStudio.Paradox.Effects.ShadowMaps
+namespace SiliconStudio.Paradox.Effects.Shadows
 {
     /// <summary>
     /// Represents a shadow map for the <see cref="ShadowMapRenderer"/>.

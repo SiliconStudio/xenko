@@ -25,6 +25,8 @@ class LightDirectionalGroup<int TMaxLightCount> : LightGroup, NormalStream
         streams.lightColor = LightColor[lightIndex];
         // TODO: Add support for disk based Directional light
         streams.lightDirectionVS = -normalize(LightDirectionsVS[lightIndex]);
-        streams.lightColorNdotL = streams.lightColor * dot(streams.lightDirectionVS, streams.normalVS);
+
+        // Base will compute shadow and Color with NdotL
+        base.ComputeLight(lightIndex);
     }
 };

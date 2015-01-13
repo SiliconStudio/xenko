@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Effects.ShadowMaps;
+using SiliconStudio.Paradox.Effects.Shadows;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;

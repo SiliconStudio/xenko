@@ -5,12 +5,14 @@ using System.Runtime.InteropServices;
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Effects.ShadowMaps
+namespace SiliconStudio.Paradox.Effects.Shadows
 {
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    internal struct ShadowMapReceiverInfo
+    internal struct ShadowMapCascadeLevel
     {
-        public Vector3 ShadowLightDirection;
-        public float ShadowMapDistance;
+        public Matrix ViewProjReceiver;
+        public Vector4 CascadeTextureCoordsBorder;
+        public Vector3 Offset;
+        private float Padding;
     }
 }

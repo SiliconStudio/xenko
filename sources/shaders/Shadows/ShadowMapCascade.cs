@@ -14,9 +14,9 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-namespace SiliconStudio.Paradox.Effects.ShadowMaps
+namespace SiliconStudio.Paradox.Effects.Shadows
 {
-    public static partial class ShadowMapCascadeKeys
+    internal static partial class ShadowMapCascadeKeys
     {
         public static readonly ParameterKey<Vector3> ShadowLightDirection = ParameterKeys.New<Vector3>();
         public static readonly ParameterKey<float> ShadowMapDistance = ParameterKeys.New<float>();

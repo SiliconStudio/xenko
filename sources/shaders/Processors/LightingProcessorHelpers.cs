@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Paradox.Effects.Renderers;
-using SiliconStudio.Paradox.Effects.ShadowMaps;
+using SiliconStudio.Paradox.Effects.Shadows;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects.Processors

@@ -442,7 +442,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Lighting\LightDirectionalGroup.cs">
+    <Compile Include="Lights\LightDirectionalGroup.cs">
       <DependentUpon>LightDirectionalGroup.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -852,25 +852,37 @@
     <Compile Include="Renderers\LightingUpdateType.cs" />
     <Compile Include="Renderers\LightParamSemantic.cs" />
     <Compile Include="Renderers\PointLightData.cs" />
-    <Compile Include="Lighting\LightGroupArray.cs">
+    <Compile Include="Lights\LightGroupArray.cs">
       <DependentUpon>LightGroupArray.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Lighting\LightGroup.cs">
+    <Compile Include="Lights\LightGroup.cs">
       <DependentUpon>LightGroup.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Lighting\LightStream.cs">
+    <Compile Include="Lights\LightStream.cs">
       <DependentUpon>LightStream.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="ShadowMaps\ShadowUpdateInfo.cs" />
+    <Compile Include="Shadows\ShadowMapCommon.cs">
+      <DependentUpon>ShadowMapCommon.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Shadows\ShadowStream.cs">
+      <DependentUpon>ShadowStream.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Shadows\ShadowUpdateInfo.cs" />
     <Compile Include="Renderers\SpotLightData.cs" />
     <Compile Include="LightPrepass\DeferredSpotShadowLighting.cs">
       <AutoGen>True</AutoGen>
@@ -924,11 +936,11 @@
     <Compile Include="Processors\LightShadowProcessor.cs" />
     <Compile Include="Processors\LightShadowProcessorDefaultBudget.cs" />
     <Compile Include="Processors\LightShadowProcessorWithBudget.cs" />
-    <Compile Include="ShadowMaps\ShadowMap.cs" />
-    <Compile Include="ShadowMaps\ShadowMapTexture.cs" />
+    <Compile Include="Shadows\ShadowMap.cs" />
+    <Compile Include="Shadows\ShadowMapTexture.cs" />
     <Compile Include="Cubemap\CubeMapRenderer.cs" />
     <Compile Include="Renderers\LightingIBLRenderer.cs" />
-    <Compile Include="ShadowMaps\ShadowMapRenderer.cs" />
+    <Compile Include="Shadows\ShadowMapRenderer.cs" />
     <Compile Include="Skybox\SkyboxRenderer.cs" />
     <Compile Include="Shading\BRDFCookTorrance.cs">
       <AutoGen>True</AutoGen>
@@ -1008,11 +1020,11 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>PostEffectVsmBlur.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="ShadowMaps\ShadowMapBase.cs">
+    <Compile Include="Shadows\ShadowMapGroup.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ShadowMapBase.pdxsl</DependentUpon>
+      <DependentUpon>ShadowMapGroup.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="LightPrepass\DeferredSpotLighting.cs">
       <AutoGen>True</AutoGen>
@@ -1255,16 +1267,16 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>SpotShading.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="ShadowMaps\ShadowMapCascadeInfo.cs" />
-    <Compile Include="ShadowMaps\ShadowMapCascadeLevel.cs" />
-    <Compile Include="ShadowMaps\ShadowMapCasterVsm.cs">
+    <Compile Include="Shadows\ShadowMapCascadeInfo.cs" />
+    <Compile Include="Shadows\ShadowMapCascadeLevel.cs" />
+    <Compile Include="Shadows\ShadowMapCasterVsm.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ShadowMapCasterVsm.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="ShadowMaps\ShadowMapReceiverInfo.cs" />
-    <Compile Include="ShadowMaps\ShadowMaps.cs">
+    <Compile Include="Shadows\ShadowMapReceiverInfo.cs" />
+    <Compile Include="Shadows\ShadowMaps.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -1333,56 +1345,56 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>SpecularPowerPerMesh.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="ShadowMaps\ShadowMapKeys.cs" />
-    <Compile Include="ShadowMaps\ShadowBase.cs">
+    <Compile Include="Shadows\ShadowMapKeys.cs" />
+    <Compile Include="Shadows\ShadowGroup.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ShadowBase.pdxsl</DependentUpon>
+      <DependentUpon>ShadowGroup.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="ShadowMaps\ShadowMapCascade.cs">
+    <Compile Include="Shadows\ShadowMapCascade.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ShadowMapCascade.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="ShadowMaps\ShadowMapCasterBase.cs">
+    <Compile Include="Shadows\ShadowMapCasterBase.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ShadowMapCasterBase.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="ShadowMaps\ShadowMapColor.cs">
+    <Compile Include="Shadows\ShadowMapColor.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ShadowMapColor.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="ShadowMaps\ShadowMapFilterBase.cs">
+    <Compile Include="Shadows\ShadowMapFilterBase.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ShadowMapFilterBase.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="ShadowMaps\ShadowMapFilterDefault.cs">
+    <Compile Include="Shadows\ShadowMapFilterDefault.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ShadowMapFilterDefault.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="ShadowMaps\ShadowMapFilterPcf.cs">
+    <Compile Include="Shadows\ShadowMapFilterPcf.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ShadowMapFilterPcf.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="ShadowMaps\ShadowMapFilterVsm.cs">
+    <Compile Include="Shadows\ShadowMapFilterVsm.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ShadowMapFilterVsm.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="ShadowMaps\ShadowMapReceiverVsmInfo.cs" />
+    <Compile Include="Shadows\ShadowMapReceiverVsmInfo.cs" />
     <Compile Include="Skinning\NormalMeshSkinning.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -2125,7 +2137,7 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ToneMapShader.cs</LastGenOutput>
     </None>
-    <None Include="Lighting\LightDirectionalGroup.pdxsl">
+    <None Include="Lights\LightDirectionalGroup.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LightDirectionalGroup.cs</LastGenOutput>
     </None>
@@ -2185,11 +2197,11 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialStream.cs</LastGenOutput>
     </None>
-    <None Include="Lighting\LightGroupArray.pdxsl">
+    <None Include="Lights\LightGroupArray.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LightGroupArray.cs</LastGenOutput>
     </None>
-    <None Include="Lighting\LightGroup.pdxsl">
+    <None Include="Lights\LightGroup.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LightGroup.cs</LastGenOutput>
     </None>
@@ -2229,7 +2241,7 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>BRDFCookTorrance.cs</LastGenOutput>
     </None>
-    <None Include="Lighting\LightStream.pdxsl">
+    <None Include="Lights\LightStream.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LightStream.cs</LastGenOutput>
     </None>
@@ -2309,9 +2321,17 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>PostEffectVsmBlur.cs</LastGenOutput>
     </None>
-    <None Include="ShadowMaps\ShadowMapBase.pdxsl">
+    <None Include="Shadows\ShadowMapCommon.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ShadowMapBase.cs</LastGenOutput>
+      <LastGenOutput>ShadowMapCommon.cs</LastGenOutput>
+    </None>
+    <None Include="Shadows\ShadowStream.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ShadowStream.cs</LastGenOutput>
+    </None>
+    <None Include="Shadows\ShadowMapGroup.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ShadowMapGroup.cs</LastGenOutput>
     </None>
     <None Include="LightPrepass\DeferredSpotLighting.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -2421,43 +2441,43 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>SpecularPowerPerMesh.cs</LastGenOutput>
     </None>
-    <None Include="ShadowMaps\ShadowMapCasterVsm.pdxsl">
+    <None Include="Shadows\ShadowMapCasterVsm.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadowMapCasterVsm.cs</LastGenOutput>
     </None>
-    <None Include="ShadowMaps\ShadowMaps.pdxfx">
+    <None Include="Shadows\ShadowMaps.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadowMaps.cs</LastGenOutput>
     </None>
-    <None Include="ShadowMaps\ShadowBase.pdxsl">
+    <None Include="Shadows\ShadowGroup.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ShadowBase.cs</LastGenOutput>
+      <LastGenOutput>ShadowGroup.cs</LastGenOutput>
     </None>
-    <None Include="ShadowMaps\ShadowMapCascade.pdxsl">
+    <None Include="Shadows\ShadowMapCascade.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadowMapCascade.cs</LastGenOutput>
     </None>
-    <None Include="ShadowMaps\ShadowMapCasterBase.pdxsl">
+    <None Include="Shadows\ShadowMapCasterBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadowMapCasterBase.cs</LastGenOutput>
     </None>
-    <None Include="ShadowMaps\ShadowMapColor.pdxsl">
+    <None Include="Shadows\ShadowMapColor.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadowMapColor.cs</LastGenOutput>
     </None>
-    <None Include="ShadowMaps\ShadowMapFilterBase.pdxsl">
+    <None Include="Shadows\ShadowMapFilterBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadowMapFilterBase.cs</LastGenOutput>
     </None>
-    <None Include="ShadowMaps\ShadowMapFilterDefault.pdxsl">
+    <None Include="Shadows\ShadowMapFilterDefault.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadowMapFilterDefault.cs</LastGenOutput>
     </None>
-    <None Include="ShadowMaps\ShadowMapFilterPcf.pdxsl">
+    <None Include="Shadows\ShadowMapFilterPcf.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadowMapFilterPcf.cs</LastGenOutput>
     </None>
-    <None Include="ShadowMaps\ShadowMapFilterVsm.pdxsl">
+    <None Include="Shadows\ShadowMapFilterVsm.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadowMapFilterVsm.cs</LastGenOutput>
     </None>

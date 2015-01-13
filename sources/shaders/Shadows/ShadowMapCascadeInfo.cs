@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Effects.ShadowMaps
+namespace SiliconStudio.Paradox.Effects.Shadows
 {
     [StructLayout(LayoutKind.Sequential)]
     internal struct ShadowMapCascadeInfo

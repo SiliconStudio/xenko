@@ -12,7 +12,7 @@ class DeferredDirectionalShadowLighting : DeferredDirectionalLighting, ShadowBas
 
         float4 lighting = base.ComputeLighting(positionVS, normalVS, eyeVS);
 
-        float3 shadowFactor = ComputeShadowFactor(0);
+        float3 shadowFactor = ComputeShadow(0);
 
         lighting *= float4(shadowFactor, shadowFactor.x);
         
