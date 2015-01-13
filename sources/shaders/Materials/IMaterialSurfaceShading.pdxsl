@@ -7,7 +7,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
     /// </summary>
     class IMaterialSurfaceShading : MaterialStream, LightStream
     {
-        float4 Shading()
+        float3 Shading()
         {
             return 0;
         }

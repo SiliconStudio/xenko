@@ -16,6 +16,7 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 using SiliconStudio.Paradox.Effects.Data;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Effects.Materials;
 namespace SiliconStudio.Paradox.Effects.Core
 {
     internal static partial class ShaderMixins
@@ -26,6 +27,7 @@ namespace SiliconStudio.Paradox.Effects.Core
             {
                 context.Mixin(mixin, "ShaderBase");
                 context.Mixin(mixin, "ShadingBase");
+                context.Mixin(mixin, "NormalStream");
                 context.Mixin(mixin, "TransformationWAndVP");
                 context.Mixin(mixin, "PositionVSStream");
                 if (context.GetParam(MaterialParameters.HasNormalMap))
@@ -46,11 +48,11 @@ namespace SiliconStudio.Paradox.Effects.Core
                     context.Mixin(mixin, "TransformationSkinning");
                     if (context.GetParam(MaterialParameters.HasSkinningNormal))
                     {
-                        context.Mixin(mixin, "NormalSkinning");
+                        context.Mixin(mixin, "NormalMeshSkinning");
                     }
                     if (context.GetParam(MaterialParameters.HasSkinningTangent))
                     {
-                        context.Mixin(mixin, "TangentSkinning");
+                        context.Mixin(mixin, "TangentMeshSkinning");
                     }
                     if (context.GetParam(MaterialParameters.HasSkinningNormal))
                     {
@@ -64,7 +66,17 @@ namespace SiliconStudio.Paradox.Effects.Core
                         }
                     }
                 }
-                context.Mixin(mixin, "MaterialSurfaceCompositor");
+                if (context.GetParam(MaterialKeys.Material) != null)
+                {
+                    context.Mixin(mixin, "MaterialSurfaceCompositor");
+
+                    {
+                        var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushComposition(mixin, "material", __subMixin);
+                        context.Mixin(__subMixin, context.GetParam(MaterialKeys.Material));
+                        context.PopComposition();
+                    }
+                }
                 var lightGroups = context.GetParam(LightingKeys.LightGroups);
 
                 for (int i = 0; i < lightGroups.Length; i++)

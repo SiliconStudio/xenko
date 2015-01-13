@@ -3,9 +3,9 @@
 namespace SiliconStudio.Paradox.Effects.Materials
 {
     // Temporary code for testing IMaterialSurface
-    class MaterialSurfaceCompositor : ShaderBase, ShadingBase, PositionVSBase, MaterialStream, LightGroupArray
+    class MaterialSurfaceCompositor : ShadingBase, PositionVSBase, MaterialStream, LightGroupArray
     {
-        compose IMaterialSurface composition;
+        compose IMaterialSurface material;
 
         stage override float4 Shading()
         {
@@ -17,7 +17,8 @@ namespace SiliconStudio.Paradox.Effects.Materials
             ResetMaterialStream();
 
             // Compute the shading of the surface
-            composition.Compute();
+            // TODO: separate between material attributes blending and material lighting/shadow shading
+            material.Compute();
 
             // Return the actual shading color
             return float4(streams.shadingColor, 1);

@@ -11,7 +11,7 @@ class NormalVSFromMesh : NormalVSBase, Transformation
         streams.normalVS = mul((float3x3)WorldViewInverse, streams.meshNormal);
     }
     
-    stage void UpdateNormalVSFromTangentToView(float3 normalInTangentSpace)
+    stage override void UpdateNormalVSFromTangentToView(float3 normalInTangentSpace)
     {
         // Override the default behavior, as we are not changing the NormalVS calculated at vertex stage when normal mapping is not used
     }

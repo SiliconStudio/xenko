@@ -7,15 +7,15 @@ namespace SiliconStudio.Paradox.Effects.Materials
     /// </summary>
     class MaterialSurfaceShadingSpecularBlinnPhong : IMaterialSurfaceShading, NormalStream
     {
-        override float4 Shading()
+        override float3 Shading()
         {
-            float k = BRDFBlinnPhong.Compute(streams.lightDirection, streams.normalVS, streams.shadingView, streams.matSpecularPower);
+            float k = BRDFBlinnPhong.Compute(streams.lightDirectionVS, streams.normalVS, streams.shadingView, streams.matSpecularPower);
 
             var specularColor = streams.matSpecular * streams.matCavity * streams.matCavitySpecular;
 
             // TODO: integrate AO/Cavity...etc.
             // TODO: Check if we need to divide by PI
-            return float4(specularColor * k * streams.lightColorNdotL, 1);
+            return specularColor * k * streams.lightColorNdotL;
         }
     };
 }

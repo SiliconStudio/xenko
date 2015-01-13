@@ -12,12 +12,12 @@ class NormalStream
     stage stream float4 meshTangent : TANGENT;
     
     // The normal in view space
-    stage stream float3 normalVS;
+    stage stream float3 normalVS : NORMALVS;
 
     // The tangent to view matrix to transform a tangent normal vector to normal vector in viewspace
     stage stream float3x3 tangentToView;
 
-    stage float3x3 GetTangentMatrix()
+    float3x3 GetTangentMatrix()
     {
         float3x3 tangentMatrix;
 
@@ -35,7 +35,7 @@ class NormalStream
         streams.tangentToView = mul(GetTangentMatrix(), GetTangentViewTransform());
     }
 
-    stage float3x3 GetTangentViewTransform()
+    float3x3 GetTangentViewTransform()
     {
         // Must be implemented when performing normal mapping
         return 0;

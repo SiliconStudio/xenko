@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Paradox.Effects.Data;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Effects.Materials;
 
 namespace SiliconStudio.Paradox.Effects.Core
 {
@@ -12,9 +13,11 @@ namespace SiliconStudio.Paradox.Effects.Core
     {
         using params LightingKeys;
         using params MaterialParameters;
+        using params MaterialKeys;
 
         mixin ShaderBase;
         mixin ShadingBase;
+        mixin NormalStream;
         mixin TransformationWAndVP;
         mixin PositionVSStream;
 
@@ -45,12 +48,12 @@ namespace SiliconStudio.Paradox.Effects.Core
 
             if (MaterialParameters.HasSkinningNormal)
             {
-                mixin NormalSkinning;
+                mixin NormalMeshSkinning;
             }
 
             if (MaterialParameters.HasSkinningTangent)
             {
-                mixin TangentSkinning;
+                mixin TangentMeshSkinning;
             }
 
             if (MaterialParameters.HasSkinningNormal)
@@ -69,7 +72,11 @@ namespace SiliconStudio.Paradox.Effects.Core
         // -----------------------------------------------
         // Mix material and lighting shading
         // -----------------------------------------------
-        mixin MaterialSurfaceCompositor;
+        if (MaterialKeys.Material != null)
+        {
+            mixin MaterialSurfaceCompositor;
+            mixin compose material = MaterialKeys.Material;
+        }
 
         // -----------------------------------------------
         // Add light groups
