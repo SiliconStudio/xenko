@@ -572,7 +572,7 @@ public:
 	MaterialAsset^ ProcessMeshMaterialAsset(FbxSurfaceMaterial* lMaterial, std::map<std::string, int>& uvElementMapping)
 	{
 		auto uvEltMappingOverride = uvElementMapping;
-		std::map<FbxFileTexture*, MaterialTextureComputeColor^> textureMap;
+		auto textureMap = gcnew Dictionary<IntPtr, MaterialTextureComputeColor^>();
 		std::map<std::string, int> textureNameCount;
 
 		auto finalMaterial = gcnew SiliconStudio::Paradox::Assets::Materials::MaterialAsset();
@@ -776,11 +776,18 @@ public:
 						
 				if (specularIntensityTree != nullptr)
 				{
-					auto specularFeature = gcnew MaterialSpecularMapFeature();
-					specularFeature->SpecularMap = specularTree;
+					MaterialSpecularMapFeature^ specularFeature;
+					if (finalMaterial->Attributes->Specular == nullptr || finalMaterial->Attributes->Specular->GetType() != MaterialSpecularMapFeature::typeid)
+					{
+						specularFeature = gcnew MaterialSpecularMapFeature();
+					}
+					else
+					{
+						specularFeature = (MaterialSpecularMapFeature^)finalMaterial->Attributes->Specular;
+					}
+					// TODO: Check Specular Intensity and Power
+					specularFeature->Intensity = specularIntensityTree;
 					finalMaterial->Attributes->Specular = specularFeature;
-
-					finalMaterial->AddColorNode(MaterialParameters::SpecularIntensityMap, "specularIntensity", specularIntensityTree);
 				}
 			}
 		}
@@ -796,40 +803,48 @@ public:
 					if(specularPower > 0)
 					{
 						specularPowerTree = gcnew MaterialFloatComputeColor((float)specularPower);
-						((MaterialFloatComputeColor^)specularPowerTree)->Key = MaterialKeys::SpecularPower;
-						((MaterialFloatComputeColor^)specularPowerTree)->AutoAssignKey = false;
-						((MaterialFloatComputeColor^)specularPowerTree)->IsReducible = false;
 					}
 				}
 						
-				if(specularPowerTree != nullptr)		
-					finalMaterial->AddColorNode(MaterialParameters::SpecularPowerMap, "specularPower", specularPowerTree);
-			}
-		}
-		{   // The reflection map
-			auto reflectionMapTree = GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sReflection, FbxSurfaceMaterial::sReflectionFactor, finalMaterial);
-			if(phongSurface || reflectionMapTree != nullptr)
-			{
-				if(reflectionMapTree == nullptr)	
+				if (specularPowerTree != nullptr)		
 				{
-					auto reflectionColor = lambertSurface->DisplacementColor.Get();
-					auto reflectionFactor = lambertSurface->DisplacementFactor.Get();
-					auto reflectionValue = reflectionFactor * reflectionColor;
-
-					// Do not create the node if the value has not been explicitly specified by the user.
-					if(reflectionValue != FbxDouble3(0))
+					MaterialSpecularMapFeature^ specularFeature;
+					if (finalMaterial->Attributes->Specular == nullptr || finalMaterial->Attributes->Specular->GetType() != MaterialSpecularMapFeature::typeid)
 					{
-						reflectionMapTree = gcnew MaterialColorComputeColor(FbxDouble3ToColor4(reflectionValue));
-						((MaterialColorComputeColor^)reflectionMapTree)->Key = MaterialKeys::ReflectionColorValue;
-						((MaterialColorComputeColor^)reflectionMapTree)->AutoAssignKey = false;
-						((MaterialColorComputeColor^)reflectionMapTree)->IsReducible = false;
+						specularFeature = gcnew MaterialSpecularMapFeature();
 					}
+					else
+					{
+						specularFeature = (MaterialSpecularMapFeature^)finalMaterial->Attributes->Specular;
+					}
+					// TODO: Check Specular Intensity and Power
+					specularFeature->Intensity = specularPowerTree;
+					finalMaterial->Attributes->Specular = specularFeature;
 				}
-				
-				if(reflectionMapTree != nullptr)
-					finalMaterial->AddColorNode(MaterialParameters::ReflectionMap, "reflectionMap", reflectionMapTree);
 			}
 		}
+		//// TODO: Support for reflection map
+		//{   // The reflection map
+		//	auto reflectionMapTree = GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sReflection, FbxSurfaceMaterial::sReflectionFactor, finalMaterial);
+		//	if(phongSurface || reflectionMapTree != nullptr)
+		//	{
+		//		if(reflectionMapTree == nullptr)	
+		//		{
+		//			auto reflectionColor = lambertSurface->DisplacementColor.Get();
+		//			auto reflectionFactor = lambertSurface->DisplacementFactor.Get();
+		//			auto reflectionValue = reflectionFactor * reflectionColor;
+
+		//			// Do not create the node if the value has not been explicitly specified by the user.
+		//			if(reflectionValue != FbxDouble3(0))
+		//			{
+		//				reflectionMapTree = gcnew MaterialColorComputeColor(FbxDouble3ToColor4(reflectionValue));
+		//			}
+		//		}
+		//		
+		//		if(reflectionMapTree != nullptr)
+		//			finalMaterial->AddColorNode(MaterialParameters::ReflectionMap, "reflectionMap", reflectionMapTree);
+		//	}
+		//}
 		return finalMaterial;
 	}
 
@@ -869,7 +884,7 @@ public:
 		return false;
 	}
 
-	MaterialComputeColor^ GenerateSurfaceTextureTree(FbxSurfaceMaterial* lMaterial, std::map<std::string, int>& uvElementMapping, std::map<FbxFileTexture*, MaterialTextureComputeColor^>& textureMap,
+	MaterialComputeColor^ GenerateSurfaceTextureTree(FbxSurfaceMaterial* lMaterial, std::map<std::string, int>& uvElementMapping, Dictionary<IntPtr, MaterialTextureComputeColor^>^ textureMap,
 												std::map<std::string, int>& textureNameCount, char const* surfaceMaterial, char const* surfaceMaterialFactor,
 												SiliconStudio::Paradox::Assets::Materials::MaterialAsset^ finalMaterial)
 	{
@@ -1064,7 +1079,7 @@ public:
 		return fileNameToUse;
 	}
 
-	MaterialTextureComputeColor^ GenerateMaterialTextureNodeFBX(FbxFileTexture* lFileTexture, std::map<std::string, int>& uvElementMapping, std::map<FbxFileTexture*, MaterialTextureComputeColor^>& textureMap, std::map<std::string, int>& textureNameCount, SiliconStudio::Paradox::Assets::Materials::MaterialAsset^ finalMaterial)
+	MaterialTextureComputeColor^ GenerateMaterialTextureNodeFBX(FbxFileTexture* lFileTexture, std::map<std::string, int>& uvElementMapping, Dictionary<IntPtr, MaterialTextureComputeColor^>^ textureMap, std::map<std::string, int>& textureNameCount, SiliconStudio::Paradox::Assets::Materials::MaterialAsset^ finalMaterial)
 	{
 		auto texScale = lFileTexture->GetUVScaling();		
 		auto texturePath = FindFilePath(lFileTexture);
@@ -1073,16 +1088,17 @@ public:
 		bool wrapTextureU = (wrapModeU == FbxTexture::EWrapMode::eRepeat);
 		bool wrapTextureV = (wrapModeV == FbxTexture::EWrapMode::eRepeat);
 		
-		auto index = textureMap.find(lFileTexture);
-		if (index != textureMap.end())
+		MaterialTextureComputeColor^ textureValue;
+		
+		if (textureMap->TryGetValue(IntPtr(lFileTexture), textureValue))
 		{
-			return textureMap[lFileTexture];
+			return textureValue;
 		}
 		else
 		{
-			auto textureValue = TextureLayerGenerator::GenerateMaterialTextureNode(vfsOutputFilename, texturePath, uvElementMapping[std::string(lFileTexture->UVSet.Get())], Vector2((float)texScale[0], (float)texScale[1]), wrapTextureU, wrapTextureV, nullptr);
+			textureValue = TextureLayerGenerator::GenerateMaterialTextureNode(vfsOutputFilename, texturePath, uvElementMapping[std::string(lFileTexture->UVSet.Get())], Vector2((float)texScale[0], (float)texScale[1]), wrapTextureU, wrapTextureV, nullptr);
 
-			auto textureNamePtr = Marshal::StringToHGlobalAnsi(textureValue->TextureName);
+			auto textureNamePtr = Marshal::StringToHGlobalAnsi(textureValue->TextureReference->Location);
 			std::string textureName = std::string((char*)textureNamePtr.ToPointer());
 			Marshal:: FreeHGlobal(textureNamePtr);
 
@@ -1093,7 +1109,7 @@ public:
 			auto referenceName = gcnew String(textureName.c_str());
 			//auto materialReference = gcnew MaterialReferenceNode(referenceName);
 			//finalMaterial->AddNode(referenceName, textureValue);
-			textureMap[lFileTexture] = textureValue;
+			textureMap[IntPtr(lFileTexture)] = textureValue;
 			return textureValue;
 		}
 		
@@ -2059,7 +2075,7 @@ private:
 	
 	void GenerateMaterialNames(std::map<FbxSurfaceMaterial*, std::string>& materialNames)
 	{
-		auto materials = gcnew List<MaterialDescription^>();
+		auto materials = gcnew List<MaterialAsset^>();
 		std::map<std::string, int> materialNameTotalCount;
 		std::map<std::string, int> materialNameCurrentCount;
 		std::map<FbxSurfaceMaterial*, std::string> tempNames;
@@ -2374,12 +2390,12 @@ private:
 		}
 	}
 
-	Dictionary<String^, MaterialDescription^>^ ExtractMaterialsNoInit()
+	Dictionary<String^, MaterialAsset^>^ ExtractMaterialsNoInit()
 	{
 		std::map<FbxSurfaceMaterial*, std::string> materialNames;
 		GenerateMaterialNames(materialNames);
 
-		auto materials = gcnew Dictionary<String^, MaterialDescription^>();
+		auto materials = gcnew Dictionary<String^, MaterialAsset^>();
 		for (int i = 0;  i < scene->GetMaterialCount(); i++)
 		{
 			std::map<std::string, int> dict;
@@ -2409,7 +2425,7 @@ private:
 		ret->Models = models;
 		ret->Cameras = cameras;
 		ret->Lights = lights;
-		ret->Materials = gcnew Dictionary<String^, MaterialDescription^>();
+		ret->Materials = gcnew Dictionary<String^, MaterialAsset^>();
 		for (int i = 0; i < materialInstances->Count; ++i)
 		{
 			for (int j = 0; j < materialInstances[i]->Instances->Count; ++j)
@@ -2512,7 +2528,7 @@ private:
 		return nullptr;
 	}
 
-	Dictionary<String^, MaterialDescription^>^ ExtractMaterials(String^ inputFilename)
+	Dictionary<String^, MaterialAsset^>^ ExtractMaterials(String^ inputFilename)
 	{
 		try
 		{

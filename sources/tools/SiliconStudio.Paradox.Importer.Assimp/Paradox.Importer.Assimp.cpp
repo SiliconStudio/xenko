@@ -21,7 +21,7 @@ using namespace SiliconStudio::Core::Serialization;
 using namespace SiliconStudio::Core::Serialization::Assets;
 using namespace SiliconStudio::Core::Serialization::Contents;
 using namespace SiliconStudio::Paradox::Assets::Materials;
-using namespace SiliconStudio::Paradox::Assets::Materials::Nodes;
+using namespace SiliconStudio::Paradox::Assets::Materials::ComputeColors;
 using namespace SiliconStudio::Paradox::AssimpNet;
 using namespace SiliconStudio::Paradox::DataModel;
 using namespace SiliconStudio::Paradox::Engine;
@@ -745,11 +745,11 @@ private:
 		return animationClip;
 	}
 
-	MaterialReferenceNode^ GetTextureReferenceNode(String^ vfsOutputPath, String^ sourceTextureFile, int textureUVSetIndex, Vector2 textureUVscaling, bool wrapTextureU, bool wrapTextureV, MaterialDescription^ finalMaterial, SiliconStudio::Core::Diagnostics::Logger^ logger)
+	MaterialTextureComputeColor^ GetTextureReferenceNode(String^ vfsOutputPath, String^ sourceTextureFile, int textureUVSetIndex, Vector2 textureUVscaling, bool wrapTextureU, bool wrapTextureV, MaterialAsset^ finalMaterial, SiliconStudio::Core::Diagnostics::Logger^ logger)
 	{
 		// TODO: compare with FBX importer - see if there could be some conflict between texture names
 		auto textureValue = TextureLayerGenerator::GenerateMaterialTextureNode(vfsOutputPath, sourceTextureFile, textureUVSetIndex, textureUVscaling, wrapTextureU, wrapTextureV, Logger);
-		auto referenceName = textureValue->TextureName;
+		auto referenceName = textureValue->TextureReference->Location;
 
 		// find a new and correctName
 		if (!textureNameCount->ContainsKey(referenceName))
@@ -761,13 +761,10 @@ private:
 			referenceName = String::Concat(referenceName, "_", count);
 		}
 
-		auto materialReference = gcnew MaterialReferenceNode(referenceName);
-		finalMaterial->AddNode(referenceName, textureValue);
-
-		return materialReference;
+		return textureValue;
 	}
 
-	MaterialNodeBase^ GenerateOneTextureTypeLayers(aiMaterial* pMat, aiTextureType textureType, int& textureCount, SiliconStudio::Paradox::Assets::Materials::MaterialDescription^ finalMaterial)
+	MaterialComputeColor^ GenerateOneTextureTypeLayers(aiMaterial* pMat, aiTextureType textureType, int& textureCount, SiliconStudio::Paradox::Assets::Materials::MaterialAsset^ finalMaterial)
 	{
 		AssimpNet::Material::Stack^ stack = NetTranslation::Materials::convertAssimpStackCppToCs(pMat, textureType);
 		int set;
@@ -776,11 +773,11 @@ private:
 
 		sets.push(0);
 		auto nbTextures = pMat->GetTextureCount(textureType);
-		MaterialNodeBase^ curComposition = nullptr,^ newCompositionFather = nullptr;
-		MaterialNodeBase^ curCompositionFather = nullptr;
+		MaterialComputeColor^ curComposition = nullptr, ^ newCompositionFather = nullptr;
+		MaterialComputeColor^ curCompositionFather = nullptr;
 
 		bool isRootElement = true;
-		MaterialNodeBase^ rootMaterial = nullptr;
+		MaterialComputeColor^ rootMaterial = nullptr;
 
 		while (!stack->IsEmpty)
 		{
@@ -791,7 +788,7 @@ private:
 				if (compositionFathers->Count == 0)
 					Logger->Error(String::Format("Texture Stack Invalid : Operand without Operation."));
 
-				curCompositionFather = (MaterialNodeBase^)compositionFathers->Pop();
+				curCompositionFather = (MaterialComputeColor^)compositionFathers->Pop();
 			}
 
 			set = sets.top();
@@ -890,119 +887,95 @@ private:
 		return rootMaterial;
 	}
 
-	void BuildLayeredSurface(aiMaterial* pMat, bool hasBaseColor, bool hasBaseValue, Color4 baseColor, float baseValue, aiTextureType textureType, SiliconStudio::Paradox::Assets::Materials::MaterialDescription^ finalMaterial)
+	void BuildLayeredSurface(aiMaterial* pMat, bool hasBaseColor, bool hasBaseValue, Color4 baseColor, float baseValue, aiTextureType textureType, SiliconStudio::Paradox::Assets::Materials::MaterialAsset^ finalMaterial)
 	{
 		auto nbTextures = pMat->GetTextureCount(textureType);
 		
-		if(nbTextures == 0)
+		MaterialComputeColor^ computeColorNode;
+		int textureCount = 0;
+		if (nbTextures == 0)
 		{
 			if (hasBaseColor)
 			{
-				auto colorNode = gcnew MaterialColorComputeColor(baseColor);
-				colorNode->AutoAssignKey = false;
-				colorNode->IsReducible = false;
-				if (textureType == aiTextureType_DIFFUSE)
-				{
-					colorNode->Key = MaterialKeys::DiffuseColorValue;
-					finalMaterial->AddColorNode(MaterialParameters::AlbedoDiffuse, "diffuse", colorNode);
-				}
-				else if (textureType == aiTextureType_SPECULAR)
-				{
-					colorNode->Key = MaterialKeys::SpecularColorValue;
-					finalMaterial->AddColorNode(MaterialParameters::AlbedoSpecular, "specular", colorNode);
-				}
-				else if (textureType == aiTextureType_EMISSIVE)
-				{
-					colorNode->Key = MaterialKeys::EmissiveColorValue;
-					finalMaterial->AddColorNode(MaterialParameters::EmissiveMap, "emissive", colorNode);
-				}
-				else if (textureType == aiTextureType_AMBIENT)
-				{
-					colorNode->Key = MaterialKeys::AmbientColorValue;
-					finalMaterial->AddColorNode(MaterialParameters::AmbientMap, "ambient", colorNode);
-				}
-				else if (textureType == aiTextureType_REFLECTION)
-				{
-					colorNode->Key = MaterialKeys::ReflectionColorValue;
-					finalMaterial->AddColorNode(MaterialParameters::ReflectionMap, "reflectionMap", colorNode);
-				}
+				computeColorNode = gcnew MaterialColorComputeColor(baseColor);
 			}
 			else if (hasBaseValue)
 			{
-				auto floatNode = gcnew MaterialFloatComputeColor(baseValue);
-				floatNode->AutoAssignKey = false;
-				floatNode->IsReducible = false;
-				if (textureType == aiTextureType_OPACITY)
-				{
-					floatNode->Key = MaterialKeys::TransparencyValue;
-					finalMaterial->AddColorNode(MaterialParameters::TransparencyMap, "transparencyMap", floatNode);
-				}
-				else if (textureType == aiTextureType_SHININESS)
-				{
-					floatNode->Key = MaterialKeys::SpecularPower;
-					finalMaterial->AddColorNode(MaterialParameters::SpecularPowerMap, "specularPower", floatNode);
-				}
+				computeColorNode = gcnew MaterialFloatComputeColor(baseValue);
 			}
 		}
 		else
 		{
-			int textureCount = 0;
-			auto albedoNode = GenerateOneTextureTypeLayers(pMat, textureType, textureCount, finalMaterial);
-			if (albedoNode != nullptr)
+			computeColorNode = GenerateOneTextureTypeLayers(pMat, textureType, textureCount, finalMaterial);
+		}
+
+		if (computeColorNode == nullptr)
+		{
+			return;
+		}
+		
+		if (textureType == aiTextureType_DIFFUSE)
+		{
+			if (pMat->GetTextureCount(aiTextureType_LIGHTMAP) > 0)
 			{
-				if (textureType == aiTextureType_DIFFUSE)
-				{
-					if (pMat->GetTextureCount(aiTextureType_LIGHTMAP) > 0)
-					{
-						auto lightMap = GenerateOneTextureTypeLayers(pMat, aiTextureType_LIGHTMAP, textureCount, finalMaterial);
-						if (lightMap != nullptr)
-							albedoNode = gcnew MaterialBinaryComputeColor(albedoNode, lightMap, MaterialBinaryOperand::Add);
-					}
-					finalMaterial->AddColorNode(MaterialParameters::AlbedoDiffuse, "diffuse", albedoNode);
-				}
-				else if (textureType == aiTextureType_SPECULAR)
-				{
-					finalMaterial->AddColorNode(MaterialParameters::AlbedoSpecular, "specular", albedoNode);
-				}
-				else if (textureType == aiTextureType_NORMALS)
-				{
-					finalMaterial->AddColorNode(MaterialParameters::NormalMap, "normalMap", albedoNode);
-				}
-				else if (textureType == aiTextureType_DISPLACEMENT)
-				{
-					finalMaterial->AddColorNode(MaterialParameters::DisplacementMap, "displacementMap", albedoNode);
-				}
-				else if (textureType == aiTextureType_AMBIENT)
-				{
-					finalMaterial->AddColorNode(MaterialParameters::AmbientMap, "ambient", albedoNode);
-				}
-				else if (textureType == aiTextureType_OPACITY)
-				{
-					finalMaterial->AddColorNode(MaterialParameters::TransparencyMap, "transparencyMap", albedoNode);
-				}
-				else if (textureType == aiTextureType_SHININESS)
-				{
-					finalMaterial->AddColorNode(MaterialParameters::SpecularPowerMap, "specularPower", albedoNode);
-				}
-				else if (textureType == aiTextureType_EMISSIVE)
-				{
-					finalMaterial->AddColorNode(MaterialParameters::EmissiveMap, "emissive", albedoNode);
-				}
-				else if (textureType == aiTextureType_HEIGHT)
-				{
-					finalMaterial->AddColorNode(MaterialParameters::BumpMap, "bumpMap", albedoNode);
-				}
-				else if (textureType == aiTextureType_REFLECTION)
-				{
-					finalMaterial->AddColorNode(MaterialParameters::ReflectionMap, "reflectionMap", albedoNode);
-				}
+				auto lightMap = GenerateOneTextureTypeLayers(pMat, aiTextureType_LIGHTMAP, textureCount, finalMaterial);
+				if (lightMap != nullptr)
+					computeColorNode = gcnew MaterialBinaryComputeColor(computeColorNode, lightMap, MaterialBinaryOperand::Add);
 			}
+
+			finalMaterial->Attributes->Diffuse = gcnew MaterialDiffuseMapFeature(computeColorNode);
+		}
+		else if (textureType == aiTextureType_SPECULAR)
+		{
+			auto specularFeature = gcnew MaterialSpecularMapFeature();
+			specularFeature->SpecularMap = computeColorNode;
+			finalMaterial->Attributes->Specular = specularFeature;
+		}
+		else if (textureType == aiTextureType_EMISSIVE)
+		{
+			// TODO: Add support
+		}
+		else if (textureType == aiTextureType_AMBIENT)
+		{
+			// TODO: Add support
+		}
+		else if (textureType == aiTextureType_REFLECTION)
+		{
+			// TODO: Add support
+		}
+		if (textureType == aiTextureType_OPACITY)
+		{
+			// TODO: Add support
+		}
+		else if (textureType == aiTextureType_SHININESS)
+		{
+			// TODO: Add support
+		}
+		if (textureType == aiTextureType_SPECULAR)
+		{
+			// TODO: Add support
+		}
+		else if (textureType == aiTextureType_NORMALS)
+		{
+			finalMaterial->Attributes->Surface = gcnew MaterialNormalMapFeature(computeColorNode);
+		}
+		else if (textureType == aiTextureType_DISPLACEMENT)
+		{
+			// TODO: Add support
+		}
+		else if (textureType == aiTextureType_SHININESS)
+		{
+			// TODO: Add support
+		}
+		else if (textureType == aiTextureType_HEIGHT)
+		{
+			// TODO: Add support
 		}
 	}
 	
-	MaterialDescription^ ProcessMeshMaterial(aiMaterial* pMaterial)
+	MaterialAsset^ ProcessMeshMaterial(aiMaterial* pMaterial)
 	{
-		auto finalMaterial = gcnew MaterialDescription();
+		auto finalMaterial = gcnew MaterialAsset();
 
 		// Set material specular components
 		float specIntensity;
@@ -1010,52 +983,53 @@ private:
 		{
 			if (specIntensity > 0)
 			{
-				auto specularIntensityMap = gcnew MaterialFloatComputeColor(specIntensity);
-				specularIntensityMap->Key = MaterialKeys::SpecularIntensity;
-				specularIntensityMap->AutoAssignKey = false;
-				specularIntensityMap->IsReducible = false;
-				finalMaterial->AddColorNode(MaterialParameters::SpecularIntensityMap, "specularIntensity", specularIntensityMap);
+				// TODO: Add Specular Intensity
+				//auto specularIntensityMap = gcnew MaterialFloatComputeColor(specIntensity);
+				//specularIntensityMap->Key = MaterialKeys::SpecularIntensity;
+				//specularIntensityMap->AutoAssignKey = false;
+				//specularIntensityMap->IsReducible = false;
+				//finalMaterial->AddColorNode(MaterialParameters::SpecularIntensityMap, "specularIntensity", specularIntensityMap);
 			}
 		}
 
-		// ---------------------------------------------------------------------------------
-        // Iterate on all custom Paradox Properties and add them to the mesh.
-        // Key must be in the format: Paradox_KeyName
-        // ---------------------------------------------------------------------------------
-		for(unsigned int i = 0; i<pMaterial->mNumProperties; ++i)
-		{
-			auto pProp = pMaterial->mProperties[i];
-			auto propertyName = aiStringToString(pProp->mKey);
-            if (propertyName->StartsWith("PX_")) 
-			{
-                int index = propertyName->IndexOf('_');
-                propertyName = propertyName->Substring(index);
-                propertyName = propertyName->Replace('_','.');
-                // TODO Paradox Change name 
-                propertyName = gcnew String("SiliconStudio.Paradox.Effects") + propertyName;
+		//// ---------------------------------------------------------------------------------
+  //      // Iterate on all custom Paradox Properties and add them to the mesh.
+  //      // Key must be in the format: Paradox_KeyName
+  //      // ---------------------------------------------------------------------------------
+		//for(unsigned int i = 0; i<pMaterial->mNumProperties; ++i)
+		//{
+		//	auto pProp = pMaterial->mProperties[i];
+		//	auto propertyName = aiStringToString(pProp->mKey);
+  //          if (propertyName->StartsWith("PX_")) 
+		//	{
+  //              int index = propertyName->IndexOf('_');
+  //              propertyName = propertyName->Substring(index);
+  //              propertyName = propertyName->Replace('_','.');
+  //              // TODO Paradox Change name 
+  //              propertyName = gcnew String("SiliconStudio.Paradox.Effects") + propertyName;
 
-				switch (pProp->mDataLength)
-				{
-                    case sizeof(double):
-                        {
-							auto value = *((double*)pProp->mData);
-                            ParameterKey<float>^ key = gcnew ParameterKey<float>(propertyName, 1, nullptr);
-                            finalMaterial->SetParameter(key, (float)value);
-                        }
-                        break;
-                    case 3*sizeof(double):
-                        {
-                            auto value = (double*)pProp->mData;
-                            ParameterKey<Vector3>^ key = gcnew ParameterKey<Vector3>(propertyName, 1, nullptr);
-                            finalMaterial->SetParameter(key, Vector3((float)value[0], (float)value[1], (float)value[2]));
-                        }
-                        break;
-                    default:
-                        Console::WriteLine("Warning, Type for property [{0}] is not supported", propertyName);
-                        break;
-                }
-            }
-		}
+		//		switch (pProp->mDataLength)
+		//		{
+  //                  case sizeof(double):
+  //                      {
+		//					auto value = *((double*)pProp->mData);
+  //                          ParameterKey<float>^ key = gcnew ParameterKey<float>(propertyName, 1, nullptr);
+  //                          finalMaterial->SetParameter(key, (float)value);
+  //                      }
+  //                      break;
+  //                  case 3*sizeof(double):
+  //                      {
+  //                          auto value = (double*)pProp->mData;
+  //                          ParameterKey<Vector3>^ key = gcnew ParameterKey<Vector3>(propertyName, 1, nullptr);
+  //                          finalMaterial->SetParameter(key, Vector3((float)value[0], (float)value[1], (float)value[2]));
+  //                      }
+  //                      break;
+  //                  default:
+  //                      Console::WriteLine("Warning, Type for property [{0}] is not supported", propertyName);
+  //                      break;
+  //              }
+  //          }
+		//}
 
 		// Build the material Diffuse, Specular, NormalMap and DisplacementColor surfaces.
 		aiColor3D color;
@@ -1105,7 +1079,7 @@ private:
 		hasSpecPower = (AI_SUCCESS == pMaterial->Get(AI_MATKEY_SHININESS, specPower) && specPower > 0);
 		if(pMaterial->Get(AI_MATKEY_OPACITY, opacity) == AI_SUCCESS && opacity < 1.0)
 		{
-			finalMaterial->SetParameter(MaterialParameters::UseTransparent, true);
+			finalMaterial->Parameters->Set(MaterialParameters::UseTransparent, true);
 			hasOpacity = true;
 		}
 
@@ -1324,11 +1298,11 @@ private:
 		return textureNames;
 	}
 
-	Dictionary<String^, MaterialDescription^>^ ExtractMaterials(const aiScene *scene, std::map<aiMaterial*, std::string>& materialNames)
+	Dictionary<String^, MaterialAsset^>^ ExtractMaterials(const aiScene *scene, std::map<aiMaterial*, std::string>& materialNames)
 	{
 		GenerateMaterialNames(scene, materialNames);
 		
-		auto materials = gcnew Dictionary<String^, MaterialDescription^>();
+		auto materials = gcnew Dictionary<String^, MaterialAsset^>();
 		for (uint32_t i = 0; i < scene->mNumMaterials; i++)
 		{
 			std::map<std::string, int> dict;

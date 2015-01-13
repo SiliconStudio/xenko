@@ -239,7 +239,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             return assetItem;
         }
 
-        private static void ImportMaterials(List<AssetItem> assetReferences, UFile localPath, Dictionary<string, MaterialDescription> materials)
+        private static void ImportMaterials(List<AssetItem> assetReferences, UFile localPath, Dictionary<string, MaterialAsset> materials)
         {
             if (materials != null)
             {
@@ -251,20 +251,19 @@ namespace SiliconStudio.Paradox.Assets.Model
                     AdjustForTransparency(materialKeyValue.Value);
                     var material = materialKeyValue.Value;
                     var materialUrl = new UFile(GenerateFinalMaterialName(localPath, materialKeyValue.Key), null);
-                    var asset = new MaterialAsset { Material = material };
 
                     // patch texture name and ids
-                    var textureVisitor = new MaterialTextureVisitor(material);
-                    var textures = textureVisitor.GetAllTextureValues();
-                    foreach (var texture in textures)
-                    {
-                        // texture location is #nameOfTheModel_#nameOfTheTexture at this point in the material
-                        var foundTexture = loadedTextures.FirstOrDefault(x => x.Location == GenerateFinalTextureUrl(localPath, texture.TextureReference.Location));
-                        if (foundTexture != null)
-                            texture.TextureReference = new AssetReference<TextureAsset>(foundTexture.Id, foundTexture.Location);
-                    }
+                    //var textureVisitor = new MaterialTextureVisitor(material);
+                    //var textures = textureVisitor.GetAllTextureValues();
+                    //foreach (var texture in textures)
+                    //{
+                    //    // texture location is #nameOfTheModel_#nameOfTheTexture at this point in the material
+                    //    var foundTexture = loadedTextures.FirstOrDefault(x => x.Location == GenerateFinalTextureUrl(localPath, texture.Location));
+                    //    if (foundTexture != null)
+                    //        texture.TextureReference = new AssetReference<TextureAsset>(foundTexture.Id, foundTexture.Location);
+                    //}
 
-                    var assetReference = new AssetItem(materialUrl, asset);
+                    var assetReference = new AssetItem(materialUrl, material);
                     assetReferences.Add(assetReference);
                 }
             }
@@ -274,56 +273,56 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// Modify the material to comply with its transparency parameters.
         /// </summary>
         /// <param name="material">The material/</param>
-        private static void AdjustForTransparency(MaterialDescription material)
+        private static void AdjustForTransparency(MaterialAsset material)
         {
-            // Note: at this point, there is no other nodes than diffuse, specular, transparent, normal and displacement
-            if (material.ColorNodes.ContainsKey(MaterialParameters.AlbedoDiffuse))
-            {
-                var diffuseNode = material.GetMaterialNode(MaterialParameters.AlbedoDiffuse);
-                if (material.ColorNodes.ContainsKey(MaterialParameters.TransparencyMap))
-                {
-                    var diffuseNodeName = material.ColorNodes[MaterialParameters.AlbedoDiffuse];
-                    var transparentNodeName = material.ColorNodes[MaterialParameters.TransparencyMap];
+            //// Note: at this point, there is no other nodes than diffuse, specular, transparent, normal and displacement
+            //if (material.ColorNodes.ContainsKey(MaterialParameters.AlbedoDiffuse))
+            //{
+            //    var diffuseNode = material.GetMaterialNode(MaterialParameters.AlbedoDiffuse);
+            //    if (material.ColorNodes.ContainsKey(MaterialParameters.TransparencyMap))
+            //    {
+            //        var diffuseNodeName = material.ColorNodes[MaterialParameters.AlbedoDiffuse];
+            //        var transparentNodeName = material.ColorNodes[MaterialParameters.TransparencyMap];
 
-                    var transparentNode = material.GetMaterialNode(MaterialParameters.TransparencyMap);
+            //        var transparentNode = material.GetMaterialNode(MaterialParameters.TransparencyMap);
 
-                    if (diffuseNode == null || transparentNode == null)
-                        return;
+            //        if (diffuseNode == null || transparentNode == null)
+            //            return;
 
-                    var foundTextureDiffuse = FindTextureNode(material, diffuseNodeName);
-                    var foundTextureTransparent = FindTextureNode(material, transparentNodeName);
+            //        var foundTextureDiffuse = FindTextureNode(material, diffuseNodeName);
+            //        var foundTextureTransparent = FindTextureNode(material, transparentNodeName);
 
-                    if (foundTextureDiffuse != null && foundTextureTransparent != null)
-                    {
-                        if (foundTextureDiffuse != foundTextureTransparent)
-                        {
-                            var alphaMixNode = new MaterialBinaryComputeColor(diffuseNode, transparentNode, MaterialBinaryOperand.SubstituteAlpha);
-                            material.AddColorNode(MaterialParameters.AlbedoDiffuse, "pdx_diffuseWithAlpha", alphaMixNode);
-                        }
-                    }
+            //        if (foundTextureDiffuse != null && foundTextureTransparent != null)
+            //        {
+            //            if (foundTextureDiffuse != foundTextureTransparent)
+            //            {
+            //                var alphaMixNode = new MaterialBinaryComputeColor(diffuseNode, transparentNode, MaterialBinaryOperand.SubstituteAlpha);
+            //                material.AddColorNode(MaterialParameters.AlbedoDiffuse, "pdx_diffuseWithAlpha", alphaMixNode);
+            //            }
+            //        }
 
-                    // set the key if it was missing
-                    material.Parameters.Set(MaterialParameters.UseTransparent, true);
-                }
-                else
-                {
-                    // NOTE: MaterialParameters.UseTransparent is mostly runtime
-                    var isTransparent = false;
-                    if (material.Parameters.ContainsKey(MaterialParameters.UseTransparent))
-                        isTransparent = (bool)material.Parameters[MaterialParameters.UseTransparent];
+            //        // set the key if it was missing
+            //        material.Parameters.Set(MaterialParameters.UseTransparent, true);
+            //    }
+            //    else
+            //    {
+            //        // NOTE: MaterialParameters.UseTransparent is mostly runtime
+            //        var isTransparent = false;
+            //        if (material.Parameters.ContainsKey(MaterialParameters.UseTransparent))
+            //            isTransparent = (bool)material.Parameters[MaterialParameters.UseTransparent];
                     
-                    if (!isTransparent)
-                    {
-                        // remove the diffuse node
-                        var diffuseName = material.ColorNodes[MaterialParameters.AlbedoDiffuse];
-                        material.Nodes.Remove(diffuseName);
+            //        if (!isTransparent)
+            //        {
+            //            // remove the diffuse node
+            //            var diffuseName = material.ColorNodes[MaterialParameters.AlbedoDiffuse];
+            //            material.Nodes.Remove(diffuseName);
 
-                        // add the new one
-                        var opaqueNode = new MaterialBinaryComputeColor(diffuseNode, null, MaterialBinaryOperand.Opaque);
-                        material.AddColorNode(MaterialParameters.AlbedoDiffuse, "pdx_diffuseOpaque", opaqueNode);
-                    }
-                }
-            }
+            //            // add the new one
+            //            var opaqueNode = new MaterialBinaryComputeColor(diffuseNode, null, MaterialBinaryOperand.Opaque);
+            //            material.AddColorNode(MaterialParameters.AlbedoDiffuse, "pdx_diffuseOpaque", opaqueNode);
+            //        }
+            //    }
+            //}
         }
 
         /// <summary>
@@ -332,16 +331,17 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <param name="material">The material.</param>
         /// <param name="startNode">The name of the stating node.</param>
         /// <returns>The MaterialTextureNode if found.</returns>
-        private static MaterialTextureComputeColor FindTextureNode(MaterialDescription material, string startNode)
+        private static MaterialTextureComputeColor FindTextureNode(MaterialAsset material, string startNode)
         {
-            var currentNode = material.FindNode(startNode);
-            while (currentNode is MaterialReferenceNode)
-            {
-                var currentReferenceNode = (MaterialReferenceNode)currentNode;
-                currentNode = material.FindNode(currentReferenceNode.Name);
-            }
+            //var currentNode = material.FindNode(startNode);
+            //while (currentNode is MaterialReferenceNode)
+            //{
+            //    var currentReferenceNode = (MaterialReferenceNode)currentNode;
+            //    currentNode = material.FindNode(currentReferenceNode.Name);
+            //}
 
-            return currentNode as MaterialTextureComputeColor;
+            //return currentNode as MaterialTextureComputeColor;
+            return null;
         }
 
         private static string GenerateFinalMaterialName(UFile localPath, string materialId)
