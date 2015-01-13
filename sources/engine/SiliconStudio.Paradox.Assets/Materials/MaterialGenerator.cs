@@ -17,17 +17,18 @@ namespace SiliconStudio.Paradox.Assets.Materials
         public ParameterCollectionData Parameters { get; set; }
     }
 
-    public class MaterialShaderGenerator
+    public class MaterialGenerator
     {
-        public static MaterialShaderResult Generate(MaterialAsset material)
+        public static MaterialShaderResult Generate(MaterialAsset material, MaterialGeneratorContext context = null)
         {
             if (material == null) throw new ArgumentNullException("material");
             var result = new MaterialShaderResult();
 
-            var context = new MaterialGeneratorContext()
+            if (context == null)
             {
-                Log = result
-            };
+                context = new MaterialGeneratorContext();
+            }
+            context.Log = result;
 
             result.Parameters = context.Parameters;
             context.PushLayer();

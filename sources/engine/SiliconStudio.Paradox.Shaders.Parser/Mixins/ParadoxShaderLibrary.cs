@@ -282,6 +282,12 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     else
                         name = new Identifier(classSource.ClassName);
 
+                    // TODO: Temporary code. We need to remove the inline shader from the cache after loading it
+                    if (classSource.Inline != null)
+                    {
+                        ShaderLoader.SourceManager.AddShaderSource(classSource.ClassName, classSource.Inline, "fake/" + classSource.ClassName);
+                    }
+
                     fakeAst.BaseClasses.Add(new TypeName(name));
                 }
 

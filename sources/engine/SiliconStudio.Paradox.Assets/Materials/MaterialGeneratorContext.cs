@@ -32,6 +32,8 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         private int shadingModelCount;
 
+        public delegate MaterialAsset FindMaterialDelegate(AssetReference<MaterialAsset> materialReference);
+
         public MaterialGeneratorContext()
         {
             Parameters = new ParameterCollectionData();
@@ -59,10 +61,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         private MaterialShadingModelCollection CurrentShadingModel { get; set; }
 
 
-        public MaterialAsset FindMaterial(AssetReference<MaterialAsset> materialReference)
-        {
-            throw new NotImplementedException();
-        }
+        public FindMaterialDelegate FindMaterial { get; set; }
 
         public void PushLayer()
         {
@@ -110,6 +109,13 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 }
 
                 foreach (var shaderSource in shadingSources)
+                {
+                    parentLayer.SurfaceShaders.Add(shaderSource);
+                }
+            }
+            else if (parentLayer != null)
+            {
+                foreach (var shaderSource in currentLayerNode.SurfaceShaders)
                 {
                     parentLayer.SurfaceShaders.Add(shaderSource);
                 }

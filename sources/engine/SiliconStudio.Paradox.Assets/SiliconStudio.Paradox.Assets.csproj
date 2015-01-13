@@ -194,7 +194,7 @@
     <Compile Include="Materials\MaterialMetalnessMapFeature.cs" />
     <Compile Include="Materials\MaterialNormalMapFeature.cs" />
     <Compile Include="Materials\MaterialOcclusionMapFeature.cs" />
-    <Compile Include="Materials\MaterialShaderGenerator.cs" />
+    <Compile Include="Materials\MaterialGenerator.cs" />
     <Compile Include="Materials\MaterialGlossinessMapFeature.cs" />
     <Compile Include="Materials\MaterialSpecularMapFeature.cs" />
     <Compile Include="Materials\MaterialStreamType.cs" />

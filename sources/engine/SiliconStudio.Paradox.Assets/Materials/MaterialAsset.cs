@@ -34,6 +34,8 @@ namespace SiliconStudio.Paradox.Assets.Materials
         public MaterialAsset()
         {
             Parameters = new ParameterCollectionData();
+            Attributes = new MaterialAttributes();
+            Layers = new MaterialBlendLayers();
             //Overrides = new Dictionary<string, MaterialComputeColor>();
         }
 

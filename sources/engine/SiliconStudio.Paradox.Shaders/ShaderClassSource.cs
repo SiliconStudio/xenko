@@ -131,7 +131,7 @@ namespace SiliconStudio.Paradox.Shaders
 
         public override object Clone()
         {
-            return new ShaderClassSource(ClassName, GenericArguments = GenericArguments != null ? GenericArguments.ToArray() : null);
+            return new ShaderClassSource(ClassName, GenericArguments = GenericArguments != null ? GenericArguments.ToArray() : null) { Inline =  Inline };
         }
         
         public override string ToString()

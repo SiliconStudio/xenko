@@ -88,7 +88,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         public virtual void Visit(MaterialGeneratorContext context)
         {
             // If not enabled, or Material or BlendMap are null, skip this layer
-            if (!Enabled || Material == null || BlendMap == null)
+            if (!Enabled || Material == null || BlendMap == null || context.FindMaterial == null)
             {
                 return;
             }
@@ -161,14 +161,15 @@ namespace SiliconStudio.Paradox.Assets.Materials
         }
 
         private const string DynamicBlendingShader = @"
-class {0} : IMaterialLayer
+class {0} : IMaterialSurface
 {{
-    compose IMaterialLayer subLayer;
+    compose IMaterialSurface subLayer;
 
     override void Compute()
     {{
 {1}        subLayer.Compute();
-{2}}}
+{2}
+    }}
 }};
 ";
     }
