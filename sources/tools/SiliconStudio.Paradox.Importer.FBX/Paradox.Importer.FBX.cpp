@@ -539,32 +539,30 @@ public:
 			if (lMaterialElement != NULL && lMaterial != NULL)
 			{
 				auto isTransparent = IsTransparent(lMaterial);
-
-				auto meshName = meshNames[pMesh];
-				if (buildMeshes->Count > 1)
-					meshName = meshName + "_" + std::to_string(i+1);
-				meshData->Name = gcnew String(meshName.c_str());
-
 				bool sortTransparentMeshes = true;	// TODO transform into importer parameter
 				if (isTransparent && sortTransparentMeshes)
 				{
 					PolySortExtensions::SortMeshPolygons(drawData, ViewDirectionForTransparentZSort);
 				}
-
-				if (hasSkinningPosition || hasSkinningNormal || totalClusterCount > 0)
-				{
-					meshData->Parameters = gcnew ParameterCollectionData();
-
-					if (hasSkinningPosition)
-						meshData->Parameters->Set(MaterialParameters::HasSkinningPosition, true);
-					if (hasSkinningNormal)
-						meshData->Parameters->Set(MaterialParameters::HasSkinningNormal, true);
-					if (totalClusterCount > 0)
-						meshData->Parameters->Set(MaterialParameters::SkinningBones, totalClusterCount);
-				}
-
-				modelData->Meshes->Add(meshData);
 			}
+
+			auto meshName = meshNames[pMesh];
+			if (buildMeshes->Count > 1)
+				meshName = meshName + "_" + std::to_string(i + 1);
+			meshData->Name = gcnew String(meshName.c_str());
+			
+			if (hasSkinningPosition || hasSkinningNormal || totalClusterCount > 0)
+			{
+				meshData->Parameters = gcnew ParameterCollectionData();
+
+				if (hasSkinningPosition)
+					meshData->Parameters->Set(MaterialParameters::HasSkinningPosition, true);
+				if (hasSkinningNormal)
+					meshData->Parameters->Set(MaterialParameters::HasSkinningNormal, true);
+				if (totalClusterCount > 0)
+					meshData->Parameters->Set(MaterialParameters::SkinningBones, totalClusterCount);
+			}
+			modelData->Meshes->Add(meshData);
 		}
 	}
 
@@ -2092,12 +2090,14 @@ private:
 			}
 
 			// TODO: remove all bad characters
-			int nextCharacterPos = materialName.find(':');
+			/*int nextCharacterPos = materialName.find(':');
 			while (nextCharacterPos != std::string::npos)
 			{
 				materialName.replace(nextCharacterPos, 1, 1, '_');
 				nextCharacterPos = materialName.find(':', nextCharacterPos);
-			}
+			}*/
+			ReplaceCharacter(materialName, ':', '_');
+			RemoveCharacter(materialName, ' ');
 			tempNames[lMaterial] = materialName;
 			
 			if (materialNameTotalCount.count(materialName) == 0)
@@ -2121,6 +2121,26 @@ private:
 				materialName = materialName + "_" + std::to_string(materialNameCurrentCount[materialName]);
 
 			materialNames[lMaterial] = materialName;
+		}
+	}
+
+	void ReplaceCharacter(std::string& name, char c, char replacement)
+	{
+		int nextCharacterPos = name.find(c);
+		while (nextCharacterPos != std::string::npos)
+		{
+			name.replace(nextCharacterPos, 1, 1, replacement);
+			nextCharacterPos = name.find(c, nextCharacterPos);
+		}
+	}
+
+	void RemoveCharacter(std::string& name, char c)
+	{
+		int nextCharacterPos = name.find(c);
+		while (nextCharacterPos != std::string::npos)
+		{
+			name.erase(nextCharacterPos, 1);
+			nextCharacterPos = name.find(c, nextCharacterPos);
 		}
 	}
 
@@ -2350,6 +2370,10 @@ private:
 
 					auto material = GetOrCreateMaterial(lMaterial, uvNames, materialInstances, uvElements, materialNames);
 					meshParams->MaterialName = material->MaterialName;
+				}
+				else
+				{
+					logger->Warning("Mesh {0} do not have a material. It might not be displayed.", meshParams->MeshName);
 				}
 
 				models->Add(meshParams);
