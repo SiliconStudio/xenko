@@ -5,6 +5,7 @@ using System.Linq;
 
 using SiliconStudio.ActionStack;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Quantum.Attributes;
 
 namespace SiliconStudio.Quantum.Commands
@@ -38,7 +39,10 @@ namespace SiliconStudio.Quantum.Commands
         {
             var dictionaryDescriptor = (DictionaryDescriptor)descriptor;
             var newKey = dictionaryDescriptor.KeyType != typeof(string) ? Activator.CreateInstance(dictionaryDescriptor.KeyType) : GenerateStringKey(currentValue, descriptor, parameter);
-            var newItem = !dictionaryDescriptor.ValueType.IsAbstract ? Activator.CreateInstance(dictionaryDescriptor.ValueType) : null;
+            object newItem = null;
+            // TODO: Find a better solution that doesn't require to reference Core.Serialization (and unreference this assembly)
+            if (!dictionaryDescriptor.ValueType.GetCustomAttributes(typeof(ContentSerializerAttribute), true).Any())
+                newItem = !dictionaryDescriptor.ValueType.IsAbstract ? Activator.CreateInstance(dictionaryDescriptor.ValueType) : null;
             dictionaryDescriptor.SetValue(currentValue, newKey, newItem);
             undoToken = new UndoToken(true, newKey);
             return currentValue;
