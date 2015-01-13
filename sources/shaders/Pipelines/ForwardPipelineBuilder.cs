@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
                 Build(BeforeMainRender);
 
             // Renders all the meshes with the correct lighting.
-            AddRenderer(new ModelRenderer(ServiceRegistry, EffectName).AddLightForwardSupport());
+            AddRenderer(new ModelRenderer(ServiceRegistry, EffectName));
         }
     }
 }

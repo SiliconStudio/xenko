@@ -4,6 +4,7 @@
 using System;
 
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Data;
 using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Shaders;
@@ -14,7 +15,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     {
         public ShaderSource ShaderSource { get; set; }
 
-        public ParameterCollectionData Parameters { get; set; }
+        public ParameterCollection Parameters { get; set; }
     }
 
     public class MaterialGenerator

@@ -787,7 +787,6 @@
     </Compile>
     <Compile Include="Images\ColorTransforms\ToneMap\ToneMap.cs" />
     <Compile Include="Pipelines\CompositePipelineBuilder.cs" />
-    <Compile Include="Pipelines\DeferredPipelineBuilder.cs" />   
     <Compile Include="Pipelines\ForwardPipelineBuilder.cs" />
     <Compile Include="Pipelines\LambdaPipelineBuilder.cs" />
     <Compile Include="Pipelines\LightingPipelineBuilder.cs" />

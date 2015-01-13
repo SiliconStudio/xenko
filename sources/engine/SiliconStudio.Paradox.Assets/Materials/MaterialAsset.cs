@@ -8,6 +8,7 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Data;
 
 namespace SiliconStudio.Paradox.Assets.Materials
@@ -33,7 +34,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// </summary>
         public MaterialAsset()
         {
-            Parameters = new ParameterCollectionData();
+            Parameters = new ParameterCollection();
             Attributes = new MaterialAttributes();
             Layers = new MaterialBlendLayers();
             //Overrides = new Dictionary<string, MaterialComputeColor>();
@@ -70,7 +71,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// </summary>
         /// <value>The parameters.</value>
         [DataMember(40)]
-        public ParameterCollectionData Parameters { get; private set; }
+        public ParameterCollection Parameters { get; private set; }
 
         private class MaterialFactory : IObjectFactory
         {

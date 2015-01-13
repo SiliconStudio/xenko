@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
 
         public override ShaderSource GenerateShaderSource(MaterialGeneratorContext context, MaterialComputeColorKeys baseKeys)
         {
-            var key = context.GetParameterKey(Key ?? baseKeys.ValueBaseKey ?? MaterialKeys.GenericValueFloat);
+            var key = (ParameterKey<float>)context.GetParameterKey(Key ?? baseKeys.ValueBaseKey ?? MaterialKeys.GenericValueFloat);
             context.Parameters.Set(key, Value);
             return new ShaderClassSource("ComputeColorConstantFloatLink", Key ?? baseKeys.ValueBaseKey);
         }

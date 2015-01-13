@@ -36,7 +36,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         public MaterialGeneratorContext()
         {
-            Parameters = new ParameterCollectionData();
+            Parameters = new ParameterCollection();
             declaredSamplerStates = new Dictionary<SamplerStateDescription, ParameterKey<SamplerState>>();
         }
 
@@ -48,7 +48,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             }
         }
 
-        public ParameterCollectionData Parameters { get; private set; }
+        public ParameterCollection Parameters { get; private set; }
 
         private MaterialBlendLayerNode Current
         {
@@ -168,15 +168,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
         // TODO: move this method to an extension method
         public ParameterKey<Texture> GetTextureKey(MaterialTextureComputeColor textureComputeColor, MaterialComputeColorKeys baseKeys)
         {
-            var textureKey = GetParameterKey(textureComputeColor.Key ?? baseKeys.TextureBaseKey ?? MaterialKeys.GenericTexture);
-            ContentReference keyReference = null;
+            var textureKey = (ParameterKey<Texture>)GetParameterKey(textureComputeColor.Key ?? baseKeys.TextureBaseKey ?? MaterialKeys.GenericTexture);
             var textureReference = textureComputeColor.TextureReference;
-            if (textureReference != null)
-            {
-                keyReference = new ContentReference<Texture>(textureReference.Id, textureReference.Location);
-            }
-            Parameters.Set(textureKey, keyReference);
-            return (ParameterKey<Texture>)textureKey;
+            var texture = AttachedReferenceManager.CreateSerializableVersion<Texture>(textureReference.Id, textureReference.Location);
+            Parameters.Set(textureKey, texture);
+            return textureKey;
         }
 
         public ParameterKey<SamplerState> GetSamplerKey(ComputeColorParameterSampler sampler)
@@ -197,8 +193,8 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 declaredSamplerStates.Add(samplerStateDesc, key);
             }
 
-            var samplerState = new FakeSamplerState(samplerStateDesc);
-            Parameters.Set(key, ContentReference.Create((SamplerState)samplerState));
+            var samplerState = new SamplerState(samplerStateDesc);
+            Parameters.Set(key, samplerState);
             return key;
         }
 

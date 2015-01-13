@@ -18,9 +18,9 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
 
             // Setup forward or deferred rendering
             MainPipelineBuilder mainPipeline;
-            if (deferred)
-                mainPipeline = new DeferredPipelineBuilder { PrepassEffectName = prepassEffectName };
-            else
+            //if (deferred)
+                //mainPipeline = new DeferredPipelineBuilder { PrepassEffectName = prepassEffectName };
+            //else
                 mainPipeline = new ForwardPipelineBuilder();
 
             mainPipeline.EffectName = effectName;
