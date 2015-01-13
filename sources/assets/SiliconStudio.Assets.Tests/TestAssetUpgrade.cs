@@ -12,6 +12,7 @@ using SharpYaml.Events;
 using SharpYaml.Serialization;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets.Tests
@@ -31,7 +32,7 @@ namespace SiliconStudio.Assets.Tests
                 SerializedVersion = 1;
             }
 
-            public int Test { get; set; }
+            public Vector3 Test { get; set; }
 
             public List<int> Test2 { get; set; }
             public List<int> Test3 { get; set; }
@@ -54,7 +55,7 @@ namespace SiliconStudio.Assets.Tests
         [Test]
         public void Simple()
         {
-            var asset = new MyUpgradedAsset { Test = 32, Test2 = new List<int> { 32, 64 } };
+            var asset = new MyUpgradedAsset { Test = new Vector3(12.0f, 15.0f, 17.0f), Test2 = new List<int> { 32, 64 } };
             var outputFilePath = Path.Combine(DirectoryTestBase, @"TestUpgrade\Asset1.pdxobj");
             AssetSerializer.Save(outputFilePath, asset);
 

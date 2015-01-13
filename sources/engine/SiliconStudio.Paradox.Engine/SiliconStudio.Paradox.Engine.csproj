@@ -74,32 +74,18 @@
     <Compile Include="DataModel\CompressedTimeSpan.cs" />
     <Compile Include="DataModel\AnimationCurveEvaluatorOptimizedQuaternionGroup.cs" />
     <Compile Include="DataModel\Interpolator.cs" />
-    <Compile Include="Data\AOTHelpers.cs" />
-    <Compile Include="Data\CameraComponentData.cs" />
-    <Compile Include="Data\EngineData.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>EngineData.pdxdata</DependentUpon>
-    </Compile>
-    <Compile Include="Data\EntityComponentReference.cs" />
-    <Compile Include="Data\EntityComponentReferenceDataConverter.cs" />
+    <Compile Include="EntityModel\EntityComponentReference.cs" />
     <Compile Include="Data\GeometricPrimitiveExtension.cs" />
-    <Compile Include="Data\IEntityComponentReference.cs" />
+    <Compile Include="EntityModel\EntityReference.cs" />
+    <Compile Include="EntityModel\IEntityComponentReference.cs" />
     <Compile Include="Data\LightingConfigurationData.cs" />
-    <Compile Include="Data\ModelComponentData.cs" />
     <Compile Include="Data\SimpleExtensions.cs" />
     <Compile Include="Data\MergeExtensions.cs" />
     <Compile Include="Data\SplitExtensions.cs" />
-    <Compile Include="Data\SpriteComponentData.cs" />
-    <Compile Include="Data\TransformationComponentData.cs" />
     <Compile Include="Data\TransformExtensions.cs" />
-    <Compile Include="Data\MeshData.cs" />
     <Compile Include="DataModel\KeyFrameData.cs" />
     <Compile Include="DataModel\LightType.cs" />
     <Compile Include="DataModel\NodePropertyData.cs" />
-    <Compile Include="Data\EntityComponentDataConverter.cs" />
-    <Compile Include="Data\SceneConverter.cs" />
     <Compile Include="DelegateHolder.cs" />
     <Compile Include="Effects\BackgroundRenderer.cs" />
     <Compile Include="Effects\CameraSetter.cs" />
@@ -189,16 +175,17 @@
     <Compile Include="Engine\SpriteComponent.cs" />
     <Compile Include="EntityModel\CloneSerializer.cs" />
     <Compile Include="EntityModel\ContentReferenceCloneDataSerializer.cs" />
-    <Compile Include="EntityModel\EntityComponentSerializer.cs" />
+    <Compile Include="EntityModel\CloneEntityComponentSerializer.cs" />
     <Compile Include="EntityModel\EntityExtensions.cs" />
     <Compile Include="EntityModel\EntitySerializer.cs" />
+    <Compile Include="EntityModel\EntityHierarchyData.cs" />
     <Compile Include="Framework.Extensions\DictionaryExtensions.cs" />
     <Compile Include="GameSystem.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Graphics\DynamicSpriteFontDataConverter.cs" />
     <Compile Include="Graphics\GameFontSystem.cs" />
     <Compile Include="Engine\SpriteProcessor.cs" />
-    <Compile Include="Graphics\StaticSpriteFontDataConverter.cs" />
+    <None Include="Graphics\StaticSpriteFontDataConverter.cs" />
     <Compile Include="Internals\LambdaReadOnlyCollection.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="OpenGL\AndroidParadoxActivity.cs" />
@@ -232,10 +219,8 @@
     <Compile Include="Engine\LightComponent.cs" />
     <Compile Include="Engine\LightShaftsComponent.cs" />
     <Compile Include="Engine\ParticleEmitterType.cs" />
-    <Compile Include="EntityModel\EntityComponentData.cs" />
     <Compile Include="EntityModel\EntityComponentProperty.cs" />
     <Compile Include="EntityModel\EntityComponentPropertyType.cs" />
-    <Compile Include="EntityModel\EntityData.cs" />
     <Compile Include="EntityModel\EntityGroup.cs" />
     <Compile Include="EntityModel\ParameterContainerExtensions.cs" />
     <Compile Include="Diffs\ThreeWayMergeOrdered.cs" />
@@ -245,7 +230,6 @@
     <Compile Include="Effects\GraphicsResizeExtensions.cs" />
     <Compile Include="Effects\RenderPass.cs" />
     <Compile Include="Effects\RenderPass.Extensions.cs" />
-    <Compile Include="Data\MeshDrawData.cs" />
     <Compile Include="Effects\RenderMesh.cs" />
     <Compile Include="Effects\RenderContext.cs" />
     <Compile Include="Engine\AnimationComponent.cs" />
@@ -308,10 +292,6 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>Global.cs</LastGenOutput>
     </None>
-    <None Include="Data\EngineData.pdxdata">
-      <Generator>ParadoxDataCodeGenerator</Generator>
-      <LastGenOutput>EngineData.cs</LastGenOutput>
-    </None>
     <None Include="Shaders\Transformation.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>Transformation.cs</LastGenOutput>
@@ -321,7 +301,6 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Effects\Data\" />
     <Folder Include="Meshes\" />
     <Folder Include="OpenGL\Effects\" />
     <Folder Include="OpenGL\Input\" />

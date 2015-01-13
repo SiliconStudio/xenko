@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             var databaseFileProvider = new DatabaseFileProvider(objDatabase);
             AssetManager.GetFileProvider = () => databaseFileProvider;
 
-            shaderMixinParser = new ShaderMixinParser();
+            shaderMixinParser = new ShaderMixinParser(AssetManager.FileProvider);
             shaderMixinParser.SourceManager.LookupDirectoryList.Add("/shaders"); 
         }
 

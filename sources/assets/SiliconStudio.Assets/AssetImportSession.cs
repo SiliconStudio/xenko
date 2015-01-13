@@ -512,8 +512,16 @@ namespace SiliconStudio.Assets
                         // new base and on the merged result
                         if (idRemapping.TryGetValue(instance.Id, out realItem))
                         {
-                            var newReference = AssetReference.New(instance.GetType(), realItem.Id, realItem.Location);
-                            node.ReplaceValue(newReference, diff3Node => diff3Node.Asset2Node, false);
+                            IContentReference newReference;
+                            if (instance is AssetReference)
+                            {
+                                newReference = AssetReference.New(instance.GetType(), realItem.Id, realItem.Location);
+                            }
+                            else
+                            {
+                                newReference = ContentReference.New(instance.GetType(), realItem.Id, realItem.Location);
+                            }
+                            node.ReplaceValue(newReference, diff3Node => diff3Node.Asset2Node);
                         }
 
                         return Diff3ChangeType.MergeFromAsset2;

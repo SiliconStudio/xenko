@@ -4,8 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
-using System.Security.Policy;
-
+using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Shaders.Parser.Ast;
 using SiliconStudio.Paradox.Shaders.Parser.Mixins;
 using SiliconStudio.Paradox.Shaders.Parser.Performance;
@@ -59,9 +59,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderMixinParser"/> class.
         /// </summary>
-        public ShaderMixinParser()
+        public ShaderMixinParser(DatabaseFileProvider fileProvider)
         {
-            SourceManager = new ShaderSourceManager();
+            SourceManager = new ShaderSourceManager(fileProvider);
             var shaderLoader = new ShaderLoader(SourceManager);
             
             if (shaderLibrary == null)

@@ -1,10 +1,23 @@
 !Entity
-Id: 6753ba3f-3c79-46ec-bd65-bebc2a7f8d70
+Id: 780ed538-2146-46bb-8528-4f0cd52a5c71
+SerializedVersion: 1
 Tags: []
-Data:
-    Name: null
-    Components:
-        SpriteComponent.Key: !SpriteComponentData
-            Color: {R: 255, G: 255, B: 255, A: 255}
-            SpriteEffect: None
-            SpriteGroupInternal: 5d8ecea5-50f2-49c1-8fe8-16e67dd65ab0:BallSprite1
+Hierarchy:
+    RootEntity: 3729e200-1a43-4e7c-a0ff-832ad06c32e3
+    Entities:
+        SyncRoot: null
+        ~Items:
+            -   Id: 3729e200-1a43-4e7c-a0ff-832ad06c32e3
+                Name: Root
+                Components:
+                    TransformationComponent.Key:
+                        Children: []
+                        Rotation: {W: 1, X: 0, Y: 0, Z: 0}
+                        Scaling: {X: 1, Y: 1, Z: 1}
+                        Translation: {X: 0, Y: 0, Z: 0}
+                        UseTRS: true
+                    SpriteComponent.Key:
+                        Color: {R: 255, G: 255, B: 255, A: 255}
+                        SpriteEffect: None
+                        SpriteGroup: 5d8ecea5-50f2-49c1-8fe8-16e67dd65ab0:BallSprite1
+AssetBases: {}

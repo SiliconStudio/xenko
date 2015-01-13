@@ -3,13 +3,11 @@
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
-using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Effects
 {
-    [DataConverter(AutoGenerate = true)]
     [DataContract("ShadowConfiguration")]
     public struct ShadowConfiguration
     {
@@ -19,7 +17,6 @@ namespace SiliconStudio.Paradox.Effects
         /// <userdoc>
         /// The type of light that will cast shadows. Point light is not yet supported.
         /// </userdoc>
-        [DataMemberConvert]
         [DataMember(10)]
         public LightType LightType;
 
@@ -29,7 +26,6 @@ namespace SiliconStudio.Paradox.Effects
         /// <userdoc>
         /// The number of shadows in this group.
         /// </userdoc>
-        [DataMemberConvert]
         [DataMember(20)]
         public int ShadowCount;
 
@@ -39,7 +35,6 @@ namespace SiliconStudio.Paradox.Effects
         /// <userdoc>
         /// The number of cascades of each shadow map in this group
         /// </userdoc>
-        [DataMemberConvert]
         [DataMember(30)]
         public int CascadeCount;
 
@@ -49,13 +44,11 @@ namespace SiliconStudio.Paradox.Effects
         /// <userdoc>
         /// The shadow filtering of this group.
         /// </userdoc>
-        [DataMemberConvert]
         [DataMember(40)]
         public ShadowMapFilterType FilterType;
     }
 
     // TODO: array?
-    [DataConverter(AutoGenerate = true)]
     [DataContract("ShadowConfigurationArray")]
     public class ShadowConfigurationArray
     {
@@ -65,7 +58,6 @@ namespace SiliconStudio.Paradox.Effects
         /// <userdoc>
         /// The groups of shadowmaps. The groups will be processed at the same time.
         /// </userdoc>
-        [DataMemberConvert]
         [DataMember(10)]
         public List<ShadowConfiguration> Groups;
 

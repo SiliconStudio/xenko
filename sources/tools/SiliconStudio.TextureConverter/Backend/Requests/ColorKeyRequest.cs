@@ -22,7 +22,7 @@ namespace SiliconStudio.TextureConverter.Requests
         /// </summary>
         public ColorKeyRequest(Color colorKey)
         {
-            this.ColorKey = colorKey;
+            ColorKey = colorKey;
         }
     }
 }

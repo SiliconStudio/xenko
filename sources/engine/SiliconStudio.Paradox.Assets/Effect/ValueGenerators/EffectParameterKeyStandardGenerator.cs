@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.Assets.Effect.ValueGenerators
     /// </ul>
     /// </summary>
     [DataContract("!fx.generator.standard")]
-    [SiliconStudio.Core.Serialization.Serializers.DataSerializer(typeof(EffectParameterKeyStandardGeneratorSerializer))]
+    [DataSerializer(typeof(EffectParameterKeyStandardGeneratorSerializer))]
     public sealed class EffectParameterKeyStandardGenerator : Dictionary<ParameterKey, object>, IEffectParameterGenerator
     {
         public IEnumerable<KeyValuePair<ParameterKey, object>> Generate()

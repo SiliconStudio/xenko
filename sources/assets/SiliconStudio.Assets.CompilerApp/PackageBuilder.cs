@@ -54,7 +54,7 @@ namespace SiliconStudio.Assets.CompilerApp
 
         private static void PrepareDatabases()
         {
-            AssetManager.GetFileProvider = () => IndexFileCommand.DatabaseFileProvider.Value;
+            AssetManager.GetFileProvider = () => IndexFileCommand.DatabaseFileProvider;
         }
 
         private BuildResultCode BuildMaster()
@@ -256,7 +256,7 @@ namespace SiliconStudio.Assets.CompilerApp
                         var builderContext = new BuilderContext(buildPath, buildProfile, inputHashes, parameters, 0, null);
 
                         var commandContext = new RemoteCommandContext(processBuilderRemote, command, builderContext, logger);
-                        IndexFileCommand.MountDatabases(commandContext);
+                        IndexFileCommand.MountDatabase(commandContext.GetOutputObjectsGroups());
                         command.PreCommand(commandContext);
                         status = await command.DoCommand(commandContext);
                         command.PostCommand(commandContext, status);

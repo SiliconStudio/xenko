@@ -136,7 +136,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         public ImageDescription Description;
 
-        private Image()
+        internal Image()
         {
         }
 

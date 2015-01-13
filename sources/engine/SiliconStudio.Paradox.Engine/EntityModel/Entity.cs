@@ -8,11 +8,10 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Core.Serialization.Serializers;
 
 namespace SiliconStudio.Paradox.EntityModel
 {
@@ -22,13 +21,24 @@ namespace SiliconStudio.Paradox.EntityModel
     //[ContentSerializer(typeof(EntityContentSerializer))]
     //[ContentSerializer(typeof(DataContentSerializer<Entity>))]
     [DebuggerTypeProxy(typeof(EntityDebugView))]
-    [DataConverter(AutoGenerate = false, ContentReference = true)]
     [DataSerializer(typeof(EntitySerializer))]
-    [ContentSerializer(typeof(DataContentConverterSerializer<Entity>))]
-    public class Entity : ComponentBase, IContentUrl, IEnumerable
+    [ContentSerializer(typeof(DataContentSerializerWithReuse<Entity>))]
+    [DataStyle(DataStyle.Normal)]
+    public class Entity : ComponentBase, IEnumerable
     {
         protected TransformationComponent transformation;
         internal List<Task> prepareTasks;
+
+        /// <summary>
+        /// The components stored in this entity.
+        /// </summary>
+        [DataMember(DataMemberMode.Content)]
+        public PropertyContainer Components;
+
+        /// <summary>
+        /// The entity identifier.
+        /// </summary>
+        public new Guid Id;
 
         static Entity()
         {
@@ -47,20 +57,26 @@ namespace SiliconStudio.Paradox.EntityModel
         /// Create a new <see cref="Entity"/> instance having the provided name.
         /// </summary>
         /// <param name="name">The name to give to the entity</param>
-        public Entity(string name)
-            : this(Vector3.Zero, name)
+        /// <param name="generateId">if set to <c>true</c> use <see cref="Guid.NewGuid()"/> to initialize <see cref="Entity.Id"/>.</param>
+        public Entity(string name, bool generateId = true)
+            : this(Vector3.Zero, name, generateId)
         {
         }
 
         /// <summary>
-        /// Create a new <see cref="Entity"/> instance having the provided name and initial position.
+        /// Create a new <see cref="Entity" /> instance having the provided name and initial position.
         /// </summary>
         /// <param name="position">The initial position of the entity</param>
         /// <param name="name">The name to give to the entity</param>
-        public Entity(Vector3 position, string name = null)
+        /// <param name="generateId">if set to <c>true</c> use <see cref="Guid.NewGuid()"/> to initialize <see cref="Entity.Id"/>.</param>
+        public Entity(Vector3 position, string name = null, bool generateId = true)
             : base(name)
         {
-            Tags.PropertyUpdated += EntityPropertyUpdated;
+            if (generateId)
+                Id = Guid.NewGuid();
+
+            Components = new PropertyContainer(this);
+            Components.PropertyUpdated += EntityPropertyUpdated;
 
             Transformation = new TransformationComponent();
             transformation.Translation = position;
@@ -70,6 +86,7 @@ namespace SiliconStudio.Paradox.EntityModel
         /// Gets or sets the <see cref="Transformation"/> associated to this entity.
         /// Added for convenience over usual Get/Set method.
         /// </summary>
+        [DataMemberIgnore]
         public TransformationComponent Transformation
         {
             get { return transformation; }
@@ -77,7 +94,7 @@ namespace SiliconStudio.Paradox.EntityModel
             {
                 var transformationOld = transformation;
                 transformation = value;
-                Tags.RaisePropertyContainerUpdated(TransformationComponent.Key, transformation, transformationOld);
+                Components.RaisePropertyContainerUpdated(TransformationComponent.Key, transformation, transformationOld);
             }
         }
 
@@ -89,11 +106,11 @@ namespace SiliconStudio.Paradox.EntityModel
         public T GetOrCreate<T>() where T : EntityComponent, new()
         {
             var key = EntityComponent.GetDefaultKey<T>();
-            var component = Tags.Get(key);
+            var component = Components.Get(key);
             if (component == null)
             {
                 component = new T();
-                Tags.SetObject(key, component);
+                Components.SetObject(key, component);
             }
 
             return (T)component;
@@ -107,11 +124,11 @@ namespace SiliconStudio.Paradox.EntityModel
         /// <returns>A new or existing instance of {T}</returns>
         public T GetOrCreate<T>(PropertyKey<T> key) where T : EntityComponent, new()
         {
-            var component = Tags.Get(key);
+            var component = Components.Get(key);
             if (component == null)
             {
                 component = new T();
-                Tags.Set(key, component);
+                Components.Set(key, component);
             }
 
             return component;
@@ -125,7 +142,7 @@ namespace SiliconStudio.Paradox.EntityModel
         public void Add(EntityComponent component)
         {
             if (component == null) throw new ArgumentNullException("component");
-            Tags.SetObject(component.DefaultKey, component);
+            Components.SetObject(component.DefaultKey, component);
         }
 
         /// <summary>
@@ -136,7 +153,7 @@ namespace SiliconStudio.Paradox.EntityModel
         /// <exception cref="System.ArgumentNullException">key</exception>
         public T Get<T>() where T : EntityComponent, new()
         {
-            return (T)Tags.Get(EntityComponent.GetDefaultKey<T>());
+            return (T)Components.Get(EntityComponent.GetDefaultKey<T>());
         }
 
         /// <summary>
@@ -149,7 +166,7 @@ namespace SiliconStudio.Paradox.EntityModel
         public T Get<T>(PropertyKey<T> key) where T : EntityComponent
         {
             if (key == null) throw new ArgumentNullException("key");
-            return Tags.Get(key);
+            return Components.Get(key);
         }
 
         /// <summary>
@@ -162,7 +179,7 @@ namespace SiliconStudio.Paradox.EntityModel
         public void Add<T>(PropertyKey<T> key, T value) where T : EntityComponent
         {
             if (key == null) throw new ArgumentNullException("key");
-            Tags.SetObject(key, value);
+            Components.SetObject(key, value);
         }
 
         /// <summary>
@@ -176,7 +193,7 @@ namespace SiliconStudio.Paradox.EntityModel
         public void Set<T>(PropertyKey<T> key, T value) where T : EntityComponent
         {
             if (key == null) throw new ArgumentNullException("key");
-            Tags.SetObject(key, value);
+            Components.SetObject(key, value);
         }
 
         private void EntityPropertyUpdated(ref PropertyContainer propertyContainer, PropertyKey propertyKey, object newValue, object oldValue)
@@ -224,7 +241,7 @@ namespace SiliconStudio.Paradox.EntityModel
             {
                 get
                 {
-                    return entity.Tags.Select(x => x.Value).OfType<EntityComponent>().ToArray();
+                    return entity.Components.Select(x => x.Value).OfType<EntityComponent>().ToArray();
                 }
             }
         }
@@ -236,9 +253,7 @@ namespace SiliconStudio.Paradox.EntityModel
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return Tags.Values.OfType<EntityComponent>().GetEnumerator();
+            return Components.Values.OfType<EntityComponent>().GetEnumerator();
         }
-
-        string IContentUrl.Url { get; set; }
     }
 }

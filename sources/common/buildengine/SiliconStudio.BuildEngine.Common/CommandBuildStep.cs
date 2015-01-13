@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SiliconStudio.Core.Diagnostics;
+
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.IO;
@@ -204,14 +204,14 @@ namespace SiliconStudio.BuildEngine
 
         internal bool ShouldExecute(IExecuteContext executeContext, CommandResultEntry[] previousResultCollection, ObjectId commandHash, out CommandResultEntry matchingResult)
         {
-            IndexFileCommand.MountDatabases(executeContext);
+            IndexFileCommand.MountDatabase(executeContext.GetOutputObjectsGroups());
             try
             {
                 matchingResult = FindMatchingResult(executeContext, previousResultCollection);
             }
             finally
             {
-                IndexFileCommand.UnmountDatabases(executeContext);
+                IndexFileCommand.UnmountDatabase();
             }
 
             if (matchingResult == null || Command.ShouldForceExecution())
@@ -396,7 +396,14 @@ namespace SiliconStudio.BuildEngine
                     if (!Command.BasePreCommandCalled)
                         throw new InvalidOperationException("base.PreCommand not called in command " + Command);
 
-                    status = await Command.DoCommand(commandContext);
+                    try
+                    {
+                        status = await Command.DoCommand(commandContext);
+                    }
+                    catch (Exception)
+                    {
+                        status = ResultStatus.Failed;
+                    }
 
                     Command.PostCommand(commandContext, status);
                     if (!Command.BasePostCommandCalled)

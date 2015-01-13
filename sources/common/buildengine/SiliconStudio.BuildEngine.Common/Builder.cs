@@ -1,5 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System.Globalization;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Storage;
 using System;
@@ -278,11 +281,11 @@ namespace SiliconStudio.BuildEngine
                 }
 
                 // Create directory
-                File.WriteAllText(versionFile, ExpectedVersion.ToString());
+                File.WriteAllText(versionFile, ExpectedVersion.ToString(CultureInfo.InvariantCulture));
             }
 
             // Prepare data base directories
-            AssetManager.GetFileProvider = () => IndexFileCommand.DatabaseFileProvider.Value;
+            AssetManager.GetFileProvider = () => IndexFileCommand.DatabaseFileProvider;
             var databasePathSplits = DatabasePath.Split('/');
             var accumulatorPath = "/";
             foreach (var pathPart in databasePathSplits.Where(x=>x!=""))
@@ -460,7 +463,7 @@ namespace SiliconStudio.BuildEngine
                         {
                             try
                             {
-                                IndexFileCommand.MountDatabases(executeContext);
+                                IndexFileCommand.MountDatabase(executeContext.GetOutputObjectsGroups());
 
                                 // Execute
                                 status = await buildStep.Execute(executeContext, builderContext);
@@ -479,7 +482,7 @@ namespace SiliconStudio.BuildEngine
                             }
                             finally
                             {
-                                IndexFileCommand.UnmountDatabases(executeContext);
+                                IndexFileCommand.UnmountDatabase();
                                 
                                 // Ensure the command set at least the result status
                                 if (status == ResultStatus.NotProcessed)

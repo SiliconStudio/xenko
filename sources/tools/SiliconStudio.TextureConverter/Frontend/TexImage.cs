@@ -20,7 +20,7 @@ namespace SiliconStudio.TextureConverter
         public int Depth { get; internal set; }
         public int RowPitch { get; internal set; }
         public int SlicePitch { get; internal set; }
-        public SiliconStudio.Paradox.Graphics.PixelFormat Format { get; internal set; }
+        public Paradox.Graphics.PixelFormat Format { get; internal set; }
 
         // Texture infos
         public int ArraySize { get; internal set; }

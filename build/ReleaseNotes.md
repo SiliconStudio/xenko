@@ -48,6 +48,7 @@ Release date: 2014/11/25
 - Studio: Fix add parameter key control filtering and mouse selection
 - Studio: Fix some actions from the property grid that were not undo-able
 - Studio: Some buttons were sometimes hidden where they should be visible in the property grid.
+- Engine: Fix EntitySystem.Remove that was destroying the hierarchy of entities.
 
 #### Breaking changes
 - Asset: CastShadows, ReceiveShadows and Layer members of `ModelAsset` class are removed. They should be set in the Parameters of the `ModelAsset` behind the corresponding keys.

@@ -33,21 +33,6 @@ namespace SiliconStudio.Paradox.Assets.Model
             var allowUnsignedBlendIndices = context.GetGraphicsPlatform() != GraphicsPlatform.OpenGLES;
             var extension = asset.Source.GetFileExtension();
 
-            // compute material and lighting configuration dictionaries here because some null reference can occur
-            var materials = new Dictionary<string, Tuple<Guid, string>>();
-            var lightings = new Dictionary<string, Tuple<Guid, string>>();
-            foreach (var meshParam in asset.MeshParameters)
-            {
-                if (meshParam.Value.Material != null)
-                    materials.Add(meshParam.Key, new Tuple<Guid, string>(meshParam.Value.Material.Id, meshParam.Value.Material.Location));
-
-                // Transform AssetReference to Tuple<Guid,UFile> as AssetReference or ContentReference is not serializable (to generate the command hash)
-                // TODO: temporary while the LightingParameters is a Member of MeshMaterialParameter class
-                // TODO: should be passed directly in the Parameters of the mesh - no extra case is required
-                if (meshParam.Value.LightingParameters != null)
-                    lightings.Add(meshParam.Key, new Tuple<Guid, string>(meshParam.Value.LightingParameters.Id, meshParam.Value.LightingParameters.Location));
-            }
-
             if (ImportFbxCommand.IsSupportingExtensions(extension))
             {
                 result.BuildSteps = new ListBuildStep
@@ -60,9 +45,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                                 AllowUnsignedBlendIndices = allowUnsignedBlendIndices,
                                 Compact = asset.Compact,
                                 PreservedNodes = asset.PreservedNodes,
-                                Materials = materials,
-                                Lightings = lightings, // TODO: remove when lighting parameters will be behind a key
-                                Parameters = asset.MeshParameters.ToDictionary(pair => pair.Key, pair => pair.Value.Parameters),
+                                Materials = asset.Materials,
                                 ViewDirectionForTransparentZSort = asset.ViewDirectionForTransparentZSort.HasValue ? asset.ViewDirectionForTransparentZSort.Value : -Vector3.UnitZ,
                             },
                         new WaitBuildStep(),
@@ -80,9 +63,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                                 AllowUnsignedBlendIndices = allowUnsignedBlendIndices,
                                 Compact = asset.Compact,
                                 PreservedNodes = asset.PreservedNodes,
-                                Materials = materials,
-                                Lightings = lightings, // TODO: remove when lighting parameters will be behind a key
-                                Parameters = asset.MeshParameters.ToDictionary(pair => pair.Key, pair => pair.Value.Parameters),
+                                Materials = asset.Materials,
                             },
                         new WaitBuildStep(),
                     };

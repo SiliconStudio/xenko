@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
 
 namespace SiliconStudio.Core
@@ -26,7 +27,7 @@ namespace SiliconStudio.Core
     /// </remarks>
     [DataContract]
     [DataSerializer(typeof(PropertyContainer.Serializer))]
-    public partial struct PropertyContainer : IEnumerable<KeyValuePair<PropertyKey, object>> //IDictionary<PropertyKey, object>
+    public partial struct PropertyContainer : IDictionary<PropertyKey, object>
     {
         private static readonly Dictionary<Type, List<PropertyKey>> accessorProperties = new Dictionary<Type, List<PropertyKey>>();
         private Dictionary<PropertyKey, object> properties;
@@ -55,6 +56,7 @@ namespace SiliconStudio.Core
             this.owner = owner;
         }
 
+        [DataMemberIgnore]
         public object Owner
         {
             get
@@ -144,6 +146,29 @@ namespace SiliconStudio.Core
         /// </returns>
         public bool ContainsKey(PropertyKey key)
         {
+            // If it's a key with AccessorMetadata, check if it has been registered to this type
+            // Not very efficient... hopefully it should be rarely used. If not, it should be quite easy to optimize.
+            if (key.AccessorMetadata != null && Owner != null)
+            {
+                var currentType = Owner.GetType();
+                while (currentType != null)
+                {
+                    List<PropertyKey> typeAccessorProperties;
+                    if (accessorProperties.TryGetValue(currentType, out typeAccessorProperties))
+                    {
+                        foreach (var accessorProperty in typeAccessorProperties)
+                        {
+                            if (accessorProperty == key)
+                                return true;
+                        }
+                    }
+
+                    currentType = currentType.GetTypeInfo().BaseType;
+                }
+
+                return false;
+            }
+
             return properties != null && properties.ContainsKey(key);
         }
 
@@ -568,42 +593,25 @@ namespace SiliconStudio.Core
             return GetEnumerator();
         }
 
-        /*void ICollection<KeyValuePair<PropertyKey, object>>.Add(KeyValuePair<PropertyKey, object> item)
+        void ICollection<KeyValuePair<PropertyKey, object>>.Add(KeyValuePair<PropertyKey, object> item)
         {
             Add(item.Key, item.Value);
         }
 
         bool ICollection<KeyValuePair<PropertyKey, object>>.Contains(KeyValuePair<PropertyKey, object> item)
         {
-            object value;
-            if (TryGetValue(item.Key, out value))
-            {
-                return Equals(value, item.Value);
-            }
-            return false;
+            return properties.ContainsValue(item);
         }
 
         void ICollection<KeyValuePair<PropertyKey, object>>.CopyTo(KeyValuePair<PropertyKey, object>[] array, int arrayIndex)
         {
-            if (properties != null)
-            {
-                ((IDictionary<PropertyKey, object>)properties).CopyTo(array, arrayIndex);
-            }
+            ((IDictionary<PropertyKey, object>)properties).CopyTo(array, arrayIndex);
         }
 
         bool ICollection<KeyValuePair<PropertyKey, object>>.Remove(KeyValuePair<PropertyKey, object> item)
         {
-            object value;
-            if (TryGetValue(item.Key, out value))
-            {
-                if (Equals(value, item.Value))
-                {
-                    Remove(item.Key);
-                }
-            }
-            return false;
+            return ((IDictionary<PropertyKey, object>)properties).Remove(item);
         }
-         */
 
         internal abstract class ValueHolder
         {

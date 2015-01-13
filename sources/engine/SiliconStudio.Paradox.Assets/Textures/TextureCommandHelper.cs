@@ -9,9 +9,11 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Assets.Materials;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Graphics.Data;
 using SiliconStudio.TextureConverter;
 
 namespace SiliconStudio.Paradox.Assets.Textures
@@ -90,30 +92,34 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// <summary>
         /// Determine the output format of the texture depending on the platform and asset properties.
         /// </summary>
-        /// <param name="textureFormat">The desired texture output format type</param>
-        /// <param name="graphicsPlatform">The graphics platform</param>
-        /// <param name="alphaFormat">The alpha format desired in output</param>
-        /// <param name="platform">The platform type</param>
+        /// <param name="parameters">The conversion request parameters</param>
         /// <param name="imageSize">The texture output size</param>
         /// <param name="inputImageFormat">The pixel format of the input image</param>
+        /// <param name="textureAsset">The texture asset</param>
         /// <returns>The pixel format to use as output</returns>
-        public static PixelFormat DetermineOutputFormat(TextureFormat textureFormat, AlphaFormat alphaFormat, PlatformType platform, GraphicsPlatform graphicsPlatform, Int2 imageSize, PixelFormat inputImageFormat)
+        public static PixelFormat DetermineOutputFormat(TextureAsset textureAsset, TextureConvertParameters parameters, Int2 imageSize, PixelFormat inputImageFormat)
         {
+            if (textureAsset.SRgb && ((int)parameters.GraphicsProfile < (int)GraphicsProfile.Level_9_2 && parameters.GraphicsPlatform != GraphicsPlatform.Direct3D11))
+                throw new NotSupportedException("sRGB is not supported on OpenGl profile level {0}".ToFormat(parameters.GraphicsProfile));
+
+            if (textureAsset.SRgb && textureAsset.Format == TextureFormat.Compressed && parameters.GraphicsPlatform == GraphicsPlatform.OpenGLES)
+                throw new NotImplementedException("sRGB compression for OpenGl 3.0 is not implemented yet");
+
             PixelFormat outputFormat;
-            switch (textureFormat)
+            switch (textureAsset.Format)
             {
                 case TextureFormat.Compressed:
-                    switch (platform)
+                    switch (parameters.Platform)
                     {
                         case PlatformType.Android:
-                            outputFormat = alphaFormat == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.R8G8B8A8_UNorm;
+                            outputFormat = textureAsset.Alpha == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.R8G8B8A8_UNorm;
                             break;
 
                         case PlatformType.iOS:
                             // PVRTC works only for square POT textures
                             if (SupportPVRTC(imageSize))
                             {
-                                switch (alphaFormat)
+                                switch (textureAsset.Alpha)
                                 {
                                     case AlphaFormat.None:
                                         // DXT1 handles 1-bit alpha channel
@@ -142,23 +148,23 @@ namespace SiliconStudio.Paradox.Assets.Textures
                         case PlatformType.Windows:
                         case PlatformType.WindowsPhone:
                         case PlatformType.WindowsStore:
-                            switch (graphicsPlatform)
+                            switch (parameters.GraphicsPlatform)
                             {
                                 case GraphicsPlatform.Direct3D11:
-                                    switch (alphaFormat)
+                                    switch (textureAsset.Alpha)
                                     {
                                         case AlphaFormat.None:
                                         case AlphaFormat.Mask:
                                             // DXT1 handles 1-bit alpha channel
-                                            outputFormat = PixelFormat.BC1_UNorm;
+                                            outputFormat = textureAsset.SRgb? PixelFormat.BC1_UNorm_SRgb : PixelFormat.BC1_UNorm;
                                             break;
                                         case AlphaFormat.Explicit:
                                             // DXT3 is good at sharp alpha transitions
-                                            outputFormat = PixelFormat.BC2_UNorm;
+                                            outputFormat = textureAsset.SRgb ? PixelFormat.BC2_UNorm_SRgb : PixelFormat.BC2_UNorm;
                                             break;
                                         case AlphaFormat.Interpolated:
                                             // DXT5 is good at alpha gradients
-                                            outputFormat = PixelFormat.BC3_UNorm;
+                                            outputFormat = textureAsset.SRgb ? PixelFormat.BC3_UNorm_SRgb : PixelFormat.BC3_UNorm;
                                             break;
                                         default:
                                             throw new ArgumentOutOfRangeException();
@@ -167,28 +173,28 @@ namespace SiliconStudio.Paradox.Assets.Textures
                                 default:
                                     // OpenGL & OpenGL ES on Windows
                                     // TODO: Need to handle OpenGL Desktop compression
-                                    outputFormat = PixelFormat.R8G8B8A8_UNorm;
+                                    outputFormat = textureAsset.SRgb ? PixelFormat.R8G8B8A8_UNorm_SRgb : PixelFormat.R8G8B8A8_UNorm;
                                     break;
                             }
                             break;
                         default:
-                            throw new NotSupportedException("Platform " + platform + " is not supported by TextureTool");
+                            throw new NotSupportedException("Platform " + parameters.Platform + " is not supported by TextureTool");
                     }
                     break;
                 case TextureFormat.HighColor:
-                    if (alphaFormat == AlphaFormat.None)
+                    if (textureAsset.SRgb)
+                        throw new NotSupportedException("HighColor texture format does not support sRGB color encryption");
+
+                    if (textureAsset.Alpha == AlphaFormat.None)
                         outputFormat = PixelFormat.B5G6R5_UNorm;
-                    else if (alphaFormat == AlphaFormat.Mask)
+                    else if (textureAsset.Alpha == AlphaFormat.Mask)
                         outputFormat = PixelFormat.B5G5R5A1_UNorm;
                     else
                         throw new NotImplementedException("This alpha format requires a TrueColor texture format.");
                     break;
                 case TextureFormat.TrueColor:
-                    outputFormat = PixelFormat.R8G8B8A8_UNorm;
+                    outputFormat = textureAsset.SRgb ? PixelFormat.R8G8B8A8_UNorm_SRgb : PixelFormat.R8G8B8A8_UNorm;
                     break;
-                //case TextureFormat.Custom:
-                //    throw new NotSupportedException();
-                //    break;
                 case TextureFormat.AsIs:
                     outputFormat = inputImageFormat;
                     break;
@@ -198,15 +204,15 @@ namespace SiliconStudio.Paradox.Assets.Textures
             return outputFormat;
         }
 
-        public static ResultStatus ImportAndSaveTextureImage(UFile sourcePath, string outputUrl, TextureAsset textureAsset, TextureConvertParameters parameters, bool separateAlpha, CancellationToken cancellationToken, Logger logger)
+        public static ResultStatus ImportAndSaveTextureImage(UFile sourcePath, string outputUrl, TextureAsset textureAsset, TextureConvertParameters parameters, CancellationToken cancellationToken, Logger logger)
         {
             var assetManager = new AssetManager();
 
             using (var texTool = new TextureTool())
-            using (var texImage = texTool.Load(sourcePath))
+            using (var texImage = texTool.Load(sourcePath, textureAsset.SRgb))
             {
                 // Apply transformations
-                texTool.Decompress(texImage);
+                texTool.Decompress(texImage, textureAsset.SRgb);
 
                 if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
                     return ResultStatus.Cancelled;
@@ -246,15 +252,18 @@ namespace SiliconStudio.Paradox.Assets.Textures
 
                 // Generate mipmaps
                 if (textureAsset.GenerateMipmaps)
-                    texTool.GenerateMipMaps(texImage, Filter.MipMapGeneration.Box);
-
+                {
+                    var boxFilteringIsSupported = texImage.Format != PixelFormat.B8G8R8A8_UNorm_SRgb || (IsPowerOfTwo(textureSize.X) && IsPowerOfTwo(textureSize.Y));
+                    texTool.GenerateMipMaps(texImage, boxFilteringIsSupported? Filter.MipMapGeneration.Box: Filter.MipMapGeneration.Linear);
+                }
+                
                 if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
                     return ResultStatus.Cancelled;
 
 
                 // Convert/Compress to output format
                 // TODO: Change alphaFormat depending on actual image content (auto-detection)?
-                var outputFormat = DetermineOutputFormat(textureAsset.Format, textureAsset.Alpha, parameters.Platform, parameters.GraphicsPlatform, textureSize, texImage.Format);
+                var outputFormat = DetermineOutputFormat(textureAsset, parameters, textureSize, texImage.Format);
                 texTool.Compress(texImage, outputFormat, (TextureConverter.Requests.TextureQuality)parameters.TextureQuality);
 
                 if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
@@ -262,7 +271,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
 
 
                 // Save the texture
-                if (separateAlpha)
+                if (parameters.SeparateAlpha)
                 {
                     //TextureAlphaComponentSplitter.CreateAndSaveSeparateTextures(texTool, texImage, outputUrl, textureAsset.GenerateMipmaps);
                 }
@@ -273,7 +282,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                         if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
                             return ResultStatus.Cancelled;
 
-                        assetManager.Save(outputUrl, outputImage);
+                        assetManager.Save(outputUrl, outputImage.ToSerializableVersion());
 
                         logger.Info("Compression successful [{3}] to ({0}x{1},{2})", outputImage.Description.Width, outputImage.Description.Height, outputImage.Description.Format, outputUrl);
                     }

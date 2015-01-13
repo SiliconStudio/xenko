@@ -46,10 +46,11 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 {
                     Model = new Model()
                     {
+                        material,
                         new Mesh()
                         {
                             Draw = GeometricPrimitive.Teapot.New(GraphicsDevice).ToMeshDraw(),
-                            Material = material
+                            MaterialIndex = 0,
                         }
                     }
                 }

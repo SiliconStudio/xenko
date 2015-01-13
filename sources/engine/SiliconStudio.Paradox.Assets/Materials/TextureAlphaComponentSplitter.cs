@@ -11,6 +11,7 @@ using SiliconStudio.Paradox.Assets.Materials.Nodes;
 using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
 using SiliconStudio.Paradox.Assets.Textures;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Graphics.Data;
 using SiliconStudio.TextureConverter;
 
 namespace SiliconStudio.Paradox.Assets.Materials
@@ -62,6 +63,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
                 var originalLocation = textureNode.TextureReference.Location;
 
+                throw new NotImplementedException("TODO: Need to reimplement this with removed data layer.");
                 using (var image = assetManager.Load<Image>(originalLocation))
                 {
                     CreateAndSaveSeparateTextures(image, originalLocation, textureAsset.GenerateMipmaps, outputFormat);
@@ -129,7 +131,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             var colorTextureURL = GenerateColorTextureURL(originalTextureURL);
 
             // create a new image containing only the alpha component
-            texTool.Decompress(texImage);
+            texTool.Decompress(texImage, texImage.Format.IsSRgb());
             using (var alphaImage = texTool.CreateImageFromAlphaComponent(texImage))
             {
                 // generate the mip-maps for the alpha component if required
@@ -139,14 +141,14 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 // save the alpha component
                 texTool.Compress(alphaImage, outputFormat);
                 using (var outputImage = texTool.ConvertToParadoxImage(alphaImage))
-                    assetManager.Save(alphaTextureURL, outputImage);
+                    assetManager.Save(alphaTextureURL, outputImage.ToSerializableVersion());
             }
 
             // save the color component
-            texTool.Decompress(texImage);
+            texTool.Decompress(texImage, texImage.Format.IsSRgb());
             texTool.Compress(texImage, outputFormat);
             using (var outputImage = texTool.ConvertToParadoxImage(texImage))
-                assetManager.Save(colorTextureURL, outputImage);
+                assetManager.Save(colorTextureURL, outputImage.ToSerializableVersion());
         }
     }
 }

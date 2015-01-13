@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Core.Serialization.Serializers;
 
 // Serializer for ContentSerializerContext.SerializeReferences()
@@ -29,8 +28,6 @@ namespace SiliconStudio.Core.Serialization.Contents
         public ArchiveMode Mode { get; protected set; }
 
         public List<ContentReference> ContentReferences { get; set; }
-
-        public ConverterContext ConverterContext { get; set; }
 
         public bool RegenerateUrls { get; set; }
 
@@ -138,11 +135,10 @@ namespace SiliconStudio.Core.Serialization.Contents
             //    AssetManager.RegisterAsset(contentReference.Location, contentReference.ObjectValue, serializationType, false);
         }
 
-        public object SerializeContent(SerializationStream stream, IContentSerializer serializer, object objToSerialize)
+        public void SerializeContent(SerializationStream stream, IContentSerializer serializer, object objToSerialize)
         {
             stream.Context.SerializerSelector = AssetManager.Serializer.LowLevelSerializerSelector;
-            serializer.Serialize(this, stream, ref objToSerialize);
-            return objToSerialize;
+            serializer.Serialize(this, stream, objToSerialize);
         }
 
         public void SerializeReferences(SerializationStream stream)

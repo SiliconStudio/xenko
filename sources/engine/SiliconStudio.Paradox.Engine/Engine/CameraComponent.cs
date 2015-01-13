@@ -1,7 +1,6 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Core;
@@ -12,7 +11,6 @@ namespace SiliconStudio.Paradox.Engine
     /// <summary>
     /// Describes the camera projection and view.
     /// </summary>
-    [DataConverter(AutoGenerate = true)]
     [DataContract("CameraComponent")]
     public sealed class CameraComponent : EntityComponent
     {
@@ -70,7 +68,6 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The vertical field of view.
         /// </value>
-        [DataMemberConvert]
         public float VerticalFieldOfView { get; set; }
 
         /// <summary>
@@ -79,7 +76,6 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The near plane distance.
         /// </value>
-        [DataMemberConvert]
         public float NearPlane { get; set; }
 
         /// <summary>
@@ -88,7 +84,6 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The far plane distance.
         /// </value>
-        [DataMemberConvert]
         public float FarPlane { get; set; }
 
         /// <summary>
@@ -97,14 +92,12 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The aspect ratio.
         /// </value>
-        [DataMemberConvert]
         public float AspectRatio { get; set; }
 
         /// <summary>
         /// Gets or sets the target this camera is pointing to. May be null.
         /// </summary>
         /// <value>The target.</value>
-        [DataMemberConvert]
         public Entity Target { get; set; }
 
         /// <summary>
@@ -113,21 +106,18 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The up direction when using a target (for LookAt).
         /// </value>
-        [DataMemberConvert]
         public Vector3 TargetUp { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether [auto focus].
         /// </summary>
         /// <value><c>true</c> if [auto focus]; otherwise, <c>false</c>.</value>
-        [DataMemberConvert]
         public bool AutoFocus { get; set; }
 
         /// <summary>
         /// Gets or sets the focus distance.
         /// </summary>
         /// <value>The focus distance.</value>
-        [DataMemberConvert]
         public float FocusDistance
         {
             get
@@ -163,34 +153,31 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets or sets a value indicating whether to use custom <see cref="ViewMatrix"/>. Default is <c>false</c>
         /// </summary>
         /// <value><c>true</c> if use custom <see cref="ViewMatrix"/>; otherwise, <c>false</c>.</value>
-        [DataMemberConvert]
         public bool UseViewMatrix { get; set; }
 
         /// <summary>
         /// Gets or sets the local view matrix, only used when <see cref="UseViewMatrix"/> is <c>true</c>.
         /// </summary>
         /// <value>The local view matrix.</value>
-        [DataMemberConvert]
         public Matrix ViewMatrix { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to use custom <see cref="ProjectionMatrix"/>. Default is <c>false</c>
         /// </summary>
         /// <value><c>true</c> if use custom <see cref="ProjectionMatrix"/>; otherwise, <c>false</c>.</value>
-        [DataMemberConvert]
         public bool UseProjectionMatrix { get; set; }
 
         /// <summary>
         /// Gets or sets the local projection matrix, only used when <see cref="UseProjectionMatrix"/> is <c>true</c>.
         /// </summary>
         /// <value>The local projection matrix.</value>
-        [DataMemberConvert]
         public Matrix ProjectionMatrix { get; set; }
 
         /// <summary>
         /// Gets or sets the position.
         /// </summary>
         /// <value>The position.</value>
+        [DataMemberIgnore]
         public Vector3 Position
         {
             get

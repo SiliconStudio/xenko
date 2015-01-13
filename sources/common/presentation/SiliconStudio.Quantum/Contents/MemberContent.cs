@@ -16,8 +16,8 @@ namespace SiliconStudio.Quantum.Contents
     {
         protected IContent Container;
 
-        public MemberContent(IContent container, IMemberDescriptor member, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
-            : base(member.Type, descriptor, isPrimitive, reference)
+        public MemberContent(INodeBuilder nodeBuilder, IContent container, IMemberDescriptor member, bool isPrimitive, IReference reference)
+            : base(nodeBuilder, nodeBuilder.TypeDescriptorFactory.Find(member.Type), isPrimitive, reference)
         {
             if (container == null) throw new ArgumentNullException("container");
             Member = member;

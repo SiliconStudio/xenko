@@ -162,7 +162,7 @@ namespace SiliconStudio.BuildEngine
             {
                 try
                 {
-                    IndexFileCommand.MountDatabases(executeContext);
+                    IndexFileCommand.MountDatabase(executeContext.GetOutputObjectsGroups());
                     StepProcessed(this, new BuildStepEventArgs(this, executeContext.Logger));
                 }
                 catch (Exception ex)
@@ -171,7 +171,7 @@ namespace SiliconStudio.BuildEngine
                 }
                 finally
                 {
-                    IndexFileCommand.UnmountDatabases(executeContext);                    
+                    IndexFileCommand.UnmountDatabase();                    
                 }
             }
         }

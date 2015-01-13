@@ -15,9 +15,13 @@ namespace SiliconStudio.Paradox.Effects
 
         public static PropertyKey<ModelRendererState> Key = new PropertyKey<ModelRendererState>("ModelRendererState", typeof(ModelRendererState));
 
-        private readonly Dictionary<SlotKey, int> modelSlotMapping = new Dictionary<SlotKey, int>();
+        private readonly Dictionary<SlotKey, ModelRendererSlot> modelSlotMapping = new Dictionary<SlotKey, ModelRendererSlot>();
+        private readonly Queue<ModelRendererSlot> availableModelSlots = new Queue<ModelRendererSlot>();
 
         #endregion
+
+        public event Action<ModelRendererState, ModelRendererSlot> ModelSlotAdded;
+        public event Action<ModelRendererState, ModelRendererSlot> ModelSlotRemoved;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ModelRendererState"/> class.
@@ -27,40 +31,15 @@ namespace SiliconStudio.Paradox.Effects
             RenderModels = new List<RenderModel>();
         }
 
-        /// <summary>
-        /// Gets the mesh pass slot count.
-        /// </summary>
-        /// <value>The mesh pass slot count.</value>
-        public int ModelSlotCount
+        public Dictionary<SlotKey, ModelRendererSlot> ModelSlotMapping
         {
-            get
-            {
-                return modelSlotMapping.Count;
-            }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether this instance is valid.
-        /// </summary>
-        /// <value><c>true</c> if this instance is valid; otherwise, <c>false</c>.</value>
-        public bool IsValid
-        {
-            get
-            {
-                return AcceptModel != null && PrepareRenderModel != null;
-            }
+            get { return modelSlotMapping; }
         }
 
         /// <summary>
         /// The action that will be applied on every model to test whether to add it to the render pipeline.
         /// </summary>
         public Func<IModelInstance, bool> AcceptModel { get; set; }
-
-        /// <summary>
-        /// Gets or sets the prepare render model.
-        /// </summary>
-        /// <value>The prepare render model.</value>
-        public Action<RenderModel> PrepareRenderModel { get; set; }
 
         /// <summary>
         /// Gets the current list of models to render.
@@ -73,19 +52,48 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         /// <param name="renderPass">The render pass.</param>
         /// <param name="effectName">Name of the effect.</param>
-        /// <returns>A mesh pass slot.</returns>
-        public int GetModelSlot(RenderPass renderPass, string effectName)
+        /// <param name="prepareRenderModel">The prepare render model.</param>
+        /// <param name="modelRendererSlot">The model renderer slot.</param>
+        public void AllocateModelSlot(RenderPass renderPass, string effectName, Action<RenderModel> prepareRenderModel, out ModelRendererSlot modelRendererSlot)
         {
-            int meshPassSlot;
             var key = new SlotKey(renderPass, effectName);
-            if (!modelSlotMapping.TryGetValue(key, out meshPassSlot))
+            if (!modelSlotMapping.TryGetValue(key, out modelRendererSlot))
             {
-                modelSlotMapping[key] = meshPassSlot = modelSlotMapping.Count;
+                // First, check free list, otherwise create a new slot
+                if (availableModelSlots.Count > 0)
+                {
+                    modelRendererSlot = availableModelSlots.Dequeue();
+                    modelRendererSlot.Key = key;
+                    modelSlotMapping[key] = modelRendererSlot;
+                }
+                else
+                    modelSlotMapping[key] = modelRendererSlot = new ModelRendererSlot(key, modelSlotMapping.Count);
+
+                modelRendererSlot.PrepareRenderModel = prepareRenderModel;
+
+                if (ModelSlotAdded != null)
+                    ModelSlotAdded(this, modelRendererSlot);
             }
-            return meshPassSlot;
+
+            modelRendererSlot.ReferenceCount++;
         }
 
-        private struct SlotKey : IEquatable<SlotKey>
+        public void ReleaseModelSlot(ModelRendererSlot modelRendererSlot)
+        {
+            if (--modelRendererSlot.ReferenceCount == 0)
+            {
+                if (ModelSlotRemoved != null)
+                    ModelSlotRemoved(this, modelRendererSlot);
+
+                // Release the slot if no other reference points to it (add it in free list)
+                if (!modelSlotMapping.Remove(modelRendererSlot.Key))
+                    throw new InvalidOperationException("Model slot not found while trying to remove it.");
+                modelRendererSlot.PrepareRenderModel = null;
+                availableModelSlots.Enqueue(modelRendererSlot);
+            }
+        }
+
+        internal struct SlotKey : IEquatable<SlotKey>
         {
             public SlotKey(RenderPass pass, string effectName)
             {
@@ -115,6 +123,20 @@ namespace SiliconStudio.Paradox.Effects
                     return ((EffectName != null ? EffectName.GetHashCode() : 0) * 397) ^ (Pass != null ? Pass.GetHashCode() : 0);
                 }
             }
+        }
+    }
+
+    internal class ModelRendererSlot
+    {
+        internal ModelRendererState.SlotKey Key;
+        public Action<RenderModel> PrepareRenderModel;
+        public int Slot;
+        public int ReferenceCount;
+
+        internal ModelRendererSlot(ModelRendererState.SlotKey key, int slot)
+        {
+            Key = key;
+            Slot = slot;
         }
     }
 }

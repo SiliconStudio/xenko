@@ -11,7 +11,7 @@ namespace SiliconStudio.Paradox.Graphics
     public enum GraphicsPlatform
     {
         /// <summary>
-        /// HLSL Direc3D Shader.
+        /// HLSL Direct3D Shader.
         /// </summary>
         Direct3D11,
 

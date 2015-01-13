@@ -4,7 +4,6 @@
 using System.ComponentModel;
 
 using SiliconStudio.Core;
-using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
 
@@ -13,7 +12,6 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
     /// <summary>
     /// Puts a cubemap at the containing entity location. This could be dynamic (runtime rendered) or static (from a file).
     /// </summary>
-    [DataConverter(AutoGenerate = true)]
     [DataContract("CubemapSourceComponent")]
     public class CubemapSourceComponent : EntityComponent
     {
@@ -49,53 +47,45 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
         /// <summary>
         /// Enables the computation of the cubemap if this one is dynamic.
         /// </summary>
-        [DataMemberConvert]
         public bool Enabled { get; set; }
 
         /// <summary>
         /// Enables runtime cubemap creation.
         /// </summary>
-        [DataMemberConvert]
         public bool IsDynamic { get; set; }
 
         /// <summary>
         /// The size of the target cubemap if this one is dynamic.
         /// </summary>
-        [DataMemberConvert]
         [DefaultValue(256)]
         public int Size { get; set; }
 
         /// <summary>
         /// The cubemap has no location.
         /// </summary>
-        [DataMemberConvert]
         public bool InfinityCubemap { get; set; }
 
         /// <summary>
         /// The influence radius of the cubemap. 0 is infinity?
         /// </summary>
-        [DataMemberConvert]
         [DefaultValue(1.0f)]
         public float InfluenceRadius { get; set; }
 
         /// <summary>
         /// The near plane of the cubemap.
         /// </summary>
-        [DataMemberConvert]
         [DefaultValue(0.1f)]
         public float NearPlane { get; set; }
 
         /// <summary>
         /// The far plane of the cubemap.
         /// </summary>
-        [DataMemberConvert]
         [DefaultValue(100.0f)]
         public float FarPlane { get; set; }
 
         /// <summary>
         /// The texture attached to this component.
         /// </summary>
-        [DataMemberConvert]
         [DataMemberCustomSerializer]
         public Texture Texture
         {

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Paradox.Shaders.Compiler
@@ -24,6 +25,12 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
         protected EffectCompilerBase Compiler
         {
             get { return compiler; }
+        }
+
+        public override DatabaseFileProvider FileProvider
+        {
+            get { return compiler.FileProvider; }
+            set { compiler.FileProvider = value; }
         }
 
         public override ObjectId GetShaderSourceHash(string type)

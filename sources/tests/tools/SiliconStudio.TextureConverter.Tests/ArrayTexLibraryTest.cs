@@ -1,13 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
+
 using System.Collections.Generic;
 using System.IO;
 
 using NUnit.Framework;
 using SiliconStudio.TextureConverter.Requests;
 using SiliconStudio.TextureConverter.TexLibraries;
-using SiliconStudio.TextureConverter;
 
 namespace SiliconStudio.TextureConverter.Tests
 {
@@ -41,7 +40,7 @@ namespace SiliconStudio.TextureConverter.Tests
         public void CanHandleRequestTest()
         {
             TexImage image = TestTools.Load(dxtLib, "array_WMipMaps.dds");
-            Assert.IsFalse(library.CanHandleRequest(image, new DecompressingRequest()));
+            Assert.IsFalse(library.CanHandleRequest(image, new DecompressingRequest(false)));
             Assert.IsTrue(library.CanHandleRequest(image, new ArrayCreationRequest(new List<TexImage>())));
             Assert.IsTrue(library.CanHandleRequest(image, new ArrayExtractionRequest(0)));
             Assert.IsTrue(library.CanHandleRequest(image, new ArrayUpdateRequest(new TexImage(), 0)));
@@ -58,11 +57,11 @@ namespace SiliconStudio.TextureConverter.Tests
             for (int i = 0; i < 5; ++i)
             {
                 var temp = new TexImage();
-                fiLib.Execute(temp, new LoadingRequest(file1));
+                fiLib.Execute(temp, new LoadingRequest(file1, false));
                 list.Add(temp);
 
                 temp = new TexImage();
-                fiLib.Execute(temp, new LoadingRequest(file2));
+                fiLib.Execute(temp, new LoadingRequest(file2, false));
                 list.Add(temp);
             }
 
@@ -109,13 +108,13 @@ namespace SiliconStudio.TextureConverter.Tests
             for (int i = 0; i < 5; ++i)
             {
                 var temp = new TexImage();
-                fiLib.Execute(temp, new LoadingRequest(TestTools.InputTestFolder + file1));
+                fiLib.Execute(temp, new LoadingRequest(TestTools.InputTestFolder + file1, false));
                 temp.Name = Path.GetFileName(file1);
                 list.Add(temp);
                 //Console.WriteLine("ExtractAll_" + Path.GetFileName(file1) + "." + TestTools.ComputeSHA1(temp.Data, temp.DataSize));
 
                 temp = new TexImage();
-                fiLib.Execute(temp, new LoadingRequest(TestTools.InputTestFolder + file2));
+                fiLib.Execute(temp, new LoadingRequest(TestTools.InputTestFolder + file2, false));
                 temp.Name = Path.GetFileName(file2);
                 list.Add(temp);
                 //Console.WriteLine("ExtractAll_" + Path.GetFileName(file2) + "." + TestTools.ComputeSHA1(temp.Data, temp.DataSize));
@@ -217,11 +216,11 @@ namespace SiliconStudio.TextureConverter.Tests
             for (int i = 0; i < 3; ++i)
             {
                 var temp = new TexImage();
-                fiLib.Execute(temp, new LoadingRequest(file1));
+                fiLib.Execute(temp, new LoadingRequest(file1, false));
                 list.Add(temp);
 
                 temp = new TexImage();
-                fiLib.Execute(temp, new LoadingRequest(file2));
+                fiLib.Execute(temp, new LoadingRequest(file2, false));
                 list.Add(temp);
             }
 

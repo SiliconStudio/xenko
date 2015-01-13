@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.Shaders;
 
-namespace SiliconStudio.Paradox.Effects.Data
+namespace SiliconStudio.Paradox.Effects
 {
-    public partial class LightingConfigurationData
+    public partial struct LightingConfiguration
     {
         public int TotalLightCount 
         {
@@ -23,22 +23,11 @@ namespace SiliconStudio.Paradox.Effects.Data
             }
         }
 
-        public LightingConfigurationData()
-        {
-            MaxNumDirectionalLight = 0;
-            MaxNumPointLight = 0;
-            MaxNumSpotLight = 0;
-
-            UnrollDirectionalLightLoop = false;
-            UnrollPointLightLoop = false;
-            UnrollSpotLightLoop = false;
-        }
-
         /// <summary>
         /// Creates a new LightingConfigurationData from a collection of parameters.
         /// </summary>
         /// <param name="collection">The parameter collection.</param>
-        public LightingConfigurationData(ParameterCollection collection)
+        public LightingConfiguration(ParameterCollection collection)
         {
             MaxNumDirectionalLight = collection.Get(LightingKeys.MaxDirectionalLights);
             MaxNumPointLight = collection.Get(LightingKeys.MaxPointLights);
@@ -48,18 +37,18 @@ namespace SiliconStudio.Paradox.Effects.Data
             UnrollPointLightLoop = false;
             UnrollSpotLightLoop = false;
 
+            ShadowConfigurations = new ShadowConfigurationArray();
+
             var configs = collection.Get(ShadowMapParameters.ShadowConfigurations);
             if (configs != null)
             {
-                ShadowConfigurations = new ShadowConfigurationArrayData();
                 if (configs.Groups.Count > 0)
                 {
-                    ShadowConfigurations.Groups = new List<ShadowConfigurationData>();
                     for (var i = 0; i < configs.Groups.Count; ++i)
                     {
                         if (configs.Groups[i].ShadowCount > 0)
                         {
-                            var configData = new ShadowConfigurationData();
+                            var configData = new ShadowConfiguration();
                             configData.LightType = configs.Groups[i].LightType;
                             configData.ShadowCount = configs.Groups[i].ShadowCount;
                             configData.CascadeCount = configData.LightType == LightType.Directional ? configs.Groups[i].CascadeCount : 1;
@@ -75,9 +64,9 @@ namespace SiliconStudio.Paradox.Effects.Data
         /// Gets the collection of parameters from the data.
         /// </summary>
         /// <returns>The parameter collection.</returns>
-        public ParameterCollectionData GetCollection()
+        public ParameterCollection GetCollection()
         {
-            var parameters = new ParameterCollectionData();
+            var parameters = new ParameterCollection();
             parameters.Set(LightingKeys.MaxDirectionalLights, MaxNumDirectionalLight);
             parameters.Set(LightingKeys.MaxPointLights, MaxNumPointLight);
             parameters.Set(LightingKeys.MaxSpotLights, MaxNumSpotLight);
@@ -102,7 +91,7 @@ namespace SiliconStudio.Paradox.Effects.Data
             return parameters;
         }
 
-        public static void CheckUnrolls(LightingConfigurationData[] sortedConfigs)
+        public static void CheckUnrolls(LightingConfiguration[] sortedConfigs)
         {
             // find unroll optimizations
             for (var i = 0; i < sortedConfigs.Length; ++i)

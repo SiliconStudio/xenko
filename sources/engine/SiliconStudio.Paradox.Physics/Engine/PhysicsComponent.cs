@@ -3,12 +3,10 @@
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
-using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Paradox.EntityModel;
 
 namespace SiliconStudio.Paradox.Physics
 {
-    [DataConverter(AutoGenerate = true)]
     [DataContract("PhysicsComponent")]
     public sealed class PhysicsComponent : EntityComponent
     {
@@ -23,7 +21,6 @@ namespace SiliconStudio.Paradox.Physics
         /// Elements describing the physical colliders/rigidbodies/character of this entity
         /// Any runtime dynamic change should happen while the entity is not added to the Game object
         /// </summary>
-        [DataMemberConvert]
         public List<PhysicsElement> Elements { get; private set; }
 
         [DataMemberIgnore]

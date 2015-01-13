@@ -15,8 +15,12 @@ namespace SiliconStudio.Quantum
     /// </summary>
     public class ModelContainer
     {
+        // TODO: Currently hardcoded until editor plugin system is refactored
+        public static readonly List<IModelBuilderPlugin> ModelBuilderPlugins = new List<IModelBuilderPlugin>();
+
         private readonly Dictionary<Guid, IModelNode> modelsByGuid = new Dictionary<Guid, IModelNode>();
         private readonly IGuidContainer guidContainer;
+        private readonly object lockObject = new object();
 
         /// <summary>
         /// Create a new instance of <see cref="ModelContainer"/>.
@@ -63,9 +67,12 @@ namespace SiliconStudio.Quantum
         /// <returns>The <see cref="IModelNode"/> associated to the given object if available, or <c>null</c> otherwise.</returns>
         public IModelNode GetModelNode(object rootObject)
         {
-            if (guidContainer == null) throw new InvalidOperationException("This ModelContainer has no GuidContainer and can't retrieve Guid associated to a data object.");
-            Guid guid = guidContainer.GetGuid(rootObject);
-            return guid == Guid.Empty ? null : GetModelNode(guid);
+            lock (lockObject)
+            {
+                if (guidContainer == null) throw new InvalidOperationException("This ModelContainer has no GuidContainer and can't retrieve Guid associated to a data object.");
+                Guid guid = guidContainer.GetGuid(rootObject);
+                return guid == Guid.Empty ? null : GetModelNode(guid);
+            }
         }
 
         /// <summary>
@@ -75,8 +82,11 @@ namespace SiliconStudio.Quantum
         /// <returns>The <see cref="IModelNode"/> associated to the given Guid if available, or <c>null</c> otherwise.</returns>
         public IModelNode GetModelNode(Guid guid)
         {
-            IModelNode result;
-            return modelsByGuid.TryGetValue(guid, out result) ? result : null;
+            lock (lockObject)
+            {
+                IModelNode result;
+                return modelsByGuid.TryGetValue(guid, out result) ? result : null;
+            }
         }
 
         /// <summary>
@@ -87,8 +97,11 @@ namespace SiliconStudio.Quantum
         /// <returns>The <see cref="Guid"/> associated to the given object if available, or <see cref="Guid.Empty"/> otherwise.</returns>
         public Guid GetGuid(object rootObject, Type type)
         {
-            if (guidContainer == null) throw new InvalidOperationException("This ModelContainer has no GuidContainer and can't retrieve Guid associated to a data object.");
-            return guidContainer.GetGuid(rootObject);
+            lock (lockObject)
+            {
+                if (guidContainer == null) throw new InvalidOperationException("This ModelContainer has no GuidContainer and can't retrieve Guid associated to a data object.");
+                return guidContainer.GetGuid(rootObject);
+            }
         }
 
         /// <summary>
@@ -96,30 +109,23 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="rootObject">The data object.</param>
         /// <param name="type">The type of the data object.</param>
+        /// <param name="updateReferencesIfExists">Update references contained in the result node, if it already exists.</param>
+        /// <param name="referencer">The referencer (optional, just here to help having some context when building nodes).</param>
         /// <returns>The <see cref="IModelNode"/> associated to the given object.</returns>
-        public IModelNode GetOrCreateModelNode(object rootObject, Type type)
+        public IModelNode GetOrCreateModelNode(object rootObject, Type type, bool updateReferencesIfExists = true, IModelNode referencer = null)
         {
-            IModelNode result = null;
-            if (guidContainer != null && (rootObject == null || !rootObject.GetType().IsValueType))
+            lock (lockObject)
             {
-                result = GetModelNode(rootObject);
-            }
+                IModelNode result = null;
+                if (guidContainer != null && (rootObject == null || !rootObject.GetType().IsValueType))
+                {
+                    result = GetModelNode(rootObject);
+                    if (result != null)
+                        UpdateReferences(result);
+                }
 
-            return result ?? CreateModelNode(rootObject, type);
-        }
-
-        /// <summary>
-        /// Removes a model that was previously registered.
-        /// </summary>
-        /// <param name="guid">The guid of the model to remove.</param>
-        /// <returns><c>true</c> if a model has been actually removed, <c>false</c> otherwise.</returns>
-        public bool RemoveModelNode(Guid guid)
-        {
-            if (guidContainer != null)
-            {
-                guidContainer.UnregisterGuid(guid);
+                return result ?? CreateModelNode(rootObject, type, referencer);
             }
-            return modelsByGuid.Remove(guid);
         }
 
         /// <summary>
@@ -127,11 +133,14 @@ namespace SiliconStudio.Quantum
         /// </summary>
         public void Clear()
         {
-            if (guidContainer != null)
+            lock (lockObject)
             {
-                guidContainer.Clear();
+                if (guidContainer != null)
+                {
+                    guidContainer.Clear();
+                }
+                modelsByGuid.Clear();
             }
-            modelsByGuid.Clear();
         }
 
         /// <summary>
@@ -140,55 +149,21 @@ namespace SiliconStudio.Quantum
         /// <param name="node">The node to update</param>
         public void UpdateReferences(IModelNode node)
         {
-            UpdateReferences(node, true);
-        }
-
-        public int CollectGarbage(IEnumerable<object> objectsToKeep)
-        {
-            var guidToRemove = modelsByGuid.Keys.ToDictionary(guid => guid);
-            foreach (var obj in objectsToKeep)
+            lock (lockObject)
             {
-                CollectGarbageRecursively(obj, guidToRemove);
-            }
-            int guidRemoved = 0;
-            foreach (var guid in guidToRemove.Where(x => x.Value != Guid.Empty).Select(x => x.Value))
-            {
-                guidContainer.UnregisterGuid(guid);
-                modelsByGuid.Remove(guid);
-                ++guidRemoved;
-            }
-            return guidRemoved;
-        }
-
-        private void CollectGarbageRecursively(object obj, Dictionary<Guid, Guid> guidToRemove)
-        {
-            var model = GetModelNode(obj);
-            if (model != null)
-            {
-                guidToRemove[model.Guid] = Guid.Empty;
-                foreach (var child in model.Children)
-                {
-                    if (child.Content.IsReference)
-                    {
-                        var enumRef = child.Content.Reference as ReferenceEnumerable;
-                        var objRef = child.Content.Reference as ObjectReference;
-                        if (enumRef != null)
-                        {
-                            foreach (var itemRef in enumRef)
-                            {
-                                CollectGarbageRecursively(itemRef.ObjectValue, guidToRemove);
-                            }
-                        }
-                        if (objRef != null)
-                        {
-                            CollectGarbageRecursively(objRef.ObjectValue, guidToRemove);
-                        }
-                    }
-                }
+                UpdateReferences(node, true);
             }
         }
 
-        private IModelNode CreateModelNode(object rootObject, Type type)
+        /// <summary>
+        /// Creates the model node.
+        /// </summary>
+        /// <param name="rootObject">The root object.</param>
+        /// <param name="type">The type.</param>
+        /// <param name="referencer">The referencer (optional, just here to help having some context when building nodes).</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentException">@The given type does not match the given object.;rootObject</exception>
+        private IModelNode CreateModelNode(object rootObject, Type type, IModelNode referencer)
         {
             if (rootObject != null && !type.IsInstanceOfType(rootObject)) throw new ArgumentException(@"The given type does not match the given object.", "rootObject");
 
@@ -198,9 +173,9 @@ namespace SiliconStudio.Quantum
             if (guidContainer != null && rootObject != null && !rootObject.GetType().IsValueType)
                 guid = guidContainer.GetOrCreateGuid(rootObject);
 
-            IModelNode result = NodeBuilder.Build(rootObject, type, guid);
+            var result = (ModelNode)NodeBuilder.Build(referencer, rootObject, type, guid);
 
-            if (result != null)
+            if (result != null && (result.Flags & ModelNodeFlags.DoNotCache) == 0)
             {
                 // Register reference objects
                 modelsByGuid.Add(result.Guid, result);
@@ -220,7 +195,7 @@ namespace SiliconStudio.Quantum
                 if (refreshReferences)
                     node.Content.Reference.Refresh(node.Content.Value);
 
-                UpdateOrCreateReferenceTarget(node.Content.Reference, node.Content, refreshReferences);
+                UpdateOrCreateReferenceTarget(node.Content.Reference, node, refreshReferences);
             }
             else
             {
@@ -230,15 +205,17 @@ namespace SiliconStudio.Quantum
                     if (refreshReferences)
                         child.Content.Reference.Refresh(child.Content.Value);
 
-                    UpdateOrCreateReferenceTarget(child.Content.Reference, child.Content, refreshReferences);
+                    UpdateOrCreateReferenceTarget(child.Content.Reference, child, refreshReferences);
                 }
             }
         }
 
-        private void UpdateOrCreateReferenceTarget(IReference reference, IContent content, bool refreshReferences, Stack<object> indices = null)
+        private void UpdateOrCreateReferenceTarget(IReference reference, IModelNode modelNode, bool refreshReferences, Stack<object> indices = null)
         {
             if (reference == null) throw new ArgumentNullException("reference");
-            if (content == null) throw new ArgumentNullException("content");
+            if (modelNode == null) throw new ArgumentNullException("modelNode");
+
+            var content = modelNode.Content;
 
             var referenceEnumerable = reference as ReferenceEnumerable;
             if (referenceEnumerable != null)
@@ -249,49 +226,53 @@ namespace SiliconStudio.Quantum
                 foreach (var itemReference in referenceEnumerable)
                 {
                     indices.Push(itemReference.Index);
-                    UpdateOrCreateReferenceTarget(itemReference, content, refreshReferences, indices);
+                    UpdateOrCreateReferenceTarget(itemReference, modelNode, refreshReferences, indices);
                     indices.Pop();
                 }
             }
             else
             {
-                var singleReference = ((ObjectReference)reference);
-                if (singleReference.TargetNode != null && singleReference.TargetNode.Content.Value != reference.ObjectValue)
+                if (content.ShouldProcessReference)
                 {
-                    singleReference.Clear();
-                }
-
-                if (singleReference.TargetNode == null)
-                {
-                    IModelNode node = GetOrCreateModelNode(reference.ObjectValue, reference.Type);
-                    if (node != null)
+                    var singleReference = ((ObjectReference)reference);
+                    if (singleReference.TargetNode != null && singleReference.TargetNode.Content.Value != reference.ObjectValue)
                     {
-                        singleReference.SetTarget(node);
-                        var structContent = node.Content as BoxedContent;
-                        if (structContent != null)
+                        singleReference.Clear();
+                    }
+
+                    if (singleReference.TargetNode == null)
+                    {
+                        IModelNode node = GetOrCreateModelNode(reference.ObjectValue, reference.Type, referencer: modelNode);
+                        if (node != null)
                         {
-                            structContent.BoxedStructureOwner = content;
-                            structContent.BoxedStructureOwnerIndices = indices != null ? indices.Reverse().ToArray() : null;
-                        }
+                            singleReference.SetTarget(node);
+                            var structContent = node.Content as BoxedContent;
+                            if (structContent != null)
+                            {
+                                structContent.BoxedStructureOwner = content;
+                                structContent.BoxedStructureOwnerIndices = indices != null ? indices.Reverse().ToArray() : null;
+                            }
 
-                        // If the node is a reference itself (that can happen for example for lists of lists)
-                        if (singleReference.TargetNode.Content.IsReference)
-                        {
-                            var targetContent = singleReference.TargetNode.Content;
-                            // Then we refresh this reference
-                            if (refreshReferences)
-                                targetContent.Reference.Refresh(targetContent.Value);
+                            // If the node is a reference itself (that can happen for example for lists of lists)
+                            if (singleReference.TargetNode.Content.IsReference)
+                            {
+                                var targetNode = singleReference.TargetNode;
+                                var targetContent = singleReference.TargetNode.Content;
+                                // Then we refresh this reference
+                                if (refreshReferences)
+                                    targetContent.Reference.Refresh(targetContent.Value);
 
-                            UpdateOrCreateReferenceTarget(targetContent.Reference, targetContent, refreshReferences);
-                        }
+                                UpdateOrCreateReferenceTarget(targetContent.Reference, targetNode, refreshReferences);
+                            }
 
-                        // Otherwise refresh potential references in its children.
-                        foreach (var child in node.Children.SelectDeep(x => x.Children).Where(x => x.Content.IsReference))
-                        {
-                            if (refreshReferences)
-                                child.Content.Reference.Refresh(child.Content.Value);
+                            // Otherwise refresh potential references in its children.
+                            foreach (var child in node.Children.SelectDeep(x => x.Children).Where(x => x.Content.IsReference))
+                            {
+                                if (refreshReferences)
+                                    child.Content.Reference.Refresh(child.Content.Value);
 
-                            UpdateOrCreateReferenceTarget(child.Content.Reference, child.Content, refreshReferences);
+                                UpdateOrCreateReferenceTarget(child.Content.Reference, child, refreshReferences);
+                            }
                         }
                     }
                 }
@@ -300,7 +281,7 @@ namespace SiliconStudio.Quantum
 
         private static INodeBuilder CreateDefaultNodeBuilder()
         {
-            var nodeBuilder = new DefaultModelBuilder();
+            var nodeBuilder = new DefaultModelBuilder(ModelBuilderPlugins);
             return nodeBuilder;
         }
     }

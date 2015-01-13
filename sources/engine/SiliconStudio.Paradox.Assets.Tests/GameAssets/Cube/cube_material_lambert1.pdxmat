@@ -38,6 +38,4 @@ Material:
                     RightChild: null
             ColorNodes:
                 MaterialParameters.AlbedoDiffuse: pdx_diffuseOpaque
-            Parameters:
-                Capacity: 0
-                ~Items: {}
+            Parameters: {}

@@ -1,14 +1,16 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
-using System.Runtime.InteropServices;
+
+using SiliconStudio.Core;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.TextureConverter.DxtWrapper;
 using SiliconStudio.TextureConverter.Requests;
+
+using Utilities = SiliconStudio.TextureConverter.DxtWrapper.Utilities;
 
 namespace SiliconStudio.TextureConverter.TexLibraries
 {
@@ -31,7 +33,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <summary>
         /// The sub images (every mipmap, every array members)
         /// </summary>
-        public Image[] DxtImages;
+        public DxtImage[] DxtImages;
     }
 
     /// <summary>
@@ -79,11 +81,11 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
             DXGI_FORMAT format = RetrieveNativeFormat(image.Format);
 
-            libraryData.DxtImages = new Image[image.SubImageArray.Length];
+            libraryData.DxtImages = new DxtImage[image.SubImageArray.Length];
 
             for (int i = 0; i < image.SubImageArray.Length; ++i)
             {
-                libraryData.DxtImages[i] = new Image(image.SubImageArray[i].Width, image.SubImageArray[i].Height, format, image.SubImageArray[i].RowPitch, image.SubImageArray[i].SlicePitch, image.SubImageArray[i].Data);
+                libraryData.DxtImages[i] = new DxtImage(image.SubImageArray[i].Width, image.SubImageArray[i].Height, format, image.SubImageArray[i].RowPitch, image.SubImageArray[i].SlicePitch, image.SubImageArray[i].Data);
             }
 
             switch (image.Dimension)
@@ -156,7 +158,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                     Export(image, libraryData, (ExportRequest)request);
                     break;
                 case RequestType.Decompressing:
-                    Decompress(image, libraryData);
+                    Decompress(image, libraryData, (DecompressingRequest)request);
                     break;
                 case RequestType.MipMapsGeneration:
                     GenerateMipMaps(image, libraryData, (MipMapsGenerationRequest)request);
@@ -182,7 +184,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <param name="image">The image.</param>
         /// <param name="libraryData">The library data.</param>
         /// <param name="loader">The loader.</param>
-        /// <exception cref="TexLibraryException">Loading dds file failed</exception>
+        /// <exception cref="TextureToolsException">Loading dds file failed</exception>
         private void Load(TexImage image, DxtTextureLibraryData libraryData, LoadingRequest loader)
         {
             Log.Info("Loading " + loader.FilePath + " ...");
@@ -201,6 +203,10 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             }
 
             libraryData.DxtImages = libraryData.Image.GetImages();
+
+            // adapt the image format based on whether input image is sRGB or not
+            var format = (PixelFormat)libraryData.Metadata.format;
+            ChangeDxtImageType(libraryData, (DXGI_FORMAT)(loader.LoadAsSRgb ? format.ToSRgb() : format.ToNonSRgb()));
 
             image.DisposingLibrary = this;
 
@@ -224,6 +230,15 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             UpdateImage(image, libraryData);
         }
 
+        private static void ChangeDxtImageType(DxtTextureLibraryData libraryData, DXGI_FORMAT dxgiFormat)
+        {
+            if(((PixelFormat)libraryData.Metadata.format).SizeInBits() != ((PixelFormat)dxgiFormat).SizeInBits())
+                throw new ArgumentException("Impossible to change image data format. The two formats '{0}' and '{1}' are not compatibles.".ToFormat(libraryData.Metadata.format, dxgiFormat));
+
+            libraryData.Metadata.format = dxgiFormat;
+            for (var i = 0; i < libraryData.DxtImages.Length; ++i)
+                libraryData.DxtImages[i].format = dxgiFormat;
+        }
 
         /// <summary>
         /// Compresses the specified image.
@@ -242,7 +257,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             ScratchImage scratchImage = new ScratchImage();
 
             HRESULT hr;
-            if (Tools.IsCompressed(request.Format))
+            if (request.Format.IsCompressed())
             {
                 var topImage = libraryData.DxtImages[0];
                 if (topImage.width % 4 != 0 || topImage.height % 4 != 0)
@@ -334,18 +349,22 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             UpdateImage(image, libraryData);
         }
 
-
         /// <summary>
         /// Decompresses the specified image.
         /// </summary>
         /// <param name="image">The image.</param>
         /// <param name="libraryData">The library data.</param>
-        /// <exception cref="TexLibraryException">Decompression failed</exception>
-        private void Decompress(TexImage image, DxtTextureLibraryData libraryData)
+        /// <param name="request">The decompression request</param>
+        /// <exception cref="TextureToolsException">Decompression failed</exception>
+        private void Decompress(TexImage image, DxtTextureLibraryData libraryData, DecompressingRequest request)
         {
             Log.Info("Decompressing texture ...");
-            ScratchImage scratchImage = new ScratchImage();
-            HRESULT hr = Utilities.Decompress(libraryData.DxtImages, libraryData.DxtImages.Length, ref libraryData.Metadata, DXGI_FORMAT.DXGI_FORMAT_R8G8B8A8_UNORM, scratchImage);
+
+            // determine the output format to avoid any sRGB/RGB conversions (only decompression, no conversion)
+            var outputFormat = !((PixelFormat)libraryData.Metadata.format).IsSRgb() ? request.DecompressedFormat.ToNonSRgb() : request.DecompressedFormat.ToSRgb();
+
+            var scratchImage = new ScratchImage();
+            var hr = Utilities.Decompress(libraryData.DxtImages, libraryData.DxtImages.Length, ref libraryData.Metadata, (DXGI_FORMAT)outputFormat, scratchImage);
 
             if (hr != HRESULT.S_OK)
             {
@@ -355,11 +374,14 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
             // Freeing Memory
             if (image.DisposingLibrary != null) image.DisposingLibrary.Dispose(image);
-
+            
             libraryData.Image = scratchImage;
             libraryData.DxtImages = libraryData.Image.GetImages();
             libraryData.Metadata = libraryData.Image.metadata;
             image.DisposingLibrary = this;
+
+            // adapt the image format based on desired output format
+            ChangeDxtImageType(libraryData, (DXGI_FORMAT)request.DecompressedFormat);
 
             UpdateImage(image, libraryData);
         }
@@ -451,7 +473,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             if (request.MinimumMipMapSize > 1 && request.MinimumMipMapSize <= libraryData.Metadata.width && request.MinimumMipMapSize <= libraryData.Metadata.height) // if a mimimun mipmap size was requested
             {
                 TexMetadata metadata = libraryData.Metadata;
-                Image[] dxtImages;
+                DxtImage[] dxtImages;
 
                 if (image.Dimension == TexImage.TextureDimension.Texture3D)
                 {
@@ -477,7 +499,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
                     // Initializing library native data according to the new mipmap level
                     metadata.mipLevels = newMipMapCount;
-                    dxtImages = new Image[metadata.arraySize * ct];
+                    dxtImages = new DxtImage[metadata.arraySize * ct];
 
                     int ct2 = 0;
                     for (int i = 0; i < image.ArraySize; ++i)
@@ -503,7 +525,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
     
                     // Initializing library native data according to the new mipmap level
                     metadata.mipLevels = newMipMapCount;
-                    dxtImages = new Image[metadata.arraySize * newMipMapCount];
+                    dxtImages = new DxtImage[metadata.arraySize * newMipMapCount];
 
                     // Assigning the right sub images for the texture to be exported (no need for memory to be adjacent)
                     int gap = libraryData.Metadata.mipLevels - newMipMapCount;
@@ -649,7 +671,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             image.Height = libraryData.Metadata.height;
             image.Depth = libraryData.Metadata.depth;
             image.RowPitch = libraryData.DxtImages[0].rowPitch;
-            image.Format = (SiliconStudio.Paradox.Graphics.PixelFormat) libraryData.Metadata.format;
+            image.Format = (PixelFormat) libraryData.Metadata.format;
             image.MipmapCount = libraryData.Metadata.mipLevels;
             image.ArraySize = libraryData.Metadata.arraySize;
             image.SlicePitch = libraryData.DxtImages[0].slicePitch;

@@ -45,7 +45,7 @@ namespace SiliconStudio.Paradox.EntityModel
             foreach (var currentEntity in ParameterContainerExtensions.CollectEntityTree(entity))
             {
                 clonedObjects.Add(currentEntity);
-                foreach (var component in currentEntity.Tags.Where(x => x.Value is EntityComponent))
+                foreach (var component in currentEntity.Components.Where(x => x.Value is EntityComponent))
                 {
                     clonedObjects.Add(component.Value);
                 }
@@ -74,7 +74,6 @@ namespace SiliconStudio.Paradox.EntityModel
                 cloneSerializerSelector
                     .RegisterProfile("Default")
                     .RegisterProfile("Clone")
-                    .RegisterSerializer(new EntitySerializer())
                     .RegisterSerializer(new CloneSerializer<string>())
                     .RegisterSerializer(new CloneSerializer<Effect>())
                     .RegisterSerializer(new CloneSerializer<Mesh>())
@@ -156,7 +155,7 @@ namespace SiliconStudio.Paradox.EntityModel
             public readonly List<object> SharedObjects = new List<object>();
 
             /// <summary>
-            /// Special serializer that goes through <see cref="EntitySerializerSelector"/> and <see cref="EntityComponentSerializer{T}"/>.
+            /// Special serializer that goes through <see cref="EntitySerializerSelector"/> and <see cref="CloneEntityComponentSerializer{T}"/>.
             /// </summary>
             public SerializerSelector EntitySerializerSelector;
         }

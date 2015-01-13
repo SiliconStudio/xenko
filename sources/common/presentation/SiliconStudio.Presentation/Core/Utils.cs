@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace SiliconStudio.Presentation.Core
 {
@@ -69,6 +70,11 @@ namespace SiliconStudio.Presentation.Core
                 result = string.Format(namePattern, baseName, ++counter);
             }
             return result;
+        }
+
+        public static string SplitCamelCase(string input)
+        {
+            return Regex.Replace(input, "([a-z](?=[A-Z])|[A-Z](?=[A-Z][a-z]))", "$1 ");
         }
     }
 }

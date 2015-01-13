@@ -577,12 +577,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>CubemapUtils.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Data\EffectsData.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>EffectsData.pdxdata</DependentUpon>
-    </Compile>
     <Compile Include="Deferred\EnvironmentMapDiffuseDeferredShading.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -792,6 +786,15 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Images\ColorTransforms\ToneMap\ToneMap.cs" />
+    <Compile Include="Pipelines\CompositePipelineBuilder.cs" />
+    <Compile Include="Pipelines\DeferredPipelineBuilder.cs" />   
+    <Compile Include="Pipelines\ForwardPipelineBuilder.cs" />
+    <Compile Include="Pipelines\LambdaPipelineBuilder.cs" />
+    <Compile Include="Pipelines\LightingPipelineBuilder.cs" />
+    <Compile Include="Pipelines\MainPipelineBuilder.cs" />
+    <Compile Include="Pipelines\PipelineBuilder.cs" />
+    <Compile Include="Pipelines\PipelineBuilders.cs" />
+    <Compile Include="Pipelines\SimpleRendererPipelineBuilder.cs" />
     <Compile Include="Materials\MaterialSurfaceBlendShading.cs">
       <DependentUpon>MaterialSurfaceBlendShading.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -2028,10 +2031,6 @@
     <None Include="Cubemap\CubemapUtils.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CubemapUtils.cs</LastGenOutput>
-    </None>
-    <None Include="Data\EffectsData.pdxdata">
-      <Generator>ParadoxDataCodeGenerator</Generator>
-      <LastGenOutput>EffectsData.cs</LastGenOutput>
     </None>
     <None Include="Deferred\EnvironmentMapDiffuseDeferredShading.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

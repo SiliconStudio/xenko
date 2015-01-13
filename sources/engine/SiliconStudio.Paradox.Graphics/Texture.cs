@@ -27,9 +27,9 @@ using System.IO;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.ReferenceCounting;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Core.Serialization.Converters;
-
+using SiliconStudio.Paradox.Graphics.Data;
 using Utilities = SiliconStudio.Core.Utilities;
 
 namespace SiliconStudio.Paradox.Graphics
@@ -37,9 +37,10 @@ namespace SiliconStudio.Paradox.Graphics
     /// <summary>
     /// Class used for all Textures (1D, 2D, 3D, DepthStencil, RenderTargets...etc.)
     /// </summary>
-    [ContentSerializer]
-    [DataConverter(AutoGenerate = false, ContentReference = true, DataType = false)]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<Texture>), Profile = "Asset")]
+    [ContentSerializer(typeof(DataContentSerializer<Texture>))]
     [DebuggerDisplay("Texture {ViewWidth}x{ViewHeight}x{ViewDepth} {Format} ({ViewFlags})")]
+    [DataSerializer(typeof(TextureSerializer))]
     public sealed partial class Texture : GraphicsResource
     {
         internal const int DepthStencilReadOnlyFlags = 16;
@@ -376,7 +377,7 @@ namespace SiliconStudio.Paradox.Graphics
 
         private MipMapDescription[] mipmapDescriptions;
 
-        internal Texture()
+        public Texture()
         {
         }
 

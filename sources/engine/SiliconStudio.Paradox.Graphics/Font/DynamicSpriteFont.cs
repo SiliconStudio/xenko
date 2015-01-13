@@ -6,14 +6,13 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Core.Serialization.Converters;
 
 namespace SiliconStudio.Paradox.Graphics.Font
 {
     /// <summary>
     /// A dynamic font. That is a font that generate its character bitmaps at execution.
     /// </summary>
-    [ContentSerializer(typeof(DataContentConverterSerializer<DynamicSpriteFont>))]
+    [ContentSerializer(typeof(DataContentSerializer<DynamicSpriteFont>))]
     internal class DynamicSpriteFont : SpriteFont
     {
         /// <summary>

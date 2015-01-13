@@ -111,6 +111,20 @@ namespace SiliconStudio.Assets.Analysis
                         return reference;
                     });
                 }
+                else
+                {
+                    var attachedReference = AttachedReferenceManager.GetAttachedReference(obj);
+                    if (attachedReference != null)
+                    {
+                        AddLink(obj, (guid, location) =>
+                        {
+                            if (guid.HasValue)
+                                attachedReference.Id = guid.Value;
+                            attachedReference.Url = location;
+                            return attachedReference;
+                        });
+                    }
+                }
             }
 
             public override void VisitArrayItem(Array array, ArrayDescriptor descriptor, int index, object item, ITypeDescriptor itemDescriptor)

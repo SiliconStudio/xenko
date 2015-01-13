@@ -32,7 +32,7 @@ namespace SiliconStudio.Core.Mathematics
     /// </summary>
     [DataContract("Size2F")]
     [DataStyle(DataStyle.Compact)]
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct Size2F : IEquatable<Size2F>
     {
         /// <summary>

@@ -18,8 +18,8 @@ namespace SiliconStudio.Core.Serialization.Assets
 
         public AssetSerializer()
         {
-            LowLevelSerializerSelector = SerializerSelector.Default;
-            LowLevelSerializerSelectorWithReuse = SerializerSelector.DefaultWithReuse;
+            LowLevelSerializerSelector = SerializerSelector.Asset;
+            LowLevelSerializerSelectorWithReuse = SerializerSelector.AssetWithReuse;
         }
 
         /// <summary>

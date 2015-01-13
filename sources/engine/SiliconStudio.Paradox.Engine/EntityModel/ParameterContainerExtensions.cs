@@ -39,7 +39,8 @@ namespace SiliconStudio.Paradox.EntityModel
         static ParameterContainerExtensions()
         {
             DefaultSceneSerializerSelector = new SerializerSelector()
-                .RegisterProfile("Default");
+                .RegisterProfile("Default")
+                .RegisterProfile("Asset");
         }
 
         public static HashSet<Entity> CollectEntityTree(Entity entity)

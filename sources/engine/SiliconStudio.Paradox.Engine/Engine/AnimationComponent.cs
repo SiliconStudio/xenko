@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
@@ -20,12 +19,13 @@ namespace SiliconStudio.Paradox.Engine
     /// <remarks>
     /// Data is stored as in http://altdevblogaday.com/2011/10/23/low-level-animation-part-2/.
     /// </remarks>
-    [DataConverter(AutoGenerate = true, ContentReference = true)]
     [DataContract("AnimationComponent")]
     public sealed class AnimationComponent : EntityComponent
     {
         private readonly Dictionary<string, AnimationClip> animations;
         private readonly TrackingCollection<PlayingAnimation> playingAnimations;
+
+        [DataMemberIgnore]
         internal AnimationBlender Blender = new AnimationBlender();
 
         public static PropertyKey<AnimationComponent> Key = new PropertyKey<AnimationComponent>("Key", typeof(AnimationComponent));
@@ -51,7 +51,6 @@ namespace SiliconStudio.Paradox.Engine
             }
         }
 
-        [DataMemberConvert]
         public Dictionary<string, AnimationClip> Animations
         {
             get { return animations; }

@@ -40,6 +40,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// The shader used in this node. It should be a ComputeColor.
         /// </userdoc>
         [DataMember(10)]
+        [MaterialNodeValuePropertyAttribute]
         public AssetReference<EffectShaderAsset> MixinReference
         {
             get
@@ -336,9 +337,9 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
             Members = newMembers;
         }
 
-        public ParameterCollectionData GetParameters(object context)
+        public ParameterCollection GetParameters(object context)
         {
-            var collection = new ParameterCollectionData();
+            var collection = new ParameterCollection();
 
             if (MixinReference != null)
             {
@@ -388,12 +389,14 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
                         {
                             var textureNode = ((ComputeColorParameterTexture)keyValue.Value).Texture;
                             if (textureNode != null)
-                                AddToCollection<Graphics.Texture>(keyValue.Key, textureNode, collection);
+                                throw new NotImplementedException();
+                                //AddToCollection<Graphics.Texture>(keyValue.Key, textureNode, collection);
                         }
                     }
                     else if (expectedType == typeof(ComputeColorParameterSampler))
                     {
-                        AddToCollection<Graphics.SamplerState>(keyValue.Key, keyValue.Value, collection);
+                        throw new NotImplementedException();
+                        //AddToCollection<Graphics.SamplerState>(keyValue.Key, keyValue.Value, collection);
                     }
                 }
             }
@@ -496,7 +499,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// <param name="key">The key of the variable.</param>
         /// <param name="value"></param>
         /// <param name="collection"></param>
-        private void AddToCollection<T>(ParameterKey key, object value, ParameterCollectionData collection)
+        private void AddToCollection<T>(ParameterKey key, T value, ParameterCollection collection)
         {
             var pk = key as ParameterKey<T>;
             if (pk != null)

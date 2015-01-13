@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
 using SiliconStudio.Core.Storage;
 

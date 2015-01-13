@@ -17,6 +17,7 @@ Profiles:
         - Path: sources/shaders
         - Path: sources/engine/SiliconStudio.Paradox.Engine/Shaders
         - Path: sources/engine/SiliconStudio.Paradox.Graphics/Shaders
+        - Path: sources/editor/SiliconStudio.Paradox.Assets.Presentation/Shaders
 TemplateFolders:
     - Path: sources/editor/SiliconStudio.Paradox.Assets.Presentation/Templates
       Group: Core

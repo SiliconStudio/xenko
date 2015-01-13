@@ -39,6 +39,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// The default value.
         /// </userdoc>
         [DataMember(20)]
+        [MaterialNodeValuePropertyAttribute]
         public T Value
         {
             get

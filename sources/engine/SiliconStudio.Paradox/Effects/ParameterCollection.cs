@@ -10,7 +10,6 @@ using System.Text;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.ReferenceCounting;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Serialization.Serializers;
@@ -20,7 +19,6 @@ namespace SiliconStudio.Paradox.Effects
     /// <summary>
     /// A container to handle a hierarchical collection of effect variables.
     /// </summary>
-    [DataConverter(AutoGenerate = false)]
     [DataSerializer(typeof(Data.ParameterCollectionSerializer))]
     [DebuggerTypeProxy(typeof(CollectionDebugView))]
     [DebuggerDisplay("Count = {Count}")]
@@ -70,11 +68,13 @@ namespace SiliconStudio.Paradox.Effects
         internal event OnUpdateValueDelegate OnUpdateValue;
         internal event OnUpdateValueDelegate OnInternalValueChange;
 
+        [DataMemberIgnore]
         public string Name { get; set; }
 
         /// <summary>
         /// Gets the sources for this collection.
         /// </summary>
+        [DataMemberIgnore]
         public IParameterCollectionInheritance[] Sources
         {
             get { return sources.ToArray(); }
@@ -83,6 +83,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <summary>
         /// Gets the dynamic values.
         /// </summary>
+        [DataMemberIgnore]
         public IEnumerable<ParameterDynamicValue> DynamicValues
         {
             get

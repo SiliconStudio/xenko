@@ -7,6 +7,7 @@ using SiliconStudio.Paradox.Effects.Data;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics.Data;
 
 namespace SiliconStudio.Paradox.Extensions
@@ -17,7 +18,7 @@ namespace SiliconStudio.Paradox.Extensions
         /// Generates an index buffer for this mesh data.
         /// </summary>
         /// <param name="meshData">The mesh data.</param>
-        public unsafe static void GenerateIndexBuffer(this MeshDrawData meshData)
+        public unsafe static void GenerateIndexBuffer(this MeshDraw meshData)
         {
             // For now, require a MeshData with only one vertex buffer and no index buffer
             if (meshData.VertexBuffers.Length != 1 || meshData.IndexBuffer != null)
@@ -30,7 +31,7 @@ namespace SiliconStudio.Paradox.Extensions
 
             // Generate vertex buffer
             var vertexBufferData = new byte[oldVertexBuffer.Declaration.VertexStride * indexMapping.Vertices.Length];
-            fixed (byte* oldVertexBufferDataStart = &oldVertexBuffer.Buffer.Value.Content[oldVertexBuffer.Offset])
+            fixed (byte* oldVertexBufferDataStart = &oldVertexBuffer.Buffer.GetSerializationData().Content[oldVertexBuffer.Offset])
             fixed (byte* vertexBufferDataStart = &vertexBufferData[0])
             {
                 var vertexBufferDataCurrent = vertexBufferDataStart;
@@ -39,7 +40,7 @@ namespace SiliconStudio.Paradox.Extensions
                     Utilities.CopyMemory((IntPtr)vertexBufferDataCurrent, new IntPtr(&oldVertexBufferDataStart[vertexStride * vertices[i]]), vertexStride);
                     vertexBufferDataCurrent += vertexStride;
                 }
-                meshData.VertexBuffers[0] = new VertexBufferBindingData(new BufferData(BufferFlags.VertexBuffer, vertexBufferData), oldVertexBuffer.Declaration, indexMapping.Vertices.Length);
+                meshData.VertexBuffers[0] = new VertexBufferBinding(new BufferData(BufferFlags.VertexBuffer, vertexBufferData).ToSerializableVersion(), oldVertexBuffer.Declaration, indexMapping.Vertices.Length);
             }
 
             // Generate index buffer
@@ -48,7 +49,7 @@ namespace SiliconStudio.Paradox.Extensions
             fixed (byte* indexBufferDataStart = &indexBufferData[0])
             {
                 Utilities.CopyMemory((IntPtr)indexBufferDataStart, (IntPtr)indexDataStart, indexBufferData.Length);
-                meshData.IndexBuffer = new IndexBufferBindingData(new BufferData(BufferFlags.IndexBuffer, indexBufferData), true, indexMapping.Indices.Length);
+                meshData.IndexBuffer = new IndexBufferBinding(new BufferData(BufferFlags.IndexBuffer, indexBufferData).ToSerializableVersion(), true, indexMapping.Indices.Length);
             }
         }
 
@@ -58,7 +59,7 @@ namespace SiliconStudio.Paradox.Extensions
         /// <param name="meshData">The mesh data.</param>
         /// <returns>Returns true if index buffer was actually compacted.</returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public static unsafe bool CompactIndexBuffer(this MeshDrawData meshData)
+        public static unsafe bool CompactIndexBuffer(this MeshDraw meshData)
         {
             // Already processed?
             if (meshData.IndexBuffer == null || !meshData.IndexBuffer.Is32Bit)
@@ -79,7 +80,7 @@ namespace SiliconStudio.Paradox.Extensions
             // Create new index buffer
             var indexCount = meshData.IndexBuffer.Count;
             var indexBufferData = new byte[indexCount * Utilities.SizeOf<ushort>()];
-            fixed (byte* oldIndexBufferDataStart = &meshData.IndexBuffer.Buffer.Value.Content[0])
+            fixed (byte* oldIndexBufferDataStart = &meshData.IndexBuffer.Buffer.GetSerializationData().Content[0])
             fixed (byte* indexBufferDataStart = &indexBufferData[0])
             {
                 var oldIndexBufferDataPtr = (int*)oldIndexBufferDataStart;
@@ -91,7 +92,7 @@ namespace SiliconStudio.Paradox.Extensions
                     *indexBufferDataPtr++ = (ushort)*oldIndexBufferDataPtr++;
                 }
 
-                meshData.IndexBuffer = new IndexBufferBindingData(new BufferData(BufferFlags.IndexBuffer, indexBufferData), false, indexCount);
+                meshData.IndexBuffer = new IndexBufferBinding(new BufferData(BufferFlags.IndexBuffer, indexBufferData).ToSerializableVersion(), false, indexCount);
             }
 
             return true;
@@ -103,7 +104,7 @@ namespace SiliconStudio.Paradox.Extensions
         /// 3 to 8 being dominant edges and 9 to 11 being dominant vertices.
         /// </summary>
         /// <param name="meshData">The mesh data.</param>
-        public static unsafe void GenerateIndexBufferAEN(this MeshDrawData meshData)
+        public static unsafe void GenerateIndexBufferAEN(this MeshDraw meshData)
         {
             // For now, require a MeshData with only one vertex buffer and one index buffer
             if (meshData.VertexBuffers.Length != 1 || meshData.IndexBuffer == null)
@@ -120,7 +121,7 @@ namespace SiliconStudio.Paradox.Extensions
             var dominantEdges = new Dictionary<EdgeKeyAEN, EdgeAEN>();
             var dominantVertices = new Dictionary<int, int>();
 
-            fixed (byte* indexBufferStart = &indexBuffer.Buffer.Value.Content[indexBuffer.Offset])
+            fixed (byte* indexBufferStart = &indexBuffer.Buffer.GetSerializationData().Content[indexBuffer.Offset])
             {
                 var oldIndices = (int*)indexBufferStart;
                 var triangleIndices = stackalloc int[3];
@@ -206,7 +207,7 @@ namespace SiliconStudio.Paradox.Extensions
             fixed (byte* indexBufferDataStart = &indexBufferData[0])
             {
                 Utilities.CopyMemory((IntPtr)indexBufferDataStart, (IntPtr)indexDataStart, indexBufferData.Length);
-                meshData.IndexBuffer = new IndexBufferBindingData(new BufferData(BufferFlags.IndexBuffer, indexBufferData), true, triangleCount * 12);
+                meshData.IndexBuffer = new IndexBufferBinding(new BufferData(BufferFlags.IndexBuffer, indexBufferData).ToSerializableVersion(), true, triangleCount * 12);
             }
 
             meshData.DrawCount = triangleCount * 12;
@@ -266,9 +267,9 @@ namespace SiliconStudio.Paradox.Extensions
         /// <param name="vertexBufferBinding">The vertex buffer binding.</param>
         /// <param name="usages">The vertex element usages to consider.</param>
         /// <returns></returns>
-        public static unsafe IndexMappingResult GenerateIndexMapping(this VertexBufferBindingData vertexBufferBinding, params string[] usages)
+        public static unsafe IndexMappingResult GenerateIndexMapping(this VertexBufferBinding vertexBufferBinding, params string[] usages)
         {
-            var bufferData = vertexBufferBinding.Buffer.Value.Content;
+            var bufferData = vertexBufferBinding.Buffer.GetSerializationData().Content;
             var vertexStride = vertexBufferBinding.Declaration.VertexStride;
             var vertexCount = vertexBufferBinding.Count;
             var activeBytes = stackalloc byte[vertexStride];

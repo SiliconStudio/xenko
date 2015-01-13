@@ -31,14 +31,26 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="bufferFlags">Type of the buffer.</param>
         /// <param name="viewFormat">The view format.</param>
         /// <param name="dataPointer">The data pointer.</param>
-        protected Buffer(GraphicsDevice device, BufferDescription description, BufferFlags bufferFlags, PixelFormat viewFormat, IntPtr dataPointer)
-            : base(device)
+        protected Buffer(GraphicsDevice device) : base(device)
         {
-            Description = description;
-            BufferFlags = bufferFlags;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Buffer" /> class.
+        /// </summary>
+        /// <param name="description">The description.</param>
+        /// <param name="viewFlags">Type of the buffer.</param>
+        /// <param name="viewFormat">The view format.</param>
+        /// <param name="dataPointer">The data pointer.</param>
+        private Buffer InitializeFromImpl(BufferDescription description, BufferFlags viewFlags, PixelFormat viewFormat, IntPtr dataPointer)
+        {
+            bufferDescription = description;
+            ViewFlags = viewFlags;
             ViewFormat = viewFormat;
 
             Recreate(dataPointer);
+
+            return this;
         }
 
         public void Recreate(IntPtr dataPointer)
@@ -153,4 +165,4 @@ namespace SiliconStudio.Paradox.Graphics
         }
     }
 } 
-#endif 
+#endif

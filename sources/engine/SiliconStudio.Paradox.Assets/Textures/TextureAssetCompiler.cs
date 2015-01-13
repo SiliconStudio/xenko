@@ -58,7 +58,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
             {
                 var texture = asset.Texture;
 
-                var importResult = TextureCommandHelper.ImportAndSaveTextureImage(asset.SourcePathFromDisk, Url, texture, asset, asset.SeparateAlpha, CancellationToken, commandContext.Logger);
+                var importResult = TextureCommandHelper.ImportAndSaveTextureImage(asset.SourcePathFromDisk, Url, texture, asset, CancellationToken, commandContext.Logger);
 
                 return Task.FromResult(importResult);
             }

@@ -2,11 +2,12 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows.Input;
 
 namespace SiliconStudio.Presentation.Quantum
 {
-    public interface IObservableNode
+    public interface IObservableNode : INotifyPropertyChanging, INotifyPropertyChanged
     {
         /// <summary>
         /// Gets the <see cref="ObservableViewModel"/> that owns this node.

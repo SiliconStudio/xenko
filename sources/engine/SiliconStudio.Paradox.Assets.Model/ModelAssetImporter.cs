@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
@@ -14,13 +13,11 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Assets.Materials;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
+using SiliconStudio.Paradox.Assets.Model.Analysis;
 using SiliconStudio.Paradox.Assets.Textures;
-using SiliconStudio.Paradox.Data;
 using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Data;
 using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Engine.Data;
-using SiliconStudio.Paradox.EntityModel.Data;
+using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Importer.Common;
 
 namespace SiliconStudio.Paradox.Assets.Model
@@ -31,14 +28,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 
         public override AssetImporterParameters GetDefaultParameters(bool isForReImport)
         {
-            var parameters = new AssetImporterParameters(supportedTypes);
-
-            // When we are reimporting, we don't want the asset to be reimported by default
-            if (isForReImport)
-            {
-                parameters.SelectedOutputTypes[typeof(EntityAsset)] = false;
-            }
-            return parameters;
+            return new AssetImporterParameters(supportedTypes);
         }
 
         /// <summary>
@@ -103,112 +93,100 @@ namespace SiliconStudio.Paradox.Assets.Model
                 // 4. Entity
                 if (isImportingEntity)
                 {
-                    var entityAsset = ImportEntity(assetReferences, localPath, modelItem, entityInfo);
+                    var entityAssetItem = ImportEntity(assetReferences, localPath, modelItem);
+                    var entityAsset = (EntityAsset)entityAssetItem.Asset;
+                    var rootEntityData = entityAsset.Hierarchy.Entities[entityAsset.Hierarchy.RootEntity];
 
                     // 5. Camera
                     if (isImportingCamera)
-                        ImportCameras(assetReferences, localPath, entityInfo, entityAsset, modelItem);
+                        ImportCameras(entityInfo, entityAsset, rootEntityData, (ModelAsset)modelItem.Asset);
 
                     // 6. Lights
                     if (isImportingLight)
-                        ImportLights(assetReferences, localPath, entityInfo, entityAsset, modelItem);
+                        ImportLights(entityInfo, entityAsset, rootEntityData, (ModelAsset)modelItem.Asset);
+
+                    // Apply EntityAnalysis 
+                    EntityAnalysis.UpdateEntityReferences(((EntityAsset)entityAssetItem.Asset).Hierarchy);
                 }
             }
 
             return assetReferences;
         }
 
-        private static void ImportLights(List<AssetItem> assetReferences, UFile localPath, EntityInfo entityInfo, AssetItem entityAsset, AssetItem modelAsset)
+        private static void ImportLights(EntityInfo entityInfo, EntityAsset entityAsset, Entity rootEntityData, ModelAsset modelAsset)
         {
             if (entityInfo.Lights == null)
                 return;
 
             foreach (var light in entityInfo.Lights)
             {
-                var lightUrl = new UFile(localPath.GetFileName() + "_light_" + light.NodeName, null);
-
-                var cameraEntityAsset = CreateTrackingEntity(entityAsset, modelAsset, lightUrl, light.NodeName);
-                ((EntityAsset)cameraEntityAsset.Asset).Data.Components.Add(LightComponent.Key, light.Data);
-
-                assetReferences.Add(cameraEntityAsset);
+                var cameraEntityAsset = CreateTrackingEntity(entityAsset, rootEntityData, modelAsset, light.NodeName);
+                cameraEntityAsset.Add(LightComponent.Key, light.Data);
             }
         }
 
-        private static void ImportCameras(List<AssetItem> assetReferences, UFile localPath, EntityInfo entityInfo, AssetItem entityAsset, AssetItem modelAsset)
+        private static void ImportCameras(EntityInfo entityInfo, EntityAsset entityAsset, Entity rootEntityData, ModelAsset modelAsset)
         {
             if (entityInfo.Cameras == null)
                 return;
 
             foreach (var camera in entityInfo.Cameras)
             {
-                var cameraUrl = new UFile(localPath.GetFileName() + "_camera_" + camera.NodeName, null);
-
-                var cameraEntityAsset = CreateTrackingEntity(entityAsset, modelAsset, cameraUrl, camera.NodeName);
-                ((EntityAsset)cameraEntityAsset.Asset).Data.Components.Add(CameraComponent.Key, camera.Data);
+                var cameraEntityAsset = CreateTrackingEntity(entityAsset, rootEntityData, modelAsset, camera.NodeName);
+                cameraEntityAsset.Add(CameraComponent.Key, camera.Data);
 
                 if (camera.TargetNodeName != null)
                 {
                     // We have a target, create an entity for it
-                    var cameraTargetUrl = new UFile(localPath.GetFileName() + "_cameratarget_" + camera.TargetNodeName, null);
-                    var cameraTargetEntityAsset = CreateTrackingEntity(entityAsset, modelAsset, cameraTargetUrl, camera.TargetNodeName);
+                    var cameraTargetEntityAsset = CreateTrackingEntity(entityAsset, rootEntityData, modelAsset, camera.TargetNodeName);
 
                     // Update target
-                    camera.Data.Target = new ContentReference<EntityData>(cameraTargetEntityAsset.Id, cameraTargetEntityAsset.Location);
-
-                    assetReferences.Add(cameraTargetEntityAsset);
+                    camera.Data.Target = cameraTargetEntityAsset;
                 }
-
-                assetReferences.Add(cameraEntityAsset);
             }
         }
 
-        private static AssetItem CreateTrackingEntity(AssetItem rootEntityAsset, AssetItem modelAsset, UFile cameraUrl, string nodeName)
+        private static Entity CreateTrackingEntity(EntityAsset entityAsset, Entity rootEntityAsset, ModelAsset modelAsset, string nodeName)
         {
-            var entity = new EntityData { Name = nodeName };
+            var childEntity = new Entity { Name = nodeName };
 
             // Add TransformationComponent
-            entity.Components.Add(TransformationComponent.Key, new TransformationComponentData());
-
+            childEntity.Add(TransformationComponent.Key, new TransformationComponent());
 
             // Add ModelNodeLinkComponent
-            entity.Components.Add(ModelNodeLinkComponent.Key, new ModelNodeLinkComponentData
+            childEntity.Add(ModelNodeLinkComponent.Key, new ModelNodeLinkComponent
             {
                 NodeName = nodeName,
-                Target = EntityComponentReference.New(rootEntityAsset.Id, rootEntityAsset.Location, ModelComponent.Key),
+                Target = rootEntityAsset.Get(ModelComponent.Key),
             });
 
-            var asset = new EntityAsset { Data = entity };
-            var entityAsset = new AssetItem(cameraUrl, asset);
-
-            var parentEntity = (EntityAsset)rootEntityAsset.Asset;
+            // Add this asset to the list
+            entityAsset.Hierarchy.Entities.Add(childEntity);
 
             // Get or create transformation component
-            EntityComponentData entityComponentData;
-            if (!parentEntity.Data.Components.TryGetValue(TransformationComponent.Key, out entityComponentData))
-            {
-                entityComponentData = new TransformationComponentData();
-                parentEntity.Data.Components.Add(TransformationComponent.Key, entityComponentData);
-            }
+            var transformationComponent = rootEntityAsset.GetOrCreate(TransformationComponent.Key);
 
             // Mark node as preserved
-            ((ModelAsset)modelAsset.Asset).PreserveNodes(new List<string> { nodeName });
+            modelAsset.PreserveNodes(new List<string> { nodeName });
 
             // Add as children of model entity
-            ((TransformationComponentData)entityComponentData).Children.Add(
-                EntityComponentReference.New(entityAsset.Id, entityAsset.Location, TransformationComponent.Key));
+            transformationComponent.Children.Add(childEntity.GetOrCreate(TransformationComponent.Key));
 
-
-            return entityAsset;
+            return childEntity;
         }
 
-        private static AssetItem ImportEntity(List<AssetItem> assetReferences, UFile localPath, AssetItem modelItem, EntityInfo entityInfo)
+        private static AssetItem ImportEntity(List<AssetItem> assetReferences, UFile localPath, AssetItem modelItem)
         {
             var entityUrl = new UFile(localPath.GetFileName(), null);
 
-            var asset = new EntityAsset();
-            asset.Data.Name = entityUrl;
+            var asset = new EntityAsset { Source = localPath };
+            var rootEntityData = new Entity();
+            asset.Hierarchy.Entities.Add(rootEntityData);
+            asset.Hierarchy.RootEntity = rootEntityData.Id;
+
+            rootEntityData.Name = entityUrl;
             // Use modelUrl.Path to get the url without the extension
-            asset.Data.Components.Add(ModelComponent.Key, new ModelComponentData { Model = new ContentReference<ModelData>(modelItem.Id, modelItem.Location), Enabled = true });
+            rootEntityData.Add(ModelComponent.Key, new ModelComponent { Model = AttachedReferenceManager.CreateSerializableVersion<Effects.Model>(modelItem.Id, modelItem.Location), Enabled = true });
 
             var assetReference = new AssetItem(entityUrl, asset);
             assetReferences.Add(assetReference);
@@ -237,19 +215,12 @@ namespace SiliconStudio.Paradox.Assets.Model
             if (entityInfo.Models != null)
             {
                 var loadedMaterials = assetReferences.Where(x => x.Asset is MaterialAsset).ToList();
-                foreach (var model in entityInfo.Models)
+                foreach (var material in entityInfo.Materials)
                 {
-                    var meshParams = new MeshMaterialParameters { Parameters = model.Parameters, NodeName = model.NodeName };
-
-                    var matId = model.MaterialName;
-                    var matName = GenerateFinalMaterialName(localPath, matId);
+                    var matName = GenerateFinalMaterialName(localPath, material.Key);
                     var foundMaterial = loadedMaterials.FirstOrDefault(x => x.Location == new UFile(matName, null));
                     if (foundMaterial != null)
-                    {
-                        var matReference = new AssetReference<MaterialAsset>(foundMaterial.Id, foundMaterial.Location);
-                        meshParams.Material = matReference;
-                    }
-                    asset.MeshParameters.Add(model.MeshName, meshParams);
+                        asset.Materials.Add(new ModelMaterial { Name = material.Key, Material = new AssetReference<MaterialAsset>(foundMaterial.Id, foundMaterial.Location) });
                 }
             }
 

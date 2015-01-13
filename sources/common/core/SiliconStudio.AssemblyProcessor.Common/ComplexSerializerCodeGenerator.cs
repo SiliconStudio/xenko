@@ -14,7 +14,7 @@ namespace SiliconStudio.AssemblyProcessor
     using System.Reflection;
     using System.Collections.Generic;
     using Mono.Cecil;
-    using SiliconStudio.Core.Serialization.Serializers;
+    using SiliconStudio.Core.Serialization;
     using System;
     
     /// <summary>

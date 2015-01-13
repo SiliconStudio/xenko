@@ -3,10 +3,15 @@
 /// <summary>
 /// Helper class to get the specular power.
 /// </summary>
+
+#ifndef SPECULAR_POWER_SCALE
+# define SPECULAR_POWER_SCALE 13
+#endif
+
 class SpecularPowerBase
 {
     float ScaleSpecularPower(float value) { 
-        return pow(2.0f, 1.0f + value * 13);
+        return exp2(1.0f + value * SPECULAR_POWER_SCALE);
     }
 
     float SpecularPowerValue() { 

@@ -1,11 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
+
 using System.IO;
 using System.Collections.Generic;
 
 using NUnit.Framework;
-using SiliconStudio.TextureConverter;
 
 namespace SiliconStudio.TextureConverter.Tests
 {
@@ -36,7 +35,7 @@ namespace SiliconStudio.TextureConverter.Tests
             Assert.IsTrue(img.Width == 512);
             Assert.IsTrue(img.Height == 512);
             Assert.IsTrue(img.Depth == 1);
-            Assert.IsTrue(img.Format == SiliconStudio.Paradox.Graphics.PixelFormat.B8G8R8A8_UNorm);
+            Assert.IsTrue(img.Format == Paradox.Graphics.PixelFormat.B8G8R8A8_UNorm);
             img.Dispose();
 
             try
@@ -58,7 +57,7 @@ namespace SiliconStudio.TextureConverter.Tests
 
             // ------------------- Test with BC3 image -------------------
             img = texTool.Load(TestTools.InputTestFolder + "TextureArray_WMipMaps_BC3.dds");
-            Assert.IsTrue(img.Format == SiliconStudio.Paradox.Graphics.PixelFormat.BC3_UNorm);
+            Assert.IsTrue(img.Format == Paradox.Graphics.PixelFormat.BC3_UNorm);
             mipmapCount = img.MipmapCount;
             arraySize = img.ArraySize;
             width = img.Width;
@@ -66,8 +65,8 @@ namespace SiliconStudio.TextureConverter.Tests
             depth = img.Depth;
             subImageArrayLenght = img.SubImageArray.Length;
 
-            texTool.Decompress(img);
-            Assert.IsTrue(img.Format == SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm);
+            texTool.Decompress(img, false);
+            Assert.IsTrue(img.Format == Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm);
             Assert.IsTrue(mipmapCount == img.MipmapCount);
             Assert.IsTrue(arraySize == img.ArraySize);
             Assert.IsTrue(width == img.Width);
@@ -80,8 +79,8 @@ namespace SiliconStudio.TextureConverter.Tests
 
             // ------------------- Test with uncompress image -------------------
             img = texTool.Load(TestTools.InputTestFolder + "stones.png");
-            texTool.Decompress(img);
-            Assert.IsTrue(img.Format == SiliconStudio.Paradox.Graphics.PixelFormat.B8G8R8A8_UNorm); //FITexLibrary loads image in BGRA order...
+            texTool.Decompress(img, false);
+            Assert.IsTrue(img.Format == Paradox.Graphics.PixelFormat.B8G8R8A8_UNorm); //FITexLibrary loads image in BGRA order...
             img.Dispose();
         }
 
@@ -117,11 +116,11 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [TestCase("stones.png", SiliconStudio.Paradox.Graphics.PixelFormat.BC3_UNorm)]
-        [TestCase("stones.png", SiliconStudio.Paradox.Graphics.PixelFormat.PVRTC_II_4bpp)]
-        [TestCase("TextureArray_WMipMaps_BC3.dds", SiliconStudio.Paradox.Graphics.PixelFormat.PVRTC_II_4bpp)]
-        [TestCase("TextureArray_WMipMaps_BC3.dds", SiliconStudio.Paradox.Graphics.PixelFormat.BC3_UNorm)]
-        public void CompressTest(string filename, SiliconStudio.Paradox.Graphics.PixelFormat format)
+        [TestCase("stones.png", Paradox.Graphics.PixelFormat.BC3_UNorm)]
+        [TestCase("stones.png", Paradox.Graphics.PixelFormat.PVRTC_II_4bpp)]
+        [TestCase("TextureArray_WMipMaps_BC3.dds", Paradox.Graphics.PixelFormat.PVRTC_II_4bpp)]
+        [TestCase("TextureArray_WMipMaps_BC3.dds", Paradox.Graphics.PixelFormat.BC3_UNorm)]
+        public void CompressTest(string filename, Paradox.Graphics.PixelFormat format)
         {
             TexImage image = texTool.Load(TestTools.InputTestFolder + filename);
             texTool.Compress(image, format);
@@ -241,13 +240,13 @@ namespace SiliconStudio.TextureConverter.Tests
         [TestCase("TextureArray_WMipMaps_BC3.dds")]
         public void SwitchChannelTest(string file)
         {
-            TexImage image = texTool.Load(TestTools.InputTestFolder + file);
-            bool isInBGRAOrder = Tools.IsInBGRAOrder(image.Format);
+            var image = texTool.Load(TestTools.InputTestFolder + file);
+            var isInBgraOrder = image.Format.IsInBGRAOrder();
 
             texTool.SwitchChannel(image);
             image.Update();
 
-            Assert.IsTrue(isInBGRAOrder != Tools.IsInBGRAOrder(image.Format));
+            Assert.IsTrue(isInBgraOrder != image.Format.IsInBGRAOrder());
 
             Assert.IsTrue(TestTools.ComputeSHA1(image.Data, image.DataSize).Equals(TestTools.GetInstance().Checksum["TextureTool_SwitchChannel_" + image.Name]));
             //Console.WriteLine("TextureTool_SwitchChannel_" + image.Name + "." + TestTools.ComputeSHA1(image.Data, image.DataSize));
@@ -256,16 +255,16 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [TestCase("TextureArray_WMipMaps_BGRA8888.dds", ".pvr", SiliconStudio.Paradox.Graphics.PixelFormat.None, 16)]
-        [TestCase("TextureArray_WMipMaps_BC3.dds", ".pvr", SiliconStudio.Paradox.Graphics.PixelFormat.ETC2_RGBA, 0)]
-        [TestCase("TextureArray_WMipMaps_BC3.dds", ".pvr", SiliconStudio.Paradox.Graphics.PixelFormat.None, 0)]
-        public void SaveTest(string input, string extension, SiliconStudio.Paradox.Graphics.PixelFormat compressionFormat, int minimumMipmapSize)
+        [TestCase("TextureArray_WMipMaps_BGRA8888.dds", ".pvr", Paradox.Graphics.PixelFormat.None, 16)]
+        [TestCase("TextureArray_WMipMaps_BC3.dds", ".pvr", Paradox.Graphics.PixelFormat.ETC2_RGBA, 0)]
+        [TestCase("TextureArray_WMipMaps_BC3.dds", ".pvr", Paradox.Graphics.PixelFormat.None, 0)]
+        public void SaveTest(string input, string extension, Paradox.Graphics.PixelFormat compressionFormat, int minimumMipmapSize)
         {
             TexImage image = texTool.Load(TestTools.InputTestFolder + input);
 
             string output = Path.GetFileNameWithoutExtension(input) + extension;
 
-            if (compressionFormat == SiliconStudio.Paradox.Graphics.PixelFormat.None)
+            if (compressionFormat == Paradox.Graphics.PixelFormat.None)
             {
                 texTool.Save(image, TestTools.TempFolder + output, minimumMipmapSize);
             }
@@ -286,12 +285,12 @@ namespace SiliconStudio.TextureConverter.Tests
             image.Dispose();
         }
 
-        [TestCase("TextureCube_WMipMaps_BC3.dds", ".pvr", Filter.Rescaling.CatmullRom, SiliconStudio.Paradox.Graphics.PixelFormat.ETC2_RGBA)]
-        [TestCase("TextureArray_WMipMaps_PVRTC2_4bpp.pvr", ".dds", Filter.Rescaling.Nearest, SiliconStudio.Paradox.Graphics.PixelFormat.BC3_UNorm)]
-        [TestCase("TextureCube_WMipMaps_ATC_RGBA_Explicit.pdx", ".dds", Filter.Rescaling.Lanczos3, SiliconStudio.Paradox.Graphics.PixelFormat.BC3_UNorm)]
-        [TestCase("duck.jpg", ".dds", Filter.Rescaling.Box, SiliconStudio.Paradox.Graphics.PixelFormat.BC3_UNorm)]
-        [TestCase("duck.jpg", ".pvr", Filter.Rescaling.BSpline, SiliconStudio.Paradox.Graphics.PixelFormat.PVRTC_II_4bpp)]
-        public void ProcessingTest(string source, string extension, Filter.Rescaling rescaleFiler, SiliconStudio.Paradox.Graphics.PixelFormat format)
+        [TestCase("TextureCube_WMipMaps_BC3.dds", ".pvr", Filter.Rescaling.CatmullRom, Paradox.Graphics.PixelFormat.ETC2_RGBA)]
+        [TestCase("TextureArray_WMipMaps_PVRTC2_4bpp.pvr", ".dds", Filter.Rescaling.Nearest, Paradox.Graphics.PixelFormat.BC3_UNorm)]
+        [TestCase("TextureCube_WMipMaps_ATC_RGBA_Explicit.pdx", ".dds", Filter.Rescaling.Lanczos3, Paradox.Graphics.PixelFormat.BC3_UNorm)]
+        [TestCase("duck.jpg", ".dds", Filter.Rescaling.Box, Paradox.Graphics.PixelFormat.BC3_UNorm)]
+        [TestCase("duck.jpg", ".pvr", Filter.Rescaling.BSpline, Paradox.Graphics.PixelFormat.PVRTC_II_4bpp)]
+        public void ProcessingTest(string source, string extension, Filter.Rescaling rescaleFiler, Paradox.Graphics.PixelFormat format)
         {
             var image = texTool.Load(TestTools.InputTestFolder + source);
 
@@ -348,7 +347,7 @@ namespace SiliconStudio.TextureConverter.Tests
             atlas.Dispose();
 
             var another = texTool.Load(fileList[fileList.Length - 1]);
-            texTool.Compress(another, SiliconStudio.Paradox.Graphics.PixelFormat.BC3_UNorm);
+            texTool.Compress(another, Paradox.Graphics.PixelFormat.BC3_UNorm);
             list.Add(another);
 
             try
@@ -651,7 +650,7 @@ namespace SiliconStudio.TextureConverter.Tests
         {
             var array = texTool.Load(TestTools.InputTestFolder + arrayFile);
             var texture = texTool.Load(TestTools.InputTestFolder + newTexture);
-            texTool.Compress(texture, SiliconStudio.Paradox.Graphics.PixelFormat.BC3_UNorm);
+            texTool.Compress(texture, Paradox.Graphics.PixelFormat.BC3_UNorm);
 
             texTool.Insert(array, texture, indice);
 

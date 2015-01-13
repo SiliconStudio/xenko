@@ -27,8 +27,6 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
 
         byte[] GenerateShaderKeys(string inputFileName, string inputFileContent);
 
-        byte[] GenerateDataClasses(string assemblyOutput, string projectFullName, string intermediateAssembly);
-
         RawShaderNavigationResult AnalyzeAndGoToDefinition(string sourceCode, RawSourceSpan span);
     }
 

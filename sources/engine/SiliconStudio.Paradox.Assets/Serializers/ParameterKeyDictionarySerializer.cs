@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 using SharpYaml.Serialization;
 using SharpYaml.Serialization.Serializers;
-
+using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Paradox.Effects;
@@ -23,20 +23,30 @@ namespace SiliconStudio.Paradox.Assets.Serializers
             return CanVisit(type) ? this : null;
         }
 
+        protected override void WriteDictionaryItem(ref ObjectContext objectContext, KeyValuePair<object, object> keyValue, KeyValuePair<Type, Type> types)
+        {
+            var propertyKey = (PropertyKey)keyValue.Key;
+            objectContext.SerializerContext.WriteYaml(propertyKey, types.Key);
+
+            // Deduce expected value type from PropertyKey
+            objectContext.SerializerContext.WriteYaml(keyValue.Value, propertyKey.PropertyType);
+        }
+
         protected override KeyValuePair<object, object> ReadDictionaryItem(ref ObjectContext objectContext, KeyValuePair<Type, Type> keyValueType)
         {
-            var keyValue = base.ReadDictionaryItem(ref objectContext, keyValueType);
-            // For value types, try to convert to their real type
-            if (keyValue.Value != null && keyValue.GetType().IsValueType)
-            {
-                keyValue = new KeyValuePair<object, object>(keyValue.Key, ((ParameterKey)keyValue.Key).ConvertValue(keyValue.Value));
-            }
-            return keyValue;
+            // Read PropertyKey
+            var keyResult = (PropertyKey)objectContext.SerializerContext.ReadYaml(null, keyValueType.Key);
+
+            // Deduce expected value type from PropertyKey
+            var valueResult = objectContext.SerializerContext.ReadYaml(null, keyResult.PropertyType);
+
+            return new KeyValuePair<object, object>(keyResult, valueResult);
         }
 
         public bool CanVisit(Type type)
         {
-            return typeof(IDictionary<ParameterKey, object>).IsAssignableFrom(type);
+            return typeof(IDictionary<ParameterKey, object>).IsAssignableFrom(type)
+                || typeof(IDictionary<PropertyKey, object>).IsAssignableFrom(type);
         }
 
         public void Visit(ref VisitorContext context)

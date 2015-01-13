@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
 
 namespace SiliconStudio.Core.Tests

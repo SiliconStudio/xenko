@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Paradox.Shaders.Compiler
@@ -16,6 +17,14 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
         protected EffectCompilerBase()
         {
         }
+
+        /// <summary>
+        /// Gets or sets the database file provider, to use for loading effects and shader sources.
+        /// </summary>
+        /// <value>
+        /// The database file provider.
+        /// </value>
+        public abstract DatabaseFileProvider FileProvider { get; set; }
 
         public virtual ObjectId GetShaderSourceHash(string type)
         {

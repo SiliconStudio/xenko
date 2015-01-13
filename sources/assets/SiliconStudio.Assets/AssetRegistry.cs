@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using SharpYaml.Serialization;
+using SiliconStudio.Assets.Diff;
 
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Assets.Serializers;
@@ -38,6 +39,7 @@ namespace SiliconStudio.Assets
         internal static readonly HashSet<Assembly> RegisteredAssemblies = new HashSet<Assembly>();
         internal static readonly HashSet<IYamlSerializableFactory> RegisteredSerializerFactories = new HashSet<IYamlSerializableFactory>();
         internal static readonly List<IDataCustomVisitor> RegisteredDataVisitNodes = new List<IDataCustomVisitor>();
+        internal static readonly List<IDataCustomVisitor> RegisteredDataVisitNodeBuilders = new List<IDataCustomVisitor>();
         private static Func<object, string, string> stringExpander;
 
         /// <summary>
@@ -358,6 +360,22 @@ namespace SiliconStudio.Assets
                         catch (Exception ex)
                         {
                             log.Error("Unable to instantiate serializer factory [{0}]", ex, type);
+                        }
+                    }
+                }
+
+                if (type.GetCustomAttribute<DiffNodeBuilderAttribute>() != null)
+                {
+                    if (typeof(IDataCustomVisitor).IsAssignableFrom(type))
+                    {
+                        try
+                        {
+                            var dataCustomVisitor = (IDataCustomVisitor)Activator.CreateInstance(type);
+                            RegisteredDataVisitNodeBuilders.Add(dataCustomVisitor);
+                        }
+                        catch (Exception ex)
+                        {
+                            log.Error("Unable to instantiate diff converter [{0}]", ex, type);
                         }
                     }
                 }

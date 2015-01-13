@@ -63,7 +63,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 var mesh = new Mesh()
                 {
                     Draw = primitives[i].Item1.ToMeshDraw(),
-                    Material = material
+                    MaterialIndex = 0,
                 };
                 mesh.Parameters.Set(RenderingParameters.RenderLayer, RenderLayers.RenderLayer1);
 
@@ -71,7 +71,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 {
                     new ModelComponent()
                     {
-                        Model = new Model() { mesh }
+                        Model = new Model() { mesh, material }
                     },
                     new TransformationComponent() { Translation = primitives[i].Item2 }
                 };

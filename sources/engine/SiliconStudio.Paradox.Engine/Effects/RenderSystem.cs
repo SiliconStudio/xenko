@@ -64,7 +64,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <value>
         /// The registered pipelines.
         /// </value>
-        public ISet<RenderPipeline> Pipelines
+        public TrackingHashSet<RenderPipeline> Pipelines
         {
             get { return pipelines; }
         }
@@ -81,6 +81,10 @@ namespace SiliconStudio.Paradox.Effects
                 GraphicsDevice.Begin();
 
                 GraphicsDevice.ClearState();
+
+                // Update global time
+                GraphicsDevice.Parameters.Set(GlobalKeys.Time, (float)gameTime.Total.TotalSeconds);
+                GraphicsDevice.Parameters.Set(GlobalKeys.TimeStep, (float)gameTime.Elapsed.TotalSeconds);
 
                 if (GraphicsDevice.IsProfilingSupported)
                 {
@@ -138,7 +142,7 @@ namespace SiliconStudio.Paradox.Effects
             {
                 processor.Load();
             }
-            renderPass.Renderers.CollectionChanged += Processors_CollectionChanged;
+            renderPass.Renderers.CollectionChanged += Renderers_CollectionChanged;
         }
 
         private void RenderPassRemoved(RenderPass renderPass)
@@ -153,7 +157,7 @@ namespace SiliconStudio.Paradox.Effects
             {
                 processor.Unload();
             }
-            renderPass.Renderers.CollectionChanged -= Processors_CollectionChanged;
+            renderPass.Renderers.CollectionChanged -= Renderers_CollectionChanged;
         }
 
         private void Pipelines_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
@@ -170,16 +174,16 @@ namespace SiliconStudio.Paradox.Effects
             }
         }
 
-        void Processors_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        private void Renderers_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
         {
             var renderer = (Renderer)e.Item;
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    renderer.Load();                    
+                    renderer.Load();
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    renderer.Unload();                    
+                    renderer.Unload();
                     break;
             }
         }
