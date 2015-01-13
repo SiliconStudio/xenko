@@ -1276,11 +1276,11 @@
       <DependentUpon>ShadowMapCasterVsm.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Shadows\ShadowMapReceiverInfo.cs" />
-    <Compile Include="Shadows\ShadowMaps.cs">
+    <Compile Include="Shadows\ShadowMapCaster.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ShadowMaps.pdxfx</DependentUpon>
+      <DependentUpon>ShadowMapCaster.pdxfx</DependentUpon>
     </Compile>
     <Compile Include="LightPrepass\LightPrepass.cs">
       <AutoGen>True</AutoGen>
@@ -2439,9 +2439,9 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadowMapCasterVsm.cs</LastGenOutput>
     </None>
-    <None Include="Shadows\ShadowMaps.pdxfx">
+    <None Include="Shadows\ShadowMapCaster.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ShadowMaps.cs</LastGenOutput>
+      <LastGenOutput>ShadowMapCaster.cs</LastGenOutput>
     </None>
     <None Include="Shadows\ShadowGroup.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
