@@ -107,9 +107,21 @@
       <Project>{1E54A9A2-4439-4444-AE57-6D2ED3C0DC47}</Project>
       <Name>SiliconStudio.Assets</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">
+      <Project>{66581DAD-70AD-4475-AE47-C6C0DF1EC5E2}</Project>
+      <Name>SiliconStudio.Core.Design</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\shaders\SiliconStudio.Paradox.Effects.csproj">
+      <Project>{0342c3e7-4a38-46b4-a8ec-e728d50085d3}</Project>
+      <Name>SiliconStudio.Paradox.Effects</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Paradox.Assets\SiliconStudio.Paradox.Assets.csproj">
       <Project>{39ae9c77-e94b-404f-8768-b6261b3c1e0e}</Project>
       <Name>SiliconStudio.Paradox.Assets</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Paradox.Engine\SiliconStudio.Paradox.Engine.csproj">
+      <Project>{C121A566-555E-42B9-9B0A-1696529A9088}</Project>
+      <Name>SiliconStudio.Paradox.Engine</Name>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Paradox.Graphics\SiliconStudio.Paradox.Graphics.csproj">
       <Project>{fb06c76a-6bb7-40be-9afa-fec13b045fb5}</Project>

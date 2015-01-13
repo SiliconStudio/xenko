@@ -73,7 +73,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 {
                     commandContext.Logger.Warning("Texture node '{0}' of material '{1}' is not pointing to a valid texture reference. " +
                                                   "This node will be replaced by black color Node.", emptyTextureNodeKey, assetItem.Location);
-                    material.Nodes[emptyTextureNodeKey] = new MaterialColorNode(new Color4(0));
+                    material.Nodes[emptyTextureNodeKey] = new MaterialColorComputeColor(new Color4(0));
                 }
 
                 // Reduce trees on CPU

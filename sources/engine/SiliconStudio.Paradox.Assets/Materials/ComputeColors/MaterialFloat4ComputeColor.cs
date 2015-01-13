@@ -12,7 +12,7 @@ using SiliconStudio.Paradox.Shaders;
 namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
 {
     [ContentSerializer(typeof(DataContentSerializer<MaterialFloat4ComputeColor>))]
-    [DataContract("MaterialFloat4Node")]
+    [DataContract("MaterialFloat4ComputeColor")]
     [Display("Constant Vector")]
     public class MaterialFloat4ComputeColor : MaterialValueComputeColor<Vector4>
     {

@@ -9,7 +9,7 @@ using namespace SiliconStudio::Core::Diagnostics;
 using namespace SiliconStudio::Core::Mathematics;
 using namespace SiliconStudio::Core::Serialization;
 using namespace SiliconStudio::Paradox::Assets::Materials;
-using namespace SiliconStudio::Paradox::Assets::Materials::Nodes;
+using namespace SiliconStudio::Paradox::Assets::Materials::ComputeColors;
 using namespace SiliconStudio::Paradox::Effects;
 using namespace SiliconStudio::Paradox::Effects::Data;
 using namespace SiliconStudio::Paradox::Engine;
@@ -59,7 +59,7 @@ public ref class EntityInfo
 {
 public:
 	List<String^>^ TextureDependencies;
-	Dictionary<String^, MaterialDescription^>^ Materials;
+	Dictionary<String^, MaterialAsset^>^ Materials;
 	List<String^>^ AnimationNodes;
 	List<MeshParameters^>^ Models;
 	List<NodeInfo^>^ Nodes;
@@ -71,7 +71,7 @@ public:
 public ref class MeshMaterials
 {
 public:
-	Dictionary<String^, MaterialDescription^>^ Materials;
+	Dictionary<String^, MaterialAsset^>^ Materials;
 	List<MeshParameters^>^ Models;
 	List<CameraInfo^>^ Cameras;
 	List<LightInfo^>^ Lights;
@@ -81,7 +81,7 @@ public ref class MaterialInstanciation
 {
 public:
 	List<String^>^ Parameters;
-	MaterialDescription^ Material;
+	MaterialAsset^ Material;
 	String^ MaterialName;
 };
 
@@ -125,12 +125,12 @@ public:
 		auto needScaling = uvScaling != Vector2::One;
 		auto currentComposition = needScaling
 			? gcnew ShaderClassSource("ComputeColorTextureRepeat", textureName, uvSetName, "float2(" + uvScaling[0] + ", " + uvScaling[1] + ")")
-			: gcnew ShaderClassSource((surfaceMaterialKey == MaterialTexturingKeys::DisplacementTexture0) ? "ComputeColorTextureDisplacement" : "ComputeColorTexture", textureName, uvSetName);
+			: gcnew ShaderClassSource("ComputeColorTexture", textureName, uvSetName);
 
 		return currentComposition;
 	}
 
-	static MaterialTextureNode^ GenerateMaterialTextureNode(String^ vfsOutputPath, String^ sourceTextureFile, int textureUVSetIndex, Vector2 textureUVscaling, bool wrapTextureU, bool wrapTextureV, Logger^ logger)
+	static MaterialTextureComputeColor^ GenerateMaterialTextureNode(String^ vfsOutputPath, String^ sourceTextureFile, int textureUVSetIndex, Vector2 textureUVscaling, bool wrapTextureU, bool wrapTextureV, Logger^ logger)
 	{
 		auto texture = gcnew ContentReference<Texture^>();
 
@@ -151,9 +151,9 @@ public:
 		auto uvScaling = textureUVscaling;
 		auto textureName = textureFileName;
 	
-		auto currentTexture = gcnew MaterialTextureNode(textureName, textureUVSetIndex, uvScaling, Vector2::Zero);
-		currentTexture->Sampler->AddressModeU = wrapTextureU ? TextureAddressMode::Wrap : TextureAddressMode::Clamp;
-		currentTexture->Sampler->AddressModeV = wrapTextureV ? TextureAddressMode::Wrap : TextureAddressMode::Clamp;
+		auto currentTexture = gcnew MaterialTextureComputeColor(textureName, (TextureCoordinate)textureUVSetIndex, uvScaling, Vector2::Zero);
+		currentTexture->AddressModeU = wrapTextureU ? TextureAddressMode::Wrap : TextureAddressMode::Clamp;
+		currentTexture->AddressModeV = wrapTextureV ? TextureAddressMode::Wrap : TextureAddressMode::Clamp;
 	
 		return currentTexture;
 	}

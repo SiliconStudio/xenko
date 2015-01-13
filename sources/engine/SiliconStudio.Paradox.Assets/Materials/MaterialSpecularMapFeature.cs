@@ -20,6 +20,13 @@ namespace SiliconStudio.Paradox.Assets.Materials
     public class MaterialSpecularMapFeature : IMaterialSpecularFeature
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="MaterialSpecularMapFeature"/> class.
+        /// </summary>
+        public MaterialSpecularMapFeature()
+        {
+        }
+
+        /// <summary>
         /// Gets or sets the specular map.
         /// </summary>
         /// <value>The specular map.</value>

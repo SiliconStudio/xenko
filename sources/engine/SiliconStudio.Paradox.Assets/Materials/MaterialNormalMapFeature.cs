@@ -21,6 +21,22 @@ namespace SiliconStudio.Paradox.Assets.Materials
     public class MaterialNormalMapFeature : IMaterialSurfaceFeature
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="MaterialNormalMapFeature"/> class.
+        /// </summary>
+        public MaterialNormalMapFeature()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MaterialNormalMapFeature"/> class.
+        /// </summary>
+        /// <param name="normalMap">The normal map.</param>
+        public MaterialNormalMapFeature(MaterialComputeColor normalMap)
+        {
+            NormalMap = normalMap;
+        }
+
+        /// <summary>
         /// Gets or sets the normal map.
         /// </summary>
         /// <value>The normal map.</value>

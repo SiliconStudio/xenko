@@ -1,9 +1,14 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
+
 using NUnit.Framework;
 
+using SiliconStudio.Assets;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
@@ -11,6 +16,7 @@ using SiliconStudio.Core.Storage;
 using SiliconStudio.Paradox.Assets.Materials;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders.Compiler;
 using SiliconStudio.Paradox.Shaders.Parser.Mixins;
@@ -33,10 +39,21 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Paradox.Graphics\Shaders");
             compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Paradox.Engine\Shaders");
             compiler.SourceDirectories.Add(@"..\..\sources\shaders\Core");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Lights");
             compiler.SourceDirectories.Add(@"..\..\sources\shaders\Materials");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Shadows");
             compiler.SourceDirectories.Add(@"..\..\sources\shaders\ComputeColor");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Skinning");
             compiler.SourceDirectories.Add(@"..\..\sources\shaders\Shading");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Transformation");
             var compilerParameters = new CompilerParameters { Platform = GraphicsPlatform.Direct3D11 };
+
+            var layers = new MaterialBlendLayers();
+            layers.Layers.Add(new MaterialBlendLayer()
+            {
+                BlendMap = new MaterialColorComputeColor(new Color4(0.5f)),
+                Material =  new AssetReference<MaterialAsset>(Guid.Empty, "fake")
+            });
 
             var materialAsset = new MaterialAsset
             {
@@ -47,19 +64,33 @@ namespace SiliconStudio.Paradox.Shaders.Tests
                         DiffuseMap = new MaterialColorComputeColor(Color4.White)
                     },
                     DiffuseModel = new MaterialDiffuseLambertianModelFeature()
+                },
+                Layers = layers
+            };
+
+            var fakeAsset = new MaterialAsset
+            {
+                Attributes = new MaterialAttributes()
+                {
+                    Diffuse = new MaterialDiffuseMapFeature()
                     {
-                        IsEnergyConservative = false
+                        DiffuseMap = new MaterialColorComputeColor(Color.Blue)
                     },
                 }
             };
 
-            var result = MaterialShaderGenerator.Generate(materialAsset);
+            var context = new MaterialGeneratorContext { FindMaterial = reference => fakeAsset };
+            var result = MaterialGenerator.Generate(materialAsset, context);
 
-            var mixin = new ShaderMixinSource();
-            mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceRoot"));
-            mixin.AddComposition("composition", result.ShaderSource); // Add result of material
-            mixin.AddCompositionToArray("lightGroups", new ShaderClassSource("LightGroup")); // add empty light
-            var results = compiler.Compile(mixin, compilerParameters);
+            compilerParameters.Set(MaterialKeys.Material, result.ShaderSource);
+            var directionalLightGroup = new ShaderClassSource("LightDirectionalGroup", 1);
+            compilerParameters.Set(LightingKeys.LightGroups, new ShaderSource[] { directionalLightGroup });
+            compilerParameters.Set(LightingKeys.CastShadows, false);
+            //compilerParameters.Set(MaterialParameters.HasSkinningPosition, true);
+            //compilerParameters.Set(MaterialParameters.HasSkinningNormal, true);
+            compilerParameters.Set(MaterialParameters.HasNormalMap, true);
+
+            var results = compiler.Compile(new ShaderMixinGeneratorSource("ParadoxBaseShader"), compilerParameters);
 
             Assert.IsFalse(results.HasErrors);
         }

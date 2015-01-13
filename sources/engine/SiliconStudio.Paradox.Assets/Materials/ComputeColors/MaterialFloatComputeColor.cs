@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
     /// A float compute color.
     /// </summary>
     [ContentSerializer(typeof(DataContentSerializer<MaterialFloatComputeColor>))]
-    [DataContract("MaterialFloatNode")]
+    [DataContract("MaterialFloatComputeColor")]
     [Display("Constant Float")]
     [DebuggerDisplay("CompputeColor Float")]
     public class MaterialFloatComputeColor : MaterialValueComputeColor<float>

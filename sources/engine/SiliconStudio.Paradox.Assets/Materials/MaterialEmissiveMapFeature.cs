@@ -17,6 +17,16 @@ namespace SiliconStudio.Paradox.Assets.Materials
     [ObjectFactory(typeof(Factory))]
     public class MaterialEmissiveMapFeature : IMaterialEmissiveFeature
     {
+        public MaterialEmissiveMapFeature()
+        {
+        }
+
+        public MaterialEmissiveMapFeature(MaterialComputeColor emissiveMap)
+        {
+            EmissiveMap = emissiveMap;
+            Intensity = new MaterialFloatComputeColor(1.0f);
+        }
+
         /// <summary>
         /// Gets or sets the diffuse map.
         /// </summary>

@@ -18,7 +18,7 @@ using namespace SiliconStudio::Core::Serialization;
 using namespace SiliconStudio::Core::Serialization::Assets;
 using namespace SiliconStudio::Core::Serialization::Contents;
 using namespace SiliconStudio::Paradox::Assets::Materials;
-using namespace SiliconStudio::Paradox::Assets::Materials::Nodes;
+using namespace SiliconStudio::Paradox::Assets::Materials::ComputeColors;
 using namespace SiliconStudio::Paradox::DataModel;
 using namespace SiliconStudio::Paradox::EntityModel;
 using namespace SiliconStudio::Paradox::Effects;
@@ -569,13 +569,13 @@ public:
 	}
 
 	// return a boolean indicating whether the built material is transparent or not
-	MaterialDescription^ ProcessMeshMaterialAsset(FbxSurfaceMaterial* lMaterial, std::map<std::string, int>& uvElementMapping)
+	MaterialAsset^ ProcessMeshMaterialAsset(FbxSurfaceMaterial* lMaterial, std::map<std::string, int>& uvElementMapping)
 	{
 		auto uvEltMappingOverride = uvElementMapping;
-		std::map<FbxFileTexture*, std::string> textureMap;
+		std::map<FbxFileTexture*, MaterialTextureComputeColor^> textureMap;
 		std::map<std::string, int> textureNameCount;
 
-		auto finalMaterial = gcnew SiliconStudio::Paradox::Assets::Materials::MaterialDescription();
+		auto finalMaterial = gcnew SiliconStudio::Paradox::Assets::Materials::MaterialAsset();
 		
 		auto phongSurface = FbxCast<FbxSurfacePhong>(lMaterial);
 		auto lambertSurface = FbxCast<FbxSurfaceLambert>(lMaterial);
@@ -591,14 +591,14 @@ public:
 					auto diffuseColorValue = diffuseFactor * diffuseColor;
 
 					// Create diffuse value even if the color is black
-					diffuseTree = gcnew MaterialColorNode(FbxDouble3ToColor4(diffuseColorValue));
-					((MaterialColorNode^)diffuseTree)->Key = MaterialKeys::DiffuseColorValue;
-					((MaterialColorNode^)diffuseTree)->AutoAssignKey = false;
-					((MaterialColorNode^)diffuseTree)->IsReducible = false;
+					diffuseTree = gcnew MaterialColorComputeColor(FbxDouble3ToColor4(diffuseColorValue));
 				}
 
-				if(diffuseTree != nullptr)
-					finalMaterial->AddColorNode(MaterialParameters::AlbedoDiffuse, "diffuse", diffuseTree);
+				if (diffuseTree != nullptr)
+				{
+					finalMaterial->Attributes->Diffuse = gcnew MaterialDiffuseMapFeature(diffuseTree);
+					finalMaterial->Attributes->DiffuseModel = gcnew MaterialDiffuseLambertianModelFeature();
+				}
 			}
 		}
 		{   // The emissive color
@@ -614,41 +614,38 @@ public:
 					// Do not create the node if the value has not been explicitly specified by the user.
 					if(emissiveColorValue != FbxDouble3(0))
 					{
-						emissiveTree = gcnew MaterialColorNode(FbxDouble3ToColor4(emissiveColorValue));
-						((MaterialColorNode^)emissiveTree)->Key = MaterialKeys::EmissiveColorValue;
-						((MaterialColorNode^)emissiveTree)->AutoAssignKey = false;
-						((MaterialColorNode^)emissiveTree)->IsReducible = false;
+						emissiveTree = gcnew MaterialColorComputeColor(FbxDouble3ToColor4(emissiveColorValue));
 					}
 				}
 
-				if(emissiveTree != nullptr)
-					finalMaterial->AddColorNode(MaterialParameters::EmissiveMap, "emissive", emissiveTree);
-			}
-		}
-		{   // The ambient color
-			auto ambientTree = GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sAmbient, FbxSurfaceMaterial::sAmbientFactor, finalMaterial);
-			if(lambertSurface || ambientTree != nullptr)
-			{
-				if(ambientTree == nullptr)	
+				if (emissiveTree != nullptr)
 				{
-					auto ambientColor = lambertSurface->Emissive.Get();
-					auto ambientFactor = lambertSurface->EmissiveFactor.Get();
-					auto ambientColorValue = ambientFactor * ambientColor;
-
-					// Do not create the node if the value has not been explicitly specified by the user.
-					if(ambientColorValue != FbxDouble3(0))
-					{
-						ambientTree = gcnew MaterialColorNode(FbxDouble3ToColor4(ambientColorValue));
-						((MaterialColorNode^)ambientTree)->Key = MaterialKeys::AmbientColorValue;
-						((MaterialColorNode^)ambientTree)->AutoAssignKey = false;
-						((MaterialColorNode^)ambientTree)->IsReducible = false;
-					}
+					finalMaterial->Attributes->Emissive = gcnew MaterialEmissiveMapFeature(emissiveTree);
 				}
-
-				if(ambientTree != nullptr)
-					finalMaterial->AddColorNode(MaterialParameters::AmbientMap, "ambient", ambientTree);
 			}
 		}
+		// TODO: Check if we want to support Ambient Color
+		//{   // The ambient color
+		//	auto ambientTree = GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sAmbient, FbxSurfaceMaterial::sAmbientFactor, finalMaterial);
+		//	if(lambertSurface || ambientTree != nullptr)
+		//	{
+		//		if(ambientTree == nullptr)	
+		//		{
+		//			auto ambientColor = lambertSurface->Emissive.Get();
+		//			auto ambientFactor = lambertSurface->EmissiveFactor.Get();
+		//			auto ambientColorValue = ambientFactor * ambientColor;
+
+		//			// Do not create the node if the value has not been explicitly specified by the user.
+		//			if(ambientColorValue != FbxDouble3(0))
+		//			{
+		//				ambientTree = gcnew MaterialColorComputeColor(FbxDouble3ToColor4(ambientColorValue));
+		//			}
+		//		}
+
+		//		if(ambientTree != nullptr)
+		//			finalMaterial->AddColorNode(MaterialParameters::AmbientMap, "ambient", ambientTree);
+		//	}
+		//}
 		{   // The normal map
 			auto normalMapTree = GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sNormalMap, NULL, finalMaterial);
 			if(lambertSurface || normalMapTree != nullptr)
@@ -660,90 +657,85 @@ public:
 					// Do not create the node if the value has not been explicitly specified by the user.
 					if(normalMapValue != FbxDouble3(0))
 					{
-						normalMapTree = gcnew MaterialFloat4Node(FbxDouble3ToVector4(normalMapValue));
-						((MaterialFloat4Node^)normalMapTree)->Key = MaterialKeys::NormalMapValue;
-						((MaterialFloat4Node^)normalMapTree)->AutoAssignKey = false;
-						((MaterialFloat4Node^)normalMapTree)->IsReducible = false;
+						normalMapTree = gcnew MaterialFloat4ComputeColor(FbxDouble3ToVector4(normalMapValue));
 					}
 				}
 				
-				if(normalMapTree != nullptr)
-					finalMaterial->AddColorNode(MaterialParameters::NormalMap, "normalMap", normalMapTree);
-			}
-		}
-		{   // The bump map
-			auto bumpMapTree = GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sBump, FbxSurfaceMaterial::sBumpFactor, finalMaterial);
-			if(lambertSurface || bumpMapTree != nullptr)
-			{
-				if(bumpMapTree == nullptr)	
+				if (normalMapTree != nullptr)
 				{
-					auto bumpValue = lambertSurface->Bump.Get();
-					auto bumpFactor = lambertSurface->BumpFactor.Get();
-					auto bumpMapValue = bumpFactor * bumpValue;
-
-					// Do not create the node if the value has not been explicitly specified by the user.
-					if(bumpMapValue != FbxDouble3(0))
-					{
-						bumpMapTree = gcnew MaterialFloat4Node(FbxDouble3ToVector4(bumpMapValue));
-						((MaterialFloat4Node^)bumpMapTree)->Key = MaterialKeys::BumpValue;
-						((MaterialFloat4Node^)bumpMapTree)->AutoAssignKey = false;
-						((MaterialFloat4Node^)bumpMapTree)->IsReducible = false;
-					}
+					finalMaterial->Attributes->Surface = gcnew MaterialNormalMapFeature(normalMapTree);
 				}
-				
-				if(bumpMapTree != nullptr)
-					finalMaterial->AddColorNode(MaterialParameters::BumpMap, "bumpMap", bumpMapTree);
 			}
 		}
-		{   // The transparency
-			auto transparencyTree = GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sTransparentColor, FbxSurfaceMaterial::sTransparencyFactor, finalMaterial);
-			if(lambertSurface || transparencyTree != nullptr)
-			{
-				if(transparencyTree == nullptr)	
-				{
-					auto transparencyColor = lambertSurface->TransparentColor.Get();
-					auto transparencyFactor = lambertSurface->TransparencyFactor.Get();
-					auto transparencyValue = transparencyFactor * transparencyColor;
-					auto opacityValue = std::min(1.0f, std::max(0.0f, 1-(float)transparencyValue[0]));
+		// TODO: Support for BumpMap
+		//{   // The bump map
+		//	auto bumpMapTree = GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sBump, FbxSurfaceMaterial::sBumpFactor, finalMaterial);
+		//	if(lambertSurface || bumpMapTree != nullptr)
+		//	{
+		//		if(bumpMapTree == nullptr)	
+		//		{
+		//			auto bumpValue = lambertSurface->Bump.Get();
+		//			auto bumpFactor = lambertSurface->BumpFactor.Get();
+		//			auto bumpMapValue = bumpFactor * bumpValue;
 
-					// Do not create the node if the value has not been explicitly specified by the user.
-					if(opacityValue < 1)
-					{
-						transparencyTree = gcnew MaterialFloatNode(opacityValue);
-						((MaterialFloatNode^)transparencyTree)->Key = MaterialKeys::TransparencyValue;
-						((MaterialFloatNode^)transparencyTree)->AutoAssignKey = false;
-						((MaterialFloatNode^)transparencyTree)->IsReducible = false;
-					}
-				}
+		//			// Do not create the node if the value has not been explicitly specified by the user.
+		//			if(bumpMapValue != FbxDouble3(0))
+		//			{
+		//				bumpMapTree = gcnew MaterialFloat4ComputeColor(FbxDouble3ToVector4(bumpMapValue));
+		//			}
+		//		}
+		//		
+		//		if (bumpMapTree != nullptr)
+		//		{
+		//			finalMaterial->AddColorNode(MaterialParameters::BumpMap, "bumpMap", bumpMapTree);
+		//		}
+		//	}
+		//}
+		// TODO: Support for Transparency
+		//{   // The transparency
+		//	auto transparencyTree = GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sTransparentColor, FbxSurfaceMaterial::sTransparencyFactor, finalMaterial);
+		//	if(lambertSurface || transparencyTree != nullptr)
+		//	{
+		//		if(transparencyTree == nullptr)	
+		//		{
+		//			auto transparencyColor = lambertSurface->TransparentColor.Get();
+		//			auto transparencyFactor = lambertSurface->TransparencyFactor.Get();
+		//			auto transparencyValue = transparencyFactor * transparencyColor;
+		//			auto opacityValue = std::min(1.0f, std::max(0.0f, 1-(float)transparencyValue[0]));
 
-				if(transparencyTree != nullptr)
-					finalMaterial->AddColorNode(MaterialParameters::TransparencyMap, "transparencyMap", transparencyTree);
-			}
-		}
-		{   // The displacement map
-			auto displacementColorTree = GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sDisplacementColor, FbxSurfaceMaterial::sDisplacementFactor, finalMaterial);
-			if(lambertSurface || displacementColorTree != nullptr)
-			{
-				if(displacementColorTree == nullptr)	
-				{
-					auto displacementColor = lambertSurface->DisplacementColor.Get();
-					auto displacementFactor = lambertSurface->DisplacementFactor.Get();
-					auto displacementValue = displacementFactor * displacementColor;
+		//			// Do not create the node if the value has not been explicitly specified by the user.
+		//			if(opacityValue < 1)
+		//			{
+		//				transparencyTree = gcnew MaterialFloatComputeColor(opacityValue);
+		//			}
+		//		}
 
-					// Do not create the node if the value has not been explicitly specified by the user.
-					if(displacementValue != FbxDouble3(0))
-					{
-						displacementColorTree = gcnew MaterialFloat4Node(FbxDouble3ToVector4(displacementValue));
-						((MaterialFloat4Node^)displacementColorTree)->Key = MaterialKeys::DisplacementValue;
-						((MaterialFloat4Node^)displacementColorTree)->AutoAssignKey = false;
-						((MaterialFloat4Node^)displacementColorTree)->IsReducible = false;
-					}
-				}
-				
-				if(displacementColorTree != nullptr)
-					finalMaterial->AddColorNode(MaterialParameters::DisplacementMap, "displacementMap", displacementColorTree);
-			}
-		}
+		//		if(transparencyTree != nullptr)
+		//			finalMaterial->AddColorNode(MaterialParameters::TransparencyMap, "transparencyMap", transparencyTree);
+		//	}
+		//}
+		//// TODO: Support for displacement map
+		//{   // The displacement map
+		//	auto displacementColorTree = GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sDisplacementColor, FbxSurfaceMaterial::sDisplacementFactor, finalMaterial);
+		//	if(lambertSurface || displacementColorTree != nullptr)
+		//	{
+		//		if(displacementColorTree == nullptr)	
+		//		{
+		//			auto displacementColor = lambertSurface->DisplacementColor.Get();
+		//			auto displacementFactor = lambertSurface->DisplacementFactor.Get();
+		//			auto displacementValue = displacementFactor * displacementColor;
+
+		//			// Do not create the node if the value has not been explicitly specified by the user.
+		//			if(displacementValue != FbxDouble3(0))
+		//			{
+		//				displacementColorTree = gcnew MaterialFloat4ComputeColor(FbxDouble3ToVector4(displacementValue));
+		//			}
+		//		}
+		//		
+		//		if(displacementColorTree != nullptr)
+		//			finalMaterial->AddColorNode(MaterialParameters::DisplacementMap, "displacementMap", displacementColorTree);
+		//	}
+		//}
 		{	// The specular color
 			auto specularTree = GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sSpecular, NULL, finalMaterial);
 			if(phongSurface || specularTree != nullptr)
@@ -755,15 +747,16 @@ public:
 					// Do not create the node if the value has not been explicitly specified by the user.
 					if(specularColor != FbxDouble3(0))
 					{
-						specularTree = gcnew MaterialColorNode(FbxDouble3ToColor4(specularColor));
-						((MaterialColorNode^)specularTree)->Key = MaterialKeys::SpecularColorValue;
-						((MaterialColorNode^)specularTree)->AutoAssignKey = false;
-						((MaterialColorNode^)specularTree)->IsReducible = false;
+						specularTree = gcnew MaterialColorComputeColor(FbxDouble3ToColor4(specularColor));
 					}
 				}
 						
-				if(specularTree != nullptr)	
-					finalMaterial->AddColorNode(MaterialParameters::AlbedoSpecular, "specular", specularTree);
+				if (specularTree != nullptr)
+				{
+					auto specularFeature = gcnew MaterialSpecularMapFeature();
+					specularFeature->SpecularMap = specularTree;
+					finalMaterial->Attributes->Specular = specularFeature;
+				}
 			}
 		}
 		{	// The specular intensity map
@@ -777,15 +770,18 @@ public:
 					// Do not create the node if the value has not been explicitly specified by the user.
 					if(specularIntensity > 0)
 					{
-						specularIntensityTree = gcnew MaterialFloatNode((float)specularIntensity);
-						((MaterialFloatNode^)specularIntensityTree)->Key = MaterialKeys::SpecularIntensity;
-						((MaterialFloatNode^)specularIntensityTree)->AutoAssignKey = false;
-						((MaterialFloatNode^)specularIntensityTree)->IsReducible = false;
+						specularIntensityTree = gcnew MaterialFloatComputeColor((float)specularIntensity);
 					}
 				}
 						
-				if(specularIntensityTree != nullptr)		
+				if (specularIntensityTree != nullptr)
+				{
+					auto specularFeature = gcnew MaterialSpecularMapFeature();
+					specularFeature->SpecularMap = specularTree;
+					finalMaterial->Attributes->Specular = specularFeature;
+
 					finalMaterial->AddColorNode(MaterialParameters::SpecularIntensityMap, "specularIntensity", specularIntensityTree);
+				}
 			}
 		}
 		{	// The specular power map
@@ -799,10 +795,10 @@ public:
 					// Do not create the node if the value has not been explicitly specified by the user.
 					if(specularPower > 0)
 					{
-						specularPowerTree = gcnew MaterialFloatNode((float)specularPower);
-						((MaterialFloatNode^)specularPowerTree)->Key = MaterialKeys::SpecularPower;
-						((MaterialFloatNode^)specularPowerTree)->AutoAssignKey = false;
-						((MaterialFloatNode^)specularPowerTree)->IsReducible = false;
+						specularPowerTree = gcnew MaterialFloatComputeColor((float)specularPower);
+						((MaterialFloatComputeColor^)specularPowerTree)->Key = MaterialKeys::SpecularPower;
+						((MaterialFloatComputeColor^)specularPowerTree)->AutoAssignKey = false;
+						((MaterialFloatComputeColor^)specularPowerTree)->IsReducible = false;
 					}
 				}
 						
@@ -823,10 +819,10 @@ public:
 					// Do not create the node if the value has not been explicitly specified by the user.
 					if(reflectionValue != FbxDouble3(0))
 					{
-						reflectionMapTree = gcnew MaterialColorNode(FbxDouble3ToColor4(reflectionValue));
-						((MaterialColorNode^)reflectionMapTree)->Key = MaterialKeys::ReflectionColorValue;
-						((MaterialColorNode^)reflectionMapTree)->AutoAssignKey = false;
-						((MaterialColorNode^)reflectionMapTree)->IsReducible = false;
+						reflectionMapTree = gcnew MaterialColorComputeColor(FbxDouble3ToColor4(reflectionValue));
+						((MaterialColorComputeColor^)reflectionMapTree)->Key = MaterialKeys::ReflectionColorValue;
+						((MaterialColorComputeColor^)reflectionMapTree)->AutoAssignKey = false;
+						((MaterialColorComputeColor^)reflectionMapTree)->IsReducible = false;
 					}
 				}
 				
@@ -873,11 +869,11 @@ public:
 		return false;
 	}
 
-	IMaterialNode^ GenerateSurfaceTextureTree(	FbxSurfaceMaterial* lMaterial, std::map<std::string, int>& uvElementMapping, std::map<FbxFileTexture*, std::string>& textureMap, 
+	MaterialComputeColor^ GenerateSurfaceTextureTree(FbxSurfaceMaterial* lMaterial, std::map<std::string, int>& uvElementMapping, std::map<FbxFileTexture*, MaterialTextureComputeColor^>& textureMap,
 												std::map<std::string, int>& textureNameCount, char const* surfaceMaterial, char const* surfaceMaterialFactor,
-												SiliconStudio::Paradox::Assets::Materials::MaterialDescription^ finalMaterial)
+												SiliconStudio::Paradox::Assets::Materials::MaterialAsset^ finalMaterial)
 	{
-		auto compositionTrees = gcnew cli::array<IMaterialNode^>(2);
+		auto compositionTrees = gcnew cli::array<MaterialComputeColor^>(2);
 
 		for (int i = 0; i < 2; ++i)
 		{
@@ -891,7 +887,7 @@ public:
 			FbxProperty lProperty = lMaterial->FindProperty(propertyName);
 			if (lProperty.IsValid())
 			{
-				IMaterialNode^ previousNode = nullptr;
+				MaterialComputeColor^ previousNode = nullptr;
 				const int lTextureCount = lProperty.GetSrcObjectCount<FbxTexture>();
 				for (int j = 0; j < lTextureCount; ++j)
 				{
@@ -915,11 +911,11 @@ public:
 								if (previousNode == nullptr)
 									previousNode = currentMaterialReference;
 								else
-									previousNode = gcnew MaterialBinaryNode(previousNode, currentMaterialReference, MaterialBinaryOperand::Add); // not sure
+									previousNode = gcnew MaterialBinaryComputeColor(previousNode, currentMaterialReference, MaterialBinaryOperand::Add); // not sure
 							}
 							else
 							{
-								auto newNode = gcnew MaterialBinaryNode(previousNode, currentMaterialReference, MaterialBinaryOperand::Add);
+								auto newNode = gcnew MaterialBinaryComputeColor(previousNode, currentMaterialReference, MaterialBinaryOperand::Add);
 								previousNode = newNode;
 								
 								FbxLayeredTexture::EBlendMode blendMode;
@@ -939,7 +935,7 @@ public:
 						if (previousNode == nullptr)
 							previousNode = newMaterialReference;
 						else
-							previousNode = gcnew MaterialBinaryNode(previousNode, newMaterialReference, MaterialBinaryOperand::Add); // not sure
+							previousNode = gcnew MaterialBinaryComputeColor(previousNode, newMaterialReference, MaterialBinaryOperand::Add); // not sure
 					}
 				}
 
@@ -948,7 +944,7 @@ public:
 		}
 
 		// If we only have one of either Color or Factor, use directly, otherwise multiply them together
-		IMaterialNode^ compositionTree;
+		MaterialComputeColor^ compositionTree;
 		if (compositionTrees[0] == nullptr) // TODO do we want only the factor??? -> delete
 		{
 			compositionTree = compositionTrees[1];
@@ -959,7 +955,7 @@ public:
 		}
 		else
 		{
-			compositionTree = gcnew MaterialBinaryNode(compositionTrees[0], compositionTrees[1], MaterialBinaryOperand::Multiply);
+			compositionTree = gcnew MaterialBinaryComputeColor(compositionTrees[0], compositionTrees[1], MaterialBinaryOperand::Multiply);
 		}
 
 		return compositionTree;
@@ -1068,7 +1064,7 @@ public:
 		return fileNameToUse;
 	}
 
-	MaterialReferenceNode^ GenerateMaterialTextureNodeFBX(FbxFileTexture* lFileTexture, std::map<std::string, int>& uvElementMapping, std::map<FbxFileTexture*, std::string>& textureMap, std::map<std::string, int>& textureNameCount, SiliconStudio::Paradox::Assets::Materials::MaterialDescription^ finalMaterial)
+	MaterialTextureComputeColor^ GenerateMaterialTextureNodeFBX(FbxFileTexture* lFileTexture, std::map<std::string, int>& uvElementMapping, std::map<FbxFileTexture*, MaterialTextureComputeColor^>& textureMap, std::map<std::string, int>& textureNameCount, SiliconStudio::Paradox::Assets::Materials::MaterialAsset^ finalMaterial)
 	{
 		auto texScale = lFileTexture->GetUVScaling();		
 		auto texturePath = FindFilePath(lFileTexture);
@@ -1080,9 +1076,7 @@ public:
 		auto index = textureMap.find(lFileTexture);
 		if (index != textureMap.end())
 		{
-			auto textureName = textureMap[lFileTexture];
-			auto materialReference = gcnew MaterialReferenceNode(gcnew String(textureName.c_str()));
-			return materialReference;
+			return textureMap[lFileTexture];
 		}
 		else
 		{
@@ -1097,10 +1091,10 @@ public:
 				textureName = textureName + "_" + std::to_string(textureCount - 1);
 
 			auto referenceName = gcnew String(textureName.c_str());
-			auto materialReference = gcnew MaterialReferenceNode(referenceName);
-			finalMaterial->AddNode(referenceName, textureValue);
-			textureMap[lFileTexture] = textureName;
-			return materialReference;
+			//auto materialReference = gcnew MaterialReferenceNode(referenceName);
+			//finalMaterial->AddNode(referenceName, textureValue);
+			textureMap[lFileTexture] = textureValue;
+			return textureValue;
 		}
 		
 		return nullptr;

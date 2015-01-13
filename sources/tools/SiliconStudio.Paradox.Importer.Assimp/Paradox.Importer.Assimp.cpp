@@ -804,7 +804,7 @@ private:
 			{
 				auto realTop = (AssimpNet::Material::StackOperation^) top;
 				AssimpNet::Material::Operation op = realTop->operation;
-				auto binNode = gcnew MaterialBinaryNode(nullptr, nullptr, MaterialBinaryOperand::Add);
+				auto binNode = gcnew MaterialBinaryComputeColor(nullptr, nullptr, MaterialBinaryOperand::Add);
 
 				switch (op)
 				{
@@ -827,7 +827,7 @@ private:
 			{
 				auto realTop = (AssimpNet::Material::StackColor^)top;
 				Color3 col = realTop->color;
-				curComposition = gcnew MaterialColorNode(Color4(col.R, col.G, col.B, alpha));
+				curComposition = gcnew MaterialColorComputeColor(Color4(col.R, col.G, col.B, alpha));
 			}
 			else if (type == AssimpNet::Material::StackType::Texture)
 			{
@@ -847,13 +847,13 @@ private:
 					strengthAlpha *= alpha;
 				
 				
-				auto factorComposition = gcnew MaterialFloat4Node(Vector4(strength, strength, strength, strengthAlpha));
-				curComposition = gcnew MaterialBinaryNode(curComposition, factorComposition, MaterialBinaryOperand::Multiply);
+				auto factorComposition = gcnew MaterialFloat4ComputeColor(Vector4(strength, strength, strength, strengthAlpha));
+				curComposition = gcnew MaterialBinaryComputeColor(curComposition, factorComposition, MaterialBinaryOperand::Multiply);
 			}
 			else if (alpha != 1.f && type != AssimpNet::Material::StackType::Color)
 			{
-				auto factorComposition = gcnew MaterialFloat4Node(Vector4(1.0f, 1.0f, 1.0f, alpha));
-				curComposition = gcnew MaterialBinaryNode(curComposition, factorComposition, MaterialBinaryOperand::Multiply);
+				auto factorComposition = gcnew MaterialFloat4ComputeColor(Vector4(1.0f, 1.0f, 1.0f, alpha));
+				curComposition = gcnew MaterialBinaryComputeColor(curComposition, factorComposition, MaterialBinaryOperand::Multiply);
 			}
 
 			if (isRootElement)
@@ -866,13 +866,13 @@ private:
 			{
 				if (set == 0)
 				{
-					((MaterialBinaryNode^)curCompositionFather)->LeftChild = curComposition;
+					((MaterialBinaryComputeColor^)curCompositionFather)->LeftChild = curComposition;
 					compositionFathers->Push(curCompositionFather);
 					sets.push(1);
 				}
 				else if (set == 1)
 				{
-					((MaterialBinaryNode^)curCompositionFather)->RightChild = curComposition;
+					((MaterialBinaryComputeColor^)curCompositionFather)->RightChild = curComposition;
 				}
 				else
 				{
@@ -898,7 +898,7 @@ private:
 		{
 			if (hasBaseColor)
 			{
-				auto colorNode = gcnew MaterialColorNode(baseColor);
+				auto colorNode = gcnew MaterialColorComputeColor(baseColor);
 				colorNode->AutoAssignKey = false;
 				colorNode->IsReducible = false;
 				if (textureType == aiTextureType_DIFFUSE)
@@ -929,7 +929,7 @@ private:
 			}
 			else if (hasBaseValue)
 			{
-				auto floatNode = gcnew MaterialFloatNode(baseValue);
+				auto floatNode = gcnew MaterialFloatComputeColor(baseValue);
 				floatNode->AutoAssignKey = false;
 				floatNode->IsReducible = false;
 				if (textureType == aiTextureType_OPACITY)
@@ -956,7 +956,7 @@ private:
 					{
 						auto lightMap = GenerateOneTextureTypeLayers(pMat, aiTextureType_LIGHTMAP, textureCount, finalMaterial);
 						if (lightMap != nullptr)
-							albedoNode = gcnew MaterialBinaryNode(albedoNode, lightMap, MaterialBinaryOperand::Add);
+							albedoNode = gcnew MaterialBinaryComputeColor(albedoNode, lightMap, MaterialBinaryOperand::Add);
 					}
 					finalMaterial->AddColorNode(MaterialParameters::AlbedoDiffuse, "diffuse", albedoNode);
 				}
@@ -1010,7 +1010,7 @@ private:
 		{
 			if (specIntensity > 0)
 			{
-				auto specularIntensityMap = gcnew MaterialFloatNode(specIntensity);
+				auto specularIntensityMap = gcnew MaterialFloatComputeColor(specIntensity);
 				specularIntensityMap->Key = MaterialKeys::SpecularIntensity;
 				specularIntensityMap->AutoAssignKey = false;
 				specularIntensityMap->IsReducible = false;

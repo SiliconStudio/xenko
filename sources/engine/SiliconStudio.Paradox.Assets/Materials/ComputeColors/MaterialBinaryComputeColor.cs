@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
     /// A node that describe a binary operation between two <see cref="Materials.MaterialComputeColor"/>
     /// </summary>
     [ContentSerializer(typeof(DataContentSerializer<MaterialBinaryComputeColor>))]
-    [DataContract("MaterialBinaryNode")]
+    [DataContract("MaterialBinaryComputeColor")]
     [Display("Binary Operator")]
     public class MaterialBinaryComputeColor : MaterialComputeColor
     {

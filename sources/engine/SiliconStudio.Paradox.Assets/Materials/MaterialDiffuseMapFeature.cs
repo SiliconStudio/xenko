@@ -20,6 +20,22 @@ namespace SiliconStudio.Paradox.Assets.Materials
     public class MaterialDiffuseMapFeature : IMaterialDiffuseFeature
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="MaterialDiffuseMapFeature"/> class.
+        /// </summary>
+        public MaterialDiffuseMapFeature()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MaterialDiffuseMapFeature"/> class.
+        /// </summary>
+        /// <param name="diffuseMap">The diffuse map.</param>
+        public MaterialDiffuseMapFeature(MaterialComputeColor diffuseMap)
+        {
+            DiffuseMap = diffuseMap;
+        }
+
+        /// <summary>
         /// Gets or sets the diffuse map.
         /// </summary>
         /// <value>The diffuse map.</value>

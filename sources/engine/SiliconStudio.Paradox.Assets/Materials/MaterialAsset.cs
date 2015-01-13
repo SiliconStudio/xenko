@@ -46,7 +46,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The material attributes.</value>
         [DefaultValue(null)]
         [DataMember(10)]
-        public IMaterialAttributes Attributes { get; set; }
+        public MaterialAttributes Attributes { get; set; }
 
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The material compositor.</value>
         [DefaultValue(null)]
         [DataMember(20)]
-        public IMaterialLayers Layers { get; set; }
+        public MaterialBlendLayers Layers { get; set; }
 
         /// <summary>
         /// XXXX
