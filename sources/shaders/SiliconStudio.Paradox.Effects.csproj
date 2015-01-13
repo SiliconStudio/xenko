@@ -1364,12 +1364,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ShadowMapCasterBase.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Shadows\ShadowMapColor.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ShadowMapColor.pdxsl</DependentUpon>
-    </Compile>
     <Compile Include="Shadows\ShadowMapFilterBase.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -2460,10 +2454,6 @@
     <None Include="Shadows\ShadowMapCasterBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadowMapCasterBase.cs</LastGenOutput>
-    </None>
-    <None Include="Shadows\ShadowMapColor.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ShadowMapColor.cs</LastGenOutput>
     </None>
     <None Include="Shadows\ShadowMapFilterBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
