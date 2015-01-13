@@ -17,7 +17,7 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 using SiliconStudio.Paradox.Effects.Data;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Materials;
-namespace SiliconStudio.Paradox.Effects.Core
+namespace SiliconStudio.Paradox.Effects
 {
     internal static partial class ShaderMixins
     {

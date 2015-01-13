@@ -22,11 +22,17 @@
     <Compile Include="..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Core\BasicShaders.cs">
+    <Compile Include="Materials\MaterialSurfaceNormalMap.cs">
+      <DependentUpon>MaterialSurfaceNormalMap.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="ParadoxBaseShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>BasicShaders.pdxfx</DependentUpon>
+      <DependentUpon>ParadoxBaseShader.pdxfx</DependentUpon>
     </Compile>
     <Compile Include="ComputeColor\3dsMax\ComputeColorAdd3ds.cs">
       <DependentUpon>ComputeColorAdd3ds.pdxsl</DependentUpon>
@@ -1607,9 +1613,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Core\BasicShaders.pdxfx">
+    <None Include="Materials\MaterialSurfaceNormalMap.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>BasicShaders.cs</LastGenOutput>
+      <LastGenOutput>MaterialSurfaceNormalMap.cs</LastGenOutput>
+    </None>
+    <None Include="ParadoxBaseShader.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ParadoxBaseShader.cs</LastGenOutput>
     </None>
     <None Include="ComputeColor\3dsMax\ComputeColorAdd3ds.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

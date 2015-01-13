@@ -1,0 +1,30 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Paradox.Effects.Materials
+{
+    /// <summary>
+    /// Material normal map
+    /// </summary>
+    class MaterialSurfaceNormalMap<bool TIsNormalXY1> : IMaterialSurface
+    {
+        compose ComputeColor normalMap;
+
+        override void Compute()
+        {
+            var normal = normalMap.Compute();
+            if (TIsNormalXY1)
+            {
+                // Texture has only xy components (e.g. BC5)
+                streams.matNormal = float3(normal.xy, 1);
+            }
+            else
+            {
+                // Texture has full xyz components 
+                streams.matNormal = normal.xyz;
+            }
+
+            // Normalize after sampling it
+            streams.matNormal = normalize(streams.matNormal);
+        }
+    };
+}

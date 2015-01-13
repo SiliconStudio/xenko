@@ -8,6 +8,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Effects.Materials;
+using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
@@ -27,6 +28,14 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [DefaultValue(null)]
         public MaterialComputeColor NormalMap { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the normal is only stored in XY components and Z is assumed to be 1.0.
+        /// </summary>
+        /// <value><c>true</c> if this instance is xy normal; otherwise, <c>false</c>.</value>
+        /// TODO: We could use an enum as we could have other normal encoding, but for now, assume that we only have [xyz] and [xy1]
+        [DefaultValue(false)]
+        public bool IsXYNormal { get; set; }
+
         private class Factory : IObjectFactory
         {
             public object New(Type type)
@@ -40,8 +49,17 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         public void Visit(MaterialGeneratorContext context)
         {
-            // handle xy vs xyz shaders
-            context.SetStream("matNormal", NormalMap, MaterialKeys.NormalMap, MaterialKeys.NormalValue);
+            if (NormalMap != null)
+            {
+                // Inform the context that we are using matNormal (from the MaterialSurfaceNormalMap shader)
+                context.UseStream("matNormal");
+
+                var computeColorSource = NormalMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.NormalMap, MaterialKeys.NormalValue));
+                var mixin = new ShaderMixinSource();
+                mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceNormalMap", IsXYNormal));
+                mixin.AddComposition("normalMap", computeColorSource);
+                context.AddSurfaceShader(mixin);
+            }
         }
     }
 }
