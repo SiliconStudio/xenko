@@ -87,8 +87,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 shadingModelCount++;
             }
 
-            var parentLayer = currentLayerNode.Parent ?? currentLayerNode;
-
             // If last shading model or current shading model different from next shading model
             if (CurrentShadingModel != null && (!sameShadingModel || currentLayerNode.Parent == null))
             {
@@ -108,16 +106,17 @@ namespace SiliconStudio.Paradox.Assets.Materials
                     shadingSources = new List<ShaderSource>() { shaderBlendingSource };
                 }
 
+                var currentOrParentLayer = currentLayerNode.Parent ?? currentLayerNode;
                 foreach (var shaderSource in shadingSources)
                 {
-                    parentLayer.SurfaceShaders.Add(shaderSource);
+                    currentOrParentLayer.SurfaceShaders.Add(shaderSource);
                 }
             }
-            else if (parentLayer != null)
+            else if (currentLayerNode.Parent != null)
             {
                 foreach (var shaderSource in currentLayerNode.SurfaceShaders)
                 {
-                    parentLayer.SurfaceShaders.Add(shaderSource);
+                    currentLayerNode.Parent.SurfaceShaders.Add(shaderSource);
                 }
             }
 
@@ -158,7 +157,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             int parameterKeyIndex;
             parameterKeyIndices.TryGetValue(baseKey, out parameterKeyIndex);
 
-            key = parameterKeyIndex == 0 ? baseKey : baseKey.ComposeWith(parameterKeyIndex.ToString(CultureInfo.InvariantCulture));
+            key = parameterKeyIndex == 0 ? baseKey : baseKey.ComposeWith("i"+parameterKeyIndex.ToString(CultureInfo.InvariantCulture));
 
             parameterKeyIndex++;
             parameterKeyIndices[baseKey] = parameterKeyIndex;
@@ -170,8 +169,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
         {
             var textureKey = (ParameterKey<Texture>)GetParameterKey(textureComputeColor.Key ?? baseKeys.TextureBaseKey ?? MaterialKeys.GenericTexture);
             var textureReference = textureComputeColor.TextureReference;
-            var texture = AttachedReferenceManager.CreateSerializableVersion<Texture>(textureReference.Id, textureReference.Location);
-            Parameters.Set(textureKey, texture);
+            if (textureReference != null)
+            {
+                var texture = AttachedReferenceManager.CreateSerializableVersion<Texture>(textureReference.Id, textureReference.Location);
+                Parameters.Set(textureKey, texture);
+            }
             return textureKey;
         }
 
@@ -189,7 +191,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
             if (!declaredSamplerStates.TryGetValue(samplerStateDesc, out key))
             {
-                key = MaterialKeys.Sampler.ComposeWith(declaredSamplerStates.Count.ToString(CultureInfo.InvariantCulture));
+                key = MaterialKeys.Sampler.ComposeWith("i" + declaredSamplerStates.Count.ToString(CultureInfo.InvariantCulture));
                 declaredSamplerStates.Add(samplerStateDesc, key);
             }
 

@@ -10,5 +10,12 @@ namespace SiliconStudio.Paradox.Effects.Lights
         stage stream float3 lightDirectionVS;
         stage stream float3 lightColor;
         stage stream float3 lightColorNdotL;
+
+        stage void ResetLightStream()
+        {
+            streams.lightDirectionVS = 0;
+            streams.lightColor = 0;
+            streams.lightColorNdotL = 0;
+        }
     };
 }

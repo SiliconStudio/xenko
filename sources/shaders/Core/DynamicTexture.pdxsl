@@ -9,5 +9,5 @@
 class DynamicTexture<LinkType TTexture>
 {
     [Link("TTexture")]
-    Texture2D Texture;
+    stage Texture2D Texture;
 };

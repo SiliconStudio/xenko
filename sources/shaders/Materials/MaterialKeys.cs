@@ -56,6 +56,11 @@ namespace SiliconStudio.Paradox.Effects.Materials
         /// <summary>
         /// Generic texture key used by a material
         /// </summary>
+        public static readonly ParameterKey<Color3> GenericValueColor3 = ParameterKeys.New<Color3>();
+
+        /// <summary>
+        /// Generic texture key used by a material
+        /// </summary>
         public static readonly ParameterKey<Color4> GenericValueColor4 = ParameterKeys.New<Color4>();
 
         /// <summary>

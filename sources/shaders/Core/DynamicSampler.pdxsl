@@ -9,5 +9,5 @@
 class DynamicSampler<LinkType TSampler>
 {
     [Link("TSampler")]
-    SamplerState Sampler;
+    stage SamplerState Sampler;
 };

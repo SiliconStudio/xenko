@@ -16,9 +16,9 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 namespace SiliconStudio.Paradox.Effects.Lights
 {
-    internal static partial class LightDirectionalGroupKeys
+    public static partial class LightDirectionalGroupKeys
     {
         public static readonly ParameterKey<Vector3[]> LightDirectionsVS = ParameterKeys.New<Vector3[]>(null);
-        public static readonly ParameterKey<Vector3[]> LightColor = ParameterKeys.New<Vector3[]>(null);
+        public static readonly ParameterKey<Color3[]> LightColor = ParameterKeys.New<Color3[]>(null);
     }
 }

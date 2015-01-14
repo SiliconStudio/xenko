@@ -15,6 +15,9 @@ namespace SiliconStudio.Paradox.Effects.Materials
             // In case normal mapping is not used, this is a no-op
             UpdateNormalVSFromTangentToView(streams.matNormal);
 
+            // Make sure that light stream is reset
+            ResetLightStream();
+
             foreach(var lightGroup in lightGroups)
             {
                 const int maxLightCount = lightGroup.GetMaxLightCount();

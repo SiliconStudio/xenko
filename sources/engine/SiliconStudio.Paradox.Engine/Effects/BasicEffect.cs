@@ -24,14 +24,14 @@ namespace SiliconStudio.Paradox.Effects
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-                context.Mixin(mixin, "ShaderBase");
-                context.Mixin(mixin, "TransformationWAndVP");
-                context.Mixin(mixin, "PositionVSStream");
-                context.Mixin(mixin, "BRDFDiffuseBase");
-                context.Mixin(mixin, "BRDFSpecularBase");
-                context.Mixin(mixin, "LightMultiDirectionalShadingPerPixel", 2);
-                context.Mixin(mixin, "TransparentShading");
-                context.Mixin(mixin, "DiscardTransparent");
+                context.Mixin(mixin, "ParadoxBaseShader");
+
+                {
+                    var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                    context.PushCompositionArray(mixin, "lightGroups", __subMixin);
+                    context.Mixin(__subMixin, "LightDirectionalGroup", 2);
+                    context.PopComposition();
+                }
             }
 
             [ModuleInitializer]

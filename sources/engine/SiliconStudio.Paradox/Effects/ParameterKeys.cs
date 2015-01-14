@@ -163,7 +163,7 @@ namespace SiliconStudio.Paradox.Effects
             builder.Append(index);
             builder.Append(']');
 
-            return ComposeWith(key, builder.ToString());
+            return ComposeWith(key, builder);
         }
 
         private static T ComposeWith<T>(this T key, StringBuilder builder) where T : ParameterKey

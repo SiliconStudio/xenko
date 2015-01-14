@@ -12,6 +12,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
         override void Compute()
         {
             var normal = normalMap.Compute();
+            normal = (2.0f * normal) - 1.0f;
             if (TIsNormalXY1)
             {
                 // Texture has only xy components (e.g. BC5)
