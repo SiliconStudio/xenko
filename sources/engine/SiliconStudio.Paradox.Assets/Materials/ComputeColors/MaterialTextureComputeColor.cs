@@ -20,7 +20,7 @@ using SiliconStudio.Paradox.Shaders;
 namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
 {
     [ContentSerializer(typeof(DataContentSerializer<MaterialTextureComputeColor>))]
-    [DataContract("MaterialTextureNode")]
+    [DataContract("MaterialTextureComputeColor")]
     [Display("Texture")]
     public class MaterialTextureComputeColor : MaterialKeyedComputeColor
     {
