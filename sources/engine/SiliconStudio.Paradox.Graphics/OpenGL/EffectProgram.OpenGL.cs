@@ -567,6 +567,12 @@ namespace SiliconStudio.Paradox.Graphics
                             if (samplerReflection.Param.RawName == "NoSampler")
                                 usingSamplerNoSampler = true;
 
+                            // Contrary to Direct3D, samplers and textures are part of the same object in OpenGL
+                            // Since we are exposing the Direct3D representation, a single sampler parameter key can be used for several textures, a single texture can be used with several samplers.
+                            // When such a case is detected, we need to duplicate the resource binding.
+                            textureReflectionIndex = GetReflexionIndex(textureReflection, textureReflectionIndex, effectReflection.ResourceBindings);
+                            samplerReflectionIndex = GetReflexionIndex(samplerReflection, samplerReflectionIndex, effectReflection.ResourceBindings);
+
                             // Update texture uniform mapping
                             GL.Uniform1(uniformIndex, textureUnitCount);
                             
@@ -698,6 +704,26 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 #endif
+
+        /// <summary>
+        /// Inserts the data in the list if this is a copy of a previously set one.
+        /// </summary>
+        /// <param name="data">The  data.</param>
+        /// <param name="index">The index in the list.</param>
+        /// <param name="bindings">The list of bindings.</param>
+        /// <returns>The new index of the data.</returns>
+        private static int GetReflexionIndex(EffectParameterResourceData data, int index, List<EffectParameterResourceData> bindings)
+        {
+            if (data.SlotCount != 0)
+            {
+                // slot count has been specified, this means that this resource was already configured
+                // We have to create a new entry for the data
+                var newIndex = bindings.Count;
+                bindings.Add(data);
+                return newIndex;
+            }
+            return index;
+        }
 
         private static int GetCountFromActiveUniformType(ActiveUniformType type)
         {

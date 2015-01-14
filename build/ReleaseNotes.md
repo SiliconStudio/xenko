@@ -22,6 +22,7 @@ Release date: 2015/01/??
 - Shaders: Better conversion from HLSL to GLSL.
 
 #### Issues fixed
+- Graphics: Fix shared texture and sampler sets on OpenGL when combinations appear in shaders (a texture used with several samplers or a sampler used with several textures).
 - Importers: Remove whitespaces from fbx and assimp objects' names that resulted in compilation errors (e.g. unable to find the shader in the database).
 - Samples: Fix SimpleTerrain increasing rotation speed along with code small mistakes.
 - Shaders: Fix code gen bug not allowing the usage of generic resources type in `pdxsl` files (like `Texture2D<int>` [#128](https://github.com/SiliconStudio/paradox/issues/128)).\
