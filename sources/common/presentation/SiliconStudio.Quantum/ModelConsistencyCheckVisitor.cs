@@ -123,7 +123,8 @@ namespace SiliconStudio.Quantum
         /// <inheritdoc/>
         public override void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
         {
-            if (!nodeBuilder.NotifyNodeConstructing(containerDescriptor, member))
+            bool shouldProcessReference;
+            if (!nodeBuilder.NotifyNodeConstructing(containerDescriptor, member, out shouldProcessReference))
                 return;
 
             var node = GetContextNode();
