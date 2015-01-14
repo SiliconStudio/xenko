@@ -101,6 +101,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\SiliconStudio.Paradox.Importer.Common\ImporterUtils.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Stdafx.h" />
     <ClInclude Include="UtilityFunctions.h" />
