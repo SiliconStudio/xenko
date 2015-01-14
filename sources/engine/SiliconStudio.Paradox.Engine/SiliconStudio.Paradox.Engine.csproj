@@ -147,6 +147,7 @@
     <Compile Include="Effects\RendererExtensions.cs" />
     <Compile Include="Effects\RenderLayers.cs" />
     <Compile Include="Effects\Renderer.cs" />
+    <Compile Include="Effects\RenderMeshSorter.cs" />
     <Compile Include="Effects\RenderModel.cs" />
     <Compile Include="Effects\RenderPipelineFactory.cs" />
     <Compile Include="Effects\RenderStateSetter.cs" />

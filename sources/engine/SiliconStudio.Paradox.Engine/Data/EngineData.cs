@@ -604,7 +604,7 @@ namespace SiliconStudio.Paradox.Engine.Data
         /// <summary>
         /// Data field for <see cref="SiliconStudio.Paradox.Engine.ModelComponent.DrawOrder"/>.
         /// </summary>
-        public System.Single DrawOrder;
+        public System.Int32 DrawOrder;
 
         /// <summary>
         /// Data field for <see cref="SiliconStudio.Paradox.Engine.ModelComponent.Parameters"/>.

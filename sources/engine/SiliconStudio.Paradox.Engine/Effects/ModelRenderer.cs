@@ -306,7 +306,7 @@ namespace SiliconStudio.Paradox.Effects
         private void DefaultSort(RenderContext context, FastList<RenderMesh> meshes)
         {
             // Sort based on ModelComponent.DrawOrder
-            meshes.Sort(ModelComponentSorter.Default);
+            DefaultRenderMeshSorter.Default.Sort(meshes);
         }
 
         private bool OnAcceptRenderModel(RenderModel renderModel)
@@ -407,38 +407,34 @@ namespace SiliconStudio.Paradox.Effects
 
         #region Helper class
 
-        private class ModelComponentSorter : IComparer<RenderMesh>
+        /// <summary>
+        /// Sorts meshes, using material transparency and then <see cref="Engine.ModelComponent.DrawOrder"/>
+        /// </summary>
+        private class DefaultRenderMeshSorter : RenderMeshSorter
         {
-            #region Constants and Fields
+            public static readonly RenderMeshSorter Default = new DefaultRenderMeshSorter();
 
-            public static readonly ModelComponentSorter Default = new ModelComponentSorter();
-
-            #endregion
-
-            public int Compare(RenderMesh left, RenderMesh right)
+            /// <inheritdoc />
+            public override int GenerateSortKey(RenderMesh renderMesh)
             {
-                var xModelComponent = left.RenderModel.ModelInstance;
-                var yModelComponent = right.RenderModel.ModelInstance;
+                int result = 0;
 
-                // Ignore if no associated mesh component
-                if (xModelComponent == null || yModelComponent == null)
-                    return 0;
+                // First, sort using material transparency
+                var material = renderMesh.Mesh.Material;
+                if (material != null && material.Parameters.Get(MaterialParameters.UseTransparent))
+                    result += 0x10000000;
 
-                // TODO: Add a kind of associated data to an effect mesh to speed up this test?
-                var leftMaterial = left.Mesh.Material;
-                var isLeftTransparent = (leftMaterial != null && leftMaterial.Parameters.Get(MaterialParameters.UseTransparent));
+                // Then sort using DrawOrder
+                var modelComponent = renderMesh.RenderModel.ModelInstance;
+                if (modelComponent != null)
+                {
+                    var drawOrder = modelComponent.DrawOrder;
+                    if (((uint)drawOrder & 0xF0000000) != 0)
+                        throw new InvalidOperationException("ModelComponent.DrawOrder is too big for this mesh sorter.");
+                    result += drawOrder;
+                }
 
-                var rightMaterial = right.Mesh.Material;
-                var isRightTransparent = (rightMaterial != null && rightMaterial.Parameters.Get(MaterialParameters.UseTransparent));
-
-                if (isLeftTransparent && !isRightTransparent)
-                    return 1;
-
-                if (!isLeftTransparent && isRightTransparent)
-                    return -1;
-
-                // Use draw order
-                return Math.Sign(xModelComponent.DrawOrder - yModelComponent.DrawOrder);
+                return result;
             }
         }
 
