@@ -28,5 +28,12 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         [DataMember(100)]
         [DefaultValue(null)]
         public ParameterKey Key { get; set; }
+
+        /// <summary>
+        /// Gets or sets the used key.
+        /// </summary>
+        /// <value>The used key.</value>
+        [DataMemberIgnore]
+        public ParameterKey UsedKey { get; set; }
     }
 }

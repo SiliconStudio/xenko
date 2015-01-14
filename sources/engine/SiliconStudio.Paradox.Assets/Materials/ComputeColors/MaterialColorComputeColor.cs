@@ -43,6 +43,8 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         {
             var key = (ParameterKey<Color4>)context.GetParameterKey(Key ?? baseKeys.ValueBaseKey ?? MaterialKeys.GenericValueColor4);
             context.Parameters.Set(key, Value);
+            UsedKey = key;
+
             return new ShaderClassSource("ComputeColorConstantColorLink", key);
             // return new ShaderClassSource("ComputeColorFixed", MaterialUtility.GetAsShaderString(Value));
         }

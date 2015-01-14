@@ -184,6 +184,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
 
             var textureKey = context.GetTextureKey(this, baseKeys);
             var samplerKey = context.GetSamplerKey(Sampler);
+            UsedKey = textureKey;
 
             var scaleStr = MaterialUtility.GetAsShaderString(Scale);
             var offsetStr = MaterialUtility.GetAsShaderString(Offset);
