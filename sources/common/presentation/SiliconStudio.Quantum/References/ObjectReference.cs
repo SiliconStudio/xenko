@@ -63,19 +63,25 @@ namespace SiliconStudio.Quantum.References
         }
 
         /// <summary>
-        /// Set the <see cref="TargetNode"/> and <see cref="TargetGuid"/> to the given object.
+        /// Set the <see cref="TargetNode"/> and <see cref="TargetGuid"/> of the targeted object by retrieving it from or creating it to the given <see cref="ModelContainer"/>.
         /// </summary>
-        /// <param name="targetNode">The <see cref="IModelNode"/> this reference should point on.</param>
-        public void SetTarget(IModelNode targetNode)
+        /// <param name="modelContainer">The <see cref="ModelContainer"/> used to retrieve or create the target node.</param>
+        public IModelNode SetTarget(ModelContainer modelContainer)
         {
-            if (targetNode.Content.Value != null && !Type.IsInstanceOfType(targetNode.Content.Value)) throw new ArgumentException(@"The type of the node content does not match the type of this reference", "targetNode");
+            if (modelContainer == null) throw new ArgumentNullException("modelContainer");
+            IModelNode targetNode = modelContainer.GetOrCreateModelNode(ObjectValue, Type);
+            if (targetNode != null)
+            {
+                if (targetNode.Content.Value != null && !Type.IsInstanceOfType(targetNode.Content.Value)) throw new InvalidOperationException(@"The type of the retrieved node content does not match the type of this reference");
 
-            if (TargetNode != null || TargetGuid != Guid.Empty)
-                throw new InvalidOperationException("TargetNode has already been set.");
-            if (targetNode.Content.Value != null && !Type.IsInstanceOfType(targetNode.Content.Value))
-                throw new InvalidOperationException("TargetNode type does not match the reference type.");
-            TargetNode = targetNode;
-            TargetGuid = targetNode.Guid;
+                if (TargetNode != null || TargetGuid != Guid.Empty)
+                    throw new InvalidOperationException("TargetNode has already been set.");
+                if (targetNode.Content.Value != null && !Type.IsInstanceOfType(targetNode.Content.Value))
+                    throw new InvalidOperationException("TargetNode type does not match the reference type.");
+                TargetNode = targetNode;
+                TargetGuid = targetNode.Guid;
+            }
+            return targetNode;
         }
 
         /// <inheritdoc/>

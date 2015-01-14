@@ -12,10 +12,10 @@ namespace SiliconStudio.Quantum
     public class DefaultContentFactory : IContentFactory
     {
         /// <inheritdoc/>
-        public virtual IContent CreateObjectContent(INodeBuilder nodeBuilder, object obj, ITypeDescriptor descriptor, bool isPrimitive)
+        public virtual IContent CreateObjectContent(INodeBuilder nodeBuilder, object obj, ITypeDescriptor descriptor, bool isPrimitive, bool shouldProcessReference)
         {
             var reference = nodeBuilder.CreateReferenceForNode(descriptor.Type, obj) as ReferenceEnumerable;
-            return new ObjectContent(nodeBuilder, obj, descriptor, isPrimitive, reference);
+            return new ObjectContent(nodeBuilder, obj, descriptor, isPrimitive, reference) { ShouldProcessReference = shouldProcessReference };
         }
 
         /// <inheritdoc/>
@@ -25,10 +25,13 @@ namespace SiliconStudio.Quantum
         }
 
         /// <inheritdoc/>
-        public virtual IContent CreateMemberContent(INodeBuilder nodeBuilder, IContent container, IMemberDescriptor member, bool isPrimitive, object value)
+        public virtual IContent CreateMemberContent(INodeBuilder nodeBuilder, IContent container, IMemberDescriptor member, bool isPrimitive, object value, bool shouldProcessReference)
         {
             var reference = nodeBuilder.CreateReferenceForNode(member.Type, value);
-            return new MemberContent(nodeBuilder, container, member, isPrimitive, reference);
+            return new MemberContent(nodeBuilder, container, member, isPrimitive, reference)
+            {
+                ShouldProcessReference = shouldProcessReference
+            };
         }
     }
 }

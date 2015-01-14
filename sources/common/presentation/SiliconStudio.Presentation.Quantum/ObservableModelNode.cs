@@ -109,19 +109,19 @@ namespace SiliconStudio.Presentation.Quantum
         // To distinguish between lists and items of a list (which have the same TargetNode if the items are primitive types), we check whether the TargetNode is
         // the same of the one of its parent. If so, we're likely in an item of a list of primitive objects. 
         /// <inheritdoc/>
-        public sealed override bool HasList { get { AssertInit(); return (targetNode.Content.Descriptor is CollectionDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || targetNode.Content.Reference is ReferenceEnumerable; } }
+        public sealed override bool HasList { get { AssertInit(); return (targetNode.Content.Descriptor is CollectionDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable); } }
 
         // To distinguish between dictionaries and items of a dictionary (which have the same TargetNode if the value type is a primitive type), we check whether the TargetNode is
         // the same of the one of its parent. If so, we're likely in an item of a dictionary of primitive objects. 
         /// <inheritdoc/>
-        public sealed override bool HasDictionary { get { AssertInit(); return (targetNode.Content.Descriptor is DictionaryDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.Reference is ReferenceEnumerable && ((ReferenceEnumerable)targetNode.Content.Reference).IsDictionary); } }
+        public sealed override bool HasDictionary { get { AssertInit(); return (targetNode.Content.Descriptor is DictionaryDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable && ((ReferenceEnumerable)targetNode.Content.Reference).IsDictionary); } }
 
         /// <inheritdoc/>
         public sealed override IDictionary<string, object> AssociatedData { get { return associatedData; } }
 
         internal Guid ModelGuid { get { return targetNode.Guid; } }
 
-        private ObservableModelNode ModelNodeParent { get { AssertInit(); for (var p = Parent; p != null; p = p.Parent) { var mp = p as ObservableModelNode; if (mp != null) return mp; } return null; } }
+        private ObservableModelNode ModelNodeParent { get { for (var p = Parent; p != null; p = p.Parent) { var mp = p as ObservableModelNode; if (mp != null) return mp; } return null; } }
                 
         /// <summary>
         /// Indicates whether this <see cref="ObservableModelNode"/> instance corresponds to the given <see cref="IModelNode"/>.
@@ -266,20 +266,27 @@ namespace SiliconStudio.Presentation.Quantum
 
         private void GenerateChildren(IModelNode modelNode, ModelNodePath modelNodePath, bool isUpdating)
         {
-            if (modelNode.Content.IsReference)
+            if (modelNode.Content.IsReference && modelNode.Content.ShouldProcessReference)
             {
                 var referenceEnumerable = modelNode.Content.Reference as ReferenceEnumerable;
                 if (referenceEnumerable != null)
                 {
-                    foreach (var reference in referenceEnumerable)
+                    // If the reference should not be processed, we still need to create an observable node for each entry of the enumerable.
+                    // These observable nodes will have the same source node that their parent so we use this information to prevent
+                    // the infinite recursion that could occur due to the fact that these child nodes will have the same model nodes (like primitive types)
+                    // while holding an enumerable reference.
+                    //if (modelNode.Content.ShouldProcessReference || ModelNodeParent.sourceNode != modelNode)
                     {
-                        // The type might be a boxed primitive type, such as float, if the collection has object as generic argument.
-                        // In this case, we must set the actual type to have type converter working, since they usually can't convert
-                        // a boxed float to double for example. Otherwise, we don't want to have a node type that is value-dependent.
-                        var type = reference.TargetNode != null && reference.TargetNode.Content.IsPrimitive ? reference.TargetNode.Content.Type : reference.Type;
-                        var observableNode = Create(Owner, null, false, this, modelNode, modelNodePath, type, reference.Index);
-                        observableNode.Initialize(isUpdating);
-                        AddChild(observableNode);
+                        foreach (var reference in referenceEnumerable)
+                        {
+                            // The type might be a boxed primitive type, such as float, if the collection has object as generic argument.
+                            // In this case, we must set the actual type to have type converter working, since they usually can't convert
+                            // a boxed float to double for example. Otherwise, we don't want to have a node type that is value-dependent.
+                            var type = reference.TargetNode != null && reference.TargetNode.Content.IsPrimitive ? reference.TargetNode.Content.Type : reference.Type;
+                            var observableNode = Create(Owner, null, false, this, modelNode, modelNodePath, type, reference.Index);
+                            observableNode.Initialize(isUpdating);
+                            AddChild(observableNode);
+                        }
                     }
                 }
             }

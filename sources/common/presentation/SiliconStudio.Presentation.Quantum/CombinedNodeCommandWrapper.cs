@@ -13,7 +13,7 @@ namespace SiliconStudio.Presentation.Quantum
     public class CombinedNodeCommandWrapper : NodeCommandWrapperBase
     {
         private readonly IEnumerable<ModelNodeCommandWrapper> commands;
-        private readonly ITransactionalActionStack actionStack;
+        private readonly IViewModelServiceProvider serviceProvider;
         private readonly string name;
         private readonly ObservableViewModelService service;
         private readonly ObservableViewModelIdentifier identifier;
@@ -26,7 +26,7 @@ namespace SiliconStudio.Presentation.Quantum
             this.commands = commands;
             this.name = name;
             this.identifier = identifier;
-            actionStack = serviceProvider.Get<ITransactionalActionStack>();
+            this.serviceProvider = serviceProvider;
             ObservableNodePath = observableNodePath;
         }
 
@@ -34,9 +34,11 @@ namespace SiliconStudio.Presentation.Quantum
 
         public override CombineMode CombineMode { get { return CombineMode.DoNotCombine; } }
 
+        private ITransactionalActionStack ActionStack { get { return serviceProvider.Get<ITransactionalActionStack>(); } }
+        
         public override void Execute(object parameter)
         {
-            actionStack.BeginTransaction();
+            ActionStack.BeginTransaction();
             Redo(parameter, true);
             var displayName = "Executing " + Name;
 
@@ -46,7 +48,7 @@ namespace SiliconStudio.Presentation.Quantum
 
             var node = observableViewModel != null ? observableViewModel.ResolveObservableNode(ObservableNodePath) as CombinedObservableNode : null;
             // TODO: this need to be verified but I suppose node is never null
-            actionStack.EndTransaction(displayName, x => new CombinedValueChangedActionItem(displayName, service, node != null ? node.Path : null, identifier, x));
+            ActionStack.EndTransaction(displayName, x => new CombinedValueChangedActionItem(displayName, service, node != null ? node.Path : null, identifier, x));
         }
 
         protected override UndoToken Redo(object parameter, bool creatingActionItem)

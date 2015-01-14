@@ -1,6 +1,5 @@
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Contents;
-using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
 {
@@ -17,8 +16,9 @@ namespace SiliconStudio.Quantum
         /// <param name="obj">The object represented by the <see cref="IContent"/> instance to create.</param>
         /// <param name="descriptor">The <see cref="ITypeDescriptor"/> of the object represented by the <see cref="IContent"/> instance to create.</param>
         /// <param name="isPrimitive">Indicates if this object should be considered as a primitive type. This is only <c>true</c> if the object type has been added to the <see cref="INodeBuilder.PrimitiveTypes"/> collection.</param>
+        /// <param name="shouldProcessReference">Indicates whether the reference that will be created in the node should be processed or not.</param>
         /// <returns>A new <see cref="IContent"/> instance representing the given class object.</returns>
-        IContent CreateObjectContent(INodeBuilder nodeBuilder, object obj, ITypeDescriptor descriptor, bool isPrimitive);
+        IContent CreateObjectContent(INodeBuilder nodeBuilder, object obj, ITypeDescriptor descriptor, bool isPrimitive, bool shouldProcessReference);
 
         /// <summary>
         /// Creates an <see cref="IContent"/> instance that represents a boxed structure object.
@@ -38,7 +38,8 @@ namespace SiliconStudio.Quantum
         /// <param name="member">The <see cref="IMemberDescriptor"/> of the member.</param>
         /// <param name="isPrimitive">Indicates if this object should be considered as a primitive type. This is <c>true</c> if the member type is a primitve .NET type, or if it is a type that has been added to the <see cref="INodeBuilder.PrimitiveTypes"/> collection.</param>
         /// <param name="value">The value of this object.</param>
+        /// <param name="shouldProcessReference">Indicates whether the reference that will be created in the node should be processed or not.</param>
         /// <returns>A new <see cref="IContent"/> instance representing the given member property.</returns>
-        IContent CreateMemberContent(INodeBuilder nodeBuilder, IContent container, IMemberDescriptor member, bool isPrimitive, object value);
+        IContent CreateMemberContent(INodeBuilder nodeBuilder, IContent container, IMemberDescriptor member, bool isPrimitive, object value, bool shouldProcessReference);
     }
 }

@@ -15,9 +15,6 @@ namespace SiliconStudio.Quantum
     /// </summary>
     public class ModelContainer
     {
-        // TODO: Currently hardcoded until editor plugin system is refactored
-        public static readonly List<IModelBuilderPlugin> ModelBuilderPlugins = new List<IModelBuilderPlugin>();
-
         private readonly Dictionary<Guid, IModelNode> modelsByGuid = new Dictionary<Guid, IModelNode>();
         private readonly IGuidContainer guidContainer;
         private readonly object lockObject = new object();
@@ -215,7 +212,7 @@ namespace SiliconStudio.Quantum
             if (reference == null) throw new ArgumentNullException("reference");
             if (modelNode == null) throw new ArgumentNullException("modelNode");
 
-            var content = modelNode.Content;
+            var content = (ContentBase)modelNode.Content;
 
             var referenceEnumerable = reference as ReferenceEnumerable;
             if (referenceEnumerable != null)
@@ -242,10 +239,9 @@ namespace SiliconStudio.Quantum
 
                     if (singleReference.TargetNode == null)
                     {
-                        IModelNode node = GetOrCreateModelNode(reference.ObjectValue, reference.Type, referencer: modelNode);
+                        IModelNode node = singleReference.SetTarget(this);
                         if (node != null)
-                        {
-                            singleReference.SetTarget(node);
+                        {                 
                             var structContent = node.Content as BoxedContent;
                             if (structContent != null)
                             {
@@ -274,6 +270,10 @@ namespace SiliconStudio.Quantum
                                 UpdateOrCreateReferenceTarget(child.Content.Reference, child, refreshReferences);
                             }
                         }
+                        else
+                        {
+                            content.ShouldProcessReference = false;
+                        }
                     }
                 }
             }
@@ -281,7 +281,7 @@ namespace SiliconStudio.Quantum
 
         private static INodeBuilder CreateDefaultNodeBuilder()
         {
-            var nodeBuilder = new DefaultModelBuilder(ModelBuilderPlugins);
+            var nodeBuilder = new DefaultModelBuilder();
             return nodeBuilder;
         }
     }
