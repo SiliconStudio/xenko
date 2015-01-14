@@ -1,4 +1,7 @@
-#include <string>
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+#ifndef __IMPORTER_UTILS_H__
+#define __IMPORTER_UTILS_H__
 
 void ReplaceCharacter(std::string& name, char c, char replacement)
 {
@@ -19,3 +22,5 @@ void RemoveCharacter(std::string& name, char c)
 		nextCharacterPos = name.find(c, nextCharacterPos);
 	}
 }
+
+#endif // __IMPORTER_UTILS_H__
