@@ -39,15 +39,5 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// </userdoc>
         [DataMember(60)]
         public ParameterCollection Parameters;
-
-        /// <summary>
-        /// The light permutation parameters
-        /// </summary>
-        /// <userdoc>
-        /// The lighting configurations the mesh supports.
-        /// </userdoc>
-        [DataMember(70)]
-        [DefaultValue(null)]
-        public AssetReference<LightingAsset> LightingParameters;
     }
 }

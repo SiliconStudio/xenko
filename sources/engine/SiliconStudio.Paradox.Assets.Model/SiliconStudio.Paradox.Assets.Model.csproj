@@ -26,7 +26,6 @@
     <Compile Include="EntitySerializer.cs" />
     <Compile Include="EntityTreeAsset.cs" />
     <Compile Include="FbxAssetImporter.cs" />
-    <Compile Include="EntityCompilerParametersGenerator.cs" />
     <Compile Include="MaterialInstance.cs" />
     <Compile Include="ImportAssimpCommand.cs" />
     <Compile Include="ImportFbxCommand.cs" />
