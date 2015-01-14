@@ -37,6 +37,7 @@ namespace SiliconStudio.Paradox.Graphics
         private EffectInputSignature currentEffectInputSignature;
         private SharpDX.Direct3D11.InputLayout currentInputLayout;
         private SharpDX.Direct3D11.RenderTargetView currentRenderTargetView;
+        private VertexArrayObject currentVertexArrayObject;
         private VertexArrayLayout currentVertexArrayLayout;
         private SharpDX.ViewportF[] currentNativeViewports = new SharpDX.ViewportF[16];
         private Viewport[] currentViewports;
@@ -347,6 +348,7 @@ namespace SiliconStudio.Paradox.Graphics
             currentEffectInputSignature = null;
             currentVertexArrayLayout = null;
             currentInputLayout = null;
+            currentVertexArrayObject = null;
             CurrentEffect = null;
 
             SetDepthAndRenderTarget(DepthStencilBuffer, BackBuffer);
@@ -1000,6 +1002,7 @@ namespace SiliconStudio.Paradox.Graphics
 
             currentInputLayout = null;
             currentEffectInputSignature = null;
+            currentVertexArrayObject = null;
             currentRenderTargetView = null;
             currentVertexArrayLayout = null;
             nativeDevice.Dispose();
@@ -1025,6 +1028,9 @@ namespace SiliconStudio.Paradox.Graphics
 
             // Setup the primitive type
             PrimitiveType = primitiveType;
+
+            if (currentVertexArrayObject == newVertexArrayObject)
+                return;
 
             // If the vertex array object is null, simply set the InputLayout to null
             if (newVertexArrayObject == null)
@@ -1055,6 +1061,8 @@ namespace SiliconStudio.Paradox.Graphics
                 // Apply the VertexArrayObject
                 newVertexArrayObject.Apply(inputAssembler);
             }
+
+            currentVertexArrayObject = newVertexArrayObject;
 
             // Setup the input layout
             inputAssembler.InputLayout = currentInputLayout;
