@@ -15,9 +15,6 @@ namespace SiliconStudio.Quantum
     /// </summary>
     public class ModelContainer
     {
-        // TODO: Currently hardcoded until editor plugin system is refactored
-        public static readonly List<IModelBuilderPlugin> ModelBuilderPlugins = new List<IModelBuilderPlugin>();
-
         private readonly Dictionary<Guid, IModelNode> modelsByGuid = new Dictionary<Guid, IModelNode>();
         private readonly IGuidContainer guidContainer;
         private readonly object lockObject = new object();
@@ -284,7 +281,7 @@ namespace SiliconStudio.Quantum
 
         private static INodeBuilder CreateDefaultNodeBuilder()
         {
-            var nodeBuilder = new DefaultModelBuilder(ModelBuilderPlugins);
+            var nodeBuilder = new DefaultModelBuilder();
             return nodeBuilder;
         }
     }

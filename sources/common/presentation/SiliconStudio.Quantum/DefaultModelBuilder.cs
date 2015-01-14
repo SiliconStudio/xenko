@@ -20,7 +20,6 @@ namespace SiliconStudio.Quantum
     {
         private readonly Stack<ModelNode> contextStack = new Stack<ModelNode>();
         private readonly HashSet<IContent> referenceContents = new HashSet<IContent>();
-        private readonly List<IModelBuilderPlugin> plugins;
         private ModelNode rootNode;
         private Guid rootGuid;
         private IModelNode referencerNode;
@@ -28,9 +27,8 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultModelBuilder"/> class that can be used to construct a model for a data object.
         /// </summary>
-        public DefaultModelBuilder(List<IModelBuilderPlugin> plugins)
+        public DefaultModelBuilder()
         {
-            this.plugins = plugins;
             PrimitiveTypes = new List<Type>();
             AvailableCommands = new List<INodeCommand>();
             ContentFactory = new DefaultContentFactory();
@@ -114,7 +112,6 @@ namespace SiliconStudio.Quantum
 
             if (!IsPrimitiveType(currentDescriptor.Type))
             {
-                ProcessModelNode();
                 base.VisitObject(obj, descriptor, (GetContextNode().Flags & ModelNodeFlags.DoNotVisitMembers) == 0);
             }
 
@@ -122,14 +119,6 @@ namespace SiliconStudio.Quantum
             {
                 PopContextNode();
                 rootNode.Seal();
-            }
-        }
-
-        private void ProcessModelNode()
-        {
-            foreach (var plugin in plugins)
-            {
-                plugin.Process(this, GetContextNode());
             }
         }
 
@@ -238,10 +227,6 @@ namespace SiliconStudio.Quantum
             {
                 // For enumerable references, we visit the member to allow VisitCollection or VisitDictionary to enrich correctly the node.
                 Visit(content.Value);
-            }
-            else
-            {
-                ProcessModelNode();
             }
             PopContextNode();
 
