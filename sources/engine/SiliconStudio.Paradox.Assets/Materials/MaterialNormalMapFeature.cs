@@ -7,6 +7,7 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Shaders;
 
@@ -69,6 +70,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             {
                 // Inform the context that we are using matNormal (from the MaterialSurfaceNormalMap shader)
                 context.UseStream("matNormal");
+                context.Parameters.Set(MaterialParameters.HasNormalMap, true);
 
                 var computeColorSource = NormalMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.NormalMap, MaterialKeys.NormalValue));
                 var mixin = new ShaderMixinSource();
