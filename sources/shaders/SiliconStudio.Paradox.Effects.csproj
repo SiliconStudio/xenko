@@ -1556,6 +1556,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>MinMaxBounding.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Utils\NormalUtil.cs">
+      <DependentUpon>NormalUtil.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Utils\NormalPack.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -2606,6 +2612,10 @@
     <None Include="Utils\MinMaxBounding.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MinMaxBounding.cs</LastGenOutput>
+    </None>
+    <None Include="Utils\NormalUtil.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>NormalUtil.cs</LastGenOutput>
     </None>
     <None Include="Utils\NormalPack.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

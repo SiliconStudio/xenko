@@ -3,14 +3,19 @@
 namespace SiliconStudio.Paradox.Effects.Materials
 {
     /// <summary>
-    /// Blend a stream linearly
+    /// Blend a stream using RNM
     /// </summary>
     class MaterialStreamNormalBlend : IMaterialStreamBlend
     {
         override void Compute(Streams fromStream)
         {
-            // TODO: code normal blending according to http://blog.selfshadow.com/publications/blending-in-detail/
-            streams.matNormal = lerp(fromStream.matNormal, streams.matNormal, streams.matBlend);
+            var middleNormal = NormalUtil.BlendRNM(fromStream.matNormal, streams.matNormal);
+
+            // This is not correct, but try to have a good 0.5 and linear interpol from this
+            // ideally, we should have RNM support a blending based of matBlend
+            streams.matNormal =  normalize(streams.matBlend < 0.5 ? 
+                  lerp(fromStream.matNormal, middleNormal, streams.matBlend / 0.5)
+                : lerp(middleNormal, streams.matNormal, (streams.matBlend - 0.5) * 2));
         }
     };
 }
