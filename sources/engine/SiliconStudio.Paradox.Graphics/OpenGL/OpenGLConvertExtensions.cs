@@ -112,6 +112,25 @@ namespace SiliconStudio.Paradox.Graphics
         }
 #endif
 
+        public static BufferAccessMask ToOpenGLMask(this MapMode mapMode)
+        {
+            switch (mapMode)
+            {
+                case MapMode.Read:
+                    return BufferAccessMask.MapReadBit;
+                case MapMode.Write:
+                    return BufferAccessMask.MapWriteBit;
+                case MapMode.ReadWrite:
+                    return BufferAccessMask.MapReadBit | BufferAccessMask.MapWriteBit;
+                case MapMode.WriteDiscard:
+                    return BufferAccessMask.MapWriteBit | BufferAccessMask.MapInvalidateBufferBit;
+                case MapMode.WriteNoOverwrite:
+                    return BufferAccessMask.MapWriteBit | BufferAccessMask.MapUnsynchronizedBit;
+                default:
+                    throw new ArgumentOutOfRangeException("mapMode");
+            }
+        }
+
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
         public static ES30.PrimitiveType ToOpenGLES(this PrimitiveType primitiveType)
         {
@@ -129,25 +148,6 @@ namespace SiliconStudio.Paradox.Graphics
                     return ES30.PrimitiveType.TriangleStrip;
                 default:
                     throw new NotImplementedException();
-            }
-        }
-
-        public static BufferAccessMask ToOpenGL(this MapMode mapMode)
-        {
-            switch (mapMode)
-            {
-                case MapMode.Read:
-                    return BufferAccessMask.MapReadBit;
-                case MapMode.Write:
-                    return BufferAccessMask.MapWriteBit;
-                case MapMode.ReadWrite:
-                    return BufferAccessMask.MapReadBit | BufferAccessMask.MapWriteBit;
-                case MapMode.WriteDiscard:
-                    return BufferAccessMask.MapWriteBit | BufferAccessMask.MapInvalidateBufferBit;
-                case MapMode.WriteNoOverwrite:
-                    return BufferAccessMask.MapWriteBit | BufferAccessMask.MapUnsynchronizedBit;
-                default:
-                    throw new ArgumentOutOfRangeException("mapMode");
             }
         }
 #else

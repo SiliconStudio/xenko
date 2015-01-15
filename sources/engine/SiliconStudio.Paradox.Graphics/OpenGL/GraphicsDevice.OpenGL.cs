@@ -195,11 +195,19 @@ namespace SiliconStudio.Paradox.Graphics
         };
 #endif
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
+        private const TextureTarget TextureTargetTexture2D = TextureTarget.Texture2D;
+        private const TextureTarget3D TextureTargetTexture3D = TextureTarget3D.Texture3D;
+#else
         private const TextureTarget2d TextureTargetTexture2D = TextureTarget2d.Texture2D;
+        private const TextureTarget3d TextureTargetTexture3D = TextureTarget3d.Texture3D;
+#endif
 #else
         private const TextureTarget TextureTargetTexture2D = TextureTarget.Texture2D;
+        private const TextureTarget TextureTargetTexture3D = TextureTarget.Texture3D;
 #endif
+
         /// <summary>
         /// Gets the status of this device.
         /// </summary>
@@ -1145,16 +1153,16 @@ namespace SiliconStudio.Paradox.Graphics
 
                 UnbindVertexArrayObject();
                 GL.BindBuffer(buffer.bufferTarget, buffer.ResourceId);
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                mapResult = GL.MapBufferRange(buffer.bufferTarget, (IntPtr)offsetInBytes, (IntPtr)lengthInBytes, mapMode.ToOpenGL());
-#else
-                if (mapMode == MapMode.WriteDiscard)
-                    mapResult = GL.MapBufferRange(buffer.bufferTarget, (IntPtr)offsetInBytes, (IntPtr)lengthInBytes, BufferAccessMask.MapWriteBit | BufferAccessMask.MapInvalidateBufferBit);
-                else if (mapMode == MapMode.WriteNoOverwrite)
-                    mapResult = GL.MapBufferRange(buffer.bufferTarget, (IntPtr)offsetInBytes, (IntPtr)lengthInBytes, BufferAccessMask.MapWriteBit | BufferAccessMask.MapUnsynchronizedBit);
-                else
+
+#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                if (mapMode != MapMode.WriteDiscard && mapMode != MapMode.WriteNoOverwrite)
                     mapResult = GL.MapBuffer(buffer.bufferTarget, mapMode.ToOpenGL());
+                else
 #endif
+                {
+                    mapResult = GL.MapBufferRange(buffer.bufferTarget, (IntPtr)offsetInBytes, (IntPtr)lengthInBytes, mapMode.ToOpenGLMask());
+                }
+
                 GL.BindBuffer(buffer.bufferTarget, 0);
 
                 return new MappedResource(resource, subResourceIndex, new DataBox { DataPointer = mapResult, SlicePitch = 0, RowPitch = 0 });
@@ -1206,7 +1214,7 @@ namespace SiliconStudio.Paradox.Graphics
             GL.BindBuffer(pixelPackUnpack, texture.PixelBufferObjectId);
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
             
-            var mapResult = GL.MapBufferRange(pixelPackUnpack, (IntPtr)offsetInBytes, (IntPtr)lengthInBytes, mapMode.ToOpenGL());
+            var mapResult = GL.MapBufferRange(pixelPackUnpack, (IntPtr)offsetInBytes, (IntPtr)lengthInBytes, mapMode.ToOpenGLMask());
             GL.BindBuffer(pixelPackUnpack, 0);
 #else
             offsetInBytes = 0;
@@ -1832,10 +1840,11 @@ namespace SiliconStudio.Paradox.Graphics
                 if (texture.Description.Usage == GraphicsResourceUsage.Staging)
                 {
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                    // unmapping on OpenGL ES 2 means doing nothing since the buffer is on the CPU memory
                     if (!IsOpenGLES2)
 #endif
                     {
-                        GL.BindBuffer(BufferTarget.PixelPackBuffer, texture.ResourceId);
+                        GL.BindBuffer(BufferTarget.PixelPackBuffer, texture.PixelBufferObjectId);
                         GL.UnmapBuffer(BufferTarget.PixelPackBuffer);
                         GL.BindBuffer(BufferTarget.PixelPackBuffer, 0);
                     }
@@ -1846,44 +1855,30 @@ namespace SiliconStudio.Paradox.Graphics
                 else if (texture.Description.Usage == GraphicsResourceUsage.Dynamic)
 #endif
                 {
-                    
+                    GL.BindBuffer(BufferTarget.PixelUnpackBuffer, texture.PixelBufferObjectId);
+                    GL.UnmapBuffer(BufferTarget.PixelUnpackBuffer);
+
+                    GL.BindTexture(texture.Target, texture.ResourceId);
+
+                    // Bind buffer to texture
+                    switch (texture.Target)
                     {
-                        GL.BindBuffer(BufferTarget.PixelUnpackBuffer, texture.PixelBufferObjectId);
-                        GL.UnmapBuffer(BufferTarget.PixelUnpackBuffer);
-
-                        GL.BindTexture(texture.Target, texture.ResourceId);
-
-                        // Bind buffer to texture
-                        switch (texture.Target)
-                        {
 #if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                            case TextureTarget.Texture1D:
-                                GL.TexSubImage1D(TextureTarget.Texture1D, 0, 0, texture.Width, texture.FormatGl, texture.Type, IntPtr.Zero);
-                                GL.BindTexture(TextureTarget.Texture1D, 0);
-                                break;
+                        case TextureTarget.Texture1D:
+                            GL.TexSubImage1D(TextureTarget.Texture1D, 0, 0, texture.Width, texture.FormatGl, texture.Type, IntPtr.Zero);
+                            break;
 #endif
-                            case TextureTarget.Texture2D:
-                                GL.TexSubImage2D(TextureTargetTexture2D, 0, 0, 0, texture.Width, texture.Height, texture.FormatGl, texture.Type, IntPtr.Zero);
-                                GL.BindTexture(TextureTarget.Texture2D, 0);
-                                break;
-                            case TextureTarget.Texture3D:
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
-                                GL.TexSubImage3D(TextureTarget3D.Texture3D, 0, 0, 0, 0, texture.Width, texture.Height, texture.Depth, texture.FormatGl, texture.Type, IntPtr.Zero);
-#else
-                                GL.TexSubImage3D(TextureTarget3d.Texture3D, 0, 0, 0, 0, texture.Width, texture.Height, texture.Depth, texture.FormatGl, texture.Type, IntPtr.Zero);
-#endif
-#else
-                                GL.TexSubImage3D(TextureTarget.Texture3D, 0, 0, 0, 0, texture.Width, texture.Height, texture.Depth, texture.FormatGl, texture.Type, IntPtr.Zero);
-#endif
-                                GL.BindTexture(TextureTarget.Texture3D, 0);
-                                break;
-                            default:
-                                throw new NotSupportedException("Invalid texture target: " + texture.Target);
-                        }
-
-                        GL.BindBuffer(BufferTarget.PixelUnpackBuffer, 0);
+                        case TextureTarget.Texture2D:
+                            GL.TexSubImage2D(TextureTargetTexture2D, 0, 0, 0, texture.Width, texture.Height, texture.FormatGl, texture.Type, IntPtr.Zero);
+                            break;
+                        case TextureTarget.Texture3D:
+                            GL.TexSubImage3D(TextureTargetTexture3D, 0, 0, 0, 0, texture.Width, texture.Height, texture.Depth, texture.FormatGl, texture.Type, IntPtr.Zero);
+                            break;
+                        default:
+                            throw new NotSupportedException("Invalid texture target: " + texture.Target);
                     }
+                    GL.BindTexture(texture.Target, 0);
+                    GL.BindBuffer(BufferTarget.PixelUnpackBuffer, 0);
                 }
                 else
                 {
