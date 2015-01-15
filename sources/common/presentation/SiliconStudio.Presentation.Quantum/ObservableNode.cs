@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Dynamic;
 using System.Linq;
-using System.Linq.Expressions;
+using System.Windows;
 using System.Windows.Input;
 
 using SiliconStudio.Presentation.Collections;
@@ -13,6 +13,8 @@ using SiliconStudio.Presentation.Core;
 using SiliconStudio.Presentation.ViewModel;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Contents;
+
+using Expression = System.Linq.Expressions.Expression;
 
 namespace SiliconStudio.Presentation.Quantum
 {
@@ -241,7 +243,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <returns>The corresponding object, or <c>null</c> if no object with the given name exists.</returns>
         public object GetDynamicObject(string name)
         {
-            return GetChild(name) ?? GetCommand(name) ?? GetAssociatedData(name);
+            return GetChild(name) ?? GetCommand(name) ?? GetAssociatedData(name) ?? DependencyProperty.UnsetValue;
         }
 
         /// <inheritdoc/>
