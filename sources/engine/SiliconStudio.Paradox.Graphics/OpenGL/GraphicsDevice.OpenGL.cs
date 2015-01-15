@@ -103,6 +103,7 @@ namespace SiliconStudio.Paradox.Graphics
         private GraphicsAdapter _adapter;
         private SwapChainBackend _defaultSwapChainBackend;
         private Viewport[] _currentViewports = new Viewport[16];
+        private Rectangle[] _currentScissorRectangles = new Rectangle[16];
         private int contextBeginCounter = 0;
 
         private int activeTexture = 0;
@@ -1031,11 +1032,14 @@ namespace SiliconStudio.Paradox.Graphics
                 {
                     for (int i = 0; i < renderTargets.Length; ++i)
                     {
-                        // TODO: Add support for render buffer
                         if (renderTargets[i] != null)
                         {
                             lastRenderTargetIndex = i;
-                            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0 + i, TextureTargetTexture2D, renderTargets[i].ResourceId, 0);
+                            // TODO: enable color render buffers when Texture creates one for other types than depth/stencil.
+                            //if (renderTargets[i].IsRenderbuffer)
+                            //    GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0 + i, RenderbufferTarget.Renderbuffer, renderTargets[i].ResourceId);
+                            //else
+                                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0 + i, TextureTargetTexture2D, renderTargets[i].ResourceId, 0);
                         }
                     }
                 }
@@ -1266,12 +1270,7 @@ namespace SiliconStudio.Paradox.Graphics
                     var boundSamplerState = texture.BoundSamplerState ?? defaultSamplerState;
                     var samplerState = samplerStates[textureInfo.TextureUnit] ?? SamplerStates.LinearClamp;
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                     bool hasMipmap = texture.Description.MipLevels > 1;
-#else
-                    // TODO: change that
-                    bool hasMipmap = false;
-#endif
 
                     bool textureChanged = texture != boundTexture;
                     bool samplerStateChanged = samplerState != boundSamplerState;
@@ -1624,15 +1623,19 @@ namespace SiliconStudio.Paradox.Graphics
 #if DEBUG
             EnsureContextActive();
 #endif
-            //TODO: verify the range of the values
-            GL.Scissor(left, bottom, right-left, top-bottom);
+            _currentScissorRectangles[0].Left = left;
+            _currentScissorRectangles[0].Top = top;
+            _currentScissorRectangles[0].Right = right;
+            _currentScissorRectangles[0].Bottom = bottom;
+            
+            UpdateScissor(_currentScissorRectangles[0]);
         }
 
         /// <summary>
         /// Binds a set of scissor rectangles to the rasterizer stage.
         /// </summary>
         /// <param name="scissorRectangles">The set of scissor rectangles to bind.</param>
-        public unsafe void SetScissorRectangles(params Rectangle[] scissorRectangles)
+        public void SetScissorRectangles(params Rectangle[] scissorRectangles)
         {
 #if DEBUG
             EnsureContextActive();
@@ -1641,19 +1644,38 @@ namespace SiliconStudio.Paradox.Graphics
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
             throw new NotImplementedException();
 #else
-            //TODO: verify the range of the values
-            var rectangleValues = new int[4*scissorRectangles.Length];
+            var scissorCount = scissorRectangles.Length > _currentScissorRectangles.Length ? _currentScissorRectangles.Length : scissorRectangles.Length;
 
-            for (int i = 0; i < scissorRectangles.Length; ++i)
+            for (var i = 0; i < scissorCount; ++i)
+                _currentScissorRectangles[i] = scissorRectangles[i];
+
+            var rectangleValues = new int[4 * scissorCount];
+
+            for (int i = 0; i < scissorCount; ++i)
             {
+                var height = scissorRectangles[i].Height;
                 rectangleValues[4*i] = scissorRectangles[i].X;
-                rectangleValues[4*i + 1] = scissorRectangles[i].Y;
+                rectangleValues[4 * i + 1] = GetScissorY(scissorRectangles[i].Y, height);
                 rectangleValues[4*i + 2] = scissorRectangles[i].Width;
-                rectangleValues[4*i + 3] = scissorRectangles[i].Height;
+                rectangleValues[4*i + 3] = height;
             }
 
-            GL.ScissorArray(0, scissorRectangles.Length, rectangleValues);
+            GL.ScissorArray(0, scissorCount, rectangleValues);
 #endif
+        }
+
+        internal void UpdateScissor(Rectangle scissorRect)
+        {
+            var height = scissorRect.Height;
+            GL.Scissor(scissorRect.Left, GetScissorY(scissorRect.Bottom, height), scissorRect.Right - scissorRect.Left, height);
+        }
+
+        private int GetScissorY(int scissorY, int scissorHeight)
+        {
+            // if we flip the render target, we should modify the scissor accordingly
+            if (flipRenderTarget)
+                return scissorY;
+            return boundFBOHeight - scissorY - scissorHeight;
         }
 
         /// <summary>
@@ -1721,7 +1743,9 @@ namespace SiliconStudio.Paradox.Graphics
             else
                 boundFBOHeight = 0;
 
+            // TODO: support multiple viewports and scissors?
             UpdateViewport(_currentViewports[0]);
+            UpdateScissor(_currentScissorRectangles[0]);
         }
 
         private void UpdateHasRenderTarget()
@@ -1803,12 +1827,44 @@ namespace SiliconStudio.Paradox.Graphics
             EnsureContextActive();
 #endif
 
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+            throw new NotImplementedException();
+#else
+            if (index >= _currentViewports.Length)
+                throw new IndexOutOfRangeException("The viewport index is higher than the number of available viewports.");
             _currentViewports[index] = value;
             UpdateViewports();
 #endif
-            
-            throw new NotImplementedException();
+        }
+
+        internal void UpdateViewport(Viewport viewport)
+        {
+            GL.Viewport((int)viewport.X, (int)GetViewportY(viewport), (int)viewport.Width, (int)viewport.Height);
+        }
+
+#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+        internal void UpdateViewports()
+        {
+            int nbViewports = _currentViewports.Length;
+            float[] viewports = new float[nbViewports * 4];
+            for (int i = 0; i < nbViewports; ++i)
+            {
+                var currViewport = _currentViewports[i];
+                viewports[4 * i] = currViewport.X;
+                viewports[4 * i + 1] = GetViewportY(currViewport);
+                viewports[4 * i + 2] = currViewport.Width;
+                viewports[4 * i + 3] = currViewport.Height;
+            }
+            GL.ViewportArray(0, nbViewports, viewports);
+        }
+#endif
+
+        private float GetViewportY(Viewport viewport)
+        {
+            // if we flip the render target, we should modify the viewport accordingly
+            if (flipRenderTarget)
+                return viewport.Y;
+            return boundFBOHeight - viewport.Y - viewport.Height;
         }
 
         internal int TryCompileShader(ShaderType shaderType, string sourceCode)
@@ -2094,36 +2150,6 @@ namespace SiliconStudio.Paradox.Graphics
                 Monitor.Exit(asyncCreationLockObject);
                 asyncCreationLockTaken = false;
             }
-        }
-
-        internal void UpdateViewport(Viewport viewport)
-        {
-            GL.Viewport((int)viewport.X, (int)GetViewportY(viewport), (int)viewport.Width, (int)viewport.Height);
-        }
-
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-        internal void UpdateViewports()
-        {
-            int nbViewports = _currentViewports.Length;
-            float[] viewports = new float[nbViewports * 4];
-            for (int i = 0; i < nbViewports; ++i)
-            {
-                var currViewport = _currentViewports[i];
-                viewports[4 * i] = currViewport.X;
-                viewports[4 * i + 1] = GetViewportY(currViewport);
-                viewports[4 * i + 2] = currViewport.Width;
-                viewports[4 * i + 3] = currViewport.Height;
-            }
-            GL.ViewportArray(0, nbViewports, viewports);
-        }
-#endif
-
-        private float GetViewportY(Viewport viewport)
-        {
-            // if we flip the render target, we should modify the viewport accordingly
-            if (flipRenderTarget)
-                return viewport.Y;
-            return boundFBOHeight - viewport.Y - viewport.Height;
         }
 
         protected void InitializePlatformDevice(GraphicsProfile[] graphicsProfile, DeviceCreationFlags deviceCreationFlags, WindowHandle windowHandle)
