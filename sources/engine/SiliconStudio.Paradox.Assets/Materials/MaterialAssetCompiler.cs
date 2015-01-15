@@ -92,6 +92,10 @@ namespace SiliconStudio.Paradox.Assets.Materials
                     var assetItem = context.Package.Session.FindAsset(reference.Id)
                                     ?? context.Package.Session.FindAsset(reference.Location);
 
+                    if (assetItem == null)
+                    {
+                        return null;
+                    }
                     return assetItem.Asset as MaterialAsset;
                 };
                 var materialClone = (MaterialAsset)AssetCloner.Clone(Asset);
