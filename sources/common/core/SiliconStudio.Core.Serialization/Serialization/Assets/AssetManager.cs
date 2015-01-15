@@ -14,7 +14,18 @@ namespace SiliconStudio.Core.Serialization.Assets
 {
     public sealed partial class AssetManager : IAssetManager
     {
-        public static DatabaseFileProvider FileProvider { get { return GetFileProvider(); } }
+        public static DatabaseFileProvider FileProvider
+        {
+            get
+            {
+                // Don't try to call GetFileProvider if it is null
+                if (GetFileProvider == null)
+                {
+                    return null;
+                }
+                return GetFileProvider();
+            }
+        }
 
         public static Func<DatabaseFileProvider> GetFileProvider { get; set; }
 
