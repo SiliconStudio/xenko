@@ -1664,7 +1664,7 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
         }
 
-        internal void UpdateScissor(Rectangle scissorRect)
+        private void UpdateScissor(Rectangle scissorRect)
         {
             var height = scissorRect.Height;
             GL.Scissor(scissorRect.Left, GetScissorY(scissorRect.Bottom, height), scissorRect.Right - scissorRect.Left, height);
@@ -1837,13 +1837,13 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
         }
 
-        internal void UpdateViewport(Viewport viewport)
+        private void UpdateViewport(Viewport viewport)
         {
             GL.Viewport((int)viewport.X, (int)GetViewportY(viewport), (int)viewport.Width, (int)viewport.Height);
         }
 
 #if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-        internal void UpdateViewports()
+        private void UpdateViewports()
         {
             int nbViewports = _currentViewports.Length;
             float[] viewports = new float[nbViewports * 4];
