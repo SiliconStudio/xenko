@@ -53,6 +53,7 @@ namespace SiliconStudio.Paradox.Graphics
 
         internal SamplerState BoundSamplerState;
         private int pixelBufferObjectId;
+        private int resourceIdStencil;
 
         public PixelInternalFormat InternalFormat { get; set; }
         public PixelFormatGl FormatGl { get; set; }
@@ -63,11 +64,15 @@ namespace SiliconStudio.Paradox.Graphics
         public bool IsDepthBuffer { get; private set; }
         public bool IsStencilBuffer { get; private set; }
         public bool IsRenderbuffer { get; private set; }
-        internal int ResourceIdStencil { get; private set; }
-
+        
         internal int PixelBufferObjectId
         {
             get { return pixelBufferObjectId; }
+        }
+
+        internal int ResourceIdStencil
+        {
+            get { return resourceIdStencil; }
         }
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
@@ -92,7 +97,6 @@ namespace SiliconStudio.Paradox.Graphics
 
         private void InitializeFromImpl(DataBox[] dataBoxes = null)
         {
-            // TODO: texture used as depth buffer should be a render buffer for optimization purposes
             if (ParentTexture != null)
             {
                 resourceId = ParentTexture.ResourceId;
@@ -108,7 +112,7 @@ namespace SiliconStudio.Paradox.Graphics
                 IsStencilBuffer = ParentTexture.IsStencilBuffer;
                 IsRenderbuffer = ParentTexture.IsRenderbuffer;
 
-                ResourceIdStencil = ParentTexture.ResourceIdStencil;
+                resourceIdStencil = ParentTexture.ResourceIdStencil;
                 pixelBufferObjectId = ParentTexture.PixelBufferObjectId;
             }
 
@@ -172,11 +176,9 @@ namespace SiliconStudio.Paradox.Graphics
                     // separate stencil
                     if (stencil != 0)
                     {
-                        int resouceIdStencil;
-                        GL.GenRenderbuffers(1, out resouceIdStencil);
-                        GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, resouceIdStencil);
+                        GL.GenRenderbuffers(1, out resourceIdStencil);
+                        GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, resourceIdStencil);
                         GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, stencil, Width, Height);
-                        ResourceIdStencil = resouceIdStencil;
                     }
 
                     GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
@@ -272,24 +274,23 @@ namespace SiliconStudio.Paradox.Graphics
 
             using (GraphicsDevice.UseOpenGLCreationContext())
             {
-                if (Description.Usage == GraphicsResourceUsage.Staging)
+                if (resourceId != 0)
                 {
-                    GL.DeleteBuffers(1, ref resourceId);
+                    if (IsRenderbuffer)
+                        GL.DeleteRenderbuffers(1, ref resourceId);
+                    else
+                        GL.DeleteTextures(1, ref resourceId);
                 }
-                else
-                {
-                    GL.DeleteTextures(1, ref resourceId);
-                }
-#if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
-                if (ResourceIdStencil != 0)
-                    GL.DeleteRenderbuffer(ResourceIdStencil);
-#endif
-                if (PixelBufferObjectId != 0)
+
+                if (resourceIdStencil != 0)
+                    GL.DeleteRenderbuffers(1, ref resourceIdStencil);
+
+                if (pixelBufferObjectId != 0)
                     GL.DeleteBuffers(1, ref pixelBufferObjectId);
             }
 
             resourceId = 0;
-            ResourceIdStencil = 0;
+            resourceIdStencil = 0;
             pixelBufferObjectId = 0;
 
             base.DestroyImpl();
