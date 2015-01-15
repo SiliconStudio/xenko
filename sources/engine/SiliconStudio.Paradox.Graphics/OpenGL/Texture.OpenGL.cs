@@ -27,15 +27,21 @@ using PixelFormatGl = OpenTK.Graphics.OpenGL.PixelFormat;
 // TODO: remove these when OpenTK API is consistent between OpenGL, mobile OpenGL ES and desktop OpenGL ES
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
 #if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
-using CompressedInternalFormat = OpenTK.Graphics.ES30.CompressedInternalFormat;
-using TextureComponentCount = OpenTK.Graphics.ES30.TextureComponentCount;
+using CompressedInternalFormat2D = OpenTK.Graphics.ES30.CompressedInternalFormat;
+using CompressedInternalFormat3D = OpenTK.Graphics.ES30.CompressedInternalFormat;
+using TextureComponentCount2D = OpenTK.Graphics.ES30.TextureComponentCount;
+using TextureComponentCount3D = OpenTK.Graphics.ES30.TextureComponentCount;
 #else
-using CompressedInternalFormat = OpenTK.Graphics.ES30.PixelInternalFormat;
-using TextureComponentCount = OpenTK.Graphics.ES30.PixelInternalFormat;
+using CompressedInternalFormat2D = OpenTK.Graphics.ES30.PixelInternalFormat;
+using CompressedInternalFormat3D = OpenTK.Graphics.ES30.CompressedInternalFormat;
+using TextureComponentCount2D = OpenTK.Graphics.ES30.PixelInternalFormat;
+using TextureComponentCount3D = OpenTK.Graphics.ES30.TextureComponentCount;
 #endif
 #else
-using CompressedInternalFormat = OpenTK.Graphics.OpenGL.PixelInternalFormat;
-using TextureComponentCount = OpenTK.Graphics.OpenGL.PixelInternalFormat;
+using CompressedInternalFormat2D = OpenTK.Graphics.OpenGL.PixelInternalFormat;
+using CompressedInternalFormat3D = OpenTK.Graphics.OpenGL.PixelInternalFormat;
+using TextureComponentCount2D = OpenTK.Graphics.OpenGL.PixelInternalFormat;
+using TextureComponentCount3D = OpenTK.Graphics.OpenGL.PixelInternalFormat;
 #endif
 
 namespace SiliconStudio.Paradox.Graphics
@@ -227,9 +233,10 @@ namespace SiliconStudio.Paradox.Graphics
                 if (Description.MipLevels == 0)
                     throw new NotImplementedException();
 
+                var setSize = TextureSetSize(Target);
+
                 for (var arrayIndex = 0; arrayIndex < Description.ArraySize; ++arrayIndex)
                 {
-                    var dataSetTarget = GetTextureTargetForDataSet(Target, arrayIndex);
                     var offsetArray = arrayIndex * Description.MipLevels;
                     for (int i = 0; i < Description.MipLevels; ++i)
                     {
@@ -238,21 +245,56 @@ namespace SiliconStudio.Paradox.Graphics
                         var height = CalculateMipSize(Description.Height, i);
                         if (dataBoxes != null && i < dataBoxes.Length)
                         {
-                            if (!compressed && dataBoxes[i].RowPitch != width * pixelSize)
+                            if (setSize > 1 && !compressed && dataBoxes[i].RowPitch != width * pixelSize)
                                 throw new NotSupportedException("Can't upload texture with pitch in glTexImage2D.");
                             // Might be possible, need to check API better.
                             data = dataBoxes[offsetArray + i].DataPointer;
                         }
-                        if (compressed)
+                        
+                        if (setSize == 2)
                         {
-                            GL.CompressedTexImage2D(dataSetTarget, i, (CompressedInternalFormat)internalFormat,
-                                width, height, 0, dataBoxes[offsetArray + i].SlicePitch, data);
+                            var dataSetTarget = GetTextureTargetForDataSet2D(Target, arrayIndex);
+                            if (compressed)
+                            {
+                                GL.CompressedTexImage2D(dataSetTarget, i, (CompressedInternalFormat2D)internalFormat,
+                                    width, height, 0, dataBoxes[offsetArray + i].SlicePitch, data);
+                            }
+                            else
+                            {
+                                GL.TexImage2D(dataSetTarget, i, (TextureComponentCount2D)internalFormat,
+                                    width, height, 0, format, type, data);
+                            }
                         }
-                        else
+                        else if (setSize == 3)
                         {
-                            GL.TexImage2D(dataSetTarget, i, (TextureComponentCount)internalFormat,
-                                            width, height, 0, format, type, data);
+                            var dataSetTarget = GetTextureTargetForDataSet3D(Target);
+                            var depth = Target == TextureTarget.Texture2DArray ? Description.Depth : CalculateMipSize(Description.Depth, i); // no depth mipmaps in Texture2DArray
+                            if (compressed)
+                            {
+                                GL.CompressedTexImage3D(dataSetTarget, i, (CompressedInternalFormat3D)internalFormat,
+                                    width, height, depth, 0, dataBoxes[offsetArray + i].SlicePitch, data);
+                            }
+                            else
+                            {
+                                GL.TexImage3D(dataSetTarget, i, (TextureComponentCount3D)internalFormat,
+                                    width, height, depth, 0, format, type, data);
+                            }
                         }
+#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                        else if (setSize == 1)
+                        {
+                            if (compressed)
+                            {
+                                GL.CompressedTexImage1D(TextureTarget.Texture1D, i, internalFormat,
+                                    width, 0, dataBoxes[offsetArray + i].SlicePitch, data);
+                            }
+                            else
+                            {
+                                GL.TexImage1D(TextureTarget.Texture1D, i, internalFormat,
+                                    width, 0, format, type, data);
+                            }
+                        }
+#endif
                     }
                 }
                 GL.BindTexture(Target, 0);
@@ -370,22 +412,50 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
-        private static TextureTarget2d GetTextureTargetForDataSet(TextureTarget target, int arrayIndex)
+        private static TextureTarget2d GetTextureTargetForDataSet2D(TextureTarget target, int arrayIndex)
         {
-            // TODO: array
+            // TODO: Proxy?
             if (target == TextureTarget.TextureCubeMap)
                 return TextureTarget2d.TextureCubeMapPositiveX + arrayIndex;
             return TextureTarget2d.Texture2D;
         }
-#else
-        private static TextureTarget GetTextureTargetForDataSet(TextureTarget target, int arrayIndex)
+
+        private static TextureTarget3d GetTextureTargetForDataSet3D(TextureTarget target)
         {
-            // TODO: array
+            return (TextureTarget3d)target;
+        }
+#else
+        private static TextureTarget GetTextureTargetForDataSet2D(TextureTarget target, int arrayIndex)
+        {
+            // TODO: Proxy?
             if (target == TextureTarget.TextureCubeMap)
                 return TextureTarget.TextureCubeMapPositiveX + arrayIndex;
             return target;
         }
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+        private static TextureTarget3D GetTextureTargetForDataSet3D(TextureTarget target)
+        {
+            return (TextureTarget3D)target;
+        }
+#else
+        private static TextureTarget GetTextureTargetForDataSet3D(TextureTarget target)
+        {
+            return target;
+        }
 #endif
+#endif
+
+        private static int TextureSetSize(TextureTarget target)
+        {
+            // TODO: improve that
+#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+            if (target == TextureTarget.Texture1D)
+                return 1;
+#endif
+            if (target == TextureTarget.Texture3D || target == TextureTarget.Texture2DArray)
+                return 3;
+            return 2;
+        }
 
         internal static PixelFormat ComputeShaderResourceFormatFromDepthFormat(PixelFormat format)
         {
