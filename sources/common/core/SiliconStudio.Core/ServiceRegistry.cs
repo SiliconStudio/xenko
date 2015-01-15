@@ -59,6 +59,16 @@ namespace SiliconStudio.Core
             return null;
         }
 
+        /// <summary>
+        /// Gets the instance service providing a specified service.
+        /// </summary>
+        /// <typeparam name="T">The type of service.</param>
+        /// <returns>The registered instance of this service.</returns>
+        public T GetService<T>()
+        {
+            return (T)GetService(typeof(T));
+        }
+
         public event EventHandler<ServiceEventArgs> ServiceAdded;
 
         public event EventHandler<ServiceEventArgs> ServiceRemoved;
@@ -90,6 +100,17 @@ namespace SiliconStudio.Core
             OnServiceAdded(new ServiceEventArgs(type, provider));
         }
 
+        /// <summary>
+        /// Adds a service to this <see cref="ServiceRegistry"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of service to add.</param>
+        /// <param name="provider">The service provider to add.</param>
+        /// <exception cref="System.ArgumentException">Service is already registered;type</exception>
+        public void AddService<T>(T provider)
+        {
+            AddService(typeof(T), provider);
+        }
+
         /// <summary>Removes the object providing a specified service.</summary>
         /// <param name="type">The type of service.</param>
         public void RemoveService(Type type)
@@ -105,6 +126,13 @@ namespace SiliconStudio.Core
             }
             if (oldService != null)
                 OnServiceRemoved(new ServiceEventArgs(type, oldService));
+        }
+
+        /// <summary>Removes the object providing a specified service.</summary>
+        /// <typeparam name="T">The type of service.</param>
+        public void RemoveService<T>()
+        {
+            RemoveService(typeof(T));
         }
 
         #endregion
