@@ -22,6 +22,30 @@
     <Compile Include="..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Materials\IMaterialSpecularMicrofacetNormalDistributionFunction.cs">
+      <DependentUpon>IMaterialSpecularMicrofacetNormalDistributionFunction.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Materials\IMaterialSpecularMicrofacetFresnelFunction.cs">
+      <DependentUpon>IMaterialSpecularMicrofacetFresnelFunction.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Materials\IMaterialSpecularMicrofacetGeometricShadowingFunction.cs">
+      <DependentUpon>IMaterialSpecularMicrofacetGeometricShadowingFunction.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Materials\MaterialShadingStream.cs">
+      <DependentUpon>MaterialShadingStream.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Materials\MaterialStreamNormalBlend.cs">
       <DependentUpon>MaterialStreamNormalBlend.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -36,6 +60,18 @@
     </Compile>
     <Compile Include="Materials\IMaterialStreamBlend.cs">
       <DependentUpon>IMaterialStreamBlend.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Materials\IMaterialSpecularMicrofacetFunction.cs">
+      <DependentUpon>IMaterialSpecularMicrofacetFunction.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Materials\MaterialSurfaceShadingSpecularMicrofacet.cs">
+      <DependentUpon>MaterialSurfaceShadingSpecularMicrofacet.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -1574,6 +1610,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>SwapUV.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Utils\Math.cs">
+      <DependentUpon>Math.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Utils\Utilities.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1645,6 +1687,22 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Materials\IMaterialSpecularMicrofacetNormalDistributionFunction.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>IMaterialSpecularMicrofacetNormalDistributionFunction.cs</LastGenOutput>
+    </None>
+    <None Include="Materials\IMaterialSpecularMicrofacetFresnelFunction.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>IMaterialSpecularMicrofacetFresnelFunction.cs</LastGenOutput>
+    </None>
+    <None Include="Materials\IMaterialSpecularMicrofacetGeometricShadowingFunction.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>IMaterialSpecularMicrofacetGeometricShadowingFunction.cs</LastGenOutput>
+    </None>
+    <None Include="Materials\MaterialShadingStream.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialShadingStream.cs</LastGenOutput>
+    </None>
     <None Include="Materials\MaterialStreamNormalBlend.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialStreamNormalBlend.cs</LastGenOutput>
@@ -1656,6 +1714,14 @@
     <None Include="Materials\IMaterialStreamBlend.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>IMaterialStreamBlend.cs</LastGenOutput>
+    </None>
+    <None Include="Materials\IMaterialSpecularMicrofacetFunction.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>IMaterialSpecularMicrofacetFunction.cs</LastGenOutput>
+    </None>
+    <None Include="Materials\MaterialSurfaceShadingSpecularMicrofacet.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialSurfaceShadingSpecularMicrofacet.cs</LastGenOutput>
     </None>
     <None Include="Materials\MaterialSurfaceStreamsBlend.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -2624,6 +2690,10 @@
     <None Include="Utils\SwapUV.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>SwapUV.cs</LastGenOutput>
+    </None>
+    <None Include="Utils\Math.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>Math.cs</LastGenOutput>
     </None>
     <None Include="Utils\Utilities.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

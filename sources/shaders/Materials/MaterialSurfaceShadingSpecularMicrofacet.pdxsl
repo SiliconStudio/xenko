@@ -1,0 +1,31 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Paradox.Effects.Materials
+{
+    /// <summary>
+    /// Performs a Microfacet shading
+    /// </summary>
+    class MaterialSurfaceShadingSpecularMicrofacet : IMaterialSurfaceShading, MaterialShadingStream
+    {
+        compose IMaterialSpecularMicrofacetFresnelFunction fresnelFunction;
+
+        compose IMaterialSpecularMicrofacetGeometricShadowingFunction geometricShadowingFunction;
+
+        compose IMaterialSpecularMicrofacetNormalDistributionFunction normalDistributionFunction;
+
+        override float3 Shading()
+        {
+            var fresnel = fresnelFunction.Compute();
+            var geometricShadowing = geometricShadowingFunction.Compute();
+            var normalDistribution = normalDistributionFunction.Compute();
+
+            var brdf = fresnel * geometricShadowing * normalDistribution 
+                       / ( 4 * streams.NdotL * streams.NdotV);
+
+            var specularColor = streams.matSpecular * streams.matCavity * streams.matCavitySpecular;
+
+            // TODO: Check if we need to divide by PI
+            return specularColor * brdf * streams.lightColorNdotL;
+        }
+    };
+}
