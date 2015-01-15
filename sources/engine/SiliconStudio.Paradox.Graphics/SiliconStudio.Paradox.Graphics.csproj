@@ -116,6 +116,7 @@
     <Compile Include="FakeDepthStencilState.cs" />
     <Compile Include="FakeRasterizerState.cs" />
     <Compile Include="Font\FontAntiAliasMode.cs" />
+    <Compile Include="Font\FontStyleExtensions.cs" />
     <Compile Include="GeometricMultiTexcoordPrimitive.cs" />
     <Compile Include="GeometricMultiTexcoordPrimitive.Cube.cs" />
     <Compile Include="GeometricMultiTexcoordPrimitive.Cylinder.cs" />
