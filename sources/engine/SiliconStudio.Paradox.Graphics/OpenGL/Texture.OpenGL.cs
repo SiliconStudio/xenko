@@ -24,6 +24,20 @@ using OpenTK.Graphics.OpenGL;
 using PixelFormatGl = OpenTK.Graphics.OpenGL.PixelFormat;
 #endif
 
+// TODO: remove these when OpenTK API is consistent between OpenGL, mobile OpenGL ES and desktop OpenGL ES
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
+using CompressedInternalFormat = OpenTK.Graphics.ES30.CompressedInternalFormat;
+using TextureComponentCount = OpenTK.Graphics.ES30.TextureComponentCount;
+#else
+using CompressedInternalFormat = OpenTK.Graphics.ES30.PixelInternalFormat;
+using TextureComponentCount = OpenTK.Graphics.ES30.PixelInternalFormat;
+#endif
+#else
+using CompressedInternalFormat = OpenTK.Graphics.OpenGL.PixelInternalFormat;
+using TextureComponentCount = OpenTK.Graphics.OpenGL.PixelInternalFormat;
+#endif
+
 namespace SiliconStudio.Paradox.Graphics
 {
     /// <summary>
@@ -225,24 +239,13 @@ namespace SiliconStudio.Paradox.Graphics
                         }
                         if (compressed)
                         {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
                             GL.CompressedTexImage2D(dataSetTarget, i, (CompressedInternalFormat)internalFormat,
                                 width, height, 0, dataBoxes[offsetArray + i].SlicePitch, data);
-#else
-                            GL.CompressedTexImage2D(dataSetTarget, i, internalFormat,
-                                width, height, 0, dataBoxes[offsetArray + i].SlicePitch, data);
-#endif
                         }
                         else
                         {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
-                            // TODO: other texture formats
-                            GL.TexImage2D(dataSetTarget, i, internalFormat.ToOpenGL(),
+                            GL.TexImage2D(dataSetTarget, i, (TextureComponentCount)internalFormat,
                                             width, height, 0, format, type, data);
-#else
-                            GL.TexImage2D(dataSetTarget, i, internalFormat,
-                                width, height, 0, format, type, data);
-#endif
                         }
                     }
                 }

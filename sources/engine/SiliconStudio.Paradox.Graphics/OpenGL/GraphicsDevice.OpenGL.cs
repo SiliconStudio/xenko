@@ -35,6 +35,20 @@ using FramebufferAttachment = OpenTK.Graphics.ES30.FramebufferSlot;
 using OpenTK.Graphics.OpenGL;
 #endif
 
+// TODO: remove these when OpenTK API is consistent between OpenGL, mobile OpenGL ES and desktop OpenGL ES
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
+using PixelInternalFormat_TextureComponentCount = OpenTK.Graphics.ES30.PixelInternalFormat;
+using TextureTarget_TextureTarget2d = OpenTK.Graphics.ES30.TextureTarget;
+#else
+using PixelInternalFormat_TextureComponentCount = OpenTK.Graphics.ES30.TextureComponentCount;
+using TextureTarget_TextureTarget2d = OpenTK.Graphics.ES30.TextureTarget2d;
+#endif
+#else
+using PixelInternalFormat_TextureComponentCount = OpenTK.Graphics.OpenGL.PixelInternalFormat;
+using TextureTarget_TextureTarget2d = OpenTK.Graphics.OpenGL.TextureTarget;
+#endif
+
 namespace SiliconStudio.Paradox.Graphics
 {
     /// <summary>
@@ -1958,7 +1972,7 @@ namespace SiliconStudio.Paradox.Graphics
                     var desc = texture.Description;
                     GL.BindTexture(TextureTarget.Texture2D, texture.ResourceId);
                     boundTextures[0] = null;
-                    GL.TexImage2D(TextureTargetTexture2D, subResourceIndex, texture.InternalFormat.ToOpenGL(), desc.Width, desc.Height, 0, texture.FormatGl, texture.Type, databox.DataPointer);
+                    GL.TexImage2D(TextureTargetTexture2D, subResourceIndex, (PixelInternalFormat_TextureComponentCount)texture.InternalFormat, desc.Width, desc.Height, 0, texture.FormatGl, texture.Type, databox.DataPointer);
                 }
                 else // neither texture nor buffer
                 {
@@ -2024,7 +2038,7 @@ namespace SiliconStudio.Paradox.Graphics
                 
                 // Update the texture region
                 GL.BindTexture(texture.Target, texture.resourceId);
-                GL.TexSubImage2D(texture.Target.ToOpenGL(), subResourceIndex, region.Left, region.Top, width, height, texture.FormatGl, texture.Type, databox.DataPointer);
+                GL.TexSubImage2D((TextureTarget_TextureTarget2d)texture.Target, subResourceIndex, region.Left, region.Top, width, height, texture.FormatGl, texture.Type, databox.DataPointer);
                 boundTextures[0] = null;
 
                 // reset the Unpack Alignment
