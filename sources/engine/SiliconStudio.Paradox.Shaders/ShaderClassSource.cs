@@ -28,12 +28,6 @@ namespace SiliconStudio.Paradox.Shaders
         /// <value>The generic parameters.</value>
         public string[] GenericArguments { get; set; }
 
-        /// <summary>
-        /// Gets or sets the inline source.
-        /// </summary>
-        /// <value>The inline.</value>
-        public string Inline { get; set; }
-
         public Dictionary<string, string> GenericParametersArguments { get; set; }
 
         /// <summary>
@@ -131,7 +125,7 @@ namespace SiliconStudio.Paradox.Shaders
 
         public override object Clone()
         {
-            return new ShaderClassSource(ClassName, GenericArguments = GenericArguments != null ? GenericArguments.ToArray() : null) { Inline =  Inline };
+            return new ShaderClassSource(ClassName, GenericArguments = GenericArguments != null ? GenericArguments.ToArray() : null);
         }
         
         public override string ToString()

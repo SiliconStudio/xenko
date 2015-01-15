@@ -22,6 +22,30 @@
     <Compile Include="..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Materials\MaterialStreamNormalBlend.cs">
+      <DependentUpon>MaterialStreamNormalBlend.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Materials\MaterialStreamLinearBlend.cs">
+      <DependentUpon>MaterialStreamLinearBlend.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Materials\IMaterialStreamBlend.cs">
+      <DependentUpon>IMaterialStreamBlend.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Materials\MaterialSurfaceStreamsBlend.cs">
+      <DependentUpon>MaterialSurfaceStreamsBlend.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Materials\MaterialSurfaceNormalMap.cs">
       <DependentUpon>MaterialSurfaceNormalMap.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -1615,6 +1639,22 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Materials\MaterialStreamNormalBlend.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialStreamNormalBlend.cs</LastGenOutput>
+    </None>
+    <None Include="Materials\MaterialStreamLinearBlend.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialStreamLinearBlend.cs</LastGenOutput>
+    </None>
+    <None Include="Materials\IMaterialStreamBlend.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>IMaterialStreamBlend.cs</LastGenOutput>
+    </None>
+    <None Include="Materials\MaterialSurfaceStreamsBlend.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialSurfaceStreamsBlend.cs</LastGenOutput>
+    </None>
     <None Include="Materials\MaterialSurfaceNormalMap.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceNormalMap.cs</LastGenOutput>

@@ -9,6 +9,7 @@ using SiliconStudio.Paradox.Shaders.Parser.Utility;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Utility;
+using SiliconStudio.Shaders.Visitor;
 
 using ParameterQualifier = SiliconStudio.Shaders.Ast.ParameterQualifier;
 
@@ -766,11 +767,27 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <param name="outputStreamStruct">the output structure of the stage</param>
         private void TransformStreamsAssignments(MethodDefinition methodDefinition, StructType inputStreamStruct, StructType intermediateStreamStruct, StructType outputStreamStruct)
         {
+            var statementLists = new List<StatementList>();
+            SearchVisitor.Run(
+                methodDefinition,
+                node =>
+                {
+                    if (node is StatementList)
+                    {
+                        statementLists.Add((StatementList)node);
+                    }
+                    return node;
+                });
+
             // replace stream assignement with field values assignements
             foreach (var assignmentKeyBlock in streamAnalyzer.AssignationsToStream)
             {
                 var assignment = assignmentKeyBlock.Key;
                 var parent = assignmentKeyBlock.Value;
+                if (!statementLists.Contains(parent))
+                {
+                    continue;
+                }
                 var index = SearchExpressionStatement(parent, assignment);
 
                 // TODO: check that it is "output = streams"
@@ -785,12 +802,29 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             {
                 var assignment = assignmentKeyBlock.Key;
                 var parent = assignmentKeyBlock.Value;
+                if (!statementLists.Contains(parent))
+                {
+                    continue;
+                }
                 var index = SearchExpressionStatement(parent, assignment);
 
                 var statementList = CreateStreamFromInput(intermediateStreamStruct, "streams", inputStreamStruct, assignment.Value, false).ToList();
                 statementList.RemoveAt(0); // do not keep the variable declaration
                 parent.RemoveAt(index);
                 parent.InsertRange(index, statementList);
+            }
+
+            foreach (var variableAndParent in streamAnalyzer.VariableStreamsAssignment)
+            {
+                var variable = variableAndParent.Key;
+                var parent = variableAndParent.Value;
+
+                if (!statementLists.Contains(parent))
+                {
+                    continue;
+                }
+
+                variable.Type = new TypeName(intermediateStreamStruct.Name);
             }
         }
 

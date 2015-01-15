@@ -28,6 +28,8 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         private readonly Dictionary<ParameterKey, int> parameterKeyIndices = new Dictionary<ParameterKey, int>();
         private readonly Dictionary<SamplerStateDescription, ParameterKey<SamplerState>> declaredSamplerStates;
+        private readonly Dictionary<string, ShaderSource> registeredStreamBlend = new Dictionary<string, ShaderSource>();
+
         private MaterialBlendLayerNode currentLayerNode;
 
         private int shadingModelCount;
@@ -217,6 +219,20 @@ namespace SiliconStudio.Paradox.Assets.Materials
         {
             if (stream == null) throw new ArgumentNullException("stream");
             Current.Streams.Add(stream);
+        }
+
+        public ShaderSource GetStreamBlendShaderSource(string stream)
+        {
+            ShaderSource shaderSource;
+            registeredStreamBlend.TryGetValue(stream, out shaderSource);
+            return shaderSource ?? new ShaderClassSource("MaterialStreamLinearBlend", stream);
+        }
+
+        public void UseStreamWithCustomBlend(string stream, ShaderSource blendStream)
+        {
+            if (stream == null) throw new ArgumentNullException("stream");
+            UseStream(stream);
+            registeredStreamBlend[stream] = blendStream;
         }
 
         public void SetStream(string stream, MaterialComputeColor computeColor, ParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey)

@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 
@@ -123,54 +124,25 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         private ShaderSource Generate(MaterialGeneratorContext context)
         {
-            // Backup stream variables that will be modified by the materials
-            var backupStreamBuilder = new StringBuilder();
-
-            // Blend stream variables modified by the material with the previous backup
-            var copyFromLayerBuilder = new StringBuilder();
-
-            foreach (var stream in context.Streams)
-            {
-                backupStreamBuilder.AppendFormat("        var __backup__{0} = streams.{0};", stream).AppendLine();
-            }
-
-            foreach (var stream in context.Streams)
-            {
-                copyFromLayerBuilder.AppendFormat("        streams.{0} = lerp(__backup__{0}, streams.{0}, streams.matBlend);", stream).AppendLine();
-            }
-
             // Generate a dynamic shader name
-            var shaderName = string.Format("MaterialBlendLayer{0}", context.NextId());
-            var shaderClassSource = new ShaderClassSource(shaderName)
-            {
-                // The shader is an inline shader
-                Inline = string.Format(DynamicBlendingShader, shaderName, backupStreamBuilder, copyFromLayerBuilder)
-            };
-
             // Create a mixin
             var shaderMixinSource = new ShaderMixinSource();
-            shaderMixinSource.Mixins.Add(shaderClassSource);
+            shaderMixinSource.Mixins.Add(new ShaderClassSource("MaterialSurfaceStreamsBlend"));
+
+            // Add all streams
+            foreach (var stream in context.Streams)
+            {
+                shaderMixinSource.AddCompositionToArray("blends", context.GetStreamBlendShaderSource(stream));
+            }
 
             var materialBlendLayerMixin = context.GenerateMixin();
 
             // Add the shader to the mixin
-            shaderMixinSource.AddComposition("subLayer", materialBlendLayerMixin);
+            shaderMixinSource.AddComposition("layer", materialBlendLayerMixin);
+
 
             // Push the result of the shader mixin into the current stack
             return shaderMixinSource;
         }
-
-        private const string DynamicBlendingShader = @"
-class {0} : IMaterialSurface
-{{
-    compose IMaterialSurface subLayer;
-
-    override void Compute()
-    {{
-{1}        subLayer.Compute();
-{2}
-    }}
-}};
-";
     }
 }

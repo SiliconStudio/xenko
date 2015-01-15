@@ -65,7 +65,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <summary>
         /// List of assignations in the form of "StreamType backup = streams;"
         /// </summary>
-        public HashSet<Variable> VariableStreamsAssignment = new HashSet<Variable>();
+        public Dictionary<Variable, StatementList> VariableStreamsAssignment = new Dictionary<Variable, StatementList>();
 
         /// <summary>
         /// streams usage by method
@@ -248,9 +248,10 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         {
             Visit((Node)variableStatement);
 
-            if (variableStatement.Type == StreamsType.Streams && variableStatement.InitialValue is VariableReferenceExpression && ((VariableReferenceExpression)(variableStatement.InitialValue)).TypeInference.TargetType is StreamsType)
+            var parentBlock = this.NodeStack.OfType<StatementList>().LastOrDefault();
+            if (parentBlock != null && variableStatement.Type == StreamsType.Streams && variableStatement.InitialValue is VariableReferenceExpression && ((VariableReferenceExpression)(variableStatement.InitialValue)).TypeInference.TargetType is StreamsType)
             {
-                VariableStreamsAssignment.Add(variableStatement);
+                VariableStreamsAssignment.Add(variableStatement, parentBlock);
             }
         }
 

@@ -281,10 +281,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 }
 
                 // Load file
-                var shaderSource = string.IsNullOrWhiteSpace(classSource.Inline)
-                    ? SourceManager.LoadShaderSource(type)
-                    : ShaderSourceManager.CreateShaderSourceWithHash(classSource.ClassName, classSource.Inline);
-
+                var shaderSource = SourceManager.LoadShaderSource(type);
                 string preprocessedSource;
                 try
                 {

@@ -138,7 +138,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
                 var ast = moduleMixinInfo.MixinAst;
                 var shaderClassSource = moduleMixinInfo.ShaderSource as ShaderClassSource;
                 // If we have a ShaderClassSource and it is not an inline one, then we can store the hash sources
-                if (ast != null && shaderClassSource != null && string.IsNullOrWhiteSpace(shaderClassSource.Inline))
+                if (ast != null && shaderClassSource != null)
                 {
                     parsingResult.HashSources[shaderClassSource.ClassName] = ast.SourceHash;
                 }
