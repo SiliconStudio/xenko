@@ -4,11 +4,11 @@
 namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
-    /// Outputs linear depth and CoC.
+    /// Outputs CoC and linear depth.
     /// Expects as input:
     /// - Texture0: the raw depth-buffer used to render the original scene
     /// </summary>
-    class LinearDepthCoCShader : ImageEffectShader, Camera, CircleOfConfusion
+    class CoCLinearDepthShader : ImageEffectShader, Camera, CircleOfConfusion
     {
 
         stage override float4 Shading()
