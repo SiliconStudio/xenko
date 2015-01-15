@@ -92,7 +92,6 @@ namespace SiliconStudio.Paradox.Graphics
 
         private void InitializeFromImpl(DataBox[] dataBoxes = null)
         {
-            // TODO: how to use ParentTexture?
             // TODO: texture used as depth buffer should be a render buffer for optimization purposes
             if (ParentTexture != null)
             {
@@ -414,7 +413,13 @@ namespace SiliconStudio.Paradox.Graphics
             }
             else if (Description.Usage == GraphicsResourceUsage.Dynamic)
             {
-                GeneratePixelBufferObject(BufferTarget.PixelUnpackBuffer, BufferUsageHint.DynamicDraw);
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                // unable to create PBO on OpenGL ES 2 but we do not throw an exception. It will be thrown if the code tries performs writes on the texture.
+                if (!GraphicsDevice.IsOpenGLES2)
+#endif
+                {
+                    GeneratePixelBufferObject(BufferTarget.PixelUnpackBuffer, BufferUsageHint.DynamicDraw);
+                }
             }
         }
 
