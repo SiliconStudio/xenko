@@ -71,8 +71,10 @@ namespace SiliconStudio.Core.Reflection
                     attributes = new List<Attribute>();
                     registeredAttributes.Add(memberInfo, attributes);
                 }
-
                 attributes.Add(attribute);
+
+                cachedAttributes.Remove(new MemberInfoKey(memberInfo, true));
+                cachedAttributes.Remove(new MemberInfoKey(memberInfo, false));
             }
         }
 
