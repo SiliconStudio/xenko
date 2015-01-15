@@ -34,11 +34,17 @@ namespace SiliconStudio.Assets.Compiler
 
             Asset = (T)assetItem.Asset;
             AssetItem = assetItem;
-            // TODO: This can critically fail if the asset item has been removed from its package - find a way to prevent exceptions here and in usages of AssetsSession
-            AssetsSession = AssetItem.Package.Session;
 
             var compilerResult = new AssetCompilerResult();
 
+            // TODO: Workaround in case an asset item has been removed from its package
+            if (AssetItem.Package == null)
+            {
+                compilerResult.Warning("Asset [{0}] is not attached to a package", AssetItem);
+                return compilerResult;
+            }
+
+            AssetsSession = AssetItem.Package.Session;
             CompileOverride((AssetCompilerContext)context, compilerResult);
 
             return compilerResult;
