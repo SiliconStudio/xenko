@@ -96,6 +96,28 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         }
 
 
+        [Test]
+        public void TestStream()
+        {
+            var compiler = new EffectCompiler { UseFileSystem = true };
+            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Paradox.Shaders.Tests\GameAssets\Compiler");
+            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Paradox.Graphics\Shaders");
+            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Paradox.Engine\Shaders");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Core");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Lights");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Materials");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Shadows");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\ComputeColor");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Skinning");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Shading");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Transformation");
+            var compilerParameters = new CompilerParameters { Platform = GraphicsPlatform.Direct3D11 };
+            var results = compiler.Compile(new ShaderClassSource("TestStream"), compilerParameters);
+
+            Assert.IsFalse(results.HasErrors);
+        }
+
+
         /// <summary>
         /// Tests mixin and compose keys with compilation.
         /// </summary>

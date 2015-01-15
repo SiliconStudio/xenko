@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using SiliconStudio.Paradox.Shaders.Parser.Analysis;
 using SiliconStudio.Paradox.Shaders.Parser.Ast;
@@ -54,12 +55,17 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <summary>
         /// List of assignations in the form of "streams = ...;"
         /// </summary>
-        public HashSet<AssignmentExpression> StreamAssignations = new HashSet<AssignmentExpression>();
+        public Dictionary<AssignmentExpression, StatementList> StreamAssignations = new Dictionary<AssignmentExpression, StatementList>();
 
         /// <summary>
         /// List of assignations in the form of "... = streams;"
         /// </summary>
-        public HashSet<AssignmentExpression> AssignationsToStream = new HashSet<AssignmentExpression>();
+        public Dictionary<AssignmentExpression, StatementList> AssignationsToStream = new Dictionary<AssignmentExpression, StatementList>();
+
+        /// <summary>
+        /// List of assignations in the form of "StreamType backup = streams;"
+        /// </summary>
+        public HashSet<Variable> VariableStreamsAssignment = new HashSet<Variable>();
 
         /// <summary>
         /// streams usage by method
@@ -226,12 +232,25 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             currentAssignmentOperatorStatus = AssignmentOperatorStatus.Read;
             currentStreamUsage = prevStreamUsage;
 
-            if (assignmentExpression.Operator == AssignmentOperator.Default)
+            var parentBlock = this.NodeStack.OfType<StatementList>().LastOrDefault();
+
+            if (assignmentExpression.Operator == AssignmentOperator.Default && parentBlock != null)
             {
                 if (assignmentExpression.Target is VariableReferenceExpression && (assignmentExpression.Target as VariableReferenceExpression).TypeInference.TargetType is StreamsType) // "streams = ...;"
-                    StreamAssignations.Add(assignmentExpression);
+                    StreamAssignations.Add(assignmentExpression, parentBlock);
                 else if (assignmentExpression.Value is VariableReferenceExpression && (assignmentExpression.Value as VariableReferenceExpression).TypeInference.TargetType is StreamsType) // "... = streams;"
-                    AssignationsToStream.Add(assignmentExpression);
+                    AssignationsToStream.Add(assignmentExpression, parentBlock);
+            }
+        }
+
+        [Visit]
+        private void Visit(Variable variableStatement)
+        {
+            Visit((Node)variableStatement);
+
+            if (variableStatement.Type == StreamsType.Streams && variableStatement.InitialValue is VariableReferenceExpression && ((VariableReferenceExpression)(variableStatement.InitialValue)).TypeInference.TargetType is StreamsType)
+            {
+                VariableStreamsAssignment.Add(variableStatement);
             }
         }
 

@@ -151,6 +151,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ToGlslEffect.pdxfx</DependentUpon>
     </Compile>
+    <Compile Include="GameAssets\Compiler\TestStream.cs">
+      <DependentUpon>TestStream.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="GameAssets\Compiler\ToGlslShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -691,6 +697,10 @@
     <None Include="GameAssets\Compiler\ToGlslEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ToGlslEffect.cs</LastGenOutput>
+    </None>
+    <None Include="GameAssets\Compiler\TestStream.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>TestStream.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Compiler\ToGlslShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
