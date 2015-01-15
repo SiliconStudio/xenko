@@ -52,6 +52,7 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
 
         internal SamplerState BoundSamplerState;
+        private int pixelBufferObjectId;
 
         public PixelInternalFormat InternalFormat { get; set; }
         public PixelFormatGl FormatGl { get; set; }
@@ -63,7 +64,11 @@ namespace SiliconStudio.Paradox.Graphics
         public bool IsStencilBuffer { get; private set; }
         public bool IsRenderbuffer { get; private set; }
         internal int ResourceIdStencil { get; private set; }
-        internal int PixelBufferObjectId { get; set; }
+
+        internal int PixelBufferObjectId
+        {
+            get { return pixelBufferObjectId; }
+        }
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
         public IntPtr StagingData { get; set; }
@@ -105,7 +110,7 @@ namespace SiliconStudio.Paradox.Graphics
                 IsRenderbuffer = ParentTexture.IsRenderbuffer;
 
                 ResourceIdStencil = ParentTexture.ResourceIdStencil;
-                PixelBufferObjectId = ParentTexture.PixelBufferObjectId;
+                pixelBufferObjectId = ParentTexture.PixelBufferObjectId;
             }
 
             if (resourceId == 0)
@@ -280,10 +285,13 @@ namespace SiliconStudio.Paradox.Graphics
                 if (ResourceIdStencil != 0)
                     GL.DeleteRenderbuffer(ResourceIdStencil);
 #endif
+                if (PixelBufferObjectId != 0)
+                    GL.DeleteBuffers(1, ref pixelBufferObjectId);
             }
 
             resourceId = 0;
             ResourceIdStencil = 0;
+            pixelBufferObjectId = 0;
 
             base.DestroyImpl();
         }
@@ -412,11 +420,9 @@ namespace SiliconStudio.Paradox.Graphics
 
         private void GeneratePixelBufferObject(BufferTarget target, BufferUsageHint bufferUsage)
         {
-            int bufferId;
-            GL.GenBuffers(1, out bufferId);
-            PixelBufferObjectId = bufferId;
+            GL.GenBuffers(1, out pixelBufferObjectId);
 
-            GL.BindBuffer(target, PixelBufferObjectId);
+            GL.BindBuffer(target, pixelBufferObjectId);
             GL.BufferData(target, (IntPtr)DepthPitch, IntPtr.Zero, bufferUsage);
             GL.BindBuffer(target, 0);
         }

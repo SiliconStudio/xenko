@@ -537,147 +537,158 @@ namespace SiliconStudio.Paradox.Graphics
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, FindOrCreateFBO(source));
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                GL.ReadPixels(sourceRectangle.Left, sourceRectangle.Top, sourceRectangle.Width, sourceRectangle.Height, destTexture.FormatGl, destTexture.Type, destTexture.StagingData);
-#else
-                GL.BindBuffer(BufferTarget.PixelPackBuffer, destTexture.ResourceId);
-                GL.ReadPixels(sourceRectangle.Left, sourceRectangle.Top, sourceRectangle.Width, sourceRectangle.Height, destTexture.FormatGl, destTexture.Type, IntPtr.Zero);
-                GL.BindBuffer(BufferTarget.PixelPackBuffer, 0);
+                if (IsOpenGLES2)
+                {
+                    GL.ReadPixels(sourceRectangle.Left, sourceRectangle.Top, sourceRectangle.Width, sourceRectangle.Height, destTexture.FormatGl, destTexture.Type, destTexture.StagingData);
+                }
+                else
 #endif
+                {
+                    GL.BindBuffer(BufferTarget.PixelPackBuffer, destTexture.PixelBufferObjectId);
+                    GL.ReadPixels(sourceRectangle.Left, sourceRectangle.Top, sourceRectangle.Width, sourceRectangle.Height, destTexture.FormatGl, destTexture.Type, IntPtr.Zero);
+                    GL.BindBuffer(BufferTarget.PixelPackBuffer, 0);
+                }
+                
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFBO);
                 GL.Viewport((int)_currentViewports[0].X, (int)_currentViewports[0].Y, (int)_currentViewports[0].Width, (int)_currentViewports[0].Height);
                 return;
             }
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-            // Use rendering
-            GL.Viewport(0, 0, destTexture.Description.Width, destTexture.Description.Height);
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, FindOrCreateFBO(destination));
-
-            if (copyProgram == -1)
+            if (IsOpenGLES2)
             {
-                const string copyVertexShaderSource =
-                    "attribute vec2 aPosition;   \n" +
-                    "varying vec2 vTexCoord;     \n" +
-                    "uniform vec4 uScale;     \n" +
-                    "uniform vec4 uOffset;     \n" +
-                    "void main()                 \n" +
-                    "{                           \n" +
-                    "   vec4 transformedPosition = aPosition.xyxy * uScale + uOffset;" +
-                    "   gl_Position = vec4(transformedPosition.zw * 2.0 - 1.0, 0.0, 1.0); \n" +
-                    "   vTexCoord = transformedPosition.xy;   \n" +
-                    "}                           \n";
+                // Use rendering
+                GL.Viewport(0, 0, destTexture.Description.Width, destTexture.Description.Height);
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, FindOrCreateFBO(destination));
 
-                const string copyFragmentShaderSource =
-                    "precision mediump float;                            \n" +
-                    "varying vec2 vTexCoord;                             \n" +
-                    "uniform sampler2D s_texture;                        \n" +
-                    "void main()                                         \n" +
-                    "{                                                   \n" +
-                    "    gl_FragColor = texture2D(s_texture, vTexCoord); \n" +
-                    "}                                                   \n";
+                if (copyProgram == -1)
+                {
+                    const string copyVertexShaderSource =
+                        "attribute vec2 aPosition;   \n" +
+                        "varying vec2 vTexCoord;     \n" +
+                        "uniform vec4 uScale;     \n" +
+                        "uniform vec4 uOffset;     \n" +
+                        "void main()                 \n" +
+                        "{                           \n" +
+                        "   vec4 transformedPosition = aPosition.xyxy * uScale + uOffset;" +
+                        "   gl_Position = vec4(transformedPosition.zw * 2.0 - 1.0, 0.0, 1.0); \n" +
+                        "   vTexCoord = transformedPosition.xy;   \n" +
+                        "}                           \n";
 
-                // First initialization of shader program
-                int vertexShader = TryCompileShader(ShaderType.VertexShader, copyVertexShaderSource);
-                int fragmentShader = TryCompileShader(ShaderType.FragmentShader, copyFragmentShaderSource);
+                    const string copyFragmentShaderSource =
+                        "precision mediump float;                            \n" +
+                        "varying vec2 vTexCoord;                             \n" +
+                        "uniform sampler2D s_texture;                        \n" +
+                        "void main()                                         \n" +
+                        "{                                                   \n" +
+                        "    gl_FragColor = texture2D(s_texture, vTexCoord); \n" +
+                        "}                                                   \n";
 
-                copyProgram = GL.CreateProgram();
-                GL.AttachShader(copyProgram, vertexShader);
-                GL.AttachShader(copyProgram, fragmentShader);
-                GL.BindAttribLocation(copyProgram, 0, "aPosition");
-                GL.LinkProgram(copyProgram);
+                    // First initialization of shader program
+                    int vertexShader = TryCompileShader(ShaderType.VertexShader, copyVertexShaderSource);
+                    int fragmentShader = TryCompileShader(ShaderType.FragmentShader, copyFragmentShaderSource);
 
-                int linkStatus;
-                GL.GetProgram(copyProgram, ProgramParameter.LinkStatus, out linkStatus);
+                    copyProgram = GL.CreateProgram();
+                    GL.AttachShader(copyProgram, vertexShader);
+                    GL.AttachShader(copyProgram, fragmentShader);
+                    GL.BindAttribLocation(copyProgram, 0, "aPosition");
+                    GL.LinkProgram(copyProgram);
 
-                if (linkStatus != 1)
-                    throw new InvalidOperationException("Error while linking GLSL shaders.");
+                    int linkStatus;
+                    GL.GetProgram(copyProgram, ProgramParameter.LinkStatus, out linkStatus);
+
+                    if (linkStatus != 1)
+                        throw new InvalidOperationException("Error while linking GLSL shaders.");
+
+                    GL.UseProgram(copyProgram);
+#if SILICONSTUDIO_PLATFORM_ANDROID
+                    var textureLocation = GL.GetUniformLocation(copyProgram, new StringBuilder("s_texture"));
+                    copyProgramOffsetLocation = GL.GetUniformLocation(copyProgram, new StringBuilder("uOffset"));
+                    copyProgramScaleLocation = GL.GetUniformLocation(copyProgram, new StringBuilder("uScale"));
+#else
+                    var textureLocation = GL.GetUniformLocation(copyProgram, "s_texture");
+                    copyProgramOffsetLocation = GL.GetUniformLocation(copyProgram, "uOffset");
+                    copyProgramScaleLocation = GL.GetUniformLocation(copyProgram, "uScale");
+#endif
+                    GL.Uniform1(textureLocation, 0);
+                }
+
+                var regionSize = new Vector2(sourceRectangle.Width, sourceRectangle.Height);
+
+                // Source
+                var sourceSize = new Vector2(sourceTexture.Width, sourceTexture.Height);
+                var sourceRegionLeftTop = new Vector2(sourceRectangle.Left, sourceRectangle.Top);
+                var sourceScale = new Vector2(regionSize.X/sourceSize.X, regionSize.Y/sourceSize.Y);
+                var sourceOffset = new Vector2(sourceRegionLeftTop.X/sourceSize.X, sourceRegionLeftTop.Y/sourceSize.Y);
+
+                // Dest
+                var destSize = new Vector2(destTexture.Width, destTexture.Height);
+                var destRegionLeftTop = new Vector2(dstX, dstY);
+                var destScale = new Vector2(regionSize.X/destSize.X, regionSize.Y/destSize.Y);
+                var destOffset = new Vector2(destRegionLeftTop.X/destSize.X, destRegionLeftTop.Y/destSize.Y);
+
+                var enabledColors = new bool[4];
+                GL.GetBoolean(GetPName.ColorWritemask, enabledColors);
+                var isDepthTestEnabled = GL.IsEnabled(EnableCap.DepthTest);
+                var isCullFaceEnabled = GL.IsEnabled(EnableCap.CullFace);
+                var isBlendEnabled = GL.IsEnabled(EnableCap.Blend);
+                var isStencilEnabled = GL.IsEnabled(EnableCap.StencilTest);
+                GL.Disable(EnableCap.DepthTest);
+                GL.Disable(EnableCap.CullFace);
+                GL.Disable(EnableCap.Blend);
+                GL.Disable(EnableCap.StencilTest);
+                GL.ColorMask(true, true, true, true);
+
+                UnbindVertexArrayObject();
 
                 GL.UseProgram(copyProgram);
-#if SILICONSTUDIO_PLATFORM_ANDROID
-                var textureLocation = GL.GetUniformLocation(copyProgram, new StringBuilder("s_texture"));
-                copyProgramOffsetLocation = GL.GetUniformLocation(copyProgram, new StringBuilder("uOffset"));
-                copyProgramScaleLocation = GL.GetUniformLocation(copyProgram, new StringBuilder("uScale"));
-#else
-                var textureLocation = GL.GetUniformLocation(copyProgram, "s_texture");
-                copyProgramOffsetLocation = GL.GetUniformLocation(copyProgram, "uOffset");
-                copyProgramScaleLocation = GL.GetUniformLocation(copyProgram, "uScale");
-#endif
-                GL.Uniform1(textureLocation, 0);
+
+                activeTexture = 0;
+                GL.ActiveTexture(TextureUnit.Texture0);
+                GL.BindTexture(TextureTarget.Texture2D, sourceTexture.resourceId);
+                boundTextures[0] = null;
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+                ((Texture)source).BoundSamplerState = SamplerStates.PointClamp;
+
+                GL.EnableVertexAttribArray(0);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 0, squareVertices);
+                GL.Uniform4(copyProgramOffsetLocation, sourceOffset.X, sourceOffset.Y, destOffset.X, destOffset.Y);
+                GL.Uniform4(copyProgramScaleLocation, sourceScale.X, sourceScale.Y, destScale.X, destScale.Y);
+                GL.DrawArrays(BeginMode.TriangleStrip, 0, 4);
+                GL.DisableVertexAttribArray(0);
+                GL.UseProgram(boundProgram);
+
+                // Restore context
+                if (isDepthTestEnabled)
+                    GL.Enable(EnableCap.DepthTest);
+                if (isCullFaceEnabled)
+                    GL.Enable(EnableCap.CullFace);
+                if (isBlendEnabled)
+                    GL.Enable(EnableCap.Blend);
+                if (isStencilEnabled)
+                    GL.Enable(EnableCap.StencilTest);
+                GL.ColorMask(enabledColors[0], enabledColors[1], enabledColors[2], enabledColors[3]);
+
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFBO);
+                GL.Viewport((int)_currentViewports[0].X, (int)_currentViewports[0].Y, (int)_currentViewports[0].Width, (int)_currentViewports[0].Height);
             }
-
-            var regionSize = new Vector2(sourceRectangle.Width, sourceRectangle.Height);
-
-            // Source
-            var sourceSize = new Vector2(sourceTexture.Width, sourceTexture.Height);
-            var sourceRegionLeftTop = new Vector2(sourceRectangle.Left, sourceRectangle.Top);
-            var sourceScale = new Vector2(regionSize.X / sourceSize.X, regionSize.Y / sourceSize.Y);
-            var sourceOffset = new Vector2(sourceRegionLeftTop.X / sourceSize.X, sourceRegionLeftTop.Y / sourceSize.Y);
-
-            // Dest
-            var destSize = new Vector2(destTexture.Width, destTexture.Height);
-            var destRegionLeftTop = new Vector2(dstX, dstY);
-            var destScale = new Vector2(regionSize.X / destSize.X, regionSize.Y / destSize.Y);
-            var destOffset = new Vector2(destRegionLeftTop.X / destSize.X, destRegionLeftTop.Y / destSize.Y);
-
-            var enabledColors = new bool[4];
-            GL.GetBoolean(GetPName.ColorWritemask, enabledColors);
-            var isDepthTestEnabled = GL.IsEnabled(EnableCap.DepthTest);
-            var isCullFaceEnabled = GL.IsEnabled(EnableCap.CullFace);
-            var isBlendEnabled = GL.IsEnabled(EnableCap.Blend);
-            var isStencilEnabled = GL.IsEnabled(EnableCap.StencilTest);
-            GL.Disable(EnableCap.DepthTest);
-            GL.Disable(EnableCap.CullFace);
-            GL.Disable(EnableCap.Blend);
-            GL.Disable(EnableCap.StencilTest);
-            GL.ColorMask(true, true, true, true);
-
-            UnbindVertexArrayObject();
-            
-            GL.UseProgram(copyProgram);
-
-            activeTexture = 0;
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, sourceTexture.resourceId);
-            boundTextures[0] = null;
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-            ((Texture)source).BoundSamplerState = SamplerStates.PointClamp;
-
-            GL.EnableVertexAttribArray(0);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 0, squareVertices);
-            GL.Uniform4(copyProgramOffsetLocation, sourceOffset.X, sourceOffset.Y, destOffset.X, destOffset.Y);
-            GL.Uniform4(copyProgramScaleLocation, sourceScale.X, sourceScale.Y, destScale.X, destScale.Y);
-            GL.DrawArrays(BeginMode.TriangleStrip, 0, 4);
-            GL.DisableVertexAttribArray(0);
-            GL.UseProgram(boundProgram);
-
-            // Restore context
-            if (isDepthTestEnabled)
-                GL.Enable(EnableCap.DepthTest);
-            if (isCullFaceEnabled)
-                GL.Enable(EnableCap.CullFace);
-            if (isBlendEnabled)
-                GL.Enable(EnableCap.Blend);
-            if(isStencilEnabled)
-                GL.Enable(EnableCap.StencilTest);
-            GL.ColorMask(enabledColors[0], enabledColors[1], enabledColors[2], enabledColors[3]);
-
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFBO);
-            GL.Viewport((int)_currentViewports[0].X, (int)_currentViewports[0].Y, (int)_currentViewports[0].Width, (int)_currentViewports[0].Height);
-#else
-            // "FindOrCreateFBO" set the frameBuffer on FBO creation -> those 2 calls cannot be made directly in the following "GL.BindFramebuffer" function calls (side effects)
-            var sourceFBO = FindOrCreateFBO(source);    
-            var destinationFBO = FindOrCreateFBO(destination);
-            GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, sourceFBO);
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, destinationFBO);
-            GL.BlitFramebuffer(sourceRegion.Left, sourceRegion.Top, sourceRegion.Right, sourceRegion.Bottom,
-                               dstX, dstY, dstX + sourceRegion.Right - sourceRegion.Left, dstY + sourceRegion.Bottom - sourceRegion.Top,
-                               ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFBO);
+            else
 #endif
+            {
+                // "FindOrCreateFBO" set the frameBuffer on FBO creation -> those 2 calls cannot be made directly in the following "GL.BindFramebuffer" function calls (side effects)
+                var sourceFBO = FindOrCreateFBO(source);
+                var destinationFBO = FindOrCreateFBO(destination);
+                GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, sourceFBO);
+                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, destinationFBO);
+                GL.BlitFramebuffer(sourceRegion.Left, sourceRegion.Top, sourceRegion.Right, sourceRegion.Bottom,
+                    dstX, dstY, dstX + sourceRegion.Right - sourceRegion.Left, dstY + sourceRegion.Bottom - sourceRegion.Top,
+                    ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFBO);
+            }
         }
 
         /// <summary>
