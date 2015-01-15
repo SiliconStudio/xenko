@@ -229,7 +229,6 @@ namespace SiliconStudio.Paradox.Graphics
                     GL.TexParameter(Target, TextureParameterName.TextureMaxLevel, Description.MipLevels - 1);
                 }
 
-                // TODO: review initialization for texture3D and textureCube
                 if (Description.MipLevels == 0)
                     throw new NotImplementedException();
 
@@ -414,10 +413,10 @@ namespace SiliconStudio.Paradox.Graphics
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
         private static TextureTarget2d GetTextureTargetForDataSet2D(TextureTarget target, int arrayIndex)
         {
-            // TODO: Proxy?
+            // TODO: Proxy from ES 3.1?
             if (target == TextureTarget.TextureCubeMap)
                 return TextureTarget2d.TextureCubeMapPositiveX + arrayIndex;
-            return TextureTarget2d.Texture2D;
+            return (TextureTarget2d)target;
         }
 
         private static TextureTarget3d GetTextureTargetForDataSet3D(TextureTarget target)
@@ -427,7 +426,7 @@ namespace SiliconStudio.Paradox.Graphics
 #else
         private static TextureTarget GetTextureTargetForDataSet2D(TextureTarget target, int arrayIndex)
         {
-            // TODO: Proxy?
+            // TODO: Proxy from ES 3.1?
             if (target == TextureTarget.TextureCubeMap)
                 return TextureTarget.TextureCubeMapPositiveX + arrayIndex;
             return target;
