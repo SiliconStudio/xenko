@@ -15,11 +15,16 @@ namespace SiliconStudio.Paradox.Effects.Materials
         // Diffuse attributes
         stage stream float3 matDiffuse;
 
+        stage stream float3 matDiffuseVisible; // Precomputed before lighting
+
         // Microsurface attributes
         stage stream float  matGlossiness;
 
         // Specular attributes
         stage stream float3 matSpecular;
+
+        stage stream float3 matSpecularVisible; // Precomputed before lighting 
+
         stage stream float  matSpecularIntensity;
         stage stream float  matSpecularPower;
 
@@ -39,15 +44,28 @@ namespace SiliconStudio.Paradox.Effects.Materials
             // TODO: It might be interesting to support pulling from VS, but this should be done from the IMaterialSurface and dedicated ComputerColors
             streams.matBlend = 0.0f;
             streams.matNormal = float3(0, 0, 1);
-            streams.matDiffuse = 0.0f;       
+
+            streams.matDiffuse = 0.0f; 
+            streams.matDiffuseVisible = 0.0f;      
+
             streams.matSpecular = 0.0f;        
+            streams.matSpecularVisible = 0.0f;      
             streams.matSpecularIntensity = 0.0f;
             streams.matSpecularPower = 0.0f;
+
             streams.matGlossiness = 0.0f;
+
             streams.matAmbientOcclusion = 0.0f;
+
             streams.matCavity = 1.0f;
-            streams.matCavityDiffuse = 1.0f;
-            streams.matCavitySpecular = 1.0f;
+            streams.matCavityDiffuse = 0.0f;
+            streams.matCavitySpecular = 0.0f;
+        }
+
+        void PrepareMaterialForLightingAndShading()
+        {
+            streams.matDiffuseVisible = streams.matDiffuse * lerp(1.0f, streams.matCavity, streams.matCavityDiffuse);
+            streams.matSpecularVisible = streams.matSpecular * lerp(1.0f, streams.matCavity, streams.matCavitySpecular);
         }
     };
 }

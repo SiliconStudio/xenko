@@ -6,7 +6,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// <summary>
     /// Common interface for the Geometric Shadowing Function of a microfacet shading model.
     /// </summary>
-    public interface IMaterialSpecularMicrofacetGeometricShadowingFunction : IMaterialSpecularMicrofacetFunction
+    public interface IMaterialSpecularMicrofacetVisibilityFunction : IMaterialSpecularMicrofacetFunction
     {
     }
 }

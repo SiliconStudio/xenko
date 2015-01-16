@@ -9,25 +9,25 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// <summary>
     /// Neumann Geometric Shadowing.
     /// </summary>
-    [DataContract("MaterialSpecularMicrofacetGeometricShadowingNeumann ")]
+    [DataContract("MaterialSpecularMicrofacetVisibilityNeumann ")]
     [Display("Neumann")]
-    public class MaterialSpecularMicrofacetGeometricShadowingNeumann : IMaterialSpecularMicrofacetGeometricShadowingFunction
+    public class MaterialSpecularMicrofacetVisibilityNeumann : IMaterialSpecularMicrofacetVisibilityFunction
     {
         public ShaderSource Generate()
         {
-            return new ShaderClassSource("MaterialSpecularMicrofacetGeometricShadowingNeumann");
+            return new ShaderClassSource("MaterialSpecularMicrofacetVisibilityNeumann");
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj is MaterialSpecularMicrofacetGeometricShadowingNeumann;
+            return obj is MaterialSpecularMicrofacetVisibilityNeumann;
         }
 
         public override int GetHashCode()
         {
-            return typeof(MaterialSpecularMicrofacetGeometricShadowingNeumann).GetHashCode();
+            return typeof(MaterialSpecularMicrofacetVisibilityNeumann).GetHashCode();
         }
     }
 }

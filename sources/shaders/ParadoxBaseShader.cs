@@ -38,7 +38,7 @@ namespace SiliconStudio.Paradox.Effects
                 {
                     context.Mixin(mixin, "NormalVSFromMesh");
                 }
-                if (context.GetParam(MaterialParameters.HasSkinningPosition))
+                if (false)
                 {
                     if (context.GetParam(MaterialParameters.SkinningBones) > context.GetParam(MaterialParameters.SkinningMaxBones))
                     {

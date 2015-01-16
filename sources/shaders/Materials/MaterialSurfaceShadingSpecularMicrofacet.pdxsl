@@ -9,22 +9,21 @@ namespace SiliconStudio.Paradox.Effects.Materials
     {
         compose IMaterialSpecularMicrofacetFresnelFunction fresnelFunction;
 
-        compose IMaterialSpecularMicrofacetGeometricShadowingFunction geometricShadowingFunction;
+        compose IMaterialSpecularMicrofacetVisibilityFunction geometricShadowingFunction;
 
         compose IMaterialSpecularMicrofacetNormalDistributionFunction normalDistributionFunction;
 
         override float3 Shading()
         {
-            var specularColor = streams.matSpecular * streams.matCavity * streams.matCavitySpecular;
+            var specularColor = streams.matSpecularVisible;
 
             var fresnel = fresnelFunction.Compute(specularColor);
             var geometricShadowing = geometricShadowingFunction.Compute();
             var normalDistribution = normalDistributionFunction.Compute();
 
-            var brdf = fresnel * geometricShadowing * normalDistribution 
-                       / ( 4 * streams.NdotL * streams.NdotV);
+            var reflected = fresnel * geometricShadowing * normalDistribution / 4;
 
-            return brdf * streams.lightColorNdotL;
+            return reflected * streams.lightColorNdotL;
         }
     };
 }

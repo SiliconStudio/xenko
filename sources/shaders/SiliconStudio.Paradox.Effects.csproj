@@ -40,50 +40,50 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Materials\MaterialSpecularMicrofacetGeometricShadowingSmithSchlickGGX.cs">
-      <DependentUpon>MaterialSpecularMicrofacetGeometricShadowingSmithSchlickGGX.pdxsl</DependentUpon>
+    <Compile Include="Materials\MaterialSpecularMicrofacetVisibilitySmithSchlickGGX.cs">
+      <DependentUpon>MaterialSpecularMicrofacetVisibilitySmithSchlickGGX.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Materials\MaterialSpecularMicrofacetGeometricShadowingSmithSchlickBeckmann.cs">
-      <DependentUpon>MaterialSpecularMicrofacetGeometricShadowingSmithSchlickBeckmann.pdxsl</DependentUpon>
+    <Compile Include="Materials\MaterialSpecularMicrofacetVisibilitySmithSchlickBeckmann.cs">
+      <DependentUpon>MaterialSpecularMicrofacetVisibilitySmithSchlickBeckmann.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Materials\MaterialSpecularMicrofacetGeometricShadowingSmithGGXCorrelated.cs">
-      <DependentUpon>MaterialSpecularMicrofacetGeometricShadowingSmithGGXCorrelated.pdxsl</DependentUpon>
+    <Compile Include="Materials\MaterialSpecularMicrofacetVisibilitySmithGGXCorrelated.cs">
+      <DependentUpon>MaterialSpecularMicrofacetVisibilitySmithGGXCorrelated.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Materials\MaterialSpecularMicrofacetGeometricShadowingSmithBeckmann.cs">
-      <DependentUpon>MaterialSpecularMicrofacetGeometricShadowingSmithBeckmann.pdxsl</DependentUpon>
+    <Compile Include="Materials\MaterialSpecularMicrofacetVisibilitySmithBeckmann.cs">
+      <DependentUpon>MaterialSpecularMicrofacetVisibilitySmithBeckmann.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Materials\MaterialSpecularMicrofacetGeometricShadowingNeumann.cs">
-      <DependentUpon>MaterialSpecularMicrofacetGeometricShadowingNeumann.pdxsl</DependentUpon>
+    <Compile Include="Materials\MaterialSpecularMicrofacetVisibilityNeumann.cs">
+      <DependentUpon>MaterialSpecularMicrofacetVisibilityNeumann.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Materials\MaterialSpecularMicrofacetGeometricShadowingKelemen.cs">
-      <DependentUpon>MaterialSpecularMicrofacetGeometricShadowingKelemen.pdxsl</DependentUpon>
+    <Compile Include="Materials\MaterialSpecularMicrofacetVisibilityKelemen.cs">
+      <DependentUpon>MaterialSpecularMicrofacetVisibilityKelemen.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Materials\MaterialSpecularMicrofacetGeometricShadowingImplicit.cs">
-      <DependentUpon>MaterialSpecularMicrofacetGeometricShadowingImplicit.pdxsl</DependentUpon>
+    <Compile Include="Materials\MaterialSpecularMicrofacetVisibilityImplicit.cs">
+      <DependentUpon>MaterialSpecularMicrofacetVisibilityImplicit.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Materials\MaterialSpecularMicrofacetGeometricShadowingCookTorrance.cs">
-      <DependentUpon>MaterialSpecularMicrofacetGeometricShadowingCookTorrance.pdxsl</DependentUpon>
+    <Compile Include="Materials\MaterialSpecularMicrofacetVisibilityCookTorrance.cs">
+      <DependentUpon>MaterialSpecularMicrofacetVisibilityCookTorrance.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -112,8 +112,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Materials\IMaterialSpecularMicrofacetGeometricShadowingFunction.cs">
-      <DependentUpon>IMaterialSpecularMicrofacetGeometricShadowingFunction.pdxsl</DependentUpon>
+    <Compile Include="Materials\IMaterialSpecularMicrofacetVisibilityFunction.cs">
+      <DependentUpon>IMaterialSpecularMicrofacetVisibilityFunction.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -1777,37 +1777,37 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSpecularMicrofacetNormalDistributionBeckmann.cs</LastGenOutput>
     </None>
-    <None Include="Materials\MaterialSpecularMicrofacetGeometricShadowingSmithSchlickGGX.pdxsl">
+    <None Include="Materials\MaterialSpecularMicrofacetVisibilitySmithSchlickGGX.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialSpecularMicrofacetGeometricShadowingSmithSchlickGGX.cs</LastGenOutput>
+      <LastGenOutput>MaterialSpecularMicrofacetVisibilitySmithSchlickGGX.cs</LastGenOutput>
     </None>
-    <None Include="Materials\MaterialSpecularMicrofacetGeometricShadowingSmithSchlickBeckmann.pdxsl">
+    <None Include="Materials\MaterialSpecularMicrofacetVisibilitySmithSchlickBeckmann.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialSpecularMicrofacetGeometricShadowingSmithSchlickBeckmann.cs</LastGenOutput>
+      <LastGenOutput>MaterialSpecularMicrofacetVisibilitySmithSchlickBeckmann.cs</LastGenOutput>
     </None>
-    <None Include="Materials\MaterialSpecularMicrofacetGeometricShadowingSmithGGXCorrelated.pdxsl">
+    <None Include="Materials\MaterialSpecularMicrofacetVisibilitySmithGGXCorrelated.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialSpecularMicrofacetGeometricShadowingSmithGGXCorrelated.cs</LastGenOutput>
+      <LastGenOutput>MaterialSpecularMicrofacetVisibilitySmithGGXCorrelated.cs</LastGenOutput>
     </None>
-    <None Include="Materials\MaterialSpecularMicrofacetGeometricShadowingSmithBeckmann.pdxsl">
+    <None Include="Materials\MaterialSpecularMicrofacetVisibilitySmithBeckmann.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialSpecularMicrofacetGeometricShadowingSmithBeckmann.cs</LastGenOutput>
+      <LastGenOutput>MaterialSpecularMicrofacetVisibilitySmithBeckmann.cs</LastGenOutput>
     </None>
-    <None Include="Materials\MaterialSpecularMicrofacetGeometricShadowingNeumann.pdxsl">
+    <None Include="Materials\MaterialSpecularMicrofacetVisibilityNeumann.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialSpecularMicrofacetGeometricShadowingNeumann.cs</LastGenOutput>
+      <LastGenOutput>MaterialSpecularMicrofacetVisibilityNeumann.cs</LastGenOutput>
     </None>
-    <None Include="Materials\MaterialSpecularMicrofacetGeometricShadowingKelemen.pdxsl">
+    <None Include="Materials\MaterialSpecularMicrofacetVisibilityKelemen.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialSpecularMicrofacetGeometricShadowingKelemen.cs</LastGenOutput>
+      <LastGenOutput>MaterialSpecularMicrofacetVisibilityKelemen.cs</LastGenOutput>
     </None>
-    <None Include="Materials\MaterialSpecularMicrofacetGeometricShadowingImplicit.pdxsl">
+    <None Include="Materials\MaterialSpecularMicrofacetVisibilityImplicit.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialSpecularMicrofacetGeometricShadowingImplicit.cs</LastGenOutput>
+      <LastGenOutput>MaterialSpecularMicrofacetVisibilityImplicit.cs</LastGenOutput>
     </None>
-    <None Include="Materials\MaterialSpecularMicrofacetGeometricShadowingCookTorrance.pdxsl">
+    <None Include="Materials\MaterialSpecularMicrofacetVisibilityCookTorrance.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialSpecularMicrofacetGeometricShadowingCookTorrance.cs</LastGenOutput>
+      <LastGenOutput>MaterialSpecularMicrofacetVisibilityCookTorrance.cs</LastGenOutput>
     </None>
     <None Include="Materials\MaterialSpecularMicrofacetFresnelSchlick.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -1825,9 +1825,9 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>IMaterialSpecularMicrofacetFresnelFunction.cs</LastGenOutput>
     </None>
-    <None Include="Materials\IMaterialSpecularMicrofacetGeometricShadowingFunction.pdxsl">
+    <None Include="Materials\IMaterialSpecularMicrofacetVisibilityFunction.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>IMaterialSpecularMicrofacetGeometricShadowingFunction.cs</LastGenOutput>
+      <LastGenOutput>IMaterialSpecularMicrofacetVisibilityFunction.cs</LastGenOutput>
     </None>
     <None Include="Materials\MaterialShadingStream.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

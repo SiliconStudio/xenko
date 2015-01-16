@@ -7,27 +7,27 @@ using SiliconStudio.Paradox.Shaders;
 namespace SiliconStudio.Paradox.Assets.Materials
 {
     /// <summary>
-    /// Schlick-Beckmann Geometric Shadowing.
+    /// Smith-Beckmann Geometric Shadowing.
     /// </summary>
-    [DataContract("MaterialSpecularMicrofacetGeometricShadowingSmithSchlickBeckmann")]
-    [Display("Schlick-Beckmann")]
-    public class MaterialSpecularMicrofacetGeometricShadowingSmithSchlickBeckmann : IMaterialSpecularMicrofacetGeometricShadowingFunction
+    [DataContract("MaterialSpecularMicrofacetVisibilitySmithBeckmann")]
+    [Display("Smith-Beckmann")]
+    public class MaterialSpecularMicrofacetVisibilitySmithBeckmann : IMaterialSpecularMicrofacetVisibilityFunction
     {
         public ShaderSource Generate()
         {
-            return new ShaderClassSource("MaterialSpecularMicrofacetGeometricShadowingSmithSchlickBeckmann");
+            return new ShaderClassSource("MaterialSpecularMicrofacetVisibilitySmithBeckmann");
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj is MaterialSpecularMicrofacetGeometricShadowingSmithSchlickBeckmann;
+            return obj is MaterialSpecularMicrofacetVisibilitySmithBeckmann;
         }
 
         public override int GetHashCode()
         {
-            return typeof(MaterialSpecularMicrofacetGeometricShadowingSmithSchlickBeckmann).GetHashCode();
+            return typeof(MaterialSpecularMicrofacetVisibilitySmithBeckmann).GetHashCode();
         }
     }
 }

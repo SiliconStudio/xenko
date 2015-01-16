@@ -5,11 +5,11 @@ namespace SiliconStudio.Paradox.Effects.Materials
     /// <summary>
     /// Interface for a microfacet Geometric Shadowing function
     /// </summary>
-    class MaterialSpecularMicrofacetGeometricShadowingSmithSchlickBeckmann : IMaterialSpecularMicrofacetGeometricShadowingFunction
+    class MaterialSpecularMicrofacetVisibilityCookTorrance : IMaterialSpecularMicrofacetVisibilityFunction
     {
         override float Compute()
         {
-            return GeometricShadowingSmithSchlickBeckmann(streams.alphaRoughness, streams.NdotL, streams.NdotV);
+            return VisibilityCookTorrance(streams.NdotH, streams.VdotH, streams.NdotL, streams.NdotV);
         }
     };
 }

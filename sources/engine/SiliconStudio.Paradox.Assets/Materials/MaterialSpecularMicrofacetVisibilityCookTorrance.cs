@@ -9,25 +9,25 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// <summary>
     /// Cook-Torrance Geometric Shadowing.
     /// </summary>
-    [DataContract("MaterialSpecularMicrofacetGeometricShadowingCookTorrance ")]
+    [DataContract("MaterialSpecularMicrofacetVisibilityCookTorrance ")]
     [Display("Cook-Torrance")]
-    public class MaterialSpecularMicrofacetGeometricShadowingCookTorrance : IMaterialSpecularMicrofacetGeometricShadowingFunction
+    public class MaterialSpecularMicrofacetVisibilityCookTorrance : IMaterialSpecularMicrofacetVisibilityFunction
     {
         public ShaderSource Generate()
         {
-            return new ShaderClassSource("MaterialSpecularMicrofacetGeometricShadowingCookTorrance");
+            return new ShaderClassSource("MaterialSpecularMicrofacetVisibilityCookTorrance");
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj is MaterialSpecularMicrofacetGeometricShadowingCookTorrance;
+            return obj is MaterialSpecularMicrofacetVisibilityCookTorrance;
         }
 
         public override int GetHashCode()
         {
-            return typeof(MaterialSpecularMicrofacetGeometricShadowingCookTorrance).GetHashCode();
+            return typeof(MaterialSpecularMicrofacetVisibilityCookTorrance).GetHashCode();
         }
     }
 }

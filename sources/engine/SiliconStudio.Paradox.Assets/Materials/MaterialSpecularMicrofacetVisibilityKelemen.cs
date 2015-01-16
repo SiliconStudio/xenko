@@ -7,27 +7,27 @@ using SiliconStudio.Paradox.Shaders;
 namespace SiliconStudio.Paradox.Assets.Materials
 {
     /// <summary>
-    /// Implicit Geometric Shadowing.
+    /// Kelemen Geometric Shadowing.
     /// </summary>
-    [DataContract("MaterialSpecularMicrofacetGeometricShadowingImplicit")]
-    [Display("Implicit")]
-    public class MaterialSpecularMicrofacetGeometricShadowingImplicit : IMaterialSpecularMicrofacetGeometricShadowingFunction
+    [DataContract("MaterialSpecularMicrofacetVisibilityKelemen")]
+    [Display("Kelemen")]
+    public class MaterialSpecularMicrofacetVisibilityKelemen : IMaterialSpecularMicrofacetVisibilityFunction
     {
         public ShaderSource Generate()
         {
-            return new ShaderClassSource("MaterialSpecularMicrofacetGeometricShadowingImplicit");
+            return new ShaderClassSource("MaterialSpecularMicrofacetVisibilityKelemen");
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj is MaterialSpecularMicrofacetGeometricShadowingImplicit;
+            return obj is MaterialSpecularMicrofacetVisibilityKelemen;
         }
 
         public override int GetHashCode()
         {
-            return typeof(MaterialSpecularMicrofacetGeometricShadowingImplicit).GetHashCode();
+            return typeof(MaterialSpecularMicrofacetVisibilityKelemen).GetHashCode();
         }
     }
 }

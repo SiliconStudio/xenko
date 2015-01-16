@@ -5,11 +5,11 @@ namespace SiliconStudio.Paradox.Effects.Materials
     /// <summary>
     /// Interface for a microfacet Geometric Shadowing function
     /// </summary>
-    class MaterialSpecularMicrofacetGeometricShadowingNeumann : IMaterialSpecularMicrofacetGeometricShadowingFunction
+    class MaterialSpecularMicrofacetVisibilityNeumann : IMaterialSpecularMicrofacetVisibilityFunction
     {
         override float Compute()
         {
-            return GeometricShadowingNeumann(streams.NdotL, streams.NdotV);
+            return VisibilityNeumann(streams.NdotL, streams.NdotV);
         }
     };
 }
