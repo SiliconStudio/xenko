@@ -152,11 +152,20 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
                 // Add std140 layout
                 foreach (var constantBuffer in glslShader.Declarations.OfType<ConstantBuffer>())
                 {
-                    // TODO: change the way layout is written in HlslToGlslWriter
-                    if (isOpenGLES3)
-                        constantBuffer.Qualifiers |= new LayoutQualifier(new LayoutKeyValue("layout(std140)"));
+                    if (isOpenGLES3) // TODO: for OpenGL too?
+                    {
+                        var layoutQualifier = constantBuffer.Qualifiers.OfType<SiliconStudio.Shaders.Ast.Glsl.LayoutQualifier>().FirstOrDefault();
+                        if (layoutQualifier == null)
+                        {
+                            layoutQualifier = new SiliconStudio.Shaders.Ast.Glsl.LayoutQualifier();
+                            constantBuffer.Qualifiers |= layoutQualifier;
+                        }
+                        layoutQualifier.Layouts.Add(new LayoutKeyValue("std140"));
+                    }
                     else
+                    {
                         constantBuffer.Qualifiers |= new LayoutQualifier(new LayoutKeyValue("std140"));
+                    }
                 }
 
                 // Output the result
