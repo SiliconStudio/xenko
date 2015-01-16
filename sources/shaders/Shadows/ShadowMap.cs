@@ -38,7 +38,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
         public Vector3 LightPosition;
 
         /// <summary>
-        /// The fov of the light.
+        /// The fov of the light in radians.
         /// </summary>
         public float Fov;
 

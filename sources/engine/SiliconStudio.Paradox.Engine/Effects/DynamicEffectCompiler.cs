@@ -150,7 +150,7 @@ namespace SiliconStudio.Paradox.Effects
         private void PrepareUpdater(DynamicEffectInstance effectInstance)
         {
             parameterCollections.Clear(true);
-            parameterCollections.Add(effectInstance.Effect.DefaultCompilationParameters);
+            parameterCollections.Add(effectInstance.Effect.CompilationParameters);
             effectInstance.FillParameterCollections(parameterCollections);
             parameterCollections.Add(GraphicsDevice.Parameters);
 

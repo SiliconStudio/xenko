@@ -4,6 +4,7 @@ using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Shaders.Compiler;
 
 namespace SiliconStudio.Paradox.Effects
 {
@@ -113,6 +114,13 @@ namespace SiliconStudio.Paradox.Effects
             BeginRendering(context);
             OnRendering(context);
             EndRendering(context);
+        }
+
+        protected CompilerParameters GetDefaultCompilerParameters()
+        {
+            var compilerParameters = new CompilerParameters();
+            compilerParameters.Set(CompilerParameters.GraphicsProfileKey, GraphicsDevice.Features.Profile);
+            return compilerParameters;
         }
     }
 }

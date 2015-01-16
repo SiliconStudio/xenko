@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 
 using SiliconStudio.Core;
@@ -75,8 +76,33 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 // On non Windows platform, we are expecting to have the bytecode stored directly
                 if (!Platform.IsWindowsDesktop && bytecode == null)
                 {
-                    Log.Error("Unable to find compiled shaders [{0}] for mixin [{1}] with parameters [{2}]", compiledUrl, mixin, compilerParameters.ToStringDetailed());
-                    throw new InvalidOperationException("Unable to find compiled shaders [{0}]".ToFormat(compiledUrl));
+                    var stringBuilder = new StringBuilder();
+                    stringBuilder.AppendFormat("Unable to find compiled shaders [{0}] for mixin [{1}] with parameters [{2}]", compiledUrl, mixin, usedParameters.ToStringDetailed());
+                    Log.Error(stringBuilder.ToString());
+                    throw new InvalidOperationException(stringBuilder.ToString());
+                }
+
+                // ------------------------------------------------------------------------------------------------------------
+                // 2) Try to load from database cache
+                // ------------------------------------------------------------------------------------------------------------
+                if (bytecode == null && database.ObjectDatabase.Exists(mixinObjectId))
+                {
+                    using (var stream = database.ObjectDatabase.OpenStream(mixinObjectId))
+                    {
+                        // We have an existing stream, make sure the shader is compiled
+                        var objectIdBuffer = new byte[ObjectId.HashSize];
+                        if (stream.Read(objectIdBuffer, 0, ObjectId.HashSize) == ObjectId.HashSize)
+                        {
+                            var newBytecodeId = new ObjectId(objectIdBuffer);
+                            bytecode = LoadEffectBytecode(database, newBytecodeId);
+
+                            if (bytecode != null)
+                            {
+                                // If we successfully retrieved it from cache, add it to index map so that it won't be collected and available for faster lookup 
+                                database.AssetIndexMap[compiledUrl] = newBytecodeId;
+                            }
+                        }
+                    }
                 }
 
                 // ------------------------------------------------------------------------------------------------------------
@@ -132,7 +158,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     var memoryStream = new MemoryStream();
                     bytecode.WriteTo(memoryStream);
                     memoryStream.Position = 0;
-                    database.ObjectDatabase.Write(memoryStream, newBytecodeId);
+                    database.ObjectDatabase.Write(memoryStream, newBytecodeId, true);
                     database.AssetIndexMap[compiledUrl] = newBytecodeId;
 
                     // Save bytecode Id to the database cache as well
@@ -213,7 +239,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
         private bool IsBytecodeObsolete(EffectBytecode bytecode)
         {
-           foreach (var hashSource in bytecode.HashSources)
+            foreach (var hashSource in bytecode.HashSources)
             {
                 if (GetShaderSourceHash(hashSource.Key) != hashSource.Value)
                 {

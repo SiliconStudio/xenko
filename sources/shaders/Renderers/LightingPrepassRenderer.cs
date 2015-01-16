@@ -25,22 +25,22 @@ namespace SiliconStudio.Paradox.Effects.Renderers
         /// <summary>
         /// The key linking the parameters of each point light.
         /// </summary>
-        public static readonly ParameterKey<PointLightData[]> PointLightInfos = ParameterKeys.New(new PointLightData[64]);
+        public static readonly ParameterKey<PointLightData[]> PointLightInfos = ParameterKeys.New(new PointLightData[LightingKeys.MaxDeferredPointLights]);
 
         /// <summary>
         /// The key linking the parameters of each directional light.
         /// </summary>
-        public static readonly ParameterKey<DirectLightData[]> DirectLightInfos = ParameterKeys.New(new DirectLightData[64]);
+        public static readonly ParameterKey<DirectLightData[]> DirectLightInfos = ParameterKeys.New(new DirectLightData[LightingKeys.MaxDeferredPointLights]);
 
         /// <summary>
         /// The key linking the parameters of each spot light.
         /// </summary>
-        public static readonly ParameterKey<SpotLightData[]> SpotLightInfos = ParameterKeys.New(new SpotLightData[64]);
+        public static readonly ParameterKey<SpotLightData[]> SpotLightInfos = ParameterKeys.New(new SpotLightData[LightingKeys.MaxDeferredPointLights]);
 
         /// <summary>
         /// The key setting the number of lights.
         /// </summary>
-        public static readonly ParameterKey<int> LightCount = ParameterKeys.New(64);
+        public static readonly ParameterKey<int> LightCount = ParameterKeys.New(LightingKeys.MaxDeferredPointLights);
 
         #endregion
 
@@ -66,7 +66,7 @@ namespace SiliconStudio.Paradox.Effects.Renderers
         public const float AttenuationCutoff = 0.1f;
 
         // TODO: make this configurable or extract from the effect
-        public const int MaxPointLightsPerTileDrawCall = 64;
+        public const int MaxPointLightsPerTileDrawCall = LightingKeys.MaxDeferredPointLights;
         
         public const int MaxDirectLightsPerTileDrawCall = 1;
 
@@ -209,35 +209,25 @@ namespace SiliconStudio.Paradox.Effects.Renderers
             for (int i = 0; i < tilesGroups.Length; ++i)
                 tilesGroups[i] = new List<PointLightData>();
 
-            pointLightingPrepassEffect = EffectSystem.LoadEffect(effectName + ".ParadoxPointPrepassLighting");
+            var compilerParameters = GetDefaultCompilerParameters();
+            // point lights
+            pointLightingPrepassEffect = EffectSystem.LoadEffect(effectName + ".ParadoxPointPrepassLighting", compilerParameters);
             CreateLightingUpdateInfo(pointLightingPrepassEffect);
 
-            spotLightingPrepassEffect = EffectSystem.LoadEffect(effectName + ".ParadoxSpotPrepassLighting");
+            // spot lights
+            spotLightingPrepassEffect = EffectSystem.LoadEffect(effectName + ".ParadoxSpotPrepassLighting", compilerParameters);
             CreateLightingUpdateInfo(spotLightingPrepassEffect);
 
-            // TODO: find a way to enumerate available shaders
-            /*var parameters = new CompilerParameters();
-            for (var i = 2; i <= 64; i = i + 62)
-            {
-                parameters.Set(LightingKeys.MaxDeferredLights, i);
-                var effect = EffectSystem.LoadEffect("LightPrepassEffect", parameters);
-                lightPrepassEffects.Add(i, effect);
-                lightConfigurations.Add(i);
-
-                CreateLightingUpdateInfo(effect);
-            }*/
-
             // directional lights
-            directLightingPrepassEffect = EffectSystem.LoadEffect(effectName + ".ParadoxDirectPrepassLighting");
+            directLightingPrepassEffect = EffectSystem.LoadEffect(effectName + ".ParadoxDirectPrepassLighting", compilerParameters);
             CreateLightingUpdateInfo(directLightingPrepassEffect);
 
             // shadow lights
-            var parameters = new CompilerParameters();
             for (var cascadeCount = 1; cascadeCount < 5; ++cascadeCount)
             {
-                AddShadowEffect(cascadeCount, ShadowMapFilterType.Nearest, parameters);
-                AddShadowEffect(cascadeCount, ShadowMapFilterType.PercentageCloserFiltering, parameters);
-                AddShadowEffect(cascadeCount, ShadowMapFilterType.Variance, parameters);
+                AddShadowEffect(cascadeCount, ShadowMapFilterType.Nearest, compilerParameters);
+                AddShadowEffect(cascadeCount, ShadowMapFilterType.PercentageCloserFiltering, compilerParameters);
+                AddShadowEffect(cascadeCount, ShadowMapFilterType.Variance, compilerParameters);
             }
 
             // Create lighting accumulation texture
@@ -305,10 +295,10 @@ namespace SiliconStudio.Paradox.Effects.Renderers
 
         #region Private methods
 
-        private void AddShadowEffect(int cascadeCount, ShadowMapFilterType filterType, CompilerParameters  parameters)
+        private void AddShadowEffect(int cascadeCount, ShadowMapFilterType filterType, CompilerParameters parameters)
         {
             parameters.Set(ShadowMapParameters.ShadowMapCascadeCount.ComposeWith("shadows[0]"), cascadeCount);
-            parameters.Set(ShadowMapParameters.FilterType.ComposeWith("shadows[0]"), filterType);
+            parameters.Set(ShadowMapParameters.FilterType, filterType);
 
             //////////////////////////////////////////////
             // DIRECTIONAL LIGHT
@@ -639,7 +629,10 @@ namespace SiliconStudio.Paradox.Effects.Renderers
             context.Parameters.Set(shadowUpdateInfo.ShadowMapLightCountKey, lightCount);
             // TODO: change texture set when multiple shadow maps will be handled.
             if (varianceShadowMap)
+            {
+                context.Parameters.Set((ParameterKey<ShadowMapReceiverVsmInfo[]>)shadowUpdateInfo.ShadowMapReceiverVsmInfoKey, receiverVsmInfos, 0, cascadeCount);
                 context.Parameters.Set(shadowUpdateInfo.ShadowMapTextureKey, lights[startLightIndex].ShadowMap.Texture.ShadowMapTargetTexture);
+            }
             else
                 context.Parameters.Set(shadowUpdateInfo.ShadowMapTextureKey, lights[startLightIndex].ShadowMap.Texture.ShadowMapDepthTexture);
 

@@ -18,6 +18,10 @@ using SiliconStudio.Paradox.UI;
 
 namespace SiliconStudio.Paradox.Starter
 {
+    // NOTE: the class should implement View.IOnSystemUiVisibilityChangeListener but doing so will prevent the engine to work on Android below 3.0 (API Level 11 is mandatory).
+    // So the methods are implemented but the class does not implement View.IOnSystemUiVisibilityChangeListener.
+    // Maybe this will change when support for API Level 10 is dropped
+    // TODO: make this class implement View.IOnSystemUiVisibilityChangeListener when support of Android < 3.0 is dropped.
     public class AndroidParadoxActivity : Activity, View.IOnTouchListener
     {
         private AndroidGameView gameView;
@@ -32,6 +36,8 @@ namespace SiliconStudio.Paradox.Starter
         /// </summary>
         protected Game Game;
 
+        private Action setFullscreenViewCallback;
+        private StatusBarVisibility lastVisibility;
         private RelativeLayout mainLayout;
         private RingerModeIntentReceiver ringerModeIntentReceiver;
 
@@ -62,6 +68,54 @@ namespace SiliconStudio.Paradox.Starter
             // set up a listener to the android ringer mode (Normal/Silent/Vibrate)
             ringerModeIntentReceiver = new RingerModeIntentReceiver((AudioManager)GetSystemService(AudioService));
             RegisterReceiver(ringerModeIntentReceiver, new IntentFilter(AudioManager.RingerModeChangedAction));
+
+            // TODO: remove the Kitkat requirement once the class implements View.IOnSystemUiVisibilityChangeListener.
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.Kitkat)
+            {
+                SetFullscreenView();
+                InitializeFullscreenViewCallback();
+            }
+        }
+
+        public void OnSystemUiVisibilityChange(StatusBarVisibility visibility)
+        {
+            //Log.Debug("Paradox", "OnSystemUiVisibilityChange: visibility=0x{0:X8}", (int)visibility);
+            var diffVisibility = lastVisibility ^ visibility;
+            lastVisibility = visibility;
+            if ((((int)diffVisibility & (int)SystemUiFlags.LowProfile) != 0) && (((int)visibility & (int)SystemUiFlags.LowProfile) == 0))
+            {
+                // visibility has changed out of low profile mode; change it back, which requires a delay to work properly:
+                // http://stackoverflow.com/questions/11027193/maintaining-lights-out-mode-view-setsystemuivisibility-across-restarts
+                RemoveFullscreenViewCallback();
+                PostFullscreenViewCallback();
+            }
+        }
+
+        public override void OnWindowFocusChanged(bool hasFocus)
+        {
+            //Log.Debug("Paradox", "OnWindowFocusChanged: hasFocus={0}", hasFocus);
+            base.OnWindowFocusChanged(hasFocus);
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.Kitkat)
+            {
+                // use fullscreen immersive mode
+                if (hasFocus)
+                {
+                    SetFullscreenView();
+                }
+            }
+            else if (Build.VERSION.SdkInt >= BuildVersionCodes.IceCreamSandwich)
+            {
+                // use fullscreen low profile mode, with a delay
+                if (hasFocus)
+                {
+                    RemoveFullscreenViewCallback();
+                    PostFullscreenViewCallback();
+                }
+                else
+                {
+                    RemoveFullscreenViewCallback();
+                }
+            }
         }
 
         private void SetupGameViewAndGameContext()
@@ -110,6 +164,65 @@ namespace SiliconStudio.Paradox.Starter
         public bool OnTouch(View v, MotionEvent e)
         {
             throw new NotImplementedException();
+        }
+
+        private void InitializeFullscreenViewCallback()
+        {
+            //Log.Debug("Paradox", "InitializeFullscreenViewCallback");
+            if ((Build.VERSION.SdkInt >= BuildVersionCodes.IceCreamSandwich) && (Build.VERSION.SdkInt < BuildVersionCodes.Kitkat))
+            {
+                setFullscreenViewCallback = SetFullscreenView;
+                // TODO: uncomment this once the class implements View.IOnSystemUiVisibilityChangeListener. Right now only Kitkat supports full screen    
+                //Window.DecorView.SetOnSystemUiVisibilityChangeListener(this);
+            }
+        }
+
+        private void PostFullscreenViewCallback()
+        {
+            //Log.Debug("Paradox", "PostFullscreenViewCallback");
+            var handler = Window.DecorView.Handler;
+            if (handler != null)
+            {
+                // post callback with delay, which needs to be longer than transient status bar timeout, otherwise it will have no effect!
+                handler.PostDelayed(setFullscreenViewCallback, 4000);
+            }
+        }
+
+        private void RemoveFullscreenViewCallback()
+        {
+            //Log.Debug("Paradox", "RemoveFullscreenViewCallback");
+            var handler = Window.DecorView.Handler;
+            if (handler != null)
+            {
+                // remove any pending callbacks
+                handler.RemoveCallbacks(setFullscreenViewCallback);
+            }
+        }
+
+        private void SetFullscreenView()
+        {
+            //Log.Debug("Paradox", "SetFullscreenView");
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.IceCreamSandwich) // http://redth.codes/such-android-api-levels-much-confuse-wow/
+            {
+                var view = Window.DecorView;
+                int flags = (int)view.SystemUiVisibility;
+                if (Build.VERSION.SdkInt >= BuildVersionCodes.JellyBean)
+                {
+                    // http://developer.android.com/training/system-ui/status.html
+                    flags |= (int)(SystemUiFlags.Fullscreen | SystemUiFlags.LayoutFullscreen | SystemUiFlags.LayoutStable);
+                }
+                if (Build.VERSION.SdkInt >= BuildVersionCodes.Kitkat)
+                {
+                    // http://developer.android.com/training/system-ui/immersive.html; the only mode that can really hide the nav bar
+                    flags |= (int)(SystemUiFlags.HideNavigation | SystemUiFlags.ImmersiveSticky | SystemUiFlags.LayoutHideNavigation);
+                }
+                else
+                {
+                    // http://developer.android.com/training/system-ui/dim.html; low profile or 'lights out' mode to minimize the nav bar
+                    flags |= (int)SystemUiFlags.LowProfile;
+                }
+                view.SystemUiVisibility = (StatusBarVisibility)flags;
+            }
         }
 
         private class RingerModeIntentReceiver : BroadcastReceiver

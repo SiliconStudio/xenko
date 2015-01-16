@@ -129,11 +129,6 @@
       <Name>SiliconStudio.Paradox.Shaders</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\shaders\SiliconStudio.Paradox.Effects.csproj">
-      <Project>{0342c3e7-4a38-46b4-a8ec-e728d50085d3}</Project>
-      <Name>SiliconStudio.Paradox.Effects</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Paradox.VisualStudio.Package\SiliconStudio.Paradox.VisualStudio.Package.csproj">
       <Project>{0BD41ADD-2704-4A77-A9AB-15460A2ABDC6}</Project>
       <Name>SiliconStudio.Paradox.VisualStudio.Package</Name>

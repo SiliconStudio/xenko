@@ -125,6 +125,7 @@
     <Compile Include="ImageFragment.cs" />
     <Compile Include="ImageGroup.cs" />
     <Compile Include="ImageOrientation.cs" />
+    <Compile Include="OpenGL\OpenGLUtils.cs" />
     <Compile Include="OpenGL\GraphicsOutput.OpenGL.cs" />
     <Compile Include="OpenGL\VertexArrayObjectInstance.cs" />
     <Compile Include="OpenGL\VertexAttrib.cs" />
@@ -269,8 +270,6 @@
     <Compile Include="Null\Texture2DBase.Null.cs" />
     <Compile Include="OpenGL\GraphicsDeviceFeatures.OpenGL.cs" />
     <Compile Include="OpenGL\Shader.OpenGL.cs" />
-    <Compile Include="OpenGL\TextureCube.OpenGL.cs" />
-    <Compile Include="OpenGL\Texture2DBase.OpenGL.cs" />
     <Compile Include="Rational.cs" />
     <Compile Include="Direct3D\SwapChainGraphicsPresenter.Direct3D.cs" />
     <Compile Include="SwizzleMode.cs" />
@@ -330,7 +329,6 @@
   <ItemGroup>
     <Compile Include="OpenGL\BlendState.OpenGL.cs" />
     <Compile Include="OpenGL\Buffer.OpenGL.cs" />
-    <Compile Include="OpenGL\DepthStencilBuffer.OpenGL.cs" />
     <Compile Include="OpenGL\DepthStencilState.OpenGL.cs" />
     <Compile Include="OpenGL\GraphicsAdapter.OpenGL.cs" />
     <Compile Include="OpenGL\GraphicsAdapterFactory.OpenGL.cs" />
@@ -338,12 +336,8 @@
     <Compile Include="OpenGL\GraphicsResourceBase.OpenGL.cs" />
     <Compile Include="OpenGL\OpenGLConvertExtensions.cs" />
     <Compile Include="OpenGL\RasterizerState.OpenGL.cs" />
-    <Compile Include="OpenGL\RenderTarget.OpenGL.cs" />
     <Compile Include="OpenGL\SamplerState.OpenGL.cs" />
     <Compile Include="OpenGL\Texture.OpenGL.cs" />
-    <Compile Include="OpenGL\Texture1D.OpenGL.cs" />
-    <Compile Include="OpenGL\Texture2D.OpenGL.cs" />
-    <Compile Include="OpenGL\Texture3D.OpenGL.cs" />
     <Compile Include="OpenGL\VertexArrayObject.OpenGL.cs" />
   </ItemGroup>
   <ItemGroup>

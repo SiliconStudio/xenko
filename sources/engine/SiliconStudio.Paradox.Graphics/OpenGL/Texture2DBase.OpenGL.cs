@@ -54,6 +54,9 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="textureDatas">The texture datas.</param>
         protected virtual void Init(DataBox[] textureDatas)
         {
+            if (Target != TextureTarget.Texture2D && Target != TextureTarget.TextureCubeMap)
+                throw new Exception("incorrect type of Texture2D, it should be TextureTarget.Texture2D or TextureTarget.TextureCubeMap");
+
             using (var creationContext = GraphicsDevice.UseOpenGLCreationContext())
             {
                 // Can we just do a renderbuffer?
@@ -126,13 +129,13 @@ namespace SiliconStudio.Paradox.Graphics
                     if ((Description.Flags & (TextureFlags.RenderTarget | TextureFlags.DepthStencil)) !=
                         TextureFlags.None)
                     {
-                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
+                        GL.TexParameter(Target, TextureParameterName.TextureMinFilter,
                                         (int)TextureMinFilter.Nearest);
-                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
+                        GL.TexParameter(Target, TextureParameterName.TextureMagFilter,
                                         (int)TextureMagFilter.Nearest);
-                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS,
+                        GL.TexParameter(Target, TextureParameterName.TextureWrapS,
                                         (int)TextureWrapMode.ClampToEdge);
-                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT,
+                        GL.TexParameter(Target, TextureParameterName.TextureWrapT,
                                         (int)TextureWrapMode.ClampToEdge);
                     }
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
@@ -144,8 +147,8 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
 
 #if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBaseLevel, 0);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, Description.MipLevels - 1);
+                    GL.TexParameter(Target, TextureParameterName.TextureBaseLevel, 0);
+                    GL.TexParameter(Target, TextureParameterName.TextureMaxLevel, Description.MipLevels - 1);
 #endif
 
                     if (Description.MipLevels == 0)
@@ -165,18 +168,35 @@ namespace SiliconStudio.Paradox.Graphics
                         }
                         if (compressed)
                         {
-                            GL.CompressedTexImage2D(TextureTarget.Texture2D, i, internalFormat,
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
+                            throw new NotSupportedException("Can't use compressed textures on desktop OpenGL ES.");
+#else
+                            GL.CompressedTexImage2D(Target, i, internalFormat,
                                 width, height, 0, textureDatas[i].SlicePitch, data);
+#endif
                         }
                         else
                         {
-                            GL.TexImage2D(TextureTarget.Texture2D, i, internalFormat,
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
+                            GL.TexImage2D(TextureTarget2d.Texture2D, i, internalFormat.ToOpenGL(),
                                             width, height, 0, format, type, data);
+#else
+                            GL.TexImage2D(Target, i, internalFormat,
+                                            width, height, 0, format, type, data);
+#endif
                         }
                     }
-                    GL.BindTexture(TextureTarget.Texture2D, 0);
+                    GL.BindTexture(Target, 0);
 
                     resourceId = textureId;
+
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                    if (!GraphicsDevice.IsOpenGLES2)
+#endif
+                    {
+                        if (Description.Usage == GraphicsResourceUsage.Dynamic)
+                            InitializePixelBufferObject();
+                    }
                 }
             }
         }

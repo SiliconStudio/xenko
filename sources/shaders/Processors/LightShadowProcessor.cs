@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
@@ -125,7 +126,7 @@ namespace SiliconStudio.Paradox.Effects.Processors
             var worldDir = Vector4.Transform(new Vector4(light.Light.LightDirection, 0), light.Entity.Transformation.WorldMatrix);
             light.ShadowMap.LightDirection = new Vector3(worldDir.X, worldDir.Y, worldDir.Z);
             light.ShadowMap.LightPosition = light.Entity.Transformation.Translation;
-            light.ShadowMap.Fov = light.Light.SpotFieldAngle;
+            light.ShadowMap.Fov = (float)(2 * Math.PI * light.Light.SpotFieldAngle / 180.0);
             light.ShadowMap.ReceiverInfo.ShadowLightDirection = light.ShadowMap.LightDirectionNormalized;
             light.ShadowMap.ShadowFarDistance = light.Light.ShadowFarDistance;
             light.ShadowMap.ReceiverInfo.ShadowMapDistance = light.Light.Type == LightType.Directional ? light.ShadowMap.ShadowFarDistance : light.ShadowMap.ShadowFarDistance - light.ShadowMap.ShadowNearDistance;

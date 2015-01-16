@@ -7,16 +7,16 @@ namespace SiliconStudio.Paradox.Graphics
 {
     public class SwapChainGraphicsPresenter : GraphicsPresenter
     {
-        private RenderTarget backBuffer;
+        private Texture backBuffer;
 
         public SwapChainGraphicsPresenter(GraphicsDevice device, PresentationParameters presentationParameters) : base(device, presentationParameters)
         {
             device.InitDefaultRenderTarget(presentationParameters);
             backBuffer = device.DefaultRenderTarget;
-            DepthStencilBuffer = device.windowProvidedDepthBuffer;
+            DepthStencilBuffer = device.windowProvidedDepthTexture;
         }
 
-        public override RenderTarget BackBuffer
+        public override Texture BackBuffer
         {
             get { return backBuffer; }
         }
@@ -45,8 +45,8 @@ namespace SiliconStudio.Paradox.Graphics
             GraphicsDevice.Begin();
             
             // If we made a fake render target to avoid OpenGL limitations on window-provided back buffer, let's copy the rendering result to it
-            if (GraphicsDevice.DefaultRenderTarget != GraphicsDevice.windowProvidedRenderTarget)
-                GraphicsDevice.Copy(GraphicsDevice.DefaultRenderTarget.Texture, GraphicsDevice.windowProvidedRenderTarget.Texture);
+            if (GraphicsDevice.DefaultRenderTarget != GraphicsDevice.windowProvidedRenderTexture)
+                GraphicsDevice.Copy(GraphicsDevice.DefaultRenderTarget, GraphicsDevice.windowProvidedRenderTexture);
             OpenTK.Graphics.GraphicsContext.CurrentContext.SwapBuffers();
             GraphicsDevice.End();
         }

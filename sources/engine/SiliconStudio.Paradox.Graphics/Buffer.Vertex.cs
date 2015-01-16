@@ -41,7 +41,7 @@ namespace SiliconStudio.Paradox.Graphics
             /// <returns>A Vertex buffer</returns>
             public static Buffer New(GraphicsDevice device, int size, GraphicsResourceUsage usage = GraphicsResourceUsage.Default)
             {
-                return Buffer.New(device,size, BufferFlags.VertexBuffer, usage);
+                return Buffer.New(device, size, BufferFlags.VertexBuffer, usage);
             }
 
             /// <summary>
@@ -66,7 +66,7 @@ namespace SiliconStudio.Paradox.Graphics
             /// <returns>A Vertex buffer</returns>
             public static Buffer<T> New<T>(GraphicsDevice device, ref T value, GraphicsResourceUsage usage = GraphicsResourceUsage.Immutable) where T : struct
             {
-                return Buffer.New(device,ref value, BufferFlags.VertexBuffer, usage);
+                return Buffer.New(device, ref value, BufferFlags.VertexBuffer, usage);
             }
 
             /// <summary>
@@ -79,7 +79,7 @@ namespace SiliconStudio.Paradox.Graphics
             /// <returns>A Vertex buffer</returns>
             public static Buffer<T> New<T>(GraphicsDevice device, T[] value, GraphicsResourceUsage usage = GraphicsResourceUsage.Immutable) where T : struct
             {
-                return Buffer.New(device,value, BufferFlags.VertexBuffer, usage);
+                return Buffer.New(device, value, BufferFlags.VertexBuffer, usage);
             }
 
             /// <summary>
@@ -104,7 +104,7 @@ namespace SiliconStudio.Paradox.Graphics
             /// <returns>A Vertex buffer</returns>
             public static Buffer New(GraphicsDevice device, DataPointer value, GraphicsResourceUsage usage = GraphicsResourceUsage.Immutable)
             {
-                return Buffer.New(device,value, 0, BufferFlags.VertexBuffer, usage);
+                return Buffer.New(device, value, 0, BufferFlags.VertexBuffer, usage);
             }
         }
     }

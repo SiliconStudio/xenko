@@ -133,7 +133,7 @@ namespace SiliconStudio.Core
             return directory;
 #elif SILICONSTUDIO_PLATFORM_WINDOWS_STORE
             var directory = Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "cache");
-            NativeFile.DirectoryCreate(directory);
+            IO.NativeFile.DirectoryCreate(directory);
             return directory;
 #elif SILICONSTUDIO_PLATFORM_WINDOWS_PHONE
             return Windows.Storage.ApplicationData.Current.LocalCacheFolder.Path;

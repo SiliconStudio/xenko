@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
@@ -83,9 +84,11 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             textures = new Texture[3]
             {
                 Texture.New2D(GraphicsDevice, 800, 480, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource),
-                Texture.New2D(GraphicsDevice, 800, 480, PixelFormat.R32_Float, TextureFlags.RenderTarget | TextureFlags.ShaderResource),
+                Texture.New2D(GraphicsDevice, 800, 480, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource),
                 Texture.New2D(GraphicsDevice, 800, 480, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource),
             };
+
+            var depthBuffer = Texture.New2D(GraphicsDevice, 800, 480, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil);
 
             // Setup the default rendering pipeline
             RenderSystem.Pipeline.Renderers.Add(new CameraSetter(Services));
@@ -93,6 +96,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             {
                 ClearColor = Color.CornflowerBlue,
                 RenderTargets = textures,
+                DepthStencil = depthBuffer,
                 ClearColors = new Color[] { Color.Black, Color.White, Color.Black }
             });
             RenderSystem.Pipeline.Renderers.Add(new ModelRenderer(Services, "MultipleRenderTargetsEffect"));
@@ -115,7 +119,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 var period = (float) (2 * Math.PI * UpdateTime.Total.TotalMilliseconds / 15000);
                 teapot.Transformation.Rotation = Quaternion.RotationAxis(Vector3.UnitY, period);
 
-                if (Input.IsKeyPressed(Keys.Space))
+                if (Input.PointerEvents.Any(x => x.State == PointerState.Down))
                     renderTargetToDisplayIndex = (renderTargetToDisplayIndex + 1) % 3;
             }
         }

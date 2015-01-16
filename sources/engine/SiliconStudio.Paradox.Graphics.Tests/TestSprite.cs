@@ -12,7 +12,7 @@ using SiliconStudio.Paradox.Graphics.Regression;
 namespace SiliconStudio.Paradox.Graphics.Tests
 {
     [TestFixture]
-    public class TestSprite : GraphicsTestBase
+    public class TestSprite : TestGameBase
     {
         private SpriteGroup spriteUv;
         private SpriteGroup spriteSphere;

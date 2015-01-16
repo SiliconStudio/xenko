@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #include "stdafx.h"
 #include "../SiliconStudio.Paradox.Assimp.Translation/Extension.h"
+#include "../SiliconStudio.Paradox.Importer.Common/ImporterUtils.h"
 
 #include <string>
 #include <map>
@@ -1013,14 +1014,14 @@ private:
   //                  case sizeof(double):
   //                      {
 		//					auto value = *((double*)pProp->mData);
-  //                          ParameterKey<float>^ key = gcnew ParameterKey<float>(propertyName, 1, nullptr);
+//							ParameterKey<float>^ key = gcnew ParameterKey<float>(propertyName, 1);
   //                          finalMaterial->SetParameter(key, (float)value);
   //                      }
   //                      break;
   //                  case 3*sizeof(double):
   //                      {
   //                          auto value = (double*)pProp->mData;
-  //                          ParameterKey<Vector3>^ key = gcnew ParameterKey<Vector3>(propertyName, 1, nullptr);
+//                            ParameterKey<Vector3>^ key = gcnew ParameterKey<Vector3>(propertyName, 1);
   //                          finalMaterial->SetParameter(key, Vector3((float)value[0], (float)value[1], (float)value[2]));
   //                      }
   //                      break;
@@ -1131,13 +1132,9 @@ private:
 				itemName = itemName.substr(0, itemNameSplitPosition);
 			}
 
-			// TODO: remove all bad characters
-			int nextCharacterPos = itemName.find(':');
-			while (nextCharacterPos != std::string::npos)
-			{
-				itemName.replace(nextCharacterPos, 1, 1, '_');
-				nextCharacterPos = itemName.find(':', nextCharacterPos);
-			}
+			// remove all bad characters
+			ReplaceCharacter(itemName, ':', '_');
+			RemoveCharacter(itemName, ' ');
 			tempNames.push_back(itemName);
 
 			// count the occurences of this name

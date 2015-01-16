@@ -14,8 +14,6 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-
-#line 3 "D:\Code\Paradox\sources\engine\SiliconStudio.Paradox.Graphics.Tests\Assets\CustomShader.pdxsl"
 namespace SiliconStudio.Paradox.Graphics.Tests
 {
     public static partial class CustomShaderKeys

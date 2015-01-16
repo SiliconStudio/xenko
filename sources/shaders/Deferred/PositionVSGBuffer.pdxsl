@@ -9,6 +9,7 @@ class PositionVSGBuffer : Transformation, PositionVSBase, DepthBase, ShaderBase
         // Reconstruct positionVS
         float2 bufferSize;
         DepthStencil.GetDimensions(bufferSize.x, bufferSize.y);
-        return float3((1.0 - Utilities.ConvertTexCoord(streams.ShadingPosition.xy / bufferSize.xy) * 2.0) * ProjScreenRay, -1.0f) * this.ComputeDepthFromScreenPosition(int2(streams.ShadingPosition.xy));
+        //return float3((1.0 - Utilities.ConvertTexCoord(streams.ShadingPosition.xy / bufferSize.xy) * 2.0) * ProjScreenRay, -1.0f) * this.ComputeDepthFromScreenPosition(int2(streams.ShadingPosition.xy));
+        return float3((1.0 - (streams.ShadingPosition.xy / bufferSize.xy) * 2.0) * ProjScreenRay, -1.0f) * this.ComputeDepthFromScreenPosition(int2(streams.ShadingPosition.xy));
     }
 };

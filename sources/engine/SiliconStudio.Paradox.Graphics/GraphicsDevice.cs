@@ -319,9 +319,10 @@ namespace SiliconStudio.Paradox.Graphics
         /// Draws a fullscreen texture using a <see cref="SamplerStateFactory.LinearClamp"/> sampler. See <see cref="Draw+a+texture"/> to learn how to use it.
         /// </summary>
         /// <param name="texture">The texture. Expecting an instance of <see cref="Texture"/>.</param>
-        public void DrawTexture(Texture texture)
+        /// <param name="applyEffectStates">The flag to apply effect states.</param>
+        public void DrawTexture(Texture texture, bool applyEffectStates = false)
         {
-            DrawTexture(texture, null, Color4.White);
+            DrawTexture(texture, null, Color4.White, applyEffectStates);
         }
 
         /// <summary>
@@ -329,9 +330,10 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         /// <param name="texture">The texture. Expecting an instance of <see cref="Texture"/>.</param>
         /// <param name="sampler">The sampler.</param>
-        public void DrawTexture(Texture texture, SamplerState sampler)
+        /// <param name="applyEffectStates">The flag to apply effect states.</param>
+        public void DrawTexture(Texture texture, SamplerState sampler, bool applyEffectStates = false)
         {
-            DrawTexture(texture, sampler, Color4.White);
+            DrawTexture(texture, sampler, Color4.White, applyEffectStates);
         }
 
         /// <summary>
@@ -340,9 +342,10 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         /// <param name="texture">The texture. Expecting an instance of <see cref="Texture"/>.</param>
         /// <param name="color">The color.</param>
-        public void DrawTexture(Texture texture, Color4 color)
+        /// <param name="applyEffectStates">The flag to apply effect states.</param>
+        public void DrawTexture(Texture texture, Color4 color, bool applyEffectStates = false)
         {
-            DrawTexture(texture, null, color);
+            DrawTexture(texture, null, color, applyEffectStates);
         }
 
         /// <summary>
@@ -352,9 +355,10 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="texture">The texture. Expecting an instance of <see cref="Texture"/>.</param>
         /// <param name="sampler">The sampler.</param>
         /// <param name="color">The color.</param>
-        public void DrawTexture(Texture texture, SamplerState sampler, Color4 color)
+        /// <param name="applyEffectStates">The flag to apply effect states.</param>
+        public void DrawTexture(Texture texture, SamplerState sampler, Color4 color, bool applyEffectStates = false)
         {
-            primitiveQuad.Draw(texture, sampler, color);
+            primitiveQuad.Draw(texture, sampler, color, applyEffectStates);
         }
 
         /// <summary>

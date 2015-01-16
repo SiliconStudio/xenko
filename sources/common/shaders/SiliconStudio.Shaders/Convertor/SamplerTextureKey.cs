@@ -18,6 +18,10 @@ namespace SiliconStudio.Shaders.Convertor
 
         public bool Equals(SamplerTextureKey other)
         {
+            if (Sampler == null && other.Sampler == null)
+                return Texture.Equals(other.Texture);
+            if (Sampler == null || other.Sampler == null)
+                return false;
             return Sampler.Equals(other.Sampler) && Texture.Equals(other.Texture);
         }
 
@@ -31,7 +35,8 @@ namespace SiliconStudio.Shaders.Convertor
         {
             unchecked
             {
-                return (Sampler.GetHashCode()*397) ^ Texture.GetHashCode();
+                var hashcode = Sampler == null ? 1 : Sampler.GetHashCode();
+                return (hashcode*397) ^ Texture.GetHashCode();
             }
         }
     }
