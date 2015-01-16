@@ -9,25 +9,25 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// <summary>
     /// Schlick-Beckmann Geometric Shadowing.
     /// </summary>
-    [DataContract("MaterialSpecularMicrofacetGeometricShadowingSchlickBeckmann")]
+    [DataContract("MaterialSpecularMicrofacetGeometricShadowingSmithSchlickBeckmann")]
     [Display("Schlick-Beckmann")]
-    public class MaterialSpecularMicrofacetGeometricShadowingSchlickBeckmann : IMaterialSpecularMicrofacetGeometricShadowingFunction
+    public class MaterialSpecularMicrofacetGeometricShadowingSmithSchlickBeckmann : IMaterialSpecularMicrofacetGeometricShadowingFunction
     {
         public ShaderSource Generate()
         {
-            return new ShaderClassSource("MaterialSpecularMicrofacetGeometricShadowingSchlickBeckmann");
+            return new ShaderClassSource("MaterialSpecularMicrofacetGeometricShadowingSmithSchlickBeckmann");
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj is MaterialSpecularMicrofacetGeometricShadowingSchlickBeckmann;
+            return obj is MaterialSpecularMicrofacetGeometricShadowingSmithSchlickBeckmann;
         }
 
         public override int GetHashCode()
         {
-            return typeof(MaterialSpecularMicrofacetGeometricShadowingSchlickBeckmann).GetHashCode();
+            return typeof(MaterialSpecularMicrofacetGeometricShadowingSmithSchlickBeckmann).GetHashCode();
         }
     }
 }

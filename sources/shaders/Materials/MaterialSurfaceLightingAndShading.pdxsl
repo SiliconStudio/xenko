@@ -5,7 +5,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
     /// <summary>
     /// Performs the shading of a material according to the lights
     /// </summary>
-    class MaterialSurfaceLightingAndShading : IMaterialSurface, LightGroupArray, LightStream, NormalStream, MaterialShadingStream
+    class MaterialSurfaceLightingAndShading : IMaterialSurface, LightGroupArray, LightStream, NormalStream, MaterialShadingStream, Math
     {
         compose IMaterialSurfaceShading surfaces[];
 
@@ -17,6 +17,8 @@ namespace SiliconStudio.Paradox.Effects.Materials
 
             // Make sure that light stream is reset
             ResetLightStream();
+
+            float3 shadingLightingColor = 0;
 
             foreach(var lightGroup in lightGroups)
             {
@@ -40,10 +42,13 @@ namespace SiliconStudio.Paradox.Effects.Materials
                     // Iterate on shading models
                     foreach(var surface in surfaces)
                     {
-                        streams.shadingColor += surface.Shading();
+                        shadingLightingColor += surface.Shading();
                     }
                 }
             }
+
+            // Multiply by PI for integration of the hemisphere
+            streams.shadingColor += shadingLightingColor * PI;
         }
     };
 }

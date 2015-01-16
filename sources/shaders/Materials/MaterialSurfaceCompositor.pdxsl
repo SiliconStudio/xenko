@@ -3,7 +3,7 @@
 namespace SiliconStudio.Paradox.Effects.Materials
 {
     // Temporary code for testing IMaterialSurface
-    class MaterialSurfaceCompositor : ShadingBase, PositionVSBase, MaterialStream, LightGroupArray
+    class MaterialSurfaceCompositor : ShadingBase, PositionVSBase, MaterialShadingStream, LightGroupArray
     {
         compose IMaterialSurface material;
 

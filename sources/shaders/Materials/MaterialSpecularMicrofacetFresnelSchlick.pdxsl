@@ -5,12 +5,11 @@ namespace SiliconStudio.Paradox.Effects.Materials
     /// <summary>
     /// Interface for a microfacet Fresnel function
     /// </summary>
-    class IMaterialSpecularMicrofacetFresnelFunction : MaterialShadingStream, BRDFMicrofacet
+    class MaterialSpecularMicrofacetFresnelSchlick : IMaterialSpecularMicrofacetFresnelFunction
     {
-        // TODO: We could provide f90 as well
-        float3 Compute(float3 f0)
+        override float3 Compute(float3 f0)
         {
-            return FresnelNone(f0);
+            return FresnelSchlick(f0, streams.LdotH);
         }
     };
 }

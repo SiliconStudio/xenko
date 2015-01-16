@@ -9,25 +9,25 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// <summary>
     /// Smith-GGX Geometric Shadowing.
     /// </summary>
-    [DataContract("MaterialSpecularMicrofacetGeometricShadowingSmithGGX")]
-    [Display("Smith-GGX")]
-    public class MaterialSpecularMicrofacetGeometricShadowingSmithGGX : IMaterialSpecularMicrofacetGeometricShadowingFunction
+    [DataContract("MaterialSpecularMicrofacetGeometricShadowingSmithGGXCorrelated")]
+    [Display("Smith-GGX Correlated")]
+    public class MaterialSpecularMicrofacetGeometricShadowingSmithGGXCorrelated : IMaterialSpecularMicrofacetGeometricShadowingFunction
     {
         public ShaderSource Generate()
         {
-            return new ShaderClassSource("MaterialSpecularMicrofacetGeometricShadowingSmithGGX");
+            return new ShaderClassSource("MaterialSpecularMicrofacetGeometricShadowingSmithGGXCorrelated");
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj is MaterialSpecularMicrofacetGeometricShadowingSmithGGX;
+            return obj is MaterialSpecularMicrofacetGeometricShadowingSmithGGXCorrelated;
         }
 
         public override int GetHashCode()
         {
-            return typeof(MaterialSpecularMicrofacetGeometricShadowingSmithGGX).GetHashCode();
+            return typeof(MaterialSpecularMicrofacetGeometricShadowingSmithGGXCorrelated).GetHashCode();
         }
     }
 }

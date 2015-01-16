@@ -3,13 +3,13 @@
 namespace SiliconStudio.Paradox.Effects.Materials
 {
     /// <summary>
-    /// Interface for a microfacet function
+    /// Interface for a microfacet Fresnel function
     /// </summary>
-    class IMaterialSpecularMicrofacetFunction : MaterialShadingStream
+    class MaterialSpecularMicrofacetFresnelNone : IMaterialSpecularMicrofacetFresnelFunction
     {
-        float3 Compute()
+        override float3 Compute(float3 f0)
         {
-            return 0;
+            return FresnelNone(f0);
         }
     };
 }

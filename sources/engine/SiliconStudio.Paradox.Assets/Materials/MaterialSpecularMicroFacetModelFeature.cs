@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// </summary>
     [DataContract("MaterialSpecularMicrofacetModelFeature")]
     [Display("Microfacet Model")]
-    public class MaterialSpecularMicrofacetModelFeature : IMaterialDiffuseModelFeature
+    public class MaterialSpecularMicrofacetModelFeature : IMaterialSpecularModelFeature, IEquatable<MaterialSpecularMicrofacetModelFeature>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialSpecularMicrofacetModelFeature"/> class.
@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         {
             // Defaults
             Fresnel = new MaterialSpecularMicrofacetFresnelSchlick();
-            GeometricShadowing = new MaterialSpecularMicrofacetGeometricShadowingSmithGGX();
+            GeometricShadowing = new MaterialSpecularMicrofacetGeometricShadowingSmithGGXCorrelated();
             NormalDistribution = new MaterialSpecularMicrofacetNormalDistributionGGX();
         }
 
@@ -48,14 +48,56 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         public virtual void Visit(MaterialGeneratorContext context)
         {
-            var shaderSource = new ShaderClassSource("MaterialSurfaceShadingSpecularMicrofacet");
+            var shaderSource = new ShaderMixinSource();
+            shaderSource.Mixins.Add(new ShaderClassSource("MaterialSurfaceShadingSpecularMicrofacet"));
+            
+            if (Fresnel != null)
+            {
+                shaderSource.AddComposition("fresnelFunction", Fresnel.Generate());
+            }
+
+            if (GeometricShadowing != null)
+            {
+                shaderSource.AddComposition("geometricShadowingFunction", GeometricShadowing.Generate());
+            }
+
+            if (NormalDistribution != null)
+            {
+                shaderSource.AddComposition("normalDistributionFunction", NormalDistribution.Generate());
+            }
+
             context.AddShading(this, shaderSource);
         }
 
         public bool Equals(IMaterialShadingModelFeature other)
         {
-            //return Equals(other as MaterialSpecularMicrofacetModelFeature);
-            throw new NotImplementedException();
+            return Equals(other as MaterialSpecularMicrofacetModelFeature);
+        }
+
+        public bool Equals(MaterialSpecularMicrofacetModelFeature other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(Fresnel, other.Fresnel) && Equals(GeometricShadowing, other.GeometricShadowing) && Equals(NormalDistribution, other.NormalDistribution);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals(obj as MaterialSpecularMicrofacetModelFeature);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hashCode = (Fresnel != null ? Fresnel.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (GeometricShadowing != null ? GeometricShadowing.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (NormalDistribution != null ? NormalDistribution.GetHashCode() : 0);
+                return hashCode;
+            }
         }
     }
 }

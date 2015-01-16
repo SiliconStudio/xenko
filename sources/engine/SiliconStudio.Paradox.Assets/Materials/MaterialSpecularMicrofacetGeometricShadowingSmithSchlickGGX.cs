@@ -7,27 +7,27 @@ using SiliconStudio.Paradox.Shaders;
 namespace SiliconStudio.Paradox.Assets.Materials
 {
     /// <summary>
-    /// The GGX Anisotropic Normal Distribution.
+    /// Schlick-GGX Geometric Shadowing.
     /// </summary>
-    [DataContract("MaterialSpecularMicrofacetNormalDistributionGGXAnisotropic")]
-    [Display("GGX Anisotropic")]
-    public class MaterialSpecularMicrofacetNormalDistributionGGXAnisotropic : IMaterialSpecularMicrofacetNormalDistributionFunction
+    [DataContract("MaterialSpecularMicrofacetGeometricShadowingSmithSchlickGGX")]
+    [Display("Schlick-GGX")]
+    public class MaterialSpecularMicrofacetGeometricShadowingSmithSchlickGGX : IMaterialSpecularMicrofacetGeometricShadowingFunction
     {
         public ShaderSource Generate()
         {
-            return new ShaderClassSource("MaterialSpecularMicrofacetNormalDistributionGGXAnisotropic");
+            return new ShaderClassSource("MaterialSpecularMicrofacetGeometricShadowingSmithSchlickGGX");
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj is MaterialSpecularMicrofacetNormalDistributionGGXAnisotropic;
+            return obj is MaterialSpecularMicrofacetGeometricShadowingSmithSchlickGGX;
         }
 
         public override int GetHashCode()
         {
-            return typeof(MaterialSpecularMicrofacetNormalDistributionGGXAnisotropic).GetHashCode();
+            return typeof(MaterialSpecularMicrofacetGeometricShadowingSmithSchlickGGX).GetHashCode();
         }
     }
 }

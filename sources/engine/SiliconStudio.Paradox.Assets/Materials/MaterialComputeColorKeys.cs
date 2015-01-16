@@ -12,8 +12,8 @@ namespace SiliconStudio.Paradox.Assets.Materials
     {
         public MaterialComputeColorKeys(ParameterKey<Texture> textureBaseKey, ParameterKey valueBaseKey)
         {
-            if (textureBaseKey == null) throw new ArgumentNullException("textureBaseKey");
-            if (valueBaseKey == null) throw new ArgumentNullException("valueBaseKey");
+            //if (textureBaseKey == null) throw new ArgumentNullException("textureBaseKey");
+            //if (valueBaseKey == null) throw new ArgumentNullException("valueBaseKey");
             TextureBaseKey = textureBaseKey;
             ValueBaseKey = valueBaseKey;
         }

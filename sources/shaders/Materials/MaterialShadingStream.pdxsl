@@ -25,24 +25,27 @@ namespace SiliconStudio.Paradox.Effects.Materials
         // light dot half vector
         stage stream float LdotH;
 
+        // view dot half vector
+        stage stream float VdotH;
+
         // disney-burley roughness
-        stage stream float shadingRoughness;
+        stage stream float alphaRoughness;
 
         stage void ComputeCommonMaterialShadingStreams()
         {
-            // Common
-            streams.NdotL = saturate(dot(streams.normalVS, streams.lightDirectionVS));
-            streams.NdotV = max(dot(streams.normalVS, streams.shadingView), 0.0001f);
-
             // Used by microfacet
             streams.H = normalize(streams.shadingView + streams.lightDirectionVS);
+            streams.NdotL = saturate(dot(streams.normalVS, streams.lightDirectionVS));
+            streams.NdotV = max(dot(streams.normalVS, streams.shadingView), 0.0001f);
             streams.NdotH = saturate(dot(streams.normalVS, streams.H));
-            streams.LdotH = dot(streams.lightDirectionVS, streams.H);
+            streams.LdotH = saturate(dot(streams.lightDirectionVS, streams.H));
+            streams.VdotH = saturate(dot(streams.shadingView, streams.H));
 
             // Calculate shading roughtness using Disney-Burley method
             // roughness-burley = roughness^2 = (1 - glossy)^2
-            streams.shadingRoughness = (1 - streams.matGlossiness);
-            streams.shadingRoughness *= streams.shadingRoughness;
+            var roughness = 1 - streams.matGlossiness;
+            streams.alphaRoughness = max(roughness * roughness, 2e-3);
+            // TODO: precalculate alphaRoughness^2
         }
     };
 }

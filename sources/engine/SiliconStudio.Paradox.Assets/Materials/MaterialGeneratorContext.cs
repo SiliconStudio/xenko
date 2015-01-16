@@ -287,7 +287,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
             public void SetStream(string stream, MaterialComputeColor computeColor, ParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey)
             {
-                if (defaultTexturingKey == null) throw new ArgumentNullException("defaultKey");
+                if (defaultValueKey == null) throw new ArgumentNullException("defaultKey");
                 if (computeColor == null)
                 {
                     return;

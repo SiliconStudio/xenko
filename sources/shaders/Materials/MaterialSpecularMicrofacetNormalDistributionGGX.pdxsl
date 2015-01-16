@@ -5,11 +5,11 @@ namespace SiliconStudio.Paradox.Effects.Materials
     /// <summary>
     /// Interface for a microfacet Normal Distribution function
     /// </summary>
-    class IMaterialSpecularMicrofacetNormalDistributionFunction : MaterialShadingStream, BRDFMicrofacet
+    class MaterialSpecularMicrofacetNormalDistributionGGX : IMaterialSpecularMicrofacetNormalDistributionFunction
     {
-        float Compute()
+        override float Compute()
         {
-            return NormalDistributionBlinnPhong(streams.alphaRoughness, streams.NdotH);
+            return NormalDistributionGGX(streams.alphaRoughness, streams.NdotH);
         }
     };
 }
