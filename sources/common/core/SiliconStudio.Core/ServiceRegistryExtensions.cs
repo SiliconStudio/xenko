@@ -8,6 +8,17 @@ namespace SiliconStudio.Core
     public static class ServiceRegistryExtensions
     {
         /// <summary>
+        /// Adds a service to this <see cref="ServiceRegistry"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of service to add.</param>
+        /// <param name="provider">The service provider to add.</param>
+        /// <exception cref="System.ArgumentException">Service is already registered;type</exception>
+        public void AddServiceAs<T>(this IServiceRegistry registry, T provider)
+        {
+            registry.AddService(typeof(T), provider);
+        }
+        
+        /// <summary>
         /// Gets a service instance from a specified interface contract.
         /// </summary>
         /// <typeparam name="T">Type of the interface contract of the service</typeparam>
@@ -56,6 +67,13 @@ namespace SiliconStudio.Core
                 serviceReady(instance);
             }
         }    
+
+        /// <summary>Removes the object providing a specified service.</summary>
+        /// <typeparam name="T">The type of service.</param>
+        public void RemoveService<T>(this IServiceRegistry registry)
+        {
+            registry.RemoveService(typeof(T));
+        }
 
         private class ServiceDeferredRegister<T>
         {
