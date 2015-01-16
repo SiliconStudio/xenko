@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using SiliconStudio.Core;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Contents;
@@ -44,6 +46,20 @@ namespace SiliconStudio.Presentation.Quantum
             CombineMode = index != null && isPrimitive ? CombineMode.AlwaysCombine : CombineMode.CombineOnlyForAll;
             targetNode = GetTargetNode(modelNode, index);
             SourceNodePath = modelNodePath;
+        
+            // Override display name if available
+            if (index == null)
+            {
+                var memberDescriptor = GetMemberDescriptor() as MemberDescriptorBase;
+                if (memberDescriptor != null)
+                {
+                    var displayAttribute = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(memberDescriptor.MemberInfo);
+                    if (displayAttribute != null)
+                    {
+                        DisplayName = displayAttribute.Name;
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -88,8 +104,21 @@ namespace SiliconStudio.Presentation.Quantum
 
             if (Owner.ObservableViewModelService != null)
             {
+                if (associatedData != null)
+                {
+                    foreach (var key in associatedData.Keys.ToList())
+                    {
+                        OnPropertyChanging(key);
+                        associatedData.Remove(key);
+                        OnPropertyChanged(key);
+                    }
+                }
+
                 var data = Owner.ObservableViewModelService.RequestAssociatedData(this, isUpdating);
+
+                data.ForEach(x => OnPropertyChanging(x.Key));
                 SetValue(ref associatedData, data, "AssociatedData");
+                data.Reverse().ForEach(x => OnPropertyChanged(x.Key));
             }
             
             CheckDynamicMemberConsistency();
@@ -133,6 +162,7 @@ namespace SiliconStudio.Presentation.Quantum
             return sourceNode == node;
         }
 
+        // TODO: If possible, make this private, it's not a good thing to expose
         public IMemberDescriptor GetMemberDescriptor()
         {
             var memberContent = sourceNode.Content as MemberContent;
@@ -203,7 +233,7 @@ namespace SiliconStudio.Presentation.Quantum
                 throw new InvalidOperationException("Accessing a property of a non-initialized ObservableNode.");
             }
         }
-        
+
         /// <summary>
         /// Retrieve the value of the model content associated to this <see cref="ObservableModelNode"/>.
         /// </summary>

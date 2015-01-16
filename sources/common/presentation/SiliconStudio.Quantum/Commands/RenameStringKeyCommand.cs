@@ -4,6 +4,7 @@ using System;
 
 using SiliconStudio.ActionStack;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Quantum.Attributes;
 
 namespace SiliconStudio.Quantum.Commands
 {
@@ -36,6 +37,13 @@ namespace SiliconStudio.Quantum.Commands
         /// <inheritdoc/>
         public bool CanAttach(ITypeDescriptor descriptor, MemberDescriptorBase memberDescriptor)
         {
+            if (memberDescriptor != null)
+            {
+                var attrib = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<SealedCollectionAttribute>(memberDescriptor.MemberInfo);
+                if (attrib != null && attrib.CollectionSealed)
+                    return false;
+            }
+
             var dictionaryDescriptor = descriptor as DictionaryDescriptor;
             return dictionaryDescriptor != null && dictionaryDescriptor.KeyType == typeof(string);
         }

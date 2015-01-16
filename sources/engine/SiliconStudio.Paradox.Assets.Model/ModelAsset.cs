@@ -6,7 +6,6 @@ using System.ComponentModel;
 using System.Linq;
 
 using SharpYaml;
-using SharpYaml.Serialization;
 
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
@@ -14,9 +13,6 @@ using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Assets.Materials;
 using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.Assets.Model
@@ -46,17 +42,8 @@ namespace SiliconStudio.Paradox.Assets.Model
             Nodes = new List<NodeInformation>();
             SetDefaults();
         }
-
-        /// <summary>
-        /// List that stores if a node should be preserved
-        /// </summary>
-        /// <userdoc>
-        /// The nodes of the model.
-        /// </userdoc>
-        [DataMember(20), DiffUseAsset2]
-        public List<NodeInformation> Nodes { get; private set; }
         
-            /// <summary>
+        /// <summary>
         /// Gets or sets the view direction to use when the importer is finding transparent polygons. Default is float3(0, 0, -1)
         /// </summary>
         /// <value>The view direction for transparent z sort.</value>
@@ -65,6 +52,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// </userdoc>
         [DataMember(30)]
         [DefaultValue(null)]
+        [Obsolete("This property will be removed in a future release")]
         public Vector3? ViewDirectionForTransparentZSort { get; set; }
         
         /// <summary>
@@ -93,6 +81,15 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// </userdoc>
         [DataMember(40)]
         public List<ModelMaterial> Materials { get; private set; }
+
+        /// <summary>
+        /// List that stores if a node should be preserved
+        /// </summary>
+        /// <userdoc>
+        /// The nodes of the model.
+        /// </userdoc>
+        [DataMember(50), DiffUseAsset2]
+        public List<NodeInformation> Nodes { get; private set; }
 
         /// <summary>
         /// Gets or sets if the mesh will be compacted (meshes will be merged).

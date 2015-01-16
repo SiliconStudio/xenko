@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Dynamic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -8,9 +9,12 @@ namespace SiliconStudio.Presentation.Quantum
 {
     internal class ObservableNodeDynamicMetaObject : DynamicMetaObject
     {
+        private readonly ObservableNode node;
+
         public ObservableNodeDynamicMetaObject(Expression parameter, ObservableNode observableNode)
             : base(parameter, BindingRestrictions.Empty, observableNode)
         {
+            node = observableNode;
         }
 
         public override DynamicMetaObject BindGetMember(GetMemberBinder binder)
@@ -50,6 +54,11 @@ namespace SiliconStudio.Presentation.Quantum
 
             var getMember = new DynamicMetaObject(expression, BindingRestrictions.GetTypeRestriction(Expression, LimitType));
             return getMember;
+        }
+
+        public override System.Collections.Generic.IEnumerable<string> GetDynamicMemberNames()
+        {
+            return node.Children.Select(x => x.Name).Concat(node.Commands.Select(x => x.Name)).Concat(node.AssociatedData.Select(x => x.Key));
         }
     }
 }
