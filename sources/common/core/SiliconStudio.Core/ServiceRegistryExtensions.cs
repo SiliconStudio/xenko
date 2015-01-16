@@ -70,7 +70,7 @@ namespace SiliconStudio.Core
 
         /// <summary>Removes the object providing a specified service.</summary>
         /// <typeparam name="T">The type of service.</param>
-        public void RemoveService<T>(this IServiceRegistry registry)
+        public void RemoveServiceAs<T>(this IServiceRegistry registry)
         {
             registry.RemoveService(typeof(T));
         }
