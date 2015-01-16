@@ -10,6 +10,12 @@ class NormalVSFromMesh : NormalVSBase, Transformation
         // Perform normal generation at the end in case vNormal is modified
         streams.normalVS = mul((float3x3)WorldViewInverse, streams.meshNormal);
     }
+
+    override stage void GenerateNormalVS_PS()
+    {
+        // Normalize just once the normal coming from the vertex shader
+        streams.normalVS = normalize(streams.normalVS);
+    }
     
     stage override void UpdateNormalVSFromTangentToView(float3 normalInTangentSpace)
     {
