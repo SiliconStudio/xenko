@@ -847,7 +847,6 @@ namespace SiliconStudio.Paradox.Graphics
 #if DEBUG
             EnsureContextActive();
 #endif
-            //TODO: review code
             PreDraw();
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
@@ -2003,8 +2002,7 @@ namespace SiliconStudio.Paradox.Graphics
             if (buffer != null)
             {
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                // TODO: Maybe the second test is enough
-                if (IsOpenGLES2 || buffer.StagingData != IntPtr.Zero)
+                if (buffer.StagingData != IntPtr.Zero)
                 {
                     // Specific case for constant buffers
                     SiliconStudio.Core.Utilities.CopyMemory(buffer.StagingData, databox.DataPointer, buffer.Description.SizeInBytes);
@@ -2031,9 +2029,10 @@ namespace SiliconStudio.Paradox.Graphics
                     }
 
                     // TODO: Handle pitchs
+                    // TODO: handle other texture formats
                     var desc = texture.Description;
                     GL.BindTexture(TextureTarget.Texture2D, texture.ResourceId);
-                    boundTextures[0] = null;
+                    boundTextures[0] = null; // bound active texture 0 has changed
                     GL.TexImage2D(TextureTargetTexture2D, subResourceIndex, (PixelInternalFormat_TextureComponentCount)texture.InternalFormat, desc.Width, desc.Height, 0, texture.FormatGl, texture.Type, databox.DataPointer);
                 }
                 else // neither texture nor buffer
@@ -2101,7 +2100,7 @@ namespace SiliconStudio.Paradox.Graphics
                 // Update the texture region
                 GL.BindTexture(texture.Target, texture.resourceId);
                 GL.TexSubImage2D((TextureTarget_TextureTarget2d)texture.Target, subResourceIndex, region.Left, region.Top, width, height, texture.FormatGl, texture.Type, databox.DataPointer);
-                boundTextures[0] = null;
+                boundTextures[0] = null; // bound active texture 0 has changed
 
                 // reset the Unpack Alignment
                 GL.PixelStore(PixelStoreParameter.UnpackAlignment, previousPackAlignment);
@@ -2233,7 +2232,7 @@ namespace SiliconStudio.Paradox.Graphics
                     deviceCreationContext.Dispose();
                     deviceCreationWindowInfo.Dispose();
                 }
-                androidAsyncDeviceCreationContext = new AndroidAsyncGraphicsContext(androidGraphicsContext, (AndroidWindow)windowInfo);
+                androidAsyncDeviceCreationContext = new AndroidAsyncGraphicsContext(androidGraphicsContext, (AndroidWindow)windowInfo, versionMajor);
                 deviceCreationContext = OpenTK.Graphics.GraphicsContext.CreateDummyContext(androidAsyncDeviceCreationContext.Context);
                 deviceCreationWindowInfo = OpenTK.Platform.Utilities.CreateDummyWindowInfo();
             }
