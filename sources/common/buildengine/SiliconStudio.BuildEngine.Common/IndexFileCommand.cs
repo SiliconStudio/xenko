@@ -22,16 +22,36 @@ namespace SiliconStudio.BuildEngine
 
         static IndexFileCommand()
         {
-            MicroThreadLocalDatabaseFileProvider = new MicroThreadLocal<DatabaseFileProvider>(() =>
+            MicroThreadLocalDatabaseFileProvider = new MicroThreadLocal<DatabaseFileProvider>();
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance has a valid database file provider.
+        /// </summary>
+        /// <value><c>true</c> if this instance has database file provider; otherwise, <c>false</c>.</value>
+        public static bool HasValidDatabaseFileProvider
+        {
+            get
             {
-                throw new InvalidOperationException("No VirtualFileProvider set for this microthread.");
-            });
+                return MicroThreadLocalDatabaseFileProvider.Value != null;
+            }
         }
 
         /// <summary>
         /// Gets the currently mounted microthread-local database provider.
         /// </summary>
-        public static DatabaseFileProvider DatabaseFileProvider { get { return MicroThreadLocalDatabaseFileProvider.Value; } }
+        public static DatabaseFileProvider DatabaseFileProvider
+        {
+            get
+            {
+                var databaseFileProvider = MicroThreadLocalDatabaseFileProvider.Value;
+                if (databaseFileProvider == null)
+                {
+                    throw new InvalidOperationException("No VirtualFileProvider set for this microthread.");                    
+                }
+                return databaseFileProvider;
+            }
+        }
 
         /// <summary>
         /// Merges the given dictionary of build output objects into the common group. Objects merged here will be integrated to every database,
@@ -59,6 +79,7 @@ namespace SiliconStudio.BuildEngine
         // TODO: Remove this once the thumbnail has been refactored to be done out of the preview game, if possible
         public static void MountDatabase(DatabaseFileProvider databaseFileProvider)
         {
+
             MicroThreadLocalDatabaseFileProvider.Value = databaseFileProvider;
         }
         
