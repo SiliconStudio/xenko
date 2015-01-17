@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
         stage stream float3 matNormal;
 
         // Diffuse attributes
-        stage stream float3 matDiffuse;
+        stage stream float4 matDiffuse;
 
         stage stream float3 matDiffuseVisible; // Precomputed before lighting
 
@@ -64,8 +64,8 @@ namespace SiliconStudio.Paradox.Effects.Materials
 
         void PrepareMaterialForLightingAndShading()
         {
-            streams.matDiffuseVisible = streams.matDiffuse * lerp(1.0f, streams.matCavity, streams.matCavityDiffuse);
-            streams.matSpecularVisible = streams.matSpecular * lerp(1.0f, streams.matCavity, streams.matCavitySpecular);
+            streams.matDiffuseVisible = streams.matDiffuse.rgb * lerp(1.0f, streams.matCavity, streams.matCavityDiffuse);
+            streams.matSpecularVisible = streams.matSpecular.rgb * lerp(1.0f, streams.matCavity, streams.matCavitySpecular);
         }
     };
 }

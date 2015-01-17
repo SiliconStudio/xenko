@@ -5,7 +5,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
     /// <summary>
     /// Performs the shading of a material according to the lights
     /// </summary>
-    class MaterialSurfaceLightingAndShading : IMaterialSurface, DirectLightGroupArray, LightStream, NormalStream, MaterialShadingStream, Math
+    class MaterialSurfaceLightingAndShading : IMaterialSurface, DirectLightGroupArray, EnvironmentLightArray, LightStream, NormalStream, MaterialShadingStream, Math
     {
         compose IMaterialSurfaceShading surfaces[];
 
@@ -21,8 +21,10 @@ namespace SiliconStudio.Paradox.Effects.Materials
             // Make sure that light stream is reset
             ResetLightStream();
 
-            float3 shadingLightingColor = 0;
-
+            // ---------------------------------------------------------------------------
+            // Compute Direct Lighting contribution
+            // ---------------------------------------------------------------------------
+            float3 directLightingContribution = 0;
             foreach(var lightGroup in directLightGroups)
             {
                 const int maxLightCount = lightGroup.GetMaxLightCount();
@@ -37,21 +39,37 @@ namespace SiliconStudio.Paradox.Effects.Materials
                     }
 
                     // Compute the light color and direction
-                    lightGroup.ComputeLight(i);
+                    lightGroup.PrepareDirectLight(i);
 
                     // Compute common material shading streams (TODO: This is temporary)
-                    PrepareMaterialPerLight();
+                    PrepareMaterialPerDirectLight();
 
                     // Iterate on shading models
                     foreach(var surface in surfaces)
                     {
-                        shadingLightingColor += surface.Shading();
+                        directLightingContribution += surface.ComputeDirectLightContribution();
                     }
                 }
             }
 
-            // Multiply by PI for integration of the hemisphere
-            streams.shadingColor += shadingLightingColor * PI;
+            // ---------------------------------------------------------------------------
+            // Compute Environment Lighting contribution
+            // ---------------------------------------------------------------------------
+            float3 environmentLightingContribution = 0;
+            foreach(var environmentLight in environmentLights)
+            {
+                // Compute the environment light color (streams.lightColor)
+                environmentLight.PrepareEnvironmentLight();
+
+                // Iterate on shading models
+                foreach(var surface in surfaces)
+                {
+                    environmentLightingContribution += surface.ComputeEnvironmentLightContribution();
+                }
+            }
+
+            // Add Direct (*PI over hemisphere) and Environment Lighting
+            streams.shadingColor += directLightingContribution * PI + environmentLightingContribution;
         }
     };
 }

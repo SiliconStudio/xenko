@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
 
         compose IMaterialSpecularMicrofacetNormalDistributionFunction normalDistributionFunction;
 
-        override float3 Shading()
+        override float3 ComputeDirectLightContribution()
         {
             var specularColor = streams.matSpecularVisible;
 

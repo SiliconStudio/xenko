@@ -7,9 +7,8 @@ namespace SiliconStudio.Paradox.Effects.Materials
     /// </summary>
     class MaterialSurfaceShadingDiffuseLambert<bool TIsEnergyConservative> : IMaterialSurfaceShading, Math
     {
-        override float3 Shading()
+        override float3 ComputeDirectLightContribution()
         {
-            // TODO: check if we need only matCavityDiffuse integrated
             var diffuseColor = streams.matDiffuseVisible;
             if (TIsEnergyConservative)
             {
@@ -17,6 +16,18 @@ namespace SiliconStudio.Paradox.Effects.Materials
                 diffuseColor *= (1 - streams.matSpecularVisible);
             }
             return diffuseColor / PI * streams.lightColorNdotL;
+        }
+
+        override float3 ComputeEnvironmentLightContribution()
+        {
+            // TODO: Check how to factorize this with DirectLight
+            var diffuseColor = streams.matDiffuseVisible;
+            if (TIsEnergyConservative)
+            {
+                diffuseColor *= (1 - streams.matSpecularVisible);
+            }
+
+            return diffuseColor * streams.lightColor;
         }
     };
 }

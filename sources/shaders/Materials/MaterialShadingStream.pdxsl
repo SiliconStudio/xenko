@@ -32,7 +32,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
         stage stream float alphaRoughness;
 
         // Computes material attributes per light
-        stage void PrepareMaterialPerLight()
+        stage void PrepareMaterialPerDirectLight()
         {
             // TODO: This is not plug-n-play
 

@@ -93,6 +93,19 @@ namespace SiliconStudio.Paradox.Effects
         }
 
         // -----------------------------------------------
+        // Add environment light groups
+        // -----------------------------------------------
+        var environmentLights = LightingKeys.EnvironmentLights;
+        if (environmentLights != null)
+        {
+            foreach(var environmentLight in environmentLights)
+            {
+                // Use parenthesis (...) to avoid lightGroup to be interpreted as a mixin named "lightGroup"
+                mixin compose environmentLights += (environmentLight);
+            }
+        }
+
+        // -----------------------------------------------
         // Mix ShadowMap caster 
         // -----------------------------------------------
         if (LightingKeys.CastShadows)

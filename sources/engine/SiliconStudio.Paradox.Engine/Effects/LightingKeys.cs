@@ -106,5 +106,7 @@ namespace SiliconStudio.Paradox.Effects
 
 
         public static readonly ParameterKey<ShaderSource[]> DirectLightGroups = ParameterKeys.New((ShaderSource[])null);
+
+        public static readonly ParameterKey<ShaderSource[]> EnvironmentLights = ParameterKeys.New((ShaderSource[])null);
     }
 }

@@ -28,7 +28,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// <summary>
         /// Compute the light color/direction for the specified index within this group
         /// </summary>
-        void ComputeLight(int lightIndex)
+        void PrepareDirectLight(int lightIndex)
         {
             // Computes the shadowColor
             ComputeShadow(lightIndex);

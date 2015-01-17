@@ -92,6 +92,21 @@ namespace SiliconStudio.Paradox.Effects
                         }
                     }
                 }
+                var environmentLights = context.GetParam(LightingKeys.EnvironmentLights);
+                if (environmentLights != null)
+                {
+                    foreach(var environmentLight in environmentLights)
+
+                    {
+
+                        {
+                            var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                            context.PushCompositionArray(mixin, "environmentLights", __subMixin);
+                            context.Mixin(__subMixin, (environmentLight));
+                            context.PopComposition();
+                        }
+                    }
+                }
                 if (context.GetParam(LightingKeys.CastShadows))
 
                     {
