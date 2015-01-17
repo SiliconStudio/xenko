@@ -5,7 +5,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
     /// <summary>
     /// Defines a group of similar lights (directional, spot...etc.)
     /// </summary>
-    class LightGroup : LightStream, ShadowGroup, NormalStream
+    class DirectLightGroup : LightStream, ShadowGroup, NormalStream
     {
         cbuffer PerPass
         {

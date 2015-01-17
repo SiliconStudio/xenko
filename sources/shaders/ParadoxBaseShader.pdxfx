@@ -82,13 +82,13 @@ namespace SiliconStudio.Paradox.Effects
         // -----------------------------------------------
         // Add light groups
         // -----------------------------------------------
-        var lightGroups = LightingKeys.LightGroups;
-        if (lightGroups != null)
+        var directLightGroups = LightingKeys.DirectLightGroups;
+        if (directLightGroups != null)
         {
-            foreach(var lightGroup in lightGroups)
+            foreach(var directLightGroup in directLightGroups)
             {
                 // Use parenthesis (...) to avoid lightGroup to be interpreted as a mixin named "lightGroup"
-                mixin compose lightGroups += (lightGroup);
+                mixin compose directLightGroups += (directLightGroup);
             }
         }
 

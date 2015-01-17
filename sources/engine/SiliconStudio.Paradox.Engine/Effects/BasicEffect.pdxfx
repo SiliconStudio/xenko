@@ -10,6 +10,6 @@ namespace SiliconStudio.Paradox.Effects
         // TODO REWRITE This Effect
         mixin ParadoxBaseShader;
 
-        mixin compose lightGroups += LightDirectionalGroup<2>;
+        mixin compose directLightGroups += LightDirectionalGroup<2>;
     };
 }

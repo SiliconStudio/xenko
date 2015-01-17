@@ -5,7 +5,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
     /// <summary>
     /// Performs the shading of a material according to the lights
     /// </summary>
-    class MaterialSurfaceLightingAndShading : IMaterialSurface, LightGroupArray, LightStream, NormalStream, MaterialShadingStream, Math
+    class MaterialSurfaceLightingAndShading : IMaterialSurface, DirectLightGroupArray, LightStream, NormalStream, MaterialShadingStream, Math
     {
         compose IMaterialSurfaceShading surfaces[];
 
@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
 
             float3 shadingLightingColor = 0;
 
-            foreach(var lightGroup in lightGroups)
+            foreach(var lightGroup in directLightGroups)
             {
                 const int maxLightCount = lightGroup.GetMaxLightCount();
                 int count = lightGroup.GetLightCount();

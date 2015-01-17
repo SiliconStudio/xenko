@@ -77,17 +77,17 @@ namespace SiliconStudio.Paradox.Effects
                         context.PopComposition();
                     }
                 }
-                var lightGroups = context.GetParam(LightingKeys.LightGroups);
-                if (lightGroups != null)
+                var directLightGroups = context.GetParam(LightingKeys.DirectLightGroups);
+                if (directLightGroups != null)
                 {
-                    foreach(var lightGroup in lightGroups)
+                    foreach(var directLightGroup in directLightGroups)
 
                     {
 
                         {
                             var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-                            context.PushCompositionArray(mixin, "lightGroups", __subMixin);
-                            context.Mixin(__subMixin, (lightGroup));
+                            context.PushCompositionArray(mixin, "directLightGroups", __subMixin);
+                            context.Mixin(__subMixin, (directLightGroup));
                             context.PopComposition();
                         }
                     }

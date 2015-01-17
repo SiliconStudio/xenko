@@ -105,6 +105,6 @@ namespace SiliconStudio.Paradox.Effects
         public static readonly ParameterKey<bool> UnrollDeferredLightLoop = ParameterKeys.New(false);
 
 
-        public static readonly ParameterKey<ShaderSource[]> LightGroups = ParameterKeys.New((ShaderSource[])null);
+        public static readonly ParameterKey<ShaderSource[]> DirectLightGroups = ParameterKeys.New((ShaderSource[])null);
     }
 }

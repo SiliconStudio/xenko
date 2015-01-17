@@ -5,8 +5,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
     /// <summary>
     /// An array of light groups
     /// </summary>
-    class LightGroupArray
+    class DirectLightGroupArray
     {
-        stage compose LightGroup lightGroups[];
+        stage compose DirectLightGroup directLightGroups[];
     };
 }

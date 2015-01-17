@@ -5,7 +5,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
     /// <summary>
     /// Defines a group of directional lights
     /// </summary>
-    class LightDirectionalGroup<int TMaxLightCount> : LightGroup, NormalStream
+    class LightDirectionalGroup<int TMaxLightCount> : DirectLightGroup, NormalStream
     {
         cbuffer PerPass
         {

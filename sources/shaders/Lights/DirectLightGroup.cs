@@ -16,8 +16,14 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 namespace SiliconStudio.Paradox.Effects.Lights
 {
-    public static partial class LightGroupKeys
+    public static partial class DirectLightGroupKeys
     {
         public static readonly ParameterKey<int> LightCount = ParameterKeys.New<int>();
+
+        public static ParameterKey<T> GetParameterKey<T>(ParameterKey<T> key, int lightGroupIndex)
+        {
+            if (key == null) throw new ArgumentNullException("key");
+            return key.ComposeIndexer("directLightGroups", lightGroupIndex);
+        }
     }
 }

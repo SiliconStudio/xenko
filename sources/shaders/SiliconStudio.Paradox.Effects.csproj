@@ -992,14 +992,14 @@
     <Compile Include="Renderers\LightingUpdateType.cs" />
     <Compile Include="Renderers\LightParamSemantic.cs" />
     <Compile Include="Renderers\PointLightData.cs" />
-    <Compile Include="Lights\LightGroupArray.cs">
-      <DependentUpon>LightGroupArray.pdxsl</DependentUpon>
+    <Compile Include="Lights\DirectLightGroupArray.cs">
+      <DependentUpon>DirectLightGroupArray.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Lights\LightGroup.cs">
-      <DependentUpon>LightGroup.pdxsl</DependentUpon>
+    <Compile Include="Lights\DirectLightGroup.cs">
+      <DependentUpon>DirectLightGroup.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -2437,13 +2437,13 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialStream.cs</LastGenOutput>
     </None>
-    <None Include="Lights\LightGroupArray.pdxsl">
+    <None Include="Lights\DirectLightGroupArray.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>LightGroupArray.cs</LastGenOutput>
+      <LastGenOutput>DirectLightGroupArray.cs</LastGenOutput>
     </None>
-    <None Include="Lights\LightGroup.pdxsl">
+    <None Include="Lights\DirectLightGroup.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>LightGroup.cs</LastGenOutput>
+      <LastGenOutput>DirectLightGroup.cs</LastGenOutput>
     </None>
     <None Include="Deferred\MaterialRoughnessGBuffer.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

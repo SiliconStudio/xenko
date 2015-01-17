@@ -84,7 +84,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
 
             compilerParameters.Set(MaterialKeys.Material, result.ShaderSource);
             var directionalLightGroup = new ShaderClassSource("LightDirectionalGroup", 1);
-            compilerParameters.Set(LightingKeys.LightGroups, new ShaderSource[] { directionalLightGroup });
+            compilerParameters.Set(LightingKeys.DirectLightGroups, new ShaderSource[] { directionalLightGroup });
             compilerParameters.Set(LightingKeys.CastShadows, false);
             //compilerParameters.Set(MaterialParameters.HasSkinningPosition, true);
             //compilerParameters.Set(MaterialParameters.HasSkinningNormal, true);
