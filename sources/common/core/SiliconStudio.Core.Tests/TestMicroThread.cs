@@ -160,6 +160,17 @@ namespace SiliconStudio.Core.Tests
                 completed();
             }
 
+            protected async Task TestWaitForkingAsyncHelper()
+            {
+                await TaskEx.Delay(10);
+            }
+
+            public async Task TestWaitForkingAsync(Action completed)
+            {
+                await TaskEx.WhenAll(TestWaitForkingAsyncHelper(), TestWaitForkingAsyncHelper());
+                completed();
+            }
+
             protected async Task TestThrowAsyncHelper()
             {
                 throw new InvalidOperationException();
