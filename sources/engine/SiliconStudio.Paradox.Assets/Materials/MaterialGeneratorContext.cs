@@ -50,7 +50,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             }
         }
 
-        public ParameterCollection Parameters { get; private set; }
+        public ParameterCollection Parameters { get; set; }
 
         private MaterialBlendLayerNode Current
         {
