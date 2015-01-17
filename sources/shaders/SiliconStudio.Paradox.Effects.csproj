@@ -35,12 +35,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Lights\EnvironmentLightKeys.cs" />
-    <Compile Include="Lights\LightEnvironmentFlat.cs">
-      <DependentUpon>LightEnvironmentFlat.pdxsl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Lights\LightSimpleAmbient.cs">
       <DependentUpon>LightSimpleAmbient.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -1797,10 +1791,6 @@
     <None Include="Lights\EnvironmentLight.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>EnvironmentLight.cs</LastGenOutput>
-    </None>
-    <None Include="Lights\LightEnvironmentFlat.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>LightEnvironmentFlat.cs</LastGenOutput>
     </None>
     <None Include="Lights\LightSimpleAmbient.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
