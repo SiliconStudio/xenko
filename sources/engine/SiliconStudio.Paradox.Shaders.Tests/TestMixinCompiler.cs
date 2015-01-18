@@ -49,7 +49,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             var compilerParameters = new CompilerParameters { Platform = GraphicsPlatform.Direct3D11 };
 
             var layers = new MaterialBlendLayers();
-            layers.Layers.Add(new MaterialBlendLayer()
+            layers.Add(new MaterialBlendLayer()
             {
                 BlendMap = new MaterialColorComputeColor(new Color4(0.5f)),
                 Material =  new AssetReference<MaterialAsset>(Guid.Empty, "fake")
@@ -84,7 +84,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
 
             compilerParameters.Set(MaterialKeys.Material, result.ShaderSource);
             var directionalLightGroup = new ShaderClassSource("LightDirectionalGroup", 1);
-            compilerParameters.Set(LightingKeys.LightGroups, new ShaderSource[] { directionalLightGroup });
+            compilerParameters.Set(LightingKeys.DirectLightGroups, new ShaderSource[] { directionalLightGroup });
             compilerParameters.Set(LightingKeys.CastShadows, false);
             //compilerParameters.Set(MaterialParameters.HasSkinningPosition, true);
             //compilerParameters.Set(MaterialParameters.HasSkinningNormal, true);

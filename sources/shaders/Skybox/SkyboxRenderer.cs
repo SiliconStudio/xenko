@@ -33,7 +33,7 @@ namespace SiliconStudio.Paradox.Effects.Skybox
         {
             base.Load();
 
-            skyboxEffect = EffectSystem.LoadEffect("SkyboxShader");
+            skyboxEffect = EffectSystem.LoadEffect("SkyboxShader", GetDefaultCompilerParameters());
             parameters.Set(TexturingKeys.TextureCube0, skybox);
         }
 

@@ -253,7 +253,7 @@ namespace SiliconStudio.Core.Reflection
 
 
             // Member is not displayed if there is a YamlIgnore attribute on it
-            if (AttributeRegistry.GetAttribute<DataMemberIgnoreAttribute>(memberInfo, false) != null)
+            if (AttributeRegistry.GetAttribute<DataMemberIgnoreAttribute>(memberInfo) != null)
                 return false;
 
             return true;
@@ -279,7 +279,7 @@ namespace SiliconStudio.Core.Reflection
             member.Style = styleAttribute != null ? styleAttribute.Style : DataStyle.Any;
 
             // Handle member attribute
-            var memberAttribute = AttributeRegistry.GetAttribute<DataMemberAttribute>(member.MemberInfo, false);
+            var memberAttribute = AttributeRegistry.GetAttribute<DataMemberAttribute>(member.MemberInfo);
             if (memberAttribute != null)
             {
                 if (!member.HasSet)

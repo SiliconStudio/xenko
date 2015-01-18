@@ -50,7 +50,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             }
         }
 
-        public ParameterCollection Parameters { get; private set; }
+        public ParameterCollection Parameters { get; set; }
 
         private MaterialBlendLayerNode Current
         {
@@ -331,6 +331,9 @@ namespace SiliconStudio.Paradox.Assets.Materials
                         break;
                     case MaterialStreamType.Float3:
                         channel = "rgb";
+                        break;
+                    case MaterialStreamType.Float4:
+                        channel = "rgba";
                         break;
                     default:
                         throw new NotSupportedException("StreamType [{0}] is not supported".ToFormat(streamType));

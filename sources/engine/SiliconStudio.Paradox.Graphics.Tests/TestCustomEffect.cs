@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Games;
 
 namespace SiliconStudio.Paradox.Graphics.Tests

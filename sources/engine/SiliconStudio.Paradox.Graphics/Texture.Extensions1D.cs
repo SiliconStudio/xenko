@@ -23,8 +23,6 @@
 
 using System;
 
-using SharpDX.DXGI;
-
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Paradox.Graphics

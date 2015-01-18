@@ -125,11 +125,9 @@ namespace SiliconStudio.Paradox.Assets.Model
                             // TODO: Generate AEN model view
                             commandContext.Logger.Error("TessellationAEN is not supported in {0}", ContextAsString);
                             hasErrors = true;
-                            continue;
                         }
 
                         // For now, make sure the mesh parameters list exists.
-                        // Not sure if we should allow it being null or not.
                         if (mesh.Parameters == null)
                             mesh.Parameters = new ParameterCollection();
 

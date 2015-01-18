@@ -4,6 +4,9 @@
 using System;
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
+#if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
+using CullFaceMode = OpenTK.Graphics.ES30.StencilFace;
+#endif
 #else
 using OpenTK.Graphics.OpenGL;
 #endif
@@ -49,7 +52,7 @@ namespace SiliconStudio.Paradox.Graphics
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLCORE
                 GL.StencilFunc(Description.FrontFace.StencilFunction.ToOpenGLStencilFunction(), stencilReference, Description.StencilWriteMask); // set both faces
-                GL.StencilFuncSeparate(Version20.StencilBackFunc, Description.BackFace.StencilFunction.ToOpenGLStencilFunction(), stencilReference, Description.StencilWriteMask); // override back face
+                GL.StencilFuncSeparate(StencilFace.Back, Description.BackFace.StencilFunction.ToOpenGLStencilFunction(), stencilReference, Description.StencilWriteMask); // override back face
                 GL.StencilOpSeparate(StencilFace.Front, Description.FrontFace.StencilDepthBufferFail.ToOpenGL(), Description.FrontFace.StencilFail.ToOpenGL(), Description.FrontFace.StencilPass.ToOpenGL());
                 GL.StencilOpSeparate(StencilFace.Back, Description.BackFace.StencilDepthBufferFail.ToOpenGL(), Description.BackFace.StencilFail.ToOpenGL(), Description.BackFace.StencilPass.ToOpenGL());
 #elif SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES

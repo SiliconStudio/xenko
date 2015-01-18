@@ -18,7 +18,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
     {
         public MaterialDiffuseLambertianModelFeature()
         {
-            IsEnergyConservative = true;
         }
 
         public bool IsLightDependent
@@ -29,10 +28,9 @@ namespace SiliconStudio.Paradox.Assets.Materials
             }
         }
 
-        [DataMember(10)]
-        [DefaultValue(true)]
-        [Display("Conserve Energy?")]
-        public bool IsEnergyConservative { get; set; }
+
+        [DataMemberIgnore]
+        internal bool IsEnergyConservative { get; set; }
 
         public virtual void Visit(MaterialGeneratorContext context)
         {

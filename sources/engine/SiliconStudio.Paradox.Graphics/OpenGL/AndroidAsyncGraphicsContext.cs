@@ -28,7 +28,7 @@ namespace SiliconStudio.Paradox.Graphics
 
         private bool isDisposed;
 
-        internal AndroidAsyncGraphicsContext(AndroidGraphicsContext graphicsContext, AndroidWindow androidWindow)
+        internal AndroidAsyncGraphicsContext(AndroidGraphicsContext graphicsContext, AndroidWindow androidWindow, int versionMajor)
         {
             egl = EGLContext.EGL.JavaCast<IEGL10>();
 
@@ -86,7 +86,8 @@ namespace SiliconStudio.Paradox.Graphics
                 throw new InvalidOperationException(string.Format("EglCreatePBufferSurface {0:x}", egl.EglGetError()));
             }
 
-            var attribList3 = new[] { 0x3098, 2, EGL10.EglNone };
+            // 0x3098 is EGL_CONTEXT_CLIENT_VERSION
+            var attribList3 = new[] { 0x3098, versionMajor, EGL10.EglNone };
             EGLContext = egl.EglCreateContext(EGLDisplay, config, androidGraphicsContext.EGLContext, attribList3);
             if (EGLContext == EGL10.EglNoContext)
             {

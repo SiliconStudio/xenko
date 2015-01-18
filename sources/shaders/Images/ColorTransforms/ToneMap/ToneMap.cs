@@ -94,22 +94,6 @@ namespace SiliconStudio.Paradox.Effects.Images
         }
 
         /// <summary>
-        /// Gets or sets the gamma.
-        /// </summary>
-        /// <value>The gamma.</value>
-        public float Gamma
-        {
-            get
-            {
-                return Parameters.Get(ToneMapShaderKeys.Gamma);
-            }
-            set
-            {
-                Parameters.Set(ToneMapShaderKeys.Gamma, value);
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the contrast.
         /// </summary>
         /// <value>The contrast.</value>

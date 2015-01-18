@@ -57,6 +57,14 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
+        public ToneMap ToneMap
+        {
+            get
+            {
+                return toneMap;
+            }
+        }
+
         public ColorTransformGroup ColorTransform
         {
             get

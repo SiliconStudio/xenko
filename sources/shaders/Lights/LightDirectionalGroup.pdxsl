@@ -5,9 +5,9 @@ namespace SiliconStudio.Paradox.Effects.Lights
     /// <summary>
     /// Defines a group of directional lights
     /// </summary>
-    class LightDirectionalGroup<int TMaxLightCount> : LightGroup, NormalStream
+    class LightDirectionalGroup<int TMaxLightCount> : DirectLightGroup, NormalStream
     {
-        cbuffer PerPass
+        cbuffer PerObject
         {
             float3 LightDirectionsVS[TMaxLightCount] = null;
             [Color]
@@ -22,14 +22,14 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// <summary>
         /// Compute the light color/direction for the specified index within this group
         /// </summary>
-        override void ComputeLight(int lightIndex)
+        override void PrepareDirectLight(int lightIndex)
         {
             streams.lightColor = LightColor[lightIndex];
             // TODO: Add support for disk based Directional light
             streams.lightDirectionVS = -normalize(LightDirectionsVS[lightIndex]);
 
             // Base will compute shadow and Color with NdotL
-            base.ComputeLight(lightIndex);
+            base.PrepareDirectLight(lightIndex);
         }
     };
 }

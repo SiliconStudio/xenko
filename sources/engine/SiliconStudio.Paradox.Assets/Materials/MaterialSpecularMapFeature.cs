@@ -24,6 +24,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// </summary>
         public MaterialSpecularMapFeature()
         {
+            IsEnergyConservative = true;
         }
 
         /// <summary>
@@ -35,18 +36,20 @@ namespace SiliconStudio.Paradox.Assets.Materials
         public MaterialComputeColor SpecularMap { get; set; }
 
         /// <summary>
-        /// Gets or sets the intensity.
+        /// Gets or sets the specular intensity.
         /// </summary>
         /// <value>The intensity.</value>
         [DefaultValue(null)]
         public MaterialComputeColor Intensity { get; set; }
 
         /// <summary>
-        /// Gets or sets the fresnel.
+        /// Gets or sets a value indicating whether this instance is energy conservative.
         /// </summary>
-        /// <value>The fresnel.</value>
-        [DefaultValue(null)]
-        public MaterialComputeColor Fresnel { get; set; }
+        /// <value><c>true</c> if this instance is energy conservative; otherwise, <c>false</c>.</value>
+        [DataMember(10)]
+        [DefaultValue(true)]
+        [Display("Is Energy Conservative?")]
+        public bool IsEnergyConservative { get; set; }
 
         private class Factory : IObjectFactory
         {
@@ -56,7 +59,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 {
                     SpecularMap = new MaterialTextureComputeColor(),
                     Intensity = new MaterialFloatComputeColor(1.0f),
-                    Fresnel = new MaterialFloatComputeColor(1.0f),
                 };
             }
         }
@@ -65,7 +67,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
         {
             context.SetStream("matSpecular", SpecularMap, MaterialKeys.SpecularMap, MaterialKeys.SpecularValue);
             context.SetStream("matSpecularIntensity", Intensity, null, MaterialKeys.SpecularIntensityValue);
-            context.SetStream("matSpecularFresnel", Fresnel, null, MaterialKeys.SpecularFresnelValue);
         }
     }
 }

@@ -36,7 +36,8 @@ namespace SiliconStudio.Paradox.Effects
         // -----------------------------------------------
         // Performs animation skinning (position, normal and tangent)
         // -----------------------------------------------
-        if (MaterialParameters.HasSkinningPosition)
+        //if (MaterialParameters.HasSkinningPosition)
+        if (false)
         {
             if (MaterialParameters.SkinningBones > MaterialParameters.SkinningMaxBones)
             {
@@ -81,13 +82,26 @@ namespace SiliconStudio.Paradox.Effects
         // -----------------------------------------------
         // Add light groups
         // -----------------------------------------------
-        var lightGroups = LightingKeys.LightGroups;
-        if (lightGroups != null)
+        var directLightGroups = LightingKeys.DirectLightGroups;
+        if (directLightGroups != null)
         {
-            foreach(var lightGroup in lightGroups)
+            foreach(var directLightGroup in directLightGroups)
             {
                 // Use parenthesis (...) to avoid lightGroup to be interpreted as a mixin named "lightGroup"
-                mixin compose lightGroups += (lightGroup);
+                mixin compose directLightGroups += (directLightGroup);
+            }
+        }
+
+        // -----------------------------------------------
+        // Add environment light groups
+        // -----------------------------------------------
+        var environmentLights = LightingKeys.EnvironmentLights;
+        if (environmentLights != null)
+        {
+            foreach(var environmentLight in environmentLights)
+            {
+                // Use parenthesis (...) to avoid lightGroup to be interpreted as a mixin named "lightGroup"
+                mixin compose environmentLights += (environmentLight);
             }
         }
 

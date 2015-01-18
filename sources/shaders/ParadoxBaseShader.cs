@@ -38,7 +38,7 @@ namespace SiliconStudio.Paradox.Effects
                 {
                     context.Mixin(mixin, "NormalVSFromMesh");
                 }
-                if (context.GetParam(MaterialParameters.HasSkinningPosition))
+                if (false)
                 {
                     if (context.GetParam(MaterialParameters.SkinningBones) > context.GetParam(MaterialParameters.SkinningMaxBones))
                     {
@@ -77,17 +77,32 @@ namespace SiliconStudio.Paradox.Effects
                         context.PopComposition();
                     }
                 }
-                var lightGroups = context.GetParam(LightingKeys.LightGroups);
-                if (lightGroups != null)
+                var directLightGroups = context.GetParam(LightingKeys.DirectLightGroups);
+                if (directLightGroups != null)
                 {
-                    foreach(var lightGroup in lightGroups)
+                    foreach(var directLightGroup in directLightGroups)
 
                     {
 
                         {
                             var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-                            context.PushCompositionArray(mixin, "lightGroups", __subMixin);
-                            context.Mixin(__subMixin, (lightGroup));
+                            context.PushCompositionArray(mixin, "directLightGroups", __subMixin);
+                            context.Mixin(__subMixin, (directLightGroup));
+                            context.PopComposition();
+                        }
+                    }
+                }
+                var environmentLights = context.GetParam(LightingKeys.EnvironmentLights);
+                if (environmentLights != null)
+                {
+                    foreach(var environmentLight in environmentLights)
+
+                    {
+
+                        {
+                            var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                            context.PushCompositionArray(mixin, "environmentLights", __subMixin);
+                            context.Mixin(__subMixin, (environmentLight));
                             context.PopComposition();
                         }
                     }

@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         {
             // Defaults
             Fresnel = new MaterialSpecularMicrofacetFresnelSchlick();
-            GeometricShadowing = new MaterialSpecularMicrofacetGeometricShadowingSmithGGXCorrelated();
+            Visibility = new MaterialSpecularMicrofacetVisibilitySmithGGXCorrelated();
             NormalDistribution = new MaterialSpecularMicrofacetNormalDistributionGGX();
         }
 
@@ -40,7 +40,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         [DataMember(20)]
         [Display("Geometric Shadowing")]
-        public IMaterialSpecularMicrofacetGeometricShadowingFunction GeometricShadowing { get; set; }
+        public IMaterialSpecularMicrofacetVisibilityFunction Visibility { get; set; }
 
         [DataMember(30)]
         [Display("Normal Distribution")]
@@ -56,9 +56,9 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 shaderSource.AddComposition("fresnelFunction", Fresnel.Generate());
             }
 
-            if (GeometricShadowing != null)
+            if (Visibility != null)
             {
-                shaderSource.AddComposition("geometricShadowingFunction", GeometricShadowing.Generate());
+                shaderSource.AddComposition("geometricShadowingFunction", Visibility.Generate());
             }
 
             if (NormalDistribution != null)
@@ -78,7 +78,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Equals(Fresnel, other.Fresnel) && Equals(GeometricShadowing, other.GeometricShadowing) && Equals(NormalDistribution, other.NormalDistribution);
+            return Equals(Fresnel, other.Fresnel) && Equals(Visibility, other.Visibility) && Equals(NormalDistribution, other.NormalDistribution);
         }
 
         public override bool Equals(object obj)
@@ -94,7 +94,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             unchecked
             {
                 int hashCode = (Fresnel != null ? Fresnel.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (GeometricShadowing != null ? GeometricShadowing.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (Visibility != null ? Visibility.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (NormalDistribution != null ? NormalDistribution.GetHashCode() : 0);
                 return hashCode;
             }

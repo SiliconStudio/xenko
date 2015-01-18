@@ -7,7 +7,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
     /// </summary>
     class MaterialSurfaceShadingSpecularBlinnPhong : IMaterialSurfaceShading, NormalStream
     {
-        override float3 Shading()
+        override float3 ComputeDirectLightContribution()
         {
             float k = BRDFBlinnPhong.Compute(streams.lightDirectionVS, streams.normalVS, streams.shadingView, streams.matSpecularPower);
 

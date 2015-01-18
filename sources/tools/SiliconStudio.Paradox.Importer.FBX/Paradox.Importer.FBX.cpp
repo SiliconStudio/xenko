@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #include "stdafx.h"
+#include "../SiliconStudio.Paradox.Importer.Common/ImporterUtils.h"
 
 #include <algorithm>
 #include <string>
@@ -37,11 +38,11 @@ public ref class MaterialInstances
 public:
 	MaterialInstances()
 	{
-		Instances = gcnew List<MaterialInstanciation^>();
+		Instances = gcnew List<MaterialInstantiation^>();
 	}
 
 	FbxSurfaceMaterial* SourceMaterial;
-	List<MaterialInstanciation^>^ Instances;
+	List<MaterialInstantiation^>^ Instances;
 	String^ MaterialsName;
 };
 
@@ -539,32 +540,30 @@ public:
 			if (lMaterialElement != NULL && lMaterial != NULL)
 			{
 				auto isTransparent = IsTransparent(lMaterial);
-
-				auto meshName = meshNames[pMesh];
-				if (buildMeshes->Count > 1)
-					meshName = meshName + "_" + std::to_string(i+1);
-				meshData->Name = gcnew String(meshName.c_str());
-
 				bool sortTransparentMeshes = true;	// TODO transform into importer parameter
 				if (isTransparent && sortTransparentMeshes)
 				{
 					PolySortExtensions::SortMeshPolygons(drawData, ViewDirectionForTransparentZSort);
 				}
-
-				if (hasSkinningPosition || hasSkinningNormal || totalClusterCount > 0)
-				{
-					meshData->Parameters = gcnew ParameterCollection();
-
-					if (hasSkinningPosition)
-						meshData->Parameters->Set(MaterialParameters::HasSkinningPosition, true);
-					if (hasSkinningNormal)
-						meshData->Parameters->Set(MaterialParameters::HasSkinningNormal, true);
-					if (totalClusterCount > 0)
-						meshData->Parameters->Set(MaterialParameters::SkinningBones, totalClusterCount);
-				}
-
-				modelData->Meshes->Add(meshData);
 			}
+
+			auto meshName = meshNames[pMesh];
+			if (buildMeshes->Count > 1)
+				meshName = meshName + "_" + std::to_string(i + 1);
+			meshData->Name = gcnew String(meshName.c_str());
+			
+			if (hasSkinningPosition || hasSkinningNormal || totalClusterCount > 0)
+			{
+				meshData->Parameters = gcnew ParameterCollection();
+
+				if (hasSkinningPosition)
+					meshData->Parameters->Set(MaterialParameters::HasSkinningPosition, true);
+				if (hasSkinningNormal)
+					meshData->Parameters->Set(MaterialParameters::HasSkinningNormal, true);
+				if (totalClusterCount > 0)
+					meshData->Parameters->Set(MaterialParameters::SkinningBones, totalClusterCount);
+			}
+			modelData->Meshes->Add(meshData);
 		}
 	}
 
@@ -759,7 +758,7 @@ public:
 				}
 			}
 		}
-		{	// The specular intensity map
+	{	// The specular intensity map
 			auto specularIntensityTree = GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sSpecularFactor, NULL, finalMaterial);
 			if(phongSurface || specularIntensityTree != nullptr)
 			{
@@ -791,7 +790,7 @@ public:
 				}
 			}
 		}
-		{	// The specular power map
+	/*			{	// The specular power map
 			auto specularPowerTree = GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sShininess, NULL, finalMaterial);
 			if(phongSurface || specularPowerTree != nullptr)
 			{
@@ -822,7 +821,7 @@ public:
 					finalMaterial->Attributes->Specular = specularFeature;
 				}
 			}
-		}
+		}*/
 		//// TODO: Support for reflection map
 		//{   // The reflection map
 		//	auto reflectionMapTree = GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sReflection, FbxSurfaceMaterial::sReflectionFactor, finalMaterial);
@@ -1124,84 +1123,6 @@ public:
 		else
 			textureNameCount[textureName] = textureNameCount[textureName] + 1;
 		return textureNameCount[textureName];
-	}
-
-	void ProcessCamera(List<CameraInfo^>^ cameras, FbxNode* pNode, FbxCamera* pCamera, std::map<FbxNode*, std::string>& nodeNames)
-	{
-		auto cameraInfo = gcnew CameraInfo();
-		auto cameraData = gcnew CameraComponent();
-		cameraInfo->Data = cameraData;
-
-		cameraInfo->NodeName = gcnew String(nodeNames[pNode].c_str());
-
-		if (pCamera->FilmAspectRatio.IsValid())
-		{
-			cameraData->AspectRatio = (float)pCamera->FilmAspectRatio.Get();
-		}
-
-		// TODO: Check vertical FOV formulas
-		if (!exportedFromMaya && pCamera->FieldOfView.IsValid() && pCamera->FilmAspectRatio.IsValid()) // Only Focal Length is valid when exported from maya
-		{
-			auto aspectRatio = pCamera->FilmAspectRatio.Get();
-			auto diagonalFov = pCamera->FieldOfView.Get();
-			cameraData->VerticalFieldOfView = (float)(2.0 * Math::Atan(Math::Tan(diagonalFov * Math::PI / 180.0 / 2.0) / Math::Sqrt(1 + aspectRatio * aspectRatio)));
-		}
-		else if (pCamera->FocalLength.IsValid() && pCamera->FilmHeight.IsValid())
-		{
-			cameraData->VerticalFieldOfView = (float)FocalLengthToVerticalFov(pCamera->FilmHeight.Get(), pCamera->FocalLength.Get());
-		}
-
-		if (pNode->GetTarget() != NULL)
-		{
-			auto targetNodeIndex = nodeMapping[(IntPtr)pNode->GetTarget()];
-			cameraInfo->TargetNodeName = nodes[targetNodeIndex].Name;
-		}
-		if (pCamera->NearPlane.IsValid())
-		{
-			cameraData->NearPlane = (float)pCamera->NearPlane.Get();
-		}
-		if (pCamera->FarPlane.IsValid())
-		{
-			cameraData->FarPlane = (float)pCamera->FarPlane.Get();
-		}
-
-		cameras->Add(cameraInfo);
-	}
-
-	void ProcessLight(List<LightInfo^>^ lights, FbxNode* pNode, FbxLight* pLight, std::map<FbxNode*, std::string>& nodeNames)
-	{
-		auto lightInfo = gcnew LightInfo();
-		auto lightData = gcnew LightComponent();
-		lightInfo->Data = lightData;
-		
-		lightInfo->NodeName = gcnew String(nodeNames[pNode].c_str());
-
-		// A FbxLight points along negative Y axis.
-		lightData->LightDirection = Vector3(0.0f, -1.0f, 0.0f);
-
-		switch (pLight->LightType.Get())
-		{
-		case FbxLight::ePoint:
-			lightData->Deferred = true;
-			lightData->Type = LightType::Point;
-			lightData->DecayStart = (float)pLight->DecayStart.Get();
-			// We support only spherical light (radius > 0)
-			if (lightData->DecayStart == 0.0)
-				return;
-			break;
-		case FbxLight::eDirectional:
-			lightData->Deferred = false;
-			lightData->Type = LightType::Directional;
-			break;
-		default:
-			logger->Error("The light type '{0}' is not supported yet. The light will be ignored.", gcnew Int32(pLight->LightType.Get()));
-			return;
-		}
-		auto lightColor = pLight->Color.IsValid() ? pLight->Color.Get() : FbxDouble3(1.0, 1.0, 1.0);
-		lightData->Color = Color3((float)lightColor[0], (float)lightColor[1], (float)lightColor[2]);
-		lightData->Intensity = (float)(pLight->Intensity.IsValid() ? pLight->Intensity.Get() * 0.01 : 1.0);
-		lightData->Layers = RenderLayers::RenderLayerAll;
-		lights->Add(lightInfo);
 	}
 
 	void ProcessAttribute(FbxNode* pNode, FbxNodeAttribute* pAttribute, std::map<FbxMesh*, std::string> meshNames, std::map<FbxSurfaceMaterial*, int> materials)
@@ -1828,7 +1749,7 @@ public:
 			config->ImportTextures = true;
 			config->ImportModels = false;
 			config->ImportAnimations = false;
-			config->ExtractEmbeddedData = false;
+			config->ExtractEmbeddedData = true;
 
 			return config;
 		}
@@ -1849,7 +1770,7 @@ public:
 			config->ImportTextures = true;
 			config->ImportModels = true;
 			config->ImportAnimations = true;
-			config->ExtractEmbeddedData = false;
+			config->ExtractEmbeddedData = true;
 
 			return config;
 		}
@@ -2101,13 +2022,9 @@ private:
 				materialName = materialName.substr(0, materialNameSplitPosition);
 			}
 
-			// TODO: remove all bad characters
-			int nextCharacterPos = materialName.find(':');
-			while (nextCharacterPos != std::string::npos)
-			{
-				materialName.replace(nextCharacterPos, 1, 1, '_');
-				nextCharacterPos = materialName.find(':', nextCharacterPos);
-			}
+			// remove all bad characters
+			ReplaceCharacter(materialName, ':', '_');
+			RemoveCharacter(materialName, ' ');
 			tempNames[lMaterial] = materialName;
 			
 			if (materialNameTotalCount.count(materialName) == 0)
@@ -2170,6 +2087,9 @@ private:
 		{
 			auto pMesh = *iter;
 			auto meshName = std::string(pMesh->GetNode()->GetName());
+
+			// remove all bad characters
+			RemoveCharacter(meshName, ' ');
 			tempNames[pMesh] = meshName;
 
 			if (meshNameTotalCount.count(meshName) == 0)
@@ -2262,7 +2182,7 @@ private:
 		return newInstance;
 	}
 
-	MaterialInstanciation^ GetOrCreateMaterial(FbxSurfaceMaterial* lMaterial, List<String^>^ uvNames, List<MaterialInstances^>^ instances, std::map<std::string, int>& uvElements, std::map<FbxSurfaceMaterial*, std::string>& materialNames)
+	MaterialInstantiation^ GetOrCreateMaterial(FbxSurfaceMaterial* lMaterial, List<String^>^ uvNames, List<MaterialInstances^>^ instances, std::map<std::string, int>& uvElements, std::map<FbxSurfaceMaterial*, std::string>& materialNames)
 	{
 		auto materialInstances = GetOrCreateInstances(lMaterial, instances, materialNames);
 
@@ -2282,7 +2202,7 @@ private:
 			}
 		}
 
-		auto newInstanciation = gcnew MaterialInstanciation();
+		auto newInstanciation = gcnew MaterialInstantiation();
 		newInstanciation->Parameters = uvNames;
 		
 		if (materialInstances->Instances->Count > 0)
@@ -2295,7 +2215,7 @@ private:
 		return newInstanciation;
 	}
 
-	void SearchMeshInAttribute(FbxNode* pNode, FbxNodeAttribute* pAttribute, std::map<FbxSurfaceMaterial*, std::string> materialNames, std::map<FbxMesh*, std::string> meshNames, std::map<FbxNode*, std::string>& nodeNames, List<MeshParameters^>^ models, List<MaterialInstances^>^ materialInstances, List<CameraInfo^>^ cameras, List<LightInfo^>^ lights)
+	void SearchMeshInAttribute(FbxNode* pNode, FbxNodeAttribute* pAttribute, std::map<FbxSurfaceMaterial*, std::string> materialNames, std::map<FbxMesh*, std::string> meshNames, std::map<FbxNode*, std::string>& nodeNames, List<MeshParameters^>^ models, List<MaterialInstances^>^ materialInstances)
 	{
 		if(!pAttribute) return;
  
@@ -2339,11 +2259,16 @@ private:
 
 			for (int i = 0; i < buildMeshes->Count; ++i)
 			{
+				auto meshParams = gcnew MeshParameters();
+				auto meshName = meshNames[pMesh];
+				if (buildMeshes->Count > 1)
+					meshName = meshName + "_" + std::to_string(i + 1);
+				meshParams->MeshName = gcnew String(meshName.c_str());
+				meshParams->NodeName = gcnew String(nodeNames[pNode].c_str());
+
 				FbxGeometryElementMaterial* lMaterialElement = pMesh->GetElementMaterial();
 				if (lMaterialElement != NULL)
 				{
-					auto meshParams = gcnew MeshParameters();
-					
 					FbxSurfaceMaterial* lMaterial = pNode->GetMaterial(i);
 					std::map<std::string, int> uvElements;
 					auto uvNames = gcnew List<String^>();
@@ -2352,41 +2277,30 @@ private:
 						uvElements[pMesh->GetElementUV(j)->GetName()] = j;
 						uvNames->Add(gcnew String(pMesh->GetElementUV(j)->GetName()));
 					}
-					
+
 					auto material = GetOrCreateMaterial(lMaterial, uvNames, materialInstances, uvElements, materialNames);
-					auto meshName = meshNames[pMesh];
-					if (buildMeshes->Count > 1)
-						meshName = meshName + "_" + std::to_string(i+1);
-					
-					meshParams->MeshName = gcnew String(meshName.c_str());
 					meshParams->MaterialName = material->MaterialName;
-					meshParams->NodeName = gcnew String(nodeNames[pNode].c_str());
-					models->Add(meshParams);
 				}
+				else
+				{
+					logger->Warning("Mesh {0} do not have a material. It might not be displayed.", meshParams->MeshName);
+				}
+
+				models->Add(meshParams);
 			}
-		}
-		else if (pAttribute->GetAttributeType() == FbxNodeAttribute::eCamera)
-		{
-			auto pCamera = (FbxCamera*)pAttribute;
-			ProcessCamera(cameras, pNode, pCamera, nodeNames);
-		}
-		else if (pAttribute->GetAttributeType() == FbxNodeAttribute::eLight)
-		{
-			auto pLight = (FbxLight*)pAttribute;
-			ProcessLight(lights, pNode, pLight, nodeNames);
 		}
 	}
 
-	void SearchMesh(FbxNode* pNode, std::map<FbxSurfaceMaterial*, std::string> materialNames, std::map<FbxMesh*, std::string> meshNames, std::map<FbxNode*, std::string>& nodeNames, List<MeshParameters^>^ models, List<MaterialInstances^>^ materialInstances, List<CameraInfo^>^ cameras, List<LightInfo^>^ lights)
+	void SearchMesh(FbxNode* pNode, std::map<FbxSurfaceMaterial*, std::string> materialNames, std::map<FbxMesh*, std::string> meshNames, std::map<FbxNode*, std::string>& nodeNames, List<MeshParameters^>^ models, List<MaterialInstances^>^ materialInstances)
 	{
 		// Process the node's attributes.
 		for(int i = 0; i < pNode->GetNodeAttributeCount(); i++)
-			SearchMeshInAttribute(pNode, pNode->GetNodeAttributeByIndex(i), materialNames, meshNames, nodeNames, models, materialInstances, cameras, lights);
+			SearchMeshInAttribute(pNode, pNode->GetNodeAttributeByIndex(i), materialNames, meshNames, nodeNames, models, materialInstances);
 
 		// Recursively process the children nodes.
 		for(int j = 0; j < pNode->GetChildCount(); j++)
 		{
-			SearchMesh(pNode->GetChild(j), materialNames, meshNames, nodeNames, models, materialInstances, cameras, lights);
+			SearchMesh(pNode->GetChild(j), materialNames, meshNames, nodeNames, models, materialInstances);
 		}
 	}
 
@@ -2417,14 +2331,10 @@ private:
 		std::map<std::string, FbxSurfaceMaterial*> materialPerMesh;
 		auto models = gcnew List<MeshParameters^>();
 		auto materialInstances = gcnew List<MaterialInstances^>();
-		auto cameras = gcnew List<CameraInfo^>();
-		auto lights = gcnew List<LightInfo^>();
-		SearchMesh(scene->GetRootNode(), materialNames, meshNames, nodeNames, models, materialInstances, cameras, lights);
+		SearchMesh(scene->GetRootNode(), materialNames, meshNames, nodeNames, models, materialInstances);
 
 		auto ret = gcnew MeshMaterials();
 		ret->Models = models;
-		ret->Cameras = cameras;
-		ret->Lights = lights;
 		ret->Materials = gcnew Dictionary<String^, MaterialAsset^>();
 		for (int i = 0; i < materialInstances->Count; ++i)
 		{
@@ -2432,28 +2342,6 @@ private:
 			{
 				ret->Materials->Add(materialInstances[i]->Instances[j]->MaterialName, materialInstances[i]->Instances[j]->Material);
 			}
-		}
-		
-		// patch lights count
-		int numPointLights = 0;
-        int numSpotLights = 0;
-        int numDirectionalLights = 0;
-		for (int i = 0; i < lights->Count; ++i)
-		{
-			auto lightType = lights[i]->Data->Type;
-			if (lightType == LightType::Point)
-				++numPointLights;
-			else if (lightType == LightType::Directional)
-				++numDirectionalLights;
-			else if (lightType == LightType::Spot)
-				++numSpotLights;
-		}
-
-		for (int i = 0; i < models->Count; ++i)
-		{
-			models[i]->Parameters->Add(LightingKeys::MaxPointLights, numPointLights);
-			models[i]->Parameters->Add(LightingKeys::MaxDirectionalLights, numDirectionalLights);
-			models[i]->Parameters->Add(LightingKeys::MaxSpotLights, numSpotLights);
 		}
         
 		return ret;
@@ -2472,9 +2360,17 @@ private:
 				continue;
 			
 			auto texturePath = FindFilePath(texture);
-			if(!String::IsNullOrEmpty(texturePath)
+			if (!String::IsNullOrEmpty(texturePath)
 				&& File::Exists(texturePath))
+			{
+				if (texturePath->Contains(".fbm\\"))
+					logger->Info("Importer detected an embedded texture. It has been extracted at address '{0}'.", texturePath);
 				textureNames->Add(texturePath);
+			}
+			else
+			{
+				logger->Warning("Importer detected a texture not available on disk at address '{0}'", texturePath);
+			}
 		}
 
 		return textureNames;
@@ -2585,8 +2481,6 @@ public:
 			entityInfo->Models = models->Models;
 			entityInfo->Materials = models->Materials;
 			entityInfo->Nodes = ExtractNodeHierarchy(nodeNames);
-			entityInfo->Lights = models->Lights;
-			entityInfo->Cameras = models->Cameras;
 			entityInfo->UpAxis = originalUpAxis;
 
 			return entityInfo;

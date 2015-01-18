@@ -40,21 +40,6 @@ public:
 	bool Preserve;
 };
 
-public ref class CameraInfo
-{
-public:
-	String^ NodeName;
-	String^ TargetNodeName;
-	CameraComponent^ Data;
-};
-
-public ref class LightInfo
-{
-public:
-	String^ NodeName;
-	LightComponent^ Data;
-};
-
 public ref class EntityInfo
 {
 public:
@@ -63,8 +48,6 @@ public:
 	List<String^>^ AnimationNodes;
 	List<MeshParameters^>^ Models;
 	List<NodeInfo^>^ Nodes;
-	List<CameraInfo^>^ Cameras;
-	List<LightInfo^>^ Lights;
 	Vector3 UpAxis;
 };
 
@@ -73,11 +56,9 @@ public ref class MeshMaterials
 public:
 	Dictionary<String^, MaterialAsset^>^ Materials;
 	List<MeshParameters^>^ Models;
-	List<CameraInfo^>^ Cameras;
-	List<LightInfo^>^ Lights;
 };
 
-public ref class MaterialInstanciation
+public ref class MaterialInstantiation
 {
 public:
 	List<String^>^ Parameters;

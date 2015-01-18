@@ -3,7 +3,7 @@
 namespace SiliconStudio.Paradox.Effects.Materials
 {
     // Temporary code for testing IMaterialSurface
-    class MaterialSurfaceCompositor : ShadingBase, PositionVSBase, MaterialShadingStream, LightGroupArray
+    class MaterialSurfaceCompositor : ShadingBase, PositionVSBase, MaterialShadingStream, DirectLightGroupArray, EnvironmentLightArray
     {
         compose IMaterialSurface material;
 
@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
             material.Compute();
 
             // Return the actual shading color
-            return float4(streams.shadingColor, 1);
+            return float4(streams.shadingColor, streams.matDiffuse.a);
         }
     };
 }

@@ -5,6 +5,16 @@ using SiliconStudio.Paradox.Effects;
 
 namespace Test
 {
+    shader CubemapDisplayEffect
+    {
+        using params MaterialParameters;
+
+		mixin ShaderBase;
+		mixin TransformationWAndVP;
+		mixin AlbedoFlatShading;
+        mixin compose albedoDiffuse = ComputeColorTextureCubeBasic<TexturingKeys.TextureCube0>;
+    };
+
 	shader CubemapEffect
 	{
 		using params MaterialParameters;

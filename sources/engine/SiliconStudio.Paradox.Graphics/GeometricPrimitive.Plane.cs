@@ -39,14 +39,15 @@ namespace SiliconStudio.Paradox.Graphics
             /// <param name="device">The device.</param>
             /// <param name="sizeX">The size X.</param>
             /// <param name="sizeY">The size Y.</param>
-            /// <param name="tessellation">The tessellation, as the number of quads per axis.</param>
+            /// <param name="tessellationX">The tessellation, as the number of quads per X axis.</param>
+            /// <param name="tessellationY">The tessellation, as the number of quads per Y axis.</param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
             /// <param name="uvFactors">Scale UVs between 0 and the values of this parameter.</param>
             /// <returns>A Plane primitive.</returns>
             /// <exception cref="System.ArgumentOutOfRangeException">tessellation;tessellation must be > 0</exception>
-            public static GeometricPrimitive New(GraphicsDevice device, float sizeX = 1.0f, float sizeY = 1.0f, int tessellation = 1, bool toLeftHanded = false, Vector2? uvFactors = null)
+            public static GeometricPrimitive New(GraphicsDevice device, float sizeX = 1.0f, float sizeY = 1.0f, int tessellationX = 1, int tessellationY = 1, bool toLeftHanded = false, Vector2? uvFactors = null)
             {
-                return new GeometricPrimitive(device, New(sizeX, sizeY, tessellation, toLeftHanded, uvFactors));
+                return new GeometricPrimitive(device, New(sizeX, sizeY, tessellationX, tessellationY, toLeftHanded, uvFactors));
             }
 
             /// <summary>
@@ -54,24 +55,26 @@ namespace SiliconStudio.Paradox.Graphics
             /// </summary>
             /// <param name="sizeX">The size X.</param>
             /// <param name="sizeY">The size Y.</param>
-            /// <param name="tessellation">The tessellation, as the number of quads per axis.</param>
+            /// <param name="tessellationX">The tessellation, as the number of quads per X axis.</param>
+            /// <param name="tessellationY">The tessellation, as the number of quads per Y axis.</param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
             /// <param name="uvFactors">Scale UVs between 0 and the values of this parameter.</param>
             /// <returns>A Plane primitive.</returns>
             /// <exception cref="System.ArgumentOutOfRangeException">tessellation;tessellation must be > 0</exception>
-            public static GeometricMeshData<VertexPositionNormalTexture> New(float sizeX = 1.0f, float sizeY = 1.0f, int tessellation = 1, bool toLeftHanded = false, Vector2? uvFactors = null, bool generateBackFace = false)
+            public static GeometricMeshData<VertexPositionNormalTexture> New(float sizeX = 1.0f, float sizeY = 1.0f, int tessellationX = 1, int tessellationY = 1, bool toLeftHanded = false, Vector2? uvFactors = null, bool generateBackFace = false)
             {
-                if (tessellation < 1)
-                {
-                    throw new ArgumentOutOfRangeException("tessellation", "tessellation must be > 0");
-                }
+                if (tessellationX < 1)                
+                    throw new ArgumentOutOfRangeException("tessellationX", "tessellationX must be > 0");                
+                if (tessellationY < 1)                
+                    throw new ArgumentOutOfRangeException("tessellationY", "tessellationY must be > 0");                
 
-                var lineWidth = tessellation + 1;
-                var vertices = new VertexPositionNormalTexture[lineWidth * lineWidth];
-                var indices = new int[tessellation * tessellation * 6 * (generateBackFace? 2: 1)];
+                var lineWidth = tessellationX + 1;
+                var lineHeight = tessellationY + 1;
+                var vertices = new VertexPositionNormalTexture[lineWidth * lineHeight];
+                var indices = new int[tessellationX * tessellationY * 6 * (generateBackFace? 2: 1)];
 
-                var deltaX = sizeX / tessellation;
-                var deltaY = sizeY / tessellation;
+                var deltaX = sizeX / tessellationX;
+                var deltaY = sizeY / tessellationY;
 
                 sizeX /= 2.0f;
                 sizeY /= 2.0f;
@@ -83,20 +86,20 @@ namespace SiliconStudio.Paradox.Graphics
                 var uv = uvFactors.HasValue ? uvFactors.Value : new Vector2(1, 1);
 
                 // Create vertices
-                for (int y = 0; y < (tessellation + 1); y++)
+                for (int y = 0; y < (tessellationY + 1); y++)
                 {
-                    for (int x = 0; x < (tessellation + 1); x++)
+                    for (int x = 0; x < (tessellationX + 1); x++)
                     {
                         var position = new Vector3(-sizeX + deltaX * x, sizeY - deltaY * y, 0);
-                        var texCoord = new Vector2(uv.X * x / tessellation, uv.Y * y / tessellation);
+                        var texCoord = new Vector2(uv.X * x / tessellationX, uv.Y * y / tessellationY);
                         vertices[vertexCount++] = new VertexPositionNormalTexture(position, normal, texCoord);
                     }
                 }
 
                 // Create indices
-                for (int y = 0; y < tessellation; y++)
+                for (int y = 0; y < tessellationY; y++)
                 {
-                    for (int x = 0; x < tessellation; x++)
+                    for (int x = 0; x < tessellationX; x++)
                     {
                         // Six indices (two triangles) per face.
                         int vbase = lineWidth * y + x;
@@ -112,9 +115,9 @@ namespace SiliconStudio.Paradox.Graphics
                 if(generateBackFace)
                 {
                     // Create indices
-                    for (int y = 0; y < tessellation; y++)
+                    for (int y = 0; y < tessellationY; y++)
                     {
-                        for (int x = 0; x < tessellation; x++)
+                        for (int x = 0; x < tessellationX; x++)
                         {
                             // Six indices (two triangles) per face.
                             int vbase = lineWidth * y + x;

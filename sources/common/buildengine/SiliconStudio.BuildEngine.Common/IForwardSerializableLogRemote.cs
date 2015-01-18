@@ -2,10 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.ServiceModel;
 
-using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Diagnostics;
 
-namespace SiliconStudio.Assets.CompilerApp
+namespace SiliconStudio.BuildEngine
 {
     [ServiceContract]
     public interface IForwardSerializableLogRemote

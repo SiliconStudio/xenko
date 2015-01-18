@@ -49,7 +49,7 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SiliconStudio.Paradox.Graphics.Tests.TestCustomEffect</StartupObject>
+    <StartupObject>SiliconStudio.Paradox.Graphics.Tests.TestCubemapDisplay</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
@@ -107,11 +107,6 @@
       <Name>SiliconStudio.Paradox</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\shaders\SiliconStudio.Paradox.Effects.csproj">
-      <Project>{0342C3E7-4A38-46B4-A8EC-E728D50085D3}</Project>
-      <Name>SiliconStudio.Paradox.Effects</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Paradox.Engine\SiliconStudio.Paradox.Engine.csproj">
       <Project>{C121A566-555E-42B9-9B0A-1696529A9088}</Project>
       <Name>SiliconStudio.Paradox.Engine</Name>
@@ -126,6 +121,10 @@
       <Project>{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}</Project>
       <Name>SiliconStudio.Shaders</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\shaders\SiliconStudio.Paradox.Effects.csproj">
+      <Project>{0342c3e7-4a38-46b4-a8ec-e728d50085d3}</Project>
+      <Name>SiliconStudio.Paradox.Effects</Name>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Paradox.Games\SiliconStudio.Paradox.Games.csproj">
       <Project>{42780CBD-3FE7-48E3-BD5B-59945EA20137}</Project>
@@ -225,6 +224,7 @@
     <Compile Include="Regression\TestSimpleTexture.cs" />
     <Compile Include="TestBitmapSpriteFont.cs" />
     <Compile Include="TestCubemapDeferred.cs" />
+    <Compile Include="TestCubemapDisplay.cs" />
     <Compile Include="TestCubemapRendering.cs" />
     <Compile Include="TestDynamicSpriteFont.cs" />
     <Compile Include="TestDynamicSpriteFontJapanese.cs" />

@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using SiliconStudio.BuildEngine;
+using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.Effects.Data;

@@ -90,14 +90,51 @@ namespace SiliconStudio.Paradox.Assets.Textures
         }
 
         /// <summary>
+        /// Determines if alpha channel should be separated from a given texture's attribute and graphics profile
+        /// </summary>
+        /// <param name="alphaFormat">Alpha format for a texture</param>
+        /// <param name="textureFormat">Texture format</param>
+        /// <param name="platform">Platform</param>
+        /// <param name="graphicsProfile">Level of graphics</param>
+        /// <returns></returns>
+        public static bool ShouldSeparateAlpha(AlphaFormat alphaFormat, TextureFormat textureFormat, PlatformType platform, GraphicsProfile graphicsProfile)
+        {
+            if (alphaFormat != AlphaFormat.None && textureFormat == TextureFormat.Compressed && platform == PlatformType.Android)
+            {
+                switch (graphicsProfile)
+                {
+                    case GraphicsProfile.Level_9_1:
+                    case GraphicsProfile.Level_9_2:
+                    case GraphicsProfile.Level_9_3:
+                        // Android with OpenGLES < 3.0 require alpha splitting if the image is compressed since ETC1 compresses only RGB
+                        return true;
+                    case GraphicsProfile.Level_10_0:
+                    case GraphicsProfile.Level_10_1:
+                    case GraphicsProfile.Level_11_0:
+                    case GraphicsProfile.Level_11_1:
+                    case GraphicsProfile.Level_11_2:
+                        // Since OpenGLES 3.0, ETC2 RGBA is used instead of ETC1 RGB so alpha is compressed along with RGB; therefore, no need to split alpha
+                        return false;
+                    default:
+                        throw new ArgumentOutOfRangeException("graphicsProfile");
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Determine the output format of the texture depending on the platform and asset properties.
         /// </summary>
         /// <param name="parameters">The conversion request parameters</param>
+        /// <param name="graphicsPlatform">The graphics platform</param>
+        /// <param name="graphicsProfile">The graphics profile</param>
         /// <param name="imageSize">The texture output size</param>
         /// <param name="inputImageFormat">The pixel format of the input image</param>
         /// <param name="textureAsset">The texture asset</param>
         /// <returns>The pixel format to use as output</returns>
-        public static PixelFormat DetermineOutputFormat(TextureAsset textureAsset, TextureConvertParameters parameters, Int2 imageSize, PixelFormat inputImageFormat)
+        public static PixelFormat DetermineOutputFormat(TextureAsset textureAsset, TextureConvertParameters parameters, Int2 imageSize, PixelFormat inputImageFormat, PlatformType platform, GraphicsPlatform graphicsPlatform,
+            GraphicsProfile graphicsProfile)
         {
             if (textureAsset.SRgb && ((int)parameters.GraphicsProfile < (int)GraphicsProfile.Level_9_2 && parameters.GraphicsPlatform != GraphicsPlatform.Direct3D11))
                 throw new NotSupportedException("sRGB is not supported on OpenGl profile level {0}".ToFormat(parameters.GraphicsProfile));
@@ -112,9 +149,25 @@ namespace SiliconStudio.Paradox.Assets.Textures
                     switch (parameters.Platform)
                     {
                         case PlatformType.Android:
-                            outputFormat = textureAsset.Alpha == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.R8G8B8A8_UNorm;
+                            switch (graphicsProfile)
+                            {
+                                case GraphicsProfile.Level_9_1:
+                                case GraphicsProfile.Level_9_2:
+                                case GraphicsProfile.Level_9_3:
+                                    outputFormat = textureAsset.Alpha == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.R8G8B8A8_UNorm;
+                                    break;
+                                case GraphicsProfile.Level_10_0:
+                                case GraphicsProfile.Level_10_1:
+                                case GraphicsProfile.Level_11_0:
+                                case GraphicsProfile.Level_11_1:
+                                case GraphicsProfile.Level_11_2:
+                                    // GLES3.0 starting from Level_10_0, this profile enables ETC2 compression on Android
+                                    outputFormat = textureAsset.Alpha == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.ETC2_RGBA;
+                                    break;
+                                default:
+                                    throw new ArgumentOutOfRangeException("graphicsProfile");
+                            }
                             break;
-
                         case PlatformType.iOS:
                             // PVRTC works only for square POT textures
                             if (SupportPVRTC(imageSize))
@@ -170,8 +223,28 @@ namespace SiliconStudio.Paradox.Assets.Textures
                                             throw new ArgumentOutOfRangeException();
                                     }
                                     break;
+                                case GraphicsPlatform.OpenGLES: // OpenGLES on Windows
+                                    switch (graphicsProfile)
+                                    {
+                                        case GraphicsProfile.Level_9_1:
+                                        case GraphicsProfile.Level_9_2:
+                                        case GraphicsProfile.Level_9_3:
+                                            outputFormat = textureAsset.Alpha == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.R8G8B8A8_UNorm;
+                                            break;
+                                        case GraphicsProfile.Level_10_0:
+                                        case GraphicsProfile.Level_10_1:
+                                        case GraphicsProfile.Level_11_0:
+                                        case GraphicsProfile.Level_11_1:
+                                        case GraphicsProfile.Level_11_2:
+                                            // GLES3.0 starting from Level_10_0, this profile enables ETC2 compression on Android
+                                            outputFormat = textureAsset.Alpha == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.ETC2_RGBA;
+                                            break;
+                                        default:
+                                            throw new ArgumentOutOfRangeException("graphicsProfile");
+                                    }
+                                    break;
                                 default:
-                                    // OpenGL & OpenGL ES on Windows
+                                    // OpenGL on Windows
                                     // TODO: Need to handle OpenGL Desktop compression
                                     outputFormat = textureAsset.SRgb ? PixelFormat.R8G8B8A8_UNorm_SRgb : PixelFormat.R8G8B8A8_UNorm;
                                     break;
@@ -263,7 +336,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
 
                 // Convert/Compress to output format
                 // TODO: Change alphaFormat depending on actual image content (auto-detection)?
-                var outputFormat = DetermineOutputFormat(textureAsset, parameters, textureSize, texImage.Format);
+                var outputFormat = DetermineOutputFormat(textureAsset, parameters, textureSize, texImage.Format, parameters.Platform, parameters.GraphicsPlatform, parameters.GraphicsProfile);
                 texTool.Compress(texImage, outputFormat, (TextureConverter.Requests.TextureQuality)parameters.TextureQuality);
 
                 if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded

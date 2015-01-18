@@ -127,6 +127,7 @@
     <ClCompile Include="UtilityFunctions.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\SiliconStudio.Paradox.Importer.Common\ImporterUtils.h" />
     <ClInclude Include="FnHook.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="UtilityFunctions.h" />

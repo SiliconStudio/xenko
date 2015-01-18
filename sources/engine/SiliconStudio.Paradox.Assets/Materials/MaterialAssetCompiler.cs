@@ -42,14 +42,21 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 assetUrl = new UFile(url);
             }
 
-            //public override System.Collections.Generic.IEnumerable<ObjectUrl> GetInputFiles()
-            //{
-            //    //var materialTextureVisitor = new MaterialTextureVisitor(asset.Material);
-            //    //foreach (var textureLocation in materialTextureVisitor.GetAllTextureValues().Where(IsTextureReferenceValid).Select(x => x.TextureReference.Location).Distinct())
-            //    //    yield return new ObjectUrl(UrlType.Internal, textureLocation);
-            //    foreach (var inputFile in base.GetInputFiles())
-            //        yield return inputFile;
-            //}
+            public override System.Collections.Generic.IEnumerable<ObjectUrl> GetInputFiles()
+            {
+                foreach (var materialReference in asset.FindMaterialReferences())
+                {
+                    yield return new ObjectUrl(UrlType.Internal, materialReference.Location);
+                }
+
+                // TODO: Add textures when we will bake them
+
+                //var materialTextureVisitor = new MaterialTextureVisitor(asset.Material);
+                //foreach (var textureLocation in materialTextureVisitor.GetAllTextureValues().Where(IsTextureReferenceValid).Select(x => x.TextureReference.Location).Distinct())
+                //    yield return new ObjectUrl(UrlType.Internal, textureLocation);
+                foreach (var inputFile in base.GetInputFiles())
+                    yield return inputFile;
+            }
 
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
             {
@@ -86,17 +93,19 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 //    }
                 //}
 
-                var materialContext = new MaterialGeneratorContext();
-                materialContext.FindMaterial = reference =>
+                var materialContext = new MaterialGeneratorContext
                 {
-                    var assetItem = context.Package.Session.FindAsset(reference.Id)
-                                    ?? context.Package.Session.FindAsset(reference.Location);
-
-                    if (assetItem == null)
+                    FindMaterial = reference =>
                     {
-                        return null;
+                        var assetItem = context.Package.Session.FindAsset(reference.Id)
+                                        ?? context.Package.Session.FindAsset(reference.Location);
+
+                        if (assetItem == null)
+                        {
+                            return null;
+                        }
+                        return assetItem.Asset as MaterialAsset;
                     }
-                    return assetItem.Asset as MaterialAsset;
                 };
                 var materialClone = (MaterialAsset)AssetCloner.Clone(Asset);
                 var result = MaterialGenerator.Generate(materialClone, materialContext);

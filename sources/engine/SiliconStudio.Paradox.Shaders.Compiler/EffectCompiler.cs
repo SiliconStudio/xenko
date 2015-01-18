@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 using SiliconStudio.Core;
@@ -14,6 +15,8 @@ using SiliconStudio.Core.Storage;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders.Parser;
+using SiliconStudio.Shaders.Ast;
+using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Utility;
 using Encoding = System.Text.Encoding;
 using LoggerResult = SiliconStudio.Core.Diagnostics.LoggerResult;
@@ -174,7 +177,34 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     break;
                 case GraphicsPlatform.OpenGL:
                 case GraphicsPlatform.OpenGLES:
-                    compiler = new OpenGL.ShaderCompiler();
+                    // get the number of render target outputs
+                    var rtOutputs = 0;
+                    var psOutput = parsingResult.Shader.Declarations.OfType<StructType>().FirstOrDefault(x => x.Name.Text == "PS_OUTPUT");
+                    if (psOutput != null)
+                    {
+                        foreach (var rto in psOutput.Fields)
+                        {
+                            var sem = rto.Qualifiers.OfType<Semantic>().FirstOrDefault();
+                            if (sem != null)
+                            {
+                                // special case SV_Target
+                                if (rtOutputs == 0 && sem.Name.Text == "SV_Target")
+                                {
+                                    rtOutputs = 1;
+                                    break;
+                                }
+                                for (var i = rtOutputs; i < 8; ++i)
+                                {
+                                    if (sem.Name.Text == ("SV_Target" + i))
+                                    {
+                                        rtOutputs = i + 1;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    compiler = new OpenGL.ShaderCompiler(rtOutputs);
                     break;
                 default:
                     throw new NotSupportedException();
@@ -185,6 +215,11 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             var stageStringBuilder = new StringBuilder();
 #endif
+            // if the shader (non-compute) does not have a pixel shader, we should add it on OpenGL ES.
+            if (platform == GraphicsPlatform.OpenGLES && !parsingResult.EntryPoints.ContainsKey(ShaderStage.Pixel) && !parsingResult.EntryPoints.ContainsKey(ShaderStage.Compute))
+            {
+                parsingResult.EntryPoints.Add(ShaderStage.Pixel, null);
+            }
 
             foreach (var stageBinding in parsingResult.EntryPoints)
             {

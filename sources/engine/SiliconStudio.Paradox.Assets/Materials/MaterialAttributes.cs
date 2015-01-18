@@ -122,6 +122,16 @@ namespace SiliconStudio.Paradox.Assets.Materials
             context.Visit(Surface);
             context.Visit(MicroSurface);
 
+            // If Specular has energy conservative, copy this to the diffuse lambertian model
+            // TODO: Should we apply it to any Diffuse Model?
+            bool isEnergyConservative = (Specular is MaterialSpecularMapFeature && ((MaterialSpecularMapFeature)Specular).IsEnergyConservative);
+
+            var lambert = DiffuseModel as MaterialDiffuseLambertianModelFeature;
+            if (lambert != null)
+            {
+                lambert.IsEnergyConservative = isEnergyConservative;
+            }
+
             // Diffuse
             context.Visit(Diffuse);
             context.Visit(DiffuseModel);

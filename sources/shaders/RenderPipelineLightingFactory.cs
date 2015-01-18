@@ -126,6 +126,21 @@ namespace SiliconStudio.Paradox.Effects
             var renderSystem = serviceRegistry.GetSafeServiceAs<RenderSystem>();
             var graphicsService = serviceRegistry.GetSafeServiceAs<IGraphicsDeviceService>();
 
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
+            var width = graphicsService.GraphicsDevice.DepthStencilBuffer.Width;
+            var height = graphicsService.GraphicsDevice.DepthStencilBuffer.Height;
+
+            // On OpenGL, intermediate texture are flipped and we cannot create a framebuffer with a user-generated attachment and a default one.
+            // So we will render everything into a intermediate texture and draw it on screen at the end.
+            var finalRenderTexture = Texture.New2D(graphicsService.GraphicsDevice, width, height, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
+            var finalDepthBuffer = Texture.New2D(graphicsService.GraphicsDevice, width, height, PixelFormat.D32_Float, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
+#else
+            var finalRenderTexture = graphicsService.GraphicsDevice.BackBuffer;
+            var finalDepthBuffer = graphicsService.GraphicsDevice.DepthStencilBuffer;
+#endif
+
+            var readOnlyDepthBuffer = finalDepthBuffer.ToDepthStencilReadOnlyTexture();
+
             // Adds a light processor that will track all the entities that have a light component.
             // This will also handle the shadows (allocation, activation etc.).
             AddLightProcessor(serviceRegistry, graphicsService.GraphicsDevice, useShadows);
@@ -146,14 +161,14 @@ namespace SiliconStudio.Paradox.Effects
 
             // Renders the G-buffer for opaque geometry.
             gbufferPipeline.Renderers.Add(new ModelRenderer(serviceRegistry, effectName + ".ParadoxGBufferShaderPass").AddOpaqueFilter());
-            var gbufferProcessor = new GBufferRenderProcessor(serviceRegistry, gbufferPipeline, graphicsService.GraphicsDevice.DepthStencilBuffer, false);
+            var gbufferProcessor = new GBufferRenderProcessor(serviceRegistry, gbufferPipeline, finalDepthBuffer, false);
 
             // Add sthe G-buffer pass to the pipeline.
             mainPipeline.Renderers.Add(gbufferProcessor);
 
             // Performs the light prepass on opaque geometry.
             // Adds this pass to the pipeline.
-            var lightDeferredProcessor = new LightingPrepassRenderer(serviceRegistry, prepassEffectName, graphicsService.GraphicsDevice.DepthStencilBuffer, gbufferProcessor.GBufferTexture);
+            var lightDeferredProcessor = new LightingPrepassRenderer(serviceRegistry, prepassEffectName, finalDepthBuffer, gbufferProcessor.GBufferTexture);
             mainPipeline.Renderers.Add(lightDeferredProcessor);
 
             // Sets the render targets and clear them. Also sets the viewport.
@@ -161,9 +176,9 @@ namespace SiliconStudio.Paradox.Effects
             {
                 ClearColor = clearColor,
                 EnableClearDepth = false,
-                RenderTarget = graphicsService.GraphicsDevice.BackBuffer,
-                DepthStencil = graphicsService.GraphicsDevice.DepthStencilBuffer,
-                Viewport = new Viewport(0, 0, graphicsService.GraphicsDevice.BackBuffer.ViewWidth, graphicsService.GraphicsDevice.BackBuffer.ViewHeight)
+                RenderTarget = finalRenderTexture,
+                DepthStencil = finalDepthBuffer,
+                Viewport = new Viewport(0, 0, finalRenderTexture.ViewWidth, finalRenderTexture.ViewHeight)
             });
 
             // Draws a background from a texture.
@@ -177,15 +192,34 @@ namespace SiliconStudio.Paradox.Effects
             {
                 EnableClearDepth = false,
                 EnableClearTarget = false,
-                RenderTarget = graphicsService.GraphicsDevice.BackBuffer,
-                DepthStencil = graphicsService.GraphicsDevice.DepthStencilBuffer,
-                Viewport = new Viewport(0, 0, graphicsService.GraphicsDevice.BackBuffer.ViewWidth, graphicsService.GraphicsDevice.BackBuffer.ViewHeight)
+                RenderTarget = finalRenderTexture,
+                DepthStencil = finalDepthBuffer,
+                Viewport = new Viewport(0, 0, finalRenderTexture.ViewWidth, finalRenderTexture.ViewHeight)
             });
 
             // Renders transparent geometry. Depth stencil state is determined by the object to draw.
-            //mainPipeline.Renderers.Add(new RenderStateSetter(serviceRegistry) { DepthStencilState = graphicsService.GraphicsDevice.DepthStencilStates.DepthRead });
+            mainPipeline.Renderers.Add(new RenderStateSetter(serviceRegistry) { DepthStencilState = graphicsService.GraphicsDevice.DepthStencilStates.DepthRead });
             mainPipeline.Renderers.Add(new ModelRenderer(serviceRegistry, effectName).AddTransparentFilter());
 
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
+            // on OpenGL, draw the final texture to the framebuffer
+            mainPipeline.Renderers.Add(new RenderStateSetter(serviceRegistry)
+            {
+                DepthStencilState = graphicsService.GraphicsDevice.DepthStencilStates.None,
+                BlendState = graphicsService.GraphicsDevice.BlendStates.Opaque
+            });
+            mainPipeline.Renderers.Add(new RenderTargetSetter(serviceRegistry)
+            {
+                ClearColor = clearColor,
+                EnableClearDepth = false,
+                EnableClearStencil = false,
+                EnableClearTarget = false,
+                RenderTarget = graphicsService.GraphicsDevice.BackBuffer,
+                DepthStencil = null,
+                Viewport = new Viewport(0, 0, graphicsService.GraphicsDevice.BackBuffer.ViewWidth, graphicsService.GraphicsDevice.BackBuffer.ViewHeight)
+            });
+            mainPipeline.Renderers.Add(new DelegateRenderer(serviceRegistry) { Render = (context => graphicsService.GraphicsDevice.DrawTexture(finalRenderTexture, true))});
+#endif
             // Renders the UI.
             if (ui)
                 mainPipeline.Renderers.Add(new UIRenderer(serviceRegistry));

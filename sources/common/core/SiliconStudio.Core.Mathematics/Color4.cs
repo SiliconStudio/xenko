@@ -307,6 +307,24 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
+        /// Converts this color from linear space to sRGB space.
+        /// </summary>
+        /// <returns>A color3 in sRGB space.</returns>
+        public Color4 ToSRgb()
+        {
+            return new Color4(MathUtil.LinearToSRgb(R), MathUtil.LinearToSRgb(G), MathUtil.LinearToSRgb(B), A);
+        }
+
+        /// <summary>
+        /// Converts this color from sRGB space to linear space.
+        /// </summary>
+        /// <returns>A color4 in linear space.</returns>
+        public Color4 ToLinear()
+        {
+            return new Color4(MathUtil.SRgbToLinear(R), MathUtil.SRgbToLinear(G), MathUtil.SRgbToLinear(B), A);
+        }
+
+        /// <summary>
         /// Adds two colors.
         /// </summary>
         /// <param name="left">The first color to add.</param>

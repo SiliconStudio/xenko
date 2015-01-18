@@ -139,6 +139,12 @@
   <ItemGroup>
     <None Include="Resources\Logo.ico" />
   </ItemGroup>
+  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' And '$(ParadoxGraphicsApi)' == 'OpenGLES' ">
+    <None Include="..\..\..\deps\SDL2\$(SiliconStudioPlatform)\**\SDL2.dll">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

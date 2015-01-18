@@ -6,7 +6,6 @@ using System.ServiceModel;
 using EnvDTE80;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
-using SiliconStudio.Assets.CompilerApp;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Paradox.VisualStudio.Commands;

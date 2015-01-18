@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.Effects.Processors
         {
             get
             {
-                return Light.ShadowMap && ShadowMap != null && ShadowMap.Texture != null;
+                return Light.Shadow != null && ShadowMap != null && ShadowMap.Texture != null;
             }
         }
     }

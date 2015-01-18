@@ -53,12 +53,12 @@ namespace SiliconStudio.Paradox.Effects.Processors
                 foreach (var light in Lights)
                 {
                     // create new shadow maps
-                    if (light.Value.Light.ShadowMap && light.Value.ShadowMap == null)
+                    if (light.Value.Light.Shadow != null)
                         CreateShadowMap(light.Value);
 
                     // TODO: handle shadow maps that does no require to be updated like static shadow maps.
                     // update shadow maps info
-                    if (light.Value.Light.Enabled && light.Value.Light.ShadowMap && light.Value.ShadowMap != null && light.Value.ShadowMap.Update)
+                    if (light.Value.Light.Enabled && light.Value.Light.Shadow != null && light.Value.Light.Shadow.Enabled && light.Value.ShadowMap.Update)
                     {
                         UpdateEntityLightShadow(light.Value);
                         InternalActiveShadowMaps.Add(light.Value.ShadowMap);
@@ -105,24 +105,26 @@ namespace SiliconStudio.Paradox.Effects.Processors
         
         protected override void CreateShadowMap(EntityLightShadow light)
         {
+            var shadowMapDesc = light.Light.Shadow as LightShadowMap;
+
+
             // create the shadow map
             var shadowMap = new ShadowMap
             {
-                LightDirection = light.Light.LightDirection,
+                LightDirection = light.Light.Direction,
                 LightPosition = light.Entity.Transformation.Translation,
-                ShadowMapSize = light.Light.ShadowMapMaxSize,
-                ShadowNearDistance = light.Light.ShadowNearDistance,
-                ShadowFarDistance = light.Light.ShadowFarDistance,
-                CascadeCount = light.Light.Type == LightType.Directional ? light.Light.ShadowMapCascadeCount : 1, // cascades are only supported for directional shadow maps
-                LightType = light.Light.Type,
-                Fov = light.Light.SpotFieldAngle,
-                Filter = light.Light.ShadowMapFilterType,
+                ShadowMapSize = shadowMapDesc.MaxSize,
+                ShadowNearDistance = shadowMapDesc.NearDistance,
+                ShadowFarDistance = shadowMapDesc.FarDistance,
+                CascadeCount = light.Light.Type is LightDirectional ? shadowMapDesc.CascadeCount : 1, // cascades are only supported for directional shadow maps
+                //Fov = light.Light.SpotFieldAngle,
+                Filter = shadowMapDesc.FilterType,
                 Layers = light.Light.Layers
             };
 
             // find or create the shadow map texture
             ShadowMapTexture chosenTexture = null;
-            chosenTexture = AllocateOrChooseTexture(shadowMap, light.Light.ShadowMapFilterType == ShadowMapFilterType.Variance ? texturesVsm : texturesDefault);
+            chosenTexture = AllocateOrChooseTexture(shadowMap, shadowMapDesc.FilterType == ShadowMapFilterType.Variance ? texturesVsm : texturesDefault);
 
             shadowMap.Texture = chosenTexture;
             InternalShadowMaps.Add(shadowMap);

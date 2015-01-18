@@ -183,9 +183,17 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             {
                 if (!CompositionsPerVariable.ContainsKey(externVar.Key))
                 {
-                    var newComp = externVar.Value.DeepClone(defaultCloneContext);
-                    mixinsToAnalyze.Push(newComp);
-                    CompositionsPerVariable.Add(externVar.Key, new List<ModuleMixin> { newComp });
+                    if (externVar.Key.Type is ArrayType)
+                    {
+                        // Empty compositions for ArrayType
+                        CompositionsPerVariable.Add(externVar.Key, new List<ModuleMixin>());
+                    }
+                    else
+                    {
+                        var newComp = externVar.Value.DeepClone(defaultCloneContext);
+                        mixinsToAnalyze.Push(newComp);
+                        CompositionsPerVariable.Add(externVar.Key, new List<ModuleMixin> { newComp });
+                    }
                 }
             }
             foreach (var dep in nextMixin.InheritanceList)
