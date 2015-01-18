@@ -121,7 +121,7 @@ namespace SiliconStudio.Paradox.Effects.Renderers
                 Vector3.TransformNormal(ref lightDir, ref worldView, out direction);
 
                 lightDirections[directLightIndex] = direction;
-                lightColors[directLightIndex] = light.Light.Color;
+                lightColors[directLightIndex] = light.Light.Color.ToLinear() * light.Light.Intensity;
             }
 
             renderMesh.Parameters.Set(DirectLightGroupKeys.GetParameterKey(DirectLightGroupKeys.LightCount, 0), countDirectional);
