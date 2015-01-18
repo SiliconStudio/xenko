@@ -15,21 +15,14 @@ namespace SiliconStudio.Paradox.Assets.Materials
     [DataContract("MaterialBlendLayers")]
     [Display("Material Layers")]
     [ObjectFactory(typeof(Factory))]
-    public class MaterialBlendLayers : IMaterialLayers
+    public class MaterialBlendLayers : List<MaterialBlendLayer>, IMaterialLayers
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialBlendLayers"/> class.
         /// </summary>
         public MaterialBlendLayers()
         {
-            Layers = new List<MaterialBlendLayer>();
         }
-
-        /// <summary>
-        /// Gets the layers.
-        /// </summary>
-        /// <value>The layers.</value>
-        public List<MaterialBlendLayer> Layers { get; private set; }
 
         private class Factory : IObjectFactory
         {
@@ -42,7 +35,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         public virtual void Visit(MaterialGeneratorContext context)
         {
-            foreach (var layer in Layers)
+            foreach (var layer in this)
             {
                 layer.Visit(context);
             }
