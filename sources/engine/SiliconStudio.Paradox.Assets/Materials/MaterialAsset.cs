@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 using SiliconStudio.Assets;
@@ -72,6 +73,19 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The parameters.</value>
         [DataMember(40)]
         public ParameterCollection Parameters { get; private set; }
+
+
+        public IEnumerable<AssetReference<MaterialAsset>> FindMaterialReferences()
+        {
+            foreach (var layer in Layers)
+            {
+                if (layer.Material != null)
+                {
+                    yield return layer.Material;
+                }
+            }
+        }
+
 
         private class MaterialFactory : IObjectFactory
         {
