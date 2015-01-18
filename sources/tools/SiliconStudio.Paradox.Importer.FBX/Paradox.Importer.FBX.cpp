@@ -758,7 +758,7 @@ public:
 				}
 			}
 		}
-		{	// The specular intensity map
+	{	// The specular intensity map
 			auto specularIntensityTree = GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sSpecularFactor, NULL, finalMaterial);
 			if(phongSurface || specularIntensityTree != nullptr)
 			{
@@ -790,7 +790,7 @@ public:
 				}
 			}
 		}
-		{	// The specular power map
+	/*			{	// The specular power map
 			auto specularPowerTree = GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sShininess, NULL, finalMaterial);
 			if(phongSurface || specularPowerTree != nullptr)
 			{
@@ -821,7 +821,7 @@ public:
 					finalMaterial->Attributes->Specular = specularFeature;
 				}
 			}
-		}
+		}*/
 		//// TODO: Support for reflection map
 		//{   // The reflection map
 		//	auto reflectionMapTree = GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sReflection, FbxSurfaceMaterial::sReflectionFactor, finalMaterial);

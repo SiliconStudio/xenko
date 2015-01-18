@@ -49,7 +49,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             var compilerParameters = new CompilerParameters { Platform = GraphicsPlatform.Direct3D11 };
 
             var layers = new MaterialBlendLayers();
-            layers.Layers.Add(new MaterialBlendLayer()
+            layers.Add(new MaterialBlendLayer()
             {
                 BlendMap = new MaterialColorComputeColor(new Color4(0.5f)),
                 Material =  new AssetReference<MaterialAsset>(Guid.Empty, "fake")

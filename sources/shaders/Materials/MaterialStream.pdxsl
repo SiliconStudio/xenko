@@ -26,8 +26,6 @@ namespace SiliconStudio.Paradox.Effects.Materials
         stage stream float3 matSpecularVisible; // Precomputed before lighting 
 
         stage stream float  matSpecularIntensity;
-        stage stream float  matSpecularPower;
-
         // Occlusion attributes
         stage stream float  matAmbientOcclusion;
         stage stream float  matCavity;
@@ -50,8 +48,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
 
             streams.matSpecular = 0.0f;        
             streams.matSpecularVisible = 0.0f;      
-            streams.matSpecularIntensity = 0.0f;
-            streams.matSpecularPower = 0.0f;
+            streams.matSpecularIntensity = 1.0f;
 
             streams.matGlossiness = 0.0f;
 
@@ -65,7 +62,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
         void PrepareMaterialForLightingAndShading()
         {
             streams.matDiffuseVisible = streams.matDiffuse.rgb * lerp(1.0f, streams.matCavity, streams.matCavityDiffuse);
-            streams.matSpecularVisible = streams.matSpecular.rgb * lerp(1.0f, streams.matCavity, streams.matCavitySpecular);
+            streams.matSpecularVisible = streams.matSpecular.rgb * streams.matSpecularIntensity * lerp(1.0f, streams.matCavity, streams.matCavitySpecular);
         }
     };
 }
