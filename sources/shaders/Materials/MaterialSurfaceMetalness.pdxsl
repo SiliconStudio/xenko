@@ -16,6 +16,9 @@ namespace SiliconStudio.Paradox.Effects.Materials
             float metalness = metalnessMap.Compute().r;
             // 0.04 is a common reflectance value (source?)
             streams.matSpecular = lerp(0.04, streams.matDiffuse.rgb, metalness);
+
+            // Adjust diffuse
+            streams.matDiffuse.rgb = lerp(streams.matDiffuse.rgb - 0.04, 0, metalness);
         }
     };
 }
