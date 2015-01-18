@@ -9,7 +9,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     internal class GammaTransformShader : ColorTransformShader
     {
         // Color/Gamma correction
-        float Gamma = 2.2f;
+        float Gamma = 2.2333333f; // Value closer to sRGB response
 
         override float4 Compute(float4 color)
         {
