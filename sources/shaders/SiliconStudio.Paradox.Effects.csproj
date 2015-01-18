@@ -1006,6 +1006,8 @@
       <DependentUpon>MaterialStream.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Renderers\DirectLightData.cs" />
+    <Compile Include="Renderers\LightForwardModelRenderer.cs" />
+    <Compile Include="Renderers\LightForwardModelRendererExtensions.cs" />
     <Compile Include="Renderers\LightingGroupInfo.cs" />
     <Compile Include="Renderers\LightingUpdateInfo.cs" />
     <Compile Include="Renderers\LightingUpdateType.cs" />

@@ -111,7 +111,7 @@ namespace SiliconStudio.Paradox.Effects.Processors
         protected override void OnEntityAdding(Entity entity, EntityLightShadow data)
         {
             base.OnEntityAdding(entity, data);
-            if (ManageShadows && (data.Light.Type == LightType.Directional || data.Light.Type == LightType.Spot) && data.Light.ShadowMap)
+            if (ManageShadows && (data.Light.Type is LightDirectional || data.Light.Type is LightSpot) && data.Light.Shadow != null)
                 CreateShadowMap(data);
         }
 
@@ -123,15 +123,17 @@ namespace SiliconStudio.Paradox.Effects.Processors
 
         protected static void UpdateEntityLightShadow(EntityLightShadow light)
         {
-            var worldDir = Vector4.Transform(new Vector4(light.Light.LightDirection, 0), light.Entity.Transformation.WorldMatrix);
+            var shadowMapDesc = (LightShadowMap)light.Light.Shadow;
+
+            var worldDir = Vector4.Transform(new Vector4(light.Light.Direction, 0), light.Entity.Transformation.WorldMatrix);
             light.ShadowMap.LightDirection = new Vector3(worldDir.X, worldDir.Y, worldDir.Z);
             light.ShadowMap.LightPosition = light.Entity.Transformation.Translation;
-            light.ShadowMap.Fov = (float)(2 * Math.PI * light.Light.SpotFieldAngle / 180.0);
+            //light.ShadowMap.Fov = (float)(2 * Math.PI * light.Light.SpotFieldAngle / 180.0);
             light.ShadowMap.ReceiverInfo.ShadowLightDirection = light.ShadowMap.LightDirectionNormalized;
-            light.ShadowMap.ShadowFarDistance = light.Light.ShadowFarDistance;
-            light.ShadowMap.ReceiverInfo.ShadowMapDistance = light.Light.Type == LightType.Directional ? light.ShadowMap.ShadowFarDistance : light.ShadowMap.ShadowFarDistance - light.ShadowMap.ShadowNearDistance;
-            light.ShadowMap.ReceiverVsmInfo.BleedingFactor = light.Light.BleedingFactor;
-            light.ShadowMap.ReceiverVsmInfo.MinVariance = light.Light.MinVariance;
+            light.ShadowMap.ShadowFarDistance = shadowMapDesc.FarDistance;
+            light.ShadowMap.ReceiverInfo.ShadowMapDistance = light.Light.Type is LightDirectional ? light.ShadowMap.ShadowFarDistance : light.ShadowMap.ShadowFarDistance - light.ShadowMap.ShadowNearDistance;
+            light.ShadowMap.ReceiverVsmInfo.BleedingFactor = shadowMapDesc.BleedingFactor;
+            light.ShadowMap.ReceiverVsmInfo.MinVariance = shadowMapDesc.MinVariance;
         }
 
         #endregion

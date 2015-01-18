@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 {
     public abstract class ModelAssetImporter : AssetImporterBase
     {
-        private static readonly Type[] supportedTypes = { typeof(EntityAsset), typeof(ModelAsset), typeof(TextureAsset), typeof(MaterialAsset), typeof(AnimationAsset), typeof(CameraAsset), typeof(LightAsset) };
+        private static readonly Type[] supportedTypes = { typeof(EntityAsset), typeof(ModelAsset), typeof(TextureAsset), typeof(MaterialAsset), typeof(AnimationAsset) };
 
         public override AssetImporterParameters GetDefaultParameters(bool isForReImport)
         {
@@ -62,11 +62,6 @@ namespace SiliconStudio.Paradox.Assets.Model
             var isImportingTexture = importParameters.IsTypeSelectedForOutput<TextureAsset>() ||
                                      isImportingMaterial;
 
-            var isImportingCamera = importParameters.IsTypeSelectedForOutput<CameraAsset>();
-
-            var isImportingLight = importParameters.IsTypeSelectedForOutput<LightAsset>();
-
-
             // 1. Textures
             if (isImportingTexture)
             {
@@ -94,16 +89,6 @@ namespace SiliconStudio.Paradox.Assets.Model
                 if (isImportingEntity)
                 {
                     var entityAssetItem = ImportEntity(assetReferences, localPath, modelItem);
-                    var entityAsset = (EntityAsset)entityAssetItem.Asset;
-                    var rootEntityData = entityAsset.Hierarchy.Entities[entityAsset.Hierarchy.RootEntity];
-
-                    // 5. Camera
-                    if (isImportingCamera)
-                        ImportCameras(entityInfo, entityAsset, rootEntityData, (ModelAsset)modelItem.Asset);
-
-                    // 6. Lights
-                    if (isImportingLight)
-                        ImportLights(entityInfo, entityAsset, rootEntityData, (ModelAsset)modelItem.Asset);
 
                     // Apply EntityAnalysis 
                     EntityAnalysis.UpdateEntityReferences(((EntityAsset)entityAssetItem.Asset).Hierarchy);
@@ -111,39 +96,6 @@ namespace SiliconStudio.Paradox.Assets.Model
             }
 
             return assetReferences;
-        }
-
-        private static void ImportLights(EntityInfo entityInfo, EntityAsset entityAsset, Entity rootEntityData, ModelAsset modelAsset)
-        {
-            if (entityInfo.Lights == null)
-                return;
-
-            foreach (var light in entityInfo.Lights)
-            {
-                var cameraEntityAsset = CreateTrackingEntity(entityAsset, rootEntityData, modelAsset, light.NodeName);
-                cameraEntityAsset.Add(LightComponent.Key, light.Data);
-            }
-        }
-
-        private static void ImportCameras(EntityInfo entityInfo, EntityAsset entityAsset, Entity rootEntityData, ModelAsset modelAsset)
-        {
-            if (entityInfo.Cameras == null)
-                return;
-
-            foreach (var camera in entityInfo.Cameras)
-            {
-                var cameraEntityAsset = CreateTrackingEntity(entityAsset, rootEntityData, modelAsset, camera.NodeName);
-                cameraEntityAsset.Add(CameraComponent.Key, camera.Data);
-
-                if (camera.TargetNodeName != null)
-                {
-                    // We have a target, create an entity for it
-                    var cameraTargetEntityAsset = CreateTrackingEntity(entityAsset, rootEntityData, modelAsset, camera.TargetNodeName);
-
-                    // Update target
-                    camera.Data.Target = cameraTargetEntityAsset;
-                }
-            }
         }
 
         private static Entity CreateTrackingEntity(EntityAsset entityAsset, Entity rootEntityAsset, ModelAsset modelAsset, string nodeName)
@@ -378,24 +330,6 @@ namespace SiliconStudio.Paradox.Assets.Model
 
             // Create asset reference
             assetReferences.Add(new AssetItem(textureUrl, texture));
-        }
-
-        /// <summary>
-        /// Used only for category purpose, there is no such thing as a Camera asset (it will be a CameraComponent inside an EntityAsset).
-        /// </summary>
-        [Display("Camera", "A camera")]
-        class CameraAsset : Asset
-        {
-
-        }
-
-        /// <summary>
-        /// Used only for category purpose, there is no such thing as a Light asset (it will be a LightComponent inside an EntityAsset).
-        /// </summary>
-        [Display("Light", "A light")]
-        class LightAsset : Asset
-        {
-
         }
     }
 }

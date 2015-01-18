@@ -38,11 +38,11 @@ public ref class MaterialInstances
 public:
 	MaterialInstances()
 	{
-		Instances = gcnew List<MaterialInstanciation^>();
+		Instances = gcnew List<MaterialInstantiation^>();
 	}
 
 	FbxSurfaceMaterial* SourceMaterial;
-	List<MaterialInstanciation^>^ Instances;
+	List<MaterialInstantiation^>^ Instances;
 	String^ MaterialsName;
 };
 
@@ -1125,84 +1125,6 @@ public:
 		return textureNameCount[textureName];
 	}
 
-	void ProcessCamera(List<CameraInfo^>^ cameras, FbxNode* pNode, FbxCamera* pCamera, std::map<FbxNode*, std::string>& nodeNames)
-	{
-		auto cameraInfo = gcnew CameraInfo();
-		auto cameraData = gcnew CameraComponent();
-		cameraInfo->Data = cameraData;
-
-		cameraInfo->NodeName = gcnew String(nodeNames[pNode].c_str());
-
-		if (pCamera->FilmAspectRatio.IsValid())
-		{
-			cameraData->AspectRatio = (float)pCamera->FilmAspectRatio.Get();
-		}
-
-		// TODO: Check vertical FOV formulas
-		if (!exportedFromMaya && pCamera->FieldOfView.IsValid() && pCamera->FilmAspectRatio.IsValid()) // Only Focal Length is valid when exported from maya
-		{
-			auto aspectRatio = pCamera->FilmAspectRatio.Get();
-			auto diagonalFov = pCamera->FieldOfView.Get();
-			cameraData->VerticalFieldOfView = (float)(2.0 * Math::Atan(Math::Tan(diagonalFov * Math::PI / 180.0 / 2.0) / Math::Sqrt(1 + aspectRatio * aspectRatio)));
-		}
-		else if (pCamera->FocalLength.IsValid() && pCamera->FilmHeight.IsValid())
-		{
-			cameraData->VerticalFieldOfView = (float)FocalLengthToVerticalFov(pCamera->FilmHeight.Get(), pCamera->FocalLength.Get());
-		}
-
-		if (pNode->GetTarget() != NULL)
-		{
-			auto targetNodeIndex = nodeMapping[(IntPtr)pNode->GetTarget()];
-			cameraInfo->TargetNodeName = nodes[targetNodeIndex].Name;
-		}
-		if (pCamera->NearPlane.IsValid())
-		{
-			cameraData->NearPlane = (float)pCamera->NearPlane.Get();
-		}
-		if (pCamera->FarPlane.IsValid())
-		{
-			cameraData->FarPlane = (float)pCamera->FarPlane.Get();
-		}
-
-		cameras->Add(cameraInfo);
-	}
-
-	void ProcessLight(List<LightInfo^>^ lights, FbxNode* pNode, FbxLight* pLight, std::map<FbxNode*, std::string>& nodeNames)
-	{
-		auto lightInfo = gcnew LightInfo();
-		auto lightData = gcnew LightComponent();
-		lightInfo->Data = lightData;
-		
-		lightInfo->NodeName = gcnew String(nodeNames[pNode].c_str());
-
-		// A FbxLight points along negative Y axis.
-		lightData->LightDirection = Vector3(0.0f, -1.0f, 0.0f);
-
-		switch (pLight->LightType.Get())
-		{
-		case FbxLight::ePoint:
-			lightData->Deferred = true;
-			lightData->Type = LightType::Point;
-			lightData->DecayStart = (float)pLight->DecayStart.Get();
-			// We support only spherical light (radius > 0)
-			if (lightData->DecayStart == 0.0)
-				return;
-			break;
-		case FbxLight::eDirectional:
-			lightData->Deferred = false;
-			lightData->Type = LightType::Directional;
-			break;
-		default:
-			logger->Error("The light type '{0}' is not supported yet. The light will be ignored.", gcnew Int32(pLight->LightType.Get()));
-			return;
-		}
-		auto lightColor = pLight->Color.IsValid() ? pLight->Color.Get() : FbxDouble3(1.0, 1.0, 1.0);
-		lightData->Color = Color3((float)lightColor[0], (float)lightColor[1], (float)lightColor[2]);
-		lightData->Intensity = (float)(pLight->Intensity.IsValid() ? pLight->Intensity.Get() * 0.01 : 1.0);
-		lightData->Layers = RenderLayers::RenderLayerAll;
-		lights->Add(lightInfo);
-	}
-
 	void ProcessAttribute(FbxNode* pNode, FbxNodeAttribute* pAttribute, std::map<FbxMesh*, std::string> meshNames, std::map<FbxSurfaceMaterial*, int> materials)
 	{
 		if(!pAttribute) return;
@@ -2260,7 +2182,7 @@ private:
 		return newInstance;
 	}
 
-	MaterialInstanciation^ GetOrCreateMaterial(FbxSurfaceMaterial* lMaterial, List<String^>^ uvNames, List<MaterialInstances^>^ instances, std::map<std::string, int>& uvElements, std::map<FbxSurfaceMaterial*, std::string>& materialNames)
+	MaterialInstantiation^ GetOrCreateMaterial(FbxSurfaceMaterial* lMaterial, List<String^>^ uvNames, List<MaterialInstances^>^ instances, std::map<std::string, int>& uvElements, std::map<FbxSurfaceMaterial*, std::string>& materialNames)
 	{
 		auto materialInstances = GetOrCreateInstances(lMaterial, instances, materialNames);
 
@@ -2280,7 +2202,7 @@ private:
 			}
 		}
 
-		auto newInstanciation = gcnew MaterialInstanciation();
+		auto newInstanciation = gcnew MaterialInstantiation();
 		newInstanciation->Parameters = uvNames;
 		
 		if (materialInstances->Instances->Count > 0)
@@ -2293,7 +2215,7 @@ private:
 		return newInstanciation;
 	}
 
-	void SearchMeshInAttribute(FbxNode* pNode, FbxNodeAttribute* pAttribute, std::map<FbxSurfaceMaterial*, std::string> materialNames, std::map<FbxMesh*, std::string> meshNames, std::map<FbxNode*, std::string>& nodeNames, List<MeshParameters^>^ models, List<MaterialInstances^>^ materialInstances, List<CameraInfo^>^ cameras, List<LightInfo^>^ lights)
+	void SearchMeshInAttribute(FbxNode* pNode, FbxNodeAttribute* pAttribute, std::map<FbxSurfaceMaterial*, std::string> materialNames, std::map<FbxMesh*, std::string> meshNames, std::map<FbxNode*, std::string>& nodeNames, List<MeshParameters^>^ models, List<MaterialInstances^>^ materialInstances)
 	{
 		if(!pAttribute) return;
  
@@ -2367,28 +2289,18 @@ private:
 				models->Add(meshParams);
 			}
 		}
-		else if (pAttribute->GetAttributeType() == FbxNodeAttribute::eCamera)
-		{
-			auto pCamera = (FbxCamera*)pAttribute;
-			ProcessCamera(cameras, pNode, pCamera, nodeNames);
-		}
-		else if (pAttribute->GetAttributeType() == FbxNodeAttribute::eLight)
-		{
-			auto pLight = (FbxLight*)pAttribute;
-			ProcessLight(lights, pNode, pLight, nodeNames);
-		}
 	}
 
-	void SearchMesh(FbxNode* pNode, std::map<FbxSurfaceMaterial*, std::string> materialNames, std::map<FbxMesh*, std::string> meshNames, std::map<FbxNode*, std::string>& nodeNames, List<MeshParameters^>^ models, List<MaterialInstances^>^ materialInstances, List<CameraInfo^>^ cameras, List<LightInfo^>^ lights)
+	void SearchMesh(FbxNode* pNode, std::map<FbxSurfaceMaterial*, std::string> materialNames, std::map<FbxMesh*, std::string> meshNames, std::map<FbxNode*, std::string>& nodeNames, List<MeshParameters^>^ models, List<MaterialInstances^>^ materialInstances)
 	{
 		// Process the node's attributes.
 		for(int i = 0; i < pNode->GetNodeAttributeCount(); i++)
-			SearchMeshInAttribute(pNode, pNode->GetNodeAttributeByIndex(i), materialNames, meshNames, nodeNames, models, materialInstances, cameras, lights);
+			SearchMeshInAttribute(pNode, pNode->GetNodeAttributeByIndex(i), materialNames, meshNames, nodeNames, models, materialInstances);
 
 		// Recursively process the children nodes.
 		for(int j = 0; j < pNode->GetChildCount(); j++)
 		{
-			SearchMesh(pNode->GetChild(j), materialNames, meshNames, nodeNames, models, materialInstances, cameras, lights);
+			SearchMesh(pNode->GetChild(j), materialNames, meshNames, nodeNames, models, materialInstances);
 		}
 	}
 
@@ -2419,14 +2331,10 @@ private:
 		std::map<std::string, FbxSurfaceMaterial*> materialPerMesh;
 		auto models = gcnew List<MeshParameters^>();
 		auto materialInstances = gcnew List<MaterialInstances^>();
-		auto cameras = gcnew List<CameraInfo^>();
-		auto lights = gcnew List<LightInfo^>();
-		SearchMesh(scene->GetRootNode(), materialNames, meshNames, nodeNames, models, materialInstances, cameras, lights);
+		SearchMesh(scene->GetRootNode(), materialNames, meshNames, nodeNames, models, materialInstances);
 
 		auto ret = gcnew MeshMaterials();
 		ret->Models = models;
-		ret->Cameras = cameras;
-		ret->Lights = lights;
 		ret->Materials = gcnew Dictionary<String^, MaterialAsset^>();
 		for (int i = 0; i < materialInstances->Count; ++i)
 		{
@@ -2434,28 +2342,6 @@ private:
 			{
 				ret->Materials->Add(materialInstances[i]->Instances[j]->MaterialName, materialInstances[i]->Instances[j]->Material);
 			}
-		}
-		
-		// patch lights count
-		int numPointLights = 0;
-        int numSpotLights = 0;
-        int numDirectionalLights = 0;
-		for (int i = 0; i < lights->Count; ++i)
-		{
-			auto lightType = lights[i]->Data->Type;
-			if (lightType == LightType::Point)
-				++numPointLights;
-			else if (lightType == LightType::Directional)
-				++numDirectionalLights;
-			else if (lightType == LightType::Spot)
-				++numSpotLights;
-		}
-
-		for (int i = 0; i < models->Count; ++i)
-		{
-			models[i]->Parameters->Add(LightingKeys::MaxPointLights, numPointLights);
-			models[i]->Parameters->Add(LightingKeys::MaxDirectionalLights, numDirectionalLights);
-			models[i]->Parameters->Add(LightingKeys::MaxSpotLights, numSpotLights);
 		}
         
 		return ret;
@@ -2595,8 +2481,6 @@ public:
 			entityInfo->Models = models->Models;
 			entityInfo->Materials = models->Materials;
 			entityInfo->Nodes = ExtractNodeHierarchy(nodeNames);
-			entityInfo->Lights = models->Lights;
-			entityInfo->Cameras = models->Cameras;
 			entityInfo->UpAxis = originalUpAxis;
 
 			return entityInfo;

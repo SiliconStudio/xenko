@@ -44,11 +44,11 @@ public ref class MaterialInstances
 public:
 	MaterialInstances()
 	{
-		Instances = gcnew List<MaterialInstanciation^>();
+		Instances = gcnew List<MaterialInstantiation^>();
 	}
 
 	aiMaterial* SourceMaterial;
-	List<MaterialInstanciation^>^ Instances;
+	List<MaterialInstantiation^>^ Instances;
 	String^ MaterialsName;
 };
 
@@ -530,88 +530,6 @@ private:
 				meshIndexToReferingNodes->Add(index, gcnew List<Entity^>());
 			meshIndexToReferingNodes[index]->Add(curNode);
 		}
-	}
-
-	void ProcessCamera(const aiCamera* assimpCam)
-	{
-		// In Assimp the cameras are part of the node hierarchy,
-		// but unfortunatelly the camera property structures have no direct reference to their corresponding hierarchy node.
-		// This correspondance can only be found by evaluating the correspondance between the camera node and property names.
-
-		// Find the camera's name of the current camera property
-		auto camName = aiStringToString(assimpCam->mName);
-		// Find its corresponding nodes in the hierarchy
-		if(!(nodeNameToNodeData->ContainsKey(camName)))
-		{
-			Logger->Error(	"The node '{0}' is missing in the node hierarchy. Impossible to properly locate the camera.", 
-							gcnew ArgumentException("Camera node missing in the node hierarchy"), camName,
-							CallerInfo::Get(__FILEW__, __FUNCTIONW__, __LINE__));
-			return;
-		}
-		auto camNodes = nodeNameToNodeData[camName];
-
-		// Build the camera attribute data
-		auto camData = gcnew CameraComponent();
-		camData->NearPlane = assimpCam->mClipPlaneNear;
-		camData->FarPlane = assimpCam->mClipPlaneFar;
-		camData->AspectRatio = assimpCam->mAspect;
-		camData->VerticalFieldOfView = assimpCam->mHorizontalFOV / assimpCam->mAspect;
-		auto camTargetNodeName = camName + ".Target";
-		if(nodeNameToNodeData->ContainsKey(camTargetNodeName))
-		{
-			auto camTargetNodes = nodeNameToNodeData[camTargetNodeName];
-			if(camTargetNodes->Count > 1)
-			{
-				Logger->Error(	"The camera target '{0}' has several corresponding nodes in the hierarchy. First correspondance will be used.", 
-								gcnew ArgumentException("Several camera's node correspondance found"), camTargetNodeName,
-								CallerInfo::Get(__FILEW__, __FUNCTIONW__, __LINE__));
-			}
-				Logger->Error(	"Camera targets are not implemented in current version.", 
-								gcnew NotImplementedException("Camera targets not implemented"), camTargetNodeName,
-								CallerInfo::Get(__FILEW__, __FUNCTIONW__, __LINE__));
-			//camData->Target = camTargetNodes[0];
-		}
-
-		// Attach the camera attribute to the Camera nodes
-		for each (Entity^ camNode in camNodes)
-			camNode->Add(CameraComponent::Key, camData);
-	}
-
-	void ProcessLight(const aiLight* assimpLight)
-	{
-		// In Assimp the lights are part of the node hierarchy,
-		// but unfortunatelly the light property structures have no direct reference to their corresponding hierarchy node.
-		// This correspondance can only be found by evaluating the correspondance between the light node and property names.
-
-		// Find the light's name of the current light property
-		auto lightName = aiStringToString(assimpLight->mName);
-		// Find its corresponding nodes in the hierarchy
-		if(!(nodeNameToNodeData->ContainsKey(lightName)))
-		{
-			Logger->Error(	"The node '{0}' is missing in the node hierarchy. Impossible to properly locate the light.", 
-							gcnew ArgumentException("Light node missing in the node hierarchy"), lightName,
-							CallerInfo::Get(__FILEW__, __FUNCTIONW__, __LINE__));
-			return;
-		}
-		auto lightNodes = nodeNameToNodeData[lightName];
-
-		// Build the camera attribute data
-		auto lightData = gcnew LightComponent();
-		lightData->LightDirection = Vector3(assimpLight->mDirection.x, assimpLight->mDirection.y, assimpLight->mDirection.z);
-		lightData->Type = aiLightTypeToPdxLightType(assimpLight->mType, lightName, Logger);
-
-		// --- Temporary --- TODO expand LightData members and fill them properly 
-		lightData->Color = aiColor3ToColor3(assimpLight->mColorDiffuse);
-		lightData->Deferred = lightData->Type == LightType::Point;
-		lightData->Intensity = 1.f;
-		lightData->DecayStart = 1.f;
-		// --- End Temporary ---
-
-		lightData->Layers = RenderLayers::RenderLayerAll;
-
-		// Attach the camera attribute to the Light nodes
-		for each (Entity^ lightNode in lightNodes)
-			lightNode->Add(LightComponent::Key, lightData);
 	}
 
 	void ProcessAnimationCurveVector(AnimationClip^ animationClip, const aiVectorKey* keys, unsigned int nbKeys, String^ partialTargetName, double ticksPerSec)
@@ -1328,95 +1246,6 @@ private:
 		return nullptr;
 	}
 
-	List<CameraInfo^>^ ExtractCameras(const aiScene* scene, std::map<aiNode*, std::string>& nodeNames)
-	{
-		auto allCameras = gcnew List<CameraInfo^>();
-		for (uint32_t cameraIndex = 0; cameraIndex < scene->mNumCameras; ++cameraIndex)
-		{
-			auto assimpCam = scene->mCameras[cameraIndex];
-
-			// In Assimp the cameras are part of the node hierarchy,
-			// but unfortunatelly the camera property structures have no direct reference to their corresponding hierarchy node.
-			// This correspondance can only be found by evaluating the correspondance between the camera node and property names.
-			auto camName = std::string(assimpCam->mName.C_Str());
-			bool foundNode = false;
-			bool foundTargetNode = false;
-			for (std::map<aiNode*, std::string>::iterator iter = nodeNames.begin(); iter != nodeNames.end(); ++iter)
-			{
-				if (camName == iter->second)
-				{
-					foundNode = true;
-					break;
-				}
-			}
-			if (!foundNode)
-				continue; // TODO: log error/warning
-
-			auto cameraInfo = gcnew CameraInfo();
-			cameraInfo->NodeName = gcnew String(assimpCam->mName.C_Str());
-			cameraInfo->TargetNodeName = cameraInfo->NodeName + ".Target";
-
-			// Build the camera attribute data
-			auto camData = gcnew CameraComponent();
-			camData->NearPlane = assimpCam->mClipPlaneNear;
-			camData->FarPlane = assimpCam->mClipPlaneFar;
-			camData->AspectRatio = assimpCam->mAspect;
-			camData->VerticalFieldOfView = assimpCam->mHorizontalFOV / assimpCam->mAspect;
-			// TODO: handle mPosition
-			
-			cameraInfo->Data = camData;
-			allCameras->Add(cameraInfo);
-		}
-		return allCameras;
-	}
-
-	List<LightInfo^>^ ExtractLights(const aiScene* scene, std::map<aiNode*, std::string>& nodeNames)
-	{
-		auto allLights = gcnew List<LightInfo^>();
-		for (uint32_t lightIndex = 0; lightIndex < scene->mNumLights; ++lightIndex)
-		{
-			auto assimpLight = scene->mLights[lightIndex];
-
-			// In Assimp the lights are part of the node hierarchy,
-			// but unfortunatelly the light property structures have no direct reference to their corresponding hierarchy node.
-			// This correspondance can only be found by evaluating the correspondance between the light node and property names.
-			auto lightName = std::string(assimpLight->mName.C_Str());
-			bool foundNode = false;
-			bool foundTargetNode = false;
-			for (std::map<aiNode*, std::string>::iterator iter = nodeNames.begin(); iter != nodeNames.end(); ++iter)
-			{
-				if (lightName == iter->second)
-				{
-					foundNode = true;
-					break;
-				}
-			}
-			if (!foundNode)
-				continue; // TODO: log error/warning
-
-			auto lightInfo = gcnew LightInfo();
-			lightInfo->NodeName = gcnew String(assimpLight->mName.C_Str()); // TODO: check that the node exists
-
-			// Build the light attribute data
-			auto lightData = gcnew LightComponent();
-			lightData->LightDirection = Vector3(assimpLight->mDirection.x, assimpLight->mDirection.y, assimpLight->mDirection.z);
-			lightData->Type = aiLightTypeToPdxLightType(assimpLight->mType, lightInfo->NodeName, Logger);
-
-			// --- Temporary --- TODO expand LightData members and fill them properly 
-			lightData->Color = aiColor3ToColor3(assimpLight->mColorDiffuse);
-			lightData->Deferred = lightData->Type == LightType::Point;
-			lightData->Intensity = 1.f;
-			lightData->DecayStart = 1.f;
-			// --- End Temporary ---
-
-			lightData->Layers = RenderLayers::RenderLayerAll;
-
-			lightInfo->Data = lightData;
-			allLights->Add(lightInfo);
-		}
-		return allLights;
-	}
-
 	List<MeshParameters^>^ ExtractModel(const aiScene* scene, std::map<aiMesh*, std::string>& meshNames, std::map<aiMaterial*, std::string>& materialNames, std::map<aiNode*, std::string>& nodeNames)
 	{
 		GenerateMeshNames(scene, meshNames);
@@ -1513,14 +1342,6 @@ private:
 		for (unsigned int i = 0; i < scene->mNumTextures; ++i)
             ExtractEmbededTexture(scene->mTextures[i]);
 
-		// cameras - left out
-		//for (unsigned int i = 0; i < scene->mNumCameras; ++i)
-		//	ProcessCamera(scene->mCameras[i]);
-		
-		// lights - left out
-		//for (unsigned int i = 0; i < scene->mNumLights; ++i)
-		//	ProcessLight(scene->mLights[i]);
-
 		return modelData;
 	}
 
@@ -1585,33 +1406,9 @@ public:
 			entityInfo->TextureDependencies = ExtractTextureDependencies(scene);
 			entityInfo->Materials = ExtractMaterials(scene, materialNames);
 			entityInfo->Models = ExtractModel(scene, meshNames, materialNames, nodeNames);
-			entityInfo->Lights = ExtractLights(scene, nodeNames);
-			entityInfo->Cameras = ExtractCameras(scene, nodeNames);
 			entityInfo->Nodes = ExtractNodeHierarchy(scene, nodeNames);
 			entityInfo->AnimationNodes = ExtractAnimations(scene, animationNames);
 			entityInfo->UpAxis = GetUpAxis(scene->mRootNode);
-
-			// patch lights count
-			int numPointLights = 0;
-			int numSpotLights = 0;
-			int numDirectionalLights = 0;
-			for (int i = 0; i < entityInfo->Lights->Count; ++i)
-			{
-				auto lightType = entityInfo->Lights[i]->Data->Type;
-				if (lightType == LightType::Point)
-					++numPointLights;
-				else if (lightType == LightType::Directional)
-					++numDirectionalLights;
-				else if (lightType == LightType::Spot)
-					++numSpotLights;
-			}
-
-			for (int i = 0; i < entityInfo->Models->Count; ++i)
-			{
-				entityInfo->Models[i]->Parameters->Add(LightingKeys::MaxPointLights, numPointLights);
-				entityInfo->Models[i]->Parameters->Add(LightingKeys::MaxDirectionalLights, numDirectionalLights);
-				entityInfo->Models[i]->Parameters->Add(LightingKeys::MaxSpotLights, numSpotLights);
-			}
 			
 			return entityInfo;
 		}
