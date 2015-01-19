@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Effects.Materials;
@@ -16,7 +17,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// </summary>
     [DataContract("MaterialSpecularMapFeature")]
     [Display("Specular Map")]
-    [ObjectFactory(typeof(Factory))]
     public class MaterialSpecularMapFeature : IMaterialSpecularFeature
     {
         /// <summary>
@@ -24,6 +24,8 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// </summary>
         public MaterialSpecularMapFeature()
         {
+            SpecularMap = new MaterialTextureComputeColor();
+            Intensity = new MaterialFloatComputeNode(1.0f);
             IsEnergyConservative = true;
         }
 
@@ -31,37 +33,28 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// Gets or sets the specular map.
         /// </summary>
         /// <value>The specular map.</value>
+        [DataMember(10)]
         [Display("Specular Map")]
-        [DefaultValue(null)]
-        public MaterialComputeColor SpecularMap { get; set; }
+        [NotNull]
+        public IMaterialComputeColor SpecularMap { get; set; }
 
         /// <summary>
         /// Gets or sets the specular intensity.
         /// </summary>
         /// <value>The intensity.</value>
-        [DefaultValue(null)]
-        public MaterialComputeColor Intensity { get; set; }
+        [DataMember(20)]
+        [NotNull]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
+        public IMaterialComputeScalar Intensity { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is energy conservative.
         /// </summary>
         /// <value><c>true</c> if this instance is energy conservative; otherwise, <c>false</c>.</value>
-        [DataMember(10)]
+        [DataMember(30)]
         [DefaultValue(true)]
         [Display("Is Energy Conservative?")]
         public bool IsEnergyConservative { get; set; }
-
-        private class Factory : IObjectFactory
-        {
-            public object New(Type type)
-            {
-                return new MaterialSpecularMapFeature()
-                {
-                    SpecularMap = new MaterialTextureComputeColor(),
-                    Intensity = new MaterialFloatComputeColor(1.0f),
-                };
-            }
-        }
 
         public void Visit(MaterialGeneratorContext context)
         {

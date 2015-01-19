@@ -2,10 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.ComponentModel;
 
 using SiliconStudio.Core;
-using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Effects.Materials;
 
@@ -16,7 +15,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// </summary>
     [DataContract("MaterialDiffuseMapFeature")]
     [Display("Diffuse Map")]
-    [ObjectFactory(typeof(Factory))]
     public class MaterialDiffuseMapFeature : IMaterialDiffuseFeature
     {
         /// <summary>
@@ -24,14 +22,16 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// </summary>
         public MaterialDiffuseMapFeature()
         {
+            DiffuseMap = new MaterialTextureComputeColor();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialDiffuseMapFeature"/> class.
         /// </summary>
         /// <param name="diffuseMap">The diffuse map.</param>
-        public MaterialDiffuseMapFeature(MaterialComputeColor diffuseMap)
+        public MaterialDiffuseMapFeature(IMaterialComputeColor diffuseMap)
         {
+            if (diffuseMap == null) throw new ArgumentNullException("diffuseMap");
             DiffuseMap = diffuseMap;
         }
 
@@ -40,16 +40,9 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// </summary>
         /// <value>The diffuse map.</value>
         [Display("Diffuse Map")]
-        [DefaultValue(null)]
-        public MaterialComputeColor DiffuseMap { get; set; }
-
-        private class Factory : IObjectFactory
-        {
-            public object New(Type type)
-            {
-                return new MaterialDiffuseMapFeature() { DiffuseMap = new MaterialTextureComputeColor() };
-            }
-        }
+        [NotNull]
+        [DataMemberCustomSerializer]
+        public IMaterialComputeColor DiffuseMap { get; set; }
 
         public void Visit(MaterialGeneratorContext context)
         {

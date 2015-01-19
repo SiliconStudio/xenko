@@ -1,11 +1,9 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
-using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
@@ -14,7 +12,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// </summary>
     [DataContract("MaterialBlendLayers")]
     [Display("Material Layers")]
-    [ObjectFactory(typeof(Factory))]
     public class MaterialBlendLayers : List<MaterialBlendLayer>, IMaterialLayers
     {
         /// <summary>
@@ -22,15 +19,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// </summary>
         public MaterialBlendLayers()
         {
-        }
-
-        private class Factory : IObjectFactory
-        {
-            public object New(Type type)
-            {
-                var stack = new MaterialBlendLayers();
-                return stack;
-            }
         }
 
         public virtual void Visit(MaterialGeneratorContext context)

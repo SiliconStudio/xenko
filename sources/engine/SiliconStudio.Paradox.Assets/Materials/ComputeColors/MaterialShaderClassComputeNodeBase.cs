@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -11,13 +11,9 @@ using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Paradox.Assets.Effect;
 using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
 using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Data;
-using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Paradox.Shaders.Parser.Ast;
@@ -25,10 +21,13 @@ using SiliconStudio.Shaders.Ast;
 
 namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
 {
-    [ContentSerializer(typeof(DataContentSerializer<MaterialShaderClassComputeColor>))]
-    [DataContract("MaterialShaderClassNode")]
+    /// <summary>
+    /// Base class for shader class node.
+    /// </summary>
+    /// <typeparam name="T">Type of the node (scalar or color)</typeparam>
+    [DataContract(Inherited = true)]
     [Display("Shader")]
-    public class MaterialShaderClassComputeColor : MaterialComputeColor
+    public abstract class MaterialShaderClassComputeNodeBase<T> : MaterialComputeNode where T : class, IMaterialComputeNode
     {
         #region Public properties
 
@@ -40,7 +39,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// The shader used in this node. It should be a ComputeColor.
         /// </userdoc>
         [DataMember(10)]
-        [MaterialNodeValuePropertyAttribute]
+        [MaterialNodeValueProperty]
         public AssetReference<EffectShaderAsset> MixinReference
         {
             get
@@ -69,7 +68,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// The compositions of the shader where material nodes can be attached. There is no need to edit the list, it is automatically filled when the shader is loaded.
         /// </userdoc>
         [DataMember(40)]
-        public Dictionary<string, Materials.MaterialComputeColor> CompositionNodes { get; set; }
+        public Dictionary<string, T> CompositionNodes { get; set; }
 
         /// <summary>
         /// The members of this class.
@@ -93,17 +92,16 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         #endregion
 
         #region Constructor & public methods
-        
-        public MaterialShaderClassComputeColor()
-            : base()
+
+        protected MaterialShaderClassComputeNodeBase()
         {
             Generics = new ComputeColorParameters();
-            CompositionNodes = new Dictionary<string, Materials.MaterialComputeColor>();
+            CompositionNodes = new Dictionary<string, T>();
             Members = new Dictionary<ParameterKey, object>();
         }
 
         /// <inheritdoc/>
-        public override IEnumerable<Materials.MaterialComputeColor> GetChildren(object context = null)
+        public override IEnumerable<IMaterialComputeNode> GetChildren(object context = null)
         {
             foreach (var composition in CompositionNodes)
             {
@@ -203,7 +201,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
             }
 
             var newGenerics = new ComputeColorParameters();
-            var newCompositionNodes = new Dictionary<string, Materials.MaterialComputeColor>();
+            var newCompositionNodes = new Dictionary<string, T>();
             var newMembers = new Dictionary<ParameterKey, object>();
 
             var localMixinName = Path.GetFileNameWithoutExtension(MixinReference.Location);
@@ -390,7 +388,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
                             var textureNode = ((ComputeColorParameterTexture)keyValue.Value).Texture;
                             if (textureNode != null)
                                 throw new NotImplementedException();
-                                //AddToCollection<Graphics.Texture>(keyValue.Key, textureNode, collection);
+                            //AddToCollection<Graphics.Texture>(keyValue.Key, textureNode, collection);
                         }
                     }
                     else if (expectedType == typeof(ComputeColorParameterSampler))
@@ -530,6 +528,4 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
 
         #endregion
     }
-
-    
 }

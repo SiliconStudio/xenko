@@ -1,16 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
 
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
-using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Shaders;
 
@@ -21,7 +16,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// </summary>
     [DataContract("MaterialBlendLayer")]
     [Display("Material Layer")]
-    [ObjectFactory(typeof(Factory))]
     public class MaterialBlendLayer : IMaterialShaderGenerator
     {
         internal const string BlendStream = "matBlend";
@@ -32,6 +26,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         public MaterialBlendLayer()
         {
             Enabled = true;
+            BlendMap = new MaterialTextureComputeScalar();
             // Overrides = new MaterialBlendOverrides();
         }
 
@@ -66,7 +61,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [Display("Blend Map")]
         [DefaultValue(null)]
         [DataMember(40)]
-        public MaterialComputeColor BlendMap { get; set; }
+        public IMaterialComputeScalar BlendMap { get; set; }
 
         ///// <summary>
         ///// Gets or sets the material overrides.
@@ -74,17 +69,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
         ///// <value>The overrides.</value>
         //[DataMember(50)]
         //public MaterialBlendOverrides Overrides { get; private set; }
-
-        private class Factory : IObjectFactory
-        {
-            public object New(Type type)
-            {
-                return new MaterialBlendLayer()
-                {
-                    BlendMap = new MaterialTextureComputeColor(),
-                };
-            }
-        }
 
         public virtual void Visit(MaterialGeneratorContext context)
         {

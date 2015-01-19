@@ -5,7 +5,7 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
 {
     public static class PipelineBuilders
     {
-        public static CompositePipelineBuilder CreateDefault(IServiceRegistry serviceRegistry, string effectName, bool deferred, string prepassEffectName, Color clearColor, bool useShadows, bool ui, string backgroundName)
+        public static CompositePipelineBuilder CreateDefault(IServiceRegistry serviceRegistry, string effectName, bool deferred, string prepassEffectName, Color clearColor, bool useShadows, bool ui, string backgroundName, bool supportLights = true)
         {
             var result = new CompositePipelineBuilder();
             result.ServiceRegistry = serviceRegistry;
@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
             //if (deferred)
                 //mainPipeline = new DeferredPipelineBuilder { PrepassEffectName = prepassEffectName };
             //else
-                mainPipeline = new ForwardPipelineBuilder();
+                mainPipeline = new ForwardPipelineBuilder(supportLights);
 
             mainPipeline.EffectName = effectName;
             mainPipeline.ClearColor = clearColor;

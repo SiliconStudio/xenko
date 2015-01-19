@@ -167,10 +167,10 @@ namespace SiliconStudio.Paradox.Assets.Materials
         }
 
         // TODO: move this method to an extension method
-        public ParameterKey<Texture> GetTextureKey(MaterialTextureComputeColor textureComputeColor, MaterialComputeColorKeys baseKeys)
+        public ParameterKey<Texture> GetTextureKey(MaterialTextureComputeNodeBase textureComputeNode, MaterialComputeColorKeys baseKeys)
         {
-            var textureKey = (ParameterKey<Texture>)GetParameterKey(textureComputeColor.Key ?? baseKeys.TextureBaseKey ?? MaterialKeys.GenericTexture);
-            var textureReference = textureComputeColor.TextureReference;
+            var textureKey = (ParameterKey<Texture>)GetParameterKey(textureComputeNode.Key ?? baseKeys.TextureBaseKey ?? MaterialKeys.GenericTexture);
+            var textureReference = textureComputeNode.TextureReference;
             if (textureReference != null)
             {
                 var texture = AttachedReferenceManager.CreateSerializableVersion<Texture>(textureReference.Id, textureReference.Location);
@@ -235,9 +235,9 @@ namespace SiliconStudio.Paradox.Assets.Materials
             registeredStreamBlend[stream] = blendStream;
         }
 
-        public void SetStream(string stream, MaterialComputeColor computeColor, ParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey)
+        public void SetStream(string stream, IMaterialComputeNode computeNode, ParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey)
         {
-            Current.SetStream(stream, computeColor, defaultTexturingKey, defaultValueKey);
+            Current.SetStream(stream, computeNode, defaultTexturingKey, defaultValueKey);
         }
 
         public void AddShading<T>(T shadingModel, ShaderSource shaderSource) where T : class, IMaterialShadingModelFeature
@@ -285,10 +285,10 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
             public MaterialShadingModelCollection ShadingModels { get; set; }
 
-            public void SetStream(string stream, MaterialComputeColor computeColor, ParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey)
+            public void SetStream(string stream, IMaterialComputeNode computeNode, ParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey)
             {
                 if (defaultValueKey == null) throw new ArgumentNullException("defaultKey");
-                if (computeColor == null)
+                if (computeNode == null)
                 {
                     return;
                 }
@@ -311,7 +311,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
                     throw new NotSupportedException("ParameterKey type [{0}] is not supported by SetStream".ToFormat(defaultValueKey.PropertyType));
                 }
 
-                var classSource = computeColor.GenerateShaderSource(context, new MaterialComputeColorKeys(defaultTexturingKey, defaultValueKey));
+                var classSource = computeNode.GenerateShaderSource(context, new MaterialComputeColorKeys(defaultTexturingKey, defaultValueKey));
                 SetStream(stream, streamType, classSource);
             }
 

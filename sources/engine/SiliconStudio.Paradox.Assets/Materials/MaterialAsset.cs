@@ -8,6 +8,7 @@ using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Data;
@@ -38,15 +39,15 @@ namespace SiliconStudio.Paradox.Assets.Materials
             Parameters = new ParameterCollection();
             Attributes = new MaterialAttributes();
             Layers = new MaterialBlendLayers();
-            //Overrides = new Dictionary<string, MaterialComputeColor>();
+            //Overrides = new Dictionary<string, MaterialComputeNode>();
         }
 
         /// <summary>
         /// Gets or sets the material attributes.
         /// </summary>
         /// <value>The material attributes.</value>
-        [DefaultValue(null)]
         [DataMember(10)]
+        [NotNull]
         public MaterialAttributes Attributes { get; set; }
 
 
@@ -56,6 +57,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The material compositor.</value>
         [DefaultValue(null)]
         [DataMember(20)]
+        [NotNull]
         public MaterialBlendLayers Layers { get; set; }
 
         /// <summary>
@@ -65,7 +67,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// All the color mapping nodes of the materials. They are map descriptions (texture or values) and operations on them.
         /// </userdoc>
         //[DataMember(30)]
-        //public Dictionary<string, MaterialComputeColor> Overrides { get; private set; }
+        //public Dictionary<string, MaterialComputeNode> Overrides { get; private set; }
 
         /// <summary>
         /// Gets the parameters.

@@ -4,6 +4,7 @@
 using System.ComponentModel;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
@@ -37,7 +38,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [Display("Surface Contribution")]
         [DefaultValue(1.0f)]
         [DataMember(10)]
-        [DataRange(0.0f, 1.0f, 0.01f)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
         public float SurfaceContribution { get; set; }
 
         /// <summary>
@@ -47,7 +48,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [Display("MicroSurface Contribution")]
         [DefaultValue(1.0f)]
         [DataMember(20)]
-        [DataRange(0.0f, 1.0f, 0.01f)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
         public float MicroSurfaceContribution { get; set; }
 
         /// <summary>
@@ -57,7 +58,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [Display("Diffuse Contribution")]
         [DefaultValue(1.0f)]
         [DataMember(30)]
-        [DataRange(0.0f, 1.0f, 0.01f)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
         public float DiffuseContribution { get; set; }
 
         /// <summary>
@@ -67,7 +68,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [Display("Specular Contribution")]
         [DefaultValue(1.0f)]
         [DataMember(40)]
-        [DataRange(0.0f, 1.0f, 0.01f)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
         public float SpecularContribution { get; set; }
 
         /// <summary>
@@ -77,7 +78,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [Display("Occlusion Contribution")]
         [DefaultValue(1.0f)]
         [DataMember(50)]
-        [DataRange(0.0f, 1.0f, 0.01f)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
         public float OcclusionContribution { get; set; }
 
         // TODO: Use Vector2 for uv Offset and uv Scales (Check how to integrate with range attribute)
@@ -88,7 +89,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The offset u.</value>
         [DefaultValue(0.0f)]
         [DataMember(60)]
-        [DataRange(0.0f, 1.0f, 0.01f)]
         public float OffsetU { get; set; }
 
         /// <summary>
@@ -97,7 +97,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The offset v.</value>
         [DefaultValue(0.0f)]
         [DataMember(70)]
-        [DataRange(0.0f, 1.0f, 0.01f)]
         public float OffsetV { get; set; }
 
         /// <summary>
@@ -106,7 +105,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The scale u.</value>
         [DefaultValue(1.0f)]
         [DataMember(80)]
-        [DataRange(0.0f, 1.0f, 0.01f)]
         public float ScaleU { get; set; }
 
         /// <summary>
@@ -115,7 +113,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The scale v.</value>
         [DefaultValue(1.0f)]
         [DataMember(90)]
-        [DataRange(0.0f, 1.0f, 0.01f)]
         public float ScaleV { get; set; }
     }
 }

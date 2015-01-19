@@ -4,7 +4,6 @@
 using System.Diagnostics;
 
 using SiliconStudio.Core;
-using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Shaders;
@@ -14,25 +13,24 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
     /// <summary>
     /// A float compute color.
     /// </summary>
-    [ContentSerializer(typeof(DataContentSerializer<MaterialFloatComputeColor>))]
-    [DataContract("MaterialFloatComputeColor")]
+    [DataContract("MaterialFloatComputeNode")]
     [Display("Constant Float")]
     [DebuggerDisplay("CompputeColor Float")]
-    public class MaterialFloatComputeColor : MaterialValueComputeColor<float>
+    public class MaterialFloatComputeNode : MaterialValueComputeNode<float>, IMaterialComputeScalar
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MaterialFloatComputeColor"/> class.
+        /// Initializes a new instance of the <see cref="MaterialFloatComputeNode"/> class.
         /// </summary>
-        public MaterialFloatComputeColor()
+        public MaterialFloatComputeNode()
             : this(0.0f)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MaterialFloatComputeColor"/> class.
+        /// Initializes a new instance of the <see cref="MaterialFloatComputeNode"/> class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public MaterialFloatComputeColor(float value)
+        public MaterialFloatComputeNode(float value)
             : base(value)
         {
         }

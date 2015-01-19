@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Effects.Materials;
@@ -17,24 +18,24 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// </summary>
     [DataContract("MaterialMetalnessMapFeature")]
     [Display("Metalness Map")]
-    [ObjectFactory(typeof(Factory))]
     public class MaterialMetalnessMapFeature : IMaterialSpecularFeature
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MaterialMetalnessMapFeature"/> class.
+        /// </summary>
+        public MaterialMetalnessMapFeature()
+        {
+            MetalnessMap = new MaterialTextureComputeScalar();
+        }
+
         /// <summary>
         /// Gets or sets the metalness map.
         /// </summary>
         /// <value>The metalness map.</value>
         [Display("Metalness Map")]
-        [DefaultValue(null)]
-        public MaterialComputeColor MetalnessMap { get; set; }
-
-        private class Factory : IObjectFactory
-        {
-            public object New(Type type)
-            {
-                return new MaterialMetalnessMapFeature() { MetalnessMap = new MaterialTextureComputeColor() };
-            }
-        }
+        [NotNull]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
+        public IMaterialComputeScalar MetalnessMap { get; set; }
 
         public void Visit(MaterialGeneratorContext context)
         {

@@ -12,11 +12,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
     public enum TextureChannel
     {
         /// <summary>
-        /// The sampled color is returned as float4(R, G, B, A)
-        /// </summary>
-        RGBA = 0,
-
-        /// <summary>
         /// The sampled color is returned as a float4(R, R, R, R)
         /// </summary>
         R,

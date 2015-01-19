@@ -1,11 +1,10 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.ComponentModel;
 
 using SiliconStudio.Core;
-using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Materials;
@@ -18,13 +17,12 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// </summary>
     [DataContract("MaterialNormalMapFeature")]
     [Display("Normal Map")]
-    [ObjectFactory(typeof(Factory))]
     public class MaterialNormalMapFeature : IMaterialSurfaceFeature
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialNormalMapFeature"/> class.
         /// </summary>
-        public MaterialNormalMapFeature()
+        public MaterialNormalMapFeature() : this(new MaterialTextureComputeColor())
         {
         }
 
@@ -32,7 +30,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// Initializes a new instance of the <see cref="MaterialNormalMapFeature"/> class.
         /// </summary>
         /// <param name="normalMap">The normal map.</param>
-        public MaterialNormalMapFeature(MaterialComputeColor normalMap)
+        public MaterialNormalMapFeature(IMaterialComputeColor normalMap)
         {
             NormalMap = normalMap;
         }
@@ -42,8 +40,8 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// </summary>
         /// <value>The normal map.</value>
         [Display("Normal Map")]
-        [DefaultValue(null)]
-        public MaterialComputeColor NormalMap { get; set; }
+        [NotNull]
+        public IMaterialComputeColor NormalMap { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the normal is only stored in XY components and Z is assumed to be 1.0.
@@ -52,17 +50,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// TODO: We could use an enum as we could have other normal encoding, but for now, assume that we only have [xyz] and [xy1]
         [DefaultValue(false)]
         public bool IsXYNormal { get; set; }
-
-        private class Factory : IObjectFactory
-        {
-            public object New(Type type)
-            {
-                return new MaterialNormalMapFeature()
-                {
-                    NormalMap = new MaterialTextureComputeColor()
-                };
-            }
-        }
 
         public void Visit(MaterialGeneratorContext context)
         {

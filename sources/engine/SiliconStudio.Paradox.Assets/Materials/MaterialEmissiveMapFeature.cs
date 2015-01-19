@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Effects.Materials;
@@ -14,17 +15,25 @@ namespace SiliconStudio.Paradox.Assets.Materials
 {
     [DataContract("MaterialEmissiveMapFeature")]
     [Display("Emissive Map")]
-    [ObjectFactory(typeof(Factory))]
     public class MaterialEmissiveMapFeature : IMaterialEmissiveFeature
     {
-        public MaterialEmissiveMapFeature()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MaterialEmissiveMapFeature"/> class.
+        /// </summary>
+        public MaterialEmissiveMapFeature() : this(new MaterialTextureComputeColor())
         {
         }
 
-        public MaterialEmissiveMapFeature(MaterialComputeColor emissiveMap)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MaterialEmissiveMapFeature"/> class.
+        /// </summary>
+        /// <param name="emissiveMap">The emissive map.</param>
+        /// <exception cref="System.ArgumentNullException">emissiveMap</exception>
+        public MaterialEmissiveMapFeature(IMaterialComputeColor emissiveMap)
         {
+            if (emissiveMap == null) throw new ArgumentNullException("emissiveMap");
             EmissiveMap = emissiveMap;
-            Intensity = new MaterialFloatComputeColor(1.0f);
+            Intensity = new MaterialFloatComputeNode(1.0f);
         }
 
         /// <summary>
@@ -32,16 +41,18 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// </summary>
         /// <value>The diffuse map.</value>
         [Display("Emissive Map")]
-        [DefaultValue(null)]
-        public MaterialComputeColor EmissiveMap { get; set; }
+        [NotNull]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
+        public IMaterialComputeColor EmissiveMap { get; set; }
 
         /// <summary>
         /// Gets or sets the intensity.
         /// </summary>
         /// <value>The intensity.</value>
         [Display("Intensity")]
-        [DefaultValue(null)]
-        public MaterialComputeColor Intensity { get; set; }
+        [NotNull]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
+        public IMaterialComputeScalar Intensity { get; set; }
 
         public bool IsLightDependent
         {
@@ -62,18 +73,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
         public bool Equals(IMaterialShadingModelFeature other)
         {
             return other is MaterialEmissiveMapFeature;
-        }
-
-        private class Factory : IObjectFactory
-        {
-            public object New(Type type)
-            {
-                return new MaterialEmissiveMapFeature()
-                {
-                    EmissiveMap = new MaterialTextureComputeColor(),
-                    Intensity =  new MaterialFloatComputeColor(1.0f)
-                };
-            }
         }
     }
 }

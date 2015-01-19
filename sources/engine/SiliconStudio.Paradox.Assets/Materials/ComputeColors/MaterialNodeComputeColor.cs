@@ -9,23 +9,23 @@ using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
 {
-    [DataContract("MaterialColorComputeColor")]
+    [DataContract("MaterialNodeComputeColor")]
     [Display("Constant Color")]
-    public class MaterialColorComputeColor : MaterialValueComputeNode<Color4>, IMaterialComputeColor
+    public class MaterialNodeComputeColor : MaterialValueComputeNode<Color4>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MaterialColorComputeColor"/> class.
+        /// Initializes a new instance of the <see cref="MaterialNodeComputeColor"/> class.
         /// </summary>
-        public MaterialColorComputeColor()
+        public MaterialNodeComputeColor()
             : this(Color4.Black)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MaterialColorComputeColor"/> class.
+        /// Initializes a new instance of the <see cref="MaterialNodeComputeColor"/> class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public MaterialColorComputeColor(Color4 value)
+        public MaterialNodeComputeColor(Color4 value)
             : base(value)
         {
         }
@@ -40,7 +40,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         {
             var key = context.GetParameterKey(Key ?? baseKeys.ValueBaseKey ?? MaterialKeys.GenericValueColor4);
 
-            // Store the color in Linear space
+            // Store the color in Linear space directly to avoid having to compute this at shader time
             var color = Value.ToLinear();
             
             if (key is ParameterKey<Color4>)

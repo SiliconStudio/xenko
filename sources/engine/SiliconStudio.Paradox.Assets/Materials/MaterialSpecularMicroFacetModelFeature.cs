@@ -4,6 +4,7 @@
 using System;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Materials
@@ -36,14 +37,17 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         [DataMember(10)]
         [Display("Fresnel")]
+        [NotNull]
         public IMaterialSpecularMicrofacetFresnelFunction Fresnel { get; set; }
 
         [DataMember(20)]
         [Display("Geometric Shadowing")]
+        [NotNull]
         public IMaterialSpecularMicrofacetVisibilityFunction Visibility { get; set; }
 
         [DataMember(30)]
         [Display("Normal Distribution")]
+        [NotNull]
         public IMaterialSpecularMicrofacetNormalDistributionFunction NormalDistribution { get; set; }
 
         public virtual void Visit(MaterialGeneratorContext context)

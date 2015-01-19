@@ -248,7 +248,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             //        {
             //            if (foundTextureDiffuse != foundTextureTransparent)
             //            {
-            //                var alphaMixNode = new MaterialBinaryComputeColor(diffuseNode, transparentNode, MaterialBinaryOperand.SubstituteAlpha);
+            //                var alphaMixNode = new MaterialBinaryComputeNode(diffuseNode, transparentNode, MaterialBinaryOperand.SubstituteAlpha);
             //                material.AddColorNode(MaterialParameters.AlbedoDiffuse, "pdx_diffuseWithAlpha", alphaMixNode);
             //            }
             //        }
@@ -270,7 +270,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             //            material.Nodes.Remove(diffuseName);
 
             //            // add the new one
-            //            var opaqueNode = new MaterialBinaryComputeColor(diffuseNode, null, MaterialBinaryOperand.Opaque);
+            //            var opaqueNode = new MaterialBinaryComputeNode(diffuseNode, null, MaterialBinaryOperand.Opaque);
             //            material.AddColorNode(MaterialParameters.AlbedoDiffuse, "pdx_diffuseOpaque", opaqueNode);
             //        }
             //    }

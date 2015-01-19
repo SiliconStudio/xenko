@@ -3,32 +3,29 @@
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
 {
-    [ContentSerializer(typeof(DataContentSerializer<MaterialFloat4ComputeColor>))]
-    [DataContract("MaterialFloat4ComputeColor")]
+    [DataContract("MaterialFloat4ComputeNode")]
     [Display("Constant Vector")]
-    public class MaterialFloat4ComputeColor : MaterialValueComputeColor<Vector4>
+    public class MaterialFloat4ComputeNode : MaterialValueComputeNode<Vector4>, IMaterialComputeColor
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MaterialFloat4ComputeColor"/> class.
+        /// Initializes a new instance of the <see cref="MaterialFloat4ComputeNode"/> class.
         /// </summary>
-        public MaterialFloat4ComputeColor()
+        public MaterialFloat4ComputeNode()
             : this(Vector4.Zero)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MaterialFloat4ComputeColor"/> class.
+        /// Initializes a new instance of the <see cref="MaterialFloat4ComputeNode"/> class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public MaterialFloat4ComputeColor(Vector4 value)
+        public MaterialFloat4ComputeNode(Vector4 value)
             : base(value)
         {
         }

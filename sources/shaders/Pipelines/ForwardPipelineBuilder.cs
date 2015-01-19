@@ -6,6 +6,12 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
 {
     public class ForwardPipelineBuilder : MainPipelineBuilder
     {
+        private bool isSupportingLight;
+        public ForwardPipelineBuilder(bool isSupportingLight)
+        {
+            this.isSupportingLight = isSupportingLight;
+        }
+
         public override void Load()
         {
             var graphicsService = ServiceRegistry.GetSafeServiceAs<IGraphicsDeviceService>();
@@ -22,7 +28,12 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
                 Build(BeforeMainRender);
 
             // Renders all the meshes with the correct lighting.
-            AddRenderer(new ModelRenderer(ServiceRegistry, EffectName).AddLightForwardSupport());
+            var renderer = new ModelRenderer(ServiceRegistry, EffectName);
+            if (isSupportingLight)
+            {
+                renderer.AddLightForwardSupport();
+            }
+            AddRenderer(renderer);
         }
     }
 }

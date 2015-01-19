@@ -1,25 +1,23 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Shaders;
 
-namespace SiliconStudio.Paradox.Assets.Materials
+namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
 {
     /// <summary>
     /// Base interface for all computer color nodes.
     /// </summary>
     [DataContract(Inherited = true)]
-    public abstract class MaterialComputeColor
+    public abstract class MaterialComputeNode : IMaterialComputeNode
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MaterialComputeColor"/> class.
+        /// Initializes a new instance of the <see cref="MaterialComputeNode"/> class.
         /// </summary>
-        protected MaterialComputeColor()
+        protected MaterialComputeNode()
         {
         }
 
@@ -28,9 +26,9 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// </summary>
         /// <param name="context">The context to get the children.</param>
         /// <returns>The list of children.</returns>
-        public virtual IEnumerable<MaterialComputeColor> GetChildren(object context = null)
+        public virtual IEnumerable<IMaterialComputeNode> GetChildren(object context = null)
         {
-            return Enumerable.Empty<MaterialComputeColor>();
+            return Enumerable.Empty<MaterialComputeNode>();
         }
 
 

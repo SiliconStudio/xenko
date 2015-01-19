@@ -580,7 +580,7 @@ public:
 		auto lambertSurface = FbxCast<FbxSurfaceLambert>(lMaterial);
 
 		{   // The diffuse color
-			auto diffuseTree = GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sDiffuse, FbxSurfaceMaterial::sDiffuseFactor, finalMaterial);
+			auto diffuseTree = (IMaterialComputeColor^)GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sDiffuse, FbxSurfaceMaterial::sDiffuseFactor, finalMaterial);
 			if(lambertSurface || diffuseTree != nullptr)
 			{
 				if(diffuseTree == nullptr)	
@@ -601,7 +601,7 @@ public:
 			}
 		}
 		{   // The emissive color
-			auto emissiveTree = GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sEmissive, FbxSurfaceMaterial::sEmissiveFactor, finalMaterial);
+			auto emissiveTree = (IMaterialComputeColor^)GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sEmissive, FbxSurfaceMaterial::sEmissiveFactor, finalMaterial);
 			if(lambertSurface || emissiveTree != nullptr)
 			{
 				if(emissiveTree == nullptr)	
@@ -646,7 +646,7 @@ public:
 		//	}
 		//}
 		{   // The normal map
-			auto normalMapTree = GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sNormalMap, NULL, finalMaterial);
+			auto normalMapTree = (IMaterialComputeColor^)GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sNormalMap, NULL, finalMaterial);
 			if(lambertSurface || normalMapTree != nullptr)
 			{
 				if(normalMapTree == nullptr)	
@@ -656,7 +656,7 @@ public:
 					// Do not create the node if the value has not been explicitly specified by the user.
 					if(normalMapValue != FbxDouble3(0))
 					{
-						normalMapTree = gcnew MaterialFloat4ComputeColor(FbxDouble3ToVector4(normalMapValue));
+						normalMapTree = gcnew MaterialFloat4ComputeNode(FbxDouble3ToVector4(normalMapValue));
 					}
 				}
 				
@@ -736,7 +736,7 @@ public:
 		//	}
 		//}
 		{	// The specular color
-			auto specularTree = GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sSpecular, NULL, finalMaterial);
+			auto specularTree = (IMaterialComputeColor^)GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sSpecular, NULL, finalMaterial);
 			if(phongSurface || specularTree != nullptr)
 			{
 				if(specularTree == nullptr)	
@@ -758,38 +758,39 @@ public:
 				}
 			}
 		}
-	{	// The specular intensity map
-			auto specularIntensityTree = GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sSpecularFactor, NULL, finalMaterial);
-			if(phongSurface || specularIntensityTree != nullptr)
-			{
-				if(specularIntensityTree == nullptr)	
-				{
-					auto specularIntensity = phongSurface->SpecularFactor.Get();
-		
-					// Do not create the node if the value has not been explicitly specified by the user.
-					if(specularIntensity > 0)
-					{
-						specularIntensityTree = gcnew MaterialFloatComputeColor((float)specularIntensity);
-					}
-				}
-						
-				if (specularIntensityTree != nullptr)
-				{
-					MaterialSpecularMapFeature^ specularFeature;
-					if (finalMaterial->Attributes->Specular == nullptr || finalMaterial->Attributes->Specular->GetType() != MaterialSpecularMapFeature::typeid)
-					{
-						specularFeature = gcnew MaterialSpecularMapFeature();
-					}
-					else
-					{
-						specularFeature = (MaterialSpecularMapFeature^)finalMaterial->Attributes->Specular;
-					}
-					// TODO: Check Specular Intensity and Power
-					specularFeature->Intensity = specularIntensityTree;
-					finalMaterial->Attributes->Specular = specularFeature;
-				}
-			}
-		}
+		// TODO REPLUG SPECULAR INTENSITY
+	//{	// The specular intensity map
+	//		auto specularIntensityTree = (IMaterialComputeColor^)GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sSpecularFactor, NULL, finalMaterial);
+	//		if(phongSurface || specularIntensityTree != nullptr)
+	//		{
+	//			if(specularIntensityTree == nullptr)	
+	//			{
+	//				auto specularIntensity = phongSurface->SpecularFactor.Get();
+	//	
+	//				// Do not create the node if the value has not been explicitly specified by the user.
+	//				if(specularIntensity > 0)
+	//				{
+	//					specularIntensityTree = gcnew MaterialFloatComputeNode((float)specularIntensity);
+	//				}
+	//			}
+	//					
+	//			if (specularIntensityTree != nullptr)
+	//			{
+	//				MaterialSpecularMapFeature^ specularFeature;
+	//				if (finalMaterial->Attributes->Specular == nullptr || finalMaterial->Attributes->Specular->GetType() != MaterialSpecularMapFeature::typeid)
+	//				{
+	//					specularFeature = gcnew MaterialSpecularMapFeature();
+	//				}
+	//				else
+	//				{
+	//					specularFeature = (MaterialSpecularMapFeature^)finalMaterial->Attributes->Specular;
+	//				}
+	//				// TODO: Check Specular Intensity and Power
+	//				specularFeature->Intensity = specularIntensityTree;
+	//				finalMaterial->Attributes->Specular = specularFeature;
+	//			}
+	//		}
+	//	}
 	/*			{	// The specular power map
 			auto specularPowerTree = GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sShininess, NULL, finalMaterial);
 			if(phongSurface || specularPowerTree != nullptr)
@@ -883,11 +884,11 @@ public:
 		return false;
 	}
 
-	MaterialComputeColor^ GenerateSurfaceTextureTree(FbxSurfaceMaterial* lMaterial, std::map<std::string, int>& uvElementMapping, Dictionary<IntPtr, MaterialTextureComputeColor^>^ textureMap,
+	IMaterialComputeNode^ GenerateSurfaceTextureTree(FbxSurfaceMaterial* lMaterial, std::map<std::string, int>& uvElementMapping, Dictionary<IntPtr, MaterialTextureComputeColor^>^ textureMap,
 												std::map<std::string, int>& textureNameCount, char const* surfaceMaterial, char const* surfaceMaterialFactor,
 												SiliconStudio::Paradox::Assets::Materials::MaterialAsset^ finalMaterial)
 	{
-		auto compositionTrees = gcnew cli::array<MaterialComputeColor^>(2);
+		auto compositionTrees = gcnew cli::array<IMaterialComputeColor^>(2);
 
 		for (int i = 0; i < 2; ++i)
 		{
@@ -901,7 +902,7 @@ public:
 			FbxProperty lProperty = lMaterial->FindProperty(propertyName);
 			if (lProperty.IsValid())
 			{
-				MaterialComputeColor^ previousNode = nullptr;
+				IMaterialComputeColor^ previousNode = nullptr;
 				const int lTextureCount = lProperty.GetSrcObjectCount<FbxTexture>();
 				for (int j = 0; j < lTextureCount; ++j)
 				{
@@ -958,7 +959,7 @@ public:
 		}
 
 		// If we only have one of either Color or Factor, use directly, otherwise multiply them together
-		MaterialComputeColor^ compositionTree;
+		IMaterialComputeColor^ compositionTree;
 		if (compositionTrees[0] == nullptr) // TODO do we want only the factor??? -> delete
 		{
 			compositionTree = compositionTrees[1];

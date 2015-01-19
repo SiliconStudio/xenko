@@ -683,7 +683,7 @@ private:
 		return textureValue;
 	}
 
-	MaterialComputeColor^ GenerateOneTextureTypeLayers(aiMaterial* pMat, aiTextureType textureType, int& textureCount, SiliconStudio::Paradox::Assets::Materials::MaterialAsset^ finalMaterial)
+	IMaterialComputeColor^ GenerateOneTextureTypeLayers(aiMaterial* pMat, aiTextureType textureType, int& textureCount, SiliconStudio::Paradox::Assets::Materials::MaterialAsset^ finalMaterial)
 	{
 		AssimpNet::Material::Stack^ stack = NetTranslation::Materials::convertAssimpStackCppToCs(pMat, textureType);
 		int set;
@@ -692,11 +692,11 @@ private:
 
 		sets.push(0);
 		auto nbTextures = pMat->GetTextureCount(textureType);
-		MaterialComputeColor^ curComposition = nullptr, ^ newCompositionFather = nullptr;
-		MaterialComputeColor^ curCompositionFather = nullptr;
+		IMaterialComputeColor^ curComposition = nullptr, ^ newCompositionFather = nullptr;
+		IMaterialComputeColor^ curCompositionFather = nullptr;
 
 		bool isRootElement = true;
-		MaterialComputeColor^ rootMaterial = nullptr;
+		IMaterialComputeColor^ rootMaterial = nullptr;
 
 		while (!stack->IsEmpty)
 		{
@@ -707,7 +707,7 @@ private:
 				if (compositionFathers->Count == 0)
 					Logger->Error(String::Format("Texture Stack Invalid : Operand without Operation."));
 
-				curCompositionFather = (MaterialComputeColor^)compositionFathers->Pop();
+				curCompositionFather = (IMaterialComputeColor^)compositionFathers->Pop();
 			}
 
 			set = sets.top();
@@ -763,12 +763,12 @@ private:
 					strengthAlpha *= alpha;
 				
 				
-				auto factorComposition = gcnew MaterialFloat4ComputeColor(Vector4(strength, strength, strength, strengthAlpha));
+				auto factorComposition = gcnew MaterialFloat4ComputeNode(Vector4(strength, strength, strength, strengthAlpha));
 				curComposition = gcnew MaterialBinaryComputeColor(curComposition, factorComposition, MaterialBinaryOperand::Multiply);
 			}
 			else if (alpha != 1.f && type != AssimpNet::Material::StackType::Color)
 			{
-				auto factorComposition = gcnew MaterialFloat4ComputeColor(Vector4(1.0f, 1.0f, 1.0f, alpha));
+				auto factorComposition = gcnew MaterialFloat4ComputeNode(Vector4(1.0f, 1.0f, 1.0f, alpha));
 				curComposition = gcnew MaterialBinaryComputeColor(curComposition, factorComposition, MaterialBinaryOperand::Multiply);
 			}
 
@@ -810,7 +810,7 @@ private:
 	{
 		auto nbTextures = pMat->GetTextureCount(textureType);
 		
-		MaterialComputeColor^ computeColorNode;
+		IMaterialComputeColor^ computeColorNode;
 		int textureCount = 0;
 		if (nbTextures == 0)
 		{
@@ -818,10 +818,10 @@ private:
 			{
 				computeColorNode = gcnew MaterialColorComputeColor(baseColor);
 			}
-			else if (hasBaseValue)
-			{
-				computeColorNode = gcnew MaterialFloatComputeColor(baseValue);
-			}
+			//else if (hasBaseValue)
+			//{
+			//	computeColorNode = gcnew MaterialFloatComputeNode(baseValue);
+			//}
 		}
 		else
 		{
