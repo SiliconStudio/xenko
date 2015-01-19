@@ -32,6 +32,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <param name="normalMap">The normal map.</param>
         public MaterialNormalMapFeature(IMaterialComputeColor normalMap)
         {
+            ScaleAndBias = true;
             NormalMap = normalMap;
         }
 
@@ -39,16 +40,36 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// Gets or sets the normal map.
         /// </summary>
         /// <value>The normal map.</value>
+        /// <userdoc>
+        /// The normal map.
+        /// </userdoc>
+        [DataMember(10)]
         [Display("Normal Map")]
         [NotNull]
         public IMaterialComputeColor NormalMap { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to scale by (2,2,2) and bias by (-1,-1,-1) the normal map.
+        /// </summary>
+        /// <value><c>true</c> if scale and bias this normal map; otherwise, <c>false</c>.</value>
+        /// <userdoc>
+        /// Scale by (2,2,2) and bias by (-1,-1,-1) this normal map.
+        /// </userdoc>
+        [DataMember(20)]
+        [DefaultValue(true)]
+        [Display("Scale & Bias")]
+        public bool ScaleAndBias { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether the normal is only stored in XY components and Z is assumed to be 1.0.
         /// </summary>
         /// <value><c>true</c> if this instance is xy normal; otherwise, <c>false</c>.</value>
-        /// TODO: We could use an enum as we could have other normal encoding, but for now, assume that we only have [xyz] and [xy1]
+        /// <userdoc>
+        /// Read only xy components and assume z to be = 1. This is used for compressed normals.
+        /// </userdoc>
+        [DataMember(30)]
         [DefaultValue(false)]
+        [Display("Normal xy")]
         public bool IsXYNormal { get; set; }
 
         public void Visit(MaterialGeneratorContext context)
@@ -61,7 +82,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
                 var computeColorSource = NormalMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.NormalMap, MaterialKeys.NormalValue));
                 var mixin = new ShaderMixinSource();
-                mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceNormalMap", IsXYNormal));
+                mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceNormalMap", IsXYNormal, ScaleAndBias));
                 mixin.AddComposition("normalMap", computeColorSource);
                 context.AddSurfaceShader(mixin);
             }

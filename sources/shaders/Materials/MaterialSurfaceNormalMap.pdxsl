@@ -5,14 +5,18 @@ namespace SiliconStudio.Paradox.Effects.Materials
     /// <summary>
     /// Material normal map
     /// </summary>
-    class MaterialSurfaceNormalMap<bool TIsNormalXY1> : IMaterialSurface
+    class MaterialSurfaceNormalMap<bool TIsNormalXY1, bool TScaleAndBias> : IMaterialSurface
     {
         compose ComputeColor normalMap;
 
         override void Compute()
         {
             var normal = normalMap.Compute();
-            normal = (2.0f * normal) - 1.0f;
+            if (TScaleAndBias)
+            {
+                normal = (2.0f * normal) - 1.0f;
+            }
+
             if (TIsNormalXY1)
             {
                 // Texture has only xy components (e.g. BC5)
