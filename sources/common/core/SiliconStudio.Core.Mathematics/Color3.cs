@@ -166,9 +166,9 @@ namespace SiliconStudio.Core.Mathematics
             uint g = (uint)(G * 255.0f);
             uint b = (uint)(B * 255.0f);
 
-            uint value = b;
+            uint value = r;
             value += g << 8;
-            value += r << 16;
+            value += b << 16;
             value += a << 24;
 
             return (int)value;
