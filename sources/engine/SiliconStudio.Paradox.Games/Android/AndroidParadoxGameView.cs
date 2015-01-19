@@ -105,8 +105,8 @@ namespace SiliconStudio.Paradox.Games.Android
 
             foreach (var version in OpenGLUtils.GetGLVersions(RequestedGraphicsProfile))
             {
-                if (TryCreateFrameBuffer(MajorVersionTOGLVersion(version), requestedColorFormat, requestedDepth, requestedStencil)
-                    || TryCreateFrameBuffer(MajorVersionTOGLVersion(version), requestedColorFormat, requestedDepthFallback, requestedStencil))
+                if (TryCreateFrameBuffer(MajorVersionToGLVersion(version), requestedColorFormat, requestedDepth, requestedStencil)
+                    || TryCreateFrameBuffer(MajorVersionToGLVersion(version), requestedColorFormat, requestedDepthFallback, requestedStencil))
                     return;
             }
 
@@ -130,7 +130,7 @@ namespace SiliconStudio.Paradox.Games.Android
             }
         }
 
-        private static GLVersion MajorVersionTOGLVersion(int major)
+        private static GLVersion MajorVersionToGLVersion(int major)
         {
             if (major >= 3)
                 return GLVersion.ES3;
