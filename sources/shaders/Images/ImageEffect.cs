@@ -207,14 +207,22 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             if (EnableSetRenderTargets)
             {
-                if (outputRenderTargetView != null)
-                {
-                    GraphicsDevice.SetRenderTarget(outputRenderTargetView);
-                }
-                else if (outputRenderTargetViews != null)
-                {
-                    GraphicsDevice.SetRenderTargets(outputRenderTargetViews);
-                }
+                SetRenderTargets();
+            }
+        }
+
+        /// <summary>
+        /// Set the render targets for the image effect.
+        /// </summary>
+        protected virtual void SetRenderTargets()
+        {
+            if (outputRenderTargetView != null)
+            {
+                GraphicsDevice.SetRenderTarget(outputRenderTargetView);
+            }
+            else if (outputRenderTargetViews != null)
+            {
+                GraphicsDevice.SetRenderTargets(outputRenderTargetViews);
             }
         }
 

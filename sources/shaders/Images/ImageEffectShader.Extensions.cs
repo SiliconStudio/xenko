@@ -13,7 +13,10 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// </summary>
     public class ImageEffectShader : ImageEffect
     {
-        private readonly DefaultEffectInstance effectInstance;
+        /// <summary>
+        /// The current effect instance.
+        /// </summary>
+        protected readonly DefaultEffectInstance EffectInstance;
 
         private readonly DynamicEffectCompiler effectCompiler;
 
@@ -50,7 +53,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             parameterCollections.Add(Parameters);
 
             // Setup the effect compiler
-            effectInstance = new DefaultEffectInstance(parameterCollections);
+            EffectInstance = new DefaultEffectInstance(parameterCollections);
             effectCompiler = new DynamicEffectCompiler(context.Services, effectName);
 
             SetDefaultParameters();
@@ -107,13 +110,18 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
-        protected override void DrawCore()
+        protected void UpdateEffect()
         {
             // Dynamically update/compile the effect based on the current parameters.
-            effectCompiler.Update(effectInstance);
+            effectCompiler.Update(EffectInstance);
+        }
+
+        protected override void DrawCore()
+        {
+            UpdateEffect();
 
             // Draw a full screen quad
-            GraphicsDevice.DrawQuad(effectInstance.Effect, parameterCollections);
+            GraphicsDevice.DrawQuad(EffectInstance.Effect, parameterCollections);
         }
     }
 }
