@@ -9,7 +9,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// <summary>
     /// Cook-Torrance Geometric Shadowing.
     /// </summary>
-    [DataContract("MaterialSpecularMicrofacetVisibilityCookTorrance ")]
+    [DataContract("MaterialSpecularMicrofacetVisibilityCookTorrance")]
     [Display("Cook-Torrance")]
     public class MaterialSpecularMicrofacetVisibilityCookTorrance : IMaterialSpecularMicrofacetVisibilityFunction
     {

@@ -9,7 +9,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// <summary>
     /// Neumann Geometric Shadowing.
     /// </summary>
-    [DataContract("MaterialSpecularMicrofacetVisibilityNeumann ")]
+    [DataContract("MaterialSpecularMicrofacetVisibilityNeumann")]
     [Display("Neumann")]
     public class MaterialSpecularMicrofacetVisibilityNeumann : IMaterialSpecularMicrofacetVisibilityFunction
     {
