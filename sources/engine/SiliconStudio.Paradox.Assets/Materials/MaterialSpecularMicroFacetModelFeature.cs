@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         {
             // Defaults
             Fresnel = new MaterialSpecularMicrofacetFresnelSchlick();
-            Visibility = new MaterialSpecularMicrofacetVisibilitySmithGGXCorrelated();
+            Visibility = new MaterialSpecularMicrofacetVisibilitySmithSchlickGGX();
             NormalDistribution = new MaterialSpecularMicrofacetNormalDistributionGGX();
         }
 
