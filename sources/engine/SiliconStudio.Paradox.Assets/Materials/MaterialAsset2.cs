@@ -297,7 +297,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// The diffuse Lambertian for the diffuse material model attribute.
     /// </summary>
     [DataContract("MaterialDiffuseLambertianModelAttribute")]
-    [Display("Lamtertian")]
+    [Display("Lambertian")]
     public class MaterialDiffuseLambertianModelAttribute : IMaterialDiffuseModelAttribute
     {
     }
