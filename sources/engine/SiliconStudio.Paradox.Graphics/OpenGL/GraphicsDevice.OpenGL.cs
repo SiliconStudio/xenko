@@ -1138,17 +1138,6 @@ namespace SiliconStudio.Paradox.Graphics
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 if (buffer.StagingData != IntPtr.Zero)
                 {
-                    // TODO: Temporarily accept NoOverwrite as a discard
-                    // Shouldn't do that, but for now it fix a big perf issue due to SpriteBatch use
-                    //if (buffer.ResourceId != 0 && mapMode == MapMode.WriteDiscard)
-                    //{
-                    //    // Notify OpenGL ES driver that previous data can be discarded by setting a new empty buffer
-                    //    UnbindVertexArrayObject();
-                    //    GL.BindBuffer(buffer.bufferTarget, buffer.ResourceId);
-                    //    GL.BufferData(buffer.bufferTarget, (IntPtr)buffer.Description.SizeInBytes, IntPtr.Zero, buffer.bufferUsageHint);
-                    //    GL.BindBuffer(buffer.bufferTarget, 0);
-                    //}
-
                     // Specific case for constant buffers
                     return new MappedResource(resource, subResourceIndex, new DataBox { DataPointer = buffer.StagingData + offsetInBytes, SlicePitch = 0, RowPitch = 0 }, offsetInBytes,
                         lengthInBytes);
@@ -2206,7 +2195,7 @@ namespace SiliconStudio.Paradox.Graphics
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
 #if SILICONSTUDIO_PLATFORM_ANDROID
-            // if the retrieved version of OpenGL does not correspond to the one used for initialization, we should fix it..
+            // if the retrieved version of OpenGL does not correspond to the one used for initialization, we should fix it.
             var glVersion = gameWindow.ContextRenderingApi == GLVersion.ES2 ? 2 : 3;
             if (glVersion != versionMajor)
             {
