@@ -35,7 +35,7 @@ namespace SiliconStudio.Presentation.ValueConverters
                 if (targetType.IsAssignableFrom(typeof(SolidColorBrush)))
                     return new SolidColorBrush(ToMediaColor(color));
                 if (targetType == typeof(string))
-                    return '#' + color.ToRgba().ToString("X8");
+                    return IntToString(color.ToRgba(), true);
             }
             if (value is Color3)
             {
@@ -51,7 +51,7 @@ namespace SiliconStudio.Presentation.ValueConverters
                 if (targetType.IsAssignableFrom(typeof(SolidColorBrush)))
                     return new SolidColorBrush(ToMediaColor(color));
                 if (targetType == typeof(string))
-                    return '#' + color.ToRgb().ToString("X6");
+                    return IntToString(color.ToRgb(), false);
             }
             if (value is Color4)
             {
@@ -67,7 +67,7 @@ namespace SiliconStudio.Presentation.ValueConverters
                 if (targetType.IsAssignableFrom(typeof(SolidColorBrush)))
                     return new SolidColorBrush(ToMediaColor(color));
                 if (targetType == typeof(string))
-                    return '#' + color.ToRgba().ToString("X8");
+                    return IntToString(color.ToRgba(), true);
             }
             if (value is string)
             {
@@ -175,16 +175,29 @@ namespace SiliconStudio.Presentation.ValueConverters
             throw new NotSupportedException("Requested conversion is not supported.");
         }
 
-        private System.Windows.Media.Color ToMediaColor(Color4 color4)
+        private static System.Windows.Media.Color ToMediaColor(Color4 color4)
         {
             var color = (Color)color4;
             return System.Windows.Media.Color.FromArgb(color.A, color.R, color.G, color.B);
         }
 
-        private System.Windows.Media.Color ToMediaColor(Color3 color3)
+        private static System.Windows.Media.Color ToMediaColor(Color3 color3)
         {
             var color = (Color)color3;
             return System.Windows.Media.Color.FromArgb(255, color.R, color.G, color.B);
+        }
+
+        private static string IntToString(int value, bool includeAlpha)
+        {
+            var r = (value & 0x000000FF);
+            var g = (value & 0x0000FF00) >> 8;
+            var b = (value & 0x00FF0000) >> 16;
+            if (includeAlpha)
+            {
+                var a = (value & 0xFF000000) >> 24;
+                return string.Format("#{0:X2}{1:X2}{2:X2}{3:X2}", r, g, b, a);
+            }
+            return string.Format("#{0:X2}{1:X2}{2:X2}", r, g, b);
         }
     }
 }
