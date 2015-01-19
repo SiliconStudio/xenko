@@ -2205,6 +2205,17 @@ namespace SiliconStudio.Paradox.Graphics
             }
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_PLATFORM_ANDROID
+            // if the retrieved version of OpenGL does not correspond to the one used for initialization, we should fix it..
+            var glVersion = gameWindow.ContextRenderingApi == GLVersion.ES2 ? 2 : 3;
+            if (glVersion != versionMajor)
+            {
+                versionMajor = glVersion;
+                versionMinor = 0;
+            }
+#elif SILICONSTUDIO_PLATFORM_IOS
+            // TODO: correct OpenGL version on iOS too?
+#endif
             IsOpenGLES2 = (versionMajor < 3);
             creationFlags |= GraphicsContextFlags.Embedded;
 #endif
