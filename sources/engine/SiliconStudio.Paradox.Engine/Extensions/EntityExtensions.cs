@@ -3,6 +3,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Core;
 
@@ -12,7 +14,7 @@ namespace SiliconStudio.Paradox.Extensions
     {
         public static IEnumerable<T> Components<T>(this IEnumerable<Entity> entities, PropertyKey<T> key) where T : EntityComponent
         {
-            return entities.Select(x => x.Get(key)).Where(x => x != null);
+            return entities.Select(x => x.Get(key)).NotNull();
         }
 
         public static IEnumerable<Entity> GetChildren(this Entity entity)

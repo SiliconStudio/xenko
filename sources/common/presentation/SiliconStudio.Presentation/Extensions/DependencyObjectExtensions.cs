@@ -7,6 +7,8 @@ using System.Windows;
 using System.Reflection;
 using System.Windows.Media;
 
+using SiliconStudio.Core.Extensions;
+
 namespace SiliconStudio.Presentation.Extensions
 {
     public static class DependencyObjectExtensions
@@ -275,7 +277,7 @@ namespace SiliconStudio.Presentation.Extensions
                     if (child is T)
                         yield return child as T;
 
-                    foreach (var subChild in FindChildrenOfType<T>(child, getChildrenCountFunc, getChildFunc).Where(x => x != null))
+                    foreach (var subChild in FindChildrenOfType<T>(child, getChildrenCountFunc, getChildFunc).NotNull())
                     {
                         yield return subChild;
                     }

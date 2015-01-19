@@ -27,7 +27,7 @@ namespace SiliconStudio.Core.Extensions
         }
 
         /// <summary>
-        /// Execute an action for each (casted) item of the given enumerable.
+        /// Executes an action for each (casted) item of the given enumerable.
         /// </summary>
         /// <typeparam name="T">Type of the item value in the enumerable.</typeparam>
         /// <param name="source">Input enumerable to work on.</param>
@@ -39,7 +39,7 @@ namespace SiliconStudio.Core.Extensions
         }
 
         /// <summary>
-        /// Execute an action for each item of the given enumerable.
+        /// Executes an action for each item of the given enumerable.
         /// </summary>
         /// <typeparam name="T">Type of the item value in the enumerable.</typeparam>
         /// <param name="source">Input enumerable to work on.</param>
@@ -99,6 +99,16 @@ namespace SiliconStudio.Core.Extensions
                 index++;
             }
             return lastIndex;
+        }
+
+        /// <summary>
+        /// Filters out null items from the enumerable.
+        /// </summary>
+        /// <typeparam name="T">Generic type parameter.</typeparam>
+        /// <param name="source">Input enumerable to work on.</param>
+        public static IEnumerable<T> NotNull<T>(this IEnumerable<T> source) where T : class
+        {
+            return source.Where(x => x != null);
         }
 
         /// <summary>
