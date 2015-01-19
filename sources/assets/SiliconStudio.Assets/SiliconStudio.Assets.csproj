@@ -157,7 +157,6 @@
     <Compile Include="PackageSessionResult.cs" />
     <Compile Include="Serializers\AssetItemSerializer.cs" />
     <Compile Include="SolutionPlatformCollection.cs" />
-    <Compile Include="StepRangeAttribute.cs" />
     <Compile Include="TemplateFolder.cs" />
     <Compile Include="Templates\TemplateSampleDescription.cs" />
     <Compile Include="Templates\TemplateScope.cs" />

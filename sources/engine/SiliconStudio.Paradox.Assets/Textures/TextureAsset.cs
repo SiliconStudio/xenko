@@ -6,6 +6,7 @@ using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Assets.Textures
@@ -42,7 +43,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// </userdoc>
         [DataMember(20)]
         [DefaultValue(100.0f)]
-        [StepRange(0, 10000, 1, 10)]
+        [DataMemberRange(0, 10000, 1, 10)]
         public float Width { get; set; }
 
         /// <summary>
@@ -54,7 +55,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// </userdoc>
         [DataMember(30)]
         [DefaultValue(100.0f)]
-        [StepRange(0, 10000, 1, 10)]
+        [DataMemberRange(0, 10000, 1, 10)]
         public float Height { get; set; }
 
         /// <summary>

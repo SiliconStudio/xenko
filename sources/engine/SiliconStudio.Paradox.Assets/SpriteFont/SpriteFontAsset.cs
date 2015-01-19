@@ -8,6 +8,7 @@ using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Graphics.Font;
@@ -57,7 +58,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
         /// The size of the font (in points) for static fonts, the default size for dynamic fonts. This property is ignored when the font source is a bitmap.
         /// </userdoc>
         [DataMember(30)]
-        [StepRangeAttribute(1, 500, 1, 10)]
+        [DataMemberRange(1, 500, 1, 10)]
         public float Size { get; set; }
         
         /// <summary>
@@ -144,7 +145,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
         /// The extra spacing to add between characters in pixels. Zero is default spacing, negative closer together, positive further apart.
         /// </userdoc>
         [DataMember(130)]
-        [StepRangeAttribute(-500, 500, 1, 10)]
+        [DataMemberRange(-500, 500, 1, 10)]
         public float Spacing { get; set; }
 
         /// <summary>
@@ -154,7 +155,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
         /// The extra interline space to add at each return of line (in pixels). Zero is default spacing, negative closer together, positive further apart.
         /// </userdoc>
         [DataMember(140)]
-        [StepRangeAttribute(-500, 500, 1, 10)]
+        [DataMemberRange(-500, 500, 1, 10)]
         public float LineSpacing { get; set; }
 
         /// <summary>
@@ -166,7 +167,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
         /// </userdoc>
         [DataMember(150)]
         [DefaultValue(1.0f)]
-        [StepRangeAttribute(-500, 500, 1, 10)]
+        [DataMemberRange(-500, 500, 1, 10)]
         public float LineGapFactor { get; set; }
 
         /// <summary>
@@ -184,7 +185,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
         /// </userdoc>
         [DataMember(160)]
         [DefaultValue(1.0f)]
-        [StepRangeAttribute(-500, 500, 1, 10)]
+        [DataMemberRange(-500, 500, 1, 10)]
         public float LineGapBaseLineFactor { get; set; }
 
         /// <summary>

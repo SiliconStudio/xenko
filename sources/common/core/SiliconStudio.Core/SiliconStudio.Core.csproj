@@ -56,7 +56,7 @@
     <Compile Include="Collections\ITrackingCollectionChanged.cs" />
     <Compile Include="Collections\KeyedSortedList.cs" />
     <Compile Include="Collections\SafeList.cs" />
-    <Compile Include="DataRangeAttribute.cs" />
+    <Compile Include="Annotations\DataMemberRangeAttribute.cs" />
     <Compile Include="DisplayAttribute.cs" />
     <Compile Include="IO\NativeFile.cs" />
     <Compile Include="IO\NativeFile.WindowsRuntime.cs" />
