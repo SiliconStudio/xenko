@@ -320,7 +320,7 @@ namespace SiliconStudio.AssemblyProcessor
             public bool HasFixedAttribute;
             public string Name;
             public IMemberDefinition MemberInfo;
-            public TypeReference Type;
+            public TypeReference Type { get; set; }
             public bool NeedReference;
             public bool AssignBack;
             public IList<CustomAttribute> Attributes;

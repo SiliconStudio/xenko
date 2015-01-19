@@ -199,9 +199,14 @@ namespace SiliconStudio.AssemblyProcessor.Serializers
             // Process members
             foreach (var serializableItem in ComplexClassSerializerGenerator.GetSerializableItems(type, true))
             {
+                var resolvedType = serializableItem.Type.Resolve();
                 // Check that all closed types have a proper serializer
-                if (!serializableItem.Attributes.Any(x => x.AttributeType.FullName == "SiliconStudio.Core.DataMemberCustomSerializerAttribute")
-                    && !serializableItem.Type.ContainsGenericParameter() && GenerateSerializer(serializableItem.Type, profile: profile) == null)
+                if (serializableItem.Attributes.Any(x => x.AttributeType.FullName == "SiliconStudio.Core.DataMemberCustomSerializerAttribute")
+                    || (resolvedType != null && resolvedType.IsInterface)
+                    || serializableItem.Type.ContainsGenericParameter())
+                    continue;
+
+                if (GenerateSerializer(serializableItem.Type, profile: profile) == null)
                 {
                     throw new InvalidOperationException(string.Format("Member {0} (type: {1}) doesn't seem to have a valid serializer.", serializableItem.MemberInfo, serializableItem.Type.ConvertCSharp()));
                 }
@@ -544,6 +549,8 @@ namespace SiliconStudio.AssemblyProcessor.Serializers
             /// </summary>
             public Dictionary<TypeReference, SerializableTypeInfo> SerializableTypes = new Dictionary<TypeReference, SerializableTypeInfo>(TypeReferenceEqualityComparer.Default);
 
+            public bool IsFrozen { get; set; }
+
             /// <summary>
             /// Generic serializable types.
             /// </summary>
@@ -561,7 +568,13 @@ namespace SiliconStudio.AssemblyProcessor.Serializers
                 if (serializableTypeInfo.Mode != DataSerializerGenericMode.None)
                     GenericSerializableTypes.Add(typeReference, serializableTypeInfo);
                 else
+                {
+                    if (IsFrozen)
+                    {
+                        throw new InvalidOperationException(string.Format("Unexpected type [{0}] to add while serializable types are frozen", typeReference));
+                    }
                     SerializableTypes.Add(typeReference, serializableTypeInfo);
+                }
             }
         }
     }
