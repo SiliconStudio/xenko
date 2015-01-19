@@ -182,7 +182,8 @@ namespace SiliconStudio.Paradox.Effects
             foreach (var mesh in Meshes)
             {
                 var meshCopy = new Mesh(mesh);
-                meshCopy.Parameters = meshCopy.Parameters.Clone();
+                if (meshCopy.Parameters != null)
+                    meshCopy.Parameters = meshCopy.Parameters.Clone();
                 result.Meshes.Add(meshCopy);
             }
 
