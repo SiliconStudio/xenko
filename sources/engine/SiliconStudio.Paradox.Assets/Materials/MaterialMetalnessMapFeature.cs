@@ -25,7 +25,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// </summary>
         public MaterialMetalnessMapFeature()
         {
-            MetalnessMap = new MaterialTextureComputeScalar();
+            MetalnessMap = new ComputeTextureScalar();
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [Display("Metalness Map")]
         [NotNull]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
-        public IMaterialComputeScalar MetalnessMap { get; set; }
+        public IComputeScalar MetalnessMap { get; set; }
 
         public void Visit(MaterialGeneratorContext context)
         {

@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
     /// <typeparam name="T">Type of the node (scalar or color)</typeparam>
     [DataContract(Inherited = true)]
     [Display("Shader")]
-    public abstract class MaterialShaderClassComputeNodeBase<T> : MaterialComputeNode where T : class, IMaterialComputeNode
+    public abstract class ComputeShaderClassBase<T> : ComputeNode where T : class, IComputeNode
     {
         #region Public properties
 
@@ -93,7 +93,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
 
         #region Constructor & public methods
 
-        protected MaterialShaderClassComputeNodeBase()
+        protected ComputeShaderClassBase()
         {
             Generics = new ComputeColorParameters();
             CompositionNodes = new Dictionary<string, T>();
@@ -101,7 +101,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         }
 
         /// <inheritdoc/>
-        public override IEnumerable<IMaterialComputeNode> GetChildren(object context = null)
+        public override IEnumerable<IComputeNode> GetChildren(object context = null)
         {
             foreach (var composition in CompositionNodes)
             {

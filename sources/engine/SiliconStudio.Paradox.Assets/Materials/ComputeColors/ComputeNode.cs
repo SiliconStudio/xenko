@@ -12,12 +12,12 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
     /// Base interface for all computer color nodes.
     /// </summary>
     [DataContract(Inherited = true)]
-    public abstract class MaterialComputeNode : IMaterialComputeNode
+    public abstract class ComputeNode : IComputeNode
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MaterialComputeNode"/> class.
+        /// Initializes a new instance of the <see cref="ComputeNode"/> class.
         /// </summary>
-        protected MaterialComputeNode()
+        protected ComputeNode()
         {
         }
 
@@ -26,9 +26,9 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// </summary>
         /// <param name="context">The context to get the children.</param>
         /// <returns>The list of children.</returns>
-        public virtual IEnumerable<IMaterialComputeNode> GetChildren(object context = null)
+        public virtual IEnumerable<IComputeNode> GetChildren(object context = null)
         {
-            return Enumerable.Empty<MaterialComputeNode>();
+            return Enumerable.Empty<ComputeNode>();
         }
 
 

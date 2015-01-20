@@ -22,14 +22,14 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// </summary>
         public MaterialDiffuseMapFeature()
         {
-            DiffuseMap = new MaterialTextureComputeColor();
+            DiffuseMap = new ComputeTextureColor();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialDiffuseMapFeature"/> class.
         /// </summary>
         /// <param name="diffuseMap">The diffuse map.</param>
-        public MaterialDiffuseMapFeature(IMaterialComputeColor diffuseMap)
+        public MaterialDiffuseMapFeature(IComputeColor diffuseMap)
         {
             if (diffuseMap == null) throw new ArgumentNullException("diffuseMap");
             DiffuseMap = diffuseMap;
@@ -42,7 +42,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [Display("Diffuse Map")]
         [NotNull]
         [DataMemberCustomSerializer]
-        public IMaterialComputeColor DiffuseMap { get; set; }
+        public IComputeColor DiffuseMap { get; set; }
 
         public void Visit(MaterialGeneratorContext context)
         {

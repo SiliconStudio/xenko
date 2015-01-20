@@ -9,23 +9,23 @@ using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
 {
-    [DataContract("MaterialFloat4ComputeNode")]
-    [Display("Constant Vector")]
-    public class MaterialFloat4ComputeNode : MaterialValueComputeNode<Vector4>, IMaterialComputeColor
+    [DataContract("ComputeFloat4")]
+    [Display("Vector")]
+    public class ComputeFloat4 : ComputeValueBase<Vector4>, IComputeColor
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MaterialFloat4ComputeNode"/> class.
+        /// Initializes a new instance of the <see cref="ComputeFloat4"/> class.
         /// </summary>
-        public MaterialFloat4ComputeNode()
+        public ComputeFloat4()
             : this(Vector4.Zero)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MaterialFloat4ComputeNode"/> class.
+        /// Initializes a new instance of the <see cref="ComputeFloat4"/> class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public MaterialFloat4ComputeNode(Vector4 value)
+        public ComputeFloat4(Vector4 value)
             : base(value)
         {
         }

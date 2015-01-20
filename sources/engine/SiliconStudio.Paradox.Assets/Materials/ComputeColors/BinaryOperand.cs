@@ -8,8 +8,8 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
     /// <summary>
     /// Operands of the MaterialNode.
     /// </summary>
-    [DataContract("MaterialBinaryOperand")]
-    public enum MaterialBinaryOperand
+    [DataContract("BinaryOperand")]
+    public enum BinaryOperand
     {
         /// <summary>
         /// Do nothing on the first texture.

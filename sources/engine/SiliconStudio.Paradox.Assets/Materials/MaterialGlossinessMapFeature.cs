@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// </summary>
         public MaterialGlossinessMapFeature()
         {
-            GlossinessMap = new MaterialTextureComputeScalar();
+            GlossinessMap = new ComputeTextureScalar();
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [Display("Glossiness Map")]
         [NotNull]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
-        public IMaterialComputeScalar GlossinessMap { get; set; }
+        public IComputeScalar GlossinessMap { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="MaterialGlossinessMapFeature"/> is invert.

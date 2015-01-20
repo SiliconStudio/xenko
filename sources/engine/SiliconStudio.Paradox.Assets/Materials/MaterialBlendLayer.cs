@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         public MaterialBlendLayer()
         {
             Enabled = true;
-            BlendMap = new MaterialTextureComputeScalar();
+            BlendMap = new ComputeTextureScalar();
             // Overrides = new MaterialBlendOverrides();
         }
 
@@ -61,7 +61,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [Display("Blend Map")]
         [DefaultValue(null)]
         [DataMember(40)]
-        public IMaterialComputeScalar BlendMap { get; set; }
+        public IComputeScalar BlendMap { get; set; }
 
         ///// <summary>
         ///// Gets or sets the material overrides.

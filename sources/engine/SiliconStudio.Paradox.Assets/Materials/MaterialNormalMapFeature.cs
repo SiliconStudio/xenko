@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialNormalMapFeature"/> class.
         /// </summary>
-        public MaterialNormalMapFeature() : this(new MaterialTextureComputeColor())
+        public MaterialNormalMapFeature() : this(new ComputeTextureColor())
         {
         }
 
@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// Initializes a new instance of the <see cref="MaterialNormalMapFeature"/> class.
         /// </summary>
         /// <param name="normalMap">The normal map.</param>
-        public MaterialNormalMapFeature(IMaterialComputeColor normalMap)
+        public MaterialNormalMapFeature(IComputeColor normalMap)
         {
             ScaleAndBias = true;
             NormalMap = normalMap;
@@ -46,7 +46,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [DataMember(10)]
         [Display("Normal Map")]
         [NotNull]
-        public IMaterialComputeColor NormalMap { get; set; }
+        public IComputeColor NormalMap { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to scale by (2,2,2) and bias by (-1,-1,-1) the normal map.

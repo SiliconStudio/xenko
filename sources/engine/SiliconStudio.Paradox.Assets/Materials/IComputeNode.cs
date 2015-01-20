@@ -8,16 +8,16 @@ using SiliconStudio.Paradox.Shaders;
 namespace SiliconStudio.Paradox.Assets.Materials
 {
     /// <summary>
-    /// Base interface for all <see cref="IMaterialComputeNode"/>
+    /// Base interface for all <see cref="IComputeNode"/>
     /// </summary>
-    public interface IMaterialComputeNode
+    public interface IComputeNode
     {
         /// <summary>
         /// Gets the children.
         /// </summary>
         /// <param name="context">The context to get the children.</param>
         /// <returns>The list of children.</returns>
-        IEnumerable<IMaterialComputeNode> GetChildren(object context = null);
+        IEnumerable<IComputeNode> GetChildren(object context = null);
 
         /// <summary>
         /// Generates the shader source equivalent for this node

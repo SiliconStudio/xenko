@@ -20,10 +20,10 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// </summary>
         public MaterialOcclusionMapFeature()
         {
-            AmbientOcclusionMap = new MaterialTextureComputeColor();
-            CavityMap = new MaterialTextureComputeColor();
-            DiffuseCavity = new MaterialFloatComputeNode(1.0f);
-            SpecularCavity = new MaterialFloatComputeNode(1.0f);
+            AmbientOcclusionMap = new ComputeTextureColor();
+            CavityMap = new ComputeTextureColor();
+            DiffuseCavity = new ComputeFloat(1.0f);
+            SpecularCavity = new ComputeFloat(1.0f);
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The occlusion map.</value>
         [Display("Occlusion Map")]
         [DataMember(10)]
-        public IMaterialComputeColor AmbientOcclusionMap { get; set; }
+        public IComputeColor AmbientOcclusionMap { get; set; }
 
         /// <summary>
         /// Gets or sets the cavity map.
@@ -40,7 +40,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The cavity map.</value>
         [Display("Cavity Map")]
         [DataMember(20)]
-        public IMaterialComputeColor CavityMap { get; set; }
+        public IComputeColor CavityMap { get; set; }
 
         /// <summary>
         /// Gets or sets the diffuse cavity influence.
@@ -50,7 +50,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [DataMember(30)]
         [NotNull]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
-        public IMaterialComputeScalar DiffuseCavity { get; set; }
+        public IComputeScalar DiffuseCavity { get; set; }
 
         /// <summary>
         /// Gets or sets the specular cavity.
@@ -60,7 +60,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [DataMember(40)]
         [NotNull]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
-        public IMaterialComputeScalar SpecularCavity { get; set; }
+        public IComputeScalar SpecularCavity { get; set; }
 
 
         public void Visit(MaterialGeneratorContext context)

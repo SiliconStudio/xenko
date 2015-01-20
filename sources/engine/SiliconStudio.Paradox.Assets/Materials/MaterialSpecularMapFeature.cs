@@ -24,8 +24,8 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// </summary>
         public MaterialSpecularMapFeature()
         {
-            SpecularMap = new MaterialTextureComputeColor();
-            Intensity = new MaterialFloatComputeNode(1.0f);
+            SpecularMap = new ComputeTextureColor();
+            Intensity = new ComputeFloat(1.0f);
             IsEnergyConservative = true;
         }
 
@@ -36,7 +36,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [DataMember(10)]
         [Display("Specular Map")]
         [NotNull]
-        public IMaterialComputeColor SpecularMap { get; set; }
+        public IComputeColor SpecularMap { get; set; }
 
         /// <summary>
         /// Gets or sets the specular intensity.
@@ -45,7 +45,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [DataMember(20)]
         [NotNull]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
-        public IMaterialComputeScalar Intensity { get; set; }
+        public IComputeScalar Intensity { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is energy conservative.

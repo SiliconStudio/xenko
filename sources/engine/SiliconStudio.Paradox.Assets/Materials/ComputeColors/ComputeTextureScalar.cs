@@ -13,26 +13,26 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
     /// <summary>
     /// A scalar texture node.
     /// </summary>
-    [DataContract("MaterialTextureComputeScalar")]
+    [DataContract("ComputeTextureScalar")]
     [Display("Texture")]
-    public class MaterialTextureComputeScalar : MaterialTextureComputeNodeBase, IMaterialComputeScalar
+    public class ComputeTextureScalar : ComputeTextureBase, IComputeScalar
     {
         /// <summary>
         /// Constructor
         /// </summary>
-        public MaterialTextureComputeScalar()
+        public ComputeTextureScalar()
             : this(null, TextureCoordinate.Texcoord0, Vector2.One, Vector2.Zero)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MaterialTextureComputeColor" /> class.
+        /// Initializes a new instance of the <see cref="ComputeTextureColor" /> class.
         /// </summary>
         /// <param name="texturePath">Name of the texture.</param>
         /// <param name="texcoordIndex">Index of the texcoord.</param>
         /// <param name="scale">The scale.</param>
         /// <param name="offset">The offset.</param>
-        public MaterialTextureComputeScalar(string texturePath, TextureCoordinate texcoordIndex, Vector2 scale, Vector2 offset)
+        public ComputeTextureScalar(string texturePath, TextureCoordinate texcoordIndex, Vector2 scale, Vector2 offset)
             : base(texturePath, texcoordIndex, scale, offset)
         {
             Channel = TextureChannel.R;

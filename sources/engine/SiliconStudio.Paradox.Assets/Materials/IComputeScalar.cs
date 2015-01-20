@@ -6,7 +6,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// <summary>
     /// Base interface for scalar compute color nodes.
     /// </summary>
-    public interface IMaterialComputeScalar : IMaterialComputeNode
+    public interface IComputeScalar : IComputeNode
     {
         
     }

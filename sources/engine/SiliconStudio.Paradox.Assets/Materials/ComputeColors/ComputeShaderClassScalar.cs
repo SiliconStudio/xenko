@@ -6,11 +6,11 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
 {
     /// <summary>
-    /// A shader outputing a single scalar value.
+    /// A shader outputing a color/vector value.
     /// </summary>
-    [DataContract("MaterialShaderClassComputeColor")]
+    [DataContract("ComputeShaderClassScalar")]
     [Display("Shader")]
-    public class MaterialShaderClassComputeColor : MaterialShaderClassComputeNodeBase<IMaterialComputeColor>, IMaterialComputeColor 
+    public class ComputeShaderClassScalar : ComputeShaderClassBase<IComputeScalar>, IComputeScalar
     {
     }
 }

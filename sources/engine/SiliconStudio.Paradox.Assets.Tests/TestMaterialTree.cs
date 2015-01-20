@@ -78,7 +78,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
             var reducedTrees = materialReducer.ReducedTrees;
 
-            Assert.IsTrue(reducedTrees["diffuse"] is MaterialFloat4ComputeNode);
+            Assert.IsTrue(reducedTrees["diffuse"] is ComputeFloat4);
         }
 
         [Test]
@@ -96,11 +96,11 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
             var nodeToReplace = ((tree.RootNode as MaterialBinaryComputeNode).RightChild as MaterialUnaryNode).Node;
 
-            (nodeToReplace as MaterialFloatComputeNode).Value = 0.666f;
-            var rightNode = new MaterialFloatComputeNode(5.0f);
-            var newNode = new MaterialBinaryComputeNode(nodeToReplace, rightNode, MaterialBinaryOperand.Add);
+            (nodeToReplace as ComputeFloat).Value = 0.666f;
+            var rightNode = new ComputeFloat(5.0f);
+            var newNode = new MaterialBinaryComputeNode(nodeToReplace, rightNode, BinaryOperand.Add);
 
-            var newNode2 = new MaterialFloat4ComputeNode(new Vector4(0.1f, 0.2f, 0.3f, 0.4f));
+            var newNode2 = new ComputeFloat4(new Vector4(0.1f, 0.2f, 0.3f, 0.4f));
 
             tree.ReplaceNode(nodeToReplace, newNode2);
 

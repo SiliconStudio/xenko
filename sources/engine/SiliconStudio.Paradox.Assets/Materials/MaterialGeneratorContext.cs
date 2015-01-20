@@ -210,10 +210,10 @@ namespace SiliconStudio.Paradox.Assets.Materials
         }
 
         // TODO: move this method to an extension method
-        public ParameterKey<Texture> GetTextureKey(MaterialTextureComputeNodeBase textureComputeNode, MaterialComputeColorKeys baseKeys)
+        public ParameterKey<Texture> GetTextureKey(ComputeTextureBase computeTexture, MaterialComputeColorKeys baseKeys)
         {
-            var textureKey = (ParameterKey<Texture>)GetParameterKey(textureComputeNode.Key ?? baseKeys.TextureBaseKey ?? MaterialKeys.GenericTexture);
-            var textureReference = textureComputeNode.TextureReference;
+            var textureKey = (ParameterKey<Texture>)GetParameterKey(computeTexture.Key ?? baseKeys.TextureBaseKey ?? MaterialKeys.GenericTexture);
+            var textureReference = computeTexture.TextureReference;
             if (textureReference != null)
             {
                 var texture = AttachedReferenceManager.CreateSerializableVersion<Texture>(textureReference.Id, textureReference.Location);
@@ -283,12 +283,12 @@ namespace SiliconStudio.Paradox.Assets.Materials
             registeredStreamBlend[stream] = blendStream;
         }
 
-        public void SetStream(MaterialShaderStage stage, string stream, IMaterialComputeNode computeNode, ParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey)
+        public void SetStream(MaterialShaderStage stage, string stream, IComputeNode computeNode, ParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey)
         {
             Current.SetStream(stage, stream, computeNode, defaultTexturingKey, defaultValueKey);
         }
 
-        public void SetStream(string stream, IMaterialComputeNode computeNode, ParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey)
+        public void SetStream(string stream, IComputeNode computeNode, ParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey)
         {
             SetStream(MaterialShaderStage.Pixel, stream, computeNode, defaultTexturingKey, defaultValueKey);
         }
@@ -341,7 +341,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
             public MaterialShadingModelCollection ShadingModels { get; set; }
 
-            public void SetStream(MaterialShaderStage stage, string stream, IMaterialComputeNode computeNode, ParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey)
+            public void SetStream(MaterialShaderStage stage, string stream, IComputeNode computeNode, ParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey)
             {
                 if (defaultValueKey == null) throw new ArgumentNullException("defaultKey");
                 if (computeNode == null)

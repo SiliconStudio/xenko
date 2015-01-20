@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialVertexDisplacementMapFeature"/> class.
         /// </summary>
-        public MaterialVertexDisplacementMapFeature() : this(new MaterialTextureComputeScalar())
+        public MaterialVertexDisplacementMapFeature() : this(new ComputeTextureScalar())
         {
         }
 
@@ -29,11 +29,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// Initializes a new instance of the <see cref="MaterialVertexDisplacementMapFeature"/> class.
         /// </summary>
         /// <param name="displacementMap">The displacement map.</param>
-        public MaterialVertexDisplacementMapFeature(IMaterialComputeScalar displacementMap)
+        public MaterialVertexDisplacementMapFeature(IComputeScalar displacementMap)
         {
             ScaleAndBias = true;
             DisplacementMap = displacementMap;
-            Intensity = new MaterialFloatComputeNode(1.0f);
+            Intensity = new ComputeFloat(1.0f);
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [DataMember(10)]
         [Display("Displacement Map")]
         [NotNull]
-        public IMaterialComputeScalar DisplacementMap { get; set; }
+        public IComputeScalar DisplacementMap { get; set; }
 
         /// <summary>
         /// Gets or sets the displacement map.
@@ -58,7 +58,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [DataMember(20)]
         [Display("Intensity")]
         [NotNull]
-        public IMaterialComputeScalar Intensity { get; set; }
+        public IComputeScalar Intensity { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to scale by (2,2,2) and bias by (-1,-1,-1) the displacement map.

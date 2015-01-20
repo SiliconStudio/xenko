@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             Parameters = new ParameterCollection();
             Attributes = new MaterialAttributes();
             Layers = new MaterialBlendLayers();
-            //Overrides = new Dictionary<string, MaterialComputeNode>();
+            //Overrides = new Dictionary<string, ComputeNode>();
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// All the color mapping nodes of the materials. They are map descriptions (texture or values) and operations on them.
         /// </userdoc>
         //[DataMember(30)]
-        //public Dictionary<string, MaterialComputeNode> Overrides { get; private set; }
+        //public Dictionary<string, ComputeNode> Overrides { get; private set; }
 
         /// <summary>
         /// Gets the parameters.

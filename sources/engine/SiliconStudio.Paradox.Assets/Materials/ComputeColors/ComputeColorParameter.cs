@@ -22,10 +22,10 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
     {
         public ComputeColorParameterTexture()
         {
-            Texture = new MaterialTextureComputeColor();
+            Texture = new ComputeTextureColor();
         }
 
-        public MaterialTextureComputeColor Texture { get; private set; }
+        public ComputeTextureColor Texture { get; private set; }
     }
 
     [DataContract()]

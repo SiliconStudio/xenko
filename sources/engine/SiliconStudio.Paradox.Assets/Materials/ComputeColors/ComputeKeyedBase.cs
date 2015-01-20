@@ -12,12 +12,12 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
     /// Base interface for all computer color nodes.
     /// </summary>
     [DataContract(Inherited = true)]
-    public abstract class MaterialKeyedComputeNode : MaterialComputeNode
+    public abstract class ComputeKeyedBase : ComputeNode
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MaterialComputeNode"/> class.
+        /// Initializes a new instance of the <see cref="ComputeNode"/> class.
         /// </summary>
-        protected MaterialKeyedComputeNode()
+        protected ComputeKeyedBase()
         {
         }
 

@@ -10,30 +10,30 @@ using SiliconStudio.Paradox.Shaders;
 namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
 {
     /// <summary>
-    /// A node that describe a binary operation between two <see cref="IMaterialComputeNode"/>
+    /// A node that describe a binary operation between two <see cref="IComputeNode"/>
     /// </summary>
     [DataContract(Inherited = true)]
     [Display("Binary Operator")]
-    public abstract class MaterialBinaryComputeNodeBase<T> : MaterialComputeNode where T : class, IMaterialComputeNode
+    public abstract class ComputeBinaryBase<T> : ComputeNode where T : class, IComputeNode
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MaterialBinaryComputeNodeBase{T}"/> class.
+        /// Initializes a new instance of the <see cref="ComputeBinaryBase{T}"/> class.
         /// </summary>
-        protected MaterialBinaryComputeNodeBase()
+        protected ComputeBinaryBase()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MaterialBinaryComputeNodeBase{T}"/> class.
+        /// Initializes a new instance of the <see cref="ComputeBinaryBase{T}"/> class.
         /// </summary>
         /// <param name="leftChild">The left child.</param>
         /// <param name="rightChild">The right child.</param>
-        /// <param name="materialBinaryOperand">The material binary operand.</param>
-        protected MaterialBinaryComputeNodeBase(T leftChild, T rightChild, MaterialBinaryOperand materialBinaryOperand)
+        /// <param name="binaryOperand">The material binary operand.</param>
+        protected ComputeBinaryBase(T leftChild, T rightChild, BinaryOperand binaryOperand)
         {
             LeftChild = leftChild;
             RightChild = rightChild;
-            Operand = materialBinaryOperand;
+            Operand = binaryOperand;
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// The operation between the background (LeftChild) and the foreground (RightChild).
         /// </userdoc>
         [DataMember(10)]
-        public MaterialBinaryOperand Operand { get; set; }
+        public BinaryOperand Operand { get; set; }
 
         /// <summary>
         /// The left (background) child node.
@@ -64,7 +64,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         public T RightChild { get; set; }
 
         /// <inheritdoc/>
-        public override IEnumerable<IMaterialComputeNode> GetChildren(object context = null)
+        public override IEnumerable<IComputeNode> GetChildren(object context = null)
         {
             if (LeftChild != null)
             	yield return LeftChild;
@@ -85,7 +85,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
             mixin.Mixins.Add(shaderSource);
             if (leftShaderSource != null)
                 mixin.AddComposition(BackgroundCompositionName, leftShaderSource);
-            if (Operand != MaterialBinaryOperand.None && Operand != MaterialBinaryOperand.Opaque && rightShaderSource != null)
+            if (Operand != BinaryOperand.None && Operand != BinaryOperand.Opaque && rightShaderSource != null)
                 mixin.AddComposition(ForegroundCompositionName, rightShaderSource);
 
             return mixin;
@@ -100,78 +100,78 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// <summary>
         /// Get the name of the ShaderClassSource corresponding to the operation
         /// </summary>
-        /// <param name="materialBinaryOperand">The operand.</param>
+        /// <param name="binaryOperand">The operand.</param>
         /// <returns>The name of the ShaderClassSource.</returns>
-        private static string GetCorrespondingShaderSourceName(MaterialBinaryOperand materialBinaryOperand)
+        private static string GetCorrespondingShaderSourceName(BinaryOperand binaryOperand)
         {
-            switch (materialBinaryOperand)
+            switch (binaryOperand)
             {
-                case MaterialBinaryOperand.Add:
+                case BinaryOperand.Add:
                     return "ComputeColorAdd3ds"; //TODO: change this (ComputeColorAdd?)
-                case MaterialBinaryOperand.Average:
+                case BinaryOperand.Average:
                     return "ComputeColorAverage";
-                case MaterialBinaryOperand.Color:
+                case BinaryOperand.Color:
                     return "ComputeColorColor";
-                case MaterialBinaryOperand.ColorBurn:
+                case BinaryOperand.ColorBurn:
                     return "ComputeColorColorBurn";
-                case MaterialBinaryOperand.ColorDodge:
+                case BinaryOperand.ColorDodge:
                     return "ComputeColorColorDodge";
-                case MaterialBinaryOperand.Darken:
+                case BinaryOperand.Darken:
                     return "ComputeColorDarken3ds"; //"ComputeColorDarkenMaya" //TODO: change this
-                case MaterialBinaryOperand.Desaturate:
+                case BinaryOperand.Desaturate:
                     return "ComputeColorDesaturate";
-                case MaterialBinaryOperand.Difference:
+                case BinaryOperand.Difference:
                     return "ComputeColorDifference3ds"; //"ComputeColorDifferenceMaya" //TODO: change this
-                case MaterialBinaryOperand.Divide:
+                case BinaryOperand.Divide:
                     return "ComputeColorDivide";
-                case MaterialBinaryOperand.Exclusion:
+                case BinaryOperand.Exclusion:
                     return "ComputeColorExclusion";
-                case MaterialBinaryOperand.HardLight:
+                case BinaryOperand.HardLight:
                     return "ComputeColorHardLight";
-                case MaterialBinaryOperand.HardMix:
+                case BinaryOperand.HardMix:
                     return "ComputeColorHardMix";
-                case MaterialBinaryOperand.Hue:
+                case BinaryOperand.Hue:
                     return "ComputeColorHue";
-                case MaterialBinaryOperand.Illuminate:
+                case BinaryOperand.Illuminate:
                     return "ComputeColorIlluminate";
-                case MaterialBinaryOperand.In:
+                case BinaryOperand.In:
                     return "ComputeColorIn";
-                case MaterialBinaryOperand.Lighten:
+                case BinaryOperand.Lighten:
                     return "ComputeColorLighten3ds"; //"ComputeColorLightenMaya" //TODO: change this
-                case MaterialBinaryOperand.LinearBurn:
+                case BinaryOperand.LinearBurn:
                     return "ComputeColorLinearBurn";
-                case MaterialBinaryOperand.LinearDodge:
+                case BinaryOperand.LinearDodge:
                     return "ComputeColorLinearDodge";
-                case MaterialBinaryOperand.Mask:
+                case BinaryOperand.Mask:
                     return "ComputeColorMask";
-                case MaterialBinaryOperand.Multiply:
+                case BinaryOperand.Multiply:
                     return "ComputeColorMultiply"; //return "ComputeColorMultiply3ds"; //"ComputeColorMultiplyMaya" //TODO: change this
-                case MaterialBinaryOperand.None:
+                case BinaryOperand.None:
                     return "ComputeColorNone";
-                case MaterialBinaryOperand.Opaque:
+                case BinaryOperand.Opaque:
                     return "ComputeColorOpaque";
-                case MaterialBinaryOperand.Out:
+                case BinaryOperand.Out:
                     return "ComputeColorOut";
-                case MaterialBinaryOperand.Over:
+                case BinaryOperand.Over:
                     return "ComputeColorOver3ds"; //TODO: change this to "ComputeColorLerpAlpha"
-                case MaterialBinaryOperand.Overlay:
+                case BinaryOperand.Overlay:
                     return "ComputeColorOverlay3ds"; //"ComputeColorOverlayMaya" //TODO: change this
-                case MaterialBinaryOperand.PinLight:
+                case BinaryOperand.PinLight:
                     return "ComputeColorPinLight";
-                case MaterialBinaryOperand.Saturate:
+                case BinaryOperand.Saturate:
                     return "ComputeColorSaturate";
-                case MaterialBinaryOperand.Saturation:
+                case BinaryOperand.Saturation:
                     return "ComputeColorSaturation";
-                case MaterialBinaryOperand.Screen:
+                case BinaryOperand.Screen:
                     return "ComputeColorScreen";
-                case MaterialBinaryOperand.SoftLight:
+                case BinaryOperand.SoftLight:
                     return "ComputeColorSoftLight";
-                case MaterialBinaryOperand.Subtract:
+                case BinaryOperand.Subtract:
                     return "ComputeColorSubtract3ds"; //"ComputeColorOverlayMaya" //TODO: change this
-                case MaterialBinaryOperand.SubstituteAlpha:
+                case BinaryOperand.SubstituteAlpha:
                     return "ComputeColorSubstituteAlpha";
                 default:
-                    throw new ArgumentOutOfRangeException("materialBinaryOperand");
+                    throw new ArgumentOutOfRangeException("binaryOperand");
             }
         }
     }

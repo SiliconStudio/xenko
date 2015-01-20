@@ -6,26 +6,26 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
 {
     /// <summary>
-    /// Base class for a constant value for <see cref="MaterialComputeNode"/>.
+    /// Base class for a constant value for <see cref="ComputeNode"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [DataContract(Inherited = true)]
-    public abstract class MaterialValueComputeNode<T> : MaterialKeyedComputeNode
+    public abstract class ComputeValueBase<T> : ComputeKeyedBase
     {
         private T value;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MaterialValueComputeNode{T}"/> class.
+        /// Initializes a new instance of the <see cref="ComputeValueBase{T}"/> class.
         /// </summary>
-        protected MaterialValueComputeNode()
+        protected ComputeValueBase()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MaterialValueComputeNode{T}"/> class.
+        /// Initializes a new instance of the <see cref="ComputeValueBase{T}"/> class.
         /// </summary>
         /// <param name="value">The value.</param>
-        protected MaterialValueComputeNode(T value) : this()
+        protected ComputeValueBase(T value) : this()
         {
             Value = value;
         }

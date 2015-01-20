@@ -21,16 +21,16 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
     /// </summary>
     [DataContract(Inherited = true)]
     [Display("Texture")]
-    public abstract class MaterialTextureComputeNodeBase : MaterialKeyedComputeNode
+    public abstract class ComputeTextureBase : ComputeKeyedBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MaterialTextureComputeColor"/> class.
+        /// Initializes a new instance of the <see cref="ComputeTextureColor"/> class.
         /// </summary>
         /// <param name="texturePath">Name of the texture.</param>
         /// <param name="texcoordIndex">Index of the texcoord.</param>
         /// <param name="scale">The scale.</param>
         /// <param name="offset">The offset.</param>
-        protected MaterialTextureComputeNodeBase(string texturePath, TextureCoordinate texcoordIndex, Vector2 scale, Vector2 offset)
+        protected ComputeTextureBase(string texturePath, TextureCoordinate texcoordIndex, Vector2 scale, Vector2 offset)
         {
             if (!string.IsNullOrEmpty(texturePath))
             {

@@ -51,7 +51,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             var layers = new MaterialBlendLayers();
             layers.Add(new MaterialBlendLayer()
             {
-                BlendMap = new MaterialFloatComputeNode(0.5f),
+                BlendMap = new ComputeFloat(0.5f),
                 Material =  new AssetReference<MaterialAsset>(Guid.Empty, "fake")
             });
 
@@ -61,7 +61,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
                 {
                     Diffuse = new MaterialDiffuseMapFeature()
                     {
-                        DiffuseMap = new MaterialColorComputeColor(Color4.White)
+                        DiffuseMap = new ComputeColor(Color4.White)
                     },
                     DiffuseModel = new MaterialDiffuseLambertianModelFeature()
                 },
@@ -74,7 +74,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
                 {
                     Diffuse = new MaterialDiffuseMapFeature()
                     {
-                        DiffuseMap = new MaterialColorComputeColor(Color.Blue)
+                        DiffuseMap = new ComputeColor(Color.Blue)
                     },
                 }
             };

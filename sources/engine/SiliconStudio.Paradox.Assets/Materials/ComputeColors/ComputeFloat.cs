@@ -13,24 +13,24 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
     /// <summary>
     /// A float compute color.
     /// </summary>
-    [DataContract("MaterialFloatComputeNode")]
-    [Display("Constant Float")]
+    [DataContract("ComputeFloat")]
+    [Display("Value")]
     [DebuggerDisplay("CompputeColor Float")]
-    public class MaterialFloatComputeNode : MaterialValueComputeNode<float>, IMaterialComputeScalar
+    public class ComputeFloat : ComputeValueBase<float>, IComputeScalar
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MaterialFloatComputeNode"/> class.
+        /// Initializes a new instance of the <see cref="ComputeFloat"/> class.
         /// </summary>
-        public MaterialFloatComputeNode()
+        public ComputeFloat()
             : this(0.0f)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MaterialFloatComputeNode"/> class.
+        /// Initializes a new instance of the <see cref="ComputeFloat"/> class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public MaterialFloatComputeNode(float value)
+        public ComputeFloat(float value)
             : base(value)
         {
         }

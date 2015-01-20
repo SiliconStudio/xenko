@@ -254,7 +254,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             //        {
             //            if (foundTextureDiffuse != foundTextureTransparent)
             //            {
-            //                var alphaMixNode = new MaterialBinaryComputeNode(diffuseNode, transparentNode, MaterialBinaryOperand.SubstituteAlpha);
+            //                var alphaMixNode = new MaterialBinaryComputeNode(diffuseNode, transparentNode, BinaryOperand.SubstituteAlpha);
             //                material.AddColorNode(MaterialParameters.AlbedoDiffuse, "pdx_diffuseWithAlpha", alphaMixNode);
             //            }
             //        }
@@ -276,7 +276,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             //            material.Nodes.Remove(diffuseName);
 
             //            // add the new one
-            //            var opaqueNode = new MaterialBinaryComputeNode(diffuseNode, null, MaterialBinaryOperand.Opaque);
+            //            var opaqueNode = new MaterialBinaryComputeNode(diffuseNode, null, BinaryOperand.Opaque);
             //            material.AddColorNode(MaterialParameters.AlbedoDiffuse, "pdx_diffuseOpaque", opaqueNode);
             //        }
             //    }
@@ -289,7 +289,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <param name="material">The material.</param>
         /// <param name="startNode">The name of the stating node.</param>
         /// <returns>The MaterialTextureNode if found.</returns>
-        private static MaterialTextureComputeColor FindTextureNode(MaterialAsset material, string startNode)
+        private static ComputeTextureColor FindTextureNode(MaterialAsset material, string startNode)
         {
             //var currentNode = material.FindNode(startNode);
             //while (currentNode is MaterialReferenceNode)
@@ -298,7 +298,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             //    currentNode = material.FindNode(currentReferenceNode.Name);
             //}
 
-            //return currentNode as MaterialTextureComputeColor;
+            //return currentNode as ComputeTextureColor;
             return null;
         }
 
