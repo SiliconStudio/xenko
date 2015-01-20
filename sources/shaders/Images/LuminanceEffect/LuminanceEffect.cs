@@ -111,7 +111,12 @@ namespace SiliconStudio.Paradox.Effects.Images
             var output = GetSafeOutput(0);
 
             var blurTextureSize = output.Size.Down2(UpscaleCount);
-            var outputTextureDown = NewScopedRenderTarget2D(blurTextureSize.Width, blurTextureSize.Height, luminanceFormat, 1);
+
+            Texture outputTextureDown = null;
+            if (blurTextureSize.Width != 1 && blurTextureSize.Height != 1)
+            {
+                outputTextureDown = NewScopedRenderTarget2D(blurTextureSize.Width, blurTextureSize.Height, luminanceFormat, 1);
+            }
 
             var luminanceMap = NewScopedRenderTarget2D(input.ViewWidth, input.ViewHeight, luminanceFormat, 1);
 
@@ -122,7 +127,14 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             // Downscales luminance up to BlurTexture (optional) and 1x1
             multiScaler.SetInput(luminanceMap);
-            multiScaler.SetOutput(outputTextureDown, luminance1x1);
+            if (outputTextureDown == null)
+            {
+                multiScaler.SetOutput(luminance1x1);
+            }
+            else
+            {
+                multiScaler.SetOutput(outputTextureDown, luminance1x1);
+            }
             multiScaler.Draw();
 
             // If we have an output texture
@@ -138,6 +150,13 @@ namespace SiliconStudio.Paradox.Effects.Images
                 multiScaler.SetInput(outputTextureDown);
                 multiScaler.SetOutput(output);
                 multiScaler.Draw();
+            }
+            else
+            {
+                // TODO: Workaround to that the output filled with 1x1
+                Scaler.SetInput(luminance1x1);
+                Scaler.SetOutput(output);
+                Scaler.Draw();
             }
 
             // Calculate average luminance only if needed
