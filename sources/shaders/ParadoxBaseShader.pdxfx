@@ -55,8 +55,7 @@ namespace SiliconStudio.Paradox.Effects
         // -----------------------------------------------
         // Performs animation skinning (position, normal and tangent)
         // -----------------------------------------------
-        //if (MaterialParameters.HasSkinningPosition)
-        if (false)
+        if (MaterialParameters.HasSkinningPosition)
         {
             if (MaterialParameters.SkinningBones > MaterialParameters.SkinningMaxBones)
             {
