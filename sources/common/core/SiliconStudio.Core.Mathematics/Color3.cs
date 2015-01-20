@@ -106,6 +106,18 @@ namespace SiliconStudio.Core.Mathematics
         /// <summary>
         /// Initializes a new instance of the <see cref="SiliconStudio.Core.Mathematics.Color3"/> struct.
         /// </summary>
+        /// <param name="rgb">A packed unsigned integer containing all three color components.
+        /// The alpha component is ignored.</param>
+        public Color3(uint rgb)
+        {
+            R = ((rgb >> 16) & 255) / 255.0f;
+            G = ((rgb >> 8) & 255) / 255.0f;
+            B = (rgb & 255) / 255.0f;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SiliconStudio.Core.Mathematics.Color3"/> struct.
+        /// </summary>
         /// <param name="values">The values to assign to the red, green, and blue components of the color. This must be an array with three elements.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
