@@ -3,7 +3,7 @@
 
 namespace SiliconStudio.Paradox.Effects.Images.Cubemap
 {
-    public class GGXPrefiltering : CubeMapEffect
+    public class GGXPrefiltering : CubemapEffect
     {
         public GGXPrefiltering(ImageEffectContext context)
             : base(context, "GGXPrefilteringEffect")

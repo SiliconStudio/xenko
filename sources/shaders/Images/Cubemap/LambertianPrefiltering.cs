@@ -3,7 +3,7 @@
 
 namespace SiliconStudio.Paradox.Effects.Images.Cubemap
 {
-    public class LambertianPrefiltering : CubeMapEffect
+    public class LambertianPrefiltering : CubemapEffect
     {
         public LambertianPrefiltering(ImageEffectContext context)
             : base(context, "LambertianPrefilteringEffect")

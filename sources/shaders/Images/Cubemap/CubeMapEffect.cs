@@ -10,14 +10,14 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 namespace SiliconStudio.Paradox.Effects.Images.Cubemap
 {
-    public class CubeMapEffect : ImageEffectShader
+    public class CubemapEffect : ImageEffectShader
     {
         private Buffer<Vector3> vertexBuffer;
         private VertexArrayObject vertexArrayObject;
 
         private readonly Texture[] cubeTextureViews = new Texture[6];
 
-        public CubeMapEffect(ImageEffectContext context, string effectName)
+        public CubemapEffect(ImageEffectContext context, string effectName)
             : base(context, effectName)
         {
         }

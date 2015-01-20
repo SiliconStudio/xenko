@@ -6,25 +6,12 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// A shader performing Lambertian pre-filtering.
     /// </summary>
-    internal class LambertianPrefilteringShader : ImageEffectShader, Texturing
+    internal class LambertianPrefilteringShader : CubemapEffectShader, Texturing
     {    
-        // -------------------------------------
-        // streams
-        // -------------------------------------
-        stage stream float4 R : POSITION;
-
-        // -------------------------------------
-        // VertexShader
-        // -------------------------------------
-        stage override void VSMain()
-        {
-            streams.ShadingPosition = streams.R;
-        }
-
         // Shading of the sprite
         stage override void PSMain()
         {
-            float3 r = streams.R;
+            var r = streams.R;
             streams.ColorTarget  = TextureCube0.Sample(Sampler, float3(r.z, r.y, -r.x));
             streams.ColorTarget1 = TextureCube0.Sample(Sampler, float3(-r.z, r.y, r.x));
             streams.ColorTarget2 = TextureCube0.Sample(Sampler, float3(r.x, r.z, -r.y));

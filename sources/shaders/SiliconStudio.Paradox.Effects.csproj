@@ -40,7 +40,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeColorTextureLodScaledSampler.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Images\Cubemap\CubeMapEffect.cs" />
     <Compile Include="Images\Cubemap\GGXPrefiltering.cs" />
     <Compile Include="Images\Cubemap\LambertianPrefiltering.cs" />
     <Compile Include="Images\Cubemap\LambertianPrefilteringEffect.cs">
