@@ -332,7 +332,8 @@ namespace SiliconStudio.Presentation.Controls
                         {
                             float x = i / (float)(width - 1);
 
-                            System.Windows.Media.Color color = new ColorHSV(Hue, x, y, 1.0f).ToSystemColor();
+                            var color4 = new ColorHSV(Hue, x, y, 1.0f).ToColor();
+                            var color = new Color(color4);
                             rawImage[(i + j * width) * 4 + 0] = color.B;
                             rawImage[(i + j * width) * 4 + 1] = color.G;
                             rawImage[(i + j * width) * 4 + 2] = color.R;

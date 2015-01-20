@@ -59,8 +59,9 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>A three component vector containing the red, green, and blue components of the color.</returns>
         public Color4 ToColor()
         {
-            int hi = Convert.ToInt32(Math.Floor(H / 60)) % 6;
-            float f = H / 60 - (float)Math.Floor(H / 60);
+            var hdiv = (int)(H / 60);
+            int hi = hdiv % 6;
+            float f = H / 60 - hdiv;
 
             float v = V;
             float p = V * (1 - S);
