@@ -69,6 +69,7 @@ namespace SiliconStudio.Presentation.Controls
         }
 
         private DragState dragState;
+        private double mouseMoveDelta;
         private Point mouseDownPosition;
         private DragDirectionAdorner adorner;
         private Orientation dragOrientation;
@@ -76,6 +77,11 @@ namespace SiliconStudio.Presentation.Controls
         private RepeatButton decreaseButton;
         private ScrollViewer contentHost;
         private bool updatingValue;
+
+        /// <summary>
+        /// The amount of pixel to move the mouse in order to add/remove a <see cref="SmallChange"/> to the current <see cref="Value"/>.
+        /// </summary>
+        public static double DragSpeed = 3;
 
         /// <summary>
         /// Identifies the <see cref="Value"/> dependency property.
@@ -404,15 +410,17 @@ namespace SiliconStudio.Presentation.Controls
                     var root = this.FindVisualRoot() as FrameworkElement;
                     if (root != null)
                         root.IsKeyboardFocusWithinChanged += RootParentIsKeyboardFocusWithinChanged;
-                    
+
+                    mouseDownPosition = position;
+                    mouseMoveDelta = 0;
                     dragState = DragState.Dragging;
+                    
                     e.MouseDevice.Capture(this);
                     var handler = DragStarted;
                     if (handler != null)
                     {
                         handler(this, new DragStartedEventArgs(mouseDownPosition.X, mouseDownPosition.Y));
                     }
-
                     SelectAll();
                     if (adorner != null)
                         adorner.SetOrientation(dragOrientation);
@@ -421,14 +429,14 @@ namespace SiliconStudio.Presentation.Controls
 
             if (dragState == DragState.Dragging)
             {
-                double delta;
-
                 if (dragOrientation == Orientation.Horizontal)
-                    delta = position.X - mouseDownPosition.X;
+                    mouseMoveDelta += position.X - mouseDownPosition.X;
                 else
-                    delta = mouseDownPosition.Y - position.Y;
+                    mouseMoveDelta += mouseDownPosition.Y - position.Y;
 
-                var newValue = Value + delta * SmallChange;
+                var deltaUsed = Math.Floor(mouseMoveDelta / DragSpeed);
+                mouseMoveDelta -= deltaUsed;
+                var newValue = Value + deltaUsed * SmallChange;
 
                 SetCurrentValue(ValueProperty, newValue);
 
