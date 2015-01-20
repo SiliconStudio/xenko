@@ -733,18 +733,6 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="vertexArrayObject">The vertex array object.</param>
         public void SetVertexArrayObject(VertexArrayObject vertexArrayObject)
         {
-            if (vertexArrayObject == null)
-            {
-                inputAssembler.InputLayout = null;
-                IntPtr vertexBufferPtr = IntPtr.Zero;
-                unsafe
-                {
-                    var ptrToNull = new IntPtr(&vertexBufferPtr);
-                    // TODO RESET MORE Vertex Buffers
-                    inputAssembler.SetVertexBuffers(0, 1, ptrToNull, ptrToNull, ptrToNull);
-                }
-            }
-
             newVertexArrayObject = vertexArrayObject;
         }
 
