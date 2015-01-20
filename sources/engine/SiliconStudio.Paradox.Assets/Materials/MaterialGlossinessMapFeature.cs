@@ -8,7 +8,9 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Materials;
+using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
@@ -36,9 +38,25 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
         public IMaterialComputeScalar GlossinessMap { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="MaterialGlossinessMapFeature"/> is invert.
+        /// </summary>
+        /// <value><c>true</c> if invert; otherwise, <c>false</c>.</value>
+        [Display("Invert")]
+        [DefaultValue(false)]
+        public bool Invert { get; set; }
+
         public void Visit(MaterialGeneratorContext context)
         {
-            context.SetStream("matGlossiness", GlossinessMap, MaterialKeys.GlossinessMap, MaterialKeys.GlossinessValue);
+            if (GlossinessMap != null)
+            {
+                context.UseStream("matGlossiness");
+                var computeColorSource = GlossinessMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.GlossinessMap, MaterialKeys.GlossinessValue));
+                var mixin = new ShaderMixinSource();
+                mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceGlossinessMap", Invert));
+                mixin.AddComposition("glossinessMap", computeColorSource);
+                context.AddSurfaceShader(MaterialShaderStage.Pixel, mixin);
+            }
         }
     }
 }

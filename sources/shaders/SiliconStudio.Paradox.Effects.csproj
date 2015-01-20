@@ -86,6 +86,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Materials\MaterialSurfaceGlossinessMap.cs">
+      <DependentUpon>MaterialSurfaceGlossinessMap.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Materials\MaterialSurfaceVertexDisplacement.cs">
       <DependentUpon>MaterialSurfaceVertexDisplacement.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -1756,6 +1762,10 @@
     <None Include="Materials\IMaterialSurfacePixel.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>IMaterialSurfacePixel.cs</LastGenOutput>
+    </None>
+    <None Include="Materials\MaterialSurfaceGlossinessMap.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialSurfaceGlossinessMap.cs</LastGenOutput>
     </None>
     <None Include="Materials\MaterialSurfaceVertexDisplacement.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
