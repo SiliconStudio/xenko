@@ -2,11 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Shaders;
@@ -50,7 +48,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The intensity.</value>
         [Display("Intensity")]
         [NotNull]
-        [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
         public IComputeScalar Intensity { get; set; }
 
         public bool IsLightDependent
@@ -64,9 +61,9 @@ namespace SiliconStudio.Paradox.Assets.Materials
         public void Visit(MaterialGeneratorContext context)
         {
             context.SetStream("matEmissive", EmissiveMap, MaterialKeys.EmissiveMap, MaterialKeys.EmissiveValue);
-            context.SetStream("matEmissiveIntensity", Intensity, null, MaterialKeys.EmissiveIntensity);
-            // TODO: Add shading model
-            context.AddShading(this, new ShaderClassSource("TODOEmissive"));
+            context.SetStream("matEmissiveIntensity", Intensity, MaterialKeys.EmissiveIntensityMap, MaterialKeys.EmissiveIntensity);
+
+            context.AddShading(this, new ShaderClassSource("MaterialSurfaceEmissiveShading"));
         }
 
         public bool Equals(IMaterialShadingModelFeature other)

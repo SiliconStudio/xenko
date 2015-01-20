@@ -92,6 +92,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Materials\MaterialSurfaceEmissiveShading.cs">
+      <DependentUpon>MaterialSurfaceEmissiveShading.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Materials\MaterialSurfaceVertexDisplacement.cs">
       <DependentUpon>MaterialSurfaceVertexDisplacement.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -1766,6 +1772,10 @@
     <None Include="Materials\MaterialSurfaceGlossinessMap.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceGlossinessMap.cs</LastGenOutput>
+    </None>
+    <None Include="Materials\MaterialSurfaceEmissiveShading.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialSurfaceEmissiveShading.cs</LastGenOutput>
     </None>
     <None Include="Materials\MaterialSurfaceVertexDisplacement.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

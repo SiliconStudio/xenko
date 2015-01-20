@@ -52,6 +52,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
         public static readonly ParameterKey<Texture> EmissiveMap = ParameterKeys.New<Texture>();
         public static readonly ParameterKey<float> EmissiveValue = ParameterKeys.New<float>();
 
+        public static readonly ParameterKey<Texture> EmissiveIntensityMap = ParameterKeys.New<Texture>();
         public static readonly ParameterKey<float> EmissiveIntensity = ParameterKeys.New<float>();
 
         /// <summary>
