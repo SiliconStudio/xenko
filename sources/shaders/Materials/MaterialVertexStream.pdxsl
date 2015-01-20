@@ -5,13 +5,16 @@ namespace SiliconStudio.Paradox.Effects.Materials
     class MaterialVertexStream : MaterialStream
     {
         // Displacement height attribute
-        stage stream float matHeightDisplacement;
+        stage stream float matDisplacement;
 
-        void ResetMaterialVertexStream()
+        stage stream float matDisplacementIntensity;
+
+        override void ResetMaterialVertexStream()
         {
-            ResetMaterialStream();
+            base.ResetMaterialVertexStream();
 
-            streams.matHeightDisplacement = 0.0f;
+            streams.matDisplacement = 0.0f;
+            streams.matDisplacementIntensity = 1.0f;
         }
     };
 }

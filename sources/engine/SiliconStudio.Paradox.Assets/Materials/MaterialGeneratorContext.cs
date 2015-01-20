@@ -36,8 +36,9 @@ namespace SiliconStudio.Paradox.Assets.Materials
         private readonly Dictionary<ParameterKey, int> parameterKeyIndices = new Dictionary<ParameterKey, int>();
         private readonly Dictionary<SamplerStateDescription, ParameterKey<SamplerState>> declaredSamplerStates;
         private readonly Dictionary<string, ShaderSource> registeredStreamBlend = new Dictionary<string, ShaderSource>();
-
         private int shadingModelCount;
+
+        private readonly List<KeyValuePair<Type, ShaderSource>> vertexInputStreamModifiers = new List<KeyValuePair<Type, ShaderSource>>();
 
         public delegate MaterialAsset FindMaterialDelegate(AssetReference<MaterialAsset> materialReference);
 
@@ -62,6 +63,22 @@ namespace SiliconStudio.Paradox.Assets.Materials
         private MaterialShadingModelCollection CurrentShadingModel { get; set; }
 
         public FindMaterialDelegate FindMaterial { get; set; }
+
+        public bool IsVertexStage { get; set; }
+
+        public void AddVertexStreamModifier<T>(ShaderSource shaderSource)
+        {
+            if (shaderSource == null)
+            {
+                return;
+            }
+
+            var typeT = typeof(T);
+            if (vertexInputStreamModifiers.All(modifiers => modifiers.Key != typeT))
+            {
+                vertexInputStreamModifiers.Add(new KeyValuePair<Type, ShaderSource>(typeT, shaderSource));
+            }
+        }
 
         public void PushLayer()
         {
@@ -133,6 +150,15 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 foreach (var shaderSource in Current.PixelStageSurfaceShaders)
                 {
                     Current.Parent.PixelStageSurfaceShaders.Add(shaderSource);
+                }
+            }
+
+            // In case of the root material and for vertex stream, add all vertex stream modifiers just at the end
+            if (Current.Parent == null)
+            {
+                foreach (var shaderSource in vertexInputStreamModifiers.Select(modifiers => modifiers.Value))
+                {
+                    Current.VertexStageSurfaceShaders.Add(shaderSource);
                 }
             }
 

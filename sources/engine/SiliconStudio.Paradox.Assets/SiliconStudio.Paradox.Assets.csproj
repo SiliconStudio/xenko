@@ -185,6 +185,7 @@
     <Compile Include="Materials\MaterialDiffuseMapFeature.cs" />
     <Compile Include="Materials\MaterialEmissiveMapFeature.cs" />
     <Compile Include="Materials\MaterialMetalnessMapFeature.cs" />
+    <Compile Include="Materials\MaterialVertexDisplacementMapFeature.cs" />
     <Compile Include="Materials\MaterialNormalMapFeature.cs" />
     <Compile Include="Materials\MaterialOcclusionMapFeature.cs" />
     <Compile Include="Materials\MaterialGenerator.cs" />

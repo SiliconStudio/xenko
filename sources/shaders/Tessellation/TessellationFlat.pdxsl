@@ -6,11 +6,12 @@
 /// <remarks>
 /// InputControlPointCount: Macro - number of input control points.
 /// </remarks>
-#ifndef InputControlPointCount
-# define InputControlPointCount 3
-#endif
 
-class TessellationFlat : ShaderBaseTessellation, PositionVSStream, PositionStream4, TransformationBase, NormalVSStream, Camera
+//#ifndef InputControlPointCount
+#define InputControlPointCount 3
+//#endif
+
+class TessellationFlat : ShaderBaseTessellation, PositionVSPerVertex, PositionStream4, TransformationBase, NormalVSStream, Camera
 {
     [Link("Tessellation.DesiredTriangleSize")]
     stage float DesiredTriangleSize = 12.0f;

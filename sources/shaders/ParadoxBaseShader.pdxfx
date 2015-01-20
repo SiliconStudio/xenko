@@ -15,11 +15,30 @@ namespace SiliconStudio.Paradox.Effects
         using params MaterialParameters;
         using params MaterialKeys;
 
+        // -----------------------------------------------
+        // Base shaders
+        // -----------------------------------------------
         mixin ShaderBase;
         mixin ShadingBase;
+
+        // -----------------------------------------------
+        // Mix material per Vertex Shader
+        // -----------------------------------------------
+        if (MaterialKeys.VertexStageSurfaceShaders != null)
+        {
+            // Must come before TransformationBase as this is responsible to modify the vertex input stream
+            mixin MaterialSurfaceVertexStageCompositor;  
+            mixin compose materialVertexStage = MaterialKeys.VertexStageSurfaceShaders;
+        }
+
+        // -----------------------------------------------
+        // Transform vertex stream
+        // -----------------------------------------------
+        // Come after material surface per vertex
+        mixin TransformationBase;
         mixin NormalStream;
         mixin TransformationWAndVP;
-        mixin PositionVSStream;
+        mixin PositionVSPerVertex;
 
         // -----------------------------------------------
         // Performs normal mapping (in case of no-skinning, otherwise it is overloaded below)

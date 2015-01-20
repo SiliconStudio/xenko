@@ -27,9 +27,21 @@ namespace SiliconStudio.Paradox.Effects
             {
                 context.Mixin(mixin, "ShaderBase");
                 context.Mixin(mixin, "ShadingBase");
+                if (context.GetParam(MaterialKeys.VertexStageSurfaceShaders) != null)
+                {
+                    context.Mixin(mixin, "MaterialSurfaceVertexStageCompositor");
+
+                    {
+                        var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushComposition(mixin, "materialVertexStage", __subMixin);
+                        context.Mixin(__subMixin, context.GetParam(MaterialKeys.VertexStageSurfaceShaders));
+                        context.PopComposition();
+                    }
+                }
+                context.Mixin(mixin, "TransformationBase");
                 context.Mixin(mixin, "NormalStream");
                 context.Mixin(mixin, "TransformationWAndVP");
-                context.Mixin(mixin, "PositionVSStream");
+                context.Mixin(mixin, "PositionVSPerVertex");
                 if (context.GetParam(MaterialParameters.HasNormalMap))
                 {
                     context.Mixin(mixin, "NormalVSFromNormalMapping");

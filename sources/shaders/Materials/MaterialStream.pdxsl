@@ -9,7 +9,14 @@ namespace SiliconStudio.Paradox.Effects.Materials
         /// </summary>
         stage stream float matBlend;
     
-        void ResetMaterialStream()
+        void ResetMaterialVertexStream()
+        {
+            // Reset all values for material stream to avoid pulling from a different stage (VS...etc.)
+            // TODO: It might be interesting to support pulling from VS, but this should be done from the IMaterialSurface and dedicated ComputerColors
+            streams.matBlend = 0.0f;
+        }
+
+        void ResetMaterialPixelStream()
         {
             // Reset all values for material stream to avoid pulling from a different stage (VS...etc.)
             // TODO: It might be interesting to support pulling from VS, but this should be done from the IMaterialSurface and dedicated ComputerColors

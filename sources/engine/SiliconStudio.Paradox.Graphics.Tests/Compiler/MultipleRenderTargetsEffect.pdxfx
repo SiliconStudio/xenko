@@ -12,7 +12,7 @@ namespace Test
 
         mixin ShaderBase;
 		mixin TransformationWAndVP;
-        mixin PositionVSStream;
+        mixin PositionVSPerVertex;
         mixin NormalVSStream;
         
         mixin macro RENDER_TARGET_COUNT = 3;

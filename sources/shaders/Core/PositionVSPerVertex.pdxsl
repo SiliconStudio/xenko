@@ -3,7 +3,7 @@
 /// <summary>
 /// Provides a stream with the view space position (vertex or fragment) from the vertex attributes.
 /// </summary>
-class PositionVSStream : Transformation, PositionVSBase, ShaderBase, PositionStream
+class PositionVSPerVertex : Transformation, PositionVSBase, ShaderBase, PositionStream
 {
     // View space position
     stage stream float4 vPositionVS : POSITION_VS;

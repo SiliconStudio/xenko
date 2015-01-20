@@ -19,7 +19,7 @@ namespace Test
         mixin child GBufferShaderPass;
 
         // Remove somes mixins from current state
-        mixin remove PositionVSStream;    
+        mixin remove PositionVSPerVertex;    
         mixin remove NormalVSStream;
         mixin remove SpecularPowerPerMesh;
         

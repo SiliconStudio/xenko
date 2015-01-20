@@ -49,7 +49,7 @@ namespace Test
                     context.Mixin(__subMixin, "GBufferShaderPass");
                     context.EndChild();
                 }
-                context.RemoveMixin(mixin, "PositionVSStream");
+                context.RemoveMixin(mixin, "PositionVSPerVertex");
                 context.RemoveMixin(mixin, "NormalVSStream");
                 context.RemoveMixin(mixin, "SpecularPowerPerMesh");
                 context.Mixin(mixin, "NormalVSGBuffer");

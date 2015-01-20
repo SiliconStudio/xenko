@@ -18,6 +18,12 @@ namespace SiliconStudio.Paradox.Effects.Materials
         public static readonly ParameterKey<Texture> BlendMap = ParameterKeys.New<Texture>();
         public static readonly ParameterKey<float> BlendValue = ParameterKeys.New<float>();
 
+        public static readonly ParameterKey<Texture> DisplacementMap = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<float> DisplacementValue = ParameterKeys.New<float>();
+
+        public static readonly ParameterKey<Texture> DisplacementIntensityMap = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<float> DisplacementIntensityValue = ParameterKeys.New<float>();
+
         public static readonly ParameterKey<Texture> NormalMap = ParameterKeys.New<Texture>();
         public static readonly ParameterKey<Vector3> NormalValue = ParameterKeys.New<Vector3>();
 
