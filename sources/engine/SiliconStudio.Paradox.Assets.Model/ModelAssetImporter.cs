@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
@@ -205,15 +206,20 @@ namespace SiliconStudio.Paradox.Assets.Model
                     var materialUrl = new UFile(GenerateFinalMaterialName(localPath, materialKeyValue.Key), null);
 
                     // patch texture name and ids
-                    //var textureVisitor = new MaterialTextureVisitor(material);
-                    //var textures = textureVisitor.GetAllTextureValues();
-                    //foreach (var texture in textures)
-                    //{
-                    //    // texture location is #nameOfTheModel_#nameOfTheTexture at this point in the material
-                    //    var foundTexture = loadedTextures.FirstOrDefault(x => x.Location == GenerateFinalTextureUrl(localPath, texture.Location));
-                    //    if (foundTexture != null)
-                    //        texture.TextureReference = new AssetReference<TextureAsset>(foundTexture.Id, foundTexture.Location);
-                    //}
+                    var materialAssetReferences = AssetReferenceAnalysis.Visit(material);
+                    foreach (var materialAssetReferenceLink in materialAssetReferences)
+                    {
+                        var materialAssetReference = materialAssetReferenceLink.Reference as AssetReference;
+                        if (materialAssetReference == null)
+                            continue;
+
+                        // texture location is #nameOfTheModel_#nameOfTheTexture at this point in the material
+                        var foundTexture = loadedTextures.FirstOrDefault(x => x.Location == GenerateFinalTextureUrl(localPath, materialAssetReference.Location));
+                        if (foundTexture != null)
+                        {
+                            materialAssetReferenceLink.UpdateReference(foundTexture.Id, foundTexture.Location);
+                        }
+                    }
 
                     var assetReference = new AssetItem(materialUrl, material);
                     assetReferences.Add(assetReference);
