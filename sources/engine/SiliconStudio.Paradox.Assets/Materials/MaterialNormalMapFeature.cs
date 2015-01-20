@@ -84,7 +84,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 var mixin = new ShaderMixinSource();
                 mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceNormalMap", IsXYNormal, ScaleAndBias));
                 mixin.AddComposition("normalMap", computeColorSource);
-                context.AddSurfaceShader(mixin);
+                context.AddSurfaceShader(MaterialShaderStage.Pixel, mixin);
             }
         }
     }

@@ -94,20 +94,25 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
             // Generate the material shaders into the current context
             material.Visit(context);
-          
-            // Blend setup for this layer
-            context.SetStream(BlendStream, BlendMap, MaterialKeys.BlendMap, MaterialKeys.BlendValue);
 
-            var shaderSource = Generate(context);
-            context.ResetSurfaceShaders();
-            context.AddSurfaceShader(shaderSource);
+            // Generate Vertex and Pixel surface shaders
+            Generate(MaterialShaderStage.Vertex, context);
+            Generate(MaterialShaderStage.Pixel, context);
 
             // Pop the stack
             context.PopLayer();
         }
 
-        private ShaderSource Generate(MaterialGeneratorContext context)
+        private void Generate(MaterialShaderStage stage, MaterialGeneratorContext context)
         {
+            if (!context.HasSurfaceShaders(stage))
+            {
+                return;
+            }
+
+            // Blend setup for this layer
+            context.SetStream(stage, BlendStream, BlendMap, MaterialKeys.BlendMap, MaterialKeys.BlendValue);
+
             // Generate a dynamic shader name
             // Create a mixin
             var shaderMixinSource = new ShaderMixinSource();
@@ -119,14 +124,13 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 shaderMixinSource.AddCompositionToArray("blends", context.GetStreamBlendShaderSource(stream));
             }
 
-            var materialBlendLayerMixin = context.GenerateMixin();
+            var materialBlendLayerMixin = context.GenerateMixin(stage);
 
             // Add the shader to the mixin
             shaderMixinSource.AddComposition("layer", materialBlendLayerMixin);
 
-
-            // Push the result of the shader mixin into the current stack
-            return shaderMixinSource;
+            context.ResetSurfaceShaders(stage);
+            context.AddSurfaceShader(stage, shaderMixinSource);
         }
     }
 }

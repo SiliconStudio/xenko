@@ -5,7 +5,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
     /// <summary>
     /// Interface for a microfacet Fresnel function
     /// </summary>
-    class IMaterialSpecularMicrofacetFresnelFunction : MaterialShadingStream, BRDFMicrofacet
+    class IMaterialSpecularMicrofacetFresnelFunction : MaterialPixelShadingStream, BRDFMicrofacet
     {
         // TODO: We could provide f90 as well
         float3 Compute(float3 f0)

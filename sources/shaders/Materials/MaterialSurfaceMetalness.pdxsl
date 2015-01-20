@@ -5,7 +5,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
     /// <summary>
     /// Converts Metalness to specular color
     /// </summary>
-    class MaterialSurfaceMetalness : IMaterialSurface
+    class MaterialSurfaceMetalness : IMaterialSurfacePixel
     {
         compose ComputeColor metalnessMap;
 

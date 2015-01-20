@@ -66,14 +66,14 @@ namespace SiliconStudio.Paradox.Effects
                         }
                     }
                 }
-                if (context.GetParam(MaterialKeys.Material) != null)
+                if (context.GetParam(MaterialKeys.PixelStageSurfaceShaders) != null)
                 {
-                    context.Mixin(mixin, "MaterialSurfaceCompositor");
+                    context.Mixin(mixin, "MaterialSurfacePixelStageCompositor");
 
                     {
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-                        context.PushComposition(mixin, "material", __subMixin);
-                        context.Mixin(__subMixin, context.GetParam(MaterialKeys.Material));
+                        context.PushComposition(mixin, "materialPixelStage", __subMixin);
+                        context.Mixin(__subMixin, context.GetParam(MaterialKeys.PixelStageSurfaceShaders));
                         context.PopComposition();
                     }
                 }

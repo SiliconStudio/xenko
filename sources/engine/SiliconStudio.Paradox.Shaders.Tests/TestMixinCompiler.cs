@@ -51,7 +51,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             var layers = new MaterialBlendLayers();
             layers.Add(new MaterialBlendLayer()
             {
-                BlendMap = new MaterialNodeComputeColor(new Color4(0.5f)),
+                BlendMap = new MaterialFloatComputeNode(0.5f),
                 Material =  new AssetReference<MaterialAsset>(Guid.Empty, "fake")
             });
 
@@ -61,7 +61,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
                 {
                     Diffuse = new MaterialDiffuseMapFeature()
                     {
-                        DiffuseMap = new MaterialNodeComputeColor(Color4.White)
+                        DiffuseMap = new MaterialColorComputeColor(Color4.White)
                     },
                     DiffuseModel = new MaterialDiffuseLambertianModelFeature()
                 },
@@ -74,7 +74,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
                 {
                     Diffuse = new MaterialDiffuseMapFeature()
                     {
-                        DiffuseMap = new MaterialNodeComputeColor(Color.Blue)
+                        DiffuseMap = new MaterialColorComputeColor(Color.Blue)
                     },
                 }
             };
@@ -82,7 +82,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             var context = new MaterialGeneratorContext { FindMaterial = reference => fakeAsset };
             var result = MaterialGenerator.Generate(materialAsset, context);
 
-            compilerParameters.Set(MaterialKeys.Material, result.ShaderSource);
+            compilerParameters.Set(MaterialKeys.PixelStageSurfaceShaders, result.PixelStageSurfaceShader);
             var directionalLightGroup = new ShaderClassSource("LightDirectionalGroup", 1);
             compilerParameters.Set(LightingKeys.DirectLightGroups, new ShaderSource[] { directionalLightGroup });
             compilerParameters.Set(LightingKeys.CastShadows, false);

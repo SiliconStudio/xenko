@@ -13,7 +13,9 @@ namespace SiliconStudio.Paradox.Assets.Materials
 {
     public class MaterialShaderResult : LoggerResult
     {
-        public ShaderSource ShaderSource { get; set; }
+        public ShaderSource VertexStageSurfaceShader { get; set; }
+
+        public ShaderSource PixelStageSurfaceShader { get; set; }
 
         public ParameterCollection Parameters { get; set; }
     }
@@ -37,8 +39,10 @@ namespace SiliconStudio.Paradox.Assets.Materials
             context.PopLayer();
 
             // Squash all operations into a single mixin
-            result.ShaderSource = context.GenerateMixin();
-            result.Parameters.Set(MaterialKeys.Material, result.ShaderSource);
+            result.VertexStageSurfaceShader = context.GenerateMixin(MaterialShaderStage.Vertex);
+            result.PixelStageSurfaceShader = context.GenerateMixin(MaterialShaderStage.Pixel);
+            result.Parameters.Set(MaterialKeys.VertexStageSurfaceShaders, result.VertexStageSurfaceShader);
+            result.Parameters.Set(MaterialKeys.PixelStageSurfaceShaders, result.PixelStageSurfaceShader);
 
             return result;
         }

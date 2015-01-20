@@ -11,7 +11,9 @@ namespace SiliconStudio.Paradox.Effects.Materials
 {
     public class MaterialKeys
     {
-        public static readonly ParameterKey<ShaderSource> Material = ParameterKeys.New<ShaderSource>();
+        public static readonly ParameterKey<ShaderSource> VertexStageSurfaceShaders = ParameterKeys.New<ShaderSource>();
+
+        public static readonly ParameterKey<ShaderSource> PixelStageSurfaceShaders = ParameterKeys.New<ShaderSource>();
 
         public static readonly ParameterKey<Texture> BlendMap = ParameterKeys.New<Texture>();
         public static readonly ParameterKey<float> BlendValue = ParameterKeys.New<float>();

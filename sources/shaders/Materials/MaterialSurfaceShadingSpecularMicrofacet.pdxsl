@@ -5,7 +5,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
     /// <summary>
     /// Performs a Microfacet shading
     /// </summary>
-    class MaterialSurfaceShadingSpecularMicrofacet : IMaterialSurfaceShading, MaterialShadingStream, Math
+    class MaterialSurfaceShadingSpecularMicrofacet : IMaterialSurfaceShading, MaterialPixelShadingStream, Math
     {
         compose IMaterialSpecularMicrofacetFresnelFunction fresnelFunction;
 

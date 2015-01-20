@@ -5,7 +5,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
     /// <summary>
     /// Interface for a microfacet Geometric Shadowing function
     /// </summary>
-    class IMaterialSpecularMicrofacetVisibilityFunction : MaterialShadingStream, BRDFMicrofacet
+    class IMaterialSpecularMicrofacetVisibilityFunction : MaterialPixelShadingStream, BRDFMicrofacet
     {
         float Compute()
         {

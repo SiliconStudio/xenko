@@ -3,12 +3,9 @@
 namespace SiliconStudio.Paradox.Effects.Materials
 {
     /// <summary>
-    /// An interface to blend a stream
+    /// Base interface for a material layer
     /// </summary>
-    class IMaterialStreamBlend : MaterialStream, MaterialVertexStream, MaterialPixelStream
+    class IMaterialSurfacePixel : IMaterialSurface, MaterialPixelStream
     {
-        void Compute(Streams fromStream)
-        {
-        }
     };
 }

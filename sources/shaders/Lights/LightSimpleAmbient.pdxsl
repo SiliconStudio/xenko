@@ -5,7 +5,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
     /// <summary>
     /// Defines a simple environment light
     /// </summary>
-    class LightSimpleAmbient : EnvironmentLight, MaterialShadingStream
+    class LightSimpleAmbient : EnvironmentLight, MaterialPixelShadingStream
     {
         cbuffer PerObject
         {

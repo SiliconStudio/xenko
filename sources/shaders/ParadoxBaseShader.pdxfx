@@ -71,12 +71,12 @@ namespace SiliconStudio.Paradox.Effects
         }
 
         // -----------------------------------------------
-        // Mix material and lighting shading
+        // Mix material and lighting shading for Pixel Shader
         // -----------------------------------------------
-        if (MaterialKeys.Material != null)
+        if (MaterialKeys.PixelStageSurfaceShaders != null)
         {
-            mixin MaterialSurfaceCompositor;
-            mixin compose material = MaterialKeys.Material;
+            mixin MaterialSurfacePixelStageCompositor;
+            mixin compose materialPixelStage = MaterialKeys.PixelStageSurfaceShaders;
         }
 
         // -----------------------------------------------

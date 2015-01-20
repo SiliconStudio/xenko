@@ -46,7 +46,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceMetalness"));
                 mixin.AddComposition("metalnessMap", computeColorSource);
                 context.UseStream("matSpecular");
-                context.AddSurfaceShader(mixin);
+                context.AddSurfaceShader(MaterialShaderStage.Pixel, mixin);
             }
         }
     }

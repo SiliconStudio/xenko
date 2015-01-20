@@ -56,6 +56,24 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Materials\IMaterialSurfaceVertex.cs">
+      <DependentUpon>IMaterialSurfaceVertex.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Materials\IMaterialSurfacePixel.cs">
+      <DependentUpon>IMaterialSurfacePixel.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Materials\MaterialVertexStream.cs">
+      <DependentUpon>MaterialVertexStream.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Materials\MaterialSpecularMicrofacetNormalDistributionGGX.cs">
       <DependentUpon>MaterialSpecularMicrofacetNormalDistributionGGX.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -152,8 +170,14 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Materials\MaterialShadingStream.cs">
-      <DependentUpon>MaterialShadingStream.pdxsl</DependentUpon>
+    <Compile Include="Materials\MaterialPixelShadingStream.cs">
+      <DependentUpon>MaterialPixelShadingStream.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Materials\MaterialPixelStream.cs">
+      <DependentUpon>MaterialPixelStream.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -172,6 +196,12 @@
     </Compile>
     <Compile Include="Materials\IMaterialStreamBlend.cs">
       <DependentUpon>IMaterialStreamBlend.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Materials\MaterialSurfaceVertexStageCompositor.cs">
+      <DependentUpon>MaterialSurfaceVertexStageCompositor.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -990,8 +1020,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Materials\MaterialSurfaceCompositor.cs">
-      <DependentUpon>MaterialSurfaceCompositor.pdxsl</DependentUpon>
+    <Compile Include="Materials\MaterialSurfacePixelStageCompositor.cs">
+      <DependentUpon>MaterialSurfacePixelStageCompositor.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -1821,6 +1851,18 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LightSimpleAmbient.cs</LastGenOutput>
     </None>
+    <None Include="Materials\IMaterialSurfaceVertex.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>IMaterialSurfaceVertex.cs</LastGenOutput>
+    </None>
+    <None Include="Materials\IMaterialSurfacePixel.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>IMaterialSurfacePixel.cs</LastGenOutput>
+    </None>
+    <None Include="Materials\MaterialVertexStream.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialVertexStream.cs</LastGenOutput>
+    </None>
     <None Include="Materials\MaterialSpecularMicrofacetNormalDistributionGGX.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSpecularMicrofacetNormalDistributionGGX.cs</LastGenOutput>
@@ -1885,9 +1927,13 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>IMaterialSpecularMicrofacetVisibilityFunction.cs</LastGenOutput>
     </None>
-    <None Include="Materials\MaterialShadingStream.pdxsl">
+    <None Include="Materials\MaterialPixelShadingStream.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialShadingStream.cs</LastGenOutput>
+      <LastGenOutput>MaterialPixelShadingStream.cs</LastGenOutput>
+    </None>
+    <None Include="Materials\MaterialPixelStream.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialPixelStream.cs</LastGenOutput>
     </None>
     <None Include="Materials\MaterialStreamNormalBlend.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -1900,6 +1946,10 @@
     <None Include="Materials\IMaterialStreamBlend.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>IMaterialStreamBlend.cs</LastGenOutput>
+    </None>
+    <None Include="Materials\MaterialSurfaceVertexStageCompositor.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialSurfaceVertexStageCompositor.cs</LastGenOutput>
     </None>
     <None Include="Materials\MaterialSurfaceShadingSpecularMicrofacet.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -2473,9 +2523,9 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceLightingAndShading.cs</LastGenOutput>
     </None>
-    <None Include="Materials\MaterialSurfaceCompositor.pdxsl">
+    <None Include="Materials\MaterialSurfacePixelStageCompositor.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialSurfaceCompositor.cs</LastGenOutput>
+      <LastGenOutput>MaterialSurfacePixelStageCompositor.cs</LastGenOutput>
     </None>
     <None Include="Materials\MaterialSurfaceArray.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
