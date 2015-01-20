@@ -706,16 +706,6 @@
     <SolidColorBrush x:Key="ButtonNormalBorder" Color="#FF888888" />
     <SolidColorBrush x:Key="ButtonNormalBackground" Color="#FF707070"/>
 
-    <Style x:Key="SimpleToggleButton" TargetType="{x:Type ToggleButton}">
-        <Setter Property="FocusVisualStyle" Value="{DynamicResource NuclearButtonFocusVisual}" />
-        <Setter Property="Background" Value="{DynamicResource ButtonNormalBackground}" />
-        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource NormalBorderBrush}" />
-        <Setter Property="Template" Value="{DynamicResource SimpleToggleButtonTemplate}" />
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="Margin" Value="0"/>
-    </Style>
-
     <ControlTemplate x:Key="SimpleToggleButtonTemplate" TargetType="{x:Type ToggleButton}">
         <Grid x:Name="Grid">
             <Border x:Name="Background" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"/>
@@ -743,6 +733,16 @@
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
+
+    <Style TargetType="{x:Type ToggleButton}">
+        <Setter Property="FocusVisualStyle" Value="{StaticResource NuclearButtonFocusVisual}" />
+        <Setter Property="Background" Value="{StaticResource ButtonNormalBackground}" />
+        <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource NormalBorderBrush}" />
+        <Setter Property="Template" Value="{StaticResource SimpleToggleButtonTemplate}" />
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Margin" Value="0"/>
+    </Style>
 
     <Style TargetType="{x:Type Button}" BasedOn="{x:Null}">
         <Setter Property="FocusVisualStyle" Value="{DynamicResource NuclearButtonFocusVisual}" />
