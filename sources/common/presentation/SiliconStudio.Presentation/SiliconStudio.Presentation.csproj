@@ -37,6 +37,7 @@
     <Compile Include="Adorners\HighlightBorderAdorner.cs" />
     <Compile Include="Adorners\HighlightAdornerState.cs" />
     <Compile Include="Behaviors\BehaviorProperties.cs" />
+    <Compile Include="Behaviors\ChangeCursorOnSliderThumbBehavior.cs" />
     <Compile Include="Behaviors\CloseWindowBehavior.cs" />
     <Compile Include="Behaviors\DoubleClickCloseWindowBehavior.cs" />
     <Compile Include="Behaviors\NumericTextBoxTransactionalRepeatButtonsBehavior.cs" />
