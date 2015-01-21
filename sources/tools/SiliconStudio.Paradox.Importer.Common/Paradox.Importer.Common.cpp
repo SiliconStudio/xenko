@@ -111,7 +111,7 @@ public:
 		return currentComposition;
 	}
 
-	static MaterialTextureComputeColor^ GenerateMaterialTextureNode(String^ vfsOutputPath, String^ sourceTextureFile, int textureUVSetIndex, Vector2 textureUVscaling, bool wrapTextureU, bool wrapTextureV, Logger^ logger)
+	static ComputeTextureColor^ GenerateMaterialTextureNode(String^ vfsOutputPath, String^ sourceTextureFile, int textureUVSetIndex, Vector2 textureUVscaling, bool wrapTextureU, bool wrapTextureV, Logger^ logger)
 	{
 		auto texture = gcnew ContentReference<Texture^>();
 
@@ -132,7 +132,7 @@ public:
 		auto uvScaling = textureUVscaling;
 		auto textureName = textureFileName;
 	
-		auto currentTexture = gcnew MaterialTextureComputeColor(textureName, (TextureCoordinate)textureUVSetIndex, uvScaling, Vector2::Zero);
+		auto currentTexture = gcnew ComputeTextureColor(textureName, (TextureCoordinate)textureUVSetIndex, uvScaling, Vector2::Zero);
 		currentTexture->AddressModeU = wrapTextureU ? TextureAddressMode::Wrap : TextureAddressMode::Clamp;
 		currentTexture->AddressModeV = wrapTextureV ? TextureAddressMode::Wrap : TextureAddressMode::Clamp;
 	

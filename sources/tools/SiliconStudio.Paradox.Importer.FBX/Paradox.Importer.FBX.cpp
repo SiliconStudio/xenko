@@ -571,7 +571,7 @@ public:
 	MaterialAsset^ ProcessMeshMaterialAsset(FbxSurfaceMaterial* lMaterial, std::map<std::string, int>& uvElementMapping)
 	{
 		auto uvEltMappingOverride = uvElementMapping;
-		auto textureMap = gcnew Dictionary<IntPtr, MaterialTextureComputeColor^>();
+		auto textureMap = gcnew Dictionary<IntPtr, ComputeTextureColor^>();
 		std::map<std::string, int> textureNameCount;
 
 		auto finalMaterial = gcnew SiliconStudio::Paradox::Assets::Materials::MaterialAsset();
@@ -580,7 +580,7 @@ public:
 		auto lambertSurface = FbxCast<FbxSurfaceLambert>(lMaterial);
 
 		{   // The diffuse color
-			auto diffuseTree = (IMaterialComputeColor^)GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sDiffuse, FbxSurfaceMaterial::sDiffuseFactor, finalMaterial);
+			auto diffuseTree = (IComputeColor^)GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sDiffuse, FbxSurfaceMaterial::sDiffuseFactor, finalMaterial);
 			if(lambertSurface || diffuseTree != nullptr)
 			{
 				if(diffuseTree == nullptr)	
@@ -590,7 +590,7 @@ public:
 					auto diffuseColorValue = diffuseFactor * diffuseColor;
 
 					// Create diffuse value even if the color is black
-					diffuseTree = gcnew MaterialColorComputeColor(FbxDouble3ToColor4(diffuseColorValue));
+					diffuseTree = gcnew ComputeColor(FbxDouble3ToColor4(diffuseColorValue));
 				}
 
 				if (diffuseTree != nullptr)
@@ -601,7 +601,7 @@ public:
 			}
 		}
 		{   // The emissive color
-			auto emissiveTree = (IMaterialComputeColor^)GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sEmissive, FbxSurfaceMaterial::sEmissiveFactor, finalMaterial);
+			auto emissiveTree = (IComputeColor^)GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sEmissive, FbxSurfaceMaterial::sEmissiveFactor, finalMaterial);
 			if(lambertSurface || emissiveTree != nullptr)
 			{
 				if(emissiveTree == nullptr)	
@@ -613,7 +613,7 @@ public:
 					// Do not create the node if the value has not been explicitly specified by the user.
 					if(emissiveColorValue != FbxDouble3(0))
 					{
-						emissiveTree = gcnew MaterialColorComputeColor(FbxDouble3ToColor4(emissiveColorValue));
+						emissiveTree = gcnew ComputeColor(FbxDouble3ToColor4(emissiveColorValue));
 					}
 				}
 
@@ -637,7 +637,7 @@ public:
 		//			// Do not create the node if the value has not been explicitly specified by the user.
 		//			if(ambientColorValue != FbxDouble3(0))
 		//			{
-		//				ambientTree = gcnew MaterialColorComputeColor(FbxDouble3ToColor4(ambientColorValue));
+		//				ambientTree = gcnew ComputeColor(FbxDouble3ToColor4(ambientColorValue));
 		//			}
 		//		}
 
@@ -646,7 +646,7 @@ public:
 		//	}
 		//}
 		{   // The normal map
-			auto normalMapTree = (IMaterialComputeColor^)GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sNormalMap, NULL, finalMaterial);
+			auto normalMapTree = (IComputeColor^)GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sNormalMap, NULL, finalMaterial);
 			if(lambertSurface || normalMapTree != nullptr)
 			{
 				if(normalMapTree == nullptr)	
@@ -656,7 +656,7 @@ public:
 					// Do not create the node if the value has not been explicitly specified by the user.
 					if(normalMapValue != FbxDouble3(0))
 					{
-						normalMapTree = gcnew MaterialFloat4ComputeNode(FbxDouble3ToVector4(normalMapValue));
+						normalMapTree = gcnew ComputeFloat4(FbxDouble3ToVector4(normalMapValue));
 					}
 				}
 				
@@ -736,7 +736,7 @@ public:
 		//	}
 		//}
 		{	// The specular color
-			auto specularTree = (IMaterialComputeColor^)GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sSpecular, NULL, finalMaterial);
+			auto specularTree = (IComputeColor^)GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sSpecular, NULL, finalMaterial);
 			if(phongSurface || specularTree != nullptr)
 			{
 				if(specularTree == nullptr)	
@@ -746,7 +746,7 @@ public:
 					// Do not create the node if the value has not been explicitly specified by the user.
 					if(specularColor != FbxDouble3(0))
 					{
-						specularTree = gcnew MaterialColorComputeColor(FbxDouble3ToColor4(specularColor));
+						specularTree = gcnew ComputeColor(FbxDouble3ToColor4(specularColor));
 					}
 				}
 						
@@ -760,7 +760,7 @@ public:
 		}
 		// TODO REPLUG SPECULAR INTENSITY
 	//{	// The specular intensity map
-	//		auto specularIntensityTree = (IMaterialComputeColor^)GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sSpecularFactor, NULL, finalMaterial);
+	//		auto specularIntensityTree = (IComputeColor^)GenerateSurfaceTextureTree(lMaterial, uvEltMappingOverride, textureMap, textureNameCount, FbxSurfaceMaterial::sSpecularFactor, NULL, finalMaterial);
 	//		if(phongSurface || specularIntensityTree != nullptr)
 	//		{
 	//			if(specularIntensityTree == nullptr)	
@@ -837,7 +837,7 @@ public:
 		//			// Do not create the node if the value has not been explicitly specified by the user.
 		//			if(reflectionValue != FbxDouble3(0))
 		//			{
-		//				reflectionMapTree = gcnew MaterialColorComputeColor(FbxDouble3ToColor4(reflectionValue));
+		//				reflectionMapTree = gcnew ComputeColor(FbxDouble3ToColor4(reflectionValue));
 		//			}
 		//		}
 		//		
@@ -884,11 +884,11 @@ public:
 		return false;
 	}
 
-	IMaterialComputeNode^ GenerateSurfaceTextureTree(FbxSurfaceMaterial* lMaterial, std::map<std::string, int>& uvElementMapping, Dictionary<IntPtr, MaterialTextureComputeColor^>^ textureMap,
+	IComputeNode^ GenerateSurfaceTextureTree(FbxSurfaceMaterial* lMaterial, std::map<std::string, int>& uvElementMapping, Dictionary<IntPtr, ComputeTextureColor^>^ textureMap,
 												std::map<std::string, int>& textureNameCount, char const* surfaceMaterial, char const* surfaceMaterialFactor,
 												SiliconStudio::Paradox::Assets::Materials::MaterialAsset^ finalMaterial)
 	{
-		auto compositionTrees = gcnew cli::array<IMaterialComputeColor^>(2);
+		auto compositionTrees = gcnew cli::array<IComputeColor^>(2);
 
 		for (int i = 0; i < 2; ++i)
 		{
@@ -902,7 +902,7 @@ public:
 			FbxProperty lProperty = lMaterial->FindProperty(propertyName);
 			if (lProperty.IsValid())
 			{
-				IMaterialComputeColor^ previousNode = nullptr;
+				IComputeColor^ previousNode = nullptr;
 				const int lTextureCount = lProperty.GetSrcObjectCount<FbxTexture>();
 				for (int j = 0; j < lTextureCount; ++j)
 				{
@@ -926,11 +926,11 @@ public:
 								if (previousNode == nullptr)
 									previousNode = currentMaterialReference;
 								else
-									previousNode = gcnew MaterialBinaryComputeColor(previousNode, currentMaterialReference, MaterialBinaryOperand::Add); // not sure
+									previousNode = gcnew ComputeBinaryColor(previousNode, currentMaterialReference, BinaryOperand::Add); // not sure
 							}
 							else
 							{
-								auto newNode = gcnew MaterialBinaryComputeColor(previousNode, currentMaterialReference, MaterialBinaryOperand::Add);
+								auto newNode = gcnew ComputeBinaryColor(previousNode, currentMaterialReference, BinaryOperand::Add);
 								previousNode = newNode;
 								
 								FbxLayeredTexture::EBlendMode blendMode;
@@ -950,7 +950,7 @@ public:
 						if (previousNode == nullptr)
 							previousNode = newMaterialReference;
 						else
-							previousNode = gcnew MaterialBinaryComputeColor(previousNode, newMaterialReference, MaterialBinaryOperand::Add); // not sure
+							previousNode = gcnew ComputeBinaryColor(previousNode, newMaterialReference, BinaryOperand::Add); // not sure
 					}
 				}
 
@@ -959,7 +959,7 @@ public:
 		}
 
 		// If we only have one of either Color or Factor, use directly, otherwise multiply them together
-		IMaterialComputeColor^ compositionTree;
+		IComputeColor^ compositionTree;
 		if (compositionTrees[0] == nullptr) // TODO do we want only the factor??? -> delete
 		{
 			compositionTree = compositionTrees[1];
@@ -970,81 +970,81 @@ public:
 		}
 		else
 		{
-			compositionTree = gcnew MaterialBinaryComputeColor(compositionTrees[0], compositionTrees[1], MaterialBinaryOperand::Multiply);
+			compositionTree = gcnew ComputeBinaryColor(compositionTrees[0], compositionTrees[1], BinaryOperand::Multiply);
 		}
 
 		return compositionTree;
 	}
 
-	MaterialBinaryOperand BlendModeToBlendOperand(FbxLayeredTexture::EBlendMode blendMode)
+	BinaryOperand BlendModeToBlendOperand(FbxLayeredTexture::EBlendMode blendMode)
 	{
 		switch (blendMode)
 		{
 		case FbxLayeredTexture::eOver:
-			return MaterialBinaryOperand::Over;
+			return BinaryOperand::Over;
 		case FbxLayeredTexture::eAdditive:
-			return MaterialBinaryOperand::Add;
+			return BinaryOperand::Add;
 		case FbxLayeredTexture::eModulate:
-			return MaterialBinaryOperand::Multiply;
+			return BinaryOperand::Multiply;
 		//case FbxLayeredTexture::eTranslucent:
-		//	return MaterialBinaryOperand::Multiply;
+		//	return BinaryOperand::Multiply;
 		//case FbxLayeredTexture::eModulate2:
-		//	return MaterialBinaryOperand::Multiply;
+		//	return BinaryOperand::Multiply;
 		//case FbxLayeredTexture::eNormal:
-		//	return MaterialBinaryOperand::Multiply;
+		//	return BinaryOperand::Multiply;
 		//case FbxLayeredTexture::eDissolve:
-		//	return MaterialBinaryOperand::Multiply;
+		//	return BinaryOperand::Multiply;
 		case FbxLayeredTexture::eDarken:
-			return MaterialBinaryOperand::Darken;
+			return BinaryOperand::Darken;
 		case FbxLayeredTexture::eColorBurn:
-			return MaterialBinaryOperand::ColorBurn;
+			return BinaryOperand::ColorBurn;
 		case FbxLayeredTexture::eLinearBurn:
-			return MaterialBinaryOperand::LinearBurn;
+			return BinaryOperand::LinearBurn;
 		//case FbxLayeredTexture::eDarkerColor:
-		//	return MaterialBinaryOperand::Multiply;
+		//	return BinaryOperand::Multiply;
 		case FbxLayeredTexture::eLighten:
-			return MaterialBinaryOperand::Lighten;
+			return BinaryOperand::Lighten;
 		case FbxLayeredTexture::eScreen:
-			return MaterialBinaryOperand::Screen;
+			return BinaryOperand::Screen;
 		case FbxLayeredTexture::eColorDodge:
-			return MaterialBinaryOperand::ColorDodge;
+			return BinaryOperand::ColorDodge;
 		case FbxLayeredTexture::eLinearDodge:
-			return MaterialBinaryOperand::LinearDodge;
+			return BinaryOperand::LinearDodge;
 		//case FbxLayeredTexture::eLighterColor:
-		//	return MaterialBinaryOperand::Multiply;
+		//	return BinaryOperand::Multiply;
 		case FbxLayeredTexture::eSoftLight:
-			return MaterialBinaryOperand::SoftLight;
+			return BinaryOperand::SoftLight;
 		case FbxLayeredTexture::eHardLight:
-			return MaterialBinaryOperand::HardLight;
+			return BinaryOperand::HardLight;
 		//case FbxLayeredTexture::eVividLight:
-		//	return MaterialBinaryOperand::Multiply;
+		//	return BinaryOperand::Multiply;
 		//case FbxLayeredTexture::eLinearLight:
-		//	return MaterialBinaryOperand::Multiply;
+		//	return BinaryOperand::Multiply;
 		case FbxLayeredTexture::ePinLight:
-			return MaterialBinaryOperand::PinLight;
+			return BinaryOperand::PinLight;
 		case FbxLayeredTexture::eHardMix:
-			return MaterialBinaryOperand::HardMix;
+			return BinaryOperand::HardMix;
 		case FbxLayeredTexture::eDifference:
-			return MaterialBinaryOperand::Difference;
+			return BinaryOperand::Difference;
 		case FbxLayeredTexture::eExclusion:
-			return MaterialBinaryOperand::Exclusion;
+			return BinaryOperand::Exclusion;
 		case FbxLayeredTexture::eSubtract:
-			return MaterialBinaryOperand::Subtract;
+			return BinaryOperand::Subtract;
 		case FbxLayeredTexture::eDivide:
-			return MaterialBinaryOperand::Divide;
+			return BinaryOperand::Divide;
 		case FbxLayeredTexture::eHue:
-			return MaterialBinaryOperand::Hue;
+			return BinaryOperand::Hue;
 		case FbxLayeredTexture::eSaturation:
-			return MaterialBinaryOperand::Saturation;
+			return BinaryOperand::Saturation;
 		//case FbxLayeredTexture::eColor:
-		//	return MaterialBinaryOperand::Multiply;
+		//	return BinaryOperand::Multiply;
 		//case FbxLayeredTexture::eLuminosity:
-		//	return MaterialBinaryOperand::Multiply;
+		//	return BinaryOperand::Multiply;
 		case FbxLayeredTexture::eOverlay:
-			return MaterialBinaryOperand::Overlay;
+			return BinaryOperand::Overlay;
 		default:
 			logger->Error("Material blending mode '{0}' is not supported yet. Multiplying blending mode will be used instead.", gcnew Int32(blendMode));
-			return MaterialBinaryOperand::Multiply;
+			return BinaryOperand::Multiply;
 		}
 	}
 
@@ -1079,7 +1079,7 @@ public:
 		return fileNameToUse;
 	}
 
-	MaterialTextureComputeColor^ GenerateMaterialTextureNodeFBX(FbxFileTexture* lFileTexture, std::map<std::string, int>& uvElementMapping, Dictionary<IntPtr, MaterialTextureComputeColor^>^ textureMap, std::map<std::string, int>& textureNameCount, SiliconStudio::Paradox::Assets::Materials::MaterialAsset^ finalMaterial)
+	ComputeTextureColor^ GenerateMaterialTextureNodeFBX(FbxFileTexture* lFileTexture, std::map<std::string, int>& uvElementMapping, Dictionary<IntPtr, ComputeTextureColor^>^ textureMap, std::map<std::string, int>& textureNameCount, SiliconStudio::Paradox::Assets::Materials::MaterialAsset^ finalMaterial)
 	{
 		auto texScale = lFileTexture->GetUVScaling();		
 		auto texturePath = FindFilePath(lFileTexture);
@@ -1088,7 +1088,7 @@ public:
 		bool wrapTextureU = (wrapModeU == FbxTexture::EWrapMode::eRepeat);
 		bool wrapTextureV = (wrapModeV == FbxTexture::EWrapMode::eRepeat);
 		
-		MaterialTextureComputeColor^ textureValue;
+		ComputeTextureColor^ textureValue;
 		
 		if (textureMap->TryGetValue(IntPtr(lFileTexture), textureValue))
 		{

@@ -664,7 +664,7 @@ private:
 		return animationClip;
 	}
 
-	MaterialTextureComputeColor^ GetTextureReferenceNode(String^ vfsOutputPath, String^ sourceTextureFile, int textureUVSetIndex, Vector2 textureUVscaling, bool wrapTextureU, bool wrapTextureV, MaterialAsset^ finalMaterial, SiliconStudio::Core::Diagnostics::Logger^ logger)
+	ComputeTextureColor^ GetTextureReferenceNode(String^ vfsOutputPath, String^ sourceTextureFile, int textureUVSetIndex, Vector2 textureUVscaling, bool wrapTextureU, bool wrapTextureV, MaterialAsset^ finalMaterial, SiliconStudio::Core::Diagnostics::Logger^ logger)
 	{
 		// TODO: compare with FBX importer - see if there could be some conflict between texture names
 		auto textureValue = TextureLayerGenerator::GenerateMaterialTextureNode(vfsOutputPath, sourceTextureFile, textureUVSetIndex, textureUVscaling, wrapTextureU, wrapTextureV, Logger);
@@ -683,7 +683,7 @@ private:
 		return textureValue;
 	}
 
-	IMaterialComputeColor^ GenerateOneTextureTypeLayers(aiMaterial* pMat, aiTextureType textureType, int& textureCount, SiliconStudio::Paradox::Assets::Materials::MaterialAsset^ finalMaterial)
+	IComputeColor^ GenerateOneTextureTypeLayers(aiMaterial* pMat, aiTextureType textureType, int& textureCount, SiliconStudio::Paradox::Assets::Materials::MaterialAsset^ finalMaterial)
 	{
 		AssimpNet::Material::Stack^ stack = NetTranslation::Materials::convertAssimpStackCppToCs(pMat, textureType);
 		int set;
@@ -692,11 +692,11 @@ private:
 
 		sets.push(0);
 		auto nbTextures = pMat->GetTextureCount(textureType);
-		IMaterialComputeColor^ curComposition = nullptr, ^ newCompositionFather = nullptr;
-		IMaterialComputeColor^ curCompositionFather = nullptr;
+		IComputeColor^ curComposition = nullptr, ^ newCompositionFather = nullptr;
+		IComputeColor^ curCompositionFather = nullptr;
 
 		bool isRootElement = true;
-		IMaterialComputeColor^ rootMaterial = nullptr;
+		IComputeColor^ rootMaterial = nullptr;
 
 		while (!stack->IsEmpty)
 		{
@@ -707,7 +707,7 @@ private:
 				if (compositionFathers->Count == 0)
 					Logger->Error(String::Format("Texture Stack Invalid : Operand without Operation."));
 
-				curCompositionFather = (IMaterialComputeColor^)compositionFathers->Pop();
+				curCompositionFather = (IComputeColor^)compositionFathers->Pop();
 			}
 
 			set = sets.top();
@@ -720,20 +720,20 @@ private:
 			{
 				auto realTop = (AssimpNet::Material::StackOperation^) top;
 				AssimpNet::Material::Operation op = realTop->operation;
-				auto binNode = gcnew MaterialBinaryComputeColor(nullptr, nullptr, MaterialBinaryOperand::Add);
+				auto binNode = gcnew ComputeBinaryColor(nullptr, nullptr, BinaryOperand::Add);
 
 				switch (op)
 				{
 					case AssimpNet::Material::Operation::Add3ds:
 					case AssimpNet::Material::Operation::AddMaya:
-						binNode->Operand = MaterialBinaryOperand::Add; //MaterialBinaryOperand::Add3ds;
+						binNode->Operand = BinaryOperand::Add; //BinaryOperand::Add3ds;
 						break;
 					case AssimpNet::Material::Operation::Multiply3ds:
 					case AssimpNet::Material::Operation::MultiplyMaya:
-						binNode->Operand = MaterialBinaryOperand::Multiply;
+						binNode->Operand = BinaryOperand::Multiply;
 						break;
 					default:
-						binNode->Operand = MaterialBinaryOperand::Add;
+						binNode->Operand = BinaryOperand::Add;
 						break;
 				}
 
@@ -743,7 +743,7 @@ private:
 			{
 				auto realTop = (AssimpNet::Material::StackColor^)top;
 				Color3 col = realTop->color;
-				curComposition = gcnew MaterialColorComputeColor(Color4(col.R, col.G, col.B, alpha));
+				curComposition = gcnew ComputeColor(Color4(col.R, col.G, col.B, alpha));
 			}
 			else if (type == AssimpNet::Material::StackType::Texture)
 			{
@@ -763,13 +763,13 @@ private:
 					strengthAlpha *= alpha;
 				
 				
-				auto factorComposition = gcnew MaterialFloat4ComputeNode(Vector4(strength, strength, strength, strengthAlpha));
-				curComposition = gcnew MaterialBinaryComputeColor(curComposition, factorComposition, MaterialBinaryOperand::Multiply);
+				auto factorComposition = gcnew ComputeFloat4(Vector4(strength, strength, strength, strengthAlpha));
+				curComposition = gcnew ComputeBinaryColor(curComposition, factorComposition, BinaryOperand::Multiply);
 			}
 			else if (alpha != 1.f && type != AssimpNet::Material::StackType::Color)
 			{
-				auto factorComposition = gcnew MaterialFloat4ComputeNode(Vector4(1.0f, 1.0f, 1.0f, alpha));
-				curComposition = gcnew MaterialBinaryComputeColor(curComposition, factorComposition, MaterialBinaryOperand::Multiply);
+				auto factorComposition = gcnew ComputeFloat4(Vector4(1.0f, 1.0f, 1.0f, alpha));
+				curComposition = gcnew ComputeBinaryColor(curComposition, factorComposition, BinaryOperand::Multiply);
 			}
 
 			if (isRootElement)
@@ -782,13 +782,13 @@ private:
 			{
 				if (set == 0)
 				{
-					((MaterialBinaryComputeColor^)curCompositionFather)->LeftChild = curComposition;
+					((ComputeBinaryColor^)curCompositionFather)->LeftChild = curComposition;
 					compositionFathers->Push(curCompositionFather);
 					sets.push(1);
 				}
 				else if (set == 1)
 				{
-					((MaterialBinaryComputeColor^)curCompositionFather)->RightChild = curComposition;
+					((ComputeBinaryColor^)curCompositionFather)->RightChild = curComposition;
 				}
 				else
 				{
@@ -810,13 +810,13 @@ private:
 	{
 		auto nbTextures = pMat->GetTextureCount(textureType);
 		
-		IMaterialComputeColor^ computeColorNode;
+		IComputeColor^ computeColorNode;
 		int textureCount = 0;
 		if (nbTextures == 0)
 		{
 			if (hasBaseColor)
 			{
-				computeColorNode = gcnew MaterialColorComputeColor(baseColor);
+				computeColorNode = gcnew ComputeColor(baseColor);
 			}
 			//else if (hasBaseValue)
 			//{
@@ -839,7 +839,7 @@ private:
 			{
 				auto lightMap = GenerateOneTextureTypeLayers(pMat, aiTextureType_LIGHTMAP, textureCount, finalMaterial);
 				if (lightMap != nullptr)
-					computeColorNode = gcnew MaterialBinaryComputeColor(computeColorNode, lightMap, MaterialBinaryOperand::Add);
+					computeColorNode = gcnew ComputeBinaryColor(computeColorNode, lightMap, BinaryOperand::Add);
 			}
 
 			finalMaterial->Attributes->Diffuse = gcnew MaterialDiffuseMapFeature(computeColorNode);
