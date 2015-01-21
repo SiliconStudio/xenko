@@ -173,6 +173,11 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         public static RoutedCommand SmallDecreaseCommand { get; private set; }
 
+        /// <summary>
+        /// Resets the current value to zero.
+        /// </summary>
+        public static RoutedCommand ResetValueCommand { get; private set; }
+
         static NumericTextBox()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(NumericTextBox), new FrameworkPropertyMetadata(typeof(NumericTextBox)));
@@ -200,6 +205,9 @@ namespace SiliconStudio.Presentation.Controls
             SmallDecreaseCommand = new RoutedCommand("SmallDecreaseCommand", typeof(System.Windows.Controls.TextBox));
             CommandManager.RegisterClassCommandBinding(typeof(System.Windows.Controls.TextBox), new CommandBinding(SmallDecreaseCommand, OnSmallDecreaseCommand));
             CommandManager.RegisterClassInputBinding(typeof(System.Windows.Controls.TextBox), new InputBinding(SmallDecreaseCommand, new KeyGesture(Key.Down)));
+
+            ResetValueCommand = new RoutedCommand("ResetValueCommand", typeof(System.Windows.Controls.TextBox));
+            CommandManager.RegisterClassCommandBinding(typeof(System.Windows.Controls.TextBox), new CommandBinding(ResetValueCommand, OnResetValueCommand));
         }
 
         /// <summary>
@@ -698,7 +706,7 @@ namespace SiliconStudio.Presentation.Controls
                 control.UpdateValue(MathUtil.Lerp(control.Minimum, control.Maximum, (double)e.NewValue));
         }
 
-        private static void UpdateValueCommand(object sender, Func<NumericTextBox, double> getValue)
+        private static void UpdateValueCommand(object sender, Func<NumericTextBox, double> getValue, bool validate = true)
         {
             var control = (sender as NumericTextBox) ?? ((System.Windows.Controls.TextBox)sender).FindVisualParentOfType<NumericTextBox>();
             if (control != null)
@@ -706,7 +714,8 @@ namespace SiliconStudio.Presentation.Controls
                 var value = getValue(control);
                 control.UpdateValue(value);
                 control.SelectAll();
-                control.Validate();
+                if (validate)
+                    control.Validate();
             }
         }
 
@@ -728,6 +737,11 @@ namespace SiliconStudio.Presentation.Controls
         private static void OnSmallDecreaseCommand(object sender, ExecutedRoutedEventArgs e)
         {
             UpdateValueCommand(sender, x => x.Value - x.SmallChange);
+        }
+
+        private static void OnResetValueCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            UpdateValueCommand(sender, x => 0.0, false);
         }
 
         private static void OnForbiddenPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
