@@ -843,12 +843,22 @@ private:
 			}
 
 			finalMaterial->Attributes->Diffuse = gcnew MaterialDiffuseMapFeature(computeColorNode);
+
+			// TODO TEMP: Set a default diffuse model
+			finalMaterial->Attributes->DiffuseModel = gcnew MaterialDiffuseLambertianModelFeature();
 		}
 		else if (textureType == aiTextureType_SPECULAR)
 		{
 			auto specularFeature = gcnew MaterialSpecularMapFeature();
 			specularFeature->SpecularMap = computeColorNode;
 			finalMaterial->Attributes->Specular = specularFeature;
+
+			// TODO TEMP: Set a default specular model
+			auto specularModel = gcnew MaterialSpecularMicrofacetModelFeature();
+			specularModel->Fresnel = gcnew MaterialSpecularMicrofacetFresnelSchlick();
+			specularModel->Visibility = gcnew MaterialSpecularMicrofacetVisibilityImplicit();
+			specularModel->NormalDistribution = gcnew MaterialSpecularMicrofacetNormalDistributionBlinnPhong();
+			finalMaterial->Attributes->SpecularModel = specularModel;
 		}
 		else if (textureType == aiTextureType_EMISSIVE)
 		{

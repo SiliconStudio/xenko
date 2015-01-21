@@ -755,6 +755,13 @@ public:
 					auto specularFeature = gcnew MaterialSpecularMapFeature();
 					specularFeature->SpecularMap = specularTree;
 					finalMaterial->Attributes->Specular = specularFeature;
+
+					auto specularModel = gcnew MaterialSpecularMicrofacetModelFeature();
+					specularModel->Fresnel = gcnew MaterialSpecularMicrofacetFresnelSchlick();
+					specularModel->Visibility = gcnew MaterialSpecularMicrofacetVisibilityImplicit();
+					specularModel->NormalDistribution = gcnew MaterialSpecularMicrofacetNormalDistributionBlinnPhong();
+
+					finalMaterial->Attributes->SpecularModel = specularModel;
 				}
 			}
 		}
