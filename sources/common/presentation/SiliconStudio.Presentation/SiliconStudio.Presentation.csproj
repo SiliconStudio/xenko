@@ -280,6 +280,9 @@
     <Resource Include="Resources\Images\minimize_window.png" />
     <Resource Include="Resources\Images\restore_window.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\gear--pencil.png" />
+  </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
