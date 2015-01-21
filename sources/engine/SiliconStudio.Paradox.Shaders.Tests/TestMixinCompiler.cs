@@ -79,7 +79,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
                 }
             };
 
-            var context = new MaterialGeneratorContext { FindMaterial = reference => fakeAsset };
+            var context = new MaterialGeneratorContext { FindAsset = reference => fakeAsset };
             var result = MaterialGenerator.Generate(materialAsset, context);
 
             compilerParameters.Set(MaterialKeys.PixelStageSurfaceShaders, result.PixelStageSurfaceShader);

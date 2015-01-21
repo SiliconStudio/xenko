@@ -95,7 +95,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
                 var materialContext = new MaterialGeneratorContext
                 {
-                    FindMaterial = reference =>
+                    FindAsset = reference =>
                     {
                         var assetItem = context.Package.Session.FindAsset(reference.Id)
                                         ?? context.Package.Session.FindAsset(reference.Location);
@@ -104,7 +104,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
                         {
                             return null;
                         }
-                        return assetItem.Asset as MaterialAsset;
+                        return assetItem.Asset;
                     }
                 };
                 var materialClone = (MaterialAsset)AssetCloner.Clone(Asset);

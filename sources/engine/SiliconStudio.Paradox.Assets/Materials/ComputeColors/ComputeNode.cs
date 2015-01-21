@@ -37,6 +37,12 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// </summary>
         /// <returns>ShaderSource.</returns>
         public abstract ShaderSource GenerateShaderSource(MaterialGeneratorContext context, MaterialComputeColorKeys baseKeys);
+
+        /// <inheritdoc/>
+        public virtual bool IsValid(MaterialGeneratorContext context)
+        {
+            return true;
+        }
     }
 
 }
