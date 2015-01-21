@@ -16,8 +16,8 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
-    internal static partial class CubemapEffectShaderKeys
+    internal static partial class LambertianPrefilteringSHPass2Keys
     {
-        public static readonly ParameterKey<int> SamplingResolution = ParameterKeys.New<int>();
+        public static readonly ParameterKey<Vector2> SamplesCounts = ParameterKeys.New<Vector2>();
     }
 }

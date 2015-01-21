@@ -101,7 +101,8 @@ namespace SiliconStudio.Paradox.Effects.Images
                 var texture = GetInput(i);
                 if (i < TexturingKeys.DefaultTextures.Count)
                 {
-                    Parameters.Set(TexturingKeys.DefaultTextures[i], texture);
+                    var texturingKeys = texture.Dimension == TextureDimension.TextureCube ? TexturingKeys.TextureCubes : TexturingKeys.DefaultTextures;
+                    Parameters.Set(texturingKeys[i], texture);
                 }
                 else
                 {

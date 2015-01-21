@@ -28,6 +28,8 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         private ImageScaler scaler;
 
+        private Texture[] renderTargetViews;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageEffect" /> class.
         /// </summary>
@@ -218,7 +220,20 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             if (outputRenderTargetView != null)
             {
-                GraphicsDevice.SetRenderTarget(outputRenderTargetView);
+                if (outputRenderTargetView.Dimension == TextureDimension.TextureCube)
+                {
+                    if(renderTargetViews == null)
+                        renderTargetViews = new Texture[6];
+
+                    for (int i = 0; i < renderTargetViews.Length; i++)
+                        renderTargetViews[i] = outputRenderTargetView.ToTextureView(ViewType.Single, i, 0);
+
+                    GraphicsDevice.SetRenderTargets(renderTargetViews);
+                }
+                else
+                {
+                    GraphicsDevice.SetRenderTarget(outputRenderTargetView);
+                }
             }
             else if (outputRenderTargetViews != null)
             {
@@ -231,7 +246,27 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         protected virtual void PostDrawCore()
         {
+            if (EnableSetRenderTargets)
+            {
+                DisposeRenderTargetViews();
+            }
+
             GraphicsDevice.EndProfile();
+        }
+
+        /// <summary>
+        /// Dispose the render target views that have been created.
+        /// </summary>
+        protected virtual void DisposeRenderTargetViews()
+        {
+            if(renderTargetViews == null)
+                return;
+
+            for (int i = 0; i < renderTargetViews.Length; i++)
+            {
+                renderTargetViews[i].Dispose();
+                renderTargetViews[i] = null;
+            }
         }
 
         /// <summary>

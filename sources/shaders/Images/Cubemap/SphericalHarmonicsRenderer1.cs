@@ -16,21 +16,8 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
-    internal static partial class ShaderMixins
+    internal static partial class SphericalHarmonicsRendererKeys
     {
-        internal partial class LambertianPrefilteringEffect  : IShaderMixinBuilder
-        {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
-            {
-                context.Mixin(mixin, "LambertianPrefilteringShader");
-            }
-
-            [ModuleInitializer]
-            internal static void __Initialize__()
-
-            {
-                ShaderMixinManager.Register("LambertianPrefilteringEffect", new LambertianPrefilteringEffect());
-            }
-        }
+        public static readonly ParameterKey<Color3[]> SHCoefficients = ParameterKeys.New<Color3[]>();
     }
 }
