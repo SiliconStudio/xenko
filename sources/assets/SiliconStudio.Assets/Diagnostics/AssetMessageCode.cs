@@ -129,6 +129,11 @@ namespace SiliconStudio.Assets.Diagnostics
         CompilationFatal,
 
         /// <summary>
+        /// A message log happened inside the asset compiler.
+        /// </summary>
+        CompilationMessage,
+
+        /// <summary>
         /// An error that caused the asset compilation to fail.
         /// </summary>
         CompilationError,
