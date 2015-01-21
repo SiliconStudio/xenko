@@ -16,6 +16,7 @@ namespace SiliconStudio.Core.Annotations
         private readonly double? maximum;
         private readonly double? smallStep;
         private readonly double? largeStep;
+        private readonly int? decimalPlaces;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DataMemberRangeAttribute" /> class.
@@ -41,6 +42,36 @@ namespace SiliconStudio.Core.Annotations
         {
             this.minimum = minimum;
             this.maximum = maximum;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DataMemberRangeAttribute" /> class.
+        /// </summary>
+        /// <param name="minimum">The minimum.</param>
+        /// <param name="maximum">The maximum.</param>
+        /// <param name="smallStep">The minimum step used to go from minimum to maximum.</param>
+        /// <param name="largeStep">The maximum step.</param>
+        /// <param name="decimalPlaces">The decimal places</param>
+        public DataMemberRangeAttribute(double minimum, double maximum, double smallStep, double largeStep, int decimalPlaces)
+        {
+            this.minimum = minimum;
+            this.maximum = maximum;
+            this.smallStep = smallStep;
+            this.largeStep = largeStep;
+            this.decimalPlaces = decimalPlaces;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DataMemberRangeAttribute" /> class.
+        /// </summary>
+        /// <param name="minimum">The minimum.</param>
+        /// <param name="maximum">The maximum.</param>
+        /// <param name="decimalPlaces">The decimal places</param>
+        public DataMemberRangeAttribute(double minimum, double maximum, int decimalPlaces)
+        {
+            this.minimum = minimum;
+            this.maximum = maximum;
+            this.decimalPlaces = decimalPlaces;
         }
 
         /// <summary>
@@ -77,6 +108,15 @@ namespace SiliconStudio.Core.Annotations
         public double? LargeStep
         {
             get { return largeStep; }
+        }
+
+        /// <summary>
+        /// Gets the decimal places.
+        /// </summary>
+        /// <value>The decimal places.</value>
+        public int? DecimalPlaces
+        {
+            get {  return decimalPlaces; }
         }
     }
 }
