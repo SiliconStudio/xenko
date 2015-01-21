@@ -154,7 +154,7 @@ namespace SiliconStudio.Presentation.Controls
                     throw new ArgumentException("Property unsupported by method OnCartesianPropertyChanged.");
 
                 angle = MathUtil.DegreesToRadians(angle);
-                Vector = new Vector2((float)(length * Math.Cos(angle)), (float)(length * Math.Sin(MathUtil.DegreesToRadians(angle))));
+                Vector = new Vector2((float)(length * Math.Cos(angle)), (float)(length * Math.Sin(angle)));
                 SetCurrentValue(XProperty, Vector.X);
                 SetCurrentValue(YProperty, Vector.Y);
                 interlock = false;
