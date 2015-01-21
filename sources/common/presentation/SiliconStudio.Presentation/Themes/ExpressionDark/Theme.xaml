@@ -3895,35 +3895,25 @@
 
                             </DockPanel>
                         </Border>
-                        <TextBlock Grid.Column="0" Text="Length:" Margin="3,0" VerticalAlignment="Center" TextAlignment="Center" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:VisibleOrCollapsed}}"/>
-                        <ctrl:NumericTextBox Grid.Column="1" Grid.ColumnSpan="7" Value="{Binding Length, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:VisibleOrCollapsed}}"/>                        
-                        <ToggleButton Grid.Column="8" x:Name="ToggleButtonPolarCoordinates" Width="22" Height="22">
-                            <ToggleButton.Style>
-                                <Style TargetType="{x:Type ToggleButton}">
-                                    <Setter Property="Background" Value="Transparent"/>
-                                    <Setter Property="BorderBrush" Value="Transparent"/>
-                                    <Setter Property="BorderThickness" Value="0" />
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="{x:Type ToggleButton}">
-                                                <Grid x:Name="Grid">
-                                                    <Border x:Name="Background" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"/>
-                                                    <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True" />
-                                                </Grid>
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsEnabled" Value="false">
-                                                        <Setter Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" TargetName="Background" />
-                                                        <Setter Property="Opacity" TargetName="Grid" Value="0.5" />
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                    <Setter Property="Margin" Value="0"/>
-                                </Style>
-                            </ToggleButton.Style>
-                            <Path Width="16" Height="16" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="F1 M 38,8C 39.9902,8 41.9352,8.19379 43.817,8.56355L 43.0384,11.4693C 41.4061,11.1612 39.7219,11 38,11L 37.6457,11.0023L 37.3836,8.0062L 38,8 Z M 66.4036,28.3187L 63.4978,29.0973C 62.8969,27.3761 62.1266,25.7343 61.2069,24.1919L 63.6707,22.4668C 64.7813,24.2982 65.7014,26.2581 66.4036,28.3187 Z M 55.0828,17.0902L 56.8079,14.6264C 58.4883,15.9803 60.0197,17.5117 61.3736,19.1921L 58.9098,20.9172C 57.765,19.5176 56.4824,18.235 55.0828,17.0902 Z M 46.9027,12.5022L 47.6813,9.59646C 49.742,10.2986 51.7018,11.2188 53.5333,12.3293L 51.8081,14.7931C 50.2657,13.8734 48.6239,13.1031 46.9027,12.5022 Z M 28.4302,12.7451L 27.1589,10.0187C 29.145,9.24866 31.2336,8.68398 33.3984,8.35073L 33.6606,11.3469C 31.8505,11.6393 30.1008,12.1117 28.4302,12.7451 Z M 20.3745,17.546L 18.248,15.4195C 19.866,14.0029 21.6377,12.7575 23.5347,11.7115L 24.806,14.4378C 23.2234,15.3259 21.7394,16.3688 20.3745,17.546 Z M 14.4378,24.806L 11.7114,23.5347C 12.7575,21.6377 14.003,19.866 15.4195,18.2479L 17.5461,20.3745C 16.3688,21.7394 15.3259,23.2234 14.4378,24.806 Z M 11.3469,33.6605L 8.35073,33.3984C 8.68398,31.2336 9.24866,29.145 10.0187,27.1589L 12.7451,28.4302C 12.1117,30.1008 11.6393,31.8505 11.3469,33.6605 Z M 11,38C 11,39.7219 11.1612,41.4061 11.4693,43.0384L 8.56356,43.8169C 8.19381,41.9351 8.00002,39.9902 8.00002,38L 8.00622,37.3835L 11.0023,37.6457L 11,38 Z M 68,38L 67.9938,38.6165L 64.9977,38.3544L 65,38C 65,36.2782 64.8388,34.594 64.5307,32.9617L 67.4364,32.1831C 67.8062,34.0649 68,36.0098 68,38 Z M 38,68C 36.0098,68 34.0649,67.8062 32.1831,67.4365L 32.9617,64.5308C 34.594,64.8388 36.2782,65 38,65L 38.3544,64.9977L 38.6165,67.9938L 38,68 Z M 9.59644,47.6813L 12.5022,46.9027C 13.1031,48.6239 13.8734,50.2657 14.7931,51.8081L 12.3293,53.5332C 11.2187,51.7018 10.2986,49.742 9.59644,47.6813 Z M 20.9172,58.9099L 19.1921,61.3736C 17.5117,60.0197 15.9803,58.4883 14.6264,56.8079L 17.0901,55.0828C 18.235,56.4824 19.5176,57.765 20.9172,58.9099 Z M 29.0974,63.4979L 28.3188,66.4036C 26.2581,65.7014 24.2983,64.7813 22.4668,63.6707L 24.1919,61.2069C 25.7343,62.1266 27.3761,62.8969 29.0974,63.4979 Z M 47.5698,63.255L 48.8411,65.9813C 46.855,66.7514 44.7665,67.316 42.6017,67.6493L 42.3395,64.6531C 44.1495,64.3607 45.8993,63.8883 47.5698,63.255 Z M 55.6256,58.4539L 57.7521,60.5805C 56.134,61.9971 54.3623,63.2425 52.4653,64.2886L 51.194,61.5622C 52.7766,60.6741 54.2606,59.6312 55.6256,58.4539 Z M 61.5622,51.194L 64.2885,52.4654C 63.2425,54.3624 61.9971,56.134 60.5805,57.752L 58.454,55.6255C 59.6312,54.2606 60.6741,52.7766 61.5622,51.194 Z M 64.6531,42.3395L 67.6493,42.6016C 67.316,44.7665 66.7513,46.855 65.9813,48.8412L 63.2549,47.5699C 63.8883,45.8993 64.3607,44.1495 64.6531,42.3395 Z "/>
+                        <ToggleButton Grid.Column="8" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16" Background="Transparent" ToolTip="Advanced options">
+                            <Image Width="16" Height="16" Margin="-1" Source="{StaticResource ImageAdvancedEditionVector}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
                         </ToggleButton>
+                        <Popup x:Name="Popup" IsOpen="{Binding IsChecked, ElementName=ToggleButtonAdvancedOptions, Mode=TwoWay}" Placement="Bottom" AllowsTransparency="True"
+                                       MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ctrl:Vector4Editor}}" StaysOpen="False"
+                                       PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=ctrl:Vector4Editor}}" PopupAnimation="Slide" VerticalOffset="2">
+                            <Border SnapsToDevicePixels="True" Background="{StaticResource BackgroundBrush}" BorderBrush="Black" BorderThickness="1">
+                                <ctrl:KeyValueGrid>
+                                    <TextBlock Text="Length:" Margin="4,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                    <ctrl:NumericTextBox Value="{Binding Length, RelativeSource={RelativeSource Mode=TemplatedParent}}" Margin="2,6,6,2" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                                    <TextBlock Text="All components:" Margin="4,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                    <ctrl:NumericTextBox x:Name="AllTextBox" Margin="2,2,6,6" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True" ValidateOnLostFocus="False">
+                                        <i:Interaction.Behaviors>
+                                            <behaviors:OnEventCommandBehavior EventName="Validated" Command="{x:Static commands:ControlCommands.SetAllVector4Components}" CommandParameter="{Binding Value, ElementName=AllTextBox}"/>
+                                        </i:Interaction.Behaviors>
+                                    </ctrl:NumericTextBox>
+                                </ctrl:KeyValueGrid>
+                            </Border>
+                        </Popup>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

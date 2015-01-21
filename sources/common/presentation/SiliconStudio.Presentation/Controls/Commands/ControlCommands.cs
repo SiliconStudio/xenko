@@ -25,6 +25,8 @@ namespace SiliconStudio.Presentation.Controls.Commands
             CommandManager.RegisterClassCommandBinding(typeof(Selector), new CommandBinding(ClearSelectionCommand, OnClearSelectionCommand));
             SetAllVector3Components = new RoutedCommand("SetAllVector3Components", typeof(Vector3Editor));
             CommandManager.RegisterClassCommandBinding(typeof(Vector3Editor), new CommandBinding(SetAllVector3Components, OnSetAllVector3Components));
+            SetAllVector4Components = new RoutedCommand("SetAllVector4Components", typeof(Vector4Editor));
+            CommandManager.RegisterClassCommandBinding(typeof(Vector4Editor), new CommandBinding(SetAllVector4Components, OnSetAllVector4Components));
         }
 
         /// <summary>
@@ -36,6 +38,11 @@ namespace SiliconStudio.Presentation.Controls.Commands
         /// Sets all the component of a <see cref="Vector3Editor"/> to the value given as parameter.
         /// </summary>
         public static RoutedCommand SetAllVector3Components { get; private set; }
+
+        /// <summary>
+        /// Sets all the component of a <see cref="Vector4Editor"/> to the value given as parameter.
+        /// </summary>
+        public static RoutedCommand SetAllVector4Components { get; private set; }
 
         private static void OnClearSelectionCommand(object sender, ExecutedRoutedEventArgs e)
         {
@@ -57,6 +64,25 @@ namespace SiliconStudio.Presentation.Controls.Commands
                     vectorEditor.SetCurrentValue(Vector3Editor.XProperty, value);
                     vectorEditor.SetCurrentValue(Vector3Editor.YProperty, value);
                     vectorEditor.SetCurrentValue(Vector3Editor.ZProperty, value);
+                }
+                catch (Exception ex)
+                {
+                    ex.Ignore();
+                }
+            }
+        }
+        private static void OnSetAllVector4Components(object sender, ExecutedRoutedEventArgs e)
+        {
+            var vectorEditor = sender as Vector4Editor;
+            if (vectorEditor != null)
+            {
+                try
+                {
+                    var value = Convert.ToSingle(e.Parameter);
+                    vectorEditor.SetCurrentValue(Vector4Editor.XProperty, value);
+                    vectorEditor.SetCurrentValue(Vector4Editor.YProperty, value);
+                    vectorEditor.SetCurrentValue(Vector4Editor.ZProperty, value);
+                    vectorEditor.SetCurrentValue(Vector4Editor.WProperty, value);
                 }
                 catch (Exception ex)
                 {
