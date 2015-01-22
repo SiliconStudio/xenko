@@ -65,9 +65,9 @@ namespace SiliconStudio.Paradox.Effects.Renderers
         {
         }
 
-        private int previousCountDirectional = -1;
-
         private ShaderSource[] directLightGroups;
+
+        private readonly ParameterKey<int> countDirectionalKey = ParameterKeys.New(0);
 
 
         /// <summary>
@@ -80,13 +80,15 @@ namespace SiliconStudio.Paradox.Effects.Renderers
             // WARNING: This is just a dirty code to reactivate and test Directional Lighting. 
             // BUT This should be written with pluggability in mind
             int countDirectional = lights.Count(light => (light.Light.Type is LightDirectional));
+            int previousCountDirectional;
+            renderMesh.Parameters.TryGet(countDirectionalKey, out previousCountDirectional);
             bool isNewCount = previousCountDirectional != countDirectional;
-            previousCountDirectional = countDirectional;
 
             if (countDirectional == 0)
             {
                 if (isNewCount)
                 {
+                    renderMesh.Parameters.Set(countDirectionalKey, countDirectional);
                     renderMesh.Parameters.Set(LightingKeys.DirectLightGroups, null);
                 }
                 return;
@@ -97,6 +99,7 @@ namespace SiliconStudio.Paradox.Effects.Renderers
                 var shaderSources = new List<ShaderSource>();
                 shaderSources.Add(new ShaderClassSource("LightDirectionalGroup", countDirectional));
                 directLightGroups = shaderSources.ToArray();
+                renderMesh.Parameters.Set(countDirectionalKey, countDirectional);
                 renderMesh.Parameters.Set(LightingKeys.DirectLightGroups, directLightGroups);
             }
 
