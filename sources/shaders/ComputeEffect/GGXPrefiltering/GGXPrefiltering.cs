@@ -5,7 +5,7 @@ namespace SiliconStudio.Paradox.Effects.Images.Cubemap
 {
     public class GGXPrefiltering : ImageEffectShader
     {
-        public GGXPrefiltering(ImageEffectContext context)
+        public GGXPrefiltering(DrawEffectContext context)
             : base(context, "GGXPrefilteringEffect")
         {
         }

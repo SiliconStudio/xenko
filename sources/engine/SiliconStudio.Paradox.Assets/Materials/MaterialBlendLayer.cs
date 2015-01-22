@@ -73,13 +73,13 @@ namespace SiliconStudio.Paradox.Assets.Materials
         public virtual void Visit(MaterialGeneratorContext context)
         {
             // If not enabled, or Material or BlendMap are null, skip this layer
-            if (!Enabled || Material == null || BlendMap == null || context.FindMaterial == null)
+            if (!Enabled || Material == null || BlendMap == null || context.FindAsset == null)
             {
                 return;
             }
 
             // Find the material from the reference
-            var material = context.FindMaterial(Material);
+            var material = context.FindAsset(Material) as MaterialAsset;
             if (material == null)
             {
                 context.Log.Error("Unable to find material [{0}]", Material);

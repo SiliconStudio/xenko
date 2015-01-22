@@ -34,7 +34,7 @@ class ComputeShaderBase
 
     cbuffer PerDispatch {
         // This variable provides the ThreadGroupCount from the dispatch method
-        //[Map("Paradox.Effects.ComputeShaderPluginKeys.ThreadGroupCount")]
+        [Link("ComputeShaderBaseKeys.ThreadGroupCountGlobal")]
         stage uint3 ThreadGroupCountGlobal;
     };
 
@@ -52,7 +52,7 @@ class ComputeShaderBase
         // Copy the global variable to the stream to make it consistent
         streams.ThreadGroupCount = ThreadGroupCountGlobal;
 
-        // Caclulate a unique thread group index, an index that identifies a unique group of thread from a dispatch
+        // Calculate a unique thread group index, an index that identifies a unique group of thread from a dispatch
         streams.ThreadGroupIndex = (streams.GroupId.z * streams.ThreadGroupCount.y + streams.GroupId.y) * streams.ThreadGroupCount.x  + streams.GroupId.x;
 
         Compute();

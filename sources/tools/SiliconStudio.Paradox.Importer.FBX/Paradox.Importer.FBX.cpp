@@ -1078,9 +1078,15 @@ public:
 		{
 			logger->Warning("Importer detected a network address in referenced assets. This may temporary block the build if the file does not exist. [Address='{0}']", fileNameToUse);
 		}
-		if (!File::Exists(fileNameToUse))
+		if (!File::Exists(fileNameToUse) && !String::IsNullOrEmpty(absFileName))
 		{
 			fileNameToUse = absFileName;
+		}
+
+		// Make sure path is absolute
+		if (!(gcnew UFile(fileNameToUse))->IsAbsolute)
+		{
+			fileNameToUse = Path::Combine(inputPath, fileNameToUse);
 		}
 
 		return fileNameToUse;
@@ -2368,16 +2374,14 @@ private:
 				continue;
 			
 			auto texturePath = FindFilePath(texture);
-			if (!String::IsNullOrEmpty(texturePath)
-				&& File::Exists(texturePath))
+			if (!String::IsNullOrEmpty(texturePath))
 			{
 				if (texturePath->Contains(".fbm\\"))
 					logger->Info("Importer detected an embedded texture. It has been extracted at address '{0}'.", texturePath);
+				if (!File::Exists(texturePath))
+					logger->Warning("Importer detected a texture not available on disk at address '{0}'", texturePath);
+
 				textureNames->Add(texturePath);
-			}
-			else
-			{
-				logger->Warning("Importer detected a texture not available on disk at address '{0}'", texturePath);
 			}
 		}
 

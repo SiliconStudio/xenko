@@ -84,7 +84,7 @@ namespace SiliconStudio.Paradox.UI
 
         private readonly IVirtualResolution gameVirtualResolution;
 
-        private float uiFrustrumHeight;
+        private float uiFrustumHeight;
 
         private Matrix inverseViewMatrix;
 
@@ -262,7 +262,7 @@ namespace SiliconStudio.Paradox.UI
                 virtualResolution = value;
 
                 var uiFieldOfView = (float)Math.Atan2(virtualResolution.Y / 2, virtualResolution.Z + 1f) * 2;
-                uiFrustrumHeight = 2 * (float)Math.Tan(uiFieldOfView / 2);
+                uiFrustumHeight = 2 * (float)Math.Tan(uiFieldOfView / 2);
 
                 nearPlane = 1f;
                 farPlane = 1f + 2 * virtualResolution.Z;
@@ -543,7 +543,7 @@ namespace SiliconStudio.Paradox.UI
         {
             // calculate the ray corresponding to the click
             var touchPosition = position - new Vector2(0.5f);
-            var rayDirectionView = Vector3.Normalize(new Vector3(touchPosition.X * uiFrustrumHeight * virtualResolution.X / virtualResolution.Y, touchPosition.Y * uiFrustrumHeight, -1));
+            var rayDirectionView = Vector3.Normalize(new Vector3(touchPosition.X * uiFrustumHeight * virtualResolution.X / virtualResolution.Y, touchPosition.Y * uiFrustumHeight, -1));
             var clickRay = new Ray(inverseViewMatrix.TranslationVector, Vector3.TransformNormal(rayDirectionView, inverseViewMatrix));
 
             // perform the hit test

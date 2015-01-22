@@ -3,7 +3,7 @@
 
 using System;
 using System.ComponentModel;
-
+using System.IO;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
@@ -162,10 +162,42 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
 
         protected abstract string GetTextureChannelAsString();
 
+        public override bool IsValid(MaterialGeneratorContext context)
+        {
+            if (TextureReference == null)
+            {
+                context.Log.Warning("Texture reference is null", TextureReference);
+                return false;
+            }
+
+            // TODO: Use actual texture compilation result before deciding if we can use that texture
+            // Check if asset exists
+            var textureAsset = context.FindAsset(TextureReference) as TextureAsset;
+            if (textureAsset == null)
+            {
+                context.Log.Warning("Unable to find texture [{0}]", TextureReference);
+                return false;
+            }
+
+            // Check if file exists
+            if (!File.Exists(textureAsset.Source))
+            {
+                context.Log.Warning("Texture [{0}] points to non-existing file {1}", TextureReference, textureAsset.Source);
+                return false;
+            }
+
+            return true;
+        }
+
         public override ShaderSource GenerateShaderSource(MaterialGeneratorContext context, MaterialComputeColorKeys baseKeys)
         {
             // TODO: Use a generated UsedTexcoordIndex when backing textures
             var usedTexcoord = "TEXCOORD" + MaterialUtility.GetTextureIndex(TexcoordIndex);
+
+            if (!IsValid(context))
+            {
+                return new ShaderClassSource("ComputeColor");
+            }
 
             var textureKey = context.GetTextureKey(this, baseKeys);
             var samplerKey = context.GetSamplerKey(Sampler);

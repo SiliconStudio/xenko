@@ -28,9 +28,29 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeColorTextureLodSampler.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Images\Cubemap\GGXPrefiltering.cs" />
-    <Compile Include="Images\Cubemap\LambertianPrefilteringSH.cs" />
-    <Compile Include="Images\Cubemap\LambertianPrefilteringSHPass1.cs">
+    <Compile Include="ComputeEffect\ComputeEffectShaderKeys.cs" />
+    <Compile Include="ComputeEffect\ComputeEffectShader.cs" />
+    <Compile Include="ComputeEffect\ComputeShaderBaseKeys.cs" />
+    <Compile Include="ComputeEffect\ComputeEffect.cs" />
+    <Compile Include="ComputeEffect\ComputeEffectShader1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ComputeEffectShader.pdxfx</DependentUpon>
+    </Compile>
+    <Compile Include="ComputeEffect\GGXPrefiltering\GGXPrefiltering.cs" />
+    <Compile Include="ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSH.cs" />
+    <None Include="ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSH.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>LambertianPrefilteringSH1.cs</LastGenOutput>
+    </None>
+    <Compile Include="ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSH1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>LambertianPrefilteringSH.pdxfx</DependentUpon>
+    </Compile>
+    <Compile Include="ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSHPass1.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -48,25 +68,39 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeColorTextureLodScaledSampler.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Images\Cubemap\LambertianPrefilteringSHPass2.cs">
+    <Compile Include="ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSHPass2.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHPass2.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Images\Cubemap\SphericalHarmonicsBase.cs">
+    <Compile Include="Images\SphericalHarmonics\SphericalHarmonicRender.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SphericalHarmonicRender.pdxfx</DependentUpon>
+    </Compile>
+    <Compile Include="Images\SphericalHarmonics\SphericalHarmonicsBase.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>SphericalHarmonicsBase.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Images\Cubemap\SphericalHarmonicsRenderer.cs" />
-    <Compile Include="Images\Cubemap\SphericalHarmonicsRenderer1.cs">
+    <Compile Include="Images\SphericalHarmonics\SphericalHarmonicsParameters.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SphericalHarmonicsParameters.pdxfx</DependentUpon>
+    </Compile>
+    <Compile Include="Images\SphericalHarmonics\SphericalHarmonicsRenderer.cs" />
+    <Compile Include="Images\SphericalHarmonics\SphericalHarmonicsRenderer1.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>SphericalHarmonicsRenderer.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="DrawEffect.cs" />
+    <Compile Include="DrawEffectContext.cs" />
     <Compile Include="Lights\EnvironmentLightArray.cs">
       <DependentUpon>EnvironmentLightArray.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -890,15 +924,14 @@
     <Compile Include="Images\ImageScaler\ImageScalerShader.Extensions.cs" />
     <Compile Include="Images\ImageEffect.cs" />
     <Compile Include="Images\ImageEffect.Extensions.cs" />
-    <Compile Include="Images\ImageEffectContext.cs" />
-    <Compile Include="Images\ImageEffectShader.Extensions.cs" />
+    <Compile Include="Images\ImageEffectShader.cs" />
     <Compile Include="Images\ImageScaler\ImageScalerShader.cs">
       <DependentUpon>ImageScalerShader.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Images\ImageEffectShader.cs">
+    <Compile Include="Images\ImageEffectShader1.cs">
       <DependentUpon>ImageEffectShader.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -1277,7 +1310,7 @@
       <DependentUpon>DeferredSpotLighting.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Deferred\GBufferRenderProcessor.cs" />
-    <Compile Include="ComputeShader\ComputeShaderBase.cs">
+    <Compile Include="ComputeEffect\ComputeShaderBase.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -1743,7 +1776,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Images\Cubemap\LambertianPrefilteringSHPass1.pdxsl">
+    <None Include="ComputeEffect\ComputeEffectShader.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeEffectShader1.cs</LastGenOutput>
+    </None>
+    <None Include="ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSHPass1.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LambertianPrefilteringSHPass1.cs</LastGenOutput>
     </None>
@@ -1759,15 +1796,23 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTextureLodScaledSampler.cs</LastGenOutput>
     </None>
-    <None Include="Images\Cubemap\LambertianPrefilteringSHPass2.pdxsl">
+    <None Include="ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSHPass2.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LambertianPrefilteringSHPass2.cs</LastGenOutput>
     </None>
-    <None Include="Images\Cubemap\SphericalHarmonicsBase.pdxsl">
+    <None Include="Images\SphericalHarmonics\SphericalHarmonicRender.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>SphericalHarmonicRender.cs</LastGenOutput>
+    </None>
+    <None Include="Images\SphericalHarmonics\SphericalHarmonicsBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>SphericalHarmonicsBase.cs</LastGenOutput>
     </None>
-    <None Include="Images\Cubemap\SphericalHarmonicsRenderer.pdxsl">
+    <None Include="Images\SphericalHarmonics\SphericalHarmonicsParameters.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>SphericalHarmonicsParameters.cs</LastGenOutput>
+    </None>
+    <None Include="Images\SphericalHarmonics\SphericalHarmonicsRenderer.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>SphericalHarmonicsRenderer1.cs</LastGenOutput>
     </None>
@@ -2203,7 +2248,7 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTextureCubeReflect.cs</LastGenOutput>
     </None>
-    <None Include="ComputeShader\ComputeShaderBase.pdxsl">
+    <None Include="ComputeEffect\ComputeShaderBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeShaderBase.cs</LastGenOutput>
     </None>
@@ -2441,7 +2486,7 @@
     </None>
     <None Include="Images\ImageEffectShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ImageEffectShader.cs</LastGenOutput>
+      <LastGenOutput>ImageEffectShader1.cs</LastGenOutput>
     </None>
     <None Include="Materials\IMaterialSurfaceShading.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -2796,9 +2841,7 @@
       <LastGenOutput>NormalWSStream.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Images\LambertianPrefiltering\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

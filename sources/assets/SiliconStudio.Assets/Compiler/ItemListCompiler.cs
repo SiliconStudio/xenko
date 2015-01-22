@@ -4,8 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
+using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.BuildEngine;
+using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Assets.Compiler
 {
@@ -86,7 +87,17 @@ namespace SiliconStudio.Assets.Compiler
                 if (handler != null)
                     handler(this, new AssetCompiledArgs(assetItem, resultPerAssetType));
 
-                resultPerAssetType.CopyTo(compilationResult);
+
+                // TODO: See if this can be unified with PackageBuilder.BuildStepProcessed
+                // Forward log messages to compilationResult
+                foreach (var message in resultPerAssetType.Messages)
+                {
+                    var assetMessage = new AssetLogMessage(null, assetItem.ToReference(), message.Type, AssetMessageCode.CompilationMessage, assetItem.Location, message.Text)
+                    {
+                        Exception = message is LogMessage ? ((LogMessage)message).Exception : null
+                    };
+                    compilationResult.Log(assetMessage);
+                }
 
                 if (resultPerAssetType.BuildSteps == null)
                     return null;

@@ -46,6 +46,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             compiler.SourceDirectories.Add(@"..\..\sources\shaders\Skinning");
             compiler.SourceDirectories.Add(@"..\..\sources\shaders\Shading");
             compiler.SourceDirectories.Add(@"..\..\sources\shaders\Transformation");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Utils");
             var compilerParameters = new CompilerParameters { Platform = GraphicsPlatform.Direct3D11 };
 
             var layers = new MaterialBlendLayers();
@@ -79,7 +80,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
                 }
             };
 
-            var context = new MaterialGeneratorContext { FindMaterial = reference => fakeAsset };
+            var context = new MaterialGeneratorContext { FindAsset = reference => fakeAsset };
             var result = MaterialGenerator.Generate(materialAsset, context);
 
             compilerParameters.Set(MaterialKeys.PixelStageSurfaceShaders, result.PixelStageSurfaceShader);
@@ -111,6 +112,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             compiler.SourceDirectories.Add(@"..\..\sources\shaders\Skinning");
             compiler.SourceDirectories.Add(@"..\..\sources\shaders\Shading");
             compiler.SourceDirectories.Add(@"..\..\sources\shaders\Transformation");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Utils");
             var compilerParameters = new CompilerParameters { Platform = GraphicsPlatform.Direct3D11 };
             var results = compiler.Compile(new ShaderClassSource("TestStream"), compilerParameters);
 

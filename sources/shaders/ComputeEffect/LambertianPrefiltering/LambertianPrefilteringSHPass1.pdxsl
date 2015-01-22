@@ -1,0 +1,75 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Paradox.Effects.Images
+{
+    /// <summary>
+    /// The first pass of a shader performing Lambertian pre-filtering using Spherical Harmonics
+    /// </summary>
+    internal class LambertianPrefilteringSHPass1<int TSize, int THarmonicsOrder> : SphericalHarmonicsBase<THarmonicsOrder>, ComputeShaderBase, Texturing
+    {    
+        // the input texture containing the radiance
+        TextureCube<float4> RadianceMap;
+
+        // the output buffer containing SH coefficient partially summed.
+        RWBuffer<float4> OutputBuffer;
+    
+        // Shared memory for summing SH-Basis coefficients for a row
+        stream groupshared float4 RowSHCoefficients[TSize][CoefficientsCount];
+        
+        // Projects radiance on SH basis and sums results along rows.
+        override void Compute()
+        {
+	        // Determine the indices of the texel to compute
+	        const int3 location = int3(streams.GroupThreadId.x, streams.GroupId.y, streams.GroupId.z);
+
+	        // Calculate the location in [-1, 1] texture space (center at the pixel center)
+	        float u =   ((location.x+0.5) / float(streams.ThreadCountX)) * 2.0f - 1.0f;
+	        float v = -(((location.y+0.5) / float(streams.ThreadCountY)) * 2.0f - 1.0f);
+
+	        // Extract direction from texel u,v
+	        float3 dirVS = normalize(CubemapUtils.ConvertTexcoordsNoFlip(float2(u, v), location.z));
+	        float3 radiance = RadianceMap.Sample(Texturing.PointSampler, dirVS).xyz;
+
+	        // Calculate weight
+	        float temp = 1.0f + u * u + v * v;
+	        float weight = 4.0f / (sqrt(temp) * temp);
+	        radiance *= weight;
+
+            // Calculates the values of the SH bases
+            EvaluateSHBases(dirVS);
+
+	        // Store the results in the shared memory
+            [unroll]
+            for(uint c=0; c<CoefficientsCount; ++c)
+            {
+	            streams.RowSHCoefficients[streams.GroupThreadId.x][c] = float4(streams.SHBaseValues[c] * radiance, weight);
+            }
+	        GroupMemoryBarrierWithGroupSync();
+
+	        // Sum the coefficients for the row 
+	        for(uint s = TSize / 2; s > 0; s >>= 1)
+	        {
+		        if(streams.GroupThreadId.x < s)
+		        {
+                    [unroll]
+                    for(uint c=0; c<CoefficientsCount; ++c)
+                    {
+	                    streams.RowSHCoefficients[streams.GroupThreadId.x][c] += streams.RowSHCoefficients[streams.GroupThreadId.x + s][c];
+                    }
+		        }
+		        GroupMemoryBarrierWithGroupSync();
+	        }
+
+	        // Have the first thread write out to the output texture
+	        if(streams.GroupThreadId.x == 0)
+	        {
+                [unroll]
+		        for(uint c = 0; c < CoefficientsCount; ++c)
+		        {
+			        OutputBuffer[streams.GroupId.y + TSize * c + TSize * CoefficientsCount * location.z] = streams.RowSHCoefficients[0][c];
+		        }
+	        }
+        }
+    };
+}

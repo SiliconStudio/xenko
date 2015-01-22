@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
     {
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, TextureAsset asset, AssetCompilerResult result)
         {
-            if (asset.Source == null)
+            if (string.IsNullOrEmpty(asset.Source))
             {
                 result.Error("Source cannot be null for Texture Asset [{0}]", asset);
                 return;

@@ -32,6 +32,8 @@
 // SampleLevel (DirectX HLSL Texture Object)
 // http://msdn.microsoft.com/en-us/library/bb509699%28v=VS.85%29.aspx
 
+void GroupMemoryBarrierWithGroupSync();
+
 class __Texture1D<T> {
 	// SM 4.0
 	float CalculateLevelOfDetail( sampler_state s, float1 x);

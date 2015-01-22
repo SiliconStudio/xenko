@@ -14,11 +14,12 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-namespace SiliconStudio.Paradox.Effects.Images
+namespace SiliconStudio.Paradox.Graphics.Tests
 {
-    internal static partial class LambertianPrefilteringSHPass1Keys
+    internal static partial class ComputeShaderTestKeys
     {
-        public static readonly ParameterKey<int> SumIterations = ParameterKeys.New<int>();
-        public static readonly ParameterKey<int> ImageSize = ParameterKeys.New<int>();
+        public static readonly ParameterKey<int> NbOfIterations = ParameterKeys.New<int>();
+        public static readonly ParameterKey<Texture> input = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<Texture> output = ParameterKeys.New<Texture>();
     }
 }

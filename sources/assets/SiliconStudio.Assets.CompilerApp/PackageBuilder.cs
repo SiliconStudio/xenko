@@ -164,7 +164,7 @@ namespace SiliconStudio.Assets.CompilerApp
             {
                 foreach (var message in stepLogger.Messages.Where(x => x.LogMessage.IsAtLeast(LogMessageType.Warning)))
                 {
-                    var assetMessage = new AssetLogMessage(project, assetRef, message.LogMessage.Type, AssetMessageCode.InternalCompilerError, assetRef.Location, message.LogMessage.Text)
+                    var assetMessage = new AssetLogMessage(project, assetRef, message.LogMessage.Type, AssetMessageCode.CompilationMessage, assetRef.Location, message.LogMessage.Text)
                     {
                         Exception = message.LogMessage is LogMessage ? ((LogMessage)message.LogMessage).Exception : null
                     };

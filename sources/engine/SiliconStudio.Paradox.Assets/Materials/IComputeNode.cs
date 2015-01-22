@@ -24,5 +24,13 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// </summary>
         /// <returns>ShaderSource.</returns>
         ShaderSource GenerateShaderSource(MaterialGeneratorContext context, MaterialComputeColorKeys baseKeys);
+
+        /// <summary>
+        /// Determines whether the specified node is valid.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="baseKeys">The base keys.</param>
+        /// <returns></returns>
+        bool IsValid(MaterialGeneratorContext context);
     }
 }

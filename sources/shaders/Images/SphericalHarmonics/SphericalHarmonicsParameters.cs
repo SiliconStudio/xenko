@@ -16,8 +16,8 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
-    internal static partial class SphericalHarmonicsBaseKeys
+    [DataContract]public partial class SphericalHarmonicsParameters : ShaderMixinParameters
     {
-        public static readonly ParameterKey<int> HarmonicsOrder = ParameterKeys.New<int>(3);
-    }
+        public static readonly ParameterKey<int> HarmonicsOrder = ParameterKeys.New<int>();
+    };
 }

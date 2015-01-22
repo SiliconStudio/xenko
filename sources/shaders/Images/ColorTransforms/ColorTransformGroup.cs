@@ -28,7 +28,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="colorTransformGroupEffect">The color transform group effect.</param>
-        public ColorTransformGroup(ImageEffectContext context, string colorTransformGroupEffect = "ColorTransformGroupEffect")
+        public ColorTransformGroup(DrawEffectContext context, string colorTransformGroupEffect = "ColorTransformGroupEffect")
             : base(context, colorTransformGroupEffect)
         {
             compositeKeys = new Dictionary<ParameterCompositeKey, ParameterKey>();

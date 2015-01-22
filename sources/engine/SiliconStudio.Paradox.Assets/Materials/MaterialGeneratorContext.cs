@@ -40,7 +40,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         private readonly List<KeyValuePair<Type, ShaderSource>> vertexInputStreamModifiers = new List<KeyValuePair<Type, ShaderSource>>();
 
-        public delegate MaterialAsset FindMaterialDelegate(AssetReference<MaterialAsset> materialReference);
+        public delegate Asset FindAssetDelegate(AssetReference reference);
 
         public MaterialGeneratorContext()
         {
@@ -62,7 +62,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         private MaterialShadingModelCollection CurrentShadingModel { get; set; }
 
-        public FindMaterialDelegate FindMaterial { get; set; }
+        public FindAssetDelegate FindAsset { get; set; }
 
         public bool IsVertexStage { get; set; }
 

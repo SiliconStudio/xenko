@@ -3,9 +3,11 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
-
+using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.BuildEngine;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
@@ -76,7 +78,34 @@ namespace SiliconStudio.Assets.Compiler
                 compilerResult.BuildSteps = null;
             }
 
-            if (compilerResult.BuildSteps == null || compilerResult.HasErrors)
+            // Check if this asset produced any error
+            // (dependent assets errors are generally ignored as long as thumbnail could be generated,
+            // but we will add a thumbnail overlay to indicate the state is not good)
+            var currentAssetHasErrors = false;
+            foreach (var logMessage in compilerResult.Messages)
+            {
+                // Ignore anything less than error
+                if (!logMessage.IsAtLeast(LogMessageType.Error))
+                    continue;
+
+                // Check if there is any non-asset log message
+                // (they are probably just emitted by current compiler, so they concern current asset)
+                // TODO: Maybe we should wrap every message in AssetLogMessage before copying them in compilerResult?
+                var assetLogMessage = logMessage as AssetLogMessage;
+                if (assetLogMessage == null)
+                {
+                    currentAssetHasErrors = true;
+                    break;
+                }
+
+                // If it was an asset log message, check it concerns current asset
+                if (assetLogMessage.AssetReference != null && assetLogMessage.AssetReference.Location == AssetItem.Location)
+                {
+                    currentAssetHasErrors = true;
+                    break;
+                }
+            }
+            if (compilerResult.BuildSteps == null || currentAssetHasErrors)
             {
                 // if a problem occurs while compiling, we don't want to enqueue null because it would mean
                 // that there is no thumbnail to build, which is incorrect. So we return a special build step
@@ -96,20 +125,26 @@ namespace SiliconStudio.Assets.Compiler
             if (!context.ShouldNotifyThumbnailBuilt)
                 return;
 
+            // TODO: the way to get last build step (which should be thumbnail, not its dependencies) should be done differently, at the compiler level
+            // (we need to generate two build step that can be accessed directly, one for dependency and one for thumbnail)
+            var lastBuildStep = buildStepEventArgs.Step is ListBuildStep ? ((ListBuildStep)buildStepEventArgs.Step).LastOrDefault() ?? buildStepEventArgs.Step : buildStepEventArgs.Step;
+
             // Retrieving build result
             var result = ThumbnailBuildResult.Failed;
-            if (buildStepEventArgs.Step.Succeeded)
+            if (lastBuildStep.Succeeded)
                 result = ThumbnailBuildResult.Succeeded;
-            else if (buildStepEventArgs.Step.Status == ResultStatus.Cancelled)
+            else if (lastBuildStep.Status == ResultStatus.Cancelled)
                 result = ThumbnailBuildResult.Cancelled;
 
-            var changed = buildStepEventArgs.Step.Status != ResultStatus.NotTriggeredWasSuccessful;
+            // TODO: Display error logo if anything else went wrong?
+
+            var changed = lastBuildStep.Status != ResultStatus.NotTriggeredWasSuccessful;
 
             // Open the image data stream if the build succeeded
             Stream thumbnailStream = null;
             ObjectId thumbnailHash = ObjectId.Empty;
 
-            if (buildStepEventArgs.Step.Succeeded)
+            if (lastBuildStep.Succeeded)
             {
                 thumbnailStream = AssetManager.FileProvider.OpenStream(thumbnailStorageUrl, VirtualFileMode.Open, VirtualFileAccess.Read);
                 thumbnailHash = AssetManager.FileProvider.AssetIndexMap[thumbnailStorageUrl];

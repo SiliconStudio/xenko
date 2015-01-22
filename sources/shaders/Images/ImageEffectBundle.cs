@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         /// <param name="services">The services.</param>
         public ImageEffectBundle(IServiceRegistry services)
-            : this(ImageEffectContext.GetShared(services))
+            : this(DrawEffectContext.GetShared(services))
         {
         }
 
@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Initializes a new instance of the <see cref="ImageEffectBundle"/> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        public ImageEffectBundle(ImageEffectContext context)
+        public ImageEffectBundle(DrawEffectContext context)
             : base(context)
         {
             luminanceEffect = new LuminanceEffect(Context);

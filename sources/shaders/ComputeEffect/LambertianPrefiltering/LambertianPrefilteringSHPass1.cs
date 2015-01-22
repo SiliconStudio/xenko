@@ -14,10 +14,11 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Effects.Images
 {
-    public static partial class ComputeShaderBaseKeys
+    internal static partial class LambertianPrefilteringSHPass1Keys
     {
-        public static readonly ParameterKey<Vector3> ThreadGroupCountGlobal = ParameterKeys.New<Vector3>();
+        public static readonly ParameterKey<Texture> RadianceMap = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<Buffer> OutputBuffer = ParameterKeys.New<Buffer>();
     }
 }
