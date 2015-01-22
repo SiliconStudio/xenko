@@ -23,12 +23,11 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorTextureLodSampler.cs">
-    <AutoGen>True</AutoGen>
+      <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeColorTextureLodSampler.pdxsl</DependentUpon>
     </Compile>
-
     <Compile Include="Images\Cubemap\GGXPrefiltering.cs" />
     <Compile Include="Images\Cubemap\LambertianPrefilteringSH.cs" />
     <Compile Include="Images\Cubemap\LambertianPrefilteringSHPass1.cs">
@@ -1202,7 +1201,9 @@
     <Compile Include="Cubemap\CubeMapRenderer.cs" />
     <Compile Include="Renderers\LightingIBLRenderer.cs" />
     <Compile Include="Shadows\ShadowMapRenderer.cs" />
-    <Compile Include="Skybox\SkyboxRenderer.cs" />
+    <Compile Include="Skyboxes\SkyboxComponent.cs" />
+    <Compile Include="Skyboxes\Skybox.cs" />
+    <Compile Include="Skyboxes\SkyboxRenderer.cs" />
     <Compile Include="Deferred\GBufferPack.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1542,7 +1543,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>TransformationSkinning.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Skybox\SkyboxShader.cs">
+    <Compile Include="Skyboxes\SkyboxShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -1741,7 +1742,7 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup> 
+  <ItemGroup>
     <None Include="Images\Cubemap\LambertianPrefilteringSHPass1.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LambertianPrefilteringSHPass1.cs</LastGenOutput>
@@ -2698,7 +2699,7 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>TransformationSkinning.cs</LastGenOutput>
     </None>
-    <None Include="Skybox\SkyboxShader.pdxfx">
+    <None Include="Skyboxes\SkyboxShader.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>SkyboxShader.cs</LastGenOutput>
     </None>

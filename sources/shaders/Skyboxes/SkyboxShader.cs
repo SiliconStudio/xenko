@@ -14,7 +14,7 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-namespace SiliconStudio.Paradox.Effects.Skybox
+namespace SiliconStudio.Paradox.Effects.Skyboxes
 {
     internal static partial class ShaderMixins
     {

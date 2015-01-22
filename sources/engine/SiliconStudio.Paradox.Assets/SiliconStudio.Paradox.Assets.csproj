@@ -228,6 +228,10 @@
     <Compile Include="Physics\ColliderShapeAsset.cs" />
     <Compile Include="Physics\ColliderShapeAssetCompiler.cs" />
     <Compile Include="Serializers\ParameterKeyDictionarySerializer.cs" />
+    <Compile Include="Skyboxes\ISkyboxModel.cs" />
+    <Compile Include="Skyboxes\SkyboxAssetCompiler.cs" />
+    <Compile Include="Skyboxes\SkyboxAsset.cs" />
+    <Compile Include="Skyboxes\SkyboxCubeMapModel.cs" />
     <Compile Include="Sprite\SpriteInfo.cs" />
     <Compile Include="Sprite\SpriteGroupAsset.cs" />
     <Compile Include="Sprite\SpriteGroupCompiler.cs" />

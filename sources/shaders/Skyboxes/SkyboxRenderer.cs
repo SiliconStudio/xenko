@@ -4,7 +4,7 @@
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.Effects.Skybox
+namespace SiliconStudio.Paradox.Effects.Skyboxes
 {
     /// <summary>
     /// A renderer for a skybox.
