@@ -31,7 +31,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Initializes a new instance of the <see cref="GaussianBlur"/> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        public GaussianBlur(ImageEffectContext context)
+        public GaussianBlur(DrawEffectContext context)
             : base(context)
         {
             // Use shared SharedParameters for blurH and blurV

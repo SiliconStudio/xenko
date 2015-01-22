@@ -23,12 +23,21 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ComputeColor\ComputeColorTextureLodSampler.cs">
-    <AutoGen>True</AutoGen>
+      <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeColorTextureLodSampler.pdxsl</DependentUpon>
     </Compile>
-
+    <Compile Include="ComputeEffect\ComputeEffectShaderKeys.cs" />
+    <Compile Include="ComputeEffect\ComputeEffectShader.cs" />
+    <Compile Include="ComputeEffect\ComputeShaderBaseKeys.cs" />
+    <Compile Include="ComputeEffect\ComputeEffect.cs" />
+    <Compile Include="ComputeEffect\ComputeEffectShader1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ComputeEffectShader.pdxfx</DependentUpon>
+    </Compile>
     <Compile Include="Images\Cubemap\GGXPrefiltering.cs" />
     <Compile Include="Images\Cubemap\LambertianPrefilteringSH.cs" />
     <Compile Include="Images\Cubemap\LambertianPrefilteringSHPass1.cs">
@@ -68,6 +77,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>SphericalHarmonicsRenderer.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="DrawEffect.cs" />
+    <Compile Include="DrawEffectContext.cs" />
     <Compile Include="Lights\EnvironmentLightArray.cs">
       <DependentUpon>EnvironmentLightArray.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -891,15 +902,14 @@
     <Compile Include="Images\ImageScaler\ImageScalerShader.Extensions.cs" />
     <Compile Include="Images\ImageEffect.cs" />
     <Compile Include="Images\ImageEffect.Extensions.cs" />
-    <Compile Include="Images\ImageEffectContext.cs" />
-    <Compile Include="Images\ImageEffectShader.Extensions.cs" />
+    <Compile Include="Images\ImageEffectShader.cs" />
     <Compile Include="Images\ImageScaler\ImageScalerShader.cs">
       <DependentUpon>ImageScalerShader.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Images\ImageEffectShader.cs">
+    <Compile Include="Images\ImageEffectShader1.cs">
       <DependentUpon>ImageEffectShader.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -1276,7 +1286,7 @@
       <DependentUpon>DeferredSpotLighting.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Deferred\GBufferRenderProcessor.cs" />
-    <Compile Include="ComputeShader\ComputeShaderBase.cs">
+    <Compile Include="ComputeEffect\ComputeShaderBase.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -1741,7 +1751,11 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup> 
+  <ItemGroup>
+    <None Include="ComputeEffect\ComputeEffectShader.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeEffectShader1.cs</LastGenOutput>
+    </None>
     <None Include="Images\Cubemap\LambertianPrefilteringSHPass1.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LambertianPrefilteringSHPass1.cs</LastGenOutput>
@@ -2202,7 +2216,7 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTextureCubeReflect.cs</LastGenOutput>
     </None>
-    <None Include="ComputeShader\ComputeShaderBase.pdxsl">
+    <None Include="ComputeEffect\ComputeShaderBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeShaderBase.cs</LastGenOutput>
     </None>
@@ -2440,7 +2454,7 @@
     </None>
     <None Include="Images\ImageEffectShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ImageEffectShader.cs</LastGenOutput>
+      <LastGenOutput>ImageEffectShader1.cs</LastGenOutput>
     </None>
     <None Include="Materials\IMaterialSurfaceShading.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

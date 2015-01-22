@@ -5,36 +5,37 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
+using SiliconStudio.Paradox.Effects.Images;
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.Effects.Images
+namespace SiliconStudio.Paradox.Effects
 {
     /// <summary>
     /// Context for post effects.
     /// </summary>
-    public class ImageEffectContext : ComponentBase
+    public class DrawEffectContext : ComponentBase
     {
-        private const string SharedImageEffectContextKey = "__SharedImageEffectContext__";
-        private readonly Dictionary<Type, ImageEffect> sharedEffects = new Dictionary<Type, ImageEffect>();
+        private const string SharedImageEffectContextKey = "__SharedDrawEffectContext__";
+        private readonly Dictionary<Type, DrawEffect> sharedEffects = new Dictionary<Type, DrawEffect>();
 
         private readonly GraphicsResourceAllocator allocator;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImageEffectContext" /> class.
+        /// Initializes a new instance of the <see cref="DrawEffectContext" /> class.
         /// </summary>
         /// <param name="game">The game.</param>
-        public ImageEffectContext(Game game)
+        public DrawEffectContext(Game game)
             : this(game.Services)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImageEffectContext" /> class.
+        /// Initializes a new instance of the <see cref="DrawEffectContext" /> class.
         /// </summary>
         /// <param name="serviceRegistry">The service registry.</param>
         /// <param name="allocator">The allocator.</param>
         /// <exception cref="System.ArgumentNullException">serviceRegistry</exception>
-        public ImageEffectContext(IServiceRegistry serviceRegistry, GraphicsResourceAllocator allocator = null)
+        public DrawEffectContext(IServiceRegistry serviceRegistry, GraphicsResourceAllocator allocator = null)
         {
             if (serviceRegistry == null) throw new ArgumentNullException("serviceRegistry");
             Services = serviceRegistry;
@@ -83,14 +84,14 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <summary>
         /// Gets or creates a shared effect.
         /// </summary>
-        /// <typeparam name="T">Type of the shared effect (mush have a constructor taking a <see cref="ImageEffectContext"/></typeparam>
+        /// <typeparam name="T">Type of the shared effect (mush have a constructor taking a <see cref="DrawEffectContext"/></typeparam>
         /// <returns>A singleton instance of <typeparamref name="T"/></returns>
-        public T GetSharedEffect<T>() where T : ImageEffect
+        public T GetSharedEffect<T>() where T : DrawEffect
         {
             // TODO: Add a way to support custom constructor
             lock (sharedEffects)
             {
-                ImageEffect effect;
+                DrawEffect effect;
                 if (!sharedEffects.TryGetValue(typeof(T), out effect))
                 {
                     effect = (ImageEffect)Activator.CreateInstance(typeof(T), this);
@@ -105,14 +106,14 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Gets a global shared context.
         /// </summary>
         /// <param name="services">The services.</param>
-        /// <returns>ImageEffectContext.</returns>
-        public static ImageEffectContext GetShared(IServiceRegistry services)
+        /// <returns>DrawEffectContext.</returns>
+        public static DrawEffectContext GetShared(IServiceRegistry services)
         {
             if (services == null) throw new ArgumentNullException("services");
 
-            // Store ImageEffectContext shared into the GraphicsDevice
+            // Store DrawEffectContext shared into the GraphicsDevice
             var graphicsDevice = services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
-            return graphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, SharedImageEffectContextKey, () => new ImageEffectContext(services));
+            return graphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, SharedImageEffectContextKey, () => new DrawEffectContext(services));
         }
 
         protected override void Destroy()

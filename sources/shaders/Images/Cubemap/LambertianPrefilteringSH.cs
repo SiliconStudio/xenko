@@ -40,7 +40,7 @@ namespace SiliconStudio.Paradox.Effects.Images.Cubemap
         /// </summary>
         public SphericalHarmonics PrefilteredLambertianSH { get { return prefilteredLambertianSH; } }
 
-        public LambertianPrefilteringSH(ImageEffectContext context)
+        public LambertianPrefilteringSH(DrawEffectContext context)
             : base(context, "LambertianPrefilteringSH")
         {
             firstPassEffect = new ImageEffectShader(context, "LambertianPrefilteringSHPass1");

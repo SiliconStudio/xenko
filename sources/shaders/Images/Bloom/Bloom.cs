@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Initializes a new instance of the <see cref="Bloom"/> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        public Bloom(ImageEffectContext context)
+        public Bloom(DrawEffectContext context)
             : base(context)
         {
             blurCombine = new ColorCombiner(Context);

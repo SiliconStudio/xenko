@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Effects.Images.Cubemap
         /// </summary>
         public SphericalHarmonics InputSH { get; set; }
 
-        public SphericalHarmonicsRenderer(ImageEffectContext context)
+        public SphericalHarmonicsRenderer(DrawEffectContext context)
             : base(context, "SphericalHarmonicsRenderer")
         {
         }

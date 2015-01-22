@@ -31,7 +31,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <param name="luminanceFormat">The luminance format.</param>
         /// <param name="luminanceLogEffect">The luminance log effect.</param>
         /// <exception cref="System.ArgumentNullException">lunkinanceLogShader</exception>
-        public LuminanceEffect(ImageEffectContext context, PixelFormat luminanceFormat = PixelFormat.R16_Float, ImageEffectShader luminanceLogEffect = null) : base(context)
+        public LuminanceEffect(DrawEffectContext context, PixelFormat luminanceFormat = PixelFormat.R16_Float, ImageEffectShader luminanceLogEffect = null) : base(context)
         {
             // Check luminance format
             if (luminanceFormat.IsCompressed() || luminanceFormat.IsPacked() || luminanceFormat.IsTypeless() || luminanceFormat == PixelFormat.None)
