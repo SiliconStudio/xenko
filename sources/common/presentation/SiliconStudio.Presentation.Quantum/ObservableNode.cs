@@ -19,11 +19,11 @@ namespace SiliconStudio.Presentation.Quantum
     public abstract class ObservableNode : DispatcherViewModel, IObservableNode, IDynamicMetaObjectProvider
     {
         private readonly SortedObservableCollection<IObservableNode> children = new SortedObservableCollection<IObservableNode>(new AnonymousComparer<IObservableNode>(CompareChildren));
-
         private readonly ObservableCollection<INodeCommandWrapper> commands = new ObservableCollection<INodeCommandWrapper>();
         private bool isVisible;
         private bool isReadOnly;
         private string displayName;
+        private int visibleChildrenCount;
 
         protected ObservableNode(ObservableViewModel ownerViewModel, IObservableNode parentNode, object index = null)
             : base(ownerViewModel.ServiceProvider)
@@ -79,7 +79,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets or sets whether this node should be displayed in the view.
         /// </summary>
-        public bool IsVisible { get { return isVisible; } set { SetValue(ref isVisible, value); } }
+        public bool IsVisible { get { return isVisible; } set { SetValue(ref isVisible, value, () => { var handler = IsVisibleChanged; if (handler != null) handler(this, EventArgs.Empty); }); } }
 
         /// <summary>
         /// Gets or sets whether this node can be modified in the view.
@@ -131,6 +131,12 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         public abstract bool HasDictionary { get; }
 
+        /// <inheritdoc/>
+        public int VisibleChildrenCount { get { return visibleChildrenCount; } private set { SetValue(ref visibleChildrenCount, value); } }
+
+        /// <inheritdoc/>
+        public event EventHandler<EventArgs> IsVisibleChanged;
+        
         /// <summary>
         /// Gets or sets the flags associated to this node.
         /// </summary>
@@ -267,12 +273,21 @@ namespace SiliconStudio.Presentation.Quantum
             NotifyPropertyChanging(node.Name);
             children.Add(node);
             NotifyPropertyChanged(node.Name);
+
+            if (node.IsVisible)
+                ++VisibleChildrenCount;    
+            node.IsVisibleChanged += ChildVisibilityChanged;
         }
 
         internal void RemoveChild(IObservableNode node)
         {
             if (node == null) throw new ArgumentNullException("node");
             if (!children.Contains(node)) throw new InvalidOperationException("The node is not in the children list of its parent.");
+
+            if (node.IsVisible)
+                --VisibleChildrenCount;
+            node.IsVisibleChanged -= ChildVisibilityChanged;
+
             NotifyPropertyChanging(node.Name);
             children.Remove(node);
             NotifyPropertyChanged(node.Name);
@@ -354,6 +369,15 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 child.UpdateCommandPath();
             }
+        }
+
+        private void ChildVisibilityChanged(object sender, EventArgs e)
+        {
+            var node = (IObservableNode)sender;
+            if (node.IsVisible)
+                ++VisibleChildrenCount;
+            else
+                --VisibleChildrenCount;
         }
 
         private static int CompareChildren(IObservableNode a, IObservableNode b)
