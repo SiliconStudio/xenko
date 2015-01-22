@@ -21,11 +21,11 @@ namespace SiliconStudio.Presentation.Quantum
     public abstract class ObservableNode : DispatcherViewModel, IObservableNode, IDynamicMetaObjectProvider
     {
         private readonly AutoUpdatingSortedObservableCollection<IObservableNode> children = new AutoUpdatingSortedObservableCollection<IObservableNode>(new AnonymousComparer<IObservableNode>(CompareChildren));
-
         private readonly ObservableCollection<INodeCommandWrapper> commands = new ObservableCollection<INodeCommandWrapper>();
         private bool isVisible;
         private bool isReadOnly;
         private string displayName;
+        private int visibleChildrenCount;
 
         protected ObservableNode(ObservableViewModel ownerViewModel, IObservableNode parentNode, object index = null)
             : base(ownerViewModel.ServiceProvider)
@@ -134,7 +134,7 @@ namespace SiliconStudio.Presentation.Quantum
         public abstract bool HasDictionary { get; }
 
         /// <inheritdoc/>
-        public int VisibleChildrenCount { get; private set; }
+        public int VisibleChildrenCount { get { return visibleChildrenCount; } private set { SetValue(ref visibleChildrenCount, value); } }
 
         /// <inheritdoc/>
         public event EventHandler<EventArgs> IsVisibleChanged;
