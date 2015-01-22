@@ -385,7 +385,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     }
                     else if (usedParam.Value is Array)
                     {
-                        builder.AppendLine(string.Join(", ", (Array)usedParam.Value));
+                        builder.AppendLine(string.Join(", ", (IEnumerable<object>)usedParam.Value));
                     }
                     else
                     {
