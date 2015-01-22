@@ -1749,12 +1749,6 @@
                                 <SplineDoubleKeyFrame KeyTime="00:00:02" Value="0" />
                             </DoubleAnimationUsingKeyFrames>
                         </Storyboard>
-                        <Storyboard x:Key="IndeterminateOn">
-                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="IndeterminateGradientFill" Storyboard.TargetProperty="(Shape.Fill).(Brush.Transform).(TransformGroup.Children)[0].X" RepeatBehavior="Forever">
-                                <SplineDoubleKeyFrame KeyTime="0" Value="0" />
-                                <SplineDoubleKeyFrame KeyTime="00:00:2.4" Value="145" />
-                            </DoubleAnimationUsingKeyFrames>
-                        </Storyboard>
                     </ControlTemplate.Resources>
                     <Grid>
                         <Border x:Name="PART_Track" BorderBrush="{DynamicResource SolidBorderBrush}" BorderThickness="1" CornerRadius="0,0,0,0" Background="{DynamicResource LightBrush}">
@@ -1807,7 +1801,7 @@
                             <Trigger.EnterActions>
                                 <BeginStoryboard x:Name="IndeterminateOnStoryboard">
                                     <Storyboard>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="IndeterminateGradientFill" Storyboard.TargetProperty="(Shape.Fill).(Brush.Transform).(TransformGroup.Children)[0].X">
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="IndeterminateGradientFill" Storyboard.TargetProperty="(Shape.Fill).(Brush.Transform).(TransformGroup.Children)[0].X" RepeatBehavior="Forever">
                                             <SplineDoubleKeyFrame KeyTime="0" Value="0" />
                                             <SplineDoubleKeyFrame KeyTime="00:00:2.4" Value="145" />
                                         </DoubleAnimationUsingKeyFrames>
