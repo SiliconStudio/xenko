@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 
-using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Images;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Input;
@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
     [TestFixture]
     public class TestImageEffect : TestGameBase
     {
-        private ImageEffectContext imageEffectContext;
+        private DrawEffectContext drawEffectContext;
 
         private Texture hdrTexture;
 
@@ -41,8 +41,8 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             hdrTexture = Texture.Load(GraphicsDevice, File.OpenRead(@"C:\Code\Paradox\sources\engine\SiliconStudio.Paradox.Graphics.Tests\Assets\AtriumNight.dds")); //await Asset.LoadAsync<Texture>("Atrium");
             hdrRenderTexture = Texture.New2D(GraphicsDevice, hdrTexture.Width, hdrTexture.Height, 1, hdrTexture.Format, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
-            imageEffectContext = new ImageEffectContext(this);
-            imageEffectBundle = new ImageEffectBundle(imageEffectContext);
+            drawEffectContext = new DrawEffectContext(this);
+            imageEffectBundle = new ImageEffectBundle(drawEffectContext);
             imageEffectBundle.BrightFilter.Threshold = 100.0f;
             imageEffectBundle.Bloom.DownScale = 2;
         }
