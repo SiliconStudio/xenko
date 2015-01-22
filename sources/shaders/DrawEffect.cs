@@ -10,6 +10,8 @@ using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Effects.Images;
 using SiliconStudio.Paradox.Graphics;
 
+using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
+
 namespace SiliconStudio.Paradox.Effects
 {
     /// <summary>
@@ -160,6 +162,16 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         protected virtual void DrawCore()
         {
+        }
+
+        /// <summary>
+        /// Gets a render target with the specified description, scoped for the duration of the <see cref="DrawEffect.DrawCore"/>.
+        /// </summary>
+        /// <returns>A new instance of texture.</returns>
+        protected Buffer NewScopedBuffer(BufferDescription description)
+        {
+            CheckIsInDrawCore();
+            return (Buffer)PushScopedResource(Context.Allocator.GetTemporaryBuffer(description));
         }
 
         /// <summary>

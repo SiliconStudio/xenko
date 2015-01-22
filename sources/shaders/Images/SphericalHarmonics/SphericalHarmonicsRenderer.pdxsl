@@ -6,23 +6,21 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// A shader performing Lambertian pre-filtering.
     /// </summary>
-    internal class SphericalHarmonicsRenderer: SphericalHarmonicsBase, ImageEffectShader, Texturing
+    internal class SphericalHarmonicsRenderer<int THarmonicsOrder>: SphericalHarmonicsBase<THarmonicsOrder>, ImageEffectShader, Texturing
     {    
-        [Color] stage float3 SHCoefficients[25];
+        [Color] stage float3 SHCoefficients[CoefficientsCount];
 
         // Shading of the sprite
         stage override void PSMain()
         {
             float3 ColorTargets[6];
-            int coefficientsCount = HarmonicsOrder * HarmonicsOrder;
-
             for( uint i=0; i<6; ++i)
             {
                 var direction = normalize(CubemapUtils.ConvertTexcoordsNoFlip(streams.TexCoord, i)); // remarks: TexCoord points to the center of the pixel (what we want)
 
                 EvaluateSHBases(direction);
 
-                for(uint k=0; k<coefficientsCount; ++i)
+                for(uint k=0; k<CoefficientsCount; ++i)
                     ColorTargets[i] += SHCoefficients[k] * streams.SHBaseValues[k];
             }
             

@@ -18,6 +18,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 {
     internal static partial class LambertianPrefilteringSHPass2Keys
     {
-        public static readonly ParameterKey<Vector2> SamplesCounts = ParameterKeys.New<Vector2>();
+        public static readonly ParameterKey<Buffer> InputBuffer = ParameterKeys.New<Buffer>();
+        public static readonly ParameterKey<Buffer> OutputBuffer = ParameterKeys.New<Buffer>();
     }
 }

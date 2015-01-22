@@ -16,9 +16,8 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
-    internal static partial class LambertianPrefilteringSHPass1Keys
+    [DataContract]public partial class SphericalHarmonicsParameters : ShaderMixinParameters
     {
-        public static readonly ParameterKey<int> SumIterations = ParameterKeys.New<int>();
-        public static readonly ParameterKey<int> ImageSize = ParameterKeys.New<int>();
-    }
+        public static readonly ParameterKey<int> HarmonicsOrder = ParameterKeys.New<int>();
+    };
 }

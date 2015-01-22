@@ -1,0 +1,53 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Paradox.Effects.Images
+{
+    /// <summary>
+    /// The second pass of a shader performing Lambertian pre-filtering using Spherical Harmonics
+    /// </summary>
+    internal class LambertianPrefilteringSHPass2<int TSize, int TFaceCount, int THarmonicsOrder> : SphericalHarmonicsBase<THarmonicsOrder>, ComputeShaderBase, Texturing, Math
+    {    
+        // the input buffer containing SH coefficients summed up along rows.
+        Buffer<float4> InputBuffer;
+
+        // the output buffer containing the final SH coefficients.
+        RWBuffer<float4> OutputBuffer;
+
+        // Shared memory for reducing SH-Basis coefficients
+        stream groupshared float4 ColumnSHCoefficients[TSize][CoefficientsCount][TFaceCount];
+
+        // Reduce (sums) the SH coefficients along the columns
+        override void Compute()
+        {
+            const int3 location = int3(streams.GroupThreadId.x, streams.GroupId.y, streams.GroupThreadId.z);
+
+	        // Store in shared memory
+	        streams.ColumnSHCoefficients[location.x][location.y][location.z] = InputBuffer[location.x + TSize * location.y + TSize * CoefficientsCount * location.z];
+	        GroupMemoryBarrierWithGroupSync();
+
+	        // Sum the coefficients for the column
+	        for(uint s = TSize / 2; s > 0; s >>= 1)
+	        {
+		        if(streams.GroupThreadId.x < s)
+			        streams.ColumnSHCoefficients[location.x][location.y][location.z] += streams.ColumnSHCoefficients[location.x + s][location.y][location.z];
+
+		        GroupMemoryBarrierWithGroupSync();
+	        }
+
+	        // Have the first thread write out to the output buffer
+	        if (streams.GroupThreadId.x == 0 && streams.GroupThreadId.z == 0)
+	        {
+		        float4 output = 0.0f;
+                
+                [unroll]
+		        for(uint i = 0; i < TFaceCount; ++i)
+                {
+			        output += streams.ColumnSHCoefficients[location.x][location.y][i];
+                }
+
+		        OutputBuffer[location.y] = float4(PI4 * output.xyz / output.w, 0);
+	        }
+        }
+    };
+}
