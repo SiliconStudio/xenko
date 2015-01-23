@@ -49,7 +49,7 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SiliconStudio.Paradox.Graphics.Tests.TestComputeShader</StartupObject>
+    <StartupObject>SiliconStudio.Paradox.Graphics.Tests.TestLambertPrefilteringSH</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
@@ -149,6 +149,12 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeShaderTest.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Assets\CopyInputShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CopyInputShader.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Assets\CustomEffect.cs">
       <AutoGen>True</AutoGen>
@@ -252,7 +258,7 @@
     <Compile Include="TestGraphicsResourceAllocator.cs" />
     <Compile Include="TestImageEffect.cs" />
     <Compile Include="TestImageLoad.cs" />
-    <Compile Include="TestLambertPrefiltering.cs" />
+    <Compile Include="TestLambertPrefilteringSH.cs" />
     <Compile Include="TestComputeShader.cs" />
     <Compile Include="TestMultipleRenderTargets.cs" />
     <Compile Include="TestSprite.cs" />
@@ -276,6 +282,10 @@
     <None Include="Assets\ComputeShaderTest.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeShaderTest.cs</LastGenOutput>
+    </None>
+    <None Include="Assets\CopyInputShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CopyInputShader.cs</LastGenOutput>
     </None>
     <None Include="Assets\CustomEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>

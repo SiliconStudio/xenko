@@ -6,25 +6,26 @@ using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Cubemap;
+using SiliconStudio.Paradox.Effects.ComputeEffect.LambertianPrefiltering;
 using SiliconStudio.Paradox.Effects.Images;
-using SiliconStudio.Paradox.Effects.Images.Cubemap;
+using SiliconStudio.Paradox.Effects.Images.SphericalHarmonics;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Input;
 
 namespace SiliconStudio.Paradox.Graphics.Tests
 {
-    public class TestLambertPrefiltering : Game
+    public class TestLambertPrefilteringSH : Game
     {
         private SpriteBatch spriteBatch;
 
-        private ImageEffectContext imageEffectContext;
+        private DrawEffectContext drawEffectContext;
 
         private Texture inputCubemap;
 
         private Texture displayedCubemap;
 
-        private LambertianPrefiltering lamberFilter;
+        private LambertianPrefilteringSH lamberFilter;
+        private SphericalHarmonicsRendererEffect renderSHEffect;
 
         private Texture outputCubemap;
 
@@ -34,7 +35,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         private Effect cubemapSpriteEffect;
 
-        public TestLambertPrefiltering()
+        public TestLambertPrefilteringSH()
         {
             GraphicsDeviceManager.PreferredBackBufferWidth = screenSize.X;
             GraphicsDeviceManager.PreferredBackBufferHeight = screenSize.Y;
@@ -47,8 +48,9 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             cubemapSpriteEffect = EffectSystem.LoadEffect("CubemapSprite");
 
-            imageEffectContext = new ImageEffectContext(this);
-            lamberFilter = new LambertianPrefiltering(imageEffectContext);
+            drawEffectContext = new DrawEffectContext(this);
+            lamberFilter = new LambertianPrefilteringSH(drawEffectContext);
+            renderSHEffect = new SphericalHarmonicsRendererEffect(drawEffectContext);
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
             inputCubemap = Asset.Load<Texture>("CubeMap");
@@ -65,9 +67,12 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             if (!shouldPrefilter)
                 return;
 
-            lamberFilter.SetInput(0, inputCubemap);
-            lamberFilter.SetOutput(outputCubemap);
+            lamberFilter.RadianceMap = inputCubemap;
             lamberFilter.Draw();
+
+            renderSHEffect.InputSH = lamberFilter.PrefilteredLambertianSH;
+            renderSHEffect.SetOutput(outputCubemap);
+            renderSHEffect.Draw();
 
             //shouldPrefilter = false;
             //displayedCubemap = outputCubemap;
@@ -127,7 +132,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         public static void Main()
         {
-            using (var game = new TestLambertPrefiltering())
+            using (var game = new TestLambertPrefilteringSH())
                 game.Run();
         }
     }
