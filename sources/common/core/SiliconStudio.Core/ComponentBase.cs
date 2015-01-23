@@ -50,6 +50,7 @@ namespace SiliconStudio.Core
         /// <value>
         /// The name.
         /// </value>
+        [DataMember(10)]
         public string Name
         {
             get

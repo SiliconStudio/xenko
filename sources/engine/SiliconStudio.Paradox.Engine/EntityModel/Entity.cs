@@ -3,6 +3,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,12 +33,13 @@ namespace SiliconStudio.Paradox.EntityModel
         /// <summary>
         /// The components stored in this entity.
         /// </summary>
-        [DataMember(DataMemberMode.Content)]
+        [DataMember(100, DataMemberMode.Content)]
         public PropertyContainer Components;
 
         /// <summary>
         /// The entity identifier.
         /// </summary>
+        [Browsable(false)]
         public new Guid Id;
 
         static Entity()
