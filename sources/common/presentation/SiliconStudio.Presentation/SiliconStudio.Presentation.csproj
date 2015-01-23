@@ -37,9 +37,11 @@
     <Compile Include="Adorners\HighlightBorderAdorner.cs" />
     <Compile Include="Adorners\HighlightAdornerState.cs" />
     <Compile Include="Behaviors\BehaviorProperties.cs" />
+    <Compile Include="Behaviors\BindableSelectedItemsBehavior.cs" />
     <Compile Include="Behaviors\ChangeCursorOnSliderThumbBehavior.cs" />
     <Compile Include="Behaviors\CloseWindowBehavior.cs" />
     <Compile Include="Behaviors\DoubleClickCloseWindowBehavior.cs" />
+    <Compile Include="Behaviors\ListBoxBindableSelectedItemsBehavior.cs" />
     <Compile Include="Behaviors\NumericTextBoxTransactionalRepeatButtonsBehavior.cs" />
     <Compile Include="Behaviors\OnEventBehavior.cs" />
     <Compile Include="Behaviors\OnEventSetPropertyBehavior.cs" />
