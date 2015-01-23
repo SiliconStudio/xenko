@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         RWBuffer<float4> OutputBuffer;
     
         // Shared memory for summing SH-Basis coefficients for a row
-        stream groupshared float4 RowSHCoefficients[TSize][CoefficientsCount];
+        groupshared float4 RowSHCoefficients[TSize][CoefficientsCount];
         
         // Projects radiance on SH basis and sums results along rows.
         override void Compute()
@@ -41,9 +41,9 @@ namespace SiliconStudio.Paradox.Effects.Images
 
 	        // Store the results in the shared memory
             [unroll]
-            for(uint c=0; c<CoefficientsCount; ++c)
+            for(int c=0; c<CoefficientsCount; ++c)
             {
-	            streams.RowSHCoefficients[streams.GroupThreadId.x][c] = float4(streams.SHBaseValues[c] * radiance, weight);
+	            RowSHCoefficients[streams.GroupThreadId.x][c] = float4(streams.SHBaseValues[c] * radiance, weight);
             }
 	        GroupMemoryBarrierWithGroupSync();
 
@@ -53,9 +53,9 @@ namespace SiliconStudio.Paradox.Effects.Images
 		        if(streams.GroupThreadId.x < s)
 		        {
                     [unroll]
-                    for(uint c=0; c<CoefficientsCount; ++c)
+                    for(int c=0; c<CoefficientsCount; ++c)
                     {
-	                    streams.RowSHCoefficients[streams.GroupThreadId.x][c] += streams.RowSHCoefficients[streams.GroupThreadId.x + s][c];
+	                    RowSHCoefficients[streams.GroupThreadId.x][c] += RowSHCoefficients[streams.GroupThreadId.x + s][c];
                     }
 		        }
 		        GroupMemoryBarrierWithGroupSync();
@@ -65,9 +65,9 @@ namespace SiliconStudio.Paradox.Effects.Images
 	        if(streams.GroupThreadId.x == 0)
 	        {
                 [unroll]
-		        for(uint c = 0; c < CoefficientsCount; ++c)
+		        for(int c = 0; c < CoefficientsCount; ++c)
 		        {
-			        OutputBuffer[streams.GroupId.y + TSize * c + TSize * CoefficientsCount * location.z] = streams.RowSHCoefficients[0][c];
+			        OutputBuffer[streams.GroupId.y + TSize * c + TSize * CoefficientsCount * location.z] = RowSHCoefficients[0][c];
 		        }
 	        }
         }
