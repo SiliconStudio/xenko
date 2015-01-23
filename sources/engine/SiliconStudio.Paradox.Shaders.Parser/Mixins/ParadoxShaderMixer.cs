@@ -1205,12 +1205,20 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         {
             MixedShader = new ShaderClassType(mainModuleMixin.MixinName);
 
+            // add constants
+            var constants = mainModuleMixin.ClassReferences.VariablesReferences.Select(x => x.Key).Where(x => x.Qualifiers.Contains(StorageQualifier.Const)).ToList();
+            MixedShader.Members.AddRange(constants);
+            
             // Add structures, typedefs
             foreach (var mixin in MixinInheritance.Where(x => x.OccurenceId == 1))
                 MixedShader.Members.AddRange(mixin.ParsingInfo.Typedefs);
             foreach (var mixin in MixinInheritance.Where(x => x.OccurenceId == 1))
                 MixedShader.Members.AddRange(mixin.ParsingInfo.StructureDefinitions);
-            
+
+            var sortedNodes = SortNodes(MixedShader.Members);
+            MixedShader.Members.Clear();
+            MixedShader.Members.AddRange(sortedNodes);
+
             // Create constant buffer
             GroupByConstantBuffer();
             
@@ -1236,6 +1244,34 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             
             // remove useless variables
             RemoveUselessVariables();
+        }
+
+        private List<Node> SortNodes(List<Node> nodes)
+        {
+            var weights = new Dictionary<Node, int>();
+            foreach (var node in nodes)
+            {
+                var weight = -1;
+                var classSource = node.GetTag(ParadoxTags.ShaderScope) as ModuleMixin;
+                if (classSource == null)
+                    throw new Exception("Node has no class source");
+
+                for (var i = 0; i < MixinInheritance.Count; ++i)
+                {
+                    if (MixinInheritance[i] == classSource)
+                    {
+                        weight = i;
+                        break;
+                    }
+                }
+
+                if (weight == -1)
+                    throw new Exception("constant mixin not found");
+
+                weights.Add(node, weight);
+            }
+
+            return nodes.OrderBy(x => weights[x]).ToList();
         }
 
         /// <summary>
@@ -1287,7 +1323,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <returns>true/false</returns>
         private bool IsOutOfCBufferVariable(Variable variable)
         {
-            return variable.Type is SamplerType || variable.Type is SamplerStateType || variable.Type is TextureType || variable.Type is StateType || variable.Type.ResolveType() is ObjectType || variable.Qualifiers.Contains(StorageQualifier.Const);
+            return variable.Type is SamplerType || variable.Type is SamplerStateType || variable.Type is TextureType || variable.Type is StateType || variable.Type.ResolveType() is ObjectType;
         }
 
         /// <summary>
@@ -1297,7 +1333,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <returns>true/false</returns>
         private bool KeepVariableInCBuffer(Variable variable)
         {
-            return !(variable.Qualifiers.Contains(ParadoxStorageQualifier.Extern) || variable.Qualifiers.Contains(ParadoxStorageQualifier.Stream) || variable.Qualifiers.Contains(ParadoxStorageQualifier.PatchStream) || IsOutOfCBufferVariable(variable));
+            return !(variable.Qualifiers.Contains(ParadoxStorageQualifier.Extern) || variable.Qualifiers.Contains(ParadoxStorageQualifier.Stream) || variable.Qualifiers.Contains(ParadoxStorageQualifier.PatchStream) || IsOutOfCBufferVariable(variable) || variable.Qualifiers.Contains(StorageQualifier.Const));
         }
 
         // Group everything by constant buffers
@@ -1326,6 +1362,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 MixedShader.Members.Add(globalBuffer);
             }
 
+            // add textures, samplers etc.
             MixedShader.Members.AddRange(mainModuleMixin.ClassReferences.VariablesReferences.Select(x => x.Key).Where(IsOutOfCBufferVariable));
         }
 
