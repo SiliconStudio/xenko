@@ -37,8 +37,8 @@ namespace SiliconStudio.Core.Reflection
                 }
 
                 // Else retrieve all default attributes
-                var defaultAttributes = memberInfo.GetCustomAttributes(inherit);
-                var attributesToCache = defaultAttributes.Cast<Attribute>().ToList();
+                var defaultAttributes = Attribute.GetCustomAttributes(memberInfo, inherit);
+                var attributesToCache = defaultAttributes.ToList();
 
                 // And add registered attributes
                 List<Attribute> registered;
