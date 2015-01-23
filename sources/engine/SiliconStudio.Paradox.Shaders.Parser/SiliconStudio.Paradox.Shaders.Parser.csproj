@@ -58,6 +58,7 @@
     <Compile Include="Ast\VarType.cs" />
     <Compile Include="Grammar\ParadoxGrammar.Ast.cs" />
     <Compile Include="Grammar\ParadoxGrammar.cs" />
+    <Compile Include="Mixins\CompositionDictionary.cs" />
     <Compile Include="Mixins\MethodDeclarationShaderCouple.cs" />
     <Compile Include="Mixins\MixinVirtualTable.cs" />
     <Compile Include="Mixins\ModuleMixin.cs" />

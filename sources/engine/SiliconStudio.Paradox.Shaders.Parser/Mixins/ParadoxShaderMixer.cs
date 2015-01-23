@@ -43,7 +43,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <summary>
         /// the extern modules
         /// </summary>
-        private Dictionary<Variable, List<ModuleMixin>> CompositionsPerVariable;
+        private CompositionDictionary CompositionsPerVariable;
 
         /// <summary>
         /// List of all the method Declaration
@@ -84,7 +84,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// or
         /// context
         /// </exception>
-        public ParadoxShaderMixer(ModuleMixin moduleMixin, LoggerResult log, Dictionary<string, ModuleMixin> context, Dictionary<Variable, List<ModuleMixin>> compositionsPerVariable, CloneContext cloneContext = null)
+        public ParadoxShaderMixer(ModuleMixin moduleMixin, LoggerResult log, Dictionary<string, ModuleMixin> context, CompositionDictionary compositionsPerVariable, CloneContext cloneContext = null)
         {
             if (moduleMixin == null)
                 throw new ArgumentNullException("moduleMixin");
@@ -104,9 +104,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             if (compositionsPerVariable != null)
                 CompositionsPerVariable = compositionsPerVariable;
             else
-                CompositionsPerVariable = new Dictionary<Variable, List<ModuleMixin>>();
+                CompositionsPerVariable = new CompositionDictionary();
 
-            var mixinsToAnalyze = new Stack<ModuleMixin>(CompositionsPerVariable.SelectMany(x => x.Value));
+            var mixinsToAnalyze = new Stack<ModuleMixin>(CompositionsPerVariable.Values.SelectMany(x => x));
             mixinsToAnalyze.Push(mainModuleMixin);
 
             while (mixinsToAnalyze.Count > 0)
@@ -129,7 +129,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             mainModuleMixin.StaticReferences.RegenKeys();
             mainModuleMixin.StageInitReferences.RegenKeys();
 
-            foreach (var externMix in CompositionsPerVariable.SelectMany(externMixes => externMixes.Value))
+            foreach (var externMix in CompositionsPerVariable.Values.SelectMany(externMixes => externMixes))
             {
                 externMix.ClassReferences.RegenKeys();
                 externMix.ExternReferences.RegenKeys();
@@ -241,9 +241,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         {
             RedoSematicAnalysis();
             CreateReferencesStructures(mainModuleMixin);
-            foreach (var compositions in CompositionsPerVariable)
+            foreach (var compositions in CompositionsPerVariable.Values)
             {
-                foreach (var comp in compositions.Value)
+                foreach (var comp in compositions)
                     CreateReferencesStructures(comp);
             }
         }
@@ -386,9 +386,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// </summary>
         private void MergeReferences()
         {
-            foreach (var externMixes in CompositionsPerVariable)
+            foreach (var externMixes in CompositionsPerVariable.Values)
             {
-                foreach (var externMix in externMixes.Value)
+                foreach (var externMix in externMixes)
                     mainModuleMixin.ClassReferences.Merge(externMix.ClassReferences);
             }
 
@@ -666,9 +666,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             var topMixin = mainModuleMixin == mixin || mainModuleMixin.InheritanceList.Any(x => x == mixin) ? mainModuleMixin : null;
             if (topMixin == null)
             {
-                foreach (var externMixes in CompositionsPerVariable)
+                foreach (var externMixes in CompositionsPerVariable.Values)
                 {
-                    foreach (var externMix in externMixes.Value)
+                    foreach (var externMix in externMixes)
                     {
                         topMixin = externMix == mixin || externMix.InheritanceList.Any(x => x == mixin) ? externMix : null;
                         if (topMixin != null)
@@ -1000,13 +1000,13 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             ProcessExternReferences(mainModuleMixin);
 
             AddStageVariables(mainModuleMixin);
-            foreach (var externMix in CompositionsPerVariable.SelectMany(externMixes => externMixes.Value))
+            foreach (var externMix in CompositionsPerVariable.Values.SelectMany(externMixes => externMixes))
                 InferStageVariables(externMix);
 
             ProcessStageInitReferences(mainModuleMixin);
-            CompositionsPerVariable.SelectMany(externMixes => externMixes.Value).ToList().ForEach(ProcessStageInitReferences);
+            CompositionsPerVariable.Values.SelectMany(externMixes => externMixes).ToList().ForEach(ProcessStageInitReferences);
             
-            foreach (var externMix in CompositionsPerVariable.SelectMany(externMixes => externMixes.Value))
+            foreach (var externMix in CompositionsPerVariable.Values.SelectMany(externMixes => externMixes))
             {
                 foreach (var variable in externMix.StaticReferences.VariablesReferences)
                 {
@@ -1228,8 +1228,11 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
             // deal with foreach statements
             ExpandForEachStatements(mainModuleMixin);
-            foreach (var externMix in CompositionsPerVariable.SelectMany(x => x.Value))
-                ExpandForEachStatements(externMix);
+            foreach (var externMixList in CompositionsPerVariable.Values)
+            {
+                foreach (var externMix in externMixList)
+                    ExpandForEachStatements(externMix);
+            }
             
             // remove useless variables
             RemoveUselessVariables();
