@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Collections.Generic;
+using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.EntityModel;
@@ -31,7 +31,19 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
         {
             // TODO: Move this to base component
             Enabled = true;
+            Skybox = skybox;
+            Lighting = new SkyboxLighting();
+            Background = new SkyboxBackground();
         }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether rendering is enabled.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if rendering is enabled; otherwise, <c>false</c>.
+        /// </value>
+        [DefaultValue(true)]
+        public bool Enabled { get; set; }
 
         /// <summary>
         /// Gets or sets the skybox.
@@ -42,12 +54,16 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
         public Skybox Skybox { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether rendering is enabled.
+        /// Gets the lighting parameters of this skybox.
         /// </summary>
-        /// <value>
-        ///   <c>true</c> if rendering is enabled; otherwise, <c>false</c>.
-        /// </value>
-        public bool Enabled { get; set; }
+        /// <value>The lighting.</value>
+        public SkyboxLighting Lighting { get; private set; }
+
+        /// <summary>
+        /// Gets the background parameters for this skybox.
+        /// </summary>
+        /// <value>The background.</value>
+        public SkyboxBackground Background { get; private set; }
 
         public override PropertyKey DefaultKey
         {

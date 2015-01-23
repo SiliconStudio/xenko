@@ -1,5 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
+
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Shaders;
 
@@ -108,5 +111,21 @@ namespace SiliconStudio.Paradox.Effects
         public static readonly ParameterKey<ShaderSource[]> DirectLightGroups = ParameterKeys.New((ShaderSource[])null);
 
         public static readonly ParameterKey<ShaderSource[]> EnvironmentLights = ParameterKeys.New((ShaderSource[])null);
+
+
+        private static readonly ShaderSource[] DefaultAmbientLighting = new ShaderSource[] { new ShaderClassSource("LightSimpleAmbient"), };
+
+        public static void EnableFixedAmbientLight(ParameterCollection parameters, bool enable)
+        {
+            if (parameters == null) throw new ArgumentNullException("parameters");
+            if (enable)
+            {
+                parameters.Set(EnvironmentLights, DefaultAmbientLighting);
+            }
+            else
+            {
+                parameters.Remove(EnvironmentLights);
+            }
+        }
     }
 }

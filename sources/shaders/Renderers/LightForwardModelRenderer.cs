@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.Effects.Renderers
     /// TODO: Evaluate if it would be possible to split this class with support for different lights instead of a big fat class
     /// TODO: Refactor this class
     /// </summary>
-    internal class LightForwardModelRenderer
+    public class LightForwardModelRenderer
     {
         private readonly List<EntityLightShadow> lights = new List<EntityLightShadow>(); 
 
@@ -29,16 +29,53 @@ namespace SiliconStudio.Paradox.Effects.Renderers
         {
             if (services == null) throw new ArgumentNullException("services");
             Services = services;
+            previousCountDirectional = -1;
         }
 
         public IServiceRegistry Services { get; private set; }
 
+        public void EnableLights(ModelRenderer modelRenderer, bool isEnabled)
+        {
+            if (modelRenderer == null) throw new ArgumentNullException("modelRenderer");
+            if (isEnabled)
+            {
+                modelRenderer.PreRender.Add(this.PreRender);
+                modelRenderer.PostRender.Add(this.PostRender);
+                modelRenderer.PreEffectUpdate.Add(this.PreEffectUpdate);
+                modelRenderer.PostEffectUpdate.Add(this.PostEffectUpdate);
+            }
+            else
+            {
+                modelRenderer.PreRender.Remove(this.PreRender);
+                modelRenderer.PostRender.Remove(this.PostRender);
+                modelRenderer.PreEffectUpdate.Remove(this.PreEffectUpdate);
+                modelRenderer.PostEffectUpdate.Remove(this.PostEffectUpdate);
+            }
+        }
+
+        private bool isNewCount;
+
+        private ShaderSource[] directLightGroups;
+
+        private int previousCountDirectional;
+
+        private readonly ParameterKey<int> countDirectionalKey = ParameterKeys.New(0);
+
+        private ParameterKey<int> directLightGroupKeysLightCount;
+        private ParameterKey<Vector3[]> directLightGroupKeysLightDirectionsVS;
+        private ParameterKey<Color3[]> directLightGroupKeysLightColor;
+
+        private Vector3[] lightDirections;
+
+        private Color3[] lightColors;
+
+        private int countDirectional;
 
         /// <summary>
         /// Filter out the inactive lights.
         /// </summary>
         /// <param name="context">The render context.</param>
-        public void PreRender(RenderContext context)
+        private void PreRender(RenderContext context)
         {
             // get the lightprocessor
             var entitySystem = Services.GetServiceAs<EntitySystem>();
@@ -55,56 +92,37 @@ namespace SiliconStudio.Paradox.Effects.Renderers
                     lights.Add(light.Value);
                 }
             }
-        }
 
-        /// <summary>
-        /// Clear the light lists.
-        /// </summary>
-        /// <param name="context">The render context.</param>
-        public void PostRender(RenderContext context)
-        {
-        }
+            // TEMP: this should be set dynamically by group
+            directLightGroupKeysLightCount = DirectLightGroupKeys.GetParameterKey(DirectLightGroupKeys.LightCount, 0);
+            directLightGroupKeysLightDirectionsVS = DirectLightGroupKeys.GetParameterKey(LightDirectionalGroupKeys.LightDirectionsVS, 0);
+            directLightGroupKeysLightColor = DirectLightGroupKeys.GetParameterKey(LightDirectionalGroupKeys.LightColor, 0);
 
-        private ShaderSource[] directLightGroups;
-
-        private readonly ParameterKey<int> countDirectionalKey = ParameterKeys.New(0);
-
-
-        /// <summary>
-        /// Update light lists and choose the new light configuration.
-        /// </summary>
-        /// <param name="context">The render context.</param>
-        /// <param name="renderMesh">The current RenderMesh (the same as <seealso cref="PostEffectUpdate"/>)</param>
-        public void PreEffectUpdate(RenderContext context, RenderMesh renderMesh)
-        {
             // WARNING: This is just a dirty code to reactivate and test Directional Lighting. 
             // BUT This should be written with pluggability in mind
-            int countDirectional = lights.Count(light => (light.Light.Type is LightDirectional));
-            int previousCountDirectional;
-            renderMesh.Parameters.TryGet(countDirectionalKey, out previousCountDirectional);
-            bool isNewCount = previousCountDirectional != countDirectional;
+            countDirectional = lights.Count(light => (light.Light.Type is LightDirectional));
+            isNewCount = previousCountDirectional != countDirectional;
 
             if (countDirectional == 0)
             {
                 if (isNewCount)
                 {
-                    renderMesh.Parameters.Set(countDirectionalKey, countDirectional);
-                    renderMesh.Parameters.Set(LightingKeys.DirectLightGroups, null);
+                    directLightGroups = null;
                 }
                 return;
             }
 
             if (isNewCount)
             {
-                var shaderSources = new List<ShaderSource>();
-                shaderSources.Add(new ShaderClassSource("LightDirectionalGroup", countDirectional));
+                var shaderSources = new List<ShaderSource>
+                {
+                    new ShaderClassSource("LightDirectionalGroup", 8)
+                };
                 directLightGroups = shaderSources.ToArray();
-                renderMesh.Parameters.Set(countDirectionalKey, countDirectional);
-                renderMesh.Parameters.Set(LightingKeys.DirectLightGroups, directLightGroups);
-            }
 
-            var lightDirections = new Vector3[countDirectional];
-            var lightColors = new Color3[countDirectional];
+                lightDirections = new Vector3[countDirectional];
+                lightColors = new Color3[countDirectional];
+            }
 
             var viewMatrix = context.CurrentPass.Parameters.Get(TransformationKeys.View);
 
@@ -127,9 +145,33 @@ namespace SiliconStudio.Paradox.Effects.Renderers
                 lightColors[directLightIndex] = light.Light.Color.ToLinear() * light.Light.Intensity;
             }
 
-            renderMesh.Parameters.Set(DirectLightGroupKeys.GetParameterKey(DirectLightGroupKeys.LightCount, 0), countDirectional);
-            renderMesh.Parameters.Set(DirectLightGroupKeys.GetParameterKey(LightDirectionalGroupKeys.LightDirectionsVS, 0), lightDirections);
-            renderMesh.Parameters.Set(DirectLightGroupKeys.GetParameterKey(LightDirectionalGroupKeys.LightColor, 0), lightColors);
+        }
+
+        /// <summary>
+        /// Clear the light lists.
+        /// </summary>
+        /// <param name="context">The render context.</param>
+        private void PostRender(RenderContext context)
+        {
+        }
+
+        /// <summary>
+        /// Update light lists and choose the new light configuration.
+        /// </summary>
+        /// <param name="context">The render context.</param>
+        /// <param name="renderMesh">The current RenderMesh (the same as <seealso cref="PostEffectUpdate"/>)</param>
+        private void PreEffectUpdate(RenderContext context, RenderMesh renderMesh)
+        {
+            if (isNewCount)
+            {
+                // Only set this keys when needed, as they are used for compilation parameters, they should not be updated 
+                // if they don't change
+                renderMesh.Parameters.Set(directLightGroupKeysLightCount, countDirectional);
+                renderMesh.Parameters.Set(LightingKeys.DirectLightGroups, directLightGroups);
+            }
+
+            renderMesh.Parameters.Set(directLightGroupKeysLightDirectionsVS, lightDirections);
+            renderMesh.Parameters.Set(directLightGroupKeysLightColor, lightColors);
         }
 
         /// <summary>
@@ -139,7 +181,6 @@ namespace SiliconStudio.Paradox.Effects.Renderers
         /// <param name="renderMesh">The current RenderMesh (the same as <seealso cref="PreEffectUpdate"/>)</param>
         public void PostEffectUpdate(RenderContext context, RenderMesh renderMesh)
         {
-            
-        }
+ }
     }
 }

@@ -15,6 +15,7 @@ using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects.Processors
 {
+    // TODO: rewrite this class
     public abstract class LightShadowProcessor : EntityProcessor<EntityLightShadow>
     {
         public static readonly Logger Logger = GlobalLogger.GetLogger("LightShadowProcessor");

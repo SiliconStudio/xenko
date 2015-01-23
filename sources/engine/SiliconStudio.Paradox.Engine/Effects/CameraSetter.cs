@@ -36,6 +36,7 @@ namespace SiliconStudio.Paradox.Effects
             if (Camera == null)
                 return;
 
+            // TODO Should we really want to throw an exception
             if(Camera.Entity == null)
                 throw new Exception("The camera component provided to 'CameraSetter' should be associated to an entity");
 

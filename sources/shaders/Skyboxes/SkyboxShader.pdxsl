@@ -1,0 +1,26 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Paradox.Effects.Images
+{
+    /// <summary>
+    /// Base class to perform post effects. Draws the input mesh without transformation.
+    /// </summary>
+    class SkyboxShader : ImageEffectShader, Transformation, SkyboxStream
+    {
+        // compose ComputeColor skyboxColor;
+
+        override stage void VSMain()
+        {
+            var position = float4(streams.TexCoord * 2 - 1, 0.9999, 1.0f);
+            var directionVS = mul(position, ProjectionInverse).xyz;
+            var directionWS = mul(directionVS, (float3x3)ViewInverse);
+            streams.skyboxViewDirection = directionWS;
+        }
+
+        override stage float4 Shading()
+        {
+            return float4(streams.skyboxViewDirection, 1.0);
+        }
+    };
+}

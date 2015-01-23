@@ -214,7 +214,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         {
             var textureKey = (ParameterKey<Texture>)GetParameterKey(computeTexture.Key ?? baseKeys.TextureBaseKey ?? MaterialKeys.GenericTexture);
             var textureReference = computeTexture.TextureReference;
-            if (textureReference != null)
+            if (computeTexture.IsValid(this) && textureReference != null)
             {
                 var texture = AttachedReferenceManager.CreateSerializableVersion<Texture>(textureReference.Id, textureReference.Location);
                 Parameters.Set(textureKey, texture);

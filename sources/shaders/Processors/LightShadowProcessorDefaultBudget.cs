@@ -10,6 +10,7 @@ namespace SiliconStudio.Paradox.Effects.Processors
     /// <summary>
     /// This class inherits from <see cref="LightShadowProcessorWithBudget"/> and has a budget of two 2048 x 2048 shadow map textures: one for the variance shadow maps, one for the other types.
     /// </summary>
+    // TODO: rewrite this class
     public class LightShadowProcessorDefaultBudget : LightShadowProcessorWithBudget
     {
         public LightShadowProcessorDefaultBudget(GraphicsDevice device, bool manageShadows)

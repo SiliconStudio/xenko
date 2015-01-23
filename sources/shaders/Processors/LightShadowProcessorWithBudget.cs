@@ -16,6 +16,7 @@ namespace SiliconStudio.Paradox.Effects.Processors
     /// <summary>
     /// A class handling the allocation of shadow maps with a fixed budget of shadow map textures. This class is meant to be inherited with the desired budget since it has no texture at all.
     /// </summary>
+    // TODO: rewrite this class
     public class LightShadowProcessorWithBudget : LightShadowProcessor
     {
         #region Private members

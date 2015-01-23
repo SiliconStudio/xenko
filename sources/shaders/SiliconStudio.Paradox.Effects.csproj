@@ -1063,14 +1063,8 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Images\ColorTransforms\ToneMap\ToneMap.cs" />
-    <Compile Include="Pipelines\CompositePipelineBuilder.cs" />
-    <Compile Include="Pipelines\ForwardPipelineBuilder.cs" />
-    <Compile Include="Pipelines\LambdaPipelineBuilder.cs" />
-    <Compile Include="Pipelines\LightingPipelineBuilder.cs" />
-    <Compile Include="Pipelines\MainPipelineBuilder.cs" />
     <Compile Include="Pipelines\PipelineBuilder.cs" />
-    <Compile Include="Pipelines\PipelineBuilders.cs" />
-    <Compile Include="Pipelines\SimpleRendererPipelineBuilder.cs" />
+    <Compile Include="Pipelines\SceneRenderingPipeline.cs" />
     <Compile Include="Materials\MaterialSurfaceBlendShading.cs">
       <DependentUpon>MaterialSurfaceBlendShading.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -1133,7 +1127,6 @@
     </Compile>
     <Compile Include="Renderers\DirectLightData.cs" />
     <Compile Include="Renderers\LightForwardModelRenderer.cs" />
-    <Compile Include="Renderers\LightForwardModelRendererExtensions.cs" />
     <Compile Include="Renderers\LightingGroupInfo.cs" />
     <Compile Include="Renderers\LightingUpdateInfo.cs" />
     <Compile Include="Renderers\LightingUpdateType.cs" />
@@ -1234,9 +1227,25 @@
     <Compile Include="Cubemap\CubeMapRenderer.cs" />
     <Compile Include="Renderers\LightingIBLRenderer.cs" />
     <Compile Include="Shadows\ShadowMapRenderer.cs" />
+    <Compile Include="Skyboxes\SkyboxLightingRenderer.cs" />
+    <Compile Include="Skyboxes\SkyboxProcessor.cs" />
+    <Compile Include="Skyboxes\SkyboxStream.cs">
+      <DependentUpon>SkyboxStream.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Skyboxes\SkyboxShader.cs">
+      <DependentUpon>SkyboxShader.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Skyboxes\SkyboxBackground.cs" />
     <Compile Include="Skyboxes\SkyboxComponent.cs" />
     <Compile Include="Skyboxes\Skybox.cs" />
-    <Compile Include="Skyboxes\SkyboxRenderer.cs" />
+    <Compile Include="Skyboxes\SkyboxLighting.cs" />
+    <Compile Include="Skyboxes\SkyboxBackgroundRenderer.cs" />
     <Compile Include="Deferred\GBufferPack.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1575,12 +1584,6 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>TransformationSkinning.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="Skyboxes\SkyboxShader.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>SkyboxShader.pdxfx</DependentUpon>
     </Compile>
     <Compile Include="PostEffectKeys.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -2744,7 +2747,11 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>TransformationSkinning.cs</LastGenOutput>
     </None>
-    <None Include="Skyboxes\SkyboxShader.pdxfx">
+    <None Include="Skyboxes\SkyboxStream.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>SkyboxStream.cs</LastGenOutput>
+    </None>
+    <None Include="Skyboxes\SkyboxShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>SkyboxShader.cs</LastGenOutput>
     </None>

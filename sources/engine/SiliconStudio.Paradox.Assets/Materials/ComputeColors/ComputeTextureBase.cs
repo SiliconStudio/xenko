@@ -166,8 +166,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         {
             if (TextureReference == null)
             {
-                context.Log.Warning("Texture reference is null", TextureReference);
-                return false;
+                return true;
             }
 
             // TODO: Use actual texture compilation result before deciding if we can use that texture
@@ -193,11 +192,6 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         {
             // TODO: Use a generated UsedTexcoordIndex when backing textures
             var usedTexcoord = "TEXCOORD" + MaterialUtility.GetTextureIndex(TexcoordIndex);
-
-            if (!IsValid(context))
-            {
-                return new ShaderClassSource("ComputeColor");
-            }
 
             var textureKey = context.GetTextureKey(this, baseKeys);
             var samplerKey = context.GetSamplerKey(Sampler);

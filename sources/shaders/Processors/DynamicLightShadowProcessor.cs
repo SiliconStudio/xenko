@@ -18,6 +18,7 @@ namespace SiliconStudio.Paradox.Effects.Processors
     /// <summary>
     /// A class allocating as many shadow map as possible without any predefined memory budget.
     /// </summary>
+    // TODO: rewrite this class
     public class DynamicLightShadowProcessor : LightShadowProcessor
     {
         #region Private members

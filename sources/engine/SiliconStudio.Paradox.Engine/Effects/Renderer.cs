@@ -24,12 +24,19 @@ namespace SiliconStudio.Paradox.Effects
         {
             if (services == null) throw new ArgumentNullException("services");
 
+            Enabled = true;
             Services = services;
             RenderSystem = services.GetSafeServiceAs<RenderSystem>();
             EffectSystem = services.GetSafeServiceAs<EffectSystem>();
             graphicsDeviceService = services.GetSafeServiceAs<IGraphicsDeviceService>();
             DebugName = GetType().Name;
         }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="Renderer"/> is enabled.
+        /// </summary>
+        /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
+        public bool Enabled { get; set; }
 
         /// <summary>
         /// Gets the services.
@@ -111,9 +118,12 @@ namespace SiliconStudio.Paradox.Effects
 
         private void PassRendering(RenderContext context)
         {
-            BeginRendering(context);
-            OnRendering(context);
-            EndRendering(context);
+            if (Enabled)
+            {
+                BeginRendering(context);
+                OnRendering(context);
+                EndRendering(context);
+            }
         }
 
         protected CompilerParameters GetDefaultCompilerParameters()
