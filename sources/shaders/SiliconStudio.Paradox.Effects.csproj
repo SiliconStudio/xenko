@@ -74,11 +74,11 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHPass2.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Images\SphericalHarmonics\SphericalHarmonicRender.cs">
+    <Compile Include="Images\SphericalHarmonics\SphericalHarmonicsRendererEffect1.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>SphericalHarmonicRender.pdxfx</DependentUpon>
+      <DependentUpon>SphericalHarmonicsRendererEffect.pdxfx</DependentUpon>
     </Compile>
     <Compile Include="Images\SphericalHarmonics\SphericalHarmonicsBase.cs">
       <AutoGen>True</AutoGen>
@@ -92,7 +92,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>SphericalHarmonicsParameters.pdxfx</DependentUpon>
     </Compile>
-    <Compile Include="Images\SphericalHarmonics\SphericalHarmonicsRenderer.cs" />
+    <Compile Include="Images\SphericalHarmonics\SphericalHarmonicsRendererEffect.cs" />
     <Compile Include="Images\SphericalHarmonics\SphericalHarmonicsRenderer1.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1798,9 +1798,9 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LambertianPrefilteringSHPass2.cs</LastGenOutput>
     </None>
-    <None Include="Images\SphericalHarmonics\SphericalHarmonicRender.pdxfx">
+    <None Include="Images\SphericalHarmonics\SphericalHarmonicsRendererEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>SphericalHarmonicRender.cs</LastGenOutput>
+      <LastGenOutput>SphericalHarmonicsRendererEffect1.cs</LastGenOutput>
     </None>
     <None Include="Images\SphericalHarmonics\SphericalHarmonicsBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
