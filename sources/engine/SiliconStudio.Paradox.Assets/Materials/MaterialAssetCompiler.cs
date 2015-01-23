@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         {
             private readonly AssetItem assetItem;
 
-            private readonly AssetCompilerContext context;
+            private readonly Package package;
 
             private UFile assetUrl;
 
@@ -38,7 +38,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 : base(url, value)
             {
                 this.assetItem = assetItem;
-                this.context = context;
+                package = context.Package;
                 assetUrl = new UFile(url);
             }
 
@@ -97,8 +97,8 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 {
                     FindAsset = reference =>
                     {
-                        var assetItem = context.Package.Session.FindAsset(reference.Id)
-                                        ?? context.Package.Session.FindAsset(reference.Location);
+                        var assetItem = package.Session.FindAsset(reference.Id)
+                                        ?? package.Session.FindAsset(reference.Location);
 
                         if (assetItem == null)
                         {
