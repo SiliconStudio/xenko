@@ -8,7 +8,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// </summary>
     internal class SphericalHarmonicsBase<int TOrder> : Math
     {    
-        const int CoefficientsCount = TOrder * TOrder;
+        static const int CoefficientsCount = TOrder * TOrder;
 
         // Pi constants
         static const float PI4  =  4 * PI;

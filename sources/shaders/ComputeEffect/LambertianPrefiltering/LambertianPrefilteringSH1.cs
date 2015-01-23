@@ -18,8 +18,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 {
     [DataContract]public partial class LambertianPrefilteringSHParameters : ShaderMixinParameters
     {
-        public static readonly ParameterKey<int> ImageSize = ParameterKeys.New<int>();
-        public static readonly ParameterKey<int> FaceCount = ParameterKeys.New<int>();
+        public static readonly ParameterKey<int> BlockSize = ParameterKeys.New<int>();
     };
     internal static partial class ShaderMixins
     {
@@ -27,7 +26,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-                context.Mixin(mixin, "LambertianPrefilteringSHPass1", context.GetParam(LambertianPrefilteringSHParameters.ImageSize), context.GetParam(SphericalHarmonicsParameters.HarmonicsOrder));
+                context.Mixin(mixin, "LambertianPrefilteringSHPass1", context.GetParam(LambertianPrefilteringSHParameters.BlockSize), context.GetParam(SphericalHarmonicsParameters.HarmonicsOrder));
             }
 
             [ModuleInitializer]
@@ -44,7 +43,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-                context.Mixin(mixin, "LambertianPrefilteringSHPass2", context.GetParam(LambertianPrefilteringSHParameters.ImageSize), context.GetParam(LambertianPrefilteringSHParameters.FaceCount), context.GetParam(SphericalHarmonicsParameters.HarmonicsOrder));
+                context.Mixin(mixin, "LambertianPrefilteringSHPass2", context.GetParam(LambertianPrefilteringSHParameters.BlockSize), context.GetParam(SphericalHarmonicsParameters.HarmonicsOrder));
             }
 
             [ModuleInitializer]

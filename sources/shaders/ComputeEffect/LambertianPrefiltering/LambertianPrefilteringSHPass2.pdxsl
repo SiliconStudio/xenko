@@ -6,7 +6,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// The second pass of a shader performing Lambertian pre-filtering using Spherical Harmonics
     /// </summary>
-    internal class LambertianPrefilteringSHPass2<int TSize, int TFaceCount, int THarmonicsOrder> : SphericalHarmonicsBase<THarmonicsOrder>, ComputeShaderBase, Texturing, Math
+    internal class LambertianPrefilteringSHPass2<int TSize, int THarmonicsOrder> : SphericalHarmonicsBase<THarmonicsOrder>, ComputeShaderBase, Texturing, Math
     {    
         // the input buffer containing SH coefficients summed up along rows.
         Buffer<float4> InputBuffer;
@@ -15,38 +15,32 @@ namespace SiliconStudio.Paradox.Effects.Images
         RWBuffer<float4> OutputBuffer;
 
         // Shared memory for reducing SH-Basis coefficients
-        groupshared float4 ColumnSHCoefficients[TSize][CoefficientsCount][TFaceCount];
+        groupshared float4 PartialSHCoeffs[TSize];
 
         // Reduce (sums) the SH coefficients along the columns
         override void Compute()
         {
-            const int3 location = int3(streams.GroupThreadId.x, streams.GroupId.y, streams.GroupThreadId.z);
+            int coeffId = streams.GroupId.z;
+            int threadId = streams.GroupThreadId.x;
+            int groupId = streams.GroupId.x + streams.ThreadGroupCount.x * streams.GroupId.y;
 
 	        // Store in shared memory
-	        ColumnSHCoefficients[location.x][location.y][location.z] = InputBuffer[location.x + TSize * location.y + TSize * CoefficientsCount * location.z];
+	        PartialSHCoeffs[threadId] = InputBuffer[coeffId + CoefficientsCount * TSize * groupId];
 	        GroupMemoryBarrierWithGroupSync();
-
-	        // Sum the coefficients for the column
-	        for(uint s = TSize / 2; s > 0; s >>= 1)
-	        {
-		        if(streams.GroupThreadId.x < s)
-			        ColumnSHCoefficients[location.x][location.y][location.z] += ColumnSHCoefficients[location.x + s][location.y][location.z];
+            
+	        // Sum the coefficients
+            for(int s = TSize / 2; s > 0; s >>= 1) 
+            {
+		        if(threadId < s)
+			        PartialSHCoeffs[threadId] += PartialSHCoeffs[threadId + s];
 
 		        GroupMemoryBarrierWithGroupSync();
 	        }
 
 	        // Have the first thread write out to the output buffer
-	        if (streams.GroupThreadId.x == 0 && streams.GroupThreadId.z == 0)
+	        if (IsFirstThreadOfGroup())
 	        {
-		        float4 output = 0.0f;
-                
-                [unroll]
-		        for(uint i = 0; i < TFaceCount; ++i)
-                {
-			        output += ColumnSHCoefficients[location.x][location.y][i];
-                }
-
-		        OutputBuffer[location.y] = float4(PI4 * output.xyz / output.w, 0);
+		        OutputBuffer[coeffId + CoefficientsCount * groupId] = PartialSHCoeffs[0];
 	        }
         }
     };

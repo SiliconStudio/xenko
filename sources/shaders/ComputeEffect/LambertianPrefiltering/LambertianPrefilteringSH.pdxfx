@@ -5,8 +5,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 {
     params LambertianPrefilteringSHParameters
     {   
-        int ImageSize;
-        int FaceCount;
+        int BlockSize;
     }
 
     shader LambertianPrefilteringSHEffectPass1
@@ -14,7 +13,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         using params SphericalHarmonicsParameters;
         using params LambertianPrefilteringSHParameters;
 
-        mixin LambertianPrefilteringSHPass1<LambertianPrefilteringSHParameters.ImageSize, SphericalHarmonicsParameters.HarmonicsOrder>;
+        mixin LambertianPrefilteringSHPass1<LambertianPrefilteringSHParameters.BlockSize, SphericalHarmonicsParameters.HarmonicsOrder>;
     };
 
     shader LambertianPrefilteringSHEffectPass2
@@ -22,6 +21,6 @@ namespace SiliconStudio.Paradox.Effects.Images
         using params SphericalHarmonicsParameters;
         using params LambertianPrefilteringSHParameters;
 
-        mixin LambertianPrefilteringSHPass2<LambertianPrefilteringSHParameters.ImageSize, LambertianPrefilteringSHParameters.FaceCount, SphericalHarmonicsParameters.HarmonicsOrder>;
+        mixin LambertianPrefilteringSHPass2<LambertianPrefilteringSHParameters.BlockSize, SphericalHarmonicsParameters.HarmonicsOrder>;
     };
 }

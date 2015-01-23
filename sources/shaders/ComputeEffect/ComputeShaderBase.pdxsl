@@ -35,7 +35,7 @@ class ComputeShaderBase
     cbuffer PerDispatch {
         // This variable provides the ThreadGroupCount from the dispatch method
         [Link("ComputeShaderBaseKeys.ThreadGroupCountGlobal")]
-        stage uint3 ThreadGroupCountGlobal;
+        stage int3 ThreadGroupCountGlobal;
     };
 
     [numthreads(ThreadNumberX, ThreadNumberY, ThreadNumberZ)]
@@ -60,5 +60,10 @@ class ComputeShaderBase
 
     void Compute() 
     {
+    }
+
+    bool IsFirstThreadOfGroup()
+    {
+        return streams.GroupThreadId.x == 0 && streams.GroupThreadId.y == 0 && streams.GroupThreadId.z == 0;
     }
 };

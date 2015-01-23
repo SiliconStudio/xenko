@@ -67,42 +67,83 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect.LambertianPrefiltering
             if (inputTexture.Dimension != TextureDimension.TextureCube)
                 throw new NotSupportedException("Only texture cube are currently supported as input of 'LambertianPrefilteringSH' effect.");
 
+            const int FirstPassBlockSize = 4;
+            const int FirstPassSumsCount = FirstPassBlockSize * FirstPassBlockSize;
+
             var faceCount = inputTexture.Dimension == TextureDimension.TextureCube ? 6 : 1;
-            var inputSize = inputTexture.Width; // (Note: for cube maps width = height)
+            var inputSize = new Int2(inputTexture.Width, inputTexture.Height); // (Note: for cube maps width = height)
             var coefficientsCount = harmonicalOrder * harmonicalOrder;
 
-            var partialSumCount = harmonicalOrder * inputSize * faceCount;
-            var partialSumBuffer = NewScopedTypedBuffer(partialSumCount, PixelFormat.R32G32B32A32_Float, true);
-            var finalCoeffsBuffer = NewScopedTypedBuffer(coefficientsCount, PixelFormat.R32G32B32A32_Float, true);
+            var sumsToPerfomRemaining = inputSize.X * inputSize.Y * faceCount / FirstPassSumsCount;
+            var partialSumBuffer = NewScopedTypedBuffer(coefficientsCount * sumsToPerfomRemaining, PixelFormat.R32G32B32A32_Float, true);
 
-            // Project the radiance on the SH basis and sum up the results along the row
-            firstPassEffect.ThreadNumbers = new Int3(inputSize, 1, 1);
-            firstPassEffect.ThreadGroupCounts = new Int3(1, inputSize, faceCount);
-            firstPassEffect.Parameters.Set(LambertianPrefilteringSHParameters.ImageSize, inputSize);
+
+            // Project the radiance on the SH basis and sum up the results along the 4x4 blocks
+            firstPassEffect.ThreadNumbers = new Int3(FirstPassBlockSize, FirstPassBlockSize, 1);
+            firstPassEffect.ThreadGroupCounts = new Int3(inputSize.X/FirstPassBlockSize, inputSize.Y/FirstPassBlockSize, faceCount);
+            firstPassEffect.Parameters.Set(LambertianPrefilteringSHParameters.BlockSize, FirstPassBlockSize);
             firstPassEffect.Parameters.Set(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
             firstPassEffect.Parameters.Set(LambertianPrefilteringSHPass1Keys.RadianceMap, inputTexture);
             firstPassEffect.Parameters.Set(LambertianPrefilteringSHPass1Keys.OutputBuffer, partialSumBuffer);
             firstPassEffect.Draw();
 
-            // Complete the partial sums until obtaining finals coefficients
-            secondPassEffect.ThreadNumbers = new Int3(1, coefficientsCount, 1);
-            secondPassEffect.ThreadGroupCounts = new Int3(inputSize, 1, faceCount);
-            secondPassEffect.Parameters.Set(LambertianPrefilteringSHParameters.ImageSize, inputSize);
-            secondPassEffect.Parameters.Set(LambertianPrefilteringSHParameters.FaceCount, faceCount);
-            secondPassEffect.Parameters.Set(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
-            secondPassEffect.Parameters.Set(LambertianPrefilteringSHPass2Keys.InputBuffer, partialSumBuffer);
-            secondPassEffect.Parameters.Set(LambertianPrefilteringSHPass2Keys.OutputBuffer, finalCoeffsBuffer);
-            secondPassEffect.Draw();
-
-            // copy the output coefficients to the output SphericalHarmonics
-            prefilteredLambertianSH = new SphericalHarmonics(HarmonicOrder);
-            var coefficients = finalCoeffsBuffer.GetData<Vector4>();
-            for (int i = 0; i < coefficientsCount; i++)
+            // Recursively applies the pass2 (sums the coefficients together) as long as needed. Swap input/output buffer at each iteration.
+            var secondPassInputBuffer = partialSumBuffer;
+            var secondPassOutputBuffer = NewScopedTypedBuffer(coefficientsCount, PixelFormat.R32G32B32A32_Float, true);
+            while (sumsToPerfomRemaining % 2 == 0)
             {
-                var coefficient = coefficients[i];
-                prefilteredLambertianSH.Coefficients[i] = new Color3(coefficient.X, coefficient.Y, coefficient.Z);
+                // we are limited in the number of summing threads by the group-shared memory size.
+                // determine the number of threads to use and update the number of sums remaining afterward.
+                var sumsCount = 1;
+                while (sumsCount < (1<<14) && sumsToPerfomRemaining % 2 == 0) // shader can perform only an 2^x number of sums.
+                {
+                    sumsCount <<= 1;
+                    sumsToPerfomRemaining >>= 1;
+                }
+
+                // determine the numbers of groups (limited to 65535 groups by dimensions)
+                var groupCountX = 1;
+                var groupCountY = sumsToPerfomRemaining;
+                while (groupCountX >= short.MaxValue)
+                {
+                    groupCountX <<= 1;
+                    groupCountY >>= 1;
+                }
+
+                // draw pass 2
+                secondPassEffect.ThreadNumbers = new Int3(sumsToPerfomRemaining, 1, 1);
+                secondPassEffect.ThreadGroupCounts = new Int3(groupCountX, groupCountY, coefficientsCount);
+                secondPassEffect.Parameters.Set(LambertianPrefilteringSHParameters.BlockSize, sumsToPerfomRemaining);
+                secondPassEffect.Parameters.Set(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
+                secondPassEffect.Parameters.Set(LambertianPrefilteringSHPass2Keys.InputBuffer, secondPassInputBuffer);
+                secondPassEffect.Parameters.Set(LambertianPrefilteringSHPass2Keys.OutputBuffer, secondPassOutputBuffer);
+                secondPassEffect.Draw();
+
+                // swap second pass input/output buffers.
+                var swapTemp = secondPassOutputBuffer;
+                secondPassOutputBuffer = secondPassInputBuffer;
+                secondPassInputBuffer = swapTemp;
+            }
+
+            // create and initialize result SH
+            prefilteredLambertianSH = new SphericalHarmonics(HarmonicOrder);
+
+            // Get the data out of the final buffer
+            var sizeResult = coefficientsCount * sumsToPerfomRemaining * PixelFormat.R32G32B32A32_Float.SizeInBytes();
+            var stagedBuffer = NewScopedBuffer(new BufferDescription(sizeResult, BufferFlags.None, GraphicsResourceUsage.Staging));
+            GraphicsDevice.CopyRegion(secondPassInputBuffer, 0, new ResourceRegion(0, 0, 0, sizeResult, 1, 1), stagedBuffer, 0);
+            var finalsValues =  stagedBuffer.GetData<Vector4>();    
+            
+            // performs last possible additions, normalize the result and store it in the SH
+            for (var c = 0; c < coefficientsCount; c++)
+            {
+                var coeff = Vector4.Zero;
+                for (var f = 0; f < sumsToPerfomRemaining; ++f)
+                {
+                    coeff += finalsValues[coefficientsCount * f + c];
+                }
+                prefilteredLambertianSH.Coefficients[c] = 4 * MathUtil.Pi / coeff.W * new Color3(coeff.X, coeff.Y, coeff.Z);
             }
         }
-
     }
 }
