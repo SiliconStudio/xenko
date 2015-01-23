@@ -21,7 +21,7 @@ namespace SiliconStudio.Presentation.Behaviors
         End
     }
 
-    [Obsolete]
+    [Obsolete("This behavior is obsolete. Use the TextBox control instead.")]
     public class TextTrimmingBehavior : DeferredBehaviorBase<TextBlock>
     {
         private FrameworkElement parent;
