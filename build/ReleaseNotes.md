@@ -22,9 +22,13 @@ Release date: 2015/01/??
 - Graphics: `Texture2D`, `Texture3D`, `TextureCube`, `RenderTarget` and `DepthStencilBuffer` have now all been unified as `Texture` (which act as a Texture view).
 - Shaders: Better conversion from HLSL to GLSL.
 
+#### Enhancements
+- Studio: Add a custom editor for rotation in the property grid.
+
 #### Issues fixed
 - Graphics: Fix shared texture and sampler sets on OpenGL when combinations appear in shaders (a texture used with several samplers or a sampler used with several textures).
 - Importers: Remove whitespaces from fbx and assimp objects' names that resulted in compilation errors (e.g. unable to find the shader in the database).
+- Studio: Fix in the settings menu.
 - Samples: Fix SimpleTerrain increasing rotation speed along with code small mistakes.
 - Shaders: Fix code gen bug not allowing the usage of generic resources type in `pdxsl` files (like `Texture2D<int>` [#128](https://github.com/SiliconStudio/paradox/issues/128)).\
 - Shaders: Fix two-dimentional array linearization during conversion from HLSL to GLSL.
