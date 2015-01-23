@@ -56,11 +56,18 @@
     <!-- Xamarin iOS 8.2+
          HACK: Use LogicalName so that it is not actually inside the app bundle
     -->
-    <ItemGroup Condition="$(XamarinIOSMajorVersion) >= 8">
+    <ItemGroup Condition="$(XamarinIOSMajorVersion) >= 8 And $(XamarinIOSMinorVersion) &lt; 6">
       <BundleResource Include="@(SiliconStudioEmbeddedNativeLibrary)">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         <LogicalName>..\lib%(SiliconStudioEmbeddedNativeLibrary.LibraryName)%(SiliconStudioEmbeddedNativeLibrary.Extension)</LogicalName>
       </BundleResource>
+    </ItemGroup>
+
+    <ItemGroup Condition="$(XamarinIOSMajorVersion) >= 8 And $(XamarinIOSMinorVersion) >= 6">
+      <NativeReferences Include="@(SiliconStudioEmbeddedNativeLibrary)">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <LogicalName>..\lib%(SiliconStudioEmbeddedNativeLibrary.LibraryName)%(SiliconStudioEmbeddedNativeLibrary.Extension)</LogicalName>
+      </NativeReferences>
     </ItemGroup>
   </Target>
 
