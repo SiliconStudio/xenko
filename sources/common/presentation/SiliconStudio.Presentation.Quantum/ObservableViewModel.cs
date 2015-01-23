@@ -52,7 +52,7 @@ namespace SiliconStudio.Presentation.Quantum
             : this(serviceProvider, modelContainer)
         {
             if (modelNode == null) throw new ArgumentNullException("modelNode");
-            var node = ObservableModelNode.Create(this, "Root", modelNode.Content.IsPrimitive, null, modelNode, modelNode.Content.Type, null);
+            var node = ObservableModelNode.Create(this, "Root", modelNode.Content.IsPrimitive, null, modelNode, new ModelNodePath(modelNode), modelNode.Content.Type, null);
             Identifier = new ObservableViewModelIdentifier(node.ModelGuid);
             dirtiableViewModels.Add(node, dirtiables.ToList());
             node.Initialize();

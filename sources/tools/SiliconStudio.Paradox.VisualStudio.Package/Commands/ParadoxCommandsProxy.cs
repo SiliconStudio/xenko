@@ -253,9 +253,9 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
             // Check if we are in a root directory with store/packages facilities
             if (NugetStore.IsStoreDirectory(paradoxSdkDir))
             {
-                var store = new NugetStore(paradoxSdkDir) { DefaultPackageId = "Paradox" };
+                var store = new NugetStore(paradoxSdkDir);
 
-                var paradoxPackage = store.GetLatestPackageInstalled(store.DefaultPackageId);
+                var paradoxPackage = store.GetLatestPackageInstalled(store.MainPackageId);
                 if (paradoxPackage == null)
                     return null;
 

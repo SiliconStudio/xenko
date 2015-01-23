@@ -4,6 +4,7 @@ using System;
 using System.Runtime.InteropServices;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Graphics
@@ -13,7 +14,7 @@ namespace SiliconStudio.Paradox.Graphics
     /// </summary>
     [DataContract]
     [StructLayout(LayoutKind.Sequential)]
-    public struct BlendStateDescription
+    public struct BlendStateDescription : IEquatable<BlendStateDescription>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="BlendStateDescription"/> class.
@@ -82,5 +83,32 @@ namespace SiliconStudio.Paradox.Graphics
         /// An array of render-target-blend descriptions (see <see cref="BlendStateRenderTargetDescription"/>); these correspond to the eight rendertargets  that can be set to the output-merger stage at one time. 
         /// </summary>
         public BlendStateRenderTargetDescription[] RenderTargets;
+
+        /// <inheritdoc/>
+        public bool Equals(BlendStateDescription other)
+        {
+            return AlphaToCoverageEnable.Equals(other.AlphaToCoverageEnable)
+                && IndependentBlendEnable.Equals(other.IndependentBlendEnable)
+                && ArrayExtensions.ArraysEqual(RenderTargets, other.RenderTargets);
+        }
+
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is BlendStateDescription && Equals((BlendStateDescription)obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hashCode = AlphaToCoverageEnable.GetHashCode();
+                hashCode = (hashCode*397) ^ IndependentBlendEnable.GetHashCode();
+                hashCode = (hashCode*397) ^ RenderTargets.ComputeHash();
+                return hashCode;
+            }
+        }
     }
 }

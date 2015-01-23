@@ -104,6 +104,16 @@ namespace SiliconStudio.Presentation.Quantum
         bool HasDictionary { get; }
 
         /// <summary>
+        /// Gets the number of <see cref="IObservableNode"/> in the <see cref="Children"/> collection that are visible according to their <see cref="IsVisible"/> property.
+        /// </summary>
+        int VisibleChildrenCount { get; }
+
+        /// <summary>
+        /// Raised when the <see cref="IsVisible"/> property has changed.
+        /// </summary>
+        event EventHandler<EventArgs> IsVisibleChanged;
+
+        /// <summary>
         /// Returns the child node with the matching name.
         /// </summary>
         /// <param name="name">The name of the <see cref="ObservableNode"/> to look for.</param>

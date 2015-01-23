@@ -196,22 +196,8 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
 
                     using (var fontFamily = fontCollection.GetFontFamily(index))
                     {
-                        var weight = FontWeight.Regular;
-                        var style = SharpDX.DirectWrite.FontStyle.Normal;
-                        switch (asset.Style)
-                        {
-                            case FontStyle.Bold:
-                                weight = FontWeight.Bold;
-                                break;
-                            case FontStyle.Italic:
-                                weight = FontWeight.Regular;
-                                style = SharpDX.DirectWrite.FontStyle.Italic;
-                                break;
-                            case FontStyle.Regular:
-                                weight = FontWeight.Regular;
-                                break;
-                        }
-
+                        var weight = asset.Style.IsBold() ? FontWeight.Bold : FontWeight.Regular;
+                        var style = asset.Style.IsItalic() ? SharpDX.DirectWrite.FontStyle.Italic : SharpDX.DirectWrite.FontStyle.Normal;
                         font = fontFamily.GetFirstMatchingFont(weight, FontStretch.Normal, style);
                         if (font == null)
                         {

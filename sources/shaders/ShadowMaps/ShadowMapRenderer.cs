@@ -29,9 +29,9 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
         #region Private static members
 
         /// <summary>
-        /// Base points for frustrum corners.
+        /// Base points for frustum corners.
         /// </summary>
-        private static readonly Vector3[] FrustrumBasePoints =
+        private static readonly Vector3[] FrustumBasePoints =
             {
                 new Vector3(-1.0f,-1.0f,-1.0f), new Vector3(1.0f,-1.0f,-1.0f), new Vector3(-1.0f,1.0f,-1.0f), new Vector3(1.0f,1.0f,-1.0f),
                 new Vector3(-1.0f,-1.0f, 1.0f), new Vector3(1.0f,-1.0f, 1.0f), new Vector3(-1.0f,1.0f, 1.0f), new Vector3(1.0f,1.0f, 1.0f),
@@ -40,7 +40,7 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
         /// <summary>
         /// The various UP vectors to try.
         /// </summary>
-        private static readonly Vector3[] VectorUps = new[] { Vector3.UnitZ, Vector3.UnitY, Vector3.UnitX };
+        private static readonly Vector3[] VectorUps = { Vector3.UnitZ, Vector3.UnitY, Vector3.UnitX };
 
         internal static readonly ParameterKey<ShadowMapReceiverInfo[]> Receivers = ParameterKeys.New(new ShadowMapReceiverInfo[1]);
         internal static readonly ParameterKey<ShadowMapReceiverVsmInfo[]> ReceiversVsm = ParameterKeys.New(new ShadowMapReceiverVsmInfo[1]);
@@ -122,7 +122,7 @@ namespace SiliconStudio.Paradox.Effects.ShadowMaps
 
                 // Transform Frustum corners in View Space (8 points) - algorithm is valid only if the view matrix does not do any kind of scale/shear transformation
                 for (int i = 0; i < 8; ++i)
-                    Vector3.TransformCoordinate(ref FrustrumBasePoints[i], ref inverseProjection, out points[i]);
+                    Vector3.TransformCoordinate(ref FrustumBasePoints[i], ref inverseProjection, out points[i]);
 
                 // Compute frustum edge directions
                 for (int i = 0; i < 4; i++)

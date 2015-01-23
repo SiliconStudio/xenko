@@ -85,7 +85,7 @@ Release date: 2014/11/25
 - Engine: Default value for ParameterKeys `LightingKeys.CastShadows` and `LightingKeys.ReceiveShadows` becomes true.
 - Engine: Remove obsolete `MeshDrawHelper` file (use `GeometricPrimitive` instead), move `ToMeshDraw` method to `GeometricPrimitiveExtensions`.
 - Engine: `ModelRenderer` is no longer inheritable but extensible via compositions.
-- Engine: `ModelRenderer.EnableFrustrumCulling` is replaced by the extension method `ModelRenderer.AddDefaultFrustrumCulling`
+- Engine: `ModelRenderer.EnableFrustrumCulling` is replaced by the extension method `ModelRenderer.AddDefaultFrustumCulling`
 - Engine: `EffectMesh` is renamed to `RenderMesh` 
 - Engine: `SpriteRenderer` now requires a valid camera to be set in the pipeline.
 - Engine: `CameraComponent` now uses the Z-axis as camera direction vector to compute the view matrix when `Target` entity is null.
