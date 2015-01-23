@@ -2,8 +2,12 @@
 
 Release date: 2014/12/??
 
+#### Enhancements
+- Studio: Add a custom editor for rotation in the property grid.
+
 #### Issues fixed
 - Shaders: Fix code gen bug not allowing the usage of generic resources type in `pdxsl` files (like `Texture2D<int>` [#128](https://github.com/SiliconStudio/paradox/issues/128)).
+- Studio: Fix in the settings menu.
  
 ### Version 1.0.0-beta06
 
