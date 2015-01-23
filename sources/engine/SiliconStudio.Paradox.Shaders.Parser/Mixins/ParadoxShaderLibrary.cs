@@ -99,13 +99,13 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 // find the mixin that depends on this shader
                 foreach (var mixin in MixinInfos)
                 {
-                    if (mixin.MixinName == shaderName)
+                    if (mixin.IsShaderClass(shaderName))
                         mixinsToDelete.Add(mixin);
                     else
                     {
                         foreach (var dep in mixin.MinimalContext)
                         {
-                            if (dep.MixinName == shaderName)
+                            if (dep.IsShaderClass(shaderName))
                                 mixinsToDelete.Add(mixin);
                         }
                     }
