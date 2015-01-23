@@ -3,9 +3,9 @@
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
-    shader SphericalHarmonicRenderer
+    shader SphericalHarmonicsRendererEffect
     {
-        using params SphericalHarmonicParameters;
+        using params SphericalHarmonicsParameters;
 
         mixin SphericalHarmonicsRenderer<SphericalHarmonicsParameters.HarmonicsOrder>;
     };
