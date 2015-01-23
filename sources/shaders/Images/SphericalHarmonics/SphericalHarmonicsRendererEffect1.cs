@@ -18,18 +18,18 @@ namespace SiliconStudio.Paradox.Effects.Images
 {
     internal static partial class ShaderMixins
     {
-        internal partial class SphericalHarmonicRenderer  : IShaderMixinBuilder
+        internal partial class SphericalHarmonicsRendererEffect  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-                context.Mixin(mixin, "SphericalHarmonicsRenderer", SphericalHarmonicsParameters.HarmonicsOrder);
+                context.Mixin(mixin, "SphericalHarmonicsRenderer", context.GetParam(SphericalHarmonicsParameters.HarmonicsOrder));
             }
 
             [ModuleInitializer]
             internal static void __Initialize__()
 
             {
-                ShaderMixinManager.Register("SphericalHarmonicRenderer", new SphericalHarmonicRenderer());
+                ShaderMixinManager.Register("SphericalHarmonicsRendererEffect", new SphericalHarmonicsRendererEffect());
             }
         }
     }

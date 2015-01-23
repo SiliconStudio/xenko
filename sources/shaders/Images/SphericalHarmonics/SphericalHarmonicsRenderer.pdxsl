@@ -19,8 +19,9 @@ namespace SiliconStudio.Paradox.Effects.Images
                 var direction = normalize(CubemapUtils.ConvertTexcoordsNoFlip(streams.TexCoord, i)); // remarks: TexCoord points to the center of the pixel (what we want)
 
                 EvaluateSHBases(direction);
-
-                for(uint k=0; k<CoefficientsCount; ++i)
+                
+                ColorTargets[i] = float3(0, 0, 0);
+                for(int k=0; k<CoefficientsCount; ++k)
                     ColorTargets[i] += SHCoefficients[k] * streams.SHBaseValues[k];
             }
             

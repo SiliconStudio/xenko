@@ -400,8 +400,9 @@ namespace SiliconStudio.BuildEngine
                     {
                         status = await Command.DoCommand(commandContext);
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
+                        executeContext.Logger.Error("Exception in command " + this + ": " + ex);
                         status = ResultStatus.Failed;
                     }
 

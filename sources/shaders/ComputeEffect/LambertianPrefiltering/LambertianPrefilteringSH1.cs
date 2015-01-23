@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-                context.Mixin(mixin, "LambertianPrefilteringSHPass1", context.GetParam(LambertianPrefilteringSHParameters.ImageSize), SphericalHarmonicsParameters.HarmonicsOrder);
+                context.Mixin(mixin, "LambertianPrefilteringSHPass1", context.GetParam(LambertianPrefilteringSHParameters.ImageSize), context.GetParam(SphericalHarmonicsParameters.HarmonicsOrder));
             }
 
             [ModuleInitializer]
@@ -44,7 +44,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-                context.Mixin(mixin, "LambertianPrefilteringSHPass2", context.GetParam(LambertianPrefilteringSHParameters.ImageSize), context.GetParam(LambertianPrefilteringSHParameters.FaceCount), SphericalHarmonicsParameters.HarmonicsOrder);
+                context.Mixin(mixin, "LambertianPrefilteringSHPass2", context.GetParam(LambertianPrefilteringSHParameters.ImageSize), context.GetParam(LambertianPrefilteringSHParameters.FaceCount), context.GetParam(SphericalHarmonicsParameters.HarmonicsOrder));
             }
 
             [ModuleInitializer]

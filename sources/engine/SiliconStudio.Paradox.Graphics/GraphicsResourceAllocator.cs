@@ -90,7 +90,7 @@ namespace SiliconStudio.Paradox.Graphics
             // Global lock to be threadsafe. 
             lock (thisLock)
             {
-                return GetTemporaryResource(textureCache, description, CreateTexture, GetTextureDefinition);
+                return GetTemporaryResource(textureCache, description, CreateTexture, GetTextureDefinition, PixelFormat.None);
             }
         }
 
@@ -98,13 +98,14 @@ namespace SiliconStudio.Paradox.Graphics
         /// Gets a texture for the specified description.
         /// </summary>
         /// <param name="description">The description.</param>
+        /// <param name="viewFormat">The pixel format seen by the shader</param>
         /// <returns>A texture</returns>
-        public Buffer GetTemporaryBuffer(BufferDescription description)
+        public Buffer GetTemporaryBuffer(BufferDescription description, PixelFormat viewFormat = PixelFormat.None)
         {
             // Global lock to be threadsafe. 
             lock (thisLock)
             {
-                return GetTemporaryResource(bufferCache, description, CreateBuffer, GetBufferDescription);
+                return GetTemporaryResource(bufferCache, description, CreateBuffer, GetBufferDescription, viewFormat);
             }
         }
 
@@ -138,20 +139,22 @@ namespace SiliconStudio.Paradox.Graphics
         /// Creates a texture for output.
         /// </summary>
         /// <param name="description">The description.</param>
+        /// <param name="viewFormat">The pixel format seen by the shader</param>
         /// <returns>Texture.</returns>
-        protected virtual Texture CreateTexture(TextureDescription description)
+        protected virtual Texture CreateTexture(TextureDescription description, PixelFormat viewFormat)
         {
             return Texture.New(GraphicsDevice, description);
         }
 
         /// <summary>
-        /// Creates a tempoary buffer.
+        /// Creates a temporary buffer.
         /// </summary>
         /// <param name="description">The description.</param>
+        /// <param name="viewFormat">The shader view format on the buffer</param>
         /// <returns>Buffer.</returns>
-        protected virtual Buffer CreateBuffer(BufferDescription description)
+        protected virtual Buffer CreateBuffer(BufferDescription description, PixelFormat viewFormat)
         {
-            return Buffer.New(GraphicsDevice, description);
+            return Buffer.New(GraphicsDevice, description, viewFormat);
         }
 
         protected override void Destroy()
@@ -194,12 +197,12 @@ namespace SiliconStudio.Paradox.Graphics
             return texture.Description;
         }
 
-        private TResource GetTemporaryResource<TResource, TKey>(Dictionary<TKey, List<GraphicsResourceLink>> cache, TKey description, Func<TKey, TResource> creator, Func<TResource, TKey> getDefinition)
+        private TResource GetTemporaryResource<TResource, TKey>(Dictionary<TKey, List<GraphicsResourceLink>> cache, TKey description, Func<TKey, PixelFormat, TResource> creator, Func<TResource, TKey> getDefinition, PixelFormat viewFormat)
             where TResource : GraphicsResource
             where TKey : struct
         {
             // For a specific description, get allocated textures
-            List<GraphicsResourceLink> resourceLinks = null;
+            List<GraphicsResourceLink> resourceLinks;
             if (!cache.TryGetValue(description, out resourceLinks))
             {
                 resourceLinks = new List<GraphicsResourceLink>();
@@ -217,7 +220,7 @@ namespace SiliconStudio.Paradox.Graphics
             }
 
             // If no texture available, then creates a new one
-            var newResource = creator(description);
+            var newResource = creator(description, viewFormat);
             newResource.Name = string.Format("{0}{1}-{2}", Name == null ? string.Empty : string.Format("{0}-", Name), newResource.Name == null ? newResource.GetType().Name : Name, resourceLinks.Count);
 
             // Description may be altered when creating a resource (based on HW limitations...etc.) so we get the actual description
@@ -304,7 +307,7 @@ namespace SiliconStudio.Paradox.Graphics
                 return false;
             }
 
-            List<GraphicsResourceLink> resourceLinks = null;
+            List<GraphicsResourceLink> resourceLinks;
             if (cache.TryGetValue(getDefinition(resource), out resourceLinks))
             {
                 foreach (var resourceLink in resourceLinks)

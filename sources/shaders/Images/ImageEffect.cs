@@ -251,7 +251,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             // TODO: Check if we should introduce an enum for the kind of scope (per DrawCore, per Frame...etc.)
             CheckIsInDrawCore();
-            return (Texture)PushScopedResource(Context.Allocator.GetTemporaryTexture2D(description));
+            return PushScopedResource(Context.Allocator.GetTemporaryTexture2D(description));
         }
 
         /// <summary>
@@ -269,7 +269,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         protected Texture NewScopedRenderTarget2D(int width, int height, PixelFormat format, TextureFlags flags = TextureFlags.RenderTarget | TextureFlags.ShaderResource, int arraySize = 1)
         {
             CheckIsInDrawCore();
-            return (Texture)PushScopedResource(Context.Allocator.GetTemporaryTexture2D(width, height, format, flags, arraySize));
+            return PushScopedResource(Context.Allocator.GetTemporaryTexture2D(width, height, format, flags, arraySize));
         }
 
         /// <summary>
@@ -288,7 +288,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         protected Texture NewScopedRenderTarget2D(int width, int height, PixelFormat format, MipMapCount mipCount, TextureFlags flags = TextureFlags.RenderTarget | TextureFlags.ShaderResource, int arraySize = 1)
         {
             CheckIsInDrawCore();
-            return (Texture)PushScopedResource(Context.Allocator.GetTemporaryTexture2D(width, height, format, mipCount, flags, arraySize));
+            return PushScopedResource(Context.Allocator.GetTemporaryTexture2D(width, height, format, mipCount, flags, arraySize));
         }
 
         private void SetOutputInternal(Texture view)

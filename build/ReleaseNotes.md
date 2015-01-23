@@ -20,6 +20,7 @@ Release date: 2015/01/??
 - FBX: Meshes without materials are now imported and added to the entity.
 - Graphics: `Texture2D`, `Texture3D`, `TextureCube`, `RenderTarget` and `DepthStencilBuffer` have now all been unified as `Texture` (which act as a Texture view).
 - Shaders: Better conversion from HLSL to GLSL.
+- Studio: Add a custom editor for rotation in the property grid.
 
 #### Issues fixed
 - Graphics: Fix shared texture and sampler sets on OpenGL when combinations appear in shaders (a texture used with several samplers or a sampler used with several textures).
@@ -28,6 +29,7 @@ Release date: 2015/01/??
 - Shaders: Fix code gen bug not allowing the usage of generic resources type in `pdxsl` files (like `Texture2D<int>` [#128](https://github.com/SiliconStudio/paradox/issues/128)).\
 - Shaders: Fix two-dimentional array linearization during conversion from HLSL to GLSL.
 - Shaders: Fix shader source change detection to get the correct precompiled shader and update existing ones.
+- Studio: Fix in the settings menu.
 
 #### Breaking changes
 - Graphics: `Texture2D`, `Texture3D`, `TextureCube`, `RenderTarget` and `DepthStencilBuffer` has been merged into `Texture` class.

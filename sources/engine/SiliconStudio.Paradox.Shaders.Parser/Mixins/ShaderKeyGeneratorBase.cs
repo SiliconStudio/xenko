@@ -52,10 +52,10 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             {
                 WriteVariableAsParameterKey(variable);
             }
-            else
-            {
-                base.Visit(variable);
-            }
+            //else
+            //{
+            //    base.Visit(variable);
+            //}
         }
 
         /// <summary>
@@ -82,6 +82,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 || variable.Qualifiers.Contains(StorageQualifier.Const)
                 || variable.Qualifiers.Contains(ParadoxStorageQualifier.Compose)
                 || variable.Qualifiers.Contains(ParadoxStorageQualifier.PatchStream)
+                || variable.Qualifiers.Contains(SiliconStudio.Shaders.Ast.Hlsl.StorageQualifier.Groupshared)
                 || variable.Qualifiers.Contains(ParadoxStorageQualifier.Stream))
                 return false;
 

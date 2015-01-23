@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -20,6 +22,7 @@ namespace SiliconStudio.Presentation.Behaviors
     /// This behavior will clone the <see cref="TextBox.Text"/> property <see cref="Binding"/> and sets the <see cref="Binding.UpdateSourceTrigger"/> property to
     /// <see cref="UpdateSourceTrigger.Explicit"/> if the current value is not already <see cref="UpdateSourceTrigger.Explicit"/>.
     /// </remarks>
+    [Obsolete("This behavior is obsolete. Use the TextBox control instead.")]
     public class TextBoxValidationBehavior : Behavior<TextBox>
     {
         /// <summary>

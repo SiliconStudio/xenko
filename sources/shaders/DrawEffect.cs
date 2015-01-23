@@ -167,11 +167,13 @@ namespace SiliconStudio.Paradox.Effects
         /// <summary>
         /// Gets a render target with the specified description, scoped for the duration of the <see cref="DrawEffect.DrawCore"/>.
         /// </summary>
+        /// <param name="description">The description of the buffer to allocate</param>
+        /// <param name="viewFormat">The pixel format seen in shader</param>
         /// <returns>A new instance of texture.</returns>
-        protected Buffer NewScopedBuffer(BufferDescription description)
+        protected Buffer NewScopedBuffer(BufferDescription description, PixelFormat viewFormat = PixelFormat.None)
         {
             CheckIsInDrawCore();
-            return (Buffer)PushScopedResource(Context.Allocator.GetTemporaryBuffer(description));
+            return PushScopedResource(Context.Allocator.GetTemporaryBuffer(description, viewFormat));
         }
 
         /// <summary>
@@ -179,7 +181,7 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         /// <param name="resource">The scoped resource</param>
         /// <returns></returns>
-        protected GraphicsResource PushScopedResource(GraphicsResource resource)
+        protected T PushScopedResource<T>(T resource) where T: GraphicsResource
         {
             scopedResources.Add(resource);
             return resource;

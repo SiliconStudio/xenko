@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect
         /// <returns>A new instance of texture.</returns>
         protected Buffer NewScopedTypedBuffer(int count, PixelFormat viewFormat, bool isUnorderedAccess, GraphicsResourceUsage usage = GraphicsResourceUsage.Default)
         {
-            return NewScopedBuffer(new BufferDescription(count * viewFormat.SizeInBytes(), BufferFlags.ShaderResource | (isUnorderedAccess? BufferFlags.UnorderedAccess : BufferFlags.None), usage));
+            return NewScopedBuffer(new BufferDescription(count * viewFormat.SizeInBytes(), BufferFlags.ShaderResource | (isUnorderedAccess ? BufferFlags.UnorderedAccess : BufferFlags.None), usage), viewFormat);
         }
     }
 }
