@@ -31,7 +31,6 @@ namespace SiliconStudio.Paradox.Assets.Model
         {
             return new Paradox.Importer.AssimpNET.MeshConverter(commandContext.Logger)
             {
-                ViewDirectionForTransparentZSort = this.ViewDirectionForTransparentZSort,
                 AllowUnsignedBlendIndices = this.AllowUnsignedBlendIndices
             };
         }

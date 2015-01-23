@@ -75,7 +75,6 @@ public ref class MeshConverter
 {
 public:
 	property Logger^ Logger;
-	property Vector3 ViewDirectionForTransparentZSort;
 	property bool AllowUnsignedBlendIndices;
 
 private:
@@ -441,13 +440,6 @@ private:
 		drawData->IndexBuffer = indexBufferBinding;
 		drawData->PrimitiveType = PrimitiveType::TriangleList;
 		drawData->DrawCount = nbIndices;
-
-		bool isTransparent = IsTransparent(scene->mMaterials[mesh->mMaterialIndex]);
-		bool sortTransparentMeshes = true;	// TODO transform into importer parameter
-		if (isTransparent && sortTransparentMeshes)
-		{
-			PolySortExtensions::SortMeshPolygons(drawData, ViewDirectionForTransparentZSort);
-		}
 
 		auto meshInfo = gcnew MeshInfo();
 		meshInfo->Draw = drawData;
@@ -1418,7 +1410,6 @@ public:
 			entityInfo->Models = ExtractModel(scene, meshNames, materialNames, nodeNames);
 			entityInfo->Nodes = ExtractNodeHierarchy(scene, nodeNames);
 			entityInfo->AnimationNodes = ExtractAnimations(scene, animationNames);
-			entityInfo->UpAxis = GetUpAxis(scene->mRootNode);
 			
 			return entityInfo;
 		}

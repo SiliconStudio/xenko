@@ -52,8 +52,6 @@ public:
 	property bool InverseNormals;
 	property bool AllowUnsignedBlendIndices;
 
-    property Vector3 ViewDirectionForTransparentZSort;
-
 	property TagSymbol^ TextureTagSymbol;
 
 	Logger^ logger;
@@ -534,18 +532,6 @@ public:
 
 			auto materialIndex = materials.find(lMaterial);
 			meshData->MaterialIndex = (materialIndex != materials.end()) ? materialIndex->second : 0;
-
-			// Dump materials/textures
-			FbxGeometryElementMaterial* lMaterialElement = pMesh->GetElementMaterial();
-			if (lMaterialElement != NULL && lMaterial != NULL)
-			{
-				auto isTransparent = IsTransparent(lMaterial);
-				bool sortTransparentMeshes = true;	// TODO transform into importer parameter
-				if (isTransparent && sortTransparentMeshes)
-				{
-					PolySortExtensions::SortMeshPolygons(drawData, ViewDirectionForTransparentZSort);
-				}
-			}
 
 			auto meshName = meshNames[pMesh];
 			if (buildMeshes->Count > 1)
@@ -1866,8 +1852,9 @@ private:
 		scene->GetRootNode()->ResetPivotSetAndConvertAnimation(framerate, false, false);
 
 		// For some reason ConvertScene doesn't seem to work well in some cases with no animation
-		//FbxAxisSystem ourAxisSystem(FbxAxisSystem::ZAxis, (FbxAxisSystem::eFrontVector)FbxAxisSystem::ParityOdd, FbxAxisSystem::LeftHanded);
-		//ourAxisSystem.ConvertScene(scene);
+		FbxAxisSystem ourAxisSystem(FbxAxisSystem::eYAxis, FbxAxisSystem::eParityOdd, FbxAxisSystem::eRightHanded);
+		if (ourAxisSystem != scene->GetGlobalSettings().GetAxisSystem())
+			ourAxisSystem.ConvertScene(scene);
 
 		auto sceneAxisSystem = scene->GetGlobalSettings().GetAxisSystem();
 
@@ -2476,12 +2463,15 @@ public:
 		{
 			Initialize(inputFileName, nullptr, ImportConfiguration::ImportEntityConfig());
 			
-			auto index = scene->GetGlobalSettings().GetOriginalUpAxis();
-			auto originalUpAxis = Vector3::Zero;
-			if (index < 0 || index > 2) // Default up vector is Z
-				originalUpAxis[2] = 1;
-			else
-				originalUpAxis[index] = 1;
+			//int sign;
+			//auto upAxis = scene->GetGlobalSettings().GetAxisSystem().GetUpVector(sign);
+			//if (upAxis != FbxAxisSystem::eYAxis)
+			//	logger->Warning("Model references material '{0}', but it was not defined in the ModelAsset.", materialName);
+			//auto originalUpAxis = Vector3::Zero;
+			//if (index < 0 || index > 2) // Default up vector is Z
+			//	originalUpAxis[1] = 1;
+			//else
+			//	originalUpAxis[index] = 1;
 			
 			std::map<FbxNode*, std::string> nodeNames;
 			GenerateNodesName(nodeNames);
@@ -2493,7 +2483,6 @@ public:
 			entityInfo->Models = models->Models;
 			entityInfo->Materials = models->Materials;
 			entityInfo->Nodes = ExtractNodeHierarchy(nodeNames);
-			entityInfo->UpAxis = originalUpAxis;
 
 			return entityInfo;
 		}

@@ -44,36 +44,6 @@ namespace SiliconStudio.Paradox.Assets.Model
         }
         
         /// <summary>
-        /// Gets or sets the view direction to use when the importer is finding transparent polygons. Default is float3(0, 0, -1)
-        /// </summary>
-        /// <value>The view direction for transparent z sort.</value>
-        /// <userdoc>
-        /// The direction used to sort the polygons of the mesh.
-        /// </userdoc>
-        [DataMember(30)]
-        [DefaultValue(null)]
-        [Obsolete("This property will be removed in a future release")]
-        public Vector3? ViewDirectionForTransparentZSort { get; set; }
-        
-        /// <summary>
-        /// Gets or sets the axis representing the up axis of the object
-        /// </summary>
-        /// <userdoc>
-        /// The up axis of the model (for editor preview only).
-        /// </userdoc>
-        [DataMember(35)]
-        public Vector3 UpAxis { get; set; }
-
-        /// <summary>
-        /// Gets or sets the axis representing the up axis of the object
-        /// </summary>
-        /// <userdoc>
-        /// The front axis of the model (for editor preview only).
-        /// </userdoc>
-        [DataMember(38)]
-        public Vector3 FrontAxis { get; set; }
-
-        /// <summary>
         /// The materials.
         /// </summary>
         /// <userdoc>
@@ -164,8 +134,6 @@ namespace SiliconStudio.Paradox.Assets.Model
         public override void SetDefaults()
         {
             BuildOrder = 500;
-            UpAxis = Vector3.UnitY;
-            FrontAxis = Vector3.UnitZ;
             if (Nodes != null)
                 Nodes.Clear();
         }

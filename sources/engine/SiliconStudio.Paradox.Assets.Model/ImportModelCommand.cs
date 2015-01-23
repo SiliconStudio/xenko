@@ -45,7 +45,6 @@ namespace SiliconStudio.Paradox.Assets.Model
 
         public bool Allow32BitIndex { get; set; }
         public bool AllowUnsignedBlendIndices { get; set; }
-        public Vector3 ViewDirectionForTransparentZSort { get; set; }
 
         protected ImportModelCommand()
         {

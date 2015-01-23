@@ -48,7 +48,6 @@ public:
 	List<String^>^ AnimationNodes;
 	List<MeshParameters^>^ Models;
 	List<NodeInfo^>^ Nodes;
-	Vector3 UpAxis;
 };
 
 public ref class MeshMaterials

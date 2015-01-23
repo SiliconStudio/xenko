@@ -162,8 +162,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 
         private static AssetItem ImportModel(List<AssetItem> assetReferences, UFile assetSource, UFile localPath, EntityInfo entityInfo)
         {
-            var frontAxis = Vector3.Cross(entityInfo.UpAxis, Vector3.UnitZ).Length() < MathUtil.ZeroTolerance ? Vector3.UnitY : Vector3.UnitZ;
-            var asset = new ModelAsset { Source = assetSource, UpAxis = entityInfo.UpAxis, FrontAxis = frontAxis };
+            var asset = new ModelAsset { Source = assetSource };
 
             if (entityInfo.Models != null)
             {

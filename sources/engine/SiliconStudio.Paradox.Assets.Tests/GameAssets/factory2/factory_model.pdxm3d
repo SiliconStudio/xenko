@@ -11,8 +11,6 @@ Nodes:
     - {Name: Plane01, Depth: 1, Preserve: false}
     - {Name: group1, Depth: 1, Preserve: false}
     - {Name: Factory_02, Depth: 2, Preserve: false}
-UpAxis: {X: 0, Y: 1, Z: 0}
-FrontAxis: {X: 0, Y: 0, Z: 1}
 Materials:
     -   Name: blinn1
         Material: 80cc8944-4eeb-4753-bfaa-f88cdf015d34:factory2/factory_material_blinn1
@@ -30,8 +28,6 @@ Materials:
             - {Name: Plane01, Depth: 1, Preserve: false}
             - {Name: group1, Depth: 1, Preserve: false}
             - {Name: Factory_02, Depth: 2, Preserve: false}
-        UpAxis: {X: 0, Y: 1, Z: 0}
-        FrontAxis: {X: 0, Y: 0, Z: 1}
         Materials:
             -   Name: blinn1
                 Material: 80cc8944-4eeb-4753-bfaa-f88cdf015d34:factory2/factory_material_blinn1
