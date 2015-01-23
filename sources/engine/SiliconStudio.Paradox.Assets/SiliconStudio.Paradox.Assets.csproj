@@ -181,7 +181,7 @@
     <Compile Include="Materials\MaterialBlendLayer.cs" />
     <Compile Include="Materials\MaterialBlendLayers.cs" />
     <Compile Include="Materials\MaterialBlendOverrides.cs" />
-    <Compile Include="Materials\MaterialDiffuseLambertianModelFeature.cs" />
+    <Compile Include="Materials\MaterialDiffuseLambertModelFeature.cs" />
     <Compile Include="Materials\MaterialDiffuseMapFeature.cs" />
     <Compile Include="Materials\MaterialEmissiveMapFeature.cs" />
     <Compile Include="Materials\MaterialMetalnessMapFeature.cs" />

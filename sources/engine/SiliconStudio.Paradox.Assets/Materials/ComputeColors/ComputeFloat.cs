@@ -1,8 +1,6 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Diagnostics;
-
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Materials;
@@ -14,8 +12,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
     /// A float compute color.
     /// </summary>
     [DataContract("ComputeFloat")]
-    [Display("Value")]
-    [DebuggerDisplay("CompputeColor Float")]
+    [Display("Float")]
     public class ComputeFloat : ComputeValueBase<float>, IComputeScalar
     {
         /// <summary>

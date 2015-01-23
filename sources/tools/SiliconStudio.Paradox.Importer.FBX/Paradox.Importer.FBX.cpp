@@ -582,7 +582,7 @@ public:
 				if (diffuseTree != nullptr)
 				{
 					finalMaterial->Attributes->Diffuse = gcnew MaterialDiffuseMapFeature(diffuseTree);
-					finalMaterial->Attributes->DiffuseModel = gcnew MaterialDiffuseLambertianModelFeature();
+					finalMaterial->Attributes->DiffuseModel = gcnew MaterialDiffuseLambertModelFeature();
 				}
 			}
 		}

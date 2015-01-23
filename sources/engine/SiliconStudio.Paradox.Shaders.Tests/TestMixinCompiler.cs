@@ -64,7 +64,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
                     {
                         DiffuseMap = new ComputeColor(Color4.White)
                     },
-                    DiffuseModel = new MaterialDiffuseLambertianModelFeature()
+                    DiffuseModel = new MaterialDiffuseLambertModelFeature()
                 },
                 Layers = layers
             };

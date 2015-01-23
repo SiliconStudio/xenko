@@ -837,7 +837,7 @@ private:
 			finalMaterial->Attributes->Diffuse = gcnew MaterialDiffuseMapFeature(computeColorNode);
 
 			// TODO TEMP: Set a default diffuse model
-			finalMaterial->Attributes->DiffuseModel = gcnew MaterialDiffuseLambertianModelFeature();
+			finalMaterial->Attributes->DiffuseModel = gcnew MaterialDiffuseLambertModelFeature();
 		}
 		else if (textureType == aiTextureType_SPECULAR)
 		{

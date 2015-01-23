@@ -126,7 +126,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             // TODO: Should we apply it to any Diffuse Model?
             bool isEnergyConservative = (Specular is MaterialSpecularMapFeature && ((MaterialSpecularMapFeature)Specular).IsEnergyConservative);
 
-            var lambert = DiffuseModel as MaterialDiffuseLambertianModelFeature;
+            var lambert = DiffuseModel as MaterialDiffuseLambertModelFeature;
             if (lambert != null)
             {
                 lambert.IsEnergyConservative = isEnergyConservative;

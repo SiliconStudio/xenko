@@ -10,7 +10,7 @@ using SiliconStudio.Paradox.Shaders;
 namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
 {
     [DataContract("ComputeFloat4")]
-    [Display("Vector")]
+    [Display("Float4")]
     public class ComputeFloat4 : ComputeValueBase<Vector4>, IComputeColor
     {
         /// <summary>

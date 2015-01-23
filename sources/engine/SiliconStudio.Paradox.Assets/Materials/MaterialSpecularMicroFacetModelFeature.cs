@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// The microfacet specular shading model.
     /// </summary>
     [DataContract("MaterialSpecularMicrofacetModelFeature")]
-    [Display("Microfacet Model")]
+    [Display("Microfacet")]
     public class MaterialSpecularMicrofacetModelFeature : IMaterialSpecularModelFeature, IEquatable<MaterialSpecularMicrofacetModelFeature>
     {
         /// <summary>
@@ -41,7 +41,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         public IMaterialSpecularMicrofacetFresnelFunction Fresnel { get; set; }
 
         [DataMember(20)]
-        [Display("Geometric Shadowing")]
+        [Display("Visibility")]
         [NotNull]
         public IMaterialSpecularMicrofacetVisibilityFunction Visibility { get; set; }
 

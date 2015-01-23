@@ -10,7 +10,7 @@ using SiliconStudio.Paradox.Shaders;
 namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
 {
     [DataContract("ComputeColor")]
-    [Display("Constant Color")]
+    [Display("Color")]
     public class ComputeColor : ComputeValueBase<Color4>, IComputeColor
     {
         /// <summary>

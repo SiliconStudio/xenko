@@ -1,9 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
-using System.ComponentModel;
-
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Shaders;
 
@@ -12,11 +9,14 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// <summary>
     /// The diffuse Lambertian for the diffuse material model attribute.
     /// </summary>
-    [DataContract("MaterialDiffuseLambertianModelFeature")]
-    [Display("Lamtertian Model")]
-    public class MaterialDiffuseLambertianModelFeature : IMaterialDiffuseModelFeature
+    [DataContract("MaterialDiffuseLambertModelFeature")]
+    [Display("Lambert")]
+    public class MaterialDiffuseLambertModelFeature : IMaterialDiffuseModelFeature
     {
-        public MaterialDiffuseLambertianModelFeature()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MaterialDiffuseLambertModelFeature"/> class.
+        /// </summary>
+        public MaterialDiffuseLambertModelFeature()
         {
         }
 
@@ -38,7 +38,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             context.AddShading(this, shaderSource);
         }
 
-        public bool Equals(MaterialDiffuseLambertianModelFeature other)
+        public bool Equals(MaterialDiffuseLambertModelFeature other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -47,14 +47,14 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         public bool Equals(IMaterialShadingModelFeature other)
         {
-            return Equals(other as MaterialDiffuseLambertianModelFeature);
+            return Equals(other as MaterialDiffuseLambertModelFeature);
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return Equals(obj as MaterialDiffuseLambertianModelFeature);
+            return Equals(obj as MaterialDiffuseLambertModelFeature);
         }
 
         public override int GetHashCode()
