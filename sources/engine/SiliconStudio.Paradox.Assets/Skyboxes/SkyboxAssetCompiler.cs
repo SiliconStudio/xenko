@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Effects.Skyboxes;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Assets.Skyboxes
 {
@@ -41,16 +45,19 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
-
                 // TODO Convert SkyboxAsset to Skybox and save to Skybox object
-
                 // TODO Add system to prefilter
 
-
-                //var materialData = new Material { Parameters = materialContext.Parameters};
+                var skybox = new Skybox();
+                var cubeMapModel = (SkyboxCubeMapModel)asset.Model;
+                if (cubeMapModel != null && cubeMapModel.CubeMap != null)
+                {
+                    var texture = AttachedReferenceManager.CreateSerializableVersion<Texture>(cubeMapModel.CubeMap.Id, cubeMapModel.CubeMap.Location);
+                    skybox.Parameters.Set(TexturingKeys.TextureCube0, texture);
+                }
                 
-                //var assetManager = new AssetManager();
-                //assetManager.Save(assetUrl, materialData);
+                var assetManager = new AssetManager();
+                assetManager.Save(Url, skybox);
 
                 return Task.FromResult(ResultStatus.Successful);
             }
