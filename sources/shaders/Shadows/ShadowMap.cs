@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             ShadowFarDistance = 50000.0f;
             ShadowMapSize = 512;
             CascadeCount = 4;
-            Layers = RenderLayers.RenderLayerAll;
+            Layers = RenderLayers.All;
             Update = true;
         }
 

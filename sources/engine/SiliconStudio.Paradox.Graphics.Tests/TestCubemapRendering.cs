@@ -65,7 +65,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                     Draw = primitives[i].Item1.ToMeshDraw(),
                     MaterialIndex = 0,
                 };
-                mesh.Parameters.Set(RenderingParameters.RenderLayer, RenderLayers.RenderLayer1);
+                mesh.Parameters.Set(RenderingParameters.RenderLayer, RenderLayers.Layer1);
 
                 var entity = new Entity()
                 {
@@ -85,7 +85,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             {
                 Draw = reflectivePrimitive.ToMeshDraw(),
             };
-            reflectiveMesh.Parameters.Set(RenderingParameters.RenderLayer, RenderLayers.RenderLayer2);
+            reflectiveMesh.Parameters.Set(RenderingParameters.RenderLayer, RenderLayers.Layer2);
 
             var reflectEntity = new Entity()
             {
@@ -132,7 +132,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             // Rendering pipeline
             var cubeMapPipeline = new RenderPipeline("CubeMap");
-            cubeMapPipeline.Renderers.Add(new ModelRenderer(Services, renderInOnePass ? "CubemapGeomEffect" : "CubemapEffect").AddLayerFilter(RenderLayers.RenderLayer1));
+            cubeMapPipeline.Renderers.Add(new ModelRenderer(Services, renderInOnePass ? "CubemapGeomEffect" : "CubemapEffect").AddLayerFilter(RenderLayers.Layer1));
             RenderSystem.Pipeline.Renderers.Add(new CubemapRenderer(Services, cubeMapPipeline, renderInOnePass));
             RenderSystem.Pipeline.Renderers.Add(new CameraSetter(Services));
             RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services) { ClearColor = Color.CornflowerBlue });

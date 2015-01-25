@@ -60,7 +60,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <returns>ModelRenderer.</returns>
         public static ModelRenderer AddLayerFilter(this ModelRenderer modelRenderer, RenderLayers activelayers)
         {
-            modelRenderer.AcceptRenderMesh.Add((context, renderMesh) => (renderMesh.Parameters.Get(RenderingParameters.RenderLayer) & activelayers) != RenderLayers.RenderLayerNone);
+            modelRenderer.AcceptRenderMesh.Add((context, renderMesh) => (renderMesh.Parameters.Get(RenderingParameters.RenderLayer) & activelayers) != RenderLayers.None);
             modelRenderer.AppendDebugName("Layer " + activelayers);
             return modelRenderer;
         }
@@ -72,7 +72,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <returns>ModelRenderer.</returns>
         public static ModelRenderer AddContextActiveLayerFilter(this ModelRenderer modelRenderer)
         {
-            modelRenderer.AcceptRenderMesh.Add((context, renderMesh) => (context.Parameters.Get(RenderingParameters.ActiveRenderLayer) & renderMesh.Parameters.Get(RenderingParameters.RenderLayer)) != RenderLayers.RenderLayerNone);
+            modelRenderer.AcceptRenderMesh.Add((context, renderMesh) => (context.Parameters.Get(RenderingParameters.ActiveRenderLayer) & renderMesh.Parameters.Get(RenderingParameters.RenderLayer)) != RenderLayers.None);
             modelRenderer.AppendDebugName("Active Layer");
             return modelRenderer;
         }
