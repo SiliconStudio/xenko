@@ -65,7 +65,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             effectParameters.Set(TexturingKeys.Texture0, UVTexture);
             // TODO: Add switch Effect to test and capture frames
             //switchEffectLevel++;
-            dynamicEffectCompiler.Update(effectInstance);
+            dynamicEffectCompiler.Update(effectInstance, null);
 
             GraphicsDevice.DrawQuad(effectInstance.Effect, effectParameters);
         }

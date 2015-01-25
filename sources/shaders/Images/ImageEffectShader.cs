@@ -114,7 +114,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         protected void UpdateEffect()
         {
             // Dynamically update/compile the effect based on the current parameters.
-            effectCompiler.Update(EffectInstance);
+            effectCompiler.Update(EffectInstance, null);
         }
 
         protected override void DrawCore()

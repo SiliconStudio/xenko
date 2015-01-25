@@ -247,7 +247,7 @@ namespace SiliconStudio.Paradox.Effects
                 }
 
                 // Update Effect and mesh
-                UpdateEffect(mesh);
+                UpdateEffect(mesh, Pass.Parameters);
 
                 // PostEffectUpdate callbacks
                 foreach (var postEffectUpdate in postEffectUpdates)
@@ -287,7 +287,7 @@ namespace SiliconStudio.Paradox.Effects
                 }
 
                 var renderMesh = new RenderMesh(renderModel, mesh);
-                UpdateEffect(renderMesh);
+                UpdateEffect(renderMesh, null);
 
                 // Register mesh for rendering
                 renderMeshes.Add(renderMesh);
@@ -371,9 +371,9 @@ namespace SiliconStudio.Paradox.Effects
         /// <summary>
         /// Create or update the Effect of the effect mesh.
         /// </summary>
-        protected void UpdateEffect(RenderMesh renderMesh)
+        protected void UpdateEffect(RenderMesh renderMesh, ParameterCollection passParameters)
         {
-            if (dynamicEffectCompiler.Update(renderMesh))
+            if (dynamicEffectCompiler.Update(renderMesh, passParameters))
             {
                 renderMesh.Initialize(GraphicsDevice);
             }
