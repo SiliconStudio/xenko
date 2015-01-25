@@ -77,8 +77,8 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
             AddRenderer(new DelegateRenderer(Services) { Render = Update});
             AddRenderer(cameraSetter);
             AddRenderer(rootRenderTargetSetter);
-            AddRenderer(modelRenderer);
             AddRenderer(skyboxBackgroundRenderer);
+            AddRenderer(modelRenderer);
             AddRenderer(postEffectRenderer);
             // In all cases, we will setup back the default buffer and stencil
             AddRenderer(new RenderTargetSetter(Services) { EnableClearDepth = false, EnableClearStencil = false, EnableClearTarget = false, RenderTarget = GraphicsDevice.BackBuffer, DepthStencil = GraphicsDevice.DepthStencilBuffer });
@@ -173,6 +173,9 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
             {
                 Utilities.Dispose(ref renderTargetHDR);
             }
+
+            // Set the rendertarget on the skybox
+            skyboxBackgroundRenderer.Target = rootRenderTargetSetter.RenderTarget;
 
             // Upload lighting
             if (useLightingChanged)

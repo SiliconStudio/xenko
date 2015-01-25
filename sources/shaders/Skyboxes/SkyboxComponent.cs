@@ -5,6 +5,7 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.EntityModel;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects.Skyboxes
 {
@@ -52,6 +53,8 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
         /// The skybox.
         /// </value>
         public Skybox Skybox { get; set; }
+
+        public Texture SkyboxTexture { get; set; }
 
         /// <summary>
         /// Gets the lighting parameters of this skybox.

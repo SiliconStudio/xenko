@@ -3,7 +3,7 @@
 
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Effects.Images;
-using SiliconStudio.Paradox.EntityModel;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects.Skyboxes
 {
@@ -13,6 +13,7 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
     public class SkyboxBackgroundRenderer : Renderer
     {
         private ImageEffectShader skyboxEffect;
+        private readonly SkyboxProcessor skyboxProcessor;
         
         /// <summary>
         /// Initializes a new instance of the <see cref="SkyboxBackgroundRenderer" /> class.
@@ -21,7 +22,10 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
         public SkyboxBackgroundRenderer(IServiceRegistry services)
             : base(services)
         {
+            skyboxProcessor = EntitySystem.GetProcessor<SkyboxProcessor>();
         }
+
+        public Texture Target { get; set; }
 
         public override void Load()
         {
@@ -39,25 +43,32 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
 
         protected override void OnRendering(RenderContext context)
         {
-            // get the lightprocessor
-            var entitySystem = Services.GetServiceAs<EntitySystem>();
-            var skyboxProcessor = entitySystem.GetProcessor<SkyboxProcessor>();
             if (skyboxProcessor == null)
-                return;
-
-            foreach (var skyboxPair in skyboxProcessor.Skyboxes)
             {
-                var skybox = skyboxPair.Value;
-                // Just display the first valid skybox
-                if (skybox.Enabled && skybox.Skybox != null && skybox.Background.Enabled)
-                {
-                    GraphicsDevice.SetDepthStencilState(GraphicsDevice.DepthStencilStates.DepthRead);
+                return;
+            }
 
-                    // TODO: Pass parameters to skybox effect
-                    skyboxEffect.Draw();
-                    GraphicsDevice.SetDepthStencilState(GraphicsDevice.DepthStencilStates.Default);
-                    break;
+            var skybox = skyboxProcessor.ActiveSkyboxBackground;
+
+            if (skybox != null)
+            {
+                GraphicsDevice.SetDepthStencilState(GraphicsDevice.DepthStencilStates.DepthRead);
+
+                context.CurrentPass.Parameters.CopySharedTo(skyboxEffect.Parameters);
+
+                //if (skybox.Skybox != null && skybox.Skybox.Parameters.ContainsKey(TexturingKeys.TextureCube0))
+                if (skybox.SkyboxTexture != null)
+                {
+                    //skyboxEffect.SetInput(skybox.Skybox.Parameters.Get(TexturingKeys.TextureCube0));
+                    skyboxEffect.SetInput(skybox.SkyboxTexture);
                 }
+
+                skyboxEffect.SetOutput(Target ?? GraphicsDevice.BackBuffer);
+                skyboxEffect.Draw();
+
+                // Restore current target
+                GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, Target ?? GraphicsDevice.BackBuffer);
+                GraphicsDevice.SetDepthStencilState(GraphicsDevice.DepthStencilStates.Default);
             }
         }
     }

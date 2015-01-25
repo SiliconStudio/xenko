@@ -1237,6 +1237,7 @@
     <Compile Include="Shadows\ShadowMapTexture.cs" />
     <Compile Include="Cubemap\CubeMapRenderer.cs" />
     <Compile Include="Renderers\LightingIBLRenderer.cs" />
+    <Compile Include="Skyboxes\SkyboxComponentCollection.cs" />
     <Compile Include="Skyboxes\SkyboxLightingRenderer.cs" />
     <Compile Include="Skyboxes\SkyboxProcessor.cs" />
     <Compile Include="Skyboxes\SkyboxStream.cs">

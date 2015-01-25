@@ -39,15 +39,10 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
 
             skyboxes.Clear();
 
-            foreach (var skyboxPair in lightProcessor.Skyboxes)
-            {
-                var skybox = skyboxPair.Value;
-
-                if (skybox.Lighting.Enabled)
-                {
-                    skyboxes.Add(skybox);
-                }
-            }
+            //foreach (var skybox in lightProcessor.ActiveSkyboxLights)
+            //{
+            //    skyboxes.Add(skybox);
+            //}
         }
 
         /// <summary>
