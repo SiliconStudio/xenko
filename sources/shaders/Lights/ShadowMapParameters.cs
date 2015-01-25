@@ -2,10 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Shaders;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Effects.Lights
 {
     [DataContract]
     public partial class ShadowMapParameters : ShaderMixinParameters
@@ -23,7 +22,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <summary>
         /// Filter type of the shadow map.
         /// </summary>
-        public static readonly ParameterKey<ShadowMapFilterType> FilterType = ParameterKeys.New<ShadowMapFilterType>();
+        public static readonly ParameterKey<LightShadowMapFilterType> FilterType = ParameterKeys.New<LightShadowMapFilterType>();
 
         /// <summary>
         /// Number of shadow maps.

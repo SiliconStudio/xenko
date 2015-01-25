@@ -78,7 +78,6 @@
     <Compile Include="Data\GeometricPrimitiveExtension.cs" />
     <Compile Include="EntityModel\EntityReference.cs" />
     <Compile Include="EntityModel\IEntityComponentReference.cs" />
-    <Compile Include="Data\LightingConfigurationData.cs" />
     <Compile Include="Data\SimpleExtensions.cs" />
     <Compile Include="Data\MergeExtensions.cs" />
     <Compile Include="Data\SplitExtensions.cs" />
@@ -100,9 +99,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Effects\LightingConfiguration.cs" />
-    <Compile Include="Effects\LightingConfigurationsSet.cs" />
-    <Compile Include="Effects\LightingKeys.cs" />
     <Compile Include="Effects\Material.cs" />
     <Compile Include="Effects\MaterialAssetKeys.cs" />
     <Compile Include="Effects\MaterialParametersKeys.cs" />
@@ -148,9 +144,6 @@
     <Compile Include="Effects\EffectSystem.cs" />
     <Compile Include="Effects\ModelRenderer.cs" />
     <Compile Include="Effects\RenderPipeline.cs" />
-    <Compile Include="Effects\Scene.cs" />
-    <Compile Include="Effects\ShadowConfiguration.cs" />
-    <Compile Include="Effects\ShadowMapParameters.cs" />
     <Compile Include="Effects\SpriteRenderer.cs" />
     <Compile Include="Effects\TransformTRS.cs" />
     <Compile Include="Effects\UIRenderer.cs" />
@@ -167,7 +160,6 @@
     <Compile Include="Data\HalfBufferExtensions.cs" />
     <Compile Include="Data\PolySortExtensions.cs" />
     <Compile Include="Effects\IModelInstance.cs" />
-    <Compile Include="Engine\LightProcessor.cs" />
     <Compile Include="Engine\PlayingAnimation.cs" />
     <Compile Include="Engine\ModelNodeLinkComponent.cs" />
     <Compile Include="Engine\ModelNodeLinkProcessor.cs" />
@@ -216,8 +208,6 @@
     <Compile Include="Effects\ParameterPath.cs" />
     <Compile Include="Engine\CameraComponent.cs" />
     <Compile Include="Engine\ParticleEmitterComponent.cs" />
-    <Compile Include="Engine\LightComponent.cs" />
-    <Compile Include="Engine\LightShaftsComponent.cs" />
     <Compile Include="Engine\ParticleEmitterType.cs" />
     <Compile Include="EntityModel\EntityComponentProperty.cs" />
     <Compile Include="EntityModel\EntityComponentPropertyType.cs" />

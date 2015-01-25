@@ -101,6 +101,14 @@
     </Compile>
     <Compile Include="DrawEffect.cs" />
     <Compile Include="DrawEffectContext.cs" />
+    <Compile Include="Lights\ILight.cs" />
+    <Compile Include="Lights\ILightColor.cs" />
+    <Compile Include="Lights\ILightShadow.cs" />
+    <Compile Include="Lights\LightColorRgb.cs" />
+    <Compile Include="Lights\LightDirectional.cs" />
+    <Compile Include="Lights\LightDirectionalGroupRenderProcessor.cs" />
+    <Compile Include="Lights\DirectLightGroupRenderProcessorBase.cs" />
+    <Compile Include="Lights\DirectLightRenderProcessorBase.cs" />
     <Compile Include="Lights\EnvironmentLightArray.cs">
       <DependentUpon>EnvironmentLightArray.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -114,12 +122,19 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Lights\EnvironmentLightKeys.cs" />
+    <Compile Include="Lights\LightComponent.cs" />
+    <Compile Include="Lights\LightingKeys.cs" />
+    <Compile Include="Lights\LightShadowMap.cs" />
+    <Compile Include="Lights\LightShadowMapFilterType.cs" />
     <Compile Include="Lights\LightSimpleAmbient.cs">
       <DependentUpon>LightSimpleAmbient.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Lights\LightSpot.cs" />
+    <Compile Include="Lights\ShadowConfiguration.cs" />
+    <Compile Include="Lights\ShadowMapParameters.cs" />
     <Compile Include="Materials\IMaterialSurfaceVertex.cs">
       <DependentUpon>IMaterialSurfaceVertex.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -1125,8 +1140,10 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>MaterialStream.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Lights\LightComponentCollection.cs" />
+    <Compile Include="Lights\LightProcessor.cs" />
     <Compile Include="Renderers\DirectLightData.cs" />
-    <Compile Include="Renderers\LightForwardModelRenderer.cs" />
+    <Compile Include="Lights\DirectLightForwardRenderProcessor.cs" />
     <Compile Include="Renderers\LightingGroupInfo.cs" />
     <Compile Include="Renderers\LightingUpdateInfo.cs" />
     <Compile Include="Renderers\LightingUpdateType.cs" />
@@ -1215,18 +1232,11 @@
     <Compile Include="Cubemap\CubemapBlendProcessor.cs" />
     <Compile Include="Cubemap\CubemapSourceProcessor.cs" />
     <Compile Include="Cubemap\CubemapBlendRenderer.cs" />
-    <Compile Include="Processors\DynamicLightShadowProcessor.cs" />
-    <Compile Include="Processors\EntityLightShadow.cs" />
-    <Compile Include="Processors\GuillotinePacker.cs" />
-    <Compile Include="Processors\LightingProcessorHelpers.cs" />
-    <Compile Include="Processors\LightShadowProcessor.cs" />
-    <Compile Include="Processors\LightShadowProcessorDefaultBudget.cs" />
-    <Compile Include="Processors\LightShadowProcessorWithBudget.cs" />
+    <Compile Include="Lights\GuillotinePacker.cs" />
     <Compile Include="Shadows\ShadowMap.cs" />
     <Compile Include="Shadows\ShadowMapTexture.cs" />
     <Compile Include="Cubemap\CubeMapRenderer.cs" />
     <Compile Include="Renderers\LightingIBLRenderer.cs" />
-    <Compile Include="Shadows\ShadowMapRenderer.cs" />
     <Compile Include="Skyboxes\SkyboxLightingRenderer.cs" />
     <Compile Include="Skyboxes\SkyboxProcessor.cs" />
     <Compile Include="Skyboxes\SkyboxStream.cs">
@@ -2848,7 +2858,10 @@
       <LastGenOutput>NormalWSStream.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Lights\obsolete\" />
+    <Folder Include="Shadows\obsolete\" />
+  </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

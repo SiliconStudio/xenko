@@ -197,9 +197,6 @@ namespace SiliconStudio.Paradox.Assets.Model
                             newMeshGroups = RefineGroups(newMeshGroups, CompareParameters);
                             // only regroup meshes if they share the shadow options
                             newMeshGroups = RefineGroups(newMeshGroups, CompareShadowOptions);
-                            //only regroup meshes if they share the same lighting configurations
-                            newMeshGroups = RefineGroups(newMeshGroups, CompareLightingConfigurations);
-
 
                             // add to the final meshes groups
                             foreach (var sameParamsMeshes in newMeshGroups)
@@ -593,39 +590,6 @@ namespace SiliconStudio.Paradox.Assets.Model
             var value0 = parameters0 != null && parameters0.ContainsKey(key) ? parameters0[key] : key.DefaultValueMetadataT.DefaultValue;
             var value1 = parameters1 != null && parameters1.ContainsKey(key) ? parameters1[key] : key.DefaultValueMetadataT.DefaultValue;
             return value0 == value1;
-        }
-
-        /// <summary>
-        /// Compares the lighting configurations of the two meshes.
-        /// </summary>
-        /// <param name="baseMesh">The base mesh.</param>
-        /// <param name="newMesh">The mesh to compare.</param>
-        /// <returns>True if all the configurations are the same, false otherwise.</returns>
-        private static bool CompareLightingConfigurations(Mesh baseMesh, Mesh newMesh)
-        {
-            var config0Content = GetLightingConfigurations(baseMesh);
-            var config1Content = GetLightingConfigurations(newMesh);
-            if (config0Content == null && config1Content == null)
-                return true;
-            if (config0Content == null || config1Content == null)
-                return false;
-            return config0Content.Id == config1Content.Id;
-        }
-
-        /// <summary>
-        /// Retrives the lighting configurations if present.
-        /// </summary>
-        /// <param name="mesh">The mesh containing the lighting configurations.</param>
-        /// <returns>The content reference to the lighting configuration.</returns>
-        private static ContentReference GetLightingConfigurations(Mesh mesh)
-        {
-            if (mesh != null && mesh.Parameters != null && mesh.Parameters.ContainsKey(LightingKeys.LightingConfigurations))
-            {
-                var config = mesh.Parameters[LightingKeys.LightingConfigurations];
-                if (config != null)
-                    return config as ContentReference;
-            }
-            return null;
         }
 
         /// <summary>

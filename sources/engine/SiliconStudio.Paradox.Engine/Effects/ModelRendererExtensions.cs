@@ -77,18 +77,18 @@ namespace SiliconStudio.Paradox.Effects
             return modelRenderer;
         }
 
-        /// <summary>
-        /// Adds a shadow caster filter for rendering only meshes that can cast shadows.
-        /// </summary>
-        /// <param name="modelRenderer">The model renderer.</param>
-        /// <returns>ModelRenderer.</returns>
-        public static ModelRenderer AddShadowCasterFilter(this ModelRenderer modelRenderer)
-        {
-            modelRenderer.AcceptPrepareMeshForRendering.Add((model, mesh) => mesh.Parameters.Get(LightingKeys.CastShadows));
-            modelRenderer.AcceptRenderMesh.Add((context, renderMesh) => renderMesh.Parameters.Get(LightingKeys.CastShadows));
-            modelRenderer.AppendDebugName("ShadowMapCaster");
-            return modelRenderer;
-        }
+        ///// <summary>
+        ///// Adds a shadow caster filter for rendering only meshes that can cast shadows.
+        ///// </summary>
+        ///// <param name="modelRenderer">The model renderer.</param>
+        ///// <returns>ModelRenderer.</returns>
+        //public static ModelRenderer AddShadowCasterFilter(this ModelRenderer modelRenderer)
+        //{
+        //    modelRenderer.AcceptPrepareMeshForRendering.Add((model, mesh) => mesh.Parameters.Get(LightingKeys.CastShadows));
+        //    modelRenderer.AcceptRenderMesh.Add((context, renderMesh) => renderMesh.Parameters.Get(LightingKeys.CastShadows));
+        //    modelRenderer.AppendDebugName("ShadowMapCaster");
+        //    return modelRenderer;
+        //}
 
         /// <summary>
         /// Adds a default frustum culling for rendering only meshes that are only inside the frustum/

@@ -70,6 +70,10 @@
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
       <Name>SiliconStudio.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\shaders\SiliconStudio.Paradox.Effects.csproj">
+      <Project>{0342C3E7-4A38-46B4-A8EC-E728D50085D3}</Project>
+      <Name>SiliconStudio.Paradox.Effects</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\tools\SiliconStudio.Paradox.Importer.Assimp\SiliconStudio.Paradox.Importer.Assimp.vcxproj">
       <Project>{c2306552-6c42-464c-8981-32fef4f9458d}</Project>
       <Name>SiliconStudio.Paradox.Importer.Assimp</Name>

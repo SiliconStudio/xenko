@@ -7,6 +7,7 @@ using System.Text;
 
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.DataModel;
+using SiliconStudio.Paradox.Effects.Lights;
 using SiliconStudio.Paradox.Effects.Shadows;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
@@ -125,7 +126,7 @@ namespace SiliconStudio.Paradox.Effects.Processors
 
             // find or create the shadow map texture
             ShadowMapTexture chosenTexture = null;
-            chosenTexture = AllocateOrChooseTexture(shadowMap, shadowMapDesc.FilterType == ShadowMapFilterType.Variance ? texturesVsm : texturesDefault);
+            chosenTexture = AllocateOrChooseTexture(shadowMap, shadowMapDesc.FilterType == LightShadowMapFilterType.Variance ? texturesVsm : texturesDefault);
 
             shadowMap.Texture = chosenTexture;
             InternalShadowMaps.Add(shadowMap);

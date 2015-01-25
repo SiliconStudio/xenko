@@ -9,6 +9,7 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Effects.Lights;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
@@ -25,7 +26,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             {
                 context.CloneParentMixinToCurrent();
                 context.Mixin(mixin, "ShadowMapCasterBase");
-                if (context.GetParam(ShadowMapParameters.FilterType) == ShadowMapFilterType.Variance)
+                if (context.GetParam(ShadowMapParameters.FilterType) == LightShadowMapFilterType.Variance)
                     context.Mixin(mixin, "ShadowMapCasterVsm");
             }
 

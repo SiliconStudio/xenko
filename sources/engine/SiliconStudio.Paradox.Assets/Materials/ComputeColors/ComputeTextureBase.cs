@@ -55,8 +55,6 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         [MaterialNodeValueProperty]
         public AssetReference<TextureAsset> TextureReference { get; set; }
 
-
-
         /// <summary>
         /// The texture coordinate used to sample the texture.
         /// </summary>

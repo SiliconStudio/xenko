@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Paradox.DataModel;
+using SiliconStudio.Paradox.Effects.Lights;
 using SiliconStudio.Paradox.Effects.Shadows;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
@@ -95,7 +96,7 @@ namespace SiliconStudio.Paradox.Effects.Processors
                 {
                     var shadowMap = (LightShadowMap)light.Light.Shadow;
 
-                    if (shadowMap.FilterType == ShadowMapFilterType.Variance)
+                    if (shadowMap.FilterType == LightShadowMapFilterType.Variance)
                     {
                         // if it was inserted, sort the shadow maps
                         if (ChooseShadowMapTexture(light, shadowMapVsmTextures, texturesVsm))
@@ -140,9 +141,9 @@ namespace SiliconStudio.Paradox.Effects.Processors
         /// </summary>
         /// <param name="shadowMapTexture">The shadow map texture.</param>
         /// <param name="filterType">The filtering that will be applied to this shadow.</param>
-        protected void AddShadowMapTexture(ShadowMapTexture shadowMapTexture, ShadowMapFilterType filterType)
+        protected void AddShadowMapTexture(ShadowMapTexture shadowMapTexture, LightShadowMapFilterType filterType)
         {
-            if (filterType == ShadowMapFilterType.Variance)
+            if (filterType == LightShadowMapFilterType.Variance)
             {
                 texturesVsm.Add(shadowMapTexture, shadowMapTexture.ShadowMapDepthTexture.ViewWidth * shadowMapTexture.ShadowMapDepthTexture.ViewHeight);
                 shadowMapVsmTextures.Add(shadowMapTexture);

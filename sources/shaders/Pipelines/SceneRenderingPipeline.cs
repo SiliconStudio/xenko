@@ -3,6 +3,7 @@ using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects.Images;
+using SiliconStudio.Paradox.Effects.Lights;
 using SiliconStudio.Paradox.Effects.Processors;
 using SiliconStudio.Paradox.Effects.Renderers;
 using SiliconStudio.Paradox.Effects.Shadows;
@@ -28,7 +29,7 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
 
         private readonly SkyboxBackgroundRenderer skyboxBackgroundRenderer;
 
-        private readonly LightForwardModelRenderer lightRendererProcessor;
+        private readonly DirectLightForwardRenderProcessor directLightRenderRenderProcessor;
 
         private Texture renderTargetHDR;
 
@@ -50,11 +51,11 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
 
             GraphicsDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
 
+            // Add light processor
+            Entities.Processors.Add(new LightProcessor());
+
             // Add processor for rendering the skybox
             Entities.Processors.Add(new SkyboxProcessor());
-
-            // Add light processor
-            Entities.Processors.Add(new DynamicLightShadowProcessor(GraphicsDevice, false));
 
             cameraSetter = new CameraSetter(serviceRegistry);
             rootRenderTargetSetter = new RenderTargetSetter(serviceRegistry);
@@ -70,7 +71,7 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
 
             skyboxBackgroundRenderer = new SkyboxBackgroundRenderer(Services);
             modelRenderer = new ModelRenderer(serviceRegistry, sceneEffect);
-            lightRendererProcessor = new LightForwardModelRenderer(modelRenderer.Services);
+            directLightRenderRenderProcessor = new DirectLightForwardRenderProcessor(modelRenderer.Services, modelRenderer);
             postEffectRenderer = new DelegateRenderer(Services) { Render = ApplyPostEffects };
 
             AddRenderer(new DelegateRenderer(Services) { Render = Update});
@@ -176,7 +177,7 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
             // Upload lighting
             if (useLightingChanged)
             {
-                lightRendererProcessor.EnableLights(modelRenderer, useLighting);
+                directLightRenderRenderProcessor.Enabled = useLighting;
 
                 LightingKeys.EnableFixedAmbientLight(GraphicsDevice.Parameters, !useLighting);
             }

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.DataModel;
+using SiliconStudio.Paradox.Effects.Lights;
 using SiliconStudio.Paradox.Effects.Processors;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
@@ -109,7 +110,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 shadowMapTexture.GuillotinePacker.Clear(shadowMapTexture.ShadowMapDepthTexture.ViewWidth, shadowMapTexture.ShadowMapDepthTexture.ViewHeight);
             }
 
-            ShadowMapFilterType filterBackup;
+            LightShadowMapFilterType filterBackup;
             var hasFilter = graphicsDevice.Parameters.ContainsKey(ShadowMapParameters.FilterType);
             filterBackup = graphicsDevice.Parameters.Get(ShadowMapParameters.FilterType);
 
@@ -136,7 +137,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                     // Compute shadow map infos
                     ComputeShadowMap(shadowMap, ref inverseView);
 
-                    if (shadowMap.Filter == ShadowMapFilterType.Variance)
+                    if (shadowMap.Filter == LightShadowMapFilterType.Variance)
                         graphicsDevice.SetDepthAndRenderTarget(shadowMap.Texture.ShadowMapDepthTexture, shadowMap.Texture.ShadowMapTargetTexture);
                     else
                         graphicsDevice.SetDepthTarget(shadowMap.Texture.ShadowMapDepthTexture);
@@ -170,7 +171,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                         // Set viewport
                         graphicsDevice.SetViewport(new Viewport((int)viewPortCoord.X, (int)viewPortCoord.Y, (int)(viewPortCoord.Z - viewPortCoord.X), (int)(viewPortCoord.W - viewPortCoord.Y)));
 
-                        if (shadowMap.Filter == ShadowMapFilterType.Variance)
+                        if (shadowMap.Filter == LightShadowMapFilterType.Variance)
                             shadowMapTexturesToBlur.Add(shadowMap.Texture);
                         
                         graphicsDevice.Parameters.Set(ShadowMapParameters.FilterType, shadowMap.Filter);

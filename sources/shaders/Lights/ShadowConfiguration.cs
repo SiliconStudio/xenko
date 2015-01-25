@@ -4,9 +4,8 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Engine;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Effects.Lights
 {
     [DataContract("ShadowConfiguration")]
     public struct ShadowConfiguration
@@ -45,7 +44,7 @@ namespace SiliconStudio.Paradox.Effects
         /// The shadow filtering of this group.
         /// </userdoc>
         [DataMember(40)]
-        public ShadowMapFilterType FilterType;
+        public LightShadowMapFilterType FilterType;
     }
 
     // TODO: array?

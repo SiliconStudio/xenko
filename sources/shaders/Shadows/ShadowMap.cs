@@ -3,6 +3,7 @@
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.DataModel;
+using SiliconStudio.Paradox.Effects.Lights;
 using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Effects.Shadows
@@ -70,7 +71,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
         /// <summary>
         /// The shadow map filter.
         /// </summary>
-        public ShadowMapFilterType Filter;
+        public LightShadowMapFilterType Filter;
 
         /// <summary>
         /// The shadow map texture.
