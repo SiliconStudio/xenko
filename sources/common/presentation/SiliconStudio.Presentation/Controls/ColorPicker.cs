@@ -94,6 +94,16 @@ namespace SiliconStudio.Presentation.Controls
         public static readonly DependencyProperty InputColumnWidthProperty = DependencyProperty.Register("InputColumnWidth", typeof(GridLength), typeof(ColorPicker), new FrameworkPropertyMetadata(GridLength.Auto));
 
         /// <summary>
+        /// Identifies the <see cref="PickupAreaSize"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty PickupAreaSizeProperty = DependencyProperty.Register("PickupAreaSize", typeof(Size), typeof(ColorPicker), new FrameworkPropertyMetadata(default(Size)));
+
+        /// <summary>
+        /// Identifies the <see cref="StripsHeight"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty StripsHeightProperty = DependencyProperty.Register("StripsHeight", typeof(double), typeof(ColorPicker), new FrameworkPropertyMetadata((double)0));
+            
+        /// <summary>
         /// Gets or sets the color associated to this color picker.
         /// </summary>
         /// <remarks>The float values of each component of the color are always equals to the float conversion of a <see cref="byte"/> value divided by <b>255</b>.</remarks>
@@ -143,6 +153,16 @@ namespace SiliconStudio.Presentation.Controls
         /// Gets or sets the length of the input column of the color picker.
         /// </summary>
         public GridLength InputColumnWidth { get { return (GridLength)GetValue(InputColumnWidthProperty); } set { SetValue(InputColumnWidthProperty, value); } }
+
+        /// <summary>
+        /// Gets or sets the size of the color pickup area.
+        /// </summary>
+        public Size PickupAreaSize { get { return (Size)GetValue(PickupAreaSizeProperty); } set { SetValue(PickupAreaSizeProperty, value); } }
+
+        /// <summary>
+        /// Gets or sets the height of the hue pickup strip and the preview color strip.
+        /// </summary>
+        public double StripsHeight { get { return (double)GetValue(StripsHeightProperty); } set { SetValue(StripsHeightProperty, value); } }
 
         /// <summary>
         /// An internal representation of the color associated to this color picker. Its value never rounded to match a byte division by 255.
