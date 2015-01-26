@@ -7,6 +7,8 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects.Images;
 using SiliconStudio.Paradox.Graphics;
 
+using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
+
 namespace SiliconStudio.Paradox.Effects.ComputeEffect.LambertianPrefiltering
 {
     /// <summary>
@@ -89,13 +91,13 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect.LambertianPrefiltering
 
             // Recursively applies the pass2 (sums the coefficients together) as long as needed. Swap input/output buffer at each iteration.
             var secondPassInputBuffer = partialSumBuffer;
-            var secondPassOutputBuffer = NewScopedTypedBuffer(coefficientsCount, PixelFormat.R32G32B32A32_Float, true);
+            Buffer secondPassOutputBuffer = null;
             while (sumsToPerfomRemaining % 2 == 0)
             {
                 // we are limited in the number of summing threads by the group-shared memory size.
                 // determine the number of threads to use and update the number of sums remaining afterward.
                 var sumsCount = 1;
-                while (sumsCount < (1<<14) && sumsToPerfomRemaining % 2 == 0) // shader can perform only an 2^x number of sums.
+                while (sumsCount < (1<<10) && sumsToPerfomRemaining % 2 == 0) // shader can perform only an 2^x number of sums.
                 {
                     sumsCount <<= 1;
                     sumsToPerfomRemaining >>= 1;
@@ -110,8 +112,12 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect.LambertianPrefiltering
                     groupCountY >>= 1;
                 }
 
+                // create the output buffer if not existing yet
+                if (secondPassOutputBuffer == null)
+                    secondPassOutputBuffer = NewScopedTypedBuffer(coefficientsCount * sumsToPerfomRemaining, PixelFormat.R32G32B32A32_Float, true);
+
                 // draw pass 2
-                secondPassEffect.ThreadNumbers = new Int3(sumsToPerfomRemaining, 1, 1);
+                secondPassEffect.ThreadNumbers = new Int3(sumsCount, 1, 1);
                 secondPassEffect.ThreadGroupCounts = new Int3(groupCountX, groupCountY, coefficientsCount);
                 secondPassEffect.Parameters.Set(LambertianPrefilteringSHParameters.BlockSize, sumsToPerfomRemaining);
                 secondPassEffect.Parameters.Set(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
