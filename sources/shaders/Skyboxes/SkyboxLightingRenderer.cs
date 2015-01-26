@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
+using SiliconStudio.Paradox.Effects.Images;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Shaders;
 
@@ -51,18 +52,39 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
 
             if (Enabled)
             {
-                foreach (var skybox in skyboxProcessor.ActiveSkyboxLights)
+                int index = 0;
+                foreach (var skyboxComponent in skyboxProcessor.ActiveSkyboxLights)
                 {
-                    var skylightParameters = skybox.Skybox.Parameters;
+                    var skybox = skyboxComponent.Skybox;
 
-                    var environmentShader = skylightParameters.Get(SkyboxKeys.Shader);
+                    var diffuseParameters = skybox.DiffuseLightingParameters;
+                    var specularParameters = skybox.SpecularLightingParameters;
+
+                    // Setup diffuse lighting
+                    {
+                        var cubeMapKey = LevelCubeMapEnvironmentColorKeys.CubeMap.ComposeWith(string.Format("lightDiffuseColor.environmentLights[{0}]", index));
+                        var mipLevelKey = LevelCubeMapEnvironmentColorKeys.MipLevel.ComposeWith(string.Format("lightDiffuseColor.environmentLights[{0}]", index));
+                        var diffuseCubemap = diffuseParameters.Get(SkyboxKeys.CubeMap);
+                        passParameters.Set(cubeMapKey, diffuseCubemap);
+                        passParameters.Set(mipLevelKey, Math.Max(0, diffuseCubemap.MipLevels - 3));
+                    }
+
+                    // Setup specular lighting
+                    {
+                        var cubeMapKey = RoughnessCubeMapEnvironmentColorKeys.CubeMap.ComposeWith(string.Format("lightSpecularColor.environmentLights[{0}]", index));
+                        var mipCountKey = RoughnessCubeMapEnvironmentColorKeys.MipCount.ComposeWith(string.Format("lightSpecularColor.environmentLights[{0}]", index));
+                        var specularCubemap = specularParameters.Get(SkyboxKeys.CubeMap);
+                        passParameters.Set(cubeMapKey, specularCubemap);
+                        passParameters.Set(mipCountKey, specularCubemap.MipLevels);
+                    }
 
                     var mixin = new ShaderMixinSource();
                     mixin.Mixins.Add(new ShaderClassSource("LightSkybox"));
-                    mixin.AddComposition("lightDiffuseColor", environmentShader);
+                    mixin.AddComposition("lightDiffuseColor", diffuseParameters.Get(SkyboxKeys.Shader));
+                    mixin.AddComposition("lightSpecularColor", specularParameters.Get(SkyboxKeys.Shader));
                     shaderSources.Add(mixin);
 
-                    passParameters.Set(SkyboxKeys.CubeMap, skylightParameters.Get(SkyboxKeys.CubeMap));
+                    passParameters.Set(SkyboxKeys.CubeMap, diffuseParameters.Get(SkyboxKeys.CubeMap));
                     break;
                 }
 

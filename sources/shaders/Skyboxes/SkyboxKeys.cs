@@ -19,6 +19,10 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
 
         public static readonly ParameterKey<ShaderSource> Shader = ParameterKeys.New<ShaderSource>();
 
+        public static readonly ParameterKey<ShaderSource> DiffuseLighting = ParameterKeys.New<ShaderSource>();
+
+        public static readonly ParameterKey<ShaderSource> SpecularLighting = ParameterKeys.New<ShaderSource>();
+
         public static readonly ParameterKey<Texture> CubeMap = ParameterKeys.New<Texture>();
 
         private static void UpdateSkyMatrix(ref float angle, ref Matrix output)

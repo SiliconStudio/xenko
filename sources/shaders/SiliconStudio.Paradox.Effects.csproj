@@ -1250,6 +1250,18 @@
     <Compile Include="Shadows\ShadowMapTexture.cs" />
     <Compile Include="Cubemap\CubeMapRenderer.cs" />
     <Compile Include="Renderers\LightingIBLRenderer.cs" />
+    <Compile Include="Skyboxes\LevelCubeMapEnvironmentColor.cs">
+      <DependentUpon>LevelCubeMapEnvironmentColor.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Skyboxes\RoughnessCubeMapEnvironmentColor.cs">
+      <DependentUpon>RoughnessCubeMapEnvironmentColor.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Skyboxes\ComputeSkyboxCubeMapColor.cs">
       <DependentUpon>ComputeSkyboxCubeMapColor.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -2803,6 +2815,14 @@
     <None Include="Skinning\TransformationSkinning.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>TransformationSkinning.cs</LastGenOutput>
+    </None>
+    <None Include="Skyboxes\LevelCubeMapEnvironmentColor.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>LevelCubeMapEnvironmentColor.cs</LastGenOutput>
+    </None>
+    <None Include="Skyboxes\RoughnessCubeMapEnvironmentColor.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>RoughnessCubeMapEnvironmentColor.cs</LastGenOutput>
     </None>
     <None Include="Skyboxes\ComputeSkyboxCubeMapColor.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

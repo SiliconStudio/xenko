@@ -28,9 +28,6 @@ namespace SiliconStudio.Paradox.Effects.Materials
         // view dot half vector
         stage stream float VdotH;
 
-        // disney-burley roughness
-        stage stream float alphaRoughness;
-
         // Computes material attributes per light
         stage void PrepareMaterialPerDirectLight()
         {
@@ -44,12 +41,6 @@ namespace SiliconStudio.Paradox.Effects.Materials
             streams.NdotH = saturate(dot(streams.normalVS, streams.H));
             streams.LdotH = saturate(dot(streams.lightDirectionVS, streams.H));
             streams.VdotH = streams.LdotH;
-
-            // Calculate shading roughtness using Disney-Burley method
-            // roughness-burley = roughness^2 = (1 - glossy)^2
-            var roughness = 1.0f - streams.matGlossiness;
-            streams.alphaRoughness = max(roughness * roughness, 2e-3);
-            // TODO: precalculate alphaRoughness^2
         }
     };
 }

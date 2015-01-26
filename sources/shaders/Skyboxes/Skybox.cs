@@ -21,6 +21,8 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
         public Skybox()
         {
             Parameters = new ParameterCollection();
+            DiffuseLightingParameters = new ParameterCollection();
+            SpecularLightingParameters = new ParameterCollection();
         }
 
         /// <summary>
@@ -28,5 +30,9 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
         /// </summary>
         /// <value>The parameters.</value>
         public ParameterCollection Parameters { get; set; }
+
+        public ParameterCollection DiffuseLightingParameters { get; set; }
+
+        public ParameterCollection SpecularLightingParameters { get; set; }
     }
 }

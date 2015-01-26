@@ -15,6 +15,9 @@ namespace SiliconStudio.Paradox.Effects.Materials
         // Microsurface attributes
         stage stream float  matGlossiness;
 
+        // disney-burley roughness
+        stage stream float alphaRoughness;      // Precomputer before lighting
+
         // Specular attributes
         stage stream float3 matSpecular;
 
@@ -47,6 +50,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
             streams.matSpecularIntensity = 1.0f;
 
             streams.matGlossiness = 0.0f;
+            streams.alphaRoughness = 1.0f;
 
             streams.matAmbientOcclusion = 0.0f;
 
@@ -59,6 +63,12 @@ namespace SiliconStudio.Paradox.Effects.Materials
         {
             streams.matDiffuseVisible = streams.matDiffuse.rgb * lerp(1.0f, streams.matCavity, streams.matCavityDiffuse);
             streams.matSpecularVisible = streams.matSpecular.rgb * streams.matSpecularIntensity * lerp(1.0f, streams.matCavity, streams.matCavitySpecular);
+
+            // Calculate shading roughtness using Disney-Burley method
+            // roughness-burley = roughness^2 = (1 - glossy)^2
+            var roughness = 1.0f - streams.matGlossiness;
+            streams.alphaRoughness = max(roughness * roughness, 2e-3);
+            // TODO: precalculate alphaRoughness^2
         }
     };
 }

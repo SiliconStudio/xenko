@@ -5,7 +5,9 @@ using System;
 
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Paradox.Effects.Images;
 using SiliconStudio.Paradox.Effects.Skyboxes;
+using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Skyboxes
 {
@@ -35,12 +37,19 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
             var result = new SkyboxResult { Skybox = new Skybox() };
 
             var parameters = context.Parameters;
-            result.Skybox.Parameters = parameters;
+            var skybox = result.Skybox;
+            skybox.Parameters = parameters;
 
             if (asset.Model != null)
             {
                 var shaderSource = asset.Model.Generate(context);
                 parameters.Set(SkyboxKeys.Shader, shaderSource);
+
+                skybox.DiffuseLightingParameters.Set(SkyboxKeys.Shader, new ShaderClassSource("LevelCubeMapEnvironmentColor"));
+                skybox.DiffuseLightingParameters.Set(SkyboxKeys.CubeMap, parameters.Get(SkyboxKeys.CubeMap));
+
+                skybox.SpecularLightingParameters.Set(SkyboxKeys.Shader, new ShaderClassSource("RoughnessCubeMapEnvironmentColor"));
+                skybox.SpecularLightingParameters.Set(SkyboxKeys.CubeMap, parameters.Get(SkyboxKeys.CubeMap));
             }
 
             return result;

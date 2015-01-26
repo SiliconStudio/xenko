@@ -25,5 +25,13 @@ namespace SiliconStudio.Paradox.Effects.Materials
 
             return reflected * streams.lightColorNdotL;
         }
+
+        override float3 ComputeEnvironmentLightContribution()
+        {
+            // TODO: Check how to factorize this with DirectLight
+            // TODO: Take into account fresnel
+            var specularColor = streams.matSpecularVisible;
+            return specularColor * streams.envLightSpecularColor;
+        }
     };
 }
