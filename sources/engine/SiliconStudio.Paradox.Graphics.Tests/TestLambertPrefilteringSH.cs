@@ -31,7 +31,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         private bool shouldPrefilter = true;
 
-        private Int2 screenSize = new Int2(1200, 900);
+        private Int2 screenSize = new Int2(768, 1024);
 
         private Effect cubemapSpriteEffect;
 
@@ -39,6 +39,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         {
             GraphicsDeviceManager.PreferredBackBufferWidth = screenSize.X;
             GraphicsDeviceManager.PreferredBackBufferHeight = screenSize.Y;
+            GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0 };
         }
 
@@ -57,7 +58,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             outputCubemap = Texture.NewCube(GraphicsDevice, 256, 1, PixelFormat.R16G16B16A16_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource).DisposeBy(this);
             displayedCubemap = outputCubemap;
 
-            RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services));
+            RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services) { ClearColor = Color.White });
             RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = RenderCubeMap });
             RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = PrefilterCubeMap });
         }
@@ -67,6 +68,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             if (!shouldPrefilter)
                 return;
 
+            lamberFilter.HarmonicOrder = 5;
             lamberFilter.RadianceMap = inputCubemap;
             lamberFilter.Draw();
 
@@ -83,7 +85,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             if (displayedCubemap == null || spriteBatch == null)
                 return;
 
-            var size = new Vector2(screenSize.X / 4f, screenSize.Y / 3f);
+            var size = new Vector2(screenSize.X / 3f, screenSize.Y / 4f);
             
             GraphicsDevice.Parameters.Set(ComputeColorSpriteKeys.ViewIndex, 1);
             spriteBatch.Begin(SpriteSortMode.Texture, cubemapSpriteEffect);
@@ -105,14 +107,14 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             spriteBatch.Draw(displayedCubemap, new RectangleF(size.X, 2f * size.Y, size.X, size.Y), Color.White);
             spriteBatch.End();
 
+            GraphicsDevice.Parameters.Set(ComputeColorSpriteKeys.ViewIndex, 5);
+            spriteBatch.Begin(SpriteSortMode.Texture, cubemapSpriteEffect);
+            spriteBatch.Draw(displayedCubemap, new RectangleF(size.X, 3f * size.Y, size.X, size.Y), null, Color.White, 0f, Vector2.Zero, SpriteEffects.FlipVertically);
+            spriteBatch.End();
+
             GraphicsDevice.Parameters.Set(ComputeColorSpriteKeys.ViewIndex, 0);
             spriteBatch.Begin(SpriteSortMode.Texture, cubemapSpriteEffect);
             spriteBatch.Draw(displayedCubemap, new RectangleF(2f * size.X, size.Y, size.X, size.Y), Color.White);
-            spriteBatch.End();
-
-            GraphicsDevice.Parameters.Set(ComputeColorSpriteKeys.ViewIndex, 5);
-            spriteBatch.Begin(SpriteSortMode.Texture, cubemapSpriteEffect);
-            spriteBatch.Draw(displayedCubemap, new RectangleF(3f * size.X, size.Y, size.X, size.Y), Color.White);
             spriteBatch.End();
         }
 

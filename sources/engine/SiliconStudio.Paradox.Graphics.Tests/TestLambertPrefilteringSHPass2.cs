@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         private const int NbOfSums = 8;
 
-        private Int2 nbOfGroups = new Int2(1, 3);
+        private Int2 nbOfGroups = new Int2(2, 3);
 
         private Vector4[] inputBufferData;
 
