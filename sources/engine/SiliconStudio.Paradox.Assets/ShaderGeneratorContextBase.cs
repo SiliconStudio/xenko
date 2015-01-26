@@ -75,7 +75,7 @@ namespace SiliconStudio.Paradox.Assets
         public ParameterKey<Texture> GetTextureKey(IContentReference textureReference, ParameterKey<Texture> key)
         {
             var textureKey = (ParameterKey<Texture>)GetParameterKey(key);
-            if (IsTextureValid(textureReference) && textureReference != null)
+            if (textureReference != null)
             {
                 var texture = AttachedReferenceManager.CreateSerializableVersion<Texture>(textureReference.Id, textureReference.Location);
                 Parameters.Set(textureKey, texture);
@@ -96,32 +96,6 @@ namespace SiliconStudio.Paradox.Assets
             var samplerState = new SamplerState(samplerStateDesc);
             Parameters.Set(key, samplerState);
             return key;
-        }
-
-        public bool IsTextureValid(IContentReference textureReference)
-        {
-            if (textureReference == null)
-            {
-                return true;
-            }
-
-            // TODO: Use actual texture compilation result before deciding if we can use that texture
-            // Check if asset exists
-            var textureAsset = FindAsset(textureReference) as TextureAsset;
-            if (textureAsset == null)
-            {
-                Log.Warning("Unable to find texture [{0}]", textureReference);
-                return false;
-            }
-
-            // Check if file exists
-            if (!File.Exists(textureAsset.Source))
-            {
-                Log.Warning("Texture [{0}] points to non-existing file {1}", textureReference, textureAsset.Source);
-                return false;
-            }
-
-            return true;
         }
     }
 }
