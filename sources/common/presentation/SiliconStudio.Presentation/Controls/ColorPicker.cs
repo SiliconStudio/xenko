@@ -89,6 +89,11 @@ namespace SiliconStudio.Presentation.Controls
         public static readonly DependencyProperty ShowAlphaProperty = DependencyProperty.Register("ShowAlpha", typeof(bool), typeof(ColorPicker), new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
         /// <summary>
+        /// Identifies the <see cref="InputColumnWidth"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty InputColumnWidthProperty = DependencyProperty.Register("InputColumnWidth", typeof(GridLength), typeof(ColorPicker), new FrameworkPropertyMetadata(GridLength.Auto));
+
+        /// <summary>
         /// Gets or sets the color associated to this color picker.
         /// </summary>
         /// <remarks>The float values of each component of the color are always equals to the float conversion of a <see cref="byte"/> value divided by <b>255</b>.</remarks>
@@ -130,9 +135,14 @@ namespace SiliconStudio.Presentation.Controls
         public byte Alpha { get { return (byte)GetValue(AlphaProperty); } set { SetValue(AlphaProperty, value); } }
 
         /// <summary>
-        /// Gets or sets whether the alpha component of the color should be displayed in the color picker
+        /// Gets or sets whether the alpha component of the color should be displayed in the color picker.
         /// </summary>
         public bool ShowAlpha { get { return (bool)GetValue(ShowAlphaProperty); } set { SetValue(ShowAlphaProperty, value); } }
+
+        /// <summary>
+        /// Gets or sets the length of the input column of the color picker.
+        /// </summary>
+        public GridLength InputColumnWidth { get { return (GridLength)GetValue(InputColumnWidthProperty); } set { SetValue(InputColumnWidthProperty, value); } }
 
         /// <summary>
         /// An internal representation of the color associated to this color picker. Its value never rounded to match a byte division by 255.
