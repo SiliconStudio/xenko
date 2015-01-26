@@ -9,14 +9,14 @@ using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Paradox.EntityModel
 {
-    [DataSerializer(typeof(EntityComponent.Serializer))]
+    [DataSerializer(typeof(Serializer))]
     [DataContract]
-    public class EntityComponent
+    public abstract class EntityComponent
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityComponent"/> class.
         /// </summary>
-        public EntityComponent()
+        protected EntityComponent()
         {
             Enabled = true;
         }
@@ -60,13 +60,7 @@ namespace SiliconStudio.Paradox.EntityModel
         /// The default key this component is associated to.
         /// </summary>
         [DataMemberIgnore]
-        public virtual PropertyKey DefaultKey
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public abstract PropertyKey DefaultKey { get; }
 
         /// <summary>
         /// Gets the default key for the specified entity component type.
