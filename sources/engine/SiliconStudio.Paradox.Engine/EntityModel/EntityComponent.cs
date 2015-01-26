@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 using SiliconStudio.Core;
@@ -17,6 +18,7 @@ namespace SiliconStudio.Paradox.EntityModel
         /// </summary>
         public EntityComponent()
         {
+            Enabled = true;
         }
 
         /// <summary>
@@ -27,6 +29,16 @@ namespace SiliconStudio.Paradox.EntityModel
         /// </value>
         [DataMemberIgnore]
         public Entity Entity { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="EntityComponent"/> is enabled.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if enabled; otherwise, <c>false</c>.
+        /// </value>
+        [DataMember(-10)]
+        [DefaultValue(true)]
+        public bool Enabled { get; set; }
 
         /// <summary>
         /// Gets the entity and throws an exception if the entity is null.

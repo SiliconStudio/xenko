@@ -58,14 +58,14 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             var textureCube = Asset.Load<Texture>("uv_cube");
             var staticCubemapEntity = new Entity()
             {
-                new CubemapSourceComponent(textureCube) { Enabled = true, InfluenceRadius = 2f, IsDynamic = false },
+                new CubemapSourceComponent(textureCube) { InfluenceRadius = 2f, IsDynamic = false },
                 new TransformationComponent() { Translation = Vector3.UnitZ }
             };
             Entities.Add(staticCubemapEntity);
 
             dynamicCubemapEntity = new Entity()
             {
-                new CubemapSourceComponent(textureCube) { Enabled = true, InfluenceRadius = 0.5f, IsDynamic = false },
+                new CubemapSourceComponent(textureCube) { InfluenceRadius = 0.5f, IsDynamic = false },
                 new TransformationComponent() { Translation = Vector3.Zero }
             };
             Entities.Add(dynamicCubemapEntity);

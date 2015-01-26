@@ -29,22 +29,10 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
         /// <param name="skybox">The skybox.</param>
         public SkyboxComponent(Skybox skybox)
         {
-            // TODO: Move this to base component
-            Enabled = true;
             Skybox = skybox;
             Lighting = new SkyboxLighting();
             Background = new SkyboxBackground();
         }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether rendering is enabled.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if rendering is enabled; otherwise, <c>false</c>.
-        /// </value>
-        [DataMember(10)]
-        [DefaultValue(true)]
-        public bool Enabled { get; set; }
 
         /// <summary>
         /// Gets or sets the skybox.

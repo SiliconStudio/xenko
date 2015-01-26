@@ -34,7 +34,6 @@ namespace SiliconStudio.Paradox.Engine
         /// <param name="model">The model.</param>
         public ModelComponent(Model model)
         {
-            Enabled = true;
             Parameters = new ParameterCollection();
             Model = model;
         }
@@ -85,14 +84,6 @@ namespace SiliconStudio.Paradox.Engine
                 return modelViewHierarchy;
             }
         }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether rendering is enabled.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if rendering is enabled; otherwise, <c>false</c>.
-        /// </value>
-        public bool Enabled { get; set; }
 
         /// <summary>
         /// Gets or sets the draw order (from lowest to highest).

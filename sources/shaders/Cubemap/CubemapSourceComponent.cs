@@ -45,11 +45,6 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
         }
 
         /// <summary>
-        /// Enables the computation of the cubemap if this one is dynamic.
-        /// </summary>
-        public bool Enabled { get; set; }
-
-        /// <summary>
         /// Enables runtime cubemap creation.
         /// </summary>
         public bool IsDynamic { get; set; }

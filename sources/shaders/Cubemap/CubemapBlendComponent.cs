@@ -34,11 +34,6 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
         }
 
         /// <summary>
-        /// Enables the computation of the cubemap.
-        /// </summary>
-        public bool Enabled { get; set; }
-
-        /// <summary>
         /// The size of the target cubemap.
         /// </summary>
         [DefaultValue(256)]

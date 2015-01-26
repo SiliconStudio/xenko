@@ -139,7 +139,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 
             rootEntityData.Name = entityUrl;
             // Use modelUrl.Path to get the url without the extension
-            rootEntityData.Add(ModelComponent.Key, new ModelComponent { Model = AttachedReferenceManager.CreateSerializableVersion<Effects.Model>(modelItem.Id, modelItem.Location), Enabled = true });
+            rootEntityData.Add(ModelComponent.Key, new ModelComponent { Model = AttachedReferenceManager.CreateSerializableVersion<Effects.Model>(modelItem.Id, modelItem.Location) });
 
             var assetReference = new AssetItem(entityUrl, asset);
             assetReferences.Add(assetReference);

@@ -23,19 +23,11 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// </summary>
         public LightComponent()
         {
-            Enabled = true;
             Type = new LightDirectional();
             Color = new LightColorRgb();
             Intensity = 1.0f;
             Layers = RenderLayers.All;
         }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the light is enabled.
-        /// </summary>
-        [DataMember(0)]
-        [DefaultValue(true)]
-        public bool Enabled { get; set; }
 
         /// <summary>
         /// Gets or sets the type of the light.

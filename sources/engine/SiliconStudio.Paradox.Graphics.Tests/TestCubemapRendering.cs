@@ -94,7 +94,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                     Model = new Model() { reflectiveMesh }
                 },
                 new TransformationComponent(),
-                new CubemapSourceComponent() { IsDynamic = true, Enabled = true, Size = 128 }
+                new CubemapSourceComponent() { IsDynamic = true, Size = 128 }
             };
             Entities.Add(reflectEntity);
             reflectEntity.Get<ModelComponent>().Parameters.Set(TexturingKeys.TextureCube0, reflectEntity.Get<CubemapSourceComponent>().Texture);
