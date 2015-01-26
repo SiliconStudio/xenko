@@ -49,7 +49,7 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SiliconStudio.Paradox.Graphics.Tests.TestLambertPrefilteringSH</StartupObject>
+    <StartupObject>SiliconStudio.Paradox.Graphics.Tests.TestLambertPrefilteringSHPass2</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
@@ -258,6 +258,7 @@
     <Compile Include="TestGraphicsResourceAllocator.cs" />
     <Compile Include="TestImageEffect.cs" />
     <Compile Include="TestImageLoad.cs" />
+    <Compile Include="TestLambertPrefilteringSHPass2.cs" />
     <Compile Include="TestLambertPrefilteringSH.cs" />
     <Compile Include="TestComputeShader.cs" />
     <Compile Include="TestMultipleRenderTargets.cs" />
