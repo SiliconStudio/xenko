@@ -16,7 +16,7 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
-    internal static partial class LambertianPrefilteringSHPass2Keys
+    public static partial class LambertianPrefilteringSHPass2Keys
     {
         public static readonly ParameterKey<Buffer> InputBuffer = ParameterKeys.New<Buffer>();
         public static readonly ParameterKey<Buffer> OutputBuffer = ParameterKeys.New<Buffer>();
