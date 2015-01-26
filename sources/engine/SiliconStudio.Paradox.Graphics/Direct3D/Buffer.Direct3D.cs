@@ -177,14 +177,19 @@ namespace SiliconStudio.Paradox.Graphics
         {
             if (Description.StructureByteStride == 0)
             {
+                // TODO: The way to calculate the count is not always correct depending on the ViewFlags...etc.
                 if ((ViewFlags & BufferFlags.RawBuffer) != 0)
-                    count = Description.SizeInBytes / sizeof(int);
-                else if ((ViewFlags & BufferFlags.IndexBuffer) != 0)
                 {
-                    count = (ViewFlags & BufferFlags.ShaderResource) != 0 ? Description.SizeInBytes / viewFormat.SizeInBytes() : 0;
+                    count = Description.SizeInBytes / sizeof(int);
+                }
+                else if ((ViewFlags & BufferFlags.ShaderResource) != 0)
+                {
+                    count = Description.SizeInBytes / viewFormat.SizeInBytes();
                 }
                 else
-                    count = 1;
+                {
+                    count = 0;
+                }
             }
             else
             {
