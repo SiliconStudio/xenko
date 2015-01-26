@@ -25,7 +25,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             int groupId = streams.GroupId.x + streams.ThreadGroupCount.x * streams.GroupId.y;
 
 	        // Store in shared memory
-	        PartialSHCoeffs[threadId] = InputBuffer[coeffId + CoefficientsCount * TSize * groupId];
+	        PartialSHCoeffs[threadId] = InputBuffer[coeffId + CoefficientsCount * (threadId + TSize * groupId)];
 	        GroupMemoryBarrierWithGroupSync();
             
 	        // Sum the coefficients
