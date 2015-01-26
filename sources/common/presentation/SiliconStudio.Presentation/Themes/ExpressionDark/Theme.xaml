@@ -560,8 +560,8 @@
                                             </Rectangle.RenderTransform>
                                         </Rectangle>
                                     </StackPanel>
-                                    <TextBlock Margin="4,0" Text="A:" ToolTipService.ToolTip="Alpha" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
-                                    <StackPanel Margin="0,2">
+                                    <TextBlock x:Name="AlphaTextBlock" Margin="4,0" Text="A:" ToolTipService.ToolTip="Alpha" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
+                                    <StackPanel Margin="0,2" x:Name="AlphaValue">
                                         <ctrl:NumericTextBox x:Name="AlphaTextBox" Value="{Binding Alpha, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="{StaticResource AlphaBrush}" Minimum="0" Maximum="255" Margin="0"/>
                                         <Rectangle Height="3" Fill="{StaticResource AlphaBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                                             <Rectangle.RenderTransform>
@@ -604,6 +604,12 @@
                             </GroupBox>
                         </Grid>
                     </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="ShowAlpha" Value="False">
+                            <Setter TargetName="AlphaTextBlock" Property="Visibility" Value="Collapsed"/>
+                            <Setter TargetName="AlphaValue" Property="Visibility" Value="Collapsed"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
