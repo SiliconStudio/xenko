@@ -13,10 +13,25 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         // the output buffer containing SH coefficient partially summed.
         RWBuffer<float4> OutputBuffer;
+
+        // The Cosine kernel factors
+        static const float A0 = 1.0;
+        static const float A1 = 2.0/3.0;
+        static const float A2 = 1.0/4.0;
+        static const float A3 = 0.0;
+        static const float A4 = -1.0/24.0;
+        static const float A[5*5] = 
+        { 
+            A0, 
+            A1, A1, A1, 
+            A2, A2, A2, A2, A2,
+            A3, A3, A3, A3, A3, A3, A3,
+            A4, A4, A4, A4, A4, A4, A4, A4, A4
+        };
     
         // Shared memory for summing SH-Basis coefficients for a block
         groupshared float4 PartialSHCoeffs[TBlockSize][TBlockSize][CoefficientsCount];
-        
+
         // Projects radiance on SH basis and sums results along rows.
         override void Compute()
         {
@@ -24,16 +39,17 @@ namespace SiliconStudio.Paradox.Effects.Images
 	        const int3 location = int3(streams.GroupThreadId.xy + streams.GroupId.xy * TBlockSize, streams.GroupId.z);
 
 	        // Calculate the location in [-1, 1] texture space (center at the pixel center)
-	        float u =   ((location.x+0.5) / float(streams.ThreadCountX)) * 2.0f - 1.0f;
-	        float v = -(((location.y+0.5) / float(streams.ThreadCountY)) * 2.0f - 1.0f);
+            float inverseSize = 1 / float(TBlockSize * streams.ThreadGroupCount.x);
+	        float u = ((location.x+0.5) * inverseSize) * 2.0f - 1.0f;
+	        float v = ((location.y+0.5) * inverseSize) * 2.0f - 1.0f;
 
 	        // Extract direction from texel u,v
-	        float3 dirVS = normalize(CubemapUtils.ConvertTexcoordsNoFlip(float2(u, v), location.z));
+            float3 dirVS = normalize(uvToDirectionVS(u, v, location.z));
 	        float3 radiance = RadianceMap.SampleLevel(Texturing.PointSampler, dirVS, 0).xyz;
 
 	        // Calculate weight
-	        float temp = 1.0f + u * u + v * v;
-	        float weight = 4.0f / (sqrt(temp) * temp);
+	        var dist = 1.0f + u * u + v * v;
+	        var weight = 4.0f / (sqrt(dist) * dist);
 	        radiance *= weight;
 
             // Calculates the values of the SH bases
@@ -43,12 +59,12 @@ namespace SiliconStudio.Paradox.Effects.Images
             [unroll]
             for(int c=0; c<CoefficientsCount; ++c)
             {
-	            PartialSHCoeffs[streams.GroupThreadId.x][streams.GroupThreadId.y][c] = float4(streams.SHBaseValues[c] * radiance, weight);
+	            PartialSHCoeffs[streams.GroupThreadId.x][streams.GroupThreadId.y][c] = float4(A[c] * streams.SHBaseValues[c] * radiance, weight);
             }
 	        GroupMemoryBarrierWithGroupSync();
 
 	        // Sum the coefficients along the block columns
-		    if(streams.GroupThreadId.x == 0)
+		    if(streams.GroupThreadId.y == 0)
             {
 	            for(int col=1; col<TBlockSize; ++col)
 	            {
@@ -86,6 +102,24 @@ namespace SiliconStudio.Paradox.Effects.Images
 			        OutputBuffer[indexBias + c] = PartialSHCoeffs[0][0][c];
 		        }
 	        }
+        }
+        
+        float3 uvToDirectionVS(float u, float v, int viewIndex)
+        {
+            if (viewIndex == 0)
+                return float3(1, -v, -u); // face X
+            if (viewIndex == 1)
+                return float3(-1, -v, u); // face -X
+            if (viewIndex == 2)
+                return float3(u, 1, v); // face Y
+            if (viewIndex == 3)
+                return float3(u, -1, -v); // face -Y
+            if (viewIndex == 4)
+                return float3(u, -v, 1); // face Z
+            if (viewIndex == 5)
+                return float3(-u, -v, -1); // face -Z
+        
+            return 0;
         }
     };
 }

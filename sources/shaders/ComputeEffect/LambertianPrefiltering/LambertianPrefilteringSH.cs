@@ -119,7 +119,7 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect.LambertianPrefiltering
                 // draw pass 2
                 secondPassEffect.ThreadNumbers = new Int3(sumsCount, 1, 1);
                 secondPassEffect.ThreadGroupCounts = new Int3(groupCountX, groupCountY, coefficientsCount);
-                secondPassEffect.Parameters.Set(LambertianPrefilteringSHParameters.BlockSize, sumsToPerfomRemaining);
+                secondPassEffect.Parameters.Set(LambertianPrefilteringSHParameters.BlockSize, sumsCount);
                 secondPassEffect.Parameters.Set(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
                 secondPassEffect.Parameters.Set(LambertianPrefilteringSHPass2Keys.InputBuffer, secondPassInputBuffer);
                 secondPassEffect.Parameters.Set(LambertianPrefilteringSHPass2Keys.OutputBuffer, secondPassOutputBuffer);
