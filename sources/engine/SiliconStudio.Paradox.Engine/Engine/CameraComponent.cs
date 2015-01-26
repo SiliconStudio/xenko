@@ -12,6 +12,7 @@ namespace SiliconStudio.Paradox.Engine
     /// Describes the camera projection and view.
     /// </summary>
     [DataContract("CameraComponent")]
+    [Display("Camera")]
     public sealed class CameraComponent : EntityComponent
     {
         private float focusDistance;

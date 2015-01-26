@@ -20,6 +20,7 @@ namespace SiliconStudio.Paradox.Engine
     /// Data is stored as in http://altdevblogaday.com/2011/10/23/low-level-animation-part-2/.
     /// </remarks>
     [DataContract("AnimationComponent")]
+    [Display("Animation")]
     public sealed class AnimationComponent : EntityComponent
     {
         private readonly Dictionary<string, AnimationClip> animations;

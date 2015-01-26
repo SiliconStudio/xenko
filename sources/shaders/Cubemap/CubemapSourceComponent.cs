@@ -13,6 +13,7 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
     /// Puts a cubemap at the containing entity location. This could be dynamic (runtime rendered) or static (from a file).
     /// </summary>
     [DataContract("CubemapSourceComponent")]
+    [Display("Cubemap Source")]
     public class CubemapSourceComponent : EntityComponent
     {
         public static PropertyKey<CubemapSourceComponent> Key = new PropertyKey<CubemapSourceComponent>("Key", typeof(CubemapSourceComponent));

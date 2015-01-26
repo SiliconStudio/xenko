@@ -7,6 +7,7 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Paradox.Engine
 {
     [DataContract("ModelNodeLinkComponent")]
+    [Display("Model Node Link")]
     public sealed class ModelNodeLinkComponent : EntityComponent
     {
         public static PropertyKey<ModelNodeLinkComponent> Key = new PropertyKey<ModelNodeLinkComponent>("Key", typeof(ModelNodeLinkComponent));

@@ -1,13 +1,11 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Runtime.InteropServices;
+
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Games;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Engine

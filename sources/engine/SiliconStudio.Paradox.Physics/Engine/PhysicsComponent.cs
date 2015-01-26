@@ -8,6 +8,7 @@ using SiliconStudio.Paradox.EntityModel;
 namespace SiliconStudio.Paradox.Physics
 {
     [DataContract("PhysicsComponent")]
+    [Display("Physics")]
     public sealed class PhysicsComponent : EntityComponent
     {
         public static PropertyKey<PhysicsComponent> Key = new PropertyKey<PhysicsComponent>("Key", typeof(PhysicsComponent));

@@ -14,6 +14,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
     /// Add a light to an <see cref="Entity"/>, that will be used during rendering.
     /// </summary>
     [DataContract("LightComponent")]
+    [Display("Light")]
     public sealed class LightComponent : EntityComponent
     {
         public static PropertyKey<LightComponent> Key = new PropertyKey<LightComponent>("Key", typeof(LightComponent));

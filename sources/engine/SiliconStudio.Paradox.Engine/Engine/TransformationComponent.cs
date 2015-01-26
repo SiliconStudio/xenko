@@ -1,7 +1,6 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Core;
@@ -16,6 +15,7 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     [DataContract("TransformationComponent")]
     [DataSerializerGlobal(null, typeof(TrackingCollection<TransformationComponent>))]
+    [Display("Transformation")]
     public sealed class TransformationComponent : EntityComponent
     {
         public static PropertyKey<TransformationComponent> Key = new PropertyKey<TransformationComponent>("Key", typeof(TransformationComponent),
