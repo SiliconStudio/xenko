@@ -34,7 +34,7 @@ class ComputeShaderBase
 
     cbuffer PerDispatch {
         // This variable provides the ThreadGroupCount from the dispatch method
-        [Link("ComputeShaderBaseKeys.ThreadGroupCountGlobal")]
+        [Link("ComputeShaderBase.ThreadGroupCountGlobal")]
         stage int3 ThreadGroupCountGlobal;
     };
 
