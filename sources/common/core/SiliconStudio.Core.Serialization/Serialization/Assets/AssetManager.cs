@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -14,6 +15,8 @@ namespace SiliconStudio.Core.Serialization.Assets
 {
     public sealed partial class AssetManager : IAssetManager
     {
+        private static readonly Logger Log = GlobalLogger.GetLogger("AssetManager");
+
         public static DatabaseFileProvider FileProvider
         {
             get
@@ -167,7 +170,10 @@ namespace SiliconStudio.Core.Serialization.Assets
             // Resolve URL
             ObjectId objectId;
             if (!FileProvider.AssetIndexMap.TryGetValue(url, out objectId))
-                throw new InvalidOperationException(string.Format("Asset [{0}] not found.", url));
+            {
+                HandleAssetNotFound(url);
+                return null;
+            }
 
             // Try to find already loaded object
             AssetReference assetReference;
@@ -202,7 +208,10 @@ namespace SiliconStudio.Core.Serialization.Assets
             // Resolve URL
             ObjectId objectId;
             if (!FileProvider.AssetIndexMap.TryGetValue(url, out objectId))
-                throw new InvalidOperationException(string.Format("Asset [{0}] not found.", url));
+            {
+                HandleAssetNotFound(url);
+                return;
+            }
 
             var assetReference = new AssetReference(objectId, url, false);
             SetAssetObject(assetReference, obj);
@@ -213,7 +222,10 @@ namespace SiliconStudio.Core.Serialization.Assets
             // Resolve URL
             ObjectId objectId;
             if (!FileProvider.AssetIndexMap.TryGetValue(url, out objectId))
-                throw new InvalidOperationException(string.Format("Asset [{0}] not found.", url));
+            {
+                HandleAssetNotFound(url);
+                return null;
+            }
 
             // Try to find already loaded object
             AssetReference assetReference;
@@ -469,6 +481,29 @@ namespace SiliconStudio.Core.Serialization.Assets
                 // Need some reorganization?
                 AttachedReferenceManager.SetUrl(obj, assetReference.Url);
             }
+        }
+
+        /// <summary>
+        /// Notify debugger and logging when an asset could not be found.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <exception cref="SiliconStudio.Core.Serialization.Assets.AssetManagerException"></exception>
+        private void HandleAssetNotFound(string url)
+        {
+            // If a debugger is attached, throw an exception (we do that instead of Debugger.Break so that user can easily ignore this specific type of exception)
+            if (Debugger.IsAttached)
+            {
+                try
+                {
+                    throw new AssetManagerException(string.Format("Asset [{0}] not found.", url));
+                }
+                catch (Exception)
+                {
+                }
+            }
+
+            // Log error
+            Log.Error("Asset [{0}] could not be found.");
         }
     }
 }

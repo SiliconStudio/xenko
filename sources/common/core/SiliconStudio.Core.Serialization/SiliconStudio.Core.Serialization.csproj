@@ -35,6 +35,7 @@
     <Compile Include="LZ4\Services\NativeLZ4Base.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serialization\Assets\AssetManager.ReferenceCounting.cs" />
+    <Compile Include="Serialization\Assets\AssetManagerException.cs" />
     <Compile Include="Serialization\Assets\AssetManagerLoaderSettings.cs" />
     <Compile Include="Serialization\Assets\AssetProfilingKeys.cs" />
     <Compile Include="Serialization\Assets\AssetManager.AssetReference.cs" />
