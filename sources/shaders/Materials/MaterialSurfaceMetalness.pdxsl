@@ -14,11 +14,11 @@ namespace SiliconStudio.Paradox.Effects.Materials
             // Metallic workflow
             // http://blog.selfshadow.com/publications/s2012-shading-course/burley/s2012_pbs_disney_brdf_notes_v3.pdf
             float metalness = metalnessMap.Compute().r;
-            // 0.04 is a common reflectance value (source?)
-            streams.matSpecular = lerp(0.04, streams.matDiffuse.rgb, metalness);
+            // Use a low 0.02 reflectance value for non-metal
+            streams.matSpecular = lerp(0.02, streams.matDiffuse.rgb, metalness);
 
             // Adjust diffuse
-            streams.matDiffuse.rgb = lerp(streams.matDiffuse.rgb - 0.04, 0, metalness);
+            streams.matDiffuse.rgb = lerp(streams.matDiffuse.rgb, 0, metalness);
         }
     };
 }
