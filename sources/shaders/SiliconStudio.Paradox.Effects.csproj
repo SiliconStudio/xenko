@@ -74,6 +74,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHPass2.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Core\DynamicTextureCube.cs">
+      <DependentUpon>DynamicTextureCube.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Images\SphericalHarmonics\SphericalHarmonicsRendererEffect1.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1237,9 +1243,28 @@
     <Compile Include="Shadows\ShadowMapTexture.cs" />
     <Compile Include="Cubemap\CubeMapRenderer.cs" />
     <Compile Include="Renderers\LightingIBLRenderer.cs" />
+    <Compile Include="Skyboxes\ComputeSkyboxCubeMapColor.cs">
+      <DependentUpon>ComputeSkyboxCubeMapColor.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Skyboxes\SkyboxEffect.cs">
+      <DependentUpon>SkyboxEffect.pdxfx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Skyboxes\SkyboxComponentCollection.cs" />
+    <Compile Include="Skyboxes\SkyboxKeys.cs" />
     <Compile Include="Skyboxes\SkyboxLightingRenderer.cs" />
     <Compile Include="Skyboxes\SkyboxProcessor.cs" />
+    <Compile Include="Skyboxes\IComputeEnvironmentColor.cs">
+      <DependentUpon>IComputeEnvironmentColor.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Skyboxes\SkyboxStream.cs">
       <DependentUpon>SkyboxStream.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -1813,6 +1838,10 @@
     <None Include="ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSHPass2.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LambertianPrefilteringSHPass2.cs</LastGenOutput>
+    </None>
+    <None Include="Core\DynamicTextureCube.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>DynamicTextureCube.cs</LastGenOutput>
     </None>
     <None Include="Images\SphericalHarmonics\SphericalHarmonicsRendererEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -2757,6 +2786,18 @@
     <None Include="Skinning\TransformationSkinning.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>TransformationSkinning.cs</LastGenOutput>
+    </None>
+    <None Include="Skyboxes\ComputeSkyboxCubeMapColor.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeSkyboxCubeMapColor.cs</LastGenOutput>
+    </None>
+    <None Include="Skyboxes\IComputeEnvironmentColor.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>IComputeEnvironmentColor.cs</LastGenOutput>
+    </None>
+    <None Include="Skyboxes\SkyboxEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>SkyboxEffect.cs</LastGenOutput>
     </None>
     <None Include="Skyboxes\SkyboxStream.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

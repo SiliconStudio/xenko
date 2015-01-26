@@ -3,14 +3,11 @@
 
 using System.Threading.Tasks;
 
+using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Skyboxes;
-using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Assets.Skyboxes
 {
@@ -19,28 +16,17 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, SkyboxAsset asset, AssetCompilerResult result)
         {
             result.ShouldWaitForPreviousBuilds = true;
-            result.BuildSteps = new ListBuildStep { new SkyboxCompileCommand(urlInStorage, asset) };
+            result.BuildSteps = new ListBuildStep { new SkyboxCompileCommand(urlInStorage, asset, context.Package) };
         }
 
         private class SkyboxCompileCommand : AssetCommand<SkyboxAsset>
         {
-            public SkyboxCompileCommand(string url, SkyboxAsset asset)
+            private readonly Package package;
+
+            public SkyboxCompileCommand(string url, SkyboxAsset asset, Package package)
                 : base(url, asset)
             {
-            }
-
-            public override System.Collections.Generic.IEnumerable<ObjectUrl> GetInputFiles()
-            {
-                if (asset.Model != null)
-                {
-                    foreach (var contentReference in asset.Model.GetDependencies())
-                    {
-                        yield return new ObjectUrl(UrlType.Internal, contentReference.Location);
-                    }
-                }
-
-                foreach (var inputFile in base.GetInputFiles())
-                    yield return inputFile;
+                this.package = package;
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
@@ -48,16 +34,17 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
                 // TODO Convert SkyboxAsset to Skybox and save to Skybox object
                 // TODO Add system to prefilter
 
-                var skybox = new Skybox();
-                var cubeMapModel = (SkyboxCubeMapModel)asset.Model;
-                if (cubeMapModel != null && cubeMapModel.CubeMap != null)
+                var context = new SkyboxGeneratorContext(package);
+                var result = SkyboxGenerator.Compile(asset, context);
+
+                if (result.HasErrors)
                 {
-                    var texture = AttachedReferenceManager.CreateSerializableVersion<Texture>(cubeMapModel.CubeMap.Id, cubeMapModel.CubeMap.Location);
-                    skybox.Parameters.Set(TexturingKeys.TextureCube0, texture);
+                    result.CopyTo(commandContext.Logger);
+                    return Task.FromResult(ResultStatus.Failed);
                 }
-                
+
                 var assetManager = new AssetManager();
-                assetManager.Save(Url, skybox);
+                assetManager.Save(Url, result.Skybox);
 
                 return Task.FromResult(ResultStatus.Successful);
             }

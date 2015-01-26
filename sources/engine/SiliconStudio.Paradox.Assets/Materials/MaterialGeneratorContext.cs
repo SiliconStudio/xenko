@@ -3,16 +3,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Security.Policy;
 
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Data;
@@ -29,23 +26,21 @@ namespace SiliconStudio.Paradox.Assets.Materials
         Pixel
     }
 
-    public class MaterialGeneratorContext
+    public class MaterialGeneratorContext : ShaderGeneratorContextBase
     {
-        private int idCounter;
-
-        private readonly Dictionary<ParameterKey, int> parameterKeyIndices = new Dictionary<ParameterKey, int>();
-        private readonly Dictionary<SamplerStateDescription, ParameterKey<SamplerState>> declaredSamplerStates;
         private readonly Dictionary<string, ShaderSource> registeredStreamBlend = new Dictionary<string, ShaderSource>();
         private int shadingModelCount;
 
         private readonly List<KeyValuePair<Type, ShaderSource>> vertexInputStreamModifiers = new List<KeyValuePair<Type, ShaderSource>>();
 
-        public delegate Asset FindAssetDelegate(AssetReference reference);
-
         public MaterialGeneratorContext()
+            : base()
         {
-            Parameters = new ParameterCollection();
-            declaredSamplerStates = new Dictionary<SamplerStateDescription, ParameterKey<SamplerState>>();
+        }
+
+        public MaterialGeneratorContext(Package package)
+            : base(package)
+        {
         }
 
         public HashSet<string> Streams
@@ -56,15 +51,14 @@ namespace SiliconStudio.Paradox.Assets.Materials
             }
         }
 
-        public ParameterCollection Parameters { get; set; }
-
         private MaterialBlendLayerNode Current { get; set; }
 
         private MaterialShadingModelCollection CurrentShadingModel { get; set; }
 
-        public FindAssetDelegate FindAsset { get; set; }
 
         public bool IsVertexStage { get; set; }
+
+        public FindAssetDelegate FindAsset { get; set; }
 
         public void AddVertexStreamModifier<T>(ShaderSource shaderSource)
         {
@@ -187,39 +181,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
             Current.GetSurfaceShaders(stage).Add(shaderSource);
         }
 
-        public LoggerResult Log;
-
-        public int NextId()
-        {
-            return idCounter++;
-        }
-
-        public ParameterKey GetParameterKey(ParameterKey key)
-        {
-            if (key == null) throw new ArgumentNullException("key");
-
-            var baseKey = key;
-            int parameterKeyIndex;
-            parameterKeyIndices.TryGetValue(baseKey, out parameterKeyIndex);
-
-            key = parameterKeyIndex == 0 ? baseKey : baseKey.ComposeWith("i"+parameterKeyIndex.ToString(CultureInfo.InvariantCulture));
-
-            parameterKeyIndex++;
-            parameterKeyIndices[baseKey] = parameterKeyIndex;
-            return key;
-        }
-
         // TODO: move this method to an extension method
         public ParameterKey<Texture> GetTextureKey(ComputeTextureBase computeTexture, MaterialComputeColorKeys baseKeys)
         {
-            var textureKey = (ParameterKey<Texture>)GetParameterKey(computeTexture.Key ?? baseKeys.TextureBaseKey ?? MaterialKeys.GenericTexture);
-            var textureReference = computeTexture.TextureReference;
-            if (computeTexture.IsValid(this) && textureReference != null)
-            {
-                var texture = AttachedReferenceManager.CreateSerializableVersion<Texture>(textureReference.Id, textureReference.Location);
-                Parameters.Set(textureKey, texture);
-            }
-            return textureKey;
+            var keyResolved = (ParameterKey<Texture>)(computeTexture.Key ?? baseKeys.TextureBaseKey ?? MaterialKeys.GenericTexture);
+            return GetTextureKey(computeTexture.TextureReference, keyResolved);
         }
 
         public ParameterKey<SamplerState> GetSamplerKey(ComputeColorParameterSampler sampler)
@@ -231,18 +197,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 AddressV = sampler.AddressModeV,
                 AddressW = TextureAddressMode.Wrap
             };
-
-            ParameterKey<SamplerState> key;
-
-            if (!declaredSamplerStates.TryGetValue(samplerStateDesc, out key))
-            {
-                key = MaterialKeys.Sampler.ComposeWith("i" + declaredSamplerStates.Count.ToString(CultureInfo.InvariantCulture));
-                declaredSamplerStates.Add(samplerStateDesc, key);
-            }
-
-            var samplerState = new SamplerState(samplerStateDesc);
-            Parameters.Set(key, samplerState);
-            return key;
+            return GetSamplerKey(samplerStateDesc);
         }
 
         public void Visit(IMaterialFeature feature)

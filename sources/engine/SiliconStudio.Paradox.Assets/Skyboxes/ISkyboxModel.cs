@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Skyboxes
 {
@@ -12,6 +13,8 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
     /// </summary>
     public interface ISkyboxModel
     {
+        ShaderSource Generate(SkyboxGeneratorContext context);
+
         IEnumerable<IContentReference> GetDependencies();
     }
 }

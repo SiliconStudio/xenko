@@ -31,7 +31,7 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
         {
             base.Load();
 
-            skyboxEffect = new ImageEffectShader(DrawEffectContext.GetShared(Services), "SkyboxShader");
+            skyboxEffect = new ImageEffectShader(DrawEffectContext.GetShared(Services), "SkyboxEffect");
         }
 
         public override void Unload()
@@ -54,13 +54,22 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
             {
                 GraphicsDevice.SetDepthStencilState(GraphicsDevice.DepthStencilStates.DepthRead);
 
+                // Copy camera/pass parameters
                 context.CurrentPass.Parameters.CopySharedTo(skyboxEffect.Parameters);
 
-                if (skybox.Skybox != null && skybox.Skybox.Parameters.ContainsKey(TexturingKeys.TextureCube0))
+                // Copy Skybox parameters
+                if (skybox.Skybox != null)
                 {
-                    skyboxEffect.SetInput(skybox.Skybox.Parameters.Get(TexturingKeys.TextureCube0));
-                    //skyboxEffect.SetInput(skybox.SkyboxTexture);
+                    skybox.Skybox.Parameters.CopySharedTo(skyboxEffect.Parameters);
                 }
+
+                // Setup the intensity
+                var intensity = skybox.Lighting.Enabled ? skybox.Lighting.Intensity : 1.0f;
+                intensity *= skybox.Background.Intensity;
+                skyboxEffect.Parameters.Set(SkyboxKeys.Intensity, intensity);
+                    
+                // Setup the rotation
+                skyboxEffect.Parameters.Set(SkyboxKeys.Rotation, skybox.Lighting.Rotation);
 
                 skyboxEffect.SetOutput(Target ?? GraphicsDevice.BackBuffer);
                 skyboxEffect.Draw();

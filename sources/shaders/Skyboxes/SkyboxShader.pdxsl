@@ -8,21 +8,27 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// </summary>
     class SkyboxShader : ImageEffectShader, Transformation, SkyboxStream
     {
-        // compose ComputeColor skyboxColor;
+        [Link("Skybox.Intensity")]
+        stage float Intensity;
+
+        [Link("Skybox.SkyMatrix")]
+        stage float4x4 SkyMatrix;
+
+        compose IComputeEnvironmentColor skyboxColor;
 
         override stage void VSMain()
         {
             base.VSMain();
-            var position = float4(streams.TexCoord.x * 2 - 1, 1 - streams.TexCoord.y * 2, 1.0, 1.0f);
+            var position = float4(streams.TexCoord.x * 2 - 1, 1 - streams.TexCoord.y * 2, 1.0f, 1.0f);
             var directionVS = mul(position, ProjectionInverse).xyz;
             var directionWS = mul(directionVS, (float3x3)ViewInverse);
-            streams.skyboxViewDirection = directionWS;
+            streams.skyboxViewDirection = mul(directionWS, (float3x3)SkyMatrix);
         }
 
         override stage float4 Shading()
         {
             var samplingDir = streams.skyboxViewDirection;
-            var color = TextureCube0.Sample(Texturing.LinearSampler, float3(samplingDir.x, samplingDir.y, -samplingDir.z));
+            var color = Intensity * skyboxColor.Compute(float3(samplingDir.x, samplingDir.y, -samplingDir.z));
             return color;
         }
     };

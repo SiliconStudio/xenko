@@ -218,6 +218,7 @@
     <Compile Include="Materials\ComputeColors\ComputeShaderClassColor.cs" />
     <Compile Include="Materials\ComputeColors\ComputeTextureColor.cs" />
     <Compile Include="Materials\MaterialUtility.cs" />
+    <Compile Include="ShaderGeneratorContextBase.cs" />
     <Compile Include="Materials\TextureChannel.cs" />
     <Compile Include="Materials\TextureCoordinate.cs" />
     <Compile Include="Materials\MaterialAssetCompiler.cs" />
@@ -232,6 +233,7 @@
     <Compile Include="Skyboxes\SkyboxAssetCompiler.cs" />
     <Compile Include="Skyboxes\SkyboxAsset.cs" />
     <Compile Include="Skyboxes\SkyboxCubeMapModel.cs" />
+    <Compile Include="Skyboxes\SkyboxGenerator.cs" />
     <Compile Include="Sprite\SpriteInfo.cs" />
     <Compile Include="Sprite\SpriteGroupAsset.cs" />
     <Compile Include="Sprite\SpriteGroupCompiler.cs" />

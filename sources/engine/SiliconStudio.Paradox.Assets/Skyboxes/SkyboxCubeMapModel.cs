@@ -7,6 +7,8 @@ using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Assets.Textures;
+using SiliconStudio.Paradox.Effects.Skyboxes;
+using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Skyboxes
 {
@@ -23,6 +25,12 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
         /// <value>The cubemap texture.</value>
         [DataMember(10)]
         public AssetReference<TextureAsset> CubeMap { get; set; }
+
+        public ShaderSource Generate(SkyboxGeneratorContext context)
+        {
+            var key = context.GetTextureKey(CubeMap, SkyboxKeys.CubeMap);
+            return new ShaderClassSource("ComputeSkyboxCubeMapColor", key);
+        }
 
         public IEnumerable<IContentReference> GetDependencies()
         {
