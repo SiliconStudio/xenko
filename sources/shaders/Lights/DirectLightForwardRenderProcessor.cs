@@ -13,10 +13,9 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// <summary>
         /// Initializes a new instance of the <see cref="DirectLightForwardRenderProcessor"/> class.
         /// </summary>
-        /// <param name="services">The services.</param>
         /// <param name="modelRenderer">The model renderer.</param>
-        public DirectLightForwardRenderProcessor(IServiceRegistry services, ModelRenderer modelRenderer)
-            : base(services, modelRenderer)
+        public DirectLightForwardRenderProcessor(ModelRenderer modelRenderer)
+            : base(modelRenderer)
         {
             RegisterLightGroupProcessor<LightDirectional>(new LightDirectionalGroupRenderProcessor());
         }

@@ -14,6 +14,9 @@ class NormalStream
     // The normal in view space
     stage stream float3 normalVS : NORMALVS;
 
+    // The normal in world space
+    stage stream float3 normalWS : NORMALWS;
+
     // The tangent to view matrix to transform a tangent normal vector to normal vector in viewspace
     stage stream float3x3 tangentToView;
 

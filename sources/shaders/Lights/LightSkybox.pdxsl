@@ -1,0 +1,23 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Paradox.Effects.Lights
+{
+    /// <summary>
+    /// Defines a skybox environment light
+    /// </summary>
+    class LightSkybox : EnvironmentLight, MaterialPixelShadingStream, NormalStream
+    {
+        compose IComputeEnvironmentColor lightDiffuseColor;
+
+        compose IComputeEnvironmentColor lightSpecularColor;
+
+        override void PrepareEnvironmentLight()
+        {
+            var sampleDirection = float3(streams.normalWS.xy, -streams.normalWS.z);
+
+            streams.envLightDiffuseColor = lightDiffuseColor.Compute(sampleDirection).rgb;
+
+            streams.envLightSpecularColor = lightSpecularColor.Compute(sampleDirection).rgb;
+        }
+    };
+}

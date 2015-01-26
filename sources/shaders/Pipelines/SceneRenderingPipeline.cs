@@ -31,6 +31,8 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
 
         private readonly DirectLightForwardRenderProcessor directLightRenderRenderProcessor;
 
+        private readonly SkyboxLightingRenderer skyboxLightingRenderer;
+
         private Texture renderTargetHDR;
 
         private bool useLighting;
@@ -71,7 +73,8 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
 
             skyboxBackgroundRenderer = new SkyboxBackgroundRenderer(Services);
             modelRenderer = new ModelRenderer(serviceRegistry, sceneEffect);
-            directLightRenderRenderProcessor = new DirectLightForwardRenderProcessor(modelRenderer.Services, modelRenderer);
+            directLightRenderRenderProcessor = new DirectLightForwardRenderProcessor(modelRenderer);
+            skyboxLightingRenderer = new SkyboxLightingRenderer(modelRenderer);
             postEffectRenderer = new DelegateRenderer(Services) { Render = ApplyPostEffects };
 
             AddRenderer(new DelegateRenderer(Services) { Render = Update});

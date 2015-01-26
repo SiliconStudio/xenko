@@ -21,11 +21,10 @@ namespace SiliconStudio.Paradox.Effects.Lights
         private readonly List<ShaderSource> shaderSources;
         private readonly Dictionary<ParameterCompositeKey, ParameterKey> compositeKeys;
 
-        protected DirectLightRenderProcessorBase(IServiceRegistry services, ModelRenderer modelRenderer)
+        protected DirectLightRenderProcessorBase(ModelRenderer modelRenderer)
         {
-            if (services == null) throw new ArgumentNullException("services");
             if (modelRenderer == null) throw new ArgumentNullException("modelRenderer");
-            Services = services;
+            Services = modelRenderer.Services;
             EntitySystem = Services.GetServiceAs<EntitySystem>();
             lightProcessor = EntitySystem.GetProcessor<LightProcessor>();
             previousShaderSources = new List<ShaderSource>();
@@ -34,6 +33,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             processors = new System.Collections.Generic.List<KeyValuePair<Type, DirectLightGroupRenderProcessorBase>>();
 
             // Register this render processor
+            // TODO: Allow to remove it
             modelRenderer.PreRender.Add(this.PreRender);
         }
 

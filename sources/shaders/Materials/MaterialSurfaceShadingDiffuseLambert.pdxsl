@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
                 diffuseColor *= (1 - streams.matSpecularVisible);
             }
 
-            return diffuseColor * streams.lightColor;
+            return diffuseColor * streams.envLightDiffuseColor;
         }
     };
 }

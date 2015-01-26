@@ -67,11 +67,11 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
             {
                 if (skybox.Enabled)
                 {
-                    if (ActiveSkyboxBackground == null && skybox.Background != null && skybox.Background.Enabled)
+                    if (ActiveSkyboxBackground == null && skybox.Background.Enabled)
                     {
                         ActiveSkyboxBackground = skybox;
                     }
-                    if (skybox.Lighting != null && skybox.Lighting != null && skybox.Lighting.Enabled)
+                    if (skybox.Lighting.Enabled)
                     {
                         activeSkyboxLights.Add(skybox);
                     }

@@ -132,6 +132,12 @@
     <Compile Include="Lights\LightingKeys.cs" />
     <Compile Include="Lights\LightShadowMap.cs" />
     <Compile Include="Lights\LightShadowMapFilterType.cs" />
+    <Compile Include="Lights\LightSkybox.cs">
+      <DependentUpon>LightSkybox.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Lights\LightSimpleAmbient.cs">
       <DependentUpon>LightSimpleAmbient.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -1249,6 +1255,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Skyboxes\SphericalHarmonicsEnvironmentColor.cs">
+      <DependentUpon>SphericalHarmonicsEnvironmentColor.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Skyboxes\SkyboxEffect.cs">
       <DependentUpon>SkyboxEffect.pdxfx</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -1866,6 +1878,10 @@
     <None Include="Lights\EnvironmentLight.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>EnvironmentLight.cs</LastGenOutput>
+    </None>
+    <None Include="Lights\LightSkybox.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>LightSkybox.cs</LastGenOutput>
     </None>
     <None Include="Lights\LightSimpleAmbient.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -2790,6 +2806,10 @@
     <None Include="Skyboxes\ComputeSkyboxCubeMapColor.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeSkyboxCubeMapColor.cs</LastGenOutput>
+    </None>
+    <None Include="Skyboxes\SphericalHarmonicsEnvironmentColor.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>SphericalHarmonicsEnvironmentColor.cs</LastGenOutput>
     </None>
     <None Include="Skyboxes\IComputeEnvironmentColor.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
