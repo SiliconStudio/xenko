@@ -34,7 +34,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             ComputeShadow(lightIndex);
 
             // Compute the final color with NdotL
-            streams.lightColorNdotL = streams.lightColor * streams.shadowColor * dot(streams.lightDirectionVS, streams.normalVS);
+            streams.lightColorNdotL = streams.lightColor * streams.shadowColor * saturate(dot(streams.lightDirectionVS, streams.normalVS));
         }
     };
 }

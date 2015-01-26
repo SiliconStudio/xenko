@@ -107,6 +107,7 @@
     </Compile>
     <Compile Include="DrawEffect.cs" />
     <Compile Include="DrawEffectContext.cs" />
+    <Compile Include="Lights\DirectLightGroupKeys.cs" />
     <Compile Include="Lights\ILight.cs" />
     <Compile Include="Lights\ILightColor.cs" />
     <Compile Include="Lights\ILightShadow.cs" />

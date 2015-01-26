@@ -83,7 +83,10 @@ namespace SiliconStudio.Paradox.Effects.Lights
             else
             {
                 // Disable completely direct light groups
-                passParameters.Set(LightingKeys.DirectLightGroups, null);
+                if (passParameters.Get(LightingKeys.DirectLightGroups) != null)
+                {
+                    passParameters.Set(LightingKeys.DirectLightGroups, null);
+                }
             }
 
             previousShaderSources.Clear();

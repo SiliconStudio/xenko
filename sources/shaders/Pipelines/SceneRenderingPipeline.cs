@@ -184,6 +184,7 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
             if (useLightingChanged)
             {
                 directLightRenderRenderProcessor.Enabled = useLighting;
+                skyboxLightingRenderer.Enabled = useLighting;
 
                 LightingKeys.EnableFixedAmbientLight(GraphicsDevice.Parameters, !useLighting);
             }

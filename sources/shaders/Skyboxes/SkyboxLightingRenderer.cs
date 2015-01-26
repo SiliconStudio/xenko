@@ -19,16 +19,22 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
         private readonly SkyboxProcessor skyboxProcessor;
         private readonly List<ShaderSource> shaderSources;
 
+        private readonly List<ShaderSource> previousShaderSources;
+
         public SkyboxLightingRenderer(ModelRenderer modelRenderer)
         {
             if (modelRenderer == null) throw new ArgumentNullException("modelRenderer");
+            Enabled = true;
             Services = modelRenderer.Services;
             EntitySystem = Services.GetServiceAs<EntitySystem>();
             skyboxProcessor = EntitySystem.GetProcessor<SkyboxProcessor>();
             shaderSources = new List<ShaderSource>();
+            previousShaderSources = new List<ShaderSource>();
 
             modelRenderer.PreRender.Add(PreRender);
         }
+
+        public bool Enabled { get; set; }
 
         public IServiceRegistry Services { get; private set; }
 
@@ -43,7 +49,7 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
             shaderSources.Clear();
             var passParameters = context.CurrentPass.Parameters;
 
-            if (skyboxProcessor.Enabled)
+            if (Enabled)
             {
                 foreach (var skybox in skyboxProcessor.ActiveSkyboxLights)
                 {
@@ -60,12 +66,38 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
                     break;
                 }
 
-                passParameters.Set(LightingKeys.EnvironmentLights, shaderSources.ToArray());
+                bool hasShaderSourcesChanges = false;
+                if (shaderSources.Count == previousShaderSources.Count)
+                {
+                    for (int i = 0; i < shaderSources.Count; i++)
+                    {
+                        if (!shaderSources[i].Equals(previousShaderSources[i]))
+                        {
+                            hasShaderSourcesChanges = true;
+                        }
+                    }
+                }
+                else
+                {
+                    hasShaderSourcesChanges = true;
+                }
+
+                if (hasShaderSourcesChanges)
+                {
+                    passParameters.Set(LightingKeys.EnvironmentLights, shaderSources.ToArray());
+                }
             }
             else
             {
-                passParameters.Set(LightingKeys.EnvironmentLights, null);
+                if (passParameters.Get(LightingKeys.EnvironmentLights) != null)
+                {
+                    passParameters.Set(LightingKeys.EnvironmentLights, null);
+                }
             }
+
+            previousShaderSources.Clear();
+            previousShaderSources.AddRange(shaderSources);
+            shaderSources.Clear();
         }
     }
 }
