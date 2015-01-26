@@ -52,7 +52,8 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
 
             if (skybox != null)
             {
-                GraphicsDevice.SetDepthStencilState(GraphicsDevice.DepthStencilStates.DepthRead);
+                // No Depthstencil tests
+                GraphicsDevice.SetDepthStencilState(GraphicsDevice.DepthStencilStates.None);
 
                 // Copy camera/pass parameters
                 context.CurrentPass.Parameters.CopySharedTo(skyboxEffect.Parameters);
