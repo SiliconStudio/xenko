@@ -154,18 +154,8 @@
     <Compile Include="TestAnimationChannel.cs" />
     <Compile Include="TestEntitySerializer.cs" />
     <Compile Include="TestParameterPath.cs" />
-    <Compile Include="Default.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Default.pdxfx</DependentUpon>
-    </Compile>
     <Compile Include="TestShaderMerging.cs" />
     <Compile Include="TestParameters.cs" />
-    <None Include="Default.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>Default.cs</LastGenOutput>
-    </None>
     <None Include="effects_test.xml">
       <SubType>Designer</SubType>
     </None>
