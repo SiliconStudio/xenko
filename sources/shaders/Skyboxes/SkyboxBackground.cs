@@ -27,6 +27,7 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
         /// Gets or sets a value indicating whether this <see cref="SkyboxBackground"/> is enabled.
         /// </summary>
         /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
+        [DataMember(10)]
         [DefaultValue(true)]
         public bool Enabled { get; set; }
 
@@ -34,6 +35,7 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
         /// Gets or sets the intensity.
         /// </summary>
         /// <value>The intensity.</value>
+        [DataMember(20)]
         [DefaultValue(1.0f)]
         [DataMemberRange(0.0, 100.0, 0.01f, 1.0f)]
         public float Intensity { get; set; }

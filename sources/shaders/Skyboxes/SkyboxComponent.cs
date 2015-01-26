@@ -5,7 +5,6 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects.Skyboxes
 {
@@ -43,6 +42,7 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
         /// <value>
         ///   <c>true</c> if rendering is enabled; otherwise, <c>false</c>.
         /// </value>
+        [DataMember(10)]
         [DefaultValue(true)]
         public bool Enabled { get; set; }
 
@@ -52,20 +52,22 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
         /// <value>
         /// The skybox.
         /// </value>
+        [DataMember(20)]
+        [DefaultValue(null)]
         public Skybox Skybox { get; set; }
-
-        public Texture SkyboxTexture { get; set; }
 
         /// <summary>
         /// Gets the lighting parameters of this skybox.
         /// </summary>
         /// <value>The lighting.</value>
+        [DataMember(30)]
         public SkyboxLighting Lighting { get; private set; }
 
         /// <summary>
         /// Gets the background parameters for this skybox.
         /// </summary>
         /// <value>The background.</value>
+        [DataMember(40)]
         public SkyboxBackground Background { get; private set; }
 
         public override PropertyKey DefaultKey

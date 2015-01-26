@@ -28,6 +28,7 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
         /// Gets or sets a value indicating whether this <see cref="SkyboxLighting"/> is enabled.
         /// </summary>
         /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
+        [DataMember(10)]
         [DefaultValue(true)]
         public bool Enabled { get; set; }
 
@@ -35,6 +36,7 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
         /// Gets or sets the intensity.
         /// </summary>
         /// <value>The intensity.</value>
+        [DataMember(20)]
         [DefaultValue(1.0f)]
         [DataMemberRange(0.0, 100.0, 0.01f, 1.0f)]
         public float Intensity { get; set; }
@@ -43,6 +45,7 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
         /// Gets or sets the rotation.
         /// </summary>
         /// <value>The rotation.</value>
+        [DataMember(30)]
         [DefaultValue(0.0f)]
         [DataMemberRange(0.0, 360.0, 1.0f, 10.0f)]
         public float Rotation { get; set; }

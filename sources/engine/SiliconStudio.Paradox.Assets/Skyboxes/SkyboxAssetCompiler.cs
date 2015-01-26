@@ -19,12 +19,12 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, SkyboxAsset asset, AssetCompilerResult result)
         {
             result.ShouldWaitForPreviousBuilds = true;
-            result.BuildSteps = new ListBuildStep { new MaterialCompileCommand(urlInStorage, asset) };
+            result.BuildSteps = new ListBuildStep { new SkyboxCompileCommand(urlInStorage, asset) };
         }
 
-        private class MaterialCompileCommand : AssetCommand<SkyboxAsset>
+        private class SkyboxCompileCommand : AssetCommand<SkyboxAsset>
         {
-            public MaterialCompileCommand(string url, SkyboxAsset asset)
+            public SkyboxCompileCommand(string url, SkyboxAsset asset)
                 : base(url, asset)
             {
             }

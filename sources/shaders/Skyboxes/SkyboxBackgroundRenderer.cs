@@ -56,11 +56,10 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
 
                 context.CurrentPass.Parameters.CopySharedTo(skyboxEffect.Parameters);
 
-                //if (skybox.Skybox != null && skybox.Skybox.Parameters.ContainsKey(TexturingKeys.TextureCube0))
-                if (skybox.SkyboxTexture != null)
+                if (skybox.Skybox != null && skybox.Skybox.Parameters.ContainsKey(TexturingKeys.TextureCube0))
                 {
-                    //skyboxEffect.SetInput(skybox.Skybox.Parameters.Get(TexturingKeys.TextureCube0));
-                    skyboxEffect.SetInput(skybox.SkyboxTexture);
+                    skyboxEffect.SetInput(skybox.Skybox.Parameters.Get(TexturingKeys.TextureCube0));
+                    //skyboxEffect.SetInput(skybox.SkyboxTexture);
                 }
 
                 skyboxEffect.SetOutput(Target ?? GraphicsDevice.BackBuffer);
