@@ -52,7 +52,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         [DataMember(10)] 
         [DefaultValue(null)]
         [Display("Texture")]
-        [MaterialNodeValueProperty]
+        [InlineProperty]
         public AssetReference<TextureAsset> TextureReference { get; set; }
 
         /// <summary>

@@ -161,7 +161,6 @@
     <Compile Include="Materials\ComputeColors\ComputeColorParameters.cs" />
     <Compile Include="Materials\IMaterialAttributes.cs" />
     <Compile Include="Materials\IMaterialEmissiveFeature.cs" />
-    <Compile Include="Materials\MaterialNodeMainPropertyAttribute.cs" />
     <Compile Include="Materials\IMaterialLayers.cs" />
     <Compile Include="Materials\IMaterialDiffuseFeature.cs" />
     <Compile Include="Materials\IMaterialDiffuseModelFeature.cs" />

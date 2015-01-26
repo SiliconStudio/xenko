@@ -117,6 +117,7 @@
     <Compile Include="IFileSynchronizable.cs" />
     <Compile Include="ImportResult.cs" />
     <Compile Include="Analysis\AssetResolver.cs" />
+    <Compile Include="InlinePropertyAttribute.cs" />
     <Compile Include="NugetLogEventArgs.cs" />
     <Compile Include="NugetStore.cs" />
     <Compile Include="AssetMigration.cs" />

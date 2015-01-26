@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using SiliconStudio.Assets;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
@@ -37,7 +38,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// The default value.
         /// </userdoc>
         [DataMember(20)]
-        [MaterialNodeValuePropertyAttribute]
+        [InlineProperty]
         public T Value
         {
             get

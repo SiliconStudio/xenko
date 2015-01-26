@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// The shader used in this node. It should be a ComputeColor.
         /// </userdoc>
         [DataMember(10)]
-        [MaterialNodeValueProperty]
+        [InlineProperty]
         public AssetReference<EffectShaderAsset> MixinReference
         {
             get
