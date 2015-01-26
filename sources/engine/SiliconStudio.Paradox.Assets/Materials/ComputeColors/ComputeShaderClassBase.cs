@@ -10,6 +10,7 @@ using System.Linq;
 
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Assets.Effect;
 using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;

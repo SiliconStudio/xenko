@@ -3,6 +3,7 @@
 
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
 {

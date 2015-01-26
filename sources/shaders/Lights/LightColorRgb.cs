@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Effects.Lights
@@ -26,6 +27,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// </summary>
         /// <value>The color.</value>
         [DataMember(10)]
+        [InlineProperty]
         public Color3 Color { get; set; }
 
         public Color3 ComputeColor()

@@ -3,7 +3,7 @@
 
 using System;
 
-namespace SiliconStudio.Assets
+namespace SiliconStudio.Core.Annotations
 {
     /// <summary>
     /// This attribute indicates that the associated property should be inlined in its container presentation

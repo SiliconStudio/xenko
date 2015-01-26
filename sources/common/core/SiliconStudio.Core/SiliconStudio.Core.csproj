@@ -51,6 +51,7 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AccessorMetadata.cs" />
+    <Compile Include="Annotations\InlinePropertyAttribute.cs" />
     <Compile Include="Annotations\NotNullAttribute.cs" />
     <Compile Include="AnonymousDisposable.cs" />
     <Compile Include="Collections\ITrackingCollectionChanged.cs" />
