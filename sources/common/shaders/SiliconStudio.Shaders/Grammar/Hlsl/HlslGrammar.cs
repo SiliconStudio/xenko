@@ -309,13 +309,13 @@ namespace SiliconStudio.Shaders.Grammar.Hlsl
             // Types used by the geometry shader
             geometry_stream.Rule = line_stream | point_stream | triangle_stream | stream_output_object;
 
-            triangle_stream.Rule = TypeName("TriangleStream") + less_than + type_name + ">";
+            triangle_stream.Rule = TypeName("TriangleStream") + less_than + type + ">";
 
-            point_stream.Rule = TypeName("PointStream") + less_than + type_name + ">";
+            point_stream.Rule = TypeName("PointStream") + less_than + type + ">";
 
-            line_stream.Rule = TypeName("LineStream") + less_than + type_name + ">";
+            line_stream.Rule = TypeName("LineStream") + less_than + type + ">";
 
-            stream_output_object.Rule = TypeName("StreamOutputObject") + less_than + type_name + ">";
+            stream_output_object.Rule = TypeName("StreamOutputObject") + less_than + type + ">";
 
             //// Shader object
             //// shader_objects.Rule = ToTerm("VertexShader") | "PixelShader" | "GeometryShader";
