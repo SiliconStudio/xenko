@@ -16,26 +16,7 @@ namespace SiliconStudio.Core.Mathematics
         /// The maximum order supported.
         /// </summary>
         public const int MaximumOrder = 5;
-
-        /// <summary>
-        /// A function of the spherical base.
-        /// </summary>
-        /// <param name="direction">The direction</param>
-        /// <returns>The value in the direction</returns>
-        public delegate float SphericalBase(Vector3 direction);
-
-        /// <summary>
-        /// The spherical bases of order 1, 2, ..., <see cref="MaximumOrder"/>.
-        /// </summary>
-        public static readonly SphericalBase[] Bases =
-        {
-            Y00, 
-            Y1M1, Y10, Y1P1,
-            Y2M2, Y2M1, Y20, Y2P1, Y2P2,
-            Y3M3, Y3M2, Y3M1, Y30, Y3P1, Y3P2, Y3P3,
-            Y4M4, Y4M3, Y4M2, Y4M1, Y40, Y4P1, Y4P2, Y4P3, Y4P4
-        };
-
+        
         private int order;
 
         /// <summary>
@@ -74,7 +55,7 @@ namespace SiliconStudio.Core.Mathematics
         protected SphericalHarmonics(int order)
         {
             this.order = order;
-           Coefficients = new TDataType[order * order]; 
+            Coefficients = new TDataType[order * order];
         }
 
         /// <summary>
@@ -104,18 +85,6 @@ namespace SiliconStudio.Core.Mathematics
             }
         }
 
-        /// <summary>
-        /// Gets the {l, m}-indexed base function of the Spherical Harmonics.
-        /// </summary>
-        /// <param name="l">the l index</param>
-        /// <param name="m">the m index</param>
-        /// <returns>The corresponding base function</returns>
-        public static SphericalBase GetBase(int l, int m)
-        {
-            CheckIndicesValidity(l, m, MaximumOrder);
-            return Bases[LmToCoefficientIndex(l, m)];
-        }
-
         // ReSharper disable UnusedParameter.Local
         private static void CheckIndicesValidity(int l, int m, int maxOrder)
         // ReSharper restore UnusedParameter.Local
@@ -131,111 +100,6 @@ namespace SiliconStudio.Core.Mathematics
         {
             return l * l + l + m;
         }
-        
-        private static float Y00(Vector3 dir)
-        {
-            throw new NotImplementedException();
-        }
-
-        private static float Y1M1(Vector3 dir)
-        {
-            throw new NotImplementedException();
-        }
-        private static float Y10(Vector3 dir)
-        {
-            throw new NotImplementedException();
-        }
-        private static float Y1P1(Vector3 dir)
-        {
-            throw new NotImplementedException();
-        }
-
-        private static float Y2M2(Vector3 dir)
-        {
-            throw new NotImplementedException();
-        }
-        private static float Y2M1(Vector3 dir)
-        {
-            throw new NotImplementedException();
-        }
-        private static float Y20(Vector3 dir)
-        {
-            throw new NotImplementedException();
-        }
-        private static float Y2P1(Vector3 dir)
-        {
-            throw new NotImplementedException();
-        }
-        private static float Y2P2(Vector3 dir)
-        {
-            throw new NotImplementedException();
-        }
-        
-        private static float Y3M3(Vector3 dir)
-        {
-            throw new NotImplementedException();
-        }
-        private static float Y3M2(Vector3 dir)
-        {
-            throw new NotImplementedException();
-        }
-        private static float Y3M1(Vector3 dir)
-        {
-            throw new NotImplementedException();
-        }
-        private static float Y30(Vector3 dir)
-        {
-            throw new NotImplementedException();
-        }
-        private static float Y3P1(Vector3 dir)
-        {
-            throw new NotImplementedException();
-        }
-        private static float Y3P2(Vector3 dir)
-        {
-            throw new NotImplementedException();
-        }
-        private static float Y3P3(Vector3 dir)
-        {
-            throw new NotImplementedException();
-        }
-
-        private static float Y4M4(Vector3 dir)
-        {
-            throw new NotImplementedException();
-        }
-        private static float Y4M3(Vector3 dir)
-        {
-            throw new NotImplementedException();
-        }
-        private static float Y4M2(Vector3 dir)
-        {
-            throw new NotImplementedException();
-        }
-        private static float Y4M1(Vector3 dir)
-        {
-            throw new NotImplementedException();
-        }
-        private static float Y40(Vector3 dir)
-        {
-            throw new NotImplementedException();
-        }
-        private static float Y4P1(Vector3 dir)
-        {
-            throw new NotImplementedException();
-        }
-        private static float Y4P2(Vector3 dir)
-        {
-            throw new NotImplementedException();
-        }
-        private static float Y4P3(Vector3 dir)
-        {
-            throw new NotImplementedException();
-        }
-        private static float Y4P4(Vector3 dir)
-        {
-            throw new NotImplementedException();
-        }
     }
 
     /// <summary>
@@ -244,6 +108,13 @@ namespace SiliconStudio.Core.Mathematics
     [DataContract("SphericalHarmonics")]
     public class SphericalHarmonics : SphericalHarmonics<Color3>
     {
+        private readonly float[] baseValues;
+
+        private const float Pi4 = 4 * MathUtil.Pi;
+        private const float Pi16 = 16 * MathUtil.Pi;
+        private const float Pi64 = 44 * MathUtil.Pi;
+        private readonly float sqrtPi = (float)Math.Sqrt(MathUtil.Pi);
+
         internal SphericalHarmonics()
         {
         }
@@ -255,13 +126,69 @@ namespace SiliconStudio.Core.Mathematics
         public SphericalHarmonics(int order)
             : base(order)
         {
+            baseValues = new float[order * order];
         }
 
         public override Color3 Evaluate(Vector3 direction)
         {
+            var x = direction.X;
+            var y = direction.Y;
+            var z = direction.Z;
+
+            var x2 = x*x;
+            var y2 = y*y;
+            var z2 = z*z;
+
+            var z3 = (float)Math.Pow(z, 3.0);
+
+            var x4 = (float)Math.Pow(x, 4.0);
+            var y4 = (float)Math.Pow(y, 4.0);
+            var z4 = (float)Math.Pow(z, 4.0);
+
+            //Equations based on data from: http://ppsloan.org/publications/StupidSH36.pdf
+            baseValues[ 0] =  1/(2*sqrtPi);
+
+            if (Order > 1)
+            {
+                baseValues[ 1] = -(float)Math.Sqrt(3/Pi4)*y;
+                baseValues[ 2] =  (float)Math.Sqrt(3/Pi4)*z;
+                baseValues[ 3] = -(float)Math.Sqrt(3/Pi4)*x;
+                
+            if (Order > 2)
+            {
+                baseValues[ 4] =  (float)Math.Sqrt(15/Pi4)*y*x;
+                baseValues[ 5] = -(float)Math.Sqrt(15/Pi4)*y*z;
+                baseValues[ 6] =  (float)Math.Sqrt(5/Pi16)*(3*z2-1);
+                baseValues[ 7] = -(float)Math.Sqrt(15/Pi4)*x*z;
+                baseValues[ 8] =  (float)Math.Sqrt(15/Pi16)*(x2-y2);
+                
+            if (Order > 3)
+            {
+                baseValues[ 9] = -(float)Math.Sqrt(  7/Pi64)*y*(3*x2-y2);
+                baseValues[10] =  (float)Math.Sqrt(105/ Pi4)*y*x*z;
+                baseValues[11] = -(float)Math.Sqrt( 21/Pi16)*y*(-1+5*z2);
+                baseValues[12] =  (float)Math.Sqrt(  7/Pi16)*(5*z3-3*z);
+                baseValues[13] = -(float)Math.Sqrt( 42/Pi64)*x*(-1+5*z2);
+                baseValues[14] =  (float)Math.Sqrt(105/Pi16)*(x2-y2)*z;
+                baseValues[15] = -(float)Math.Sqrt( 70/Pi64)*x*(x2-3*y2);
+                
+            if (Order > 4)
+            {
+                baseValues[16] =  3*(float)Math.Sqrt(35/Pi16)*x*y*(x2-y2);
+                baseValues[17] = -3*(float)Math.Sqrt(70/Pi64)*y*z*(3*x2-y2);
+                baseValues[18] =  3*(float)Math.Sqrt( 5/Pi16)*y*x*(-1+7*z2);
+                baseValues[19] = -3*(float)Math.Sqrt(10/Pi64)*y*z*(-3+7*z2);
+                baseValues[20] =  (105*z4-90*z2+9)/(16*sqrtPi);
+                baseValues[21] = -3*(float)Math.Sqrt(10/Pi64)*x*z*(-3+7*z2);
+                baseValues[22] =  3*(float)Math.Sqrt( 5/Pi64)*(x2-y2)*(-1+7*z2);
+                baseValues[23] = -3*(float)Math.Sqrt(70/Pi64)*x*z*(x2-3*y2);
+                baseValues[24] =  3*(float)Math.Sqrt(35/(4*Pi64))*(x4-6*y2*x2+y4);
+            }}}}
+
             var data = new Color3();
-            for (int i = 0; i < Coefficients.Length; i++)
-                data += Coefficients[i] * Bases[i](direction);
+
+            for (int i = 0; i < baseValues.Length; i++)
+                data += Coefficients[i] * baseValues[i];
 
             return data;
         }
