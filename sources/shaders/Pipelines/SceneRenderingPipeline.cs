@@ -4,15 +4,10 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects.Images;
 using SiliconStudio.Paradox.Effects.Lights;
-using SiliconStudio.Paradox.Effects.Processors;
-using SiliconStudio.Paradox.Effects.Renderers;
-using SiliconStudio.Paradox.Effects.Shadows;
 using SiliconStudio.Paradox.Effects.Skyboxes;
 using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Effects.Pipelines
 {
@@ -51,6 +46,9 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
 
             GraphicsDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
 
+            RenderTarget = GraphicsDevice.BackBuffer;
+            DepthStencilBuffer = GraphicsDevice.DepthStencilBuffer; 
+
             // Add light processor
             Entities.Processors.Add(new LightProcessor());
 
@@ -83,7 +81,8 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
             AddRenderer(modelRenderer);
             AddRenderer(postEffectRenderer);
             // In all cases, we will setup back the default buffer and stencil
-            AddRenderer(new RenderTargetSetter(Services) { EnableClearDepth = false, EnableClearStencil = false, EnableClearTarget = false, RenderTarget = GraphicsDevice.BackBuffer, DepthStencil = GraphicsDevice.DepthStencilBuffer });
+            AddRenderer(new RenderTargetSetter(Services) { EnableClearDepth = false, EnableClearStencil = false, EnableClearTarget = false, RenderTarget = RenderTarget, DepthStencil = DepthStencilBuffer });
+            AddRenderer(new SpriteRenderer(Services));
 
             useLightingChanged = true;
         }
@@ -93,13 +92,17 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
             Services.GetSafeServiceAs<IGame>().Window.ClientSizeChanged -= Window_ClientSizeChanged;
         }
 
+        public Texture RenderTarget { get; set; }
+
+        public Texture DepthStencilBuffer { get; set; }
+
         private void ApplyPostEffects(RenderContext obj)
         {
             // TODO allow posteffects on backbuffer
             if (useHdr)
             {
                 postEffects.SetInput(renderTargetHDR);
-                postEffects.SetOutput(GraphicsDevice.BackBuffer);
+                postEffects.SetOutput(RenderTarget);
                 postEffects.Draw();
             }
         }
@@ -167,7 +170,7 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
             {
                 if (renderTargetHDR == null)
                 {
-                    renderTargetHDR = Texture.New2D(GraphicsDevice, GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
+                    renderTargetHDR = Texture.New2D(GraphicsDevice, RenderTarget.Width, RenderTarget.Height, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
                 }
                 rootRenderTargetSetter.RenderTarget = renderTargetHDR;
             }

@@ -93,12 +93,6 @@
     <Compile Include="Effects\DynamicEffectCompiler.cs" />
     <Compile Include="Effects\DynamicEffectInstance.cs" />
     <Compile Include="Effects\EffectParameterUpdater.cs" />
-    <Compile Include="Effects\BasicEffect.cs">
-      <DependentUpon>BasicEffect.pdxfx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Effects\Material.cs" />
     <Compile Include="Effects\MaterialAssetKeys.cs" />
     <Compile Include="Effects\MaterialParametersKeys.cs" />
@@ -261,10 +255,6 @@
     <Compile Include="Threading\TaskList.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Effects\BasicEffect.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>BasicEffect.cs</LastGenOutput>
-    </None>
     <None Include="Effects\MaterialParameters.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialParameters.cs</LastGenOutput>
