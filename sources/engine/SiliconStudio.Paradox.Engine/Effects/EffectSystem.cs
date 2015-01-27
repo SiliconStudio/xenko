@@ -195,7 +195,7 @@ namespace SiliconStudio.Paradox.Effects
 
         private CompilerResults GetCompilerResults(string effectName, CompilerParameters compilerParameters, out string subEffect)
         {
-            compilerParameters.Profile = GraphicsDevice.ShaderProfile.HasValue ? GraphicsDevice.ShaderProfile.Value : graphicsDeviceService.GraphicsDevice.Features.Profile;
+            compilerParameters.Profile = GraphicsDevice.ShaderProfile.HasValue ? GraphicsDevice.ShaderProfile.Value : GraphicsDevice.Features.Profile;
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLCORE
             compilerParameters.Platform = GraphicsPlatform.OpenGL;
 #endif

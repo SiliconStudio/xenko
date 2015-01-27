@@ -57,7 +57,7 @@ namespace SiliconStudio.Paradox.Games
         {
             if (registry == null) throw new ArgumentNullException("registry");
             this.registry = registry;
-            game = (GameBase)Services.GetSafeServiceAs<IGame>();
+            game = (GameBase)Services.GetServiceAs<IGame>();
             assetManager = Services.GetSafeServiceAs<IAssetManager>();
         }
 
@@ -65,6 +65,7 @@ namespace SiliconStudio.Paradox.Games
         /// Gets the <see cref="Game"/> associated with this <see cref="GameSystemBase"/>. This value can be null in a mock environment.
         /// </summary>
         /// <value>The game.</value>
+        /// <remarks>This value can be null</remarks>
         public GameBase Game
         {
             get { return game; }
@@ -102,6 +103,8 @@ namespace SiliconStudio.Paradox.Games
         {
             get
             {
+                // TODO: This is bad: Review how to order correctly the graphics device to avoid this
+                InitGraphicsDeviceService();
                 return graphicsDeviceService != null ? graphicsDeviceService.GraphicsDevice : null;
             }
         }
@@ -157,8 +160,15 @@ namespace SiliconStudio.Paradox.Games
 
         public virtual void Initialize()
         {
-            // Gets the graphics device service
-            graphicsDeviceService = (IGraphicsDeviceService)registry.GetService(typeof(IGraphicsDeviceService));
+            InitGraphicsDeviceService();
+        }
+
+        private void InitGraphicsDeviceService()
+        {
+            if (graphicsDeviceService == null)
+            {
+                graphicsDeviceService = (IGraphicsDeviceService)registry.GetService(typeof(IGraphicsDeviceService));
+            }
         }
 
         #endregion

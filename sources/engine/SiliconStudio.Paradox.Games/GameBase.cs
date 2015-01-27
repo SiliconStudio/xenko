@@ -111,8 +111,7 @@ namespace SiliconStudio.Paradox.Games
             Services = new ServiceRegistry();
 
             // Asset manager
-            Asset = new AssetManager();
-            Asset.Serializer.SerializerContextTags.Set(ServiceRegistry.ServiceRegistryKey, Services);
+            Asset = new AssetManager(Services);
 
             LaunchParameters = new LaunchParameters();
             GameSystems = new GameSystemCollection();
@@ -127,8 +126,6 @@ namespace SiliconStudio.Paradox.Games
             // Setup registry
             Services.AddService(typeof(IGame), this);
             Services.AddService(typeof(IVirtualResolution), this);
-            Services.AddService(typeof(IAssetManager), Asset);
-            Services.AddService(typeof(AssetManager), Asset);
             Services.AddService(typeof(IGamePlatform), gamePlatform);
 
             IsActive = true;

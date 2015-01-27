@@ -39,9 +39,19 @@ namespace SiliconStudio.Core.Serialization.Assets
 
         private readonly Dictionary<object, AssetReference> loadedAssetsUrl = new Dictionary<object, AssetReference>();
 
-        public AssetManager()
+        public AssetManager() : this(null)
+        {
+        }
+
+        public AssetManager(IServiceRegistry services)
         {
             Serializer = new AssetSerializer();
+            if (services != null)
+            {
+                services.AddService(typeof(IAssetManager), this);
+                services.AddService(typeof(AssetManager), this);
+                Serializer.SerializerContextTags.Set(ServiceRegistry.ServiceRegistryKey, services);
+            }
         }
 
         public void Save(string url, object asset)

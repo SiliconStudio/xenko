@@ -98,6 +98,7 @@
     <Compile Include="DataOld\GpuRasterizerStateSerializer.cs" />
     <Compile Include="DataOld\GpuSamplerStateSerializer2.cs" />
     <Compile Include="DataOld\GpuTextureSerializer2.cs" />
+    <Compile Include="GraphicsDeviceServiceLocal.cs" />
     <Compile Include="RasterizerStateSerializer.cs" />
     <Compile Include="Data\BufferData.cs" />
     <Compile Include="Data\GraphicsSerializerExtensions.cs" />
