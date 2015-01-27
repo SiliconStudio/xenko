@@ -69,6 +69,7 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
             postEffects.Bloom.Enabled = false;
             postEffects.BrightFilter.Enabled = false;
             postEffects.ColorTransform.Enabled = true;
+            postEffects.ToneMap.AutoKeyValue = false;
             postEffects.ToneMap.Operator = new ToneMapU2FilmicOperator();
 
             skyboxBackgroundRenderer = new SkyboxBackgroundRenderer(Services);
