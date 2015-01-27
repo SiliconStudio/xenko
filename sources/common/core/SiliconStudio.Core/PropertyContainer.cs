@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reflection;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
@@ -222,8 +223,7 @@ namespace SiliconStudio.Core
         {
             get
             {
-                if (properties != null) return properties.Keys;
-                return emptyKeys;
+                return this.Select(x => x.Key).ToList();
             }
         }
 
@@ -231,8 +231,7 @@ namespace SiliconStudio.Core
         {
             get
             {
-                if (properties != null) return properties.Values;
-                return emptyValues;
+                return this.Select(x => x.Value).ToList();
             }
         }
 
