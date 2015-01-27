@@ -38,8 +38,48 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeEffectShader.pdxfx</DependentUpon>
     </Compile>
-    <Compile Include="ComputeEffect\GGXPrefiltering\GGXPrefiltering.cs" />
+    <Compile Include="ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGX.cs" />
+    <Compile Include="ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXEffect.cs">
+      <DependentUpon>RadiancePrefilteringGGXEffect.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXShader.cs">
+      <DependentUpon>RadiancePrefilteringGGXShader.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="ComputeEffect\GGXPrefiltering\ImportanceSamplingGGX.cs">
+      <DependentUpon>ImportanceSamplingGGX.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="ComputeEffect\GGXPrefiltering\Hammersley.cs">
+      <DependentUpon>Hammersley.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSH.cs" />
+    <None Include="ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXEffect.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>RadiancePrefilteringGGXEffect.cs</LastGenOutput>
+    </None>
+    <None Include="ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>RadiancePrefilteringGGXShader.cs</LastGenOutput>
+    </None>
+    <None Include="ComputeEffect\GGXPrefiltering\ImportanceSamplingGGX.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ImportanceSamplingGGX.cs</LastGenOutput>
+    </None>
+    <None Include="ComputeEffect\GGXPrefiltering\Hammersley.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>Hammersley.cs</LastGenOutput>
+    </None>
     <None Include="ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSH.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LambertianPrefilteringSH1.cs</LastGenOutput>
