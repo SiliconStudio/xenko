@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
 
         private static void UpdateSkyMatrix(ref float angle, ref Matrix output)
         {
-            Matrix.RotationY(angle, out output);
+            Matrix.RotationY(MathUtil.DegreesToRadians(angle), out output);
         }
     }
 }

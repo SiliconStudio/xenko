@@ -7,17 +7,27 @@ namespace SiliconStudio.Paradox.Effects.Lights
     /// </summary>
     class LightSkybox : EnvironmentLight, MaterialPixelShadingStream, NormalStream
     {
+        float4x4 SkyMatrix;
+
+        float Intensity;
+
         compose IComputeEnvironmentColor lightDiffuseColor;
 
         compose IComputeEnvironmentColor lightSpecularColor;
 
         override void PrepareEnvironmentLight()
         {
-            var sampleDirection = float3(streams.normalWS.xy, -streams.normalWS.z);
+            var sampleDirection = streams.normalWS;
 
-            streams.envLightDiffuseColor = lightDiffuseColor.Compute(sampleDirection).rgb;
+            // TODO: This could be optimized by having a flag to allow rotation only if necessary
+            // Rotate the skybox
+            sampleDirection = mul(sampleDirection, (float3x3)SkyMatrix);
 
-            streams.envLightSpecularColor = lightSpecularColor.Compute(sampleDirection).rgb;
+            sampleDirection = float3(sampleDirection.xy, -sampleDirection.z);
+
+            streams.envLightDiffuseColor = lightDiffuseColor.Compute(sampleDirection).rgb * Intensity;
+
+            streams.envLightSpecularColor = lightSpecularColor.Compute(sampleDirection).rgb * Intensity;
         }
     };
 }

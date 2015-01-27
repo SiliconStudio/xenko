@@ -6,4 +6,19 @@
 // and re-save the associated .pdxfx.
 // </auto-generated>
 
-// Nothing to generate
+using System;
+using SiliconStudio.Core;
+using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Core.Mathematics;
+using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
+
+namespace SiliconStudio.Paradox.Effects.Lights
+{
+    public static partial class LightSkyboxKeys
+    {
+        public static readonly ParameterKey<Matrix> SkyMatrix = ParameterKeys.New<Matrix>();
+        public static readonly ParameterKey<float> Intensity = ParameterKeys.New<float>();
+    }
+}

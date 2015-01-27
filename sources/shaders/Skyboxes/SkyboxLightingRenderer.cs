@@ -5,7 +5,9 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects.Images;
+using SiliconStudio.Paradox.Effects.Lights;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Shaders;
 
@@ -60,13 +62,25 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
                     var diffuseParameters = skybox.DiffuseLightingParameters;
                     var specularParameters = skybox.SpecularLightingParameters;
 
+                    var intensity = skyboxComponent.Lighting.Intensity;
+                    var rotation = skyboxComponent.Lighting.Rotation;
+                    var rotationMatrix = Matrix.RotationY(MathUtil.DegreesToRadians(rotation));
+                    // global parameters
+                    {
+                        var composition = string.Format("environmentLights[{0}]", index);
+                        var intensityKey = LightSkyboxKeys.Intensity.ComposeWith(composition);
+                        var skyMatrixKey = LightSkyboxKeys.SkyMatrix.ComposeWith(composition);
+                        passParameters.Set(intensityKey, intensity);
+                        passParameters.Set(skyMatrixKey, rotationMatrix);
+                    }
+
                     // Setup diffuse lighting
                     {
                         var cubeMapKey = LevelCubeMapEnvironmentColorKeys.CubeMap.ComposeWith(string.Format("lightDiffuseColor.environmentLights[{0}]", index));
                         var mipLevelKey = LevelCubeMapEnvironmentColorKeys.MipLevel.ComposeWith(string.Format("lightDiffuseColor.environmentLights[{0}]", index));
                         var diffuseCubemap = diffuseParameters.Get(SkyboxKeys.CubeMap);
                         passParameters.Set(cubeMapKey, diffuseCubemap);
-                        passParameters.Set(mipLevelKey, Math.Max(0, diffuseCubemap.MipLevels - 3));
+                        passParameters.Set(mipLevelKey, diffuseCubemap.MipLevels * 0.8f);
                     }
 
                     // Setup specular lighting
