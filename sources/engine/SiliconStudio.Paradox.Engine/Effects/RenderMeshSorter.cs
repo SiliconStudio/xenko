@@ -28,8 +28,46 @@ namespace SiliconStudio.Paradox.Effects
                 indices[index] = GenerateSortKey(meshes[index]);
 
             // Sort both indices and meshes at the same time
-            // Note: Tried a custom quick sort, performance was little bit better but not by much; might be good to investigate other sort
-            Array.Sort(indices, meshes.Items, 0, meshes.Count, Comparer<int>.Default);
+            // Similar to Array.Sort (which is not available in Windows Store/Phone)
+            QuickSort(indices, meshes.Items, 0, meshes.Count - 1);
+        }
+
+        private void QuickSort(int[] indices, RenderMesh[] meshes, int left, int right)
+        {
+            if (left > right)
+                return;
+
+            int i = left;
+            int j = right;
+            int pivot = indices[(left + right) / 2];
+
+            while (i <= j)
+            {
+                while (indices[i] < pivot)
+                    ++i;
+                while (indices[j] > pivot)
+                    --j;
+                if (i <= j)
+                {
+                    RenderMesh meshTmp = meshes[i];
+                    meshes[i] = meshes[j];
+                    meshes[j] = meshTmp;
+
+                    int indexTmp = indices[i];
+                    indices[i++] = indices[j];
+                    indices[j--] = indexTmp;
+                }
+            }
+
+            // Recurse
+            if (left < j)
+            {
+                QuickSort(indices, meshes, left, j);
+            }
+            if (i < right)
+            {
+                QuickSort(indices, meshes, i, right);
+            }
         }
 
         /// <summary>
