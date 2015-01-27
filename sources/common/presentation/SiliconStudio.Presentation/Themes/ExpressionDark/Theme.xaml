@@ -3951,6 +3951,24 @@
 
                             </DockPanel>
                         </Border>
+                        <ToggleButton Grid.Column="6" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16" Background="Transparent" ToolTip="Advanced options">
+                            <Image Width="16" Height="16" Margin="-1" Source="{StaticResource ImageAdvancedEditionVector}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                        </ToggleButton>
+                        <Popup x:Name="Popup" IsOpen="{Binding IsChecked, ElementName=ToggleButtonAdvancedOptions, Mode=TwoWay}" Placement="Bottom" AllowsTransparency="True"
+                                       MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ctrl:RotationEditor}}" StaysOpen="False"
+                                       PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=ctrl:RotationEditor}}" PopupAnimation="Slide" VerticalOffset="2">
+                            <Border SnapsToDevicePixels="True" Background="{StaticResource BackgroundBrush}" BorderBrush="Black" BorderThickness="1">
+                                <ctrl:KeyValueGrid>
+                                    <TextBlock Text="All components:" Margin="4,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                    <ctrl:NumericTextBox x:Name="AllTextBox" Margin="2,2,6,6" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True" ValidateOnLostFocus="False">
+                                        <i:Interaction.Behaviors>
+                                            <behaviors:OnEventCommandBehavior EventName="Validated" Command="{x:Static commands:ControlCommands.SetAllRotationComponents}" CommandParameter="{Binding Value, ElementName=AllTextBox}"/>
+                                            <behaviors:OnEventCommandBehavior EventName="Validated" Command="{Binding ResetValueCommand, ElementName=AllTextBox}"/>
+                                        </i:Interaction.Behaviors>
+                                    </ctrl:NumericTextBox>
+                                </ctrl:KeyValueGrid>
+                            </Border>
+                        </Popup>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
