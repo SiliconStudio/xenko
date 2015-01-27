@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 namespace SiliconStudio.Paradox.Effects.Materials
 {
-    class MaterialPixelStream : MaterialStream
+    class MaterialPixelStream : MaterialStream, NormalStream
     {
         // Surface attributes
         stage stream float3 matNormal;
@@ -34,6 +34,12 @@ namespace SiliconStudio.Paradox.Effects.Materials
         stage stream float3  matEmissive;
         stage stream float   matEmissiveIntensity;
 
+        // Inputs while shading a material surface
+        stage stream float3 shadingView;
+    
+        // normal dot view
+        stage stream float NdotV;
+
         override void ResetMaterialPixelStream()
         {
             base.ResetMaterialPixelStream();
@@ -64,10 +70,12 @@ namespace SiliconStudio.Paradox.Effects.Materials
             streams.matDiffuseVisible = streams.matDiffuse.rgb * lerp(1.0f, streams.matCavity, streams.matCavityDiffuse);
             streams.matSpecularVisible = streams.matSpecular.rgb * streams.matSpecularIntensity * lerp(1.0f, streams.matCavity, streams.matCavitySpecular);
 
+            streams.NdotV = max(dot(streams.normalVS, streams.shadingView), 0.0001f);
+
             // Calculate shading roughtness using Disney-Burley method
             // roughness-burley = roughness^2 = (1 - glossy)^2
             var roughness = 1.0f - streams.matGlossiness;
-            streams.alphaRoughness = max(roughness * roughness, 2e-3);
+            streams.alphaRoughness = max(roughness * roughness, 1e-5);
             // TODO: precalculate alphaRoughness^2
         }
     };

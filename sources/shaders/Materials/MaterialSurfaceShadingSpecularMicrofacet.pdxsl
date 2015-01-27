@@ -5,7 +5,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
     /// <summary>
     /// Performs a Microfacet shading
     /// </summary>
-    class MaterialSurfaceShadingSpecularMicrofacet : IMaterialSurfaceShading, MaterialPixelShadingStream, Math
+    class MaterialSurfaceShadingSpecularMicrofacet : IMaterialSurfaceShading, MaterialPixelShadingStream, Math, BRDFMicrofacet
     {
         compose IMaterialSpecularMicrofacetFresnelFunction fresnelFunction;
 
@@ -28,10 +28,11 @@ namespace SiliconStudio.Paradox.Effects.Materials
 
         override float3 ComputeEnvironmentLightContribution()
         {
-            // TODO: Check how to factorize this with DirectLight
-            // TODO: Take into account fresnel
             var specularColor = streams.matSpecularVisible;
-            return specularColor * streams.envLightSpecularColor;
+
+            // TODO: Allow plugability of this function (pb is that it is a combination of fresnel, visibility and NDF)
+            //return specularColor * streams.envLightSpecularColor;
+            return EnvironmentLightingDFG_GGX_Fresnel_SmithSchlickGGX(specularColor, streams.alphaRoughness, streams.NdotV) * streams.envLightSpecularColor;
         }
     };
 }

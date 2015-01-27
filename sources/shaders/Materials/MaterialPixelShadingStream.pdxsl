@@ -2,11 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 namespace SiliconStudio.Paradox.Effects.Materials
 {
-    class MaterialPixelShadingStream : MaterialPixelStream, NormalStream, LightStream
+    class MaterialPixelShadingStream : MaterialPixelStream, LightStream
     {
-        // Inputs while shading a material surface
-        stage stream float3 shadingView;
-
         // Output of shading a material surface
         stage stream float3 shadingColor;
 
@@ -15,9 +12,6 @@ namespace SiliconStudio.Paradox.Effects.Materials
 
         // normal dot light
         stage stream float NdotL;
-
-        // normal dot view
-        stage stream float NdotV;
 
         // normal dot half vector
         stage stream float NdotH;
