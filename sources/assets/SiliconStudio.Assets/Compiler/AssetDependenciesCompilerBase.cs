@@ -57,7 +57,7 @@ namespace SiliconStudio.Assets.Compiler
         /// </summary>
         /// <param name="context">A compiler context.</param>
         /// <param name="result">The current result of the compilation</param>
-        protected void AddDependenciesBuildStepsToResult(AssetCompilerContext context, AssetCompilerResult result)
+        protected BuildStep AddDependenciesBuildStepsToResult(AssetCompilerContext context, AssetCompilerResult result)
         {
             // create the fake package used to compile the dependences
             var dependenciesCompilePackage = AssetsSession.CreateCompilePackageFromAsset(AssetItem);
@@ -76,6 +76,8 @@ namespace SiliconStudio.Assets.Compiler
 
             // Copy log the dependencies result to the current result
             dependenciesCompileResult.CopyTo(result);
+
+            return dependenciesCompileResult.BuildSteps;
         }
     }
 }
