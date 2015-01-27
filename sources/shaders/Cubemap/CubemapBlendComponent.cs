@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
     /// Performs a blend at the location of the containing entity. When enabled, takes the up to the MaxBlendCount-most important cubemaps and blends them.
     /// </summary>
     [DataContract("CubemapBlendComponent")]
-    [Display("Cubemap Blend")]
+    [Display(50, "Cubemap Blend")]
     public sealed class CubemapBlendComponent : EntityComponent
     {
         public static PropertyKey<CubemapBlendComponent> Key = new PropertyKey<CubemapBlendComponent>("Key", typeof(CubemapBlendComponent));

@@ -28,9 +28,20 @@ namespace SiliconStudio.Core
         /// <param name="name">A value that is used for display in the UI..</param>
         /// <param name="category">A value that is used to group fields in the UI..</param>
         /// <param name="description">A value that is used to display a description in the UI..</param>
-        public DisplayAttribute(int? order, string name = null, string category = null, string description = null)
+        public DisplayAttribute(int order, string name = null, string category = null, string description = null)
+            : this(name, category, description)
         {
             this.order = order;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DisplayAttribute"/> class.
+        /// </summary>
+        /// <param name="name">A value that is used for display in the UI..</param>
+        /// <param name="category">A value that is used to group fields in the UI..</param>
+        /// <param name="description">A value that is used to display a description in the UI.</param>
+        public DisplayAttribute(string name = null, string category = null, string description = null)
+        {
             this.name = name;
             this.category = category;
             this.description = description;
@@ -40,19 +51,9 @@ namespace SiliconStudio.Core
         /// Initializes a new instance of the <see cref="DisplayAttribute"/> class.
         /// </summary>
         /// <param name="name">A value that is used for display in the UI..</param>
-        /// <param name="category">A value that is used to group fields in the UI..</param>
-        /// <param name="description">A value that is used to display a description in the UI.</param>
-        public DisplayAttribute(string name = null, string category = null, string description = null) : this(null, name, category, description)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DisplayAttribute"/> class.
-        /// </summary>
-        /// <param name="name">A value that is used for display in the UI..</param>
         /// <param name="description">A value that is used to display a description in the UI.</param>
         public DisplayAttribute(string name, string description)
-            : this(null, name, null, description)
+            : this(name, null, description)
         {
         }
 

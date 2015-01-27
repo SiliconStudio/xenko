@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.Engine
     /// Add a <see cref="Sprite"/> to an <see cref="Entity"/>. It could be an animated sprite.
     /// </summary>
     [DataContract("SpriteComponent")]
-    [Display("Sprite")]
+    [Display(100, "Sprite")]
     public sealed class SpriteComponent : EntityComponent
     {
         public static PropertyKey<SpriteComponent> Key = new PropertyKey<SpriteComponent>("Key", typeof(SpriteComponent));

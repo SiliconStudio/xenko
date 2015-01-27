@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
     /// Add a <see cref="Skybox"/> to an <see cref="Entity"/>, that will be used during rendering.
     /// </summary>
     [DataContract("SkyboxComponent")]
-    [Display("Skybox")]
+    [Display(80, "Skybox")]
     public sealed class SkyboxComponent : EntityComponent
     {
         public static PropertyKey<SkyboxComponent> Key = new PropertyKey<SkyboxComponent>("Key", typeof(SkyboxComponent));

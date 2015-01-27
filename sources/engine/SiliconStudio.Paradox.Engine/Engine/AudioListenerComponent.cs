@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.Engine
     /// <para>Use the AudioSytem's <see cref="AudioSystem.AddListener"/> and <see cref="AudioSystem.RemoveListener"/> functions 
     /// to activate/deactivate the listeners that are actually listening at a given time.</para>
     /// <para>The entity needs to be added to the Entity System so that the associated AudioListenerComponent can be processed.</para></remarks>
-    [Display("Audio Listener")]
+    [Display(60, "Audio Listener")]
     public sealed class AudioListenerComponent : EntityComponent
     {
         public static PropertyKey<AudioListenerComponent> Key = new PropertyKey<AudioListenerComponent>("Key", typeof(AudioListenerComponent));

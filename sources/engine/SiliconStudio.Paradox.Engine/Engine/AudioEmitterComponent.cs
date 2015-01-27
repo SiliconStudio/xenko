@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.Engine
     /// To get the AudioEmitterSoundController associated to a SoundEffect use the <see cref="GetSoundEffectController"/> function.
     /// </para>
     /// </remarks>
-    [Display("Audio Emitter")]
+    [Display(70, "Audio Emitter")]
     public sealed class AudioEmitterComponent : EntityComponent
     {
         public static PropertyKey<AudioEmitterComponent> Key = new PropertyKey<AudioEmitterComponent>("Key", typeof(AudioEmitterComponent));

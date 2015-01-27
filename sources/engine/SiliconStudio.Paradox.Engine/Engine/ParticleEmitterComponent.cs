@@ -10,7 +10,7 @@ using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Engine
 {
-    [Display("Particle Emitter")]
+    [Display(90, "Particle Emitter")]
     public class ParticleEmitterComponent : EntityComponent
     {
         public static PropertyKey<ParticleEmitterComponent> Key = new PropertyKey<ParticleEmitterComponent>("Key", typeof(ParticleEmitterComponent));
