@@ -4,6 +4,7 @@
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Effects.Images;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Effects.Skyboxes
 {
@@ -58,10 +59,42 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
                 // Copy camera/pass parameters
                 context.CurrentPass.Parameters.CopySharedTo(skyboxEffect.Parameters);
 
-                // Copy Skybox parameters
-                if (skybox.Skybox != null)
+                // TODO: Find a way to switch more easily between irradiance/skybox
+
+                // Show irradiance in the background
+                if (skybox.Background.ShowIrrandiance)
                 {
-                    skybox.Skybox.Parameters.CopySharedTo(skyboxEffect.Parameters);
+                    foreach (var parameterKeyValue in skybox.Skybox.DiffuseLightingParameters)
+                    {
+                        if (parameterKeyValue.Key == SkyboxKeys.Shader)
+                        {
+                            skyboxEffect.Parameters.Set(SkyboxKeys.Shader, (ShaderSource)parameterKeyValue.Value);
+                        }
+                        else
+                        {
+                            skyboxEffect.Parameters.SetObject(parameterKeyValue.Key.ComposeWith("skyboxColor"), parameterKeyValue.Value);
+                        }
+                    }
+                }
+                else
+                {
+                    // TODO: Should we better use composition on "skyboxColor" for parameters?
+
+                    // Copy Skybox parameters
+                    if (skybox.Skybox != null)
+                    {
+                        foreach (var parameterKeyValue in skybox.Skybox.Parameters)
+                        {
+                            if (parameterKeyValue.Key == SkyboxKeys.Shader)
+                            {
+                                skyboxEffect.Parameters.Set(SkyboxKeys.Shader, (ShaderSource)parameterKeyValue.Value);
+                            }
+                            else
+                            {
+                                skyboxEffect.Parameters.SetObject(parameterKeyValue.Key, parameterKeyValue.Value);
+                            }
+                        }
+                    }
                 }
 
                 // Setup the intensity

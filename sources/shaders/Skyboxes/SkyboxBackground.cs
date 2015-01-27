@@ -32,6 +32,14 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
         public bool Enabled { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether [show irrandiance].
+        /// </summary>
+        /// <value><c>true</c> if [show irrandiance]; otherwise, <c>false</c>.</value>
+        [DataMember(15)]
+        [DefaultValue(false)]
+        public bool ShowIrrandiance { get; set; }
+
+        /// <summary>
         /// Gets or sets the intensity.
         /// </summary>
         /// <value>The intensity.</value>

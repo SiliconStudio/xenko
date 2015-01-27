@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         override stage float4 Shading()
         {
-            var samplingDir = streams.skyboxViewDirection;
+            var samplingDir = normalize(streams.skyboxViewDirection);
             var color = Intensity * skyboxColor.Compute(float3(samplingDir.x, samplingDir.y, -samplingDir.z));
             return color;
         }
