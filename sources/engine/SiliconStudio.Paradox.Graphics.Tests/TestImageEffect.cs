@@ -98,7 +98,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         /// <summary>
         /// Run the test
         /// </summary>
-        [Test]
+        [Test, Ignore]
         public void RunImageEffect()
         {
             RunGameTest(new TestImageEffect());
