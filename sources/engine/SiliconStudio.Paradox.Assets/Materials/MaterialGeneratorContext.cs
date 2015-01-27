@@ -58,8 +58,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         public bool IsVertexStage { get; set; }
 
-        public FindAssetDelegate FindAsset { get; set; }
-
         public void AddVertexStreamModifier<T>(ShaderSource shaderSource)
         {
             if (shaderSource == null)
