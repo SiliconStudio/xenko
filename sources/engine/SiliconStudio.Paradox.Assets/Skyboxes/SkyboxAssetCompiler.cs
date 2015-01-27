@@ -88,7 +88,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
                     bases[5] = (float)(-Math.Sqrt(15.0 / PI4));
                     bases[6] = (float)(Math.Sqrt(5.0 / PI16));
                     bases[7] = (float)(-Math.Sqrt(15.0 / PI4));
-                    bases[8] = (float)(Math.Sqrt(15.0 / PI4));
+                    bases[8] = (float)(Math.Sqrt(15.0 / PI16));
                     for (int i = 0; i < coefficients.Length; i++)
                     {
                         coefficients[i] = coefficients[i] * bases[i];
