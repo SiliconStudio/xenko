@@ -7,14 +7,13 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.ComputeEffect.LambertianPrefiltering;
-using SiliconStudio.Paradox.Effects.Images;
 using SiliconStudio.Paradox.Effects.Images.SphericalHarmonics;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Input;
 
 namespace SiliconStudio.Paradox.Graphics.Tests
 {
-    public class TestLambertPrefilteringSH : Game
+    public class TestLambertPrefilteringSH : TestGameBase
     {
         private SpriteBatch spriteBatch;
 
@@ -55,10 +54,10 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
             inputCubemap = Asset.Load<Texture>("CubeMap");
-            outputCubemap = Texture.NewCube(GraphicsDevice, 256, 1, PixelFormat.R16G16B16A16_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource).DisposeBy(this);
+            outputCubemap = Texture.NewCube(GraphicsDevice, 256, 1, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource).DisposeBy(this);
             displayedCubemap = outputCubemap;
 
-            RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services) { ClearColor = Color.White });
+            RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services) { ClearColor = Color.Zero });
             RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = RenderCubeMap });
             RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = PrefilterCubeMap });
         }
@@ -130,6 +129,9 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             if (Input.IsKeyPressed(Keys.O))
                 displayedCubemap = outputCubemap;
+
+            if(Input.IsKeyPressed(Keys.S))
+                SaveTexture(GraphicsDevice.BackBuffer, "LambertianPrefilteredImageCross.png");
         }
 
         public static void Main()
