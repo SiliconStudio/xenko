@@ -9,10 +9,12 @@ using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Paradox.EntityModel
 {
-    [DataSerializer(typeof(Serializer))]
+    [DataSerializer(typeof(EntityComponent.Serializer))]
     [DataContract]
     public abstract class EntityComponent
     {
+        private bool enabled;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityComponent"/> class.
         /// </summary>
@@ -38,7 +40,17 @@ namespace SiliconStudio.Paradox.EntityModel
         /// </value>
         [DataMember(-10)]
         [DefaultValue(true)]
-        public bool Enabled { get; set; }
+        public bool Enabled
+        {
+            get
+            {
+                return enabled;
+            }
+            set
+            {
+                enabled = value;
+            }
+        }
 
         /// <summary>
         /// Gets the entity and throws an exception if the entity is null.
@@ -83,7 +95,9 @@ namespace SiliconStudio.Paradox.EntityModel
             public override void Serialize(ref EntityComponent obj, ArchiveMode mode, SerializationStream stream)
             {
                 var entity = obj.Entity;
+
                 stream.Serialize(ref entity, mode);
+                stream.Serialize(ref obj.enabled, mode);
                 obj.Entity = entity;
             }
         }
