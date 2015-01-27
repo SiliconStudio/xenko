@@ -24,6 +24,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         protected DirectLightRenderProcessorBase(ModelRenderer modelRenderer)
         {
             if (modelRenderer == null) throw new ArgumentNullException("modelRenderer");
+            Enabled = true;
             Services = modelRenderer.Services;
             EntitySystem = Services.GetServiceAs<EntitySystem>();
             lightProcessor = EntitySystem.GetProcessor<LightProcessor>();

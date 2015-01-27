@@ -73,8 +73,8 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
 
             skyboxBackgroundRenderer = new SkyboxBackgroundRenderer(Services);
             modelRenderer = new ModelRenderer(serviceRegistry, sceneEffect);
-            directLightRenderRenderProcessor = new DirectLightForwardRenderProcessor(modelRenderer);
-            skyboxLightingRenderer = new SkyboxLightingRenderer(modelRenderer);
+            directLightRenderRenderProcessor = new DirectLightForwardRenderProcessor(modelRenderer) { Enabled = false };
+            skyboxLightingRenderer = new SkyboxLightingRenderer(modelRenderer) { Enabled = false };
             postEffectRenderer = new DelegateRenderer(Services) { Render = ApplyPostEffects };
 
             AddRenderer(new DelegateRenderer(Services) { Render = Update});
