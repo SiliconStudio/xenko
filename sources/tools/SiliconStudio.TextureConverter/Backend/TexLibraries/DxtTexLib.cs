@@ -422,6 +422,14 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                     break;
             }
 
+            // Don't use WIC if we have a Float texture as mipmaps are clamped to [0, 1]
+            // TODO: Report bug to DirectXTex
+            var isPowerOfTwoAndFloat = image.IsPowerOfTwo() && (image.Format == PixelFormat.R16G16_Float || image.Format == PixelFormat.R16G16B16A16_Float);
+            if (isPowerOfTwoAndFloat)
+            {
+                filter = TEX_FILTER_FLAGS.TEX_FILTER_FORCE_NON_WIC;
+            }
+
             HRESULT hr;
             var scratchImage = new ScratchImage();
             if (libraryData.Metadata.dimension == TEX_DIMENSION.TEX_DIMENSION_TEXTURE3D)
