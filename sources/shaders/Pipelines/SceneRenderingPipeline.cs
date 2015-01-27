@@ -37,8 +37,6 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
 
         private bool useLighting;
 
-        private bool changed;
-
         private bool useLightingChanged;
 
         private bool useHdr;
@@ -87,7 +85,7 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
             // In all cases, we will setup back the default buffer and stencil
             AddRenderer(new RenderTargetSetter(Services) { EnableClearDepth = false, EnableClearStencil = false, EnableClearTarget = false, RenderTarget = GraphicsDevice.BackBuffer, DepthStencil = GraphicsDevice.DepthStencilBuffer });
 
-            changed = true;
+            useLightingChanged = true;
         }
 
         public override void Unload()
