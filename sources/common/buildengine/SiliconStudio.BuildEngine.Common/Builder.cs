@@ -315,7 +315,7 @@ namespace SiliconStudio.BuildEngine
 
             public ExecuteContext(Builder builder, BuilderContext builderContext, BuildStep buildStep)
             {
-                logger = new BuildStepLogger(builder.Logger, builder.startTime);
+                logger = new BuildStepLogger(buildStep, builder.Logger, builder.startTime);
                 this.builderContext = builderContext;
                 this.builder = builder;
                 this.buildStep = buildStep;
@@ -499,9 +499,6 @@ namespace SiliconStudio.BuildEngine
                             status = ResultStatus.NotTriggeredPrerequisiteFailed;
                         }
 
-                        buildStep.RegisterResult(executeContext, status);
-                        stepCounter.AddStepResult(status);
-
                         //if (completedTask.IsCanceled)
                         //{
                         //    completedStep.Status = ResultStatus.Cancelled;
@@ -509,7 +506,7 @@ namespace SiliconStudio.BuildEngine
                         var logType = LogMessageType.Info;
                         string logText = null;
                         
-                        switch (buildStep.Status)
+                        switch (status)
                         {
                             case ResultStatus.Successful:
                                 logType = LogMessageType.Info;
@@ -531,6 +528,9 @@ namespace SiliconStudio.BuildEngine
                             var logMessage = new LogMessage(buildStep.Module, logType, logText);
                             executeContext.Logger.Log(logMessage);
                         }
+
+                        buildStep.RegisterResult(executeContext, status);
+                        stepCounter.AddStepResult(status);
                     });
                 }
                 else

@@ -198,6 +198,9 @@ namespace SiliconStudio.BuildEngine
                 }
             }
 
+            // Forward logs
+            buildStep.Logger.CopyTo(Logger);
+
             // Process recursively
             // TODO: Wait for completion of spawned step in case Task didn't wait for them
             foreach (var spawnedStep in buildStep.SpawnedSteps)

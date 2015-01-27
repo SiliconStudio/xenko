@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization.Assets;
 using System;
 using System.Collections.Generic;
@@ -10,6 +12,8 @@ namespace SiliconStudio.BuildEngine
 {
     public abstract class BuildStep
     {
+        private LoggerResult logger = new LoggerResult();
+
         protected BuildStep(ResultStatus status = ResultStatus.NotProcessed)
         {
             Status = status;
@@ -97,6 +101,11 @@ namespace SiliconStudio.BuildEngine
         /// Indicate whether all prerequisite commands have been processed and are in a successful state
         /// </summary>
         public bool ArePrerequisitesSuccessful { get { return PrerequisiteSteps.All(x => x.Succeeded); } }
+
+        /// <summary>
+        /// Gets the logger for the current build step.
+        /// </summary>
+        public LoggerResult Logger { get { return logger; } }
 
         /// <summary>
         /// Event raised when the command is processed (even if it has been skipped or if it failed)
