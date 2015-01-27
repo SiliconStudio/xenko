@@ -29,6 +29,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
         public SkyboxAsset()
         {
             Model = new SkyboxCubeMapModel();
+            BuildOrder = 500;
         }
 
         /// <summary>

@@ -76,11 +76,8 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
 
                     // Setup diffuse lighting
                     {
-                        var cubeMapKey = LevelCubeMapEnvironmentColorKeys.CubeMap.ComposeWith(string.Format("lightDiffuseColor.environmentLights[{0}]", index));
-                        var mipLevelKey = LevelCubeMapEnvironmentColorKeys.MipLevel.ComposeWith(string.Format("lightDiffuseColor.environmentLights[{0}]", index));
-                        var diffuseCubemap = diffuseParameters.Get(SkyboxKeys.CubeMap);
-                        passParameters.Set(cubeMapKey, diffuseCubemap);
-                        passParameters.Set(mipLevelKey, diffuseCubemap.MipLevels * 0.8f);
+                        var sphericalColorsKey = SphericalHarmonicsEnvironmentColorKeys.SphericalColors.ComposeWith(string.Format("lightDiffuseColor.environmentLights[{0}]", index));
+                        passParameters.Set(sphericalColorsKey, diffuseParameters.Get(SphericalHarmonicsEnvironmentColorKeys.SphericalColors));
                     }
 
                     // Setup specular lighting

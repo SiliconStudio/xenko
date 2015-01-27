@@ -18,6 +18,6 @@ namespace SiliconStudio.Paradox.Effects.Images
 {
     public static partial class SphericalHarmonicsEnvironmentColorKeys
     {
-        public static readonly ParameterKey<Vector3[]> SphericalColors = ParameterKeys.New<Vector3[]>();
+        public static readonly ParameterKey<Color3[]> SphericalColors = ParameterKeys.New<Color3[]>();
     }
 }
