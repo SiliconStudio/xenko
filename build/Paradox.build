@@ -8,7 +8,7 @@ Build file used to build Paradox and package it from the command line
     <ParadoxRootBin>$(ParadoxRoot)Bin\Windows-Direct3D11\</ParadoxRootBin>
     <ParadoxPackage>$(ParadoxRoot)Paradox.pdxpkg</ParadoxPackage>
     <ParadoxSolution>$(ParadoxRoot)build\Paradox</ParadoxSolution>
-    <BuildProperties>Configuration=Release;GenerateDoc=true;NoWarn=1591</BuildProperties>
+    <BuildProperties>Configuration=Release;GenerateDoc=true;NoWarn=1591;DeployExtension=false</BuildProperties>
     <BuildProperties Condition="'$(SiliconStudioSign)' != ''">$(BuildProperties);SiliconStudioSign=$(SiliconStudioSign)</BuildProperties>
     <BuildProperties Condition="'$(SiliconStudioOfficialBuild)' != ''">$(BuildProperties);SiliconStudioOfficialBuild=$(SiliconStudioOfficialBuild)</BuildProperties>
     <ILRepackPath>$(ParadoxRootBin)ILRepack.exe</ILRepackPath>
