@@ -94,12 +94,6 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
-                const bool useCacheFonts = false;
-
-                // compute the path of the cache files
-                var cachedImagePath = assetAbsolutePath.GetFileName() + ".CachedImage";
-                var cachedFontGlyphs = assetAbsolutePath.GetFileName() + ".CachedGlyphs";
-
                 // try to import the font from the original bitmap or ttf file
                 StaticSpriteFontData data;
                 try
@@ -108,36 +102,8 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
                 }
                 catch (FontNotFoundException ex) 
                 {
-                    if (!useCacheFonts)
-                    {
-                        commandContext.Logger.Error("Font [{0}] was not found on this machine.", ex.FontName);
-                        return Task.FromResult(ResultStatus.Failed);
-                    }
-                    else
-                    {
-                        // If the original fo
-                        commandContext.Logger.Warning("Font [{0}] was not found on this machine. Trying to use cached glyphs/image", ex.FontName);
-                        if (!File.Exists(cachedFontGlyphs))
-                        {
-                            commandContext.Logger.Error("Expecting cached glyphs [{0}]", cachedFontGlyphs);
-                            return Task.FromResult(ResultStatus.Failed);
-                        }
-
-                        if (!File.Exists(cachedImagePath))
-                        {
-                            commandContext.Logger.Error("Expecting cached image [{0}]", cachedImagePath);
-                            return Task.FromResult(ResultStatus.Failed);
-                        }
-
-                        // read the cached glyphs
-                        using (var glyphStream = File.OpenRead(cachedFontGlyphs))
-                            data = BinarySerialization.Read<StaticSpriteFontData>(glyphStream);
-
-                        // read the cached image
-                        data.Bitmaps = new[] { new ContentReference<Image>() };
-                        using (var imageStream = File.OpenRead(cachedImagePath))
-                            data.Bitmaps[0].Value = Image.Load(imageStream);
-                    }
+                    commandContext.Logger.Error("Font [{0}] was not found on this machine.", ex.FontName);
+                    return Task.FromResult(ResultStatus.Failed);
                 }
 
                 // check that the font data is valid
@@ -151,26 +117,6 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
                 assetManager.Save(Url, data);
 
                 var image = data.Bitmaps[0].Value;
-
-                // cache the generated data
-                if (useCacheFonts)
-                {
-                    try
-                    {
-                        // the image
-                        using (var imageStream = File.OpenWrite(cachedImagePath))
-                            image.Save(imageStream, ImageFileType.Paradox);
-
-                        // the glyphs
-                        data.Bitmaps = null;
-                        using (var glyphStream = File.OpenWrite(cachedFontGlyphs))
-                            BinarySerialization.Write(glyphStream, data);
-                    }
-                    catch (IOException ex)
-                    {
-                        commandContext.Logger.Warning("Cannot save cached glyphs [{0}] or image [{1}]", ex, cachedFontGlyphs, cachedImagePath);
-                    }
-                }
 
                 // free the objects
                 image.Dispose();
