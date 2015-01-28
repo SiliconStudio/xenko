@@ -107,6 +107,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
         /// Note that this property only represents an alternative way of indicating character to import, the result is the same as using the 'CharacterSet' property.
         /// </userdoc>
         [DataMember(80)]
+        [Category]
         public List<CharacterRegion> CharacterRegions { get; set; }
 
         /// <summary>

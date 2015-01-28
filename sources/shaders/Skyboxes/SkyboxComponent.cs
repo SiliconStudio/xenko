@@ -50,6 +50,7 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
         /// </summary>
         /// <value>The lighting.</value>
         [DataMember(30)]
+        [Category]
         public SkyboxLighting Lighting { get; private set; }
 
         /// <summary>
@@ -57,6 +58,7 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
         /// </summary>
         /// <value>The background.</value>
         [DataMember(40)]
+        [Category]
         public SkyboxBackground Background { get; private set; }
 
         public override PropertyKey DefaultKey
