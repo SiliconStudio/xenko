@@ -21,6 +21,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         private Texture inputCubemap;
         private Texture outputCubemap;
+        private Texture displayedCubemap;
         private Texture[] displayedViews = new Texture[6];
 
         private RadiancePrefilteringGGX radianceFilter;
@@ -56,7 +57,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
             inputCubemap = Asset.Load<Texture>("CubeMap");
-            outputCubemap = Texture.New2D(GraphicsDevice, outputSize, outputSize, outputSizeLog2, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource, 6).DisposeBy(this);
+            outputCubemap = Texture.New2D(GraphicsDevice, outputSize, outputSize, outputSizeLog2, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.UnorderedAccess, 6).DisposeBy(this);
             CreateViewsFor(outputCubemap);
 
             RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services) { ClearColor = Color.Zero });
@@ -66,12 +67,15 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         private void PrefilterCubeMap(RenderContext obj)
         {
-            radianceFilter.DoNotFilterHighestLevel = skipHighestLevel;
-            radianceFilter.MipmapGenerationCount = mipmapCount;
-            radianceFilter.SamplingsCount = samplingCounts;
-            radianceFilter.RadianceMap = inputCubemap;
-            radianceFilter.PrefilteredRadiance = outputCubemap;
-            radianceFilter.Draw();
+            //if (DrawTime.FrameCount % 60 == 0)
+            {
+                radianceFilter.DoNotFilterHighestLevel = skipHighestLevel;
+                radianceFilter.MipmapGenerationCount = mipmapCount;
+                radianceFilter.SamplingsCount = samplingCounts;
+                radianceFilter.RadianceMap = inputCubemap;
+                radianceFilter.PrefilteredRadiance = outputCubemap;
+                radianceFilter.Draw(); 
+            }
         }
 
         private void RenderCubeMap(RenderContext obj)
@@ -106,11 +110,23 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             if (Input.IsKeyPressed(Keys.NumPad6))
                 mipmapCount = Math.Min(10, mipmapCount + 1);
 
-            if (Input.IsKeyPressed(Keys.Left))
+            if (Input.IsKeyPressed(Keys.NumPad1))
                 samplingCounts = Math.Max(1, samplingCounts / 2);
 
-            if (Input.IsKeyPressed(Keys.Right))
+            if (Input.IsKeyPressed(Keys.NumPad3))
                 samplingCounts = Math.Min(1024, samplingCounts * 2);
+
+            if (Input.IsKeyPressed(Keys.Left))
+            {
+                displayedLevel = Math.Max(0, displayedLevel - 1);
+                CreateViewsFor(displayedCubemap);
+            }
+
+            if (Input.IsKeyPressed(Keys.Right))
+            {
+                displayedLevel = Math.Min(mipmapCount-1, displayedLevel + 1);
+                CreateViewsFor(displayedCubemap);
+            }
 
             if (Input.IsKeyPressed(Keys.I))
                 CreateViewsFor(inputCubemap);
@@ -124,6 +140,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         private void CreateViewsFor(Texture texture)
         {
+            displayedCubemap = texture;
             for (int i = 0; i < displayedViews.Length; i++)
             {
                 if (displayedViews[i] != null)
