@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
@@ -6,6 +7,16 @@ namespace SiliconStudio.Presentation.Controls
 {
     public abstract class VectorEditor : Control
     {
+        /// <summary>
+        /// Identifies the <see cref="DecimalPlaces"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty DecimalPlacesProperty = DependencyProperty.Register("DecimalPlaces", typeof(int), typeof(VectorEditor), new FrameworkPropertyMetadata(-1));
+
+        /// <summary>
+        /// Gets or sets the number of decimal places displayed in the <see cref="NumericTextBox"/>.
+        /// </summary>
+        public int DecimalPlaces { get { return (int)GetValue(DecimalPlacesProperty); } set { SetValue(DecimalPlacesProperty, value); } }
+
         /// <summary>
         /// Sets the vector value of this vector editor from a single float value.
         /// </summary>
@@ -137,6 +148,13 @@ namespace SiliconStudio.Presentation.Controls
         {
             var editor = (VectorEditor<T>)sender;
             editor.OnComponentPropertyChanged(e);
+        }
+
+        protected static object CoerceComponentValue(DependencyObject sender, object basevalue)
+        {
+            var editor = (VectorEditor<T>)sender;
+            int decimalPlaces = editor.DecimalPlaces;
+            return decimalPlaces < 0 ? basevalue : (float)Math.Round((float)basevalue, decimalPlaces);
         }
 
         /// <summary>
