@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 using SiliconStudio.Assets;
@@ -9,12 +10,15 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Effects.ComputeEffect.GGXPrefiltering;
 using SiliconStudio.Paradox.Effects.ComputeEffect.LambertianPrefiltering;
 using SiliconStudio.Paradox.Effects.Images;
 using SiliconStudio.Paradox.Effects.Skyboxes;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Graphics.Data;
 using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Skyboxes
@@ -37,10 +41,17 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
                 this.package = package;
             }
 
+            protected override void ComputeParameterHash(BinarySerializationWriter writer)
+            {
+                base.ComputeParameterHash(writer);
+                writer.Write(1); // Change this number to recompute the hash when prefiltering algorithm are changed
+            }
+
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 // TODO Convert SkyboxAsset to Skybox and save to Skybox object
                 // TODO Add system to prefilter
+                // TODO: Add input texture as input 
 
                 var context = new SkyboxGeneratorContext(package);
                 var result = SkyboxGenerator.Compile(asset, context);
@@ -52,7 +63,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
                 // Lambert prefiltering using Spherical Harmonics
                 if (((SkyboxCubeMapModel)asset.Model).CubeMap != null)
                 {
-                    var graphicsDevice = GraphicsDevice.New();
+                    var graphicsDevice = GraphicsDevice.New(DeviceCreationFlags.Debug);
                     var graphicsService = new GraphicsDeviceServiceLocal(registry, graphicsDevice);
                     
                     var effectSystem = new EffectSystem(registry);
@@ -60,11 +71,16 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
 
                     var drawFxContext = new DrawEffectContext(registry);
 
+
+                    // -------------------------------------------------------------------
+                    // Calculate Diffuse prefiltering
+                    // -------------------------------------------------------------------
                     var lamberFiltering = new LambertianPrefilteringSH(drawFxContext);
 
                     var skybox = result.Skybox;
 
-                    var skyboxTexture = assetManager.Load<Texture>(((SkyboxCubeMapModel)asset.Model).CubeMap.Location);
+                    var location = ((SkyboxCubeMapModel)asset.Model).CubeMap.Location;
+                    var skyboxTexture = assetManager.Load<Texture>(location);
 
                     lamberFiltering.HarmonicOrder = 3;
                     lamberFiltering.RadianceMap = skyboxTexture;
@@ -96,6 +112,28 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
 
                     skybox.DiffuseLightingParameters.Set(SkyboxKeys.Shader, new ShaderClassSource("SphericalHarmonicsEnvironmentColor", lamberFiltering.HarmonicOrder));
                     skybox.DiffuseLightingParameters.Set(SphericalHarmonicsEnvironmentColorKeys.SphericalColors, coefficients);
+
+                    // -------------------------------------------------------------------
+                    // Calculate Specular prefiltering
+                    // -------------------------------------------------------------------
+                    var specularRadiancePrefilterGGX = new RadiancePrefilteringGGX(drawFxContext);
+
+                    //var outputTexture = Texture.New2D(graphicsDevice, 256, 256, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.UnorderedAccess, 6);
+                    var outputTexture = Texture.New2D(graphicsDevice, 256, 256, true, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.UnorderedAccess, 6);
+                    specularRadiancePrefilterGGX.RadianceMap = skyboxTexture;
+                    specularRadiancePrefilterGGX.PrefilteredRadiance = outputTexture;
+                    specularRadiancePrefilterGGX.Draw();
+
+                    var cubeTexture = Texture.NewCube(graphicsDevice, 256, true, PixelFormat.R16G16B16A16_Float);
+                    graphicsDevice.Copy(outputTexture, cubeTexture);
+                    using (var stream = new FileStream(Path.GetFileNameWithoutExtension(location) + "_GGX.dds", FileMode.Create, FileAccess.Write))
+                    {
+                        cubeTexture.Save(stream, ImageFileType.Dds);
+                    }
+                    cubeTexture.SetSerializationData(cubeTexture.GetDataAsImage());
+
+                    assetManager.Save(location + "/GGX", cubeTexture);
+                    skybox.SpecularLightingParameters.Set(SkyboxKeys.CubeMap, cubeTexture);
                 }
 
                 if (result.HasErrors)

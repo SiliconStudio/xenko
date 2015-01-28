@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect.GGXPrefiltering
     {
         private int samplingsCount;
 
-        private ComputeEffectShader computeShader;
+        private readonly ComputeEffectShader computeShader;
 
         /// <summary>
         /// Gets or sets the boolean indicating if the highest level of mipmaps should be let as-is or pre-filtered.
@@ -47,6 +47,7 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect.GGXPrefiltering
         {
             computeShader = new ComputeEffectShader(context) { ShaderSourceName = "RadiancePrefilteringGGXEffect" };
             DoNotFilterHighestLevel = true;
+            samplingsCount = 1024;
         }
 
         /// <summary>
@@ -73,7 +74,7 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect.GGXPrefiltering
             base.DrawCore();
 
             var output = PrefilteredRadiance;
-            if(output == null || output.Dimension != TextureDimension.Texture2D)
+            if(output == null || (output.Dimension != TextureDimension.Texture2D && output.Dimension != TextureDimension.TextureCube) || output.ArraySize != 6)
                 throw new NotSupportedException("Only array of 2D textures are currently supported as output");
 
             var input = RadianceMap;
@@ -83,7 +84,9 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect.GGXPrefiltering
             var roughness = 0f;
             var faceCount = output.ArraySize;
             var levelSize = new Int2(output.Width, output.Height);
-            for (int l = 0; l < MipmapGenerationCount; l++)
+            var mipCount = MipmapGenerationCount == 0 ? output.MipLevels : MipmapGenerationCount;
+
+            for (int l = 0; l < mipCount; l++)
             {
                 if (l == 0 && DoNotFilterHighestLevel && input.Width >= output.Width)
                 {
@@ -112,8 +115,11 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect.GGXPrefiltering
                     outputView.Dispose();
                 }
 
-                roughness += 1f / (MipmapGenerationCount-1);
-                levelSize /= 2;
+                if (mipCount > 1)
+                {
+                    roughness += 1f / (mipCount - 1);
+                    levelSize /= 2;
+                }
             }
         }
     }

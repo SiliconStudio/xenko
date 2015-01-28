@@ -14,8 +14,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         override float4 Compute(float3 direction)
         {
             var alpha = streams.alphaRoughness;
-            // TODO: This is just for testing purpose. Find a proper way to calculate the mip level
-            var mipLevel = sqrt(sqrt(sqrt(alpha))) * (MipCount - 1);
+            var mipLevel = sqrt(alpha) * MipCount;
 
             return CubeMap.SampleLevel(LinearSampler, direction, mipLevel);
         }
