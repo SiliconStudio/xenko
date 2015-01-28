@@ -25,6 +25,8 @@ namespace SiliconStudio.Presentation.Controls.Commands
             CommandManager.RegisterClassCommandBinding(typeof(Selector), new CommandBinding(ClearSelectionCommand, OnClearSelectionCommand));
             SetAllVectorComponentsCommand = new RoutedCommand("SetAllVectorComponentsCommand", typeof(VectorEditor));
             CommandManager.RegisterClassCommandBinding(typeof(VectorEditor), new CommandBinding(SetAllVectorComponentsCommand, OnSetAllVectorComponents));
+            ResetValueCommand = new RoutedCommand("ResetValueCommand", typeof(VectorEditor));
+            CommandManager.RegisterClassCommandBinding(typeof(VectorEditor), new CommandBinding(ResetValueCommand, OnResetValue));
         }
 
         /// <summary>
@@ -37,6 +39,11 @@ namespace SiliconStudio.Presentation.Controls.Commands
         /// </summary>
         public static RoutedCommand SetAllVectorComponentsCommand { get; private set; }
 
+        /// <summary>
+        /// Resets the current value of a vector editor to the value set in the <see cref="VectorEditor{T}.DefaultValue"/> property.
+        /// </summary>
+        public static RoutedCommand ResetValueCommand { get; private set; }
+        
         private static void OnClearSelectionCommand(object sender, ExecutedRoutedEventArgs e)
         {
             var selector = sender as Selector;
@@ -60,6 +67,15 @@ namespace SiliconStudio.Presentation.Controls.Commands
                 {
                     ex.Ignore();
                 }
+            }
+        }
+
+        private static void OnResetValue(object sender, ExecutedRoutedEventArgs e)
+        {
+            var vectorEditor = sender as VectorEditor;
+            if (vectorEditor != null)
+            {
+                vectorEditor.ResetValue();
             }
         }
     }

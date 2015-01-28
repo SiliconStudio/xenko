@@ -3763,6 +3763,8 @@
                                             <behaviors:OnEventCommandBehavior EventName="Validated" Command="{Binding ResetValueCommand, ElementName=AllTextBox}"/>
                                         </i:Interaction.Behaviors>
                                     </ctrl:NumericTextBox>
+                                    <Rectangle Width="0" Height="0" Visibility="Collapsed"/>
+                                    <Button Command="{x:Static commands:ControlCommands.ResetValueCommand}" Content="Reset value" Margin="2,2,6,6"/>
                                 </ctrl:KeyValueGrid>
                             </Border>
                         </Popup>
@@ -3828,6 +3830,8 @@
                                             <behaviors:OnEventCommandBehavior EventName="Validated" Command="{Binding ResetValueCommand, ElementName=AllTextBox}"/>
                                         </i:Interaction.Behaviors>
                                     </ctrl:NumericTextBox>
+                                    <Rectangle Width="0" Height="0" Visibility="Collapsed"/>
+                                    <Button Command="{x:Static commands:ControlCommands.ResetValueCommand}" Content="Reset value" Margin="2,2,6,6"/>
                                 </ctrl:KeyValueGrid>
                             </Border>
                         </Popup>
@@ -3903,6 +3907,8 @@
                                             <behaviors:OnEventCommandBehavior EventName="Validated" Command="{Binding ResetValueCommand, ElementName=AllTextBox}"/>
                                         </i:Interaction.Behaviors>
                                     </ctrl:NumericTextBox>
+                                    <Rectangle Width="0" Height="0" Visibility="Collapsed"/>
+                                    <Button Command="{x:Static commands:ControlCommands.ResetValueCommand}" Content="Reset value" Margin="2,2,6,6"/>
                                 </ctrl:KeyValueGrid>
                             </Border>
                         </Popup>
@@ -3958,8 +3964,7 @@
                                        MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ctrl:RotationEditor}}" StaysOpen="False"
                                        PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=ctrl:RotationEditor}}" PopupAnimation="Slide" VerticalOffset="2">
                             <Border SnapsToDevicePixels="True" Background="{StaticResource BackgroundBrush}" BorderBrush="Black" BorderThickness="1">
-                                <ctrl:KeyValueGrid>
-                                </ctrl:KeyValueGrid>
+                                <Button Command="{x:Static commands:ControlCommands.ResetValueCommand}" Content="Reset value" Margin="6"/>
                             </Border>
                         </Popup>
                     </Grid>

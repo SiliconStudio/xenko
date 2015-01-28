@@ -11,6 +11,8 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         /// <param name="value">The value to use to generate a vector.</param>
         public abstract void SetVectorFromValue(float value);
+
+        public abstract void ResetValue();
     }
 
     public abstract class VectorEditor<T> : VectorEditor
@@ -25,10 +27,20 @@ namespace SiliconStudio.Presentation.Controls
         public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(T), typeof(VectorEditor<T>), new FrameworkPropertyMetadata(default(T), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnValuePropertyChanged, null, false, UpdateSourceTrigger.Explicit));
 
         /// <summary>
-        /// The vector associated to this control.
+        /// Identifies the <see cref="DefaultValue"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty DefaultValueProperty = DependencyProperty.Register("DefaultValue", typeof(T), typeof(VectorEditor<T>), new PropertyMetadata(default(T)));
+
+        /// <summary>
+        /// Gets or sets the vector associated to this control.
         /// </summary>
         public T Value { get { return (T)GetValue(ValueProperty); } set { SetValue(ValueProperty, value); } }
 
+        /// <summary>
+        /// Gets or sets the value that will be used by the <see cref="VectorEditor.ResetValue"/> method to reset the <see cref="Value"/> of this control.
+        /// </summary>
+        public T DefaultValue { get { return (T)GetValue(DefaultValueProperty); } set { SetValue(DefaultValueProperty, value); } }
+        
         /// <inheritdoc/>
         public override void OnApplyTemplate()
         {
@@ -41,6 +53,12 @@ namespace SiliconStudio.Presentation.Controls
         public override void SetVectorFromValue(float value)
         {
             Value = UpateValueFromFloat(value);
+        }
+
+        /// <inheritdoc/>
+        public override void ResetValue()
+        {
+            Value = DefaultValue;
         }
 
         /// <summary>
