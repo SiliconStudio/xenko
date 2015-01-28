@@ -75,7 +75,8 @@ namespace SiliconStudio.Paradox.Effects.Materials
             // Calculate shading roughtness using Disney-Burley method
             // roughness-burley = roughness^2 = (1 - glossy)^2
             var roughness = 1.0f - streams.matGlossiness;
-            streams.alphaRoughness = max(roughness * roughness, 1e-5);
+            // Make sure alphaRoughness is not going below a certain value as it can generate Infinity with some specular model
+            streams.alphaRoughness = max(roughness * roughness, 0.0001); 
             // TODO: precalculate alphaRoughness^2
         }
     };
