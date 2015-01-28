@@ -1,6 +1,6 @@
 ### Version 1.0.0-beta07
 
-Release date: 2015/01/??
+Release date: 2015/01/29
 
 #### New Features
 - Android: Added ETC2 compression.
@@ -8,7 +8,7 @@ Release date: 2015/01/??
 - FBX: Added support for embedded textures.
 - Graphics: Choose best OpenGL version based on desired graphics profile.
 - Graphics: Added foundation for easily building and using post effects.
-- Graphics: Added built-in posteffect: depth-of-field (DoF), bloom, gaussian blur and exposure.
+- Graphics: Added built-in posteffect: depth-of-field (DoF), bloom, gaussian blur and exposure (internal only, no documentation yet).
 - Graphics: Added deferred rendering for OpenGL and OpenGL ES 3.0.
 - Graphics: Extended support of texture formats on OpenGL ES.
 - Graphics: Added ability to apply effect states (blend, depth, rasterizer etc.) when drawing a texture on screen.
@@ -21,8 +21,6 @@ Release date: 2015/01/??
 - FBX: Meshes without materials are now imported and added to the entity.
 - Graphics: `Texture2D`, `Texture3D`, `TextureCube`, `RenderTarget` and `DepthStencilBuffer` have now all been unified as `Texture` (which act as a Texture view).
 - Shaders: Better conversion from HLSL to GLSL.
-
-#### Enhancements
 - Studio: Add a custom editor for rotation in the property grid.
 
 #### Issues fixed
