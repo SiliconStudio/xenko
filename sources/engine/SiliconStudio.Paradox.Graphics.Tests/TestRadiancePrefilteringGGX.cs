@@ -54,10 +54,11 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             drawEffectContext = new DrawEffectContext(this);
             radianceFilter = new RadiancePrefilteringGGX(drawEffectContext);
+            skipHighestLevel = radianceFilter.DoNotFilterHighestLevel;
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
             inputCubemap = Asset.Load<Texture>("CubeMap");
-            outputCubemap = Texture.New2D(GraphicsDevice, outputSize, outputSize, outputSizeLog2, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.UnorderedAccess, 6).DisposeBy(this);
+            outputCubemap = Texture.New2D(GraphicsDevice, outputSize, outputSize, outputSizeLog2, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.UnorderedAccess, 6).DisposeBy(this);
             CreateViewsFor(outputCubemap);
 
             RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services) { ClearColor = Color.Zero });
