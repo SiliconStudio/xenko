@@ -313,7 +313,15 @@ namespace SiliconStudio.Paradox.Assets.Model
 
                     // merges all the Draw VB and IB together to produce one final VB and IB by entity.
                     var sizeVertexBuffer = model.Meshes.SelectMany(x => x.Draw.VertexBuffers).Select(x => x.Buffer.GetSerializationData().Content.Length).Sum();
-                    var sizeIndexBuffer = model.Meshes.Select(x => x.Draw.IndexBuffer).Select(x => x.Buffer.GetSerializationData().Content.Length).Sum();
+                    var sizeIndexBuffer = 0;
+                    foreach (var x in model.Meshes)
+                    {
+                        // Let's be aligned (if there was 16bit indices before, we might be off)
+                        if (x.Draw.IndexBuffer.Is32Bit && sizeIndexBuffer % 4 != 0)
+                            sizeIndexBuffer += 2;
+
+                        sizeIndexBuffer += x.Draw.IndexBuffer.Buffer.GetSerializationData().Content.Length;
+                    }
                     var vertexBuffer = new BufferData(BufferFlags.VertexBuffer, new byte[sizeVertexBuffer]);
                     var indexBuffer = new BufferData(BufferFlags.IndexBuffer, new byte[sizeIndexBuffer]);
                     var vertexBufferNextIndex = 0;
@@ -322,7 +330,11 @@ namespace SiliconStudio.Paradox.Assets.Model
                     {
                         // the index buffer
                         var oldIndexBuffer = drawMesh.IndexBuffer.Buffer.GetSerializationData().Content;
-                    
+
+                        // Let's be aligned (if there was 16bit indices before, we might be off)
+                        if (drawMesh.IndexBuffer.Is32Bit && indexBufferNextIndex % 4 != 0)
+                            indexBufferNextIndex += 2;
+
                         Array.Copy(oldIndexBuffer, 0, indexBuffer.Content, indexBufferNextIndex, oldIndexBuffer.Length);
                     
                         drawMesh.IndexBuffer = new IndexBufferBinding(indexBuffer.ToSerializableVersion(), drawMesh.IndexBuffer.Is32Bit, drawMesh.IndexBuffer.Count, indexBufferNextIndex);
