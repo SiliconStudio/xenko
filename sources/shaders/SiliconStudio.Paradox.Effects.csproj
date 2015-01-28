@@ -40,7 +40,7 @@
     </Compile>
     <Compile Include="ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGX.cs" />
     <Compile Include="ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXEffect.cs">
-      <DependentUpon>RadiancePrefilteringGGXEffect.pdxsl</DependentUpon>
+      <DependentUpon>RadiancePrefilteringGGXEffect.pdxfx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -64,7 +64,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSH.cs" />
-    <None Include="ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXEffect.pdxsl">
+    <None Include="ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>RadiancePrefilteringGGXEffect.cs</LastGenOutput>
     </None>
