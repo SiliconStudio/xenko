@@ -37,7 +37,9 @@ namespace SiliconStudio.Paradox.Starter
         protected Game Game;
 
         private Action setFullscreenViewCallback;
-        private StatusBarVisibility lastVisibility;
+
+        // Type should be StatusBarVisibility, but we might be compiled against older Mono.Android which didn't contain this enum
+        private int lastVisibility;
         private RelativeLayout mainLayout;
         private RingerModeIntentReceiver ringerModeIntentReceiver;
 
@@ -69,15 +71,18 @@ namespace SiliconStudio.Paradox.Starter
             ringerModeIntentReceiver = new RingerModeIntentReceiver((AudioManager)GetSystemService(AudioService));
             RegisterReceiver(ringerModeIntentReceiver, new IntentFilter(AudioManager.RingerModeChangedAction));
 
-            SetFullscreenView();
-            InitializeFullscreenViewCallback();
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.IceCreamSandwich)
+            {
+                SetFullscreenView();
+                InitializeFullscreenViewCallback();
+            }
         }
         
         public void OnSystemUiVisibilityChange(StatusBarVisibility visibility)
         {
             //Log.Debug("Paradox", "OnSystemUiVisibilityChange: visibility=0x{0:X8}", (int)visibility);
-            var diffVisibility = lastVisibility ^ visibility;
-            lastVisibility = visibility;
+            var diffVisibility = (StatusBarVisibility)lastVisibility ^ visibility;
+            lastVisibility = (int)visibility;
             if ((((int)diffVisibility & (int)SystemUiFlags.LowProfile) != 0) && (((int)visibility & (int)SystemUiFlags.LowProfile) == 0))
             {
                 // visibility has changed out of low profile mode; change it back, which requires a delay to work properly:
