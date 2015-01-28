@@ -18,9 +18,10 @@ namespace SiliconStudio.Paradox.Effects.Images
 {
     public static partial class RadiancePrefilteringGGXShaderKeys
     {
+        public static readonly ParameterKey<int> RadianceMapSize = ParameterKeys.New<int>();
         public static readonly ParameterKey<Texture> RadianceMap = ParameterKeys.New<Texture>();
         public static readonly ParameterKey<Texture> FilteredRadiance = ParameterKeys.New<Texture>();
-        public static readonly ParameterKey<float> MipmapLevel = ParameterKeys.New<float>();
+        public static readonly ParameterKey<float> MipmapCount = ParameterKeys.New<float>();
         public static readonly ParameterKey<float> Roughness = ParameterKeys.New<float>();
     }
 }

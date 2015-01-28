@@ -9,6 +9,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     class RadiancePrefilteringGGXShader<int TNbOfSamples> : Math, ComputeShaderBase
     {            
         // the input texture containing the radiance
+        int RadianceMapSize;
         TextureCube<float4> RadianceMap;
 
         // the output cube map containing the filtered radiance.
@@ -16,9 +17,9 @@ namespace SiliconStudio.Paradox.Effects.Images
             
         // Shared memory for summing SH-Basis coefficients for a block
         groupshared float4 PrefilteredSamples[TNbOfSamples];
-
-        // The level of the mipmap to sample from/write into
-        stage float MipmapLevel;
+        
+        // The number of mipmap available
+        stage float MipmapCount;
 
         // The roughness of the GGX distribution
         stage float Roughness;
@@ -40,14 +41,19 @@ namespace SiliconStudio.Paradox.Effects.Images
             // Perform one sampling, calculate pre-filtered color and weight contribution
             var xi = Hammersley.GetSamplePlane(threadId, TNbOfSamples);
             var H = ImportanceSamplingGGX.GetSample(xi, Roughness, R);
+
             float3 L = 2 * dot( R, H ) * H - R;
             float NoL = saturate( dot( R, L ) );
+            float pdf = BRDFMicrofacet.NormalDistributionGGX(Roughness*Roughness, NoL) / 4;
+            float omegaS = 1.0 / ( TNbOfSamples * pdf );
+            float omegaP = 4.0 * Math.PI / (6.0 * RadianceMapSize * RadianceMapSize ) ;
+            float mipLevel = clamp (0.5 * log2 ( omegaS / omegaP ) , 0, MipmapCount );            
             float3 prefilteredColor = 0;
             float weight = 0;
             if( NoL > 0 )
             {
                 weight = NoL;
-                prefilteredColor = RadianceMap.SampleLevel(Texturing.LinearSampler, L, MipmapLevel).rgb * weight;
+                prefilteredColor = RadianceMap.SampleLevel(Texturing.LinearSampler, L, mipLevel).rgb * weight;
             }
 
             // Stock the result in group-shared memory
