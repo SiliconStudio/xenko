@@ -437,5 +437,30 @@ namespace SiliconStudio.Core.Mathematics
             if (linearValue < 0.0031308f) return linearValue * 12.92f;
             return (float)(1.055 * Math.Pow(linearValue, 1 / 2.4) - 0.055);
         }
+
+        /// <summary>
+        /// Calculate the logarithm 2 of a floating point.
+        /// </summary>
+        /// <param name="x">The input float</param>
+        /// <returns><value>Log2(x)</value></returns>
+        public static float Log2(float x)
+        {
+            return (float) Math.Log(x) / 0.6931471805599453f;
+        }
+
+        /// <summary>
+        /// Calculate the logarithm 2 of an integer.
+        /// </summary>
+        /// <param name="i">The input integer</param>
+        /// <returns><value>the log2(i) rounded to lower integer</value></returns>
+        public static int Log2(int i)
+        {
+            var r = 0;
+
+            while ((i >>= 1) != 0)
+                ++r;
+
+            return r;
+        }
     }
 }
