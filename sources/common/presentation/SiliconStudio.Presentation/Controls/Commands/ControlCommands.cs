@@ -23,14 +23,8 @@ namespace SiliconStudio.Presentation.Controls.Commands
         {
             ClearSelectionCommand = new RoutedCommand("ClearSelectionCommand", typeof(Selector));
             CommandManager.RegisterClassCommandBinding(typeof(Selector), new CommandBinding(ClearSelectionCommand, OnClearSelectionCommand));
-            SetAllVector2Components = new RoutedCommand("SetAllVector2Components", typeof(Vector2Editor));
-            CommandManager.RegisterClassCommandBinding(typeof(Vector2Editor), new CommandBinding(SetAllVector2Components, OnSetAllVector2Components));
-            SetAllVector3Components = new RoutedCommand("SetAllVector3Components", typeof(Vector3Editor));
-            CommandManager.RegisterClassCommandBinding(typeof(Vector3Editor), new CommandBinding(SetAllVector3Components, OnSetAllVector3Components));
-            SetAllVector4Components = new RoutedCommand("SetAllVector4Components", typeof(Vector4Editor));
-            CommandManager.RegisterClassCommandBinding(typeof(Vector4Editor), new CommandBinding(SetAllVector4Components, OnSetAllVector4Components));
-            SetAllRotationComponents = new RoutedCommand("SetAllRotationComponents", typeof(RotationEditor));
-            CommandManager.RegisterClassCommandBinding(typeof(RotationEditor), new CommandBinding(SetAllRotationComponents, OnSetAllRotationComponents));
+            SetAllVectorComponentsCommand = new RoutedCommand("SetAllVectorComponentsCommand", typeof(VectorEditor));
+            CommandManager.RegisterClassCommandBinding(typeof(VectorEditor), new CommandBinding(SetAllVectorComponentsCommand, OnSetAllVectorComponents));
         }
 
         /// <summary>
@@ -39,24 +33,9 @@ namespace SiliconStudio.Presentation.Controls.Commands
         public static RoutedCommand ClearSelectionCommand { get; private set; }
 
         /// <summary>
-        /// Sets all the components of a <see cref="Vector2Editor"/> to the value given as parameter.
+        /// Sets all the components of a <see cref="VectorEditor"/> to the value given as parameter.
         /// </summary>
-        public static RoutedCommand SetAllVector2Components { get; private set; }
-
-        /// <summary>
-        /// Sets all the components of a <see cref="Vector3Editor"/> to the value given as parameter.
-        /// </summary>
-        public static RoutedCommand SetAllVector3Components { get; private set; }
-
-        /// <summary>
-        /// Sets all the components of a <see cref="Vector4Editor"/> to the value given as parameter.
-        /// </summary>
-        public static RoutedCommand SetAllVector4Components { get; private set; }
-
-        /// <summary>
-        /// Sets all the components of a <see cref="RotationEditor"/> to the value given as parameter.
-        /// </summary>
-        public static RoutedCommand SetAllRotationComponents { get; private set; }
+        public static RoutedCommand SetAllVectorComponentsCommand { get; private set; }
 
         private static void OnClearSelectionCommand(object sender, ExecutedRoutedEventArgs e)
         {
@@ -66,75 +45,16 @@ namespace SiliconStudio.Presentation.Controls.Commands
                 selector.SelectedItem = null;
             }
         }
-        
-        private static void OnSetAllVector2Components(object sender, ExecutedRoutedEventArgs e)
-        {
-            var vectorEditor = sender as Vector2Editor;
-            if (vectorEditor != null)
-            {
-                try
-                {
-                    var value = Convert.ToSingle(e.Parameter);
-                    vectorEditor.SetCurrentValue(Vector2Editor.XProperty, value);
-                    vectorEditor.SetCurrentValue(Vector2Editor.YProperty, value);
-                }
-                catch (Exception ex)
-                {
-                    ex.Ignore();
-                }
-            }
-        }
-  
-        private static void OnSetAllVector3Components(object sender, ExecutedRoutedEventArgs e)
-        {
-            var vectorEditor = sender as Vector3Editor;
-            if (vectorEditor != null)
-            {
-                try
-                {
-                    var value = Convert.ToSingle(e.Parameter);
-                    vectorEditor.SetCurrentValue(Vector3Editor.XProperty, value);
-                    vectorEditor.SetCurrentValue(Vector3Editor.YProperty, value);
-                    vectorEditor.SetCurrentValue(Vector3Editor.ZProperty, value);
-                }
-                catch (Exception ex)
-                {
-                    ex.Ignore();
-                }
-            }
-        }
-    
-        private static void OnSetAllVector4Components(object sender, ExecutedRoutedEventArgs e)
-        {
-            var vectorEditor = sender as Vector4Editor;
-            if (vectorEditor != null)
-            {
-                try
-                {
-                    var value = Convert.ToSingle(e.Parameter);
-                    vectorEditor.SetCurrentValue(Vector4Editor.XProperty, value);
-                    vectorEditor.SetCurrentValue(Vector4Editor.YProperty, value);
-                    vectorEditor.SetCurrentValue(Vector4Editor.ZProperty, value);
-                    vectorEditor.SetCurrentValue(Vector4Editor.WProperty, value);
-                }
-                catch (Exception ex)
-                {
-                    ex.Ignore();
-                }
-            }
-        }
 
-        private static void OnSetAllRotationComponents(object sender, ExecutedRoutedEventArgs e)
+        private static void OnSetAllVectorComponents(object sender, ExecutedRoutedEventArgs e)
         {
-            var rotationEditor = sender as RotationEditor;
-            if (rotationEditor != null)
+            var vectorEditor = sender as VectorEditor;
+            if (vectorEditor != null)
             {
                 try
                 {
                     var value = Convert.ToSingle(e.Parameter);
-                    rotationEditor.SetCurrentValue(RotationEditor.XProperty, value);
-                    rotationEditor.SetCurrentValue(RotationEditor.YProperty, value);
-                    rotationEditor.SetCurrentValue(RotationEditor.ZProperty, value);
+                    vectorEditor.SetVectorFromValue(value);
                 }
                 catch (Exception ex)
                 {

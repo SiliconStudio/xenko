@@ -6,6 +6,11 @@ namespace SiliconStudio.Presentation.Controls
 {
     public abstract class VectorEditor : Control
     {
+        /// <summary>
+        /// Sets the vector value of this vector editor from a single float value.
+        /// </summary>
+        /// <param name="value">The value to use to generate a vector.</param>
+        public abstract void SetVectorFromValue(float value);
     }
 
     public abstract class VectorEditor<T> : VectorEditor
@@ -32,6 +37,12 @@ namespace SiliconStudio.Presentation.Controls
             templateApplied = true;
         }
 
+        /// <inheritdoc/>
+        public override void SetVectorFromValue(float value)
+        {
+            Value = UpateValueFromFloat(value);
+        }
+
         /// <summary>
         /// Updates the properties corresponding to the components of the vector from the given vector value.
         /// </summary>
@@ -43,7 +54,13 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         /// <param name="property">The component property from which to update the <see cref="Value"/>.</param>
         protected abstract T UpdateValueFromComponent(DependencyProperty property);
-        
+
+        /// <summary>
+        /// Updates the <see cref="Value"/> property from a single float.
+        /// </summary>
+        /// <param name="value">The value to use to generate a vector.</param>
+        protected abstract T UpateValueFromFloat(float value);
+
         /// <summary>
         /// Raised when the <see cref="Value"/> property is modified.
         /// </summary>

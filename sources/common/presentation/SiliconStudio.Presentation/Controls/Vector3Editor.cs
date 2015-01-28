@@ -78,6 +78,12 @@ namespace SiliconStudio.Presentation.Controls
             throw new ArgumentException("Property unsupported by method UpdateValueFromComponent.");
         }
 
+        /// <inheritdoc/>
+        protected override Vector3 UpateValueFromFloat(float value)
+        {
+            return new Vector3(value);
+        }
+
         /// <summary>
         /// Coerce the value of the Length so it is always positive
         /// </summary>

@@ -201,5 +201,10 @@ namespace SiliconStudio.Presentation.Controls
 
             return new Matrix(array);
         }
+
+        protected override Matrix UpateValueFromFloat(float value)
+        {
+            return new Matrix(value);
+        }
     }
 }

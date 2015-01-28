@@ -67,5 +67,17 @@ namespace SiliconStudio.Presentation.Controls
             Quaternion.RotationZ(decomposedRotation.Z, out quatZ);
             return quatX * quatY * quatZ;
         }
+
+        /// <inheritdoc/>
+        protected override Quaternion UpateValueFromFloat(float value)
+        {
+            var radian = MathUtil.DegreesToRadians(value);
+            decomposedRotation = new Vector3(radian);
+            Quaternion quatX, quatY, quatZ;
+            Quaternion.RotationX(decomposedRotation.X, out quatX);
+            Quaternion.RotationY(decomposedRotation.Y, out quatY);
+            Quaternion.RotationZ(decomposedRotation.Z, out quatZ);
+            return quatX * quatY * quatZ;
+        }
     }
 }
