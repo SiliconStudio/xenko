@@ -87,14 +87,18 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect.GGXPrefiltering
             var levelSize = new Int2(output.Width, output.Height);
             for (int l = 0; l < MipmapGenerationCount; l++)
             {
+                var outputView = output.ToTextureView(ViewType.MipBand, 0, l);
+
                 computeShader.ThreadGroupCounts = new Int3(levelSize.X, levelSize.Y, faceCount);
                 computeShader.ThreadNumbers = new Int3(SamplingsCount, 1, 1);
                 computeShader.Parameters.Set(RadiancePrefilteringGGXShaderKeys.Roughness, roughness);
                 computeShader.Parameters.Set(RadiancePrefilteringGGXShaderKeys.MipmapLevel, l);
                 computeShader.Parameters.Set(RadiancePrefilteringGGXShaderKeys.RadianceMap, input);
-                computeShader.Parameters.Set(RadiancePrefilteringGGXShaderKeys.FilteredRadiance, output);
+                computeShader.Parameters.Set(RadiancePrefilteringGGXShaderKeys.FilteredRadiance, outputView);
                 computeShader.Parameters.Set(RadiancePrefilteringGGXParams.NbOfSamplings, SamplingsCount);
                 computeShader.Draw();
+
+                outputView.Dispose();
 
                 roughness -= 1f / MipmapGenerationCount;
                 levelSize /= 2;
