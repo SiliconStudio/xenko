@@ -1852,9 +1852,9 @@ private:
 		scene->GetRootNode()->ResetPivotSetAndConvertAnimation(framerate, false, false);
 
 		// For some reason ConvertScene doesn't seem to work well in some cases with no animation
-		FbxAxisSystem ourAxisSystem(FbxAxisSystem::eYAxis, FbxAxisSystem::eParityOdd, FbxAxisSystem::eRightHanded);
-		if (ourAxisSystem != scene->GetGlobalSettings().GetAxisSystem())
-			ourAxisSystem.ConvertScene(scene);
+		//FbxAxisSystem ourAxisSystem(FbxAxisSystem::eYAxis, FbxAxisSystem::eParityOdd, FbxAxisSystem::eRightHanded);
+		//if (ourAxisSystem != scene->GetGlobalSettings().GetAxisSystem())
+		//	ourAxisSystem.ConvertScene(scene);
 
 		auto sceneAxisSystem = scene->GetGlobalSettings().GetAxisSystem();
 
