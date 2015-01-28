@@ -21,7 +21,6 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
         {
             Enabled = true;
             Intensity = 1.0f;
-            Rotation = 0.0f;
         }
 
         /// <summary>
@@ -40,14 +39,5 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
         [DefaultValue(1.0f)]
         [DataMemberRange(0.0, 100.0, 0.01f, 1.0f)]
         public float Intensity { get; set; }
-
-        /// <summary>
-        /// Gets or sets the rotation.
-        /// </summary>
-        /// <value>The rotation.</value>
-        [DataMember(30)]
-        [DefaultValue(0.0f)]
-        [DataMemberRange(0.0, 360.0, 1.0f, 10.0f)]
-        public float Rotation { get; set; }
     }
 }

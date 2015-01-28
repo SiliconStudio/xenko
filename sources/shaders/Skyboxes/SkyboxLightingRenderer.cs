@@ -63,8 +63,7 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
                     var specularParameters = skybox.SpecularLightingParameters;
 
                     var intensity = skyboxComponent.Lighting.Intensity;
-                    var rotation = skyboxComponent.Lighting.Rotation;
-                    var rotationMatrix = Matrix.RotationY(MathUtil.DegreesToRadians(rotation));
+                    var rotationMatrix = Matrix.RotationQuaternion(skyboxComponent.Entity.Transformation.Rotation);
                     // global parameters
                     {
                         var composition = string.Format("environmentLights[{0}]", index);

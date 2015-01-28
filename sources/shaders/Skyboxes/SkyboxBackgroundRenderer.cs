@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects.Images;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
@@ -103,7 +104,7 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
                 skyboxEffect.Parameters.Set(SkyboxKeys.Intensity, intensity);
                     
                 // Setup the rotation
-                skyboxEffect.Parameters.Set(SkyboxKeys.Rotation, skybox.Lighting.Rotation);
+                skyboxEffect.Parameters.Set(SkyboxKeys.SkyMatrix, Matrix.RotationQuaternion(skybox.Entity.Transformation.Rotation));
 
                 skyboxEffect.SetOutput(Target ?? GraphicsDevice.BackBuffer);
                 skyboxEffect.Draw();
