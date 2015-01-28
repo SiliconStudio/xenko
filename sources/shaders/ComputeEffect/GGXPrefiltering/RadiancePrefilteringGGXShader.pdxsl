@@ -31,8 +31,8 @@ namespace SiliconStudio.Paradox.Effects.Images
             int threadId = streams.GroupThreadId.x;
 
             // Calculate the uv of the pixel in [0, 1]
-            float u =  pixel.x / float(streams.ThreadGroupCount.x);
-	        float v = -pixel.y / float(streams.ThreadGroupCount.y);
+            float u = (pixel.x + 0.5) / float(streams.ThreadGroupCount.x);
+	        float v = (pixel.y + 0.5) / float(streams.ThreadGroupCount.y);
 
             // Calculate the direction of the texel in the cubemap
             float3 R = normalize(CubemapUtils.ConvertTexcoordsNoFlip(float2(u, v), face));
@@ -52,6 +52,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             // Stock the result in group-shared memory
             PrefilteredSamples[threadId] = float4(prefilteredColor, weight);
+		    GroupMemoryBarrierWithGroupSync();
 
             // Perform the sums among the group
             for(int s = TNbOfSamples / 2; s > 0; s >>= 1) 

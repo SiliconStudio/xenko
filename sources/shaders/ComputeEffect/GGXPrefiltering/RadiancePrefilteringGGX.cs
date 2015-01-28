@@ -82,9 +82,10 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect.GGXPrefiltering
             if(DoNotFilterHighestLevel)
                 throw new NotImplementedException();
 
-            var roughness = 1f;
+            var roughness = 0f;
             var faceCount = output.ArraySize;
             var levelSize = new Int2(output.Width, output.Height);
+            var startLevel = (int)Math.Max(0, Math.Round(Math.Log(input.Width / (float)output.Width)/Math.Log(2)));
             for (int l = 0; l < MipmapGenerationCount; l++)
             {
                 var outputView = output.ToTextureView(ViewType.MipBand, 0, l);
@@ -92,7 +93,7 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect.GGXPrefiltering
                 computeShader.ThreadGroupCounts = new Int3(levelSize.X, levelSize.Y, faceCount);
                 computeShader.ThreadNumbers = new Int3(SamplingsCount, 1, 1);
                 computeShader.Parameters.Set(RadiancePrefilteringGGXShaderKeys.Roughness, roughness);
-                computeShader.Parameters.Set(RadiancePrefilteringGGXShaderKeys.MipmapLevel, l);
+                computeShader.Parameters.Set(RadiancePrefilteringGGXShaderKeys.MipmapLevel, startLevel+l);
                 computeShader.Parameters.Set(RadiancePrefilteringGGXShaderKeys.RadianceMap, input);
                 computeShader.Parameters.Set(RadiancePrefilteringGGXShaderKeys.FilteredRadiance, outputView);
                 computeShader.Parameters.Set(RadiancePrefilteringGGXParams.NbOfSamplings, SamplingsCount);
@@ -100,7 +101,7 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect.GGXPrefiltering
 
                 outputView.Dispose();
 
-                roughness -= 1f / MipmapGenerationCount;
+                roughness += 1f / (MipmapGenerationCount-1);
                 levelSize /= 2;
             }
         }
