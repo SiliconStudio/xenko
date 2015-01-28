@@ -1,8 +1,0 @@
-﻿namespace Test
-{
-    shader CubemapSprite
-    {
-        mixin SpriteEffect;
-        mixin ComputeColorSprite;
-    };
-}

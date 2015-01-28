@@ -3,6 +3,8 @@
 
 using System.Threading.Tasks;
 
+using NUnit.Framework;
+
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.ComputeEffect;
@@ -11,7 +13,7 @@ using SiliconStudio.Paradox.Input;
 
 namespace SiliconStudio.Paradox.Graphics.Tests
 {
-    public class TestComputeShader : Game
+    public class TestComputeShader : TestGameBase
     {
         const int ReductionRatio = 4;
 
@@ -29,6 +31,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         public TestComputeShader()
         {
+            CurrentVersion = 2;
             GraphicsDeviceManager.PreferredBackBufferWidth = screenSize.X;
             GraphicsDeviceManager.PreferredBackBufferHeight = screenSize.Y;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0 };
@@ -46,19 +49,26 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             displayedTexture = outputTexture;
             
             drawEffectContext = new DrawEffectContext(Services);
-            computeShaderEffect = new ComputeEffectShader(drawEffectContext) { ShaderSourceName = "ComputeShaderTest", ThreadGroupCounts = groupCounts };
+            computeShaderEffect = new ComputeEffectShader(drawEffectContext) { ShaderSourceName = "ComputeShaderTestEffect", ThreadGroupCounts = groupCounts };
 
+            RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = RenderComputeShader });
             RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services));
             RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = RenderResult });
-            RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = RenderComputeShader });
         }
 
         private void RenderComputeShader(RenderContext obj)
         {
-            computeShaderEffect.Parameters.Set(ComputeShaderTestKeys.NbOfIterations, ReductionRatio);
+            computeShaderEffect.Parameters.Set(ComputeShaderTestParams.NbOfIterations, ReductionRatio);
             computeShaderEffect.Parameters.Set(ComputeShaderTestKeys.input, inputTexture);
             computeShaderEffect.Parameters.Set(ComputeShaderTestKeys.output, outputTexture);
             computeShaderEffect.Draw();
+        }
+
+        protected override void RegisterTests()
+        {
+            base.RegisterTests();
+
+            FrameGameSystem.TakeScreenshot();
         }
 
         private void RenderResult(RenderContext obj)
@@ -78,6 +88,12 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             if (Input.IsKeyPressed(Keys.O))
                 displayedTexture = outputTexture;
+        }
+
+        [Test]
+        public void RunTest()
+        {
+            RunGameTest(new TestComputeShader());
         }
 
         public static void Main()

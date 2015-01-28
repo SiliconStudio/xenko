@@ -14,24 +14,10 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-namespace Test
+namespace SiliconStudio.Paradox.Effects
 {
-    internal static partial class ShaderMixins
+    public static partial class CubemapSpriteKeys
     {
-        internal partial class CubemapSprite  : IShaderMixinBuilder
-        {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
-            {
-                context.Mixin(mixin, "SpriteEffect");
-                context.Mixin(mixin, "ComputeColorSprite");
-            }
-
-            [ModuleInitializer]
-            internal static void __Initialize__()
-
-            {
-                ShaderMixinManager.Register("CubemapSprite", new CubemapSprite());
-            }
-        }
+        public static readonly ParameterKey<float> ViewIndex = ParameterKeys.New<float>();
     }
 }

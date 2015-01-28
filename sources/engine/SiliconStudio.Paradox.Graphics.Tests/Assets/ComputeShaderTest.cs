@@ -18,7 +18,6 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 {
     internal static partial class ComputeShaderTestKeys
     {
-        public static readonly ParameterKey<int> NbOfIterations = ParameterKeys.New<int>();
         public static readonly ParameterKey<Texture> input = ParameterKeys.New<Texture>();
         public static readonly ParameterKey<Texture> output = ParameterKeys.New<Texture>();
     }

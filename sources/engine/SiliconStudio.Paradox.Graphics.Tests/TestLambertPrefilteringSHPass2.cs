@@ -38,6 +38,10 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         private readonly Int2 screenSize = new Int2(1200, 900);
 
+        public TestLambertPrefilteringSHPass2() : this(true)
+        {
+        }
+
         public TestLambertPrefilteringSHPass2(bool assertResults)
         {
             this.assertResults = assertResults;
@@ -118,7 +122,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         [Test]
         public void RunTestPass2()
         {
-             RunGameTest(new TestLambertPrefilteringSHPass2(true));
+             RunGameTest(new TestLambertPrefilteringSHPass2());
         }
 
         public static void Main()

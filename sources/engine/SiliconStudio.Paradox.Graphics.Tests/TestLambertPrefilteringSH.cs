@@ -3,6 +3,8 @@
 
 using System.Threading.Tasks;
 
+using NUnit.Framework;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
@@ -36,6 +38,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         public TestLambertPrefilteringSH()
         {
+            CurrentVersion = 2;
             GraphicsDeviceManager.PreferredBackBufferWidth = screenSize.X;
             GraphicsDeviceManager.PreferredBackBufferHeight = screenSize.Y;
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
@@ -57,9 +60,9 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             outputCubemap = Texture.NewCube(GraphicsDevice, 256, 1, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource).DisposeBy(this);
             displayedCubemap = outputCubemap;
 
+            RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = PrefilterCubeMap });
             RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services) { ClearColor = Color.Zero });
             RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = RenderCubeMap });
-            RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = PrefilterCubeMap });
         }
 
         private void PrefilterCubeMap(RenderContext obj)
@@ -79,6 +82,13 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             //displayedCubemap = outputCubemap;
         }
 
+        protected override void RegisterTests()
+        {
+            base.RegisterTests();
+
+            FrameGameSystem.TakeScreenshot();
+        }
+
         private void RenderCubeMap(RenderContext obj)
         {
             if (displayedCubemap == null || spriteBatch == null)
@@ -86,32 +96,32 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             var size = new Vector2(screenSize.X / 3f, screenSize.Y / 4f);
             
-            GraphicsDevice.Parameters.Set(ComputeColorSpriteKeys.ViewIndex, 1);
+            GraphicsDevice.Parameters.Set(CubemapSpriteKeys.ViewIndex, 1);
             spriteBatch.Begin(SpriteSortMode.Texture, cubemapSpriteEffect);
             spriteBatch.Draw(displayedCubemap, new RectangleF(0, size.Y, size.X, size.Y), Color.White);
             spriteBatch.End();
 
-            GraphicsDevice.Parameters.Set(ComputeColorSpriteKeys.ViewIndex, 2);
+            GraphicsDevice.Parameters.Set(CubemapSpriteKeys.ViewIndex, 2);
             spriteBatch.Begin(SpriteSortMode.Texture, cubemapSpriteEffect);
             spriteBatch.Draw(displayedCubemap, new RectangleF(size.X, 0f, size.X, size.Y), Color.White);
             spriteBatch.End();
 
-            GraphicsDevice.Parameters.Set(ComputeColorSpriteKeys.ViewIndex, 4);
+            GraphicsDevice.Parameters.Set(CubemapSpriteKeys.ViewIndex, 4);
             spriteBatch.Begin(SpriteSortMode.Texture, cubemapSpriteEffect);
             spriteBatch.Draw(displayedCubemap, new RectangleF(size.X, size.Y, size.X, size.Y), Color.White);
             spriteBatch.End();
 
-            GraphicsDevice.Parameters.Set(ComputeColorSpriteKeys.ViewIndex, 3);
+            GraphicsDevice.Parameters.Set(CubemapSpriteKeys.ViewIndex, 3);
             spriteBatch.Begin(SpriteSortMode.Texture, cubemapSpriteEffect);
             spriteBatch.Draw(displayedCubemap, new RectangleF(size.X, 2f * size.Y, size.X, size.Y), Color.White);
             spriteBatch.End();
 
-            GraphicsDevice.Parameters.Set(ComputeColorSpriteKeys.ViewIndex, 5);
+            GraphicsDevice.Parameters.Set(CubemapSpriteKeys.ViewIndex, 5);
             spriteBatch.Begin(SpriteSortMode.Texture, cubemapSpriteEffect);
             spriteBatch.Draw(displayedCubemap, new RectangleF(size.X, 3f * size.Y, size.X, size.Y), null, Color.White, 0f, Vector2.Zero, SpriteEffects.FlipVertically);
             spriteBatch.End();
 
-            GraphicsDevice.Parameters.Set(ComputeColorSpriteKeys.ViewIndex, 0);
+            GraphicsDevice.Parameters.Set(CubemapSpriteKeys.ViewIndex, 0);
             spriteBatch.Begin(SpriteSortMode.Texture, cubemapSpriteEffect);
             spriteBatch.Draw(displayedCubemap, new RectangleF(2f * size.X, size.Y, size.X, size.Y), Color.White);
             spriteBatch.End();
@@ -132,6 +142,12 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             if(Input.IsKeyPressed(Keys.S))
                 SaveTexture(GraphicsDevice.BackBuffer, "LambertianPrefilteredImageCross.png");
+        }
+
+        [Test]
+        public void RunTestPass2()
+        {
+            RunGameTest(new TestLambertPrefilteringSH());
         }
 
         public static void Main()

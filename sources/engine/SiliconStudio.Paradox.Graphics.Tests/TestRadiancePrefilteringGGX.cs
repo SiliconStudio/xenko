@@ -4,6 +4,8 @@
 using System;
 using System.Threading.Tasks;
 
+using NUnit.Framework;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
@@ -38,19 +40,35 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         private Effect spriteEffect;
 
-        public TestRadiancePrefilteringGGX()
+        private bool filterAtEachFrame = true;
+        private bool hasBeenFiltered;
+
+        public TestRadiancePrefilteringGGX() : this(false)
         {
+            
+        }
+
+        public TestRadiancePrefilteringGGX(bool filterAtEachFrame)
+        {
+            CurrentVersion = 2;
+            this.filterAtEachFrame = filterAtEachFrame;
             GraphicsDeviceManager.PreferredBackBufferWidth = screenSize.X;
             GraphicsDeviceManager.PreferredBackBufferHeight = screenSize.Y;
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0 };
         }
 
+        protected override void RegisterTests()
+        {
+            base.RegisterTests();
+
+            FrameGameSystem.Draw(DisplayNextMipmapLevel).TakeScreenshot();
+            FrameGameSystem.Draw(DisplayNextMipmapLevel).TakeScreenshot();
+        }
+
         protected override async Task LoadContent()
         {
             await base.LoadContent();
-
-            var outputSizeLog2 = (int)Math.Round(Math.Log(outputSize) / Math.Log(2));
 
             drawEffectContext = new DrawEffectContext(this);
             radianceFilter = new RadiancePrefilteringGGX(drawEffectContext);
@@ -58,25 +76,27 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
             inputCubemap = Asset.Load<Texture>("CubeMap");
-            outputCubemap = Texture.New2D(GraphicsDevice, outputSize, outputSize, outputSizeLog2, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.UnorderedAccess, 6).DisposeBy(this);
+            outputCubemap = Texture.New2D(GraphicsDevice, outputSize, outputSize, MathUtil.Log2(outputSize), PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.UnorderedAccess, 6).DisposeBy(this);
             CreateViewsFor(outputCubemap);
 
+            RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = PrefilterCubeMap });
             RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services) { ClearColor = Color.Zero });
             RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = RenderCubeMap });
-            RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = PrefilterCubeMap });
         }
 
         private void PrefilterCubeMap(RenderContext obj)
         {
-            //if (DrawTime.FrameCount % 60 == 0)
-            {
-                radianceFilter.DoNotFilterHighestLevel = skipHighestLevel;
-                radianceFilter.MipmapGenerationCount = mipmapCount;
-                radianceFilter.SamplingsCount = samplingCounts;
-                radianceFilter.RadianceMap = inputCubemap;
-                radianceFilter.PrefilteredRadiance = outputCubemap;
-                radianceFilter.Draw(); 
-            }
+            if (!filterAtEachFrame && hasBeenFiltered)
+                return;
+
+            radianceFilter.DoNotFilterHighestLevel = skipHighestLevel;
+            radianceFilter.MipmapGenerationCount = mipmapCount;
+            radianceFilter.SamplingsCount = samplingCounts;
+            radianceFilter.RadianceMap = inputCubemap;
+            radianceFilter.PrefilteredRadiance = outputCubemap;
+            radianceFilter.Draw();
+
+            hasBeenFiltered = true;
         }
 
         private void RenderCubeMap(RenderContext obj)
@@ -118,16 +138,10 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 samplingCounts = Math.Min(1024, samplingCounts * 2);
 
             if (Input.IsKeyPressed(Keys.Left))
-            {
-                displayedLevel = Math.Max(0, displayedLevel - 1);
-                CreateViewsFor(displayedCubemap);
-            }
+                DisplayPreviousMipmapLevel();
 
             if (Input.IsKeyPressed(Keys.Right))
-            {
-                displayedLevel = Math.Min(mipmapCount-1, displayedLevel + 1);
-                CreateViewsFor(displayedCubemap);
-            }
+                DisplayNextMipmapLevel();
 
             if (Input.IsKeyPressed(Keys.I))
                 CreateViewsFor(inputCubemap);
@@ -137,6 +151,18 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             if (Input.IsKeyPressed(Keys.S))
                 SaveTexture(GraphicsDevice.BackBuffer, "RadiancePrefilteredGGXCross_level{0}.png".ToFormat(displayedLevel));
+        }
+
+        private void DisplayPreviousMipmapLevel()
+        {
+            displayedLevel = Math.Max(0, displayedLevel - 1);
+            CreateViewsFor(displayedCubemap);
+        }
+
+        private void DisplayNextMipmapLevel()
+        {
+            displayedLevel = Math.Min(mipmapCount - 1, displayedLevel + 1);
+            CreateViewsFor(displayedCubemap);
         }
 
         private void CreateViewsFor(Texture texture)
@@ -156,9 +182,15 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             }
         }
 
+        [Test]
+        public void RunTest()
+        {
+            RunGameTest(new TestRadiancePrefilteringGGX());
+        }
+
         public static void Main()
         {
-            using (var game = new TestRadiancePrefilteringGGX())
+            using (var game = new TestRadiancePrefilteringGGX(true))
                 game.Run();
         }
     }

@@ -144,6 +144,12 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\ComputeShaderTestEffect.cs">
+      <DependentUpon>ComputeShaderTestEffect.pdxfx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Assets\HammersleyTest.cs">
       <DependentUpon>HammersleyTest.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -161,12 +167,6 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeShaderTest.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="Assets\CopyInputShader.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>CopyInputShader.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Assets\CustomEffect.cs">
       <AutoGen>True</AutoGen>
@@ -192,18 +192,10 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>CustomShader.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Assets\ComputeColorSprite.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeColorSprite.pdxsl</DependentUpon>
-    </Compile>
     <Compile Include="Assets\CubemapSprite.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>CubemapSprite.pdxfx</DependentUpon>
-    </Compile>
     <Compile Include="Compiler\CubemapEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -215,6 +207,7 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>MultipleRenderTargetsEffect.pdxfx</DependentUpon>
+      <DependentUpon>CubemapSprite.pdxsl</DependentUpon>
     </Compile>
     <Compile Label="Paradox.DoNotSync" Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Compiler\MultiTexturesSpriteEffect.cs">
@@ -294,6 +287,10 @@
     <Compile Include="TestTexture.cs" />
     <Compile Include="TestGraphicsApiCheck.cs" />
     <Compile Include="TestTextureSampling.cs" />
+    <None Include="Assets\ComputeShaderTestEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeShaderTestEffect.cs</LastGenOutput>
+    </None>
     <None Include="Assets\HammersleyTest.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>HammersleyTest.cs</LastGenOutput>
@@ -305,10 +302,6 @@
     <None Include="Assets\ComputeShaderTest.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeShaderTest.cs</LastGenOutput>
-    </None>
-    <None Include="Assets\CopyInputShader.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>CopyInputShader.cs</LastGenOutput>
     </None>
     <None Include="Assets\CustomEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -326,11 +319,7 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CustomShader.cs</LastGenOutput>
     </None>
-    <None Include="Assets\ComputeColorSprite.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeColorSprite.cs</LastGenOutput>
-    </None>
-    <None Include="Assets\CubemapSprite.pdxfx">
+    <None Include="Assets\CubemapSprite.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CubemapSprite.cs</LastGenOutput>
     </None>
