@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.IO;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -165,6 +166,19 @@ namespace SiliconStudio.Paradox.Effects.Images
                 readback.Draw();
                 var rawLogValue = readback.Result[0];
                 AverageLuminance = (float)Math.Pow(2.0, rawLogValue);
+
+                // In case AvergaeLuminance go crazy because of halp float/infinity precision, some code to save the values here:
+                //if (float.IsInfinity(AverageLuminance))
+                //{
+                //    using (var stream = new FileStream("luminance_input.dds", FileMode.Create, FileAccess.Write))
+                //    {
+                //        input.Save(stream, ImageFileType.Dds);
+                //    }
+                //    using (var stream = new FileStream("luminance.dds", FileMode.Create, FileAccess.Write))
+                //    {
+                //        luminanceMap.Save(stream, ImageFileType.Dds);
+                //    }
+                //}
             }
         }
     }
