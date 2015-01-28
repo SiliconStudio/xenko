@@ -20,8 +20,9 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// </summary>
         public MaterialOcclusionMapFeature()
         {
-            AmbientOcclusionMap = new ComputeTextureColor();
-            CavityMap = new ComputeTextureColor();
+            AmbientOcclusionMap = new ComputeTextureScalar();
+            DirectLightingFactor = new ComputeFloat(0.0f);
+            CavityMap = new ComputeTextureScalar();
             DiffuseCavity = new ComputeFloat(1.0f);
             SpecularCavity = new ComputeFloat(1.0f);
         }
@@ -32,7 +33,18 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The occlusion map.</value>
         [Display("Occlusion Map")]
         [DataMember(10)]
-        public IComputeColor AmbientOcclusionMap { get; set; }
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
+        public IComputeScalar AmbientOcclusionMap { get; set; }
+
+        /// <summary>
+        /// Gets or sets how much the occlusion map can influence direct lighting (default: 0).
+        /// </summary>
+        /// <value>The direct lighting factor.</value>
+        [Display("Direct Lighting Influence")]
+        [DataMember(15)]
+        [NotNull]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
+        public IComputeScalar DirectLightingFactor { get; set; }
 
         /// <summary>
         /// Gets or sets the cavity map.
@@ -40,7 +52,8 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The cavity map.</value>
         [Display("Cavity Map")]
         [DataMember(20)]
-        public IComputeColor CavityMap { get; set; }
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
+        public IComputeScalar CavityMap { get; set; }
 
         /// <summary>
         /// Gets or sets the diffuse cavity influence.
@@ -66,6 +79,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         public void Visit(MaterialGeneratorContext context)
         {
             context.SetStream("matAmbientOcclusion", AmbientOcclusionMap, MaterialKeys.AmbientOcclusionMap, MaterialKeys.AmbientOcclusionValue);
+            context.SetStream("matAmbientOcclusionDirectLightingFactor", DirectLightingFactor, null, MaterialKeys.AmbientOcclusionDirectLightingFactorValue);
 
             if (CavityMap != null)
             {

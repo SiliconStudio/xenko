@@ -18,11 +18,11 @@ namespace SiliconStudio.Paradox.Effects.Materials
             // TODO: Try to see if we could not do the whole calculation in WS instead of VS
             streams.normalWS = mul(streams.normalVS, (float3x3)ViewInverse);
 
-            // Prepare the material for lighting (allow to pre-compute some attributes based on other attributes)
-            PrepareMaterialForLightingAndShading();
-
             // Make sure that light stream is reset
             ResetLightStream();
+
+            // Prepare the material for lighting (allow to pre-compute some attributes based on other attributes)
+            PrepareMaterialForLightingAndShading();
 
             // ---------------------------------------------------------------------------
             // Compute Direct Lighting contribution

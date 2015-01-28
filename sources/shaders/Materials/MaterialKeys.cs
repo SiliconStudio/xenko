@@ -39,6 +39,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
 
         public static readonly ParameterKey<Texture> AmbientOcclusionMap = ParameterKeys.New<Texture>();
         public static readonly ParameterKey<float> AmbientOcclusionValue = ParameterKeys.New<float>();
+        public static readonly ParameterKey<float> AmbientOcclusionDirectLightingFactorValue = ParameterKeys.New<float>();
 
         public static readonly ParameterKey<Texture> CavityMap = ParameterKeys.New<Texture>();
         public static readonly ParameterKey<float> CavityValue = ParameterKeys.New<float>();

@@ -13,6 +13,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
         stage stream float3 envLightDiffuseColor;
         stage stream float3 envLightSpecularColor;
 
+        stage stream float  lightDirectAmbientOcclusion;
+
         stage void ResetLightStream()
         {
             streams.lightDirectionVS = 0;
@@ -20,6 +22,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             streams.lightColorNdotL = 0;
             streams.envLightDiffuseColor = 0;
             streams.envLightSpecularColor = 0;
+            streams.lightDirectAmbientOcclusion = 1.0f;
         }
     };
 }

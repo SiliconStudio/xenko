@@ -17,6 +17,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
         override void PrepareEnvironmentLight()
         {
+            var ambientAccessibility = streams.matAmbientOcclusion;
+
             // -----------------------------------------
             // Diffuse lighting
             // -----------------------------------------
@@ -25,7 +27,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             var sampleDirection = mul(streams.normalWS, (float3x3)SkyMatrix);
             sampleDirection = float3(sampleDirection.xy, -sampleDirection.z);
 
-            streams.envLightDiffuseColor = lightDiffuseColor.Compute(sampleDirection).rgb * Intensity;
+            streams.envLightDiffuseColor = lightDiffuseColor.Compute(sampleDirection).rgb * Intensity * ambientAccessibility;
 
             // -----------------------------------------
             // Specular lighting
@@ -38,7 +40,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             sampleDirection = mul(sampleDirection, (float3x3)SkyMatrix);
             sampleDirection = float3(sampleDirection.xy, -sampleDirection.z);
 
-            streams.envLightSpecularColor = lightSpecularColor.Compute(sampleDirection).rgb * Intensity;
+            streams.envLightSpecularColor = lightSpecularColor.Compute(sampleDirection).rgb * Intensity * ambientAccessibility;
         }
     };
 }
