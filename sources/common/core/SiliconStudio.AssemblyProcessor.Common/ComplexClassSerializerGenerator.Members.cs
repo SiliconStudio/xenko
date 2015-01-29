@@ -191,7 +191,7 @@ namespace SiliconStudio.AssemblyProcessor
             var fields = new List<FieldDefinition>();
             var properties = new List<PropertyDefinition>();
 
-            var fieldEnum = type.Fields.Where(x => x.IsPublic && !x.IsStatic);
+            var fieldEnum = type.Fields.Where(x => (x.IsPublic || (x.IsAssembly && x.CustomAttributes.Any(a => a.AttributeType.FullName == "SiliconStudio.Core.DataMemberAttribute"))) && !x.IsStatic);
 
             // If there is a explicit or sequential layout, use offset, otherwise use name
             // (not sure if Cecil follow declaration order, in which case it could be OK to not sort;
