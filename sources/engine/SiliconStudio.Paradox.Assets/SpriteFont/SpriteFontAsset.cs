@@ -58,7 +58,6 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
         /// The size of the font (in points) for static fonts, the default size for dynamic fonts. This property is ignored when the font source is a bitmap.
         /// </userdoc>
         [DataMember(30)]
-        [DataMemberRange(1, 500, 1, 10)]
         public float Size { get; set; }
         
         /// <summary>
