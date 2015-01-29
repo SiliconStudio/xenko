@@ -217,7 +217,7 @@
     <Compile Include="ViewModel\ActionStack\ActionItemViewModel.cs" />
     <Compile Include="ViewModel\ActionStack\CollectionChangedViewModelActionItem.cs" />
     <Compile Include="ViewModel\DirtiableEditableViewModel.cs" />
-    <Compile Include="ViewModel\DirtinessChangedEventArgs.cs" />
+    <Compile Include="ViewModel\DirtinessUpdatedEventArgs.cs" />
     <Compile Include="ViewModel\DispatcherViewModel.cs" />
     <Compile Include="ViewModel\EditableViewModel.cs" />
     <Compile Include="ViewModel\IDirtiableViewModel.cs" />

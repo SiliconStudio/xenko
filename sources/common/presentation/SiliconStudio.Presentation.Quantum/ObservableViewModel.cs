@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Extensions;
 using SiliconStudio.Presentation.Services;
 using SiliconStudio.Presentation.ViewModel;
@@ -12,7 +13,7 @@ using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum
 {
-    public class ObservableViewModel : EditableViewModel
+    public class ObservableViewModel : EditableViewModel, IDisposable
     {
         public const string DefaultLoggerName = "Quantum";
         public const string HasChildPrefix = "HasChild_";
@@ -22,7 +23,9 @@ namespace SiliconStudio.Presentation.Quantum
         private readonly ObservableViewModelService observableViewModelService;
         private readonly ModelContainer modelContainer;
         private readonly IEnumerable<IDirtiableViewModel> dirtiables;
+        private readonly HashSet<string> nodeChangeList = new HashSet<string>();
         private IObservableNode rootNode;
+        private ObservableViewModel parent;
 
         private Func<SingleObservableNode, object, string> formatSingleUpdateMessage = (node, value) => string.Format("Update '{0}'", node.Name);
         private Func<CombinedObservableNode, object, string> formatCombinedUpdateMessage = (node, value) => string.Format("Update '{0}'", node.Name);
@@ -40,6 +43,7 @@ namespace SiliconStudio.Presentation.Quantum
             if (dirtiables == null) throw new ArgumentNullException("dirtiables");
             this.modelContainer = modelContainer;
             this.dirtiables = dirtiables;
+            this.dirtiables.ForEach(x => x.DirtinessUpdated += DirtinessUpdated);
             observableViewModelService = serviceProvider.Get<ObservableViewModelService>();
         }
 
@@ -61,6 +65,11 @@ namespace SiliconStudio.Presentation.Quantum
             node.CheckConsistency();
         }
 
+        public void Dispose()
+        {
+            Dirtiables.ForEach(x => x.DirtinessUpdated -= DirtinessUpdated);
+        }
+
         public static ObservableViewModel CombineViewModels(IViewModelServiceProvider serviceProvider, ModelContainer modelContainer, IReadOnlyCollection<ObservableViewModel> viewModels)
         {
             if (viewModels == null) throw new ArgumentNullException("viewModels");
@@ -72,6 +81,7 @@ namespace SiliconStudio.Presentation.Quantum
                 if (!(viewModel.RootNode is SingleObservableNode))
                     throw new ArgumentException(@"The view models to combine must contains SingleObservableNode.", "viewModels");
 
+                viewModel.parent = combinedViewModel;
                 var rootNode = (ObservableModelNode)viewModel.RootNode;
                 rootNodes.Add(rootNode);
             }
@@ -178,18 +188,19 @@ namespace SiliconStudio.Presentation.Quantum
 
         internal void NotifyNodeChanged(string observableNodePath)
         {
-            var handler = NodeChanged;
-            if (handler != null)
-            {
-                handler(this, new NodeChangedArgs(this, observableNodePath));
-            }
+            if (parent != null)
+                parent.nodeChangeList.Add(observableNodePath);
+            else
+                nodeChangeList.Add(observableNodePath);
         }
 
         internal void RegisterAction(string displayName, ModelNodePath nodePath, string observableNodePath, object index, object newValue, object previousValue)
         {
+            // This must be done before adding the action item to the stack!
+            NotifyNodeChanged(observableNodePath);
+
             var actionItem = new ValueChangedActionItem(displayName, observableViewModelService, nodePath, observableNodePath, Identifier, index, dirtiables, modelContainer, previousValue);
             ActionStack.Add(actionItem);
-            NotifyNodeChanged(observableNodePath);
         }
 
         internal void BeginCombinedAction()
@@ -208,6 +219,19 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 ActionStack.EndTransaction(displayName, x => new CombinedValueChangedActionItem(displayName, observableViewModelService, observableNodePath, Identifier, x));
             }
+        }
+
+        private void DirtinessUpdated(object sender, DirtinessUpdatedEventArgs e)
+        {
+            var handler = NodeChanged;
+            if (handler != null && nodeChangeList.Count > 0)
+            {
+                foreach (var nodeChange in nodeChangeList)
+                {
+                    handler(this, new NodeChangedArgs(this, nodeChange));
+                }
+            }
+            nodeChangeList.Clear();
         }
     }
 }
