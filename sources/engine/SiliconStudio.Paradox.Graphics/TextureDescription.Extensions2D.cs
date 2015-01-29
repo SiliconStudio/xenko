@@ -35,21 +35,6 @@ namespace SiliconStudio.Paradox.Graphics
             return New2D(width, height, format, textureFlags, mipCount, arraySize, usage);
         }
 
-        /// <summary>
-        /// Creates a new <see cref="TextureDescription"/> with a single level of mipmap.
-        /// </summary>
-        /// <param name="width">The width.</param>
-        /// <param name="height">The height.</param>
-        /// <param name="format">Describes the format to use.</param>
-        /// <param name="textureFlags">true if the texture needs to support unordered read write.</param>
-        /// <param name="usage">The usage.</param>
-        /// <returns>A new instance of <see cref="TextureDescription"/> class.</returns>
-        /// <remarks>Each value in textureData is a pixel in the destination texture.</remarks>
-        public static TextureDescription New2D(int width, int height, PixelFormat format, TextureFlags textureFlags = TextureFlags.ShaderResource, GraphicsResourceUsage usage = GraphicsResourceUsage.Immutable)
-        {
-            return New2D(width, height, 1, format, textureFlags, 1, usage);
-        }
-
         private static TextureDescription New2D(int width, int height, PixelFormat format, TextureFlags textureFlags, int mipCount, int arraySize, GraphicsResourceUsage usage)
         {
             if ((textureFlags & TextureFlags.UnorderedAccess) != 0)
