@@ -213,7 +213,7 @@ namespace SiliconStudio.AssemblyProcessor
                     continue;
 
                 // If it's a struct (!IsValueType), we need a public set method as well
-                if (property.PropertyType.IsValueType && (property.SetMethod == null || !property.SetMethod.IsPublic))
+                if (property.PropertyType.IsValueType && (property.SetMethod == null || !(property.SetMethod.IsAssembly || property.SetMethod.IsPublic)))
                     continue;
 
                 // Only take virtual properties (override ones will be handled by parent serializers)
@@ -254,7 +254,7 @@ namespace SiliconStudio.AssemblyProcessor
                     if (property.CustomAttributes.Any(x => x.AttributeType.FullName == "SiliconStudio.Core.DataMemberIgnoreAttribute"))
                         continue;
                     var attributes = property.CustomAttributes;
-                    bool assignBack = property.SetMethod != null && property.SetMethod.IsPublic;
+                    bool assignBack = property.SetMethod != null && (property.SetMethod.IsPublic || property.SetMethod.IsAssembly);
                     yield return new SerializableItem { MemberInfo = property, Type = property.PropertyType, Name = property.Name, Attributes = attributes, AssignBack = assignBack, NeedReference = !type.IsClass || type.IsValueType };
                 }
             }
