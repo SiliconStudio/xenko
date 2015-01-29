@@ -30,6 +30,7 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
 
         private Texture renderTargetHDR;
 
+        private Texture depthStencilMSAA;
         private bool useLighting;
 
         private bool useLightingChanged;
@@ -74,17 +75,27 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
             skyboxLightingRenderer = new SkyboxLightingRenderer(modelRenderer) { Enabled = false };
             postEffectRenderer = new DelegateRenderer(Services) { Render = ApplyPostEffects };
 
+            // TODO: Add support for Push/Pop of DepthStencil/RenderTarget/States into the GraphicsDevice
             AddRenderer(new DelegateRenderer(Services) { Render = Update});
             AddRenderer(cameraSetter);
             AddRenderer(rootRenderTargetSetter);
             AddRenderer(skyboxBackgroundRenderer);
+            AddRenderer(new DelegateRenderer(Services) { Render = ResetTargets});
             AddRenderer(modelRenderer);
             AddRenderer(postEffectRenderer);
             // In all cases, we will setup back the default buffer and stencil
             AddRenderer(new RenderTargetSetter(Services) { EnableClearDepth = false, EnableClearStencil = false, EnableClearTarget = false, RenderTarget = RenderTarget, DepthStencil = DepthStencilBuffer });
             AddRenderer(new SpriteRenderer(Services));
 
+            // TODO: Multisample is not working yet as we need to resolve the MSAA depth buffer to a non MSAA
+            // IsMultiSample = true;
+
             useLightingChanged = true;
+        }
+
+        private void ResetTargets(RenderContext renderContext)
+        {
+            GraphicsDevice.SetDepthAndRenderTarget(rootRenderTargetSetter.DepthStencil, rootRenderTargetSetter.RenderTarget);
         }
 
         public override void Unload()
@@ -98,14 +109,33 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
 
         private void ApplyPostEffects(RenderContext obj)
         {
+            Texture msaaRenderTargetRersolve = null;
+
+
+            // Resolve multisampling 
+            if (IsMultiSample)
+            {
+                var descNoMsaa = renderTargetHDR.Description;
+                descNoMsaa.MultiSampleLevel = MSAALevel.None;
+                msaaRenderTargetRersolve = postEffects.Context.Allocator.GetTemporaryTexture(descNoMsaa);
+
+                GraphicsDevice.CopyMultiSample(renderTargetHDR, 0, msaaRenderTargetRersolve, 0);
+                GraphicsDevice.Clear(DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            }
+
             // TODO allow posteffects on backbuffer
             if (useHdr)
             {
-                postEffects.SetInput(renderTargetHDR);
+                postEffects.SetInput(msaaRenderTargetRersolve ?? renderTargetHDR);
                 postEffects.SetOutput(RenderTarget);
                 postEffects.Draw();
             }
+
+            // Release the temporary texture for MSAA resolve
+            postEffects.Context.Allocator.ReleaseReference(msaaRenderTargetRersolve);
         }
+
+        public bool IsMultiSample { get; set; }
 
         public Color ClearColor
         {
@@ -170,9 +200,27 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
             {
                 if (renderTargetHDR == null)
                 {
-                    renderTargetHDR = Texture.New2D(GraphicsDevice, RenderTarget.Width, RenderTarget.Height, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
+                    Utilities.Dispose(ref renderTargetHDR);
+                    Utilities.Dispose(ref depthStencilMSAA);
+
+                    var desc = TextureDescription.New2D(RenderTarget.Width, RenderTarget.Height, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
+                    if (IsMultiSample)
+                    {
+                        desc.MultiSampleLevel = MSAALevel.X4;
+                    }
+                    renderTargetHDR = Texture.New(GraphicsDevice, desc);
+
+                    if (IsMultiSample)
+                    {
+                        desc = DepthStencilBuffer.Description;
+                        desc.MultiSampleLevel = MSAALevel.X4;
+                        desc.Width = RenderTarget.Width;
+                        desc.Height = RenderTarget.Height;
+                        depthStencilMSAA = Texture.New(GraphicsDevice, desc);
+                    }
                 }
                 rootRenderTargetSetter.RenderTarget = renderTargetHDR;
+                rootRenderTargetSetter.DepthStencil = IsMultiSample ? depthStencilMSAA : DepthStencilBuffer;
             }
             else
             {

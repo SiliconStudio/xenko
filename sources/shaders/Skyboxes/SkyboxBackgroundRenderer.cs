@@ -54,9 +54,6 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
 
             if (skybox != null)
             {
-                // No Depthstencil tests
-                GraphicsDevice.SetDepthStencilState(GraphicsDevice.DepthStencilStates.None);
-
                 // Copy camera/pass parameters
                 context.CurrentPass.Parameters.CopySharedTo(skyboxEffect.Parameters);
 
@@ -108,10 +105,6 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
 
                 skyboxEffect.SetOutput(Target ?? GraphicsDevice.BackBuffer);
                 skyboxEffect.Draw();
-
-                // Restore current target
-                GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, Target ?? GraphicsDevice.BackBuffer);
-                GraphicsDevice.SetDepthStencilState(GraphicsDevice.DepthStencilStates.Default);
             }
         }
     }
