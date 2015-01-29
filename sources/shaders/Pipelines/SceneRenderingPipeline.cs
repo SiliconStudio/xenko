@@ -8,6 +8,7 @@ using SiliconStudio.Paradox.Effects.Skyboxes;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Input;
 
 namespace SiliconStudio.Paradox.Effects.Pipelines
 {
@@ -28,6 +29,8 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
 
         private readonly SkyboxLightingRenderer skyboxLightingRenderer;
 
+        private readonly InputManager Input;
+
         private Texture renderTargetHDR;
 
         private Texture depthStencilMSAA;
@@ -46,6 +49,8 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
             if (sceneEffect == null) throw new ArgumentNullException("sceneEffect");
 
             GraphicsDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
+
+            Input = Services.GetSafeServiceAs<InputManager>();
 
             RenderTarget = GraphicsDevice.BackBuffer;
             DepthStencilBuffer = GraphicsDevice.DepthStencilBuffer; 
@@ -111,6 +116,10 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
         {
             Texture msaaRenderTargetRersolve = null;
 
+            if (Input.IsKeyReleased(Keys.L))
+            {
+                postEffects.Antialiasing.Enabled = !postEffects.Antialiasing.Enabled;
+            }
 
             // Resolve multisampling 
             if (IsMultiSample)

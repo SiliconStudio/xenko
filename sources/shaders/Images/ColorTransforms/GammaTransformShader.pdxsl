@@ -13,7 +13,8 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         override float4 Compute(float4 color)
         {
-	        return float4(pow(color.rgb, 1.0/Gamma), color.a);
+            // TODO: Temporarely output luminance in alpha as it is used by FXAA. Need to find a way to handle this cleanly
+	        return float4(pow(color.rgb, 1.0/Gamma), LuminanceUtils.Luma(color));
         }
     };
 }

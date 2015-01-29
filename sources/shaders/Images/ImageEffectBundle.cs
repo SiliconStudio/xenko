@@ -16,6 +16,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         private readonly Bloom bloom;
         private readonly ColorTransformGroup colorTransformGroup;
         private readonly ToneMap toneMap;
+        private readonly FXAAEffect fxaa;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageEffectBundle"/> class.
@@ -37,6 +38,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             brightFilter = new BrightFilter(Context);
             bloom = new Bloom(Context);
             colorTransformGroup = new ColorTransformGroup(Context);
+            fxaa = new FXAAEffect(Context);
             toneMap = new ToneMap();
             colorTransformGroup.Transforms.Add(toneMap);
         }
@@ -65,6 +67,14 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
+        public FXAAEffect Antialiasing
+        {
+            get
+            {
+                return fxaa;
+            }
+        }
+
         public ColorTransformGroup ColorTransform
         {
             get
@@ -83,7 +93,6 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
 
             // TODO: Add DOF/MotionBlur pass
-
             // Luminance pass (only if tone mapping is enabled)
             if (toneMap.Enabled)
             {
@@ -114,11 +123,25 @@ namespace SiliconStudio.Paradox.Effects.Images
                 bloom.Draw();
             }
 
+            var outputForLastEffectBeforeAntiAliasing = output;
+
+            if (fxaa.Enabled)
+            {
+                outputForLastEffectBeforeAntiAliasing = NewScopedRenderTarget2D(output.Width, output.Height, output.Format);
+            }
+
             // Color transform group pass (tonemap, color grading, gamma correction)
             var lastEffect = colorTransformGroup.Enabled ? (ImageEffect)colorTransformGroup: Scaler;
             lastEffect.SetInput(input);
-            lastEffect.SetOutput(output);
+            lastEffect.SetOutput(outputForLastEffectBeforeAntiAliasing);
             lastEffect.Draw();
+
+            if (fxaa.Enabled)
+            {
+                fxaa.SetInput(outputForLastEffectBeforeAntiAliasing);
+                fxaa.SetOutput(output);
+                fxaa.Draw();
+            }
 
             // TODO: Add anti aliasing pass
         }
