@@ -93,7 +93,7 @@ namespace SiliconStudio.Presentation.Quantum
             
             foreach (var command in targetNode.Commands)
             {
-                var commandWrapper = new ModelNodeCommandWrapper(ServiceProvider, command, Path, Owner.Identifier, targetNodePath, Owner.ModelContainer, Owner.GetDirtiableViewModels(this));
+                var commandWrapper = new ModelNodeCommandWrapper(ServiceProvider, command, Path, Owner.Identifier, targetNodePath, Owner.ModelContainer, Owner.Dirtiables);
                 AddCommand(commandWrapper);
             }
 
@@ -442,8 +442,7 @@ namespace SiliconStudio.Presentation.Quantum
                     if (parent != null)
                         ((ObservableNode)Parent).NotifyPropertyChanged(Name);
                     string displayName = Owner.FormatSingleUpdateMessage(this, value);
-                    var dirtiables = Owner.GetDirtiableViewModels(this);
-                    Owner.RegisterAction(displayName, SourceNodePath, Path, Index, dirtiables, value, previousValue);
+                    Owner.RegisterAction(displayName, SourceNodePath, Path, Index, value, previousValue);
                 }
             }
         }

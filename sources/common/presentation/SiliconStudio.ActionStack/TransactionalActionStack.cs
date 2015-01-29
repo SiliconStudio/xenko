@@ -124,10 +124,7 @@ namespace SiliconStudio.ActionStack
             TransactionStack.Pop();
         }
 
-        /// <summary>
-        /// Gets the action items in the current transaction.
-        /// </summary>
-        /// <returns>The action items in the current transaction.</returns>
+        /// <inheritdoc/>
         public IReadOnlyCollection<IActionItem> GetCurrentTransactions()
         {
             if (TransactionStack.Count == 0) throw new InvalidOperationException(Properties.ExceptionMessages.NoTransactionInProgress);

@@ -77,6 +77,13 @@ namespace SiliconStudio.ActionStack
         }
 
         /// <inheritdocs/>
+        public IReadOnlyCollection<IActionItem> GetCurrentTransactions()
+        {
+            // Returns an empty list
+            return ActionItems.ToList();
+        }
+
+        /// <inheritdocs/>
         public IEnumerable<IActionItem> ActionItems
         {
             get { return Enumerable.Empty<IActionItem>(); }

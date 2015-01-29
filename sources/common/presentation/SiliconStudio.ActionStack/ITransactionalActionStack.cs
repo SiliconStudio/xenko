@@ -85,5 +85,11 @@ namespace SiliconStudio.ActionStack
         /// </summary>
         /// <remarks>This method will ends the transaction and discard every action item it contains.</remarks>
         void DiscardTransaction();
-    }
+
+        /// <summary>
+        /// Gets the action items in the current transaction.
+        /// </summary>
+        /// <returns>The action items in the current transaction.</returns>
+        IReadOnlyCollection<IActionItem> GetCurrentTransactions();
+}
 }
