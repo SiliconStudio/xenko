@@ -139,7 +139,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                 }
             }
 
-            // Move no next staging target
+            // Move to next staging target
             currentStagingIndex = (currentStagingIndex + 1) % stagingTargets.Count;
 
             // Stop the clock.

@@ -15,7 +15,9 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
            color = max(0,color-0.004);
            color = (color*(6.2*color+.5))/(color*(6.2*color+1.7)+0.06);
-           return color;
+           // Reverts the gamma correction which was automatically applied by the formula
+           float3 linearColor = pow(color.rgb, 2.2);
+           return float4(linearColor, 1.0);
         }
     };
 }
