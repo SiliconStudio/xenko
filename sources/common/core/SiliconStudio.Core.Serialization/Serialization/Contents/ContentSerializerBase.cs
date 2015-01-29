@@ -13,7 +13,7 @@ namespace SiliconStudio.Core.Serialization.Contents
     /// <typeparam name="T"></typeparam>
     public class ContentSerializerBase<T> : IContentSerializer<T>
     {
-        static readonly bool hasParameterlessConstructor = typeof(T).GetTypeInfo().DeclaredConstructors.Any(x => !x.IsStatic && !x.GetParameters().Any());
+        static readonly bool hasParameterlessConstructor = typeof(T).GetTypeInfo().DeclaredConstructors.Any(x => !x.IsStatic && x.IsPublic && !x.GetParameters().Any());
 
         /// <inheritdoc/>
         public virtual Type SerializationType
