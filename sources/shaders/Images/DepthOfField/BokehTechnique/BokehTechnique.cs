@@ -46,7 +46,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <param name="name"></param>
         /// <param name="context"></param>
         /// <returns>A Bokeh blur corresponding to the tehcnique specified.</returns>
-        public static BokehBlur ToBlurInstance(this BokehTechnique name, ImageEffectContext context)
+        public static BokehBlur ToBlurInstance(this BokehTechnique name, DrawEffectContext context)
         {
             switch (name)
             {

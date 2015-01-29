@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Initializes a new instance of the <see cref="McIntoshBokeh"/> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        public McIntoshBokeh(ImageEffectContext context)
+        public McIntoshBokeh(DrawEffectContext context)
             : base(context)
         {
             directionalBlurEffect = new ImageEffectShader(context, "DepthAwareDirectionalBlurEffect");

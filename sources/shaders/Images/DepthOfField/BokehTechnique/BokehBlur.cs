@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Initializes a new instance of the <see cref="BokehBlur"/> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        public BokehBlur(ImageEffectContext context)
+        public BokehBlur(DrawEffectContext context)
             : base(context)
         {
             SetRadius(5f); // Default value

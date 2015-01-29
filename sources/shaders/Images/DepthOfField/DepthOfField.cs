@@ -156,7 +156,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// You can further customize the effect, balance the quality/performance using <see cref="SetupTechnique"/>.
         /// </remarks>
         /// <param name="context">The context.</param>
-        public DepthOfField(ImageEffectContext context)
+        public DepthOfField(DrawEffectContext context)
             : base(context)
         {
             coclinearDepthMapEffect = new ImageEffectShader(context, "CoCLinearDepthShader");
