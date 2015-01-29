@@ -2,11 +2,12 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows.Input;
 
 namespace SiliconStudio.Presentation.Quantum
 {
-    public interface IObservableNode
+    public interface IObservableNode : INotifyPropertyChanging, INotifyPropertyChanged
     {
         /// <summary>
         /// Gets the <see cref="ObservableViewModel"/> that owns this node.
@@ -102,6 +103,16 @@ namespace SiliconStudio.Presentation.Quantum
         /// Gets whether this node contains a dictionary
         /// </summary>
         bool HasDictionary { get; }
+
+        /// <summary>
+        /// Gets the number of <see cref="IObservableNode"/> in the <see cref="Children"/> collection that are visible according to their <see cref="IsVisible"/> property.
+        /// </summary>
+        int VisibleChildrenCount { get; }
+
+        /// <summary>
+        /// Raised when the <see cref="IsVisible"/> property has changed.
+        /// </summary>
+        event EventHandler<EventArgs> IsVisibleChanged;
 
         /// <summary>
         /// Returns the child node with the matching name.

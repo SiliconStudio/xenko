@@ -3,6 +3,7 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders.Compiler;
 
@@ -24,12 +25,20 @@ namespace SiliconStudio.Paradox.Effects
         {
             if (services == null) throw new ArgumentNullException("services");
 
+            Enabled = true;
             Services = services;
             RenderSystem = services.GetSafeServiceAs<RenderSystem>();
             EffectSystem = services.GetSafeServiceAs<EffectSystem>();
+            EntitySystem = services.GetSafeServiceAs<EntitySystem>();
             graphicsDeviceService = services.GetSafeServiceAs<IGraphicsDeviceService>();
             DebugName = GetType().Name;
         }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="Renderer"/> is enabled.
+        /// </summary>
+        /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
+        public bool Enabled { get; set; }
 
         /// <summary>
         /// Gets the services.
@@ -54,6 +63,12 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         /// <value>The render system.</value>
         public RenderSystem RenderSystem { get; private set; }
+
+        /// <summary>
+        /// Gets the entity system.
+        /// </summary>
+        /// <value>The entity system.</value>
+        public EntitySystem EntitySystem { get; private set; }
 
         /// <summary>
         /// Gets the effect system.
@@ -111,9 +126,12 @@ namespace SiliconStudio.Paradox.Effects
 
         private void PassRendering(RenderContext context)
         {
-            BeginRendering(context);
-            OnRendering(context);
-            EndRendering(context);
+            if (Enabled)
+            {
+                BeginRendering(context);
+                OnRendering(context);
+                EndRendering(context);
+            }
         }
 
         protected CompilerParameters GetDefaultCompilerParameters()

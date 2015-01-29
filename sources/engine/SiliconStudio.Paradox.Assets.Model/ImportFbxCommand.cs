@@ -3,6 +3,8 @@
 using System;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
+using SiliconStudio.BuildEngine;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.DataModel;
@@ -24,10 +26,11 @@ namespace SiliconStudio.Paradox.Assets.Model
             return !String.IsNullOrEmpty(ext) && ext.ToLower().Equals(".fbx");
         }
 
-        protected override ModelData LoadModel(ICommandContext commandContext, AssetManager assetManager)
+        protected override Effects.Model LoadModel(ICommandContext commandContext, AssetManager assetManager)
         {
             var meshConverter = this.CreateMeshConverter(commandContext, assetManager);
-            var sceneData = meshConverter.Convert(SourcePath, Location);
+            var materialMapping = Materials.Select((s, i) => new { Value = s, Index = i }).ToDictionary(x => x.Value.Name, x => x.Index);
+            var sceneData = meshConverter.Convert(SourcePath, Location, materialMapping);
             return sceneData;
         }
 
@@ -44,7 +47,6 @@ namespace SiliconStudio.Paradox.Assets.Model
                 {
                     InverseNormals = this.InverseNormals,
                     TextureTagSymbol = this.TextureTagSymbol,
-                    ViewDirectionForTransparentZSort = this.ViewDirectionForTransparentZSort,
                     AllowUnsignedBlendIndices = this.AllowUnsignedBlendIndices
                 };
         }

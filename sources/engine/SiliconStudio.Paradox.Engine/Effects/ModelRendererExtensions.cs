@@ -22,8 +22,8 @@ namespace SiliconStudio.Paradox.Effects
         /// <returns>ModelRenderer.</returns>
         public static ModelRenderer AddTransparentFilter(this ModelRenderer modelRenderer)
         {
-            modelRenderer.AcceptPrepareMeshForRendering.Add((model, mesh) => IsTransparent(mesh));
-            modelRenderer.AcceptRenderMesh.Add((context, renderMesh) => IsTransparent(renderMesh.Mesh));
+            modelRenderer.AcceptPrepareMeshForRendering.Add((model, mesh) => IsTransparent(model, mesh));
+            modelRenderer.AcceptRenderMesh.Add((context, renderMesh) => IsTransparent(renderMesh));
             modelRenderer.AppendDebugName("Transparent");
             return modelRenderer;
         }
@@ -35,13 +35,19 @@ namespace SiliconStudio.Paradox.Effects
         /// <returns>ModelRenderer.</returns>
         public static ModelRenderer AddOpaqueFilter(this ModelRenderer modelRenderer)
         {
-            modelRenderer.AcceptPrepareMeshForRendering.Add((model, mesh) => !IsTransparent(mesh));
-            modelRenderer.AcceptRenderMesh.Add((context, renderMesh) => !IsTransparent(renderMesh.Mesh));
+            modelRenderer.AcceptPrepareMeshForRendering.Add((model, mesh) => !IsTransparent(model, mesh));
+            modelRenderer.AcceptRenderMesh.Add((context, renderMesh) => !IsTransparent(renderMesh));
             modelRenderer.AppendDebugName("Opaque");
             return modelRenderer;
         }
 
-        private static bool IsTransparent(Mesh mesh)
+        private static bool IsTransparent(RenderModel model, Mesh mesh)
+        {
+            return model.GetMaterial(mesh.MaterialIndex).Parameters.Get(MaterialParameters.UseTransparent);
+        }
+
+
+        private static bool IsTransparent(RenderMesh mesh)
         {
             return mesh.Material.Parameters.Get(MaterialParameters.UseTransparent);
         }
@@ -54,7 +60,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <returns>ModelRenderer.</returns>
         public static ModelRenderer AddLayerFilter(this ModelRenderer modelRenderer, RenderLayers activelayers)
         {
-            modelRenderer.AcceptRenderMesh.Add((context, renderMesh) => (renderMesh.Parameters.Get(RenderingParameters.RenderLayer) & activelayers) != RenderLayers.RenderLayerNone);
+            modelRenderer.AcceptRenderMesh.Add((context, renderMesh) => (renderMesh.Parameters.Get(RenderingParameters.RenderLayer) & activelayers) != RenderLayers.None);
             modelRenderer.AppendDebugName("Layer " + activelayers);
             return modelRenderer;
         }
@@ -66,30 +72,30 @@ namespace SiliconStudio.Paradox.Effects
         /// <returns>ModelRenderer.</returns>
         public static ModelRenderer AddContextActiveLayerFilter(this ModelRenderer modelRenderer)
         {
-            modelRenderer.AcceptRenderMesh.Add((context, renderMesh) => (context.Parameters.Get(RenderingParameters.ActiveRenderLayer) & renderMesh.Parameters.Get(RenderingParameters.RenderLayer)) != RenderLayers.RenderLayerNone);
+            modelRenderer.AcceptRenderMesh.Add((context, renderMesh) => (context.Parameters.Get(RenderingParameters.ActiveRenderLayer) & renderMesh.Parameters.Get(RenderingParameters.RenderLayer)) != RenderLayers.None);
             modelRenderer.AppendDebugName("Active Layer");
             return modelRenderer;
         }
 
-        /// <summary>
-        /// Adds a shadow caster filter for rendering only meshes that can cast shadows.
-        /// </summary>
-        /// <param name="modelRenderer">The model renderer.</param>
-        /// <returns>ModelRenderer.</returns>
-        public static ModelRenderer AddShadowCasterFilter(this ModelRenderer modelRenderer)
-        {
-            modelRenderer.AcceptPrepareMeshForRendering.Add((model, mesh) => mesh.Parameters.Get(LightingKeys.CastShadows));
-            modelRenderer.AcceptRenderMesh.Add((context, renderMesh) => renderMesh.Parameters.Get(LightingKeys.CastShadows));
-            modelRenderer.AppendDebugName("ShadowMapCaster");
-            return modelRenderer;
-        }
+        ///// <summary>
+        ///// Adds a shadow caster filter for rendering only meshes that can cast shadows.
+        ///// </summary>
+        ///// <param name="modelRenderer">The model renderer.</param>
+        ///// <returns>ModelRenderer.</returns>
+        //public static ModelRenderer AddShadowCasterFilter(this ModelRenderer modelRenderer)
+        //{
+        //    modelRenderer.AcceptPrepareMeshForRendering.Add((model, mesh) => mesh.Parameters.Get(LightingKeys.CastShadows));
+        //    modelRenderer.AcceptRenderMesh.Add((context, renderMesh) => renderMesh.Parameters.Get(LightingKeys.CastShadows));
+        //    modelRenderer.AppendDebugName("ShadowMapCaster");
+        //    return modelRenderer;
+        //}
 
         /// <summary>
-        /// Adds a default frustrum culling for rendering only meshes that are only inside the frustrum/
+        /// Adds a default frustum culling for rendering only meshes that are only inside the frustum/
         /// </summary>
         /// <param name="modelRenderer">The model renderer.</param>
         /// <returns>ModelRenderer.</returns>
-        public static ModelRenderer AddDefaultFrustrumCulling(this ModelRenderer modelRenderer)
+        public static ModelRenderer AddDefaultFrustumCulling(this ModelRenderer modelRenderer)
         {
             return modelRenderer.UpdateMeshes.Add(
                 (context, meshes) =>

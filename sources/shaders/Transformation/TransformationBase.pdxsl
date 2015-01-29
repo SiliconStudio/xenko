@@ -9,7 +9,7 @@ class TransformationBase : ShaderBase
     // Need to split that more properly (with guaranted shader stages)
     // VS for sure (usually skinning)
     stage void PreTransformPosition() {}
-    // VS or DS (usually displacement mapping, etc...)
+    // VS or DS (usually displacement mapping in view space, etc...)
     stage void TransformPosition() {}
     // after TransformPosition (to generate ShadingPosition)
     stage void PostTransformPosition() {}
@@ -23,6 +23,7 @@ class TransformationBase : ShaderBase
 
     stage override void VSMain()
     {
+        base.VSMain();
         this.BaseTransformVS();
     }
 };

@@ -7,7 +7,8 @@ namespace SiliconStudio.Paradox.Graphics.Data
     /// <summary>
     /// Content of a GPU buffer (vertex buffer, index buffer, etc...).
     /// </summary>
-    public partial class BufferData
+    [DataContract]
+    public class BufferData
     {
         public BufferData()
         {

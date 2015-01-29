@@ -53,13 +53,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataGenerator\DataCodeGeneratorHelper.cs" />
-    <Compile Include="DataGenerator\DataConverterGenerator.cs">
-      <DependentUpon>DataConverterGenerator.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="DataGenerator\DataConverterGenerator.Members.cs" />
     <Compile Include="PackageBuildMonitorRemote.cs" />
     <Compile Include="ParadoxCommands.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -136,11 +129,6 @@
       <Name>SiliconStudio.Paradox.Shaders</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\shaders\SiliconStudio.Paradox.Effects.csproj">
-      <Project>{0342c3e7-4a38-46b4-a8ec-e728d50085d3}</Project>
-      <Name>SiliconStudio.Paradox.Effects</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Paradox.VisualStudio.Package\SiliconStudio.Paradox.VisualStudio.Package.csproj">
       <Project>{0BD41ADD-2704-4A77-A9AB-15460A2ABDC6}</Project>
       <Name>SiliconStudio.Paradox.VisualStudio.Package</Name>
@@ -148,10 +136,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="DataGenerator\DataConverterGenerator.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>DataConverterGenerator.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
     {
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, TextureAsset asset, AssetCompilerResult result)
         {
-            if (asset.Source == null)
+            if (string.IsNullOrEmpty(asset.Source))
             {
                 result.Error("Source cannot be null for Texture Asset [{0}]", asset);
                 return;
@@ -58,7 +58,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
             {
                 var texture = asset.Texture;
 
-                var importResult = TextureCommandHelper.ImportAndSaveTextureImage(asset.SourcePathFromDisk, Url, texture, asset, asset.SeparateAlpha, CancellationToken, commandContext.Logger);
+                var importResult = TextureCommandHelper.ImportAndSaveTextureImage(asset.SourcePathFromDisk, Url, texture, asset, CancellationToken, commandContext.Logger);
 
                 return Task.FromResult(importResult);
             }

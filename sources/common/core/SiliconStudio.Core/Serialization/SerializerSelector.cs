@@ -54,16 +54,23 @@ namespace SiliconStudio.Core.Serialization
         /// The default instance.
         /// </value>
         public static SerializerSelector Default { get; internal set; }
-        public static SerializerSelector DefaultWithReuse { get; internal set; }
+
+        public static SerializerSelector Asset { get; internal set; }
+        public static SerializerSelector AssetWithReuse { get; internal set; }
 
         static SerializerSelector()
         {
             Default = new SerializerSelector();
             Default.RegisterProfile("Default");
 
-            DefaultWithReuse = new SerializerSelector();
-            DefaultWithReuse.RegisterProfile("Default");
-            DefaultWithReuse.ReuseReferences = true;
+            Asset = new SerializerSelector();
+            Asset.RegisterProfile("Default");
+            Asset.RegisterProfile("Asset");
+
+            AssetWithReuse = new SerializerSelector();
+            AssetWithReuse.RegisterProfile("Default");
+            AssetWithReuse.RegisterProfile("Asset");
+            AssetWithReuse.ReuseReferences = true;
         }
 
         /// <summary>

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.ActionStack;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Presentation.ViewModel;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Commands;
@@ -72,6 +73,17 @@ namespace SiliconStudio.Presentation.Quantum
             // If we have an observable node, we use it to set the new value so the UI can be notified at the same time.
             if (observableNode != null)
             {
+                if (observableNode.IsPrimitive)
+                {
+                    var collectionDescriptor = modelNode.Content.Descriptor as CollectionDescriptor;
+                    if (collectionDescriptor != null)
+                        newValue = collectionDescriptor.GetValue(newValue, observableNode.Index);
+
+                    var dictionaryDescriptor = modelNode.Content.Descriptor as DictionaryDescriptor;
+                    if (dictionaryDescriptor != null)
+                        newValue = dictionaryDescriptor.GetValue(newValue, observableNode.Index);
+                }
+
                 observableNode.Value = newValue;
                 observableNode.Owner.NotifyNodeChanged(observableNode.Path);
             }

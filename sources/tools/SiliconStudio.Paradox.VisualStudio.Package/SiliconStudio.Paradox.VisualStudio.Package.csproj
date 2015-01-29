@@ -201,7 +201,6 @@
     <Compile Include="Commands\BuildMonitorCallback.cs" />
     <Compile Include="Commands\IParadoxCommands.cs" />
     <Compile Include="Commands\ParadoxCommandsProxy.cs" />
-    <Compile Include="DataGenerator\DataCodeGenerator.cs" />
     <Compile Include="MyControl.xaml.cs">
       <DependentUpon>MyControl.xaml</DependentUpon>
     </Compile>

@@ -8,11 +8,13 @@ namespace SiliconStudio.BuildEngine
 {
     public class BuildStepLogger : Logger
     {
+        private readonly BuildStep buildStep;
         private readonly ILogger mainLogger;
         public readonly TimestampLocalLogger StepLogger;
 
-        public BuildStepLogger(ILogger mainLogger, DateTime startTime)
+        public BuildStepLogger(BuildStep buildStep, ILogger mainLogger, DateTime startTime)
         {
+            this.buildStep = buildStep;
             this.mainLogger = mainLogger;
             StepLogger = new TimestampLocalLogger(startTime);
             // Let's receive all level messages, each logger will filter them itself
@@ -23,6 +25,8 @@ namespace SiliconStudio.BuildEngine
 
         protected override void LogRaw(ILogMessage logMessage)
         {
+            buildStep.Logger.Log(logMessage);
+
             if (mainLogger != null)
             {
                 mainLogger.Log(logMessage);

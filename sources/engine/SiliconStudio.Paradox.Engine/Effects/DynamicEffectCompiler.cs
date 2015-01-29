@@ -75,30 +75,35 @@ namespace SiliconStudio.Paradox.Effects
         /// Update a dynamic effect instance based on its parameters.
         /// </summary>
         /// <param name="effectInstance">A dynmaic effect instance</param>
+        /// <param name="passParameters">The pass parameters.</param>
         /// <returns><c>true</c> if the effect was recomiled on the effect instance, <c>false</c> otherwise.</returns>
-        public bool Update(DynamicEffectInstance effectInstance)
+        public bool Update(DynamicEffectInstance effectInstance, ParameterCollection passParameters)
         {
             bool effectChanged = false;
 
-            if (effectInstance.Effect == null || !EffectSystem.IsValid(effectInstance.Effect) || HasCollectionChanged(effectInstance))
+            if (effectInstance.Effect == null || !EffectSystem.IsValid(effectInstance.Effect) || HasCollectionChanged(effectInstance, passParameters))
             {
-                CreateEffect(effectInstance);
+                CreateEffect(effectInstance, passParameters);
                 effectChanged = true;
             }
 
             return effectChanged;
         }
 
-        private bool HasCollectionChanged(DynamicEffectInstance effectInstance)
+        private bool HasCollectionChanged(DynamicEffectInstance effectInstance, ParameterCollection passParameters)
         {
-            PrepareUpdater(effectInstance);
+            PrepareUpdater(effectInstance, passParameters);
             return updater.HasChanged(effectInstance.UpdaterDefinition);
         }
 
-        private void CreateEffect(DynamicEffectInstance effectInstance)
+        private void CreateEffect(DynamicEffectInstance effectInstance, ParameterCollection passParameters)
         {
             var compilerParameters = new CompilerParameters();
             parameterCollections.Clear(true);
+            if (passParameters != null)
+            {
+                parameterCollections.Add(passParameters);
+            }
             effectInstance.FillParameterCollections(parameterCollections);
 
             foreach (var parameterCollection in parameterCollections)
@@ -133,13 +138,13 @@ namespace SiliconStudio.Paradox.Effects
                 effectInstance.UpdaterDefinition.UpdateCounter(effect.CompilationParameters);
             }
 
-            UpdateLevels(effectInstance);
+            UpdateLevels(effectInstance, null);
             updater.UpdateCounters(effectInstance.UpdaterDefinition);
         }
 
-        private void UpdateLevels(DynamicEffectInstance effectInstance)
+        private void UpdateLevels(DynamicEffectInstance effectInstance, ParameterCollection passParameters)
         {
-            PrepareUpdater(effectInstance);
+            PrepareUpdater(effectInstance, passParameters);
             updater.ComputeLevels(effectInstance.UpdaterDefinition);
         }
 
@@ -147,10 +152,15 @@ namespace SiliconStudio.Paradox.Effects
         /// Prepare the EffectParameterUpdater for the effect instance.
         /// </summary>
         /// <param name="effectInstance">The effect instance.</param>
-        private void PrepareUpdater(DynamicEffectInstance effectInstance)
+        /// <param name="passParameters">The pass parameters.</param>
+        private void PrepareUpdater(DynamicEffectInstance effectInstance, ParameterCollection passParameters)
         {
             parameterCollections.Clear(true);
             parameterCollections.Add(effectInstance.Effect.CompilationParameters);
+            if (passParameters != null)
+            {
+                parameterCollections.Add(passParameters);
+            }
             effectInstance.FillParameterCollections(parameterCollections);
             parameterCollections.Add(GraphicsDevice.Parameters);
 

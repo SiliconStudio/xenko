@@ -1,14 +1,15 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using SiliconStudio.Core.Serialization.Converters;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Serializers;
 
 namespace SiliconStudio.Paradox.Graphics
 {    
     /// <summary>
     /// Binding structure that specifies a vertex buffer and other per-vertex parameters (such as offset and instancing) for a graphics device.
     /// </summary>
-    [DataConverter(AutoGenerate = true, CustomConvertFromData = true)]
+    [DataSerializer(typeof(VertexBufferBinding.Serializer))]
     public struct VertexBufferBinding : IEquatable<VertexBufferBinding>
     {
         private readonly int hashCode;
@@ -45,33 +46,28 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// Gets a vertex buffer.
         /// </summary>
-        [DataMemberConvert]
         public Buffer Buffer { get; private set; }
 
         /// <summary>
         /// Gets the offset (vertex index) between the beginning of the buffer and the vertex data to use.
         /// </summary>
-        [DataMemberConvert]
         public int Offset { get; private set; }
 
         /// <summary>
         /// Gets the vertex stride.
         /// </summary>
-        [DataMemberConvert]
         public int Stride { get; private set; }
 
         /// <summary>
         /// Gets the number of vertex.
         /// </summary>
         /// <value>The count.</value>
-        [DataMemberConvert]
         public int Count { get; private set; }
 
         /// <summary>
         /// Gets the layout of the vertex buffer.
         /// </summary>
         /// <value>The declaration.</value>
-        [DataMemberConvert]
         public VertexDeclaration Declaration { get; private set; }
 
         public bool Equals(VertexBufferBinding other)
@@ -88,6 +84,31 @@ namespace SiliconStudio.Paradox.Graphics
         public override int GetHashCode()
         {
             return hashCode;
+        }
+
+        internal class Serializer : DataSerializer<VertexBufferBinding>
+        {
+            public override void Serialize(ref VertexBufferBinding vertexBufferBinding, ArchiveMode mode, SerializationStream stream)
+            {
+                if (mode == ArchiveMode.Deserialize)
+                {
+                    var buffer = stream.Read<Buffer>();
+                    var declaration = stream.Read<VertexDeclaration>();
+                    var count = stream.ReadInt32();
+                    var stride = stream.ReadInt32();
+                    var offset = stream.ReadInt32();
+
+                    vertexBufferBinding = new VertexBufferBinding(buffer, declaration, count, stride, offset);
+                }
+                else
+                {
+                    stream.Write(vertexBufferBinding.Buffer);
+                    stream.Write(vertexBufferBinding.Declaration);
+                    stream.Write(vertexBufferBinding.Count);
+                    stream.Write(vertexBufferBinding.Stride);
+                    stream.Write(vertexBufferBinding.Offset);
+                }
+            }
         }
     }
 }

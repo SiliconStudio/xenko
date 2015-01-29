@@ -4,9 +4,6 @@ using System;
 using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.Effects;
 

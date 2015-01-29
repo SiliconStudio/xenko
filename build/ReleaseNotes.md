@@ -20,6 +20,7 @@ Release date: 2015/01/??
 - FBX: Meshes without materials are now imported and added to the entity.
 - Graphics: `Texture2D`, `Texture3D`, `TextureCube`, `RenderTarget` and `DepthStencilBuffer` have now all been unified as `Texture` (which act as a Texture view).
 - Shaders: Better conversion from HLSL to GLSL.
+- Studio: Add a custom editor for rotation in the property grid.
 
 #### Issues fixed
 - Graphics: Fix shared texture and sampler sets on OpenGL when combinations appear in shaders (a texture used with several samplers or a sampler used with several textures).
@@ -28,6 +29,7 @@ Release date: 2015/01/??
 - Shaders: Fix code gen bug not allowing the usage of generic resources type in `pdxsl` files (like `Texture2D<int>` [#128](https://github.com/SiliconStudio/paradox/issues/128)).\
 - Shaders: Fix two-dimentional array linearization during conversion from HLSL to GLSL.
 - Shaders: Fix shader source change detection to get the correct precompiled shader and update existing ones.
+- Studio: Fix in the settings menu.
 
 #### Breaking changes
 - Graphics: `Texture2D`, `Texture3D`, `TextureCube`, `RenderTarget` and `DepthStencilBuffer` has been merged into `Texture` class.
@@ -77,13 +79,14 @@ Release date: 2014/11/25
 - Studio: Fix add parameter key control filtering and mouse selection
 - Studio: Fix some actions from the property grid that were not undo-able
 - Studio: Some buttons were sometimes hidden where they should be visible in the property grid.
+- Engine: Fix EntitySystem.Remove that was destroying the hierarchy of entities.
 
 #### Breaking changes
 - Asset: CastShadows, ReceiveShadows and Layer members of `ModelAsset` class are removed. They should be set in the Parameters of the `ModelAsset` behind the corresponding keys.
 - Engine: Default value for ParameterKeys `LightingKeys.CastShadows` and `LightingKeys.ReceiveShadows` becomes true.
 - Engine: Remove obsolete `MeshDrawHelper` file (use `GeometricPrimitive` instead), move `ToMeshDraw` method to `GeometricPrimitiveExtensions`.
 - Engine: `ModelRenderer` is no longer inheritable but extensible via compositions.
-- Engine: `ModelRenderer.EnableFrustrumCulling` is replaced by the extension method `ModelRenderer.AddDefaultFrustrumCulling`
+- Engine: `ModelRenderer.EnableFrustrumCulling` is replaced by the extension method `ModelRenderer.AddDefaultFrustumCulling`
 - Engine: `EffectMesh` is renamed to `RenderMesh` 
 - Engine: `SpriteRenderer` now requires a valid camera to be set in the pipeline.
 - Engine: `CameraComponent` now uses the Z-axis as camera direction vector to compute the view matrix when `Target` entity is null.

@@ -98,8 +98,8 @@ namespace SiliconStudio.Paradox.Assets
     public class ImageGroupCommand<TGroupAsset, TImageInfo, TImageGroupData, TImageData> : AssetCommand<ImageGroupParameters<TGroupAsset>>
         where TGroupAsset : ImageGroupAsset<TImageInfo>
         where TImageInfo : ImageInfo
-        where TImageGroupData : ImageGroupData<TImageData>, new()
-        where TImageData : ImageFragmentData, new()
+        where TImageGroupData : ImageGroup<TImageData>, new()
+        where TImageData : ImageFragment, new()
     {
         protected readonly bool UseSeparateAlphaTexture;
 
@@ -119,8 +119,8 @@ namespace SiliconStudio.Paradox.Assets
                 if (UseSeparateAlphaTexture)
                 {
                     var textureUrl = ImageGroupAsset.BuildTextureUrl(Url, i);
-                    yield return new ObjectUrl(UrlType.Internal, TextureAlphaComponentSplitter.GenerateColorTextureURL(textureUrl));
-                    yield return new ObjectUrl(UrlType.Internal, TextureAlphaComponentSplitter.GenerateAlphaTextureURL(textureUrl));
+                    //yield return new ObjectUrl(UrlType.Internal, TextureAlphaComponentSplitter.GenerateColorTextureURL(textureUrl));
+                    //yield return new ObjectUrl(UrlType.Internal, TextureAlphaComponentSplitter.GenerateAlphaTextureURL(textureUrl));
                 }
                 else
                 {
@@ -148,12 +148,12 @@ namespace SiliconStudio.Paradox.Assets
                 if (UseSeparateAlphaTexture)
                 {
                     var baseLocation = ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]);
-                    newImage.Texture = new ContentReference<Graphics.Texture> { Location = TextureAlphaComponentSplitter.GenerateColorTextureURL(baseLocation) };
-                    newImage.TextureAlpha = new ContentReference<Graphics.Texture> { Location = TextureAlphaComponentSplitter.GenerateAlphaTextureURL(baseLocation) };
+                    // newImage.Texture = AttachedReferenceManager.CreateSerializableVersion<Texture>(Guid.Empty, TextureAlphaComponentSplitter.GenerateColorTextureURL(baseLocation));
+                    // newImage.TextureAlpha = AttachedReferenceManager.CreateSerializableVersion<Texture>(Guid.Empty, TextureAlphaComponentSplitter.GenerateAlphaTextureURL(baseLocation));
                 }
                 else
                 {
-                    newImage.Texture = new ContentReference<Graphics.Texture> { Location = ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]) };
+                    newImage.Texture = AttachedReferenceManager.CreateSerializableVersion<Texture>(Guid.Empty, ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]));
                 }
 
                 SetImageSpecificFields(uiImage, newImage);

@@ -1,13 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Paradox.Graphics
 {
     /// <summary>
     /// Contains depth-stencil state for the device.
     /// </summary>
-    [ContentSerializer(typeof(DepthStencilStateSerializer))]
     public partial class DepthStencilState : GraphicsResourceBase
     {
         // For FakeDepthStencilState.
@@ -16,7 +14,7 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         // For FakeDepthStencilState.
-        protected DepthStencilState(DepthStencilStateDescription description)
+        public DepthStencilState(DepthStencilStateDescription description)
         {
             Description = description;
         }

@@ -8,7 +8,7 @@ Build file used to build Paradox and package it from the command line
     <ParadoxRootBin>$(ParadoxRoot)Bin\Windows-Direct3D11\</ParadoxRootBin>
     <ParadoxPackage>$(ParadoxRoot)Paradox.pdxpkg</ParadoxPackage>
     <ParadoxSolution>$(ParadoxRoot)build\Paradox</ParadoxSolution>
-    <BuildProperties>Configuration=Release;GenerateDoc=true;NoWarn=1591</BuildProperties>
+    <BuildProperties>Configuration=Release;GenerateDoc=true;NoWarn=1591;DeployExtension=false</BuildProperties>
     <BuildProperties Condition="'$(SiliconStudioSign)' != ''">$(BuildProperties);SiliconStudioSign=$(SiliconStudioSign)</BuildProperties>
     <BuildProperties Condition="'$(SiliconStudioOfficialBuild)' != ''">$(BuildProperties);SiliconStudioOfficialBuild=$(SiliconStudioOfficialBuild)</BuildProperties>
     <ILRepackPath>$(ParadoxRootBin)ILRepack.exe</ILRepackPath>
@@ -32,7 +32,7 @@ Build file used to build Paradox and package it from the command line
     </ItemGroup>    
     
     <Delete Files="@(FilesToDelete)"/>
-    <PackageArchiveTask File="$(ParadoxPackage)"/>
+    <PackageArchiveTask File="$(ParadoxPackage)" SpecialVersion="$(ParadoxPackageSpecialVersion)"/>
   </Target>
 
   <!--
@@ -79,37 +79,33 @@ Build file used to build Paradox and package it from the command line
   <!--
   Build Paradox: Windows, Android, iOS, Windows Store, Windows Phone
   -->
-  <Target Name="Build">
+  <Target Name="Clean">
     <Exec Command="RMDIR /Q /S $(ParadoxRoot)\Bin"/>
-    <CallTarget Targets="CopyParadoxKey" Condition="'$(SiliconStudioSign)' == 'true'"/>
-    <CallTarget Targets="BuildWindows"/>
-    <CallTarget Targets="BuildAndroid"/>
-    <CallTarget Targets="BuildiOS"/>
-    <CallTarget Targets="BuildWindowsStore"/>
-    <CallTarget Targets="BuildWindowsPhone"/>
   </Target>
   
+  <Target Name="Build" DependsOnTargets="Clean;BuildWindows;BuildAndroid;BuildiOS;BuildWindowsStore;BuildWindowsPhone"/>
+  
   <Target Name="CopyParadoxKey">
-    <Copy Condition="Exists('$(LOCALAPPDATA)\SiliconStudio\ParadoxBuildKey\paradox.snk')" SourceFiles="$(LOCALAPPDATA)\SiliconStudio\ParadoxBuildKey\paradox.snk" DestinationFolder="$(MSBuildThisFileDirectory)"/>
+    <Copy Condition="'$(SiliconStudioSign)' == 'true' And Exists('$(LOCALAPPDATA)\SiliconStudio\ParadoxBuildKey\paradox.snk')" SourceFiles="$(LOCALAPPDATA)\SiliconStudio\ParadoxBuildKey\paradox.snk" DestinationFolder="$(MSBuildThisFileDirectory)"/>
   </Target>
 
-  <Target Name="BuildWindows">
+  <Target Name="BuildWindows" DependsOnTargets="CopyParadoxKey">
     <MSBuild Targets="Clean;Build" Projects="$(ParadoxSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
   </Target>
 
-  <Target Name="BuildAndroid">
+  <Target Name="BuildAndroid" DependsOnTargets="CopyParadoxKey">
     <MSBuild Targets="Clean;Build" Projects="$(ParadoxSolution).Android.sln" Properties="$(BuildProperties);Platform=Android"/>
   </Target>
 
-  <Target Name="BuildiOS">
+  <Target Name="BuildiOS" DependsOnTargets="CopyParadoxKey">
     <MSBuild Targets="Clean;Build" Projects="$(ParadoxSolution).iOS.sln" Properties="$(BuildProperties);Platform=iPhone"/>
   </Target>
   
-  <Target Name="BuildWindowsStore">
+  <Target Name="BuildWindowsStore" DependsOnTargets="CopyParadoxKey">
     <MSBuild Targets="Clean;Build" Projects="$(ParadoxSolution).WindowsStore.sln" Properties="$(BuildProperties);Platform=WindowsStore"/>
   </Target>
 
-  <Target Name="BuildWindowsPhone">
+  <Target Name="BuildWindowsPhone" DependsOnTargets="CopyParadoxKey">
     <MSBuild Targets="Clean;Build" Projects="$(ParadoxSolution).WindowsPhone.sln" Properties="$(BuildProperties);Platform=WindowsPhone"/>
   </Target>
 </Project>

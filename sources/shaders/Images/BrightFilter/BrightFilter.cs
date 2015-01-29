@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="brightPassShaderName">Name of the bright pass shader.</param>
-        public BrightFilter(ImageEffectContext context, string brightPassShaderName = "BrightFilterShader")
+        public BrightFilter(DrawEffectContext context, string brightPassShaderName = "BrightFilterShader")
             : base(context, brightPassShaderName)
         {
         }

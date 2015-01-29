@@ -58,6 +58,7 @@ using Microsoft::WRL::ComPtr;
 
 #else
 
+    #pragma prefast(suppress:28196, "a simple wrapper around an existing annotated function" );
     static inline HRESULT CreateMemoryStream( _Outptr_ IStream** stream )
     {
         return CreateStreamOnHGlobal( 0, TRUE, stream );
@@ -299,10 +300,27 @@ static HRESULT _DecodeMetadata( _In_ DWORD flags,
                     sRGB = true;
                 }
             }
+#if defined(_XBOX_ONE) && defined(_TITLE)
+            else if ( memcmp( &containerFormat, &GUID_ContainerFormatJpeg, sizeof(GUID) ) == 0 )
+            {
+                if ( SUCCEEDED( metareader->GetMetadataByName( L"/app1/ifd/exif/{ushort=40961}", &value ) ) && value.vt == VT_UI2 && value.uiVal == 1 )
+                {
+                    sRGB = true;
+                }
+            }
+            else if ( memcmp( &containerFormat, &GUID_ContainerFormatTiff, sizeof(GUID) ) == 0 )
+            {
+                if ( SUCCEEDED( metareader->GetMetadataByName( L"/ifd/exif/{ushort=40961}", &value ) ) && value.vt == VT_UI2 && value.uiVal == 1 )
+                {
+                    sRGB = true;
+                }
+            }
+#else
             else if ( SUCCEEDED( metareader->GetMetadataByName( L"System.Image.ColorSpace", &value ) ) && value.vt == VT_UI2 && value.uiVal == 1 )
             {
                 sRGB = true;
             }
+#endif
 
             PropVariantClear( &value );
 
@@ -353,6 +371,18 @@ static HRESULT _DecodeSingleFrame( _In_ DWORD flags, _In_ const TexMetadata& met
         hr = pWIC->CreateFormatConverter( FC.GetAddressOf() );
         if ( FAILED(hr) )
             return hr;
+
+        WICPixelFormatGUID pixelFormat;
+        hr = frame->GetPixelFormat( &pixelFormat );
+        if ( FAILED(hr) )
+            return hr;
+
+        BOOL canConvert = FALSE;
+        hr = FC->CanConvert( pixelFormat, convertGUID, &canConvert );
+        if ( FAILED(hr) || !canConvert )
+        {
+            return E_UNEXPECTED;
+        }
 
         hr = FC->Initialize( frame, convertGUID, _GetWICDither( flags ), 0, 0, WICBitmapPaletteTypeCustom );
         if ( FAILED(hr) )
@@ -443,6 +473,13 @@ static HRESULT _DecodeMultiframe( _In_ DWORD flags, _In_ const TexMetadata& meta
             if ( FAILED(hr) )
                 return hr;
 
+            BOOL canConvert = FALSE;
+            hr = FC->CanConvert( sourceGUID, pfGuid, &canConvert );
+            if ( FAILED(hr) || !canConvert )
+            {
+                return E_UNEXPECTED;
+            }
+
             hr = FC->Initialize( frame.Get(), pfGuid, _GetWICDither( flags ), 0, 0, WICBitmapPaletteTypeCustom );
             if ( FAILED(hr) )
                 return hr;
@@ -510,6 +547,34 @@ static HRESULT _EncodeMetadata( _In_ IWICBitmapFrameEncode* frame, _In_ const GU
                 (void)metawriter->SetMetadataByName( L"/sRGB/RenderingIntent", &value );
             }
         }
+#if defined(_XBOX_ONE) && defined(_TITLE)
+        else if ( memcmp( &containerFormat, &GUID_ContainerFormatJpeg, sizeof(GUID) ) == 0 )
+        {
+            // Set Software name
+            (void)metawriter->SetMetadataByName( L"/app1/ifd/{ushort=305}", &value );
+
+            if ( sRGB )
+            {
+                // Set EXIF Colorspace of sRGB
+                value.vt = VT_UI2;
+                value.uiVal = 1;
+                (void)metawriter->SetMetadataByName( L"/app1/ifd/exif/{ushort=40961}", &value );
+            }
+        }
+        else if ( memcmp( &containerFormat, &GUID_ContainerFormatTiff, sizeof(GUID) ) == 0 )
+        {
+            // Set Software name
+            (void)metawriter->SetMetadataByName( L"/ifd/{ushort=305}", &value );
+
+            if ( sRGB )
+            {
+                // Set EXIF Colorspace of sRGB
+                value.vt = VT_UI2;
+                value.uiVal = 1;
+                (void)metawriter->SetMetadataByName( L"/ifd/exif/{ushort=40961}", &value );
+            }
+        }
+#else
         else
         {
             // Set Software name
@@ -517,12 +582,13 @@ static HRESULT _EncodeMetadata( _In_ IWICBitmapFrameEncode* frame, _In_ const GU
 
             if ( sRGB )
             {
-                // Set JPEG EXIF Colorspace of sRGB
+                // Set EXIF Colorspace of sRGB
                 value.vt = VT_UI2;
                 value.uiVal = 1;
                 (void)metawriter->SetMetadataByName( L"System.Image.ColorSpace", &value );
             }
         }
+#endif
     }
     else if ( hr == WINCODEC_ERR_UNSUPPORTEDOPERATION )
     {
@@ -601,11 +667,18 @@ static HRESULT _EncodeImage( _In_ const Image& image, _In_ DWORD flags, _In_ REF
         if ( FAILED(hr) )
             return hr;
 
+        BOOL canConvert = FALSE;
+        hr = FC->CanConvert( pfGuid, targetGuid, &canConvert );
+        if ( FAILED(hr) || !canConvert )
+        {
+            return E_UNEXPECTED;
+        }
+
         hr = FC->Initialize( source.Get(), targetGuid, _GetWICDither( flags ), 0, 0, WICBitmapPaletteTypeCustom );
         if ( FAILED(hr) )
             return hr;
 
-        WICRect rect = { 0, 0, static_cast<UINT>( image.width ), static_cast<UINT>( image.height ) };
+        WICRect rect = { 0, 0, static_cast<INT>( image.width ), static_cast<INT>( image.height ) };
         hr = frame->WriteSource( FC.Get(), &rect );
         if ( FAILED(hr) )
             return hr;

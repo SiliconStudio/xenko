@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             GraphicsDeviceManager.PreferredBackBufferHeight = 480;
             GraphicsDeviceManager.PreferredDepthStencilFormat = PixelFormat.D24_UNorm_S8_UInt;
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.None;
-            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0 };
+            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0, GraphicsProfile.Level_9_1 };
         }
 
         protected override async Task LoadContent()

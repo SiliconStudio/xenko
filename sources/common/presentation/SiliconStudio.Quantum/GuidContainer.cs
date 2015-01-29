@@ -1,8 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace SiliconStudio.Quantum
 {
@@ -13,7 +12,7 @@ namespace SiliconStudio.Quantum
     /// <remarks>This class is thread safe.</remarks>
     public class GuidContainer : IGuidContainer
     {
-        private readonly Dictionary<object, Guid> objectGuids = new Dictionary<object, Guid>();
+        private ConditionalWeakTable<object, object> objectGuids = new ConditionalWeakTable<object, object>();
 
         /// <inheritdoc/>
         public Guid GetOrCreateGuid(object obj)
@@ -22,12 +21,12 @@ namespace SiliconStudio.Quantum
 
             lock (objectGuids)
             {
-                Guid guid;
+                object guid;
                 if (!objectGuids.TryGetValue(obj, out guid))
                 {
                     objectGuids.Add(obj, guid = Guid.NewGuid());
                 }
-                return guid;
+                return (Guid)guid;
             }
         }
 
@@ -36,8 +35,8 @@ namespace SiliconStudio.Quantum
         {
             lock (objectGuids)
             {
-                Guid guid;
-                return obj != null && objectGuids.TryGetValue(obj, out guid) ? guid : Guid.Empty;
+                object guid;
+                return (Guid)(obj != null && objectGuids.TryGetValue(obj, out guid) ? guid : Guid.Empty);
             }
         }
 
@@ -48,17 +47,7 @@ namespace SiliconStudio.Quantum
 
             lock (objectGuids)
             {
-                objectGuids[obj] = guid;
-            }
-        }
-
-        /// <inheritdoc/>
-        public bool UnregisterGuid(Guid guid)
-        {
-            lock (objectGuids)
-            {
-                object key = objectGuids.SingleOrDefault(x => x.Value == guid).Key;
-                return key != null && objectGuids.Remove(key);
+                objectGuids.Add(obj, guid);
             }
         }
 
@@ -67,7 +56,7 @@ namespace SiliconStudio.Quantum
         {
             lock (objectGuids)
             {
-                objectGuids.Clear();
+                objectGuids = new ConditionalWeakTable<object, object>();
             }
         }
     }

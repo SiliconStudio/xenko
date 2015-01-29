@@ -18,7 +18,6 @@ namespace SiliconStudio.Paradox.Effects.Images
         float LuminanceAverageGlobal;
 
         // Color/Gamma correction
-        float Gamma = 2.2f;
         float Contrast = 0.0f;
         float Brightness = 0.0f;
 
@@ -30,6 +29,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             // Get the input color to tonemap
 	        float3 color = inputColor.rgb;
+
 
 	        // Gets the local luminance
 	        float luminanceAverageLocal = LuminanceTexture.Sample(Texturing.LinearSampler, streams.TexCoord).r;
@@ -48,7 +48,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             // Apply ToneMapping
 	        color = ToneMap(color, avgLuminance, 0);
 
-	        return float4(pow(color, 1.0/Gamma), 1.0);
+	        return float4(color, 1.0);
         }
 
         float CalculateExposure(float avgLuminance, float threshold)
@@ -63,7 +63,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         float3 ToneMap(float3 color, float avgLuminance, float threshold)
         {
 	        float exposure = CalculateExposure(avgLuminance, threshold);
-	        color *= exposure;
+	        //color *= exposure;
 	        color = ToneMapOperator.Compute(float4(color,1)).rgb;
 	        return color;
         }

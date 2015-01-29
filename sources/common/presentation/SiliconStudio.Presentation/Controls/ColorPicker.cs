@@ -84,45 +84,85 @@ namespace SiliconStudio.Presentation.Controls
         public static readonly DependencyProperty AlphaProperty = DependencyProperty.Register("Alpha", typeof(byte), typeof(ColorPicker), new FrameworkPropertyMetadata((byte)0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnRGBAPropertyChanged));
 
         /// <summary>
-        /// The color associated to this color picker.
+        /// Identifies the <see cref="ShowAlpha"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ShowAlphaProperty = DependencyProperty.Register("ShowAlpha", typeof(bool), typeof(ColorPicker), new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+        /// <summary>
+        /// Identifies the <see cref="InputColumnWidth"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty InputColumnWidthProperty = DependencyProperty.Register("InputColumnWidth", typeof(GridLength), typeof(ColorPicker), new FrameworkPropertyMetadata(GridLength.Auto));
+
+        /// <summary>
+        /// Identifies the <see cref="PickupAreaSize"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty PickupAreaSizeProperty = DependencyProperty.Register("PickupAreaSize", typeof(Size), typeof(ColorPicker), new FrameworkPropertyMetadata(default(Size)));
+
+        /// <summary>
+        /// Identifies the <see cref="StripsHeight"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty StripsHeightProperty = DependencyProperty.Register("StripsHeight", typeof(double), typeof(ColorPicker), new FrameworkPropertyMetadata((double)0));
+            
+        /// <summary>
+        /// Gets or sets the color associated to this color picker.
         /// </summary>
         /// <remarks>The float values of each component of the color are always equals to the float conversion of a <see cref="byte"/> value divided by <b>255</b>.</remarks>
         public Color4 Color { get { return (Color4)GetValue(ColorProperty); } set { SetValue(ColorProperty, value); } }
 
         /// <summary>
-        /// The hue of the color associated to this color picker.
+        /// Gets or sets the hue of the color associated to this color picker.
         /// </summary>
         public float Hue { get { return (float)GetValue(HueProperty); } set { SetValue(HueProperty, value); } }
 
         /// <summary>
-        /// The saturation of the color associated to this color picker.
+        /// Gets or sets the saturation of the color associated to this color picker.
         /// </summary>
         public float Saturation { get { return (float)GetValue(SaturationProperty); } set { SetValue(SaturationProperty, value); } }
 
         /// <summary>
-        /// The brightness of the color associated to this color picker.
+        /// Gets or sets the brightness of the color associated to this color picker.
         /// </summary>
         public float Brightness { get { return (float)GetValue(BrightnessProperty); } set { SetValue(BrightnessProperty, value); } }
 
         /// <summary>
-        /// The red component of the color associated to this color picker.
+        /// Gets or sets the red component of the color associated to this color picker.
         /// </summary>
         public byte Red { get { return (byte)GetValue(RedProperty); } set { SetValue(RedProperty, value); } }
 
         /// <summary>
-        /// The green component of the color associated to this color picker.
+        /// Gets or sets the green component of the color associated to this color picker.
         /// </summary>
         public byte Green { get { return (byte)GetValue(GreenProperty); } set { SetValue(GreenProperty, value); } }
 
         /// <summary>
-        /// The blue component of the color associated to this color picker.
+        /// Gets or sets the blue component of the color associated to this color picker.
         /// </summary>
         public byte Blue { get { return (byte)GetValue(BlueProperty); } set { SetValue(BlueProperty, value); } }
 
         /// <summary>
-        /// The alpha component of the color associated to this color picker.
+        /// Gets or sets the alpha component of the color associated to this color picker.
         /// </summary>
         public byte Alpha { get { return (byte)GetValue(AlphaProperty); } set { SetValue(AlphaProperty, value); } }
+
+        /// <summary>
+        /// Gets or sets whether the alpha component of the color should be displayed in the color picker.
+        /// </summary>
+        public bool ShowAlpha { get { return (bool)GetValue(ShowAlphaProperty); } set { SetValue(ShowAlphaProperty, value); } }
+
+        /// <summary>
+        /// Gets or sets the length of the input column of the color picker.
+        /// </summary>
+        public GridLength InputColumnWidth { get { return (GridLength)GetValue(InputColumnWidthProperty); } set { SetValue(InputColumnWidthProperty, value); } }
+
+        /// <summary>
+        /// Gets or sets the size of the color pickup area.
+        /// </summary>
+        public Size PickupAreaSize { get { return (Size)GetValue(PickupAreaSizeProperty); } set { SetValue(PickupAreaSizeProperty, value); } }
+
+        /// <summary>
+        /// Gets or sets the height of the hue pickup strip and the preview color strip.
+        /// </summary>
+        public double StripsHeight { get { return (double)GetValue(StripsHeightProperty); } set { SetValue(StripsHeightProperty, value); } }
 
         /// <summary>
         /// An internal representation of the color associated to this color picker. Its value never rounded to match a byte division by 255.
@@ -332,7 +372,8 @@ namespace SiliconStudio.Presentation.Controls
                         {
                             float x = i / (float)(width - 1);
 
-                            System.Windows.Media.Color color = new ColorHSV(Hue, x, y, 1.0f).ToSystemColor();
+                            var color4 = new ColorHSV(Hue, x, y, 1.0f).ToColor();
+                            var color = new Color(color4);
                             rawImage[(i + j * width) * 4 + 0] = color.B;
                             rawImage[(i + j * width) * 4 + 1] = color.G;
                             rawImage[(i + j * width) * 4 + 2] = color.R;

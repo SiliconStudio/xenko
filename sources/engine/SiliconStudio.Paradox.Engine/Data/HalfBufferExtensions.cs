@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Extensions
 {
     public static class HalfBufferExtensions
     {
-        public unsafe static void CompactHalf(this VertexBufferBindingData vertexBufferBinding)
+        public unsafe static void CompactHalf(ref VertexBufferBinding vertexBufferBinding)
         {
             var vertexElementsWithOffsets = vertexBufferBinding.Declaration
                 .EnumerateWithOffsets()
@@ -78,11 +78,11 @@ namespace SiliconStudio.Paradox.Extensions
 
             var oldVertexStride = vertexBufferBinding.Declaration.VertexStride;
 
-            vertexBufferBinding.Declaration = new VertexDeclaration(vertexElements.Select(x => x.VertexElementWithOffset.VertexElement).ToArray());
+            var vertexDeclaration = new VertexDeclaration(vertexElements.Select(x => x.VertexElementWithOffset.VertexElement).ToArray());
 
-            var newVertexStride = vertexBufferBinding.Declaration.VertexStride;
+            var newVertexStride = vertexDeclaration.VertexStride;
             var newBufferData = new byte[vertexBufferBinding.Count * newVertexStride];
-            fixed (byte* oldBuffer = &vertexBufferBinding.Buffer.Value.Content[vertexBufferBinding.Offset])
+            fixed (byte* oldBuffer = &vertexBufferBinding.Buffer.GetSerializationData().Content[vertexBufferBinding.Offset])
             fixed (byte* newBuffer = &newBufferData[0])
             {
                 var oldBufferVertexPtr = (IntPtr)oldBuffer;
@@ -123,8 +123,7 @@ namespace SiliconStudio.Paradox.Extensions
                 }
             }
 
-            vertexBufferBinding.Offset = 0;
-            vertexBufferBinding.Buffer = new BufferData(BufferFlags.VertexBuffer, newBufferData);
+            vertexBufferBinding = new VertexBufferBinding(new BufferData(BufferFlags.VertexBuffer, newBufferData).ToSerializableVersion(), vertexDeclaration, vertexBufferBinding.Count);
         }
 
         private struct VertexElementConvertInfo

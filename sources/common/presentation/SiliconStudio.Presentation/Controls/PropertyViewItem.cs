@@ -19,7 +19,13 @@ namespace SiliconStudio.Presentation.Controls
 
         public static readonly DependencyProperty IsExpandedProperty = DependencyProperty.Register("IsExpanded", typeof(bool), typeof(PropertyViewItem), new FrameworkPropertyMetadata(false, OnIsExpandedChanged));
 
-        public static readonly DependencyProperty CanBeHoveredProperty = DependencyProperty.Register("CanBeHovered", typeof(bool), typeof(PropertyViewItem), new FrameworkPropertyMetadata(true));
+        public static readonly DependencyProperty HighlightableProperty = DependencyProperty.Register("Highlightable", typeof(bool), typeof(PropertyViewItem), new FrameworkPropertyMetadata(true));
+
+        public static readonly DependencyPropertyKey IsHighlightedPropertyKey = DependencyProperty.RegisterReadOnly("IsHighlighted", typeof(bool), typeof(PropertyViewItem), new FrameworkPropertyMetadata(false));
+       
+        public static readonly DependencyPropertyKey IsHoveredPropertyKey = DependencyProperty.RegisterReadOnly("IsHovered", typeof(bool), typeof(PropertyViewItem), new FrameworkPropertyMetadata(false));
+
+        public static readonly DependencyPropertyKey IsKeyboardActivePropertyKey = DependencyProperty.RegisterReadOnly("IsKeyboardActive", typeof(bool), typeof(PropertyViewItem), new FrameworkPropertyMetadata(false));
 
         public static readonly DependencyPropertyKey OffsetPropertyKey = DependencyProperty.RegisterReadOnly("Offset", typeof(double), typeof(PropertyViewItem), new FrameworkPropertyMetadata(0.0));
 
@@ -39,7 +45,7 @@ namespace SiliconStudio.Presentation.Controls
             if (propertyView == null) throw new ArgumentNullException("propertyView");
             this.propertyView = propertyView;
             PreviewMouseMove += propertyView.ItemMouseMove;
-            
+            IsKeyboardFocusWithinChanged += propertyView.OnIsKeyboardFocusWithinChanged;
         }
 
         public PropertyView PropertyView { get { return propertyView; } }
@@ -48,8 +54,14 @@ namespace SiliconStudio.Presentation.Controls
 
         public bool IsExpanded { get { return (bool)GetValue(IsExpandedProperty); } set { SetValue(IsExpandedProperty, value); } }
 
-        public bool CanBeHovered { get { return (bool)GetValue(CanBeHoveredProperty); } set { SetValue(CanBeHoveredProperty, value); } }
-        
+        public bool Highlightable { get { return (bool)GetValue(HighlightableProperty); } set { SetValue(HighlightableProperty, value); } }
+
+        public bool IsHighlighted { get { return (bool)GetValue(IsHighlightedPropertyKey.DependencyProperty); } }
+
+        public bool IsHovered { get { return (bool)GetValue(IsHoveredPropertyKey.DependencyProperty); } }
+
+        public bool IsKeyboardActive { get { return (bool)GetValue(IsKeyboardActivePropertyKey.DependencyProperty); } }
+
         public double Offset { get { return (double)GetValue(OffsetPropertyKey.DependencyProperty); } private set { SetValue(OffsetPropertyKey, value); } }
 
         public double Increment { get { return (double)GetValue(IncrementProperty); } set { SetValue(IncrementProperty, value); } }
@@ -68,7 +80,7 @@ namespace SiliconStudio.Presentation.Controls
         {
             return item is PropertyViewItem;
         }
-        
+
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             if (!e.Handled && IsEnabled)

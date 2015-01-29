@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Dynamic;
 using System.Linq;
-using System.Linq.Expressions;
+using System.Windows;
 using System.Windows.Input;
 
 using SiliconStudio.Presentation.Collections;
@@ -14,16 +14,18 @@ using SiliconStudio.Presentation.ViewModel;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Contents;
 
+using Expression = System.Linq.Expressions.Expression;
+
 namespace SiliconStudio.Presentation.Quantum
 {
     public abstract class ObservableNode : DispatcherViewModel, IObservableNode, IDynamicMetaObjectProvider
     {
-        private readonly SortedObservableCollection<IObservableNode> children = new SortedObservableCollection<IObservableNode>(new AnonymousComparer<IObservableNode>(CompareChildren));
-
+        private readonly AutoUpdatingSortedObservableCollection<IObservableNode> children = new AutoUpdatingSortedObservableCollection<IObservableNode>(new AnonymousComparer<IObservableNode>(CompareChildren));
         private readonly ObservableCollection<INodeCommandWrapper> commands = new ObservableCollection<INodeCommandWrapper>();
         private bool isVisible;
         private bool isReadOnly;
         private string displayName;
+        private int visibleChildrenCount;
 
         protected ObservableNode(ObservableViewModel ownerViewModel, IObservableNode parentNode, object index = null)
             : base(ownerViewModel.ServiceProvider)
@@ -79,7 +81,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets or sets whether this node should be displayed in the view.
         /// </summary>
-        public bool IsVisible { get { return isVisible; } set { SetValue(ref isVisible, value); } }
+        public bool IsVisible { get { return isVisible; } set { SetValue(ref isVisible, value, () => { var handler = IsVisibleChanged; if (handler != null) handler(this, EventArgs.Empty); }); } }
 
         /// <summary>
         /// Gets or sets whether this node can be modified in the view.
@@ -131,6 +133,12 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         public abstract bool HasDictionary { get; }
 
+        /// <inheritdoc/>
+        public int VisibleChildrenCount { get { return visibleChildrenCount; } private set { SetValue(ref visibleChildrenCount, value); } }
+
+        /// <inheritdoc/>
+        public event EventHandler<EventArgs> IsVisibleChanged;
+        
         /// <summary>
         /// Gets or sets the flags associated to this node.
         /// </summary>
@@ -241,7 +249,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <returns>The corresponding object, or <c>null</c> if no object with the given name exists.</returns>
         public object GetDynamicObject(string name)
         {
-            return GetChild(name) ?? GetCommand(name) ?? GetAssociatedData(name);
+            return GetChild(name) ?? GetCommand(name) ?? GetAssociatedData(name) ?? DependencyProperty.UnsetValue;
         }
 
         /// <inheritdoc/>
@@ -267,12 +275,21 @@ namespace SiliconStudio.Presentation.Quantum
             NotifyPropertyChanging(node.Name);
             children.Add(node);
             NotifyPropertyChanged(node.Name);
+
+            if (node.IsVisible)
+                ++VisibleChildrenCount;    
+            node.IsVisibleChanged += ChildVisibilityChanged;
         }
 
         internal void RemoveChild(IObservableNode node)
         {
             if (node == null) throw new ArgumentNullException("node");
             if (!children.Contains(node)) throw new InvalidOperationException("The node is not in the children list of its parent.");
+
+            if (node.IsVisible)
+                --VisibleChildrenCount;
+            node.IsVisibleChanged -= ChildVisibilityChanged;
+
             NotifyPropertyChanging(node.Name);
             children.Remove(node);
             NotifyPropertyChanged(node.Name);
@@ -356,11 +373,26 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
+        private void ChildVisibilityChanged(object sender, EventArgs e)
+        {
+            var node = (IObservableNode)sender;
+            if (node.IsVisible)
+                ++VisibleChildrenCount;
+            else
+                --VisibleChildrenCount;
+        }
+
         private static int CompareChildren(IObservableNode a, IObservableNode b)
         {
             // Order has the best priority for comparison, if set.
             if (a.Order != null && b.Order != null)
                 return ((int)a.Order).CompareTo(b.Order);
+
+            // If one has order and not the other one, consider the one with order as more prioritary
+            if (a.Order != null)
+                return -1;
+            if (b.Order != null)
+                return 1;
 
             // Then we use index, if they are set and comparable.
             if (a.Index != null && b.Index != null)

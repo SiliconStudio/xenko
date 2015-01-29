@@ -34,11 +34,17 @@ namespace SiliconStudio.Assets.Compiler
 
             Asset = (T)assetItem.Asset;
             AssetItem = assetItem;
-            // TODO: This can critically fail if the asset item has been removed from its package - find a way to prevent exceptions here and in usages of AssetsSession
-            AssetsSession = AssetItem.Package.Session;
 
             var compilerResult = new AssetCompilerResult();
 
+            // TODO: Workaround in case an asset item has been removed from its package
+            if (AssetItem.Package == null)
+            {
+                compilerResult.Warning("Asset [{0}] is not attached to a package", AssetItem);
+                return compilerResult;
+            }
+
+            AssetsSession = AssetItem.Package.Session;
             CompileOverride((AssetCompilerContext)context, compilerResult);
 
             return compilerResult;
@@ -51,7 +57,7 @@ namespace SiliconStudio.Assets.Compiler
         /// </summary>
         /// <param name="context">A compiler context.</param>
         /// <param name="result">The current result of the compilation</param>
-        protected void AddDependenciesBuildStepsToResult(AssetCompilerContext context, AssetCompilerResult result)
+        protected BuildStep AddDependenciesBuildStepsToResult(AssetCompilerContext context, AssetCompilerResult result)
         {
             // create the fake package used to compile the dependences
             var dependenciesCompilePackage = AssetsSession.CreateCompilePackageFromAsset(AssetItem);
@@ -70,6 +76,8 @@ namespace SiliconStudio.Assets.Compiler
 
             // Copy log the dependencies result to the current result
             dependenciesCompileResult.CopyTo(result);
+
+            return dependenciesCompileResult.BuildSteps;
         }
     }
 }

@@ -9,6 +9,8 @@ class Transformation
         stage float4x4 ViewInverse;
         // Projection matrix. Default to Matrix.Identity.
         stage float4x4 Projection;
+        // Projection matrix. Default to Matrix.Inverse(Projection).
+        stage float4x4 ProjectionInverse;
         // ViewProjection matrix. Default to = View * Projection.
         stage float4x4 ViewProjection;
         // Screen projected ray vector.  Default to = new Vector2(-1.0f / Projection.M11, 1.0f / Projection.M22);

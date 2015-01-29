@@ -3,13 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using SiliconStudio.Paradox.EntityModel.Data;
-using SiliconStudio.Paradox.Games;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Paradox.EntityModel
 {
@@ -23,6 +18,17 @@ namespace SiliconStudio.Paradox.EntityModel
             entityDataSerializer = MemberSerializer<EntityData>.Create(serializerSelector);
         }
 
+        /// <inheritdoc/>
+        public override void PreSerialize(ref Entity entity, ArchiveMode mode, SerializationStream stream)
+        {
+            if (mode == ArchiveMode.Deserialize && entity == null)
+            {
+                // Generate a new entity without creating a random Id; it will be set during deserialization
+                entity = new Entity(null, false);
+            }
+        }
+
+        /// <inheritdoc/>
         public override void Serialize(ref Entity entity, ArchiveMode mode, SerializationStream stream)
         {
             if (mode == ArchiveMode.Serialize)
@@ -30,7 +36,8 @@ namespace SiliconStudio.Paradox.EntityModel
                 var entityData = new EntityData
                     {
                         Name = entity.Name,
-                        Components = entity.Tags
+                        Guid = entity.Id,
+                        Components = entity.Components
                             .Where(x => x.Value is EntityComponent)
                             .ToDictionary(x => x.Key, x => (EntityComponent)x.Value),
                     };
@@ -38,16 +45,14 @@ namespace SiliconStudio.Paradox.EntityModel
             }
             else if (mode == ArchiveMode.Deserialize)
             {
-                if (entity == null)
-                    entity = new Entity();
-
                 EntityData entityData = null;
                 entityDataSerializer.Serialize(ref entityData, mode, stream);
                 entity.Name = entityData.Name;
+                entity.Id = entityData.Guid;
 
                 foreach (var component in entityData.Components)
                 {
-                    entity.Tags.SetObject(component.Key, component.Value);
+                    entity.Components.SetObject(component.Key, component.Value);
                 }
             }
         }

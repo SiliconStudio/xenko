@@ -10,11 +10,17 @@
 /// TOffset: generic float2 - the texture coordinates offset.
 /// TSampler: generic SamplerState - the custom sampler.
 /// </remarks>
-class ComputeColorTextureScaledOffsetSampler<Texture2D TTexture, Semantic TStream, float2 TScale, float2 TOffset, SamplerState TSampler> : ComputeColor
+class ComputeColorTextureScaledOffsetSampler<LinkType TTextureName, 
+                                             Semantic TStream, 
+                                             LinkType TSampler, 
+                                             MemberName TRgba, 
+                                             float2 TScale, 
+                                             float2 TOffset> : ComputeColor, 
+                                                               DynamicTexture<TTextureName>, 
+                                                               DynamicSampler<TSampler>, 
+                                                               DynamicTextureStream<TStream>
 {
-    stream float2 TexCoord : TStream;
-
     override float4 Compute() {
-        return TTexture.Sample(TSampler, streams.TexCoord * TScale + TOffset);
+        return Texture.Sample(Sampler, streams.TexCoord * TScale + TOffset).TRgba;
     }
 };

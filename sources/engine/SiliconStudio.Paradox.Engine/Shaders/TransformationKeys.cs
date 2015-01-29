@@ -22,6 +22,7 @@ namespace SiliconStudio.Paradox.Effects
             EyeMS = ParameterKeys.NewDynamic(ParameterDynamicValue.New<Vector4, Matrix>(WorldView, WorldViewToEyeMS));
             WorldInverse = ParameterKeys.NewDynamic(ParameterDynamicValue.New<Matrix, Matrix>(World, InvertMatrix));
             ViewInverse = ParameterKeys.NewDynamic(ParameterDynamicValue.New<Matrix, Matrix>(View, InvertMatrix));
+            ProjectionInverse = ParameterKeys.NewDynamic(ParameterDynamicValue.New<Matrix, Matrix>(Projection, InvertMatrix));
             WorldViewInverse = ParameterKeys.NewDynamic(ParameterDynamicValue.New<Matrix, Matrix>(WorldView, InvertMatrix));
         }
 

@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,7 +23,7 @@ namespace SiliconStudio.TextureConverter
         /// <summary>
         /// Initializes a new instance of the <see cref="TexAtlas"/> class.
         /// </summary>
-        internal TexAtlas() : base()
+        internal TexAtlas()
         {
             Layout = new TexLayout();
         }

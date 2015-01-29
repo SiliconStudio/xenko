@@ -408,7 +408,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
                 if (memberReference.TypeInference.Declaration is Variable)
                 {
                     var refAsVariable = memberReference.TypeInference.Declaration as Variable;
-                    if (!refAsVariable.Qualifiers.Contains(ParadoxStorageQualifier.Stream) && !refAsVariable.Qualifiers.Contains(ParadoxStorageQualifier.PatchStream))
+                    if (!(refAsVariable.Type is MemberName) && !refAsVariable.Qualifiers.Contains(ParadoxStorageQualifier.Stream) && !refAsVariable.Qualifiers.Contains(ParadoxStorageQualifier.PatchStream))
                         Error(ParadoxMessageCode.ErrorExtraStreamsPrefix, memberReference.Span, memberReference, refAsVariable, analyzedModuleMixin.MixinName);
                 }
             }

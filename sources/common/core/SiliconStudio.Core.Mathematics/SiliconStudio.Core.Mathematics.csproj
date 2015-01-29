@@ -44,6 +44,7 @@
     <Compile Include="Size3.cs" />
     <Compile Include="Size2.cs" />
     <Compile Include="Size2F.cs" />
+    <Compile Include="SphericalHarmonics.cs" />
     <Compile Include="UInt4.cs" />
     <Compile Include="Half.cs" />
     <Compile Include="Half2.cs" />

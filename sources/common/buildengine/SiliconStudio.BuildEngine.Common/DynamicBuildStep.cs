@@ -11,18 +11,21 @@ namespace SiliconStudio.BuildEngine
     {
         private readonly IBuildStepProvider buildStepProvider;
 
-        // TODO: centralize this infomation in the Builder.
-        private const int MaxParallelism = 8;
-
         /// <summary>
         /// The <see cref="AutoResetEvent"/> used to notify the dynamic build step that new work is requested.
         /// </summary>
         private readonly AutoResetEvent newWorkAvailable = new AutoResetEvent(false);
 
-        public DynamicBuildStep(IBuildStepProvider buildStepProvider)
+        public DynamicBuildStep(IBuildStepProvider buildStepProvider, int maxParallelSteps)
         {
             this.buildStepProvider = buildStepProvider;
+            MaxParallelSteps = maxParallelSteps;
         }
+
+        /// <summary>
+        /// Gets or sets the maximum number of steps that can run at the same time in parallel.
+        /// </summary>
+        public int MaxParallelSteps { get; set; }
 
         /// <summary>
         /// Notify the dynamic build step new work is available.
@@ -43,7 +46,7 @@ namespace SiliconStudio.BuildEngine
                     return ResultStatus.Cancelled;
 
                 // wait for a task to complete
-                if (buildStepsToWait.Count >= MaxParallelism)
+                if (buildStepsToWait.Count >= MaxParallelSteps)
                     await CompleteOneBuildStep(executeContext, buildStepsToWait);
 
                 // Transform item into build step
@@ -79,7 +82,7 @@ namespace SiliconStudio.BuildEngine
         /// <inheritdoc/>
         public override BuildStep Clone()
         {
-            var clone = new DynamicBuildStep(buildStepProvider);
+            var clone = new DynamicBuildStep(buildStepProvider, MaxParallelSteps);
             return clone;
         }
 
@@ -100,9 +103,6 @@ namespace SiliconStudio.BuildEngine
 
             // Process input and outputs
             await CompleteCommands(executeContext, new List<BuildStep> { completeBuildStep.Result });
-
-            // Merge outputs with index file
-            IndexFileCommand.MergeOutputObjects(outputObjects);
 
             // Remove from list of build step to wait
             buildStepsToWait.Remove(completeBuildStep.Result);

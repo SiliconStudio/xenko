@@ -84,7 +84,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// A Teapot primitive.
         /// </summary>
-        public struct Teapot
+        public static class Teapot
         {
             // The teapot model consists of 10 bezier patches. Each patch has 16 control
             // points, plus a flag indicating whether it should be mirrored in the Z axis

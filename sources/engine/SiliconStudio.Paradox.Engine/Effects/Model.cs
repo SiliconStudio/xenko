@@ -4,11 +4,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.ReferenceCounting;
-using SiliconStudio.Core.Serialization.Converters;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Paradox.Graphics;
 
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
@@ -19,10 +21,13 @@ namespace SiliconStudio.Paradox.Effects
     /// Collection of <see cref="Mesh"/>, each one usually being a different LOD of the same Model.
     /// The effect system will select the appropriate LOD depending on distance, current pass, and other effect-specific requirements.
     /// </summary>
-    [DataConverter(AutoGenerate = true, ContentReference = true)]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<Model>), Profile = "Asset")]
+    [ContentSerializer(typeof(DataContentSerializer<Model>))]
+    [DataContract]
     public class Model : IEnumerable
     {
-        private readonly List<Mesh> meshes = new List<Mesh>();
+        private List<Mesh> meshes = new List<Mesh>();
+        private readonly List<Material> materials = new List<Material>();
         private IList<Model> children;
         private Model parent;
 
@@ -32,11 +37,21 @@ namespace SiliconStudio.Paradox.Effects
         /// <value>
         /// The views.
         /// </value>
-        [DataMemberConvert]
         public IList<Model> Children
         {
             get { return children; }
             set { children = value; }
+        }
+
+        /// <summary>
+        /// Gets the materials.
+        /// </summary>
+        /// <value>
+        /// The materials.
+        /// </value>
+        public List<Material> Materials
+        {
+            get { return materials; }
         }
 
         /// <summary>
@@ -45,10 +60,10 @@ namespace SiliconStudio.Paradox.Effects
         /// <value>
         /// The meshes.
         /// </value>
-        [DataMemberConvert]
         public List<Mesh> Meshes
         {
             get { return meshes; }
+            set { meshes = value; }
         }
 
         /// <summary>
@@ -57,7 +72,6 @@ namespace SiliconStudio.Paradox.Effects
         /// <value>
         /// The hierarchy, which describes nodes name, default transformation and hierarchical parent.
         /// </value>
-        [DataMemberConvert]
         public ModelViewHierarchyDefinition Hierarchy { get; set; }
 
         /// <summary>
@@ -66,7 +80,6 @@ namespace SiliconStudio.Paradox.Effects
         /// <value>
         /// The bounding box.
         /// </value>
-        [DataMemberConvert]
         public BoundingBox BoundingBox { get; set; }
 
         // Temporarily removed
@@ -94,9 +107,18 @@ namespace SiliconStudio.Paradox.Effects
             Meshes.Add(mesh);
         }
 
+        /// <summary>
+        /// Adds the specified material (for collection initializers).
+        /// </summary>
+        /// <param name="material">The mesh.</param>
+        public void Add(Material material)
+        {
+            Materials.Add(material);
+        }
+
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new NotImplementedException();
+            return meshes.Cast<object>().Concat(materials).GetEnumerator();
         }
 
         public static Model FromGeometricMeshData(GraphicsDevice graphicsDevice, GeometricMeshData<VertexPositionNormalTexture> geometryMesh, string effectName = "Default")
@@ -155,7 +177,7 @@ namespace SiliconStudio.Paradox.Effects
             meshDraw.PrimitiveType = PrimitiveType.TriangleList;
 
             var mesh = new Mesh { Draw = meshDraw, BoundingBox = boundingBox };
-            mesh.Parameters.Set(RenderingParameters.RenderLayer, RenderLayers.RenderLayerAll);
+            mesh.Parameters.Set(RenderingParameters.RenderLayer, RenderLayers.All);
 
             var model = new Model { BoundingBox = boundingBox };
             model.Add(mesh);

@@ -3,41 +3,33 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Analysis;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Assets.Materials;
-using SiliconStudio.Paradox.Assets.Materials.Nodes;
+using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
+using SiliconStudio.Paradox.Assets.Model.Analysis;
 using SiliconStudio.Paradox.Assets.Textures;
-using SiliconStudio.Paradox.Data;
 using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Data;
 using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Engine.Data;
-using SiliconStudio.Paradox.EntityModel.Data;
+using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Importer.Common;
 
 namespace SiliconStudio.Paradox.Assets.Model
 {
     public abstract class ModelAssetImporter : AssetImporterBase
     {
-        private static readonly Type[] supportedTypes = { typeof(EntityAsset), typeof(ModelAsset), typeof(TextureAsset), typeof(MaterialAsset), typeof(AnimationAsset), typeof(CameraAsset), typeof(LightAsset) };
+        private static readonly Type[] supportedTypes = { typeof(EntityAsset), typeof(ModelAsset), typeof(TextureAsset), typeof(MaterialAsset), typeof(AnimationAsset) };
 
         public override AssetImporterParameters GetDefaultParameters(bool isForReImport)
         {
-            var parameters = new AssetImporterParameters(supportedTypes);
-
-            // When we are reimporting, we don't want the asset to be reimported by default
-            if (isForReImport)
-            {
-                parameters.SelectedOutputTypes[typeof(EntityAsset)] = false;
-            }
-            return parameters;
+            return new AssetImporterParameters(supportedTypes);
         }
 
         /// <summary>
@@ -71,11 +63,6 @@ namespace SiliconStudio.Paradox.Assets.Model
             var isImportingTexture = importParameters.IsTypeSelectedForOutput<TextureAsset>() ||
                                      isImportingMaterial;
 
-            var isImportingCamera = importParameters.IsTypeSelectedForOutput<CameraAsset>();
-
-            var isImportingLight = importParameters.IsTypeSelectedForOutput<LightAsset>();
-
-
             // 1. Textures
             if (isImportingTexture)
             {
@@ -102,112 +89,57 @@ namespace SiliconStudio.Paradox.Assets.Model
                 // 4. Entity
                 if (isImportingEntity)
                 {
-                    var entityAsset = ImportEntity(assetReferences, localPath, modelItem, entityInfo);
+                    var entityAssetItem = ImportEntity(assetReferences, localPath, modelItem);
 
-                    // 5. Camera
-                    if (isImportingCamera)
-                        ImportCameras(assetReferences, localPath, entityInfo, entityAsset, modelItem);
-
-                    // 6. Lights
-                    if (isImportingLight)
-                        ImportLights(assetReferences, localPath, entityInfo, entityAsset, modelItem);
+                    // Apply EntityAnalysis 
+                    EntityAnalysis.UpdateEntityReferences(((EntityAsset)entityAssetItem.Asset).Hierarchy);
                 }
             }
 
             return assetReferences;
         }
 
-        private static void ImportLights(List<AssetItem> assetReferences, UFile localPath, EntityInfo entityInfo, AssetItem entityAsset, AssetItem modelAsset)
+        private static Entity CreateTrackingEntity(EntityAsset entityAsset, Entity rootEntityAsset, ModelAsset modelAsset, string nodeName)
         {
-            if (entityInfo.Lights == null)
-                return;
-
-            foreach (var light in entityInfo.Lights)
-            {
-                var lightUrl = new UFile(localPath.GetFileName() + "_light_" + light.NodeName, null);
-
-                var cameraEntityAsset = CreateTrackingEntity(entityAsset, modelAsset, lightUrl, light.NodeName);
-                ((EntityAsset)cameraEntityAsset.Asset).Data.Components.Add(LightComponent.Key, light.Data);
-
-                assetReferences.Add(cameraEntityAsset);
-            }
-        }
-
-        private static void ImportCameras(List<AssetItem> assetReferences, UFile localPath, EntityInfo entityInfo, AssetItem entityAsset, AssetItem modelAsset)
-        {
-            if (entityInfo.Cameras == null)
-                return;
-
-            foreach (var camera in entityInfo.Cameras)
-            {
-                var cameraUrl = new UFile(localPath.GetFileName() + "_camera_" + camera.NodeName, null);
-
-                var cameraEntityAsset = CreateTrackingEntity(entityAsset, modelAsset, cameraUrl, camera.NodeName);
-                ((EntityAsset)cameraEntityAsset.Asset).Data.Components.Add(CameraComponent.Key, camera.Data);
-
-                if (camera.TargetNodeName != null)
-                {
-                    // We have a target, create an entity for it
-                    var cameraTargetUrl = new UFile(localPath.GetFileName() + "_cameratarget_" + camera.TargetNodeName, null);
-                    var cameraTargetEntityAsset = CreateTrackingEntity(entityAsset, modelAsset, cameraTargetUrl, camera.TargetNodeName);
-
-                    // Update target
-                    camera.Data.Target = new ContentReference<EntityData>(cameraTargetEntityAsset.Id, cameraTargetEntityAsset.Location);
-
-                    assetReferences.Add(cameraTargetEntityAsset);
-                }
-
-                assetReferences.Add(cameraEntityAsset);
-            }
-        }
-
-        private static AssetItem CreateTrackingEntity(AssetItem rootEntityAsset, AssetItem modelAsset, UFile cameraUrl, string nodeName)
-        {
-            var entity = new EntityData { Name = nodeName };
+            var childEntity = new Entity { Name = nodeName };
 
             // Add TransformationComponent
-            entity.Components.Add(TransformationComponent.Key, new TransformationComponentData());
-
+            childEntity.Add(TransformationComponent.Key, new TransformationComponent());
 
             // Add ModelNodeLinkComponent
-            entity.Components.Add(ModelNodeLinkComponent.Key, new ModelNodeLinkComponentData
+            childEntity.Add(ModelNodeLinkComponent.Key, new ModelNodeLinkComponent
             {
                 NodeName = nodeName,
-                Target = EntityComponentReference.New(rootEntityAsset.Id, rootEntityAsset.Location, ModelComponent.Key),
+                Target = rootEntityAsset.Get(ModelComponent.Key),
             });
 
-            var asset = new EntityAsset { Data = entity };
-            var entityAsset = new AssetItem(cameraUrl, asset);
-
-            var parentEntity = (EntityAsset)rootEntityAsset.Asset;
+            // Add this asset to the list
+            entityAsset.Hierarchy.Entities.Add(childEntity);
 
             // Get or create transformation component
-            EntityComponentData entityComponentData;
-            if (!parentEntity.Data.Components.TryGetValue(TransformationComponent.Key, out entityComponentData))
-            {
-                entityComponentData = new TransformationComponentData();
-                parentEntity.Data.Components.Add(TransformationComponent.Key, entityComponentData);
-            }
+            var transformationComponent = rootEntityAsset.GetOrCreate(TransformationComponent.Key);
 
             // Mark node as preserved
-            ((ModelAsset)modelAsset.Asset).PreserveNodes(new List<string> { nodeName });
+            modelAsset.PreserveNodes(new List<string> { nodeName });
 
             // Add as children of model entity
-            ((TransformationComponentData)entityComponentData).Children.Add(
-                EntityComponentReference.New(entityAsset.Id, entityAsset.Location, TransformationComponent.Key));
+            transformationComponent.Children.Add(childEntity.GetOrCreate(TransformationComponent.Key));
 
-
-            return entityAsset;
+            return childEntity;
         }
 
-        private static AssetItem ImportEntity(List<AssetItem> assetReferences, UFile localPath, AssetItem modelItem, EntityInfo entityInfo)
+        private static AssetItem ImportEntity(List<AssetItem> assetReferences, UFile localPath, AssetItem modelItem)
         {
             var entityUrl = new UFile(localPath.GetFileName(), null);
 
-            var asset = new EntityAsset();
-            asset.Data.Name = entityUrl;
+            var asset = new EntityAsset { Source = localPath };
+            var rootEntityData = new Entity();
+            asset.Hierarchy.Entities.Add(rootEntityData);
+            asset.Hierarchy.RootEntity = rootEntityData.Id;
+
+            rootEntityData.Name = entityUrl;
             // Use modelUrl.Path to get the url without the extension
-            asset.Data.Components.Add(ModelComponent.Key, new ModelComponentData { Model = new ContentReference<ModelData>(modelItem.Id, modelItem.Location), Enabled = true });
+            rootEntityData.Add(ModelComponent.Key, new ModelComponent { Model = AttachedReferenceManager.CreateSerializableVersion<Effects.Model>(modelItem.Id, modelItem.Location) });
 
             var assetReference = new AssetItem(entityUrl, asset);
             assetReferences.Add(assetReference);
@@ -230,25 +162,17 @@ namespace SiliconStudio.Paradox.Assets.Model
 
         private static AssetItem ImportModel(List<AssetItem> assetReferences, UFile assetSource, UFile localPath, EntityInfo entityInfo)
         {
-            var frontAxis = Vector3.Cross(entityInfo.UpAxis, Vector3.UnitZ).Length() < MathUtil.ZeroTolerance ? Vector3.UnitY : Vector3.UnitZ;
-            var asset = new ModelAsset { Source = assetSource, UpAxis = entityInfo.UpAxis, FrontAxis = frontAxis };
+            var asset = new ModelAsset { Source = assetSource };
 
             if (entityInfo.Models != null)
             {
                 var loadedMaterials = assetReferences.Where(x => x.Asset is MaterialAsset).ToList();
-                foreach (var model in entityInfo.Models)
+                foreach (var material in entityInfo.Materials)
                 {
-                    var meshParams = new MeshMaterialParameters { Parameters = model.Parameters, NodeName = model.NodeName };
-
-                    var matId = model.MaterialName;
-                    var matName = GenerateFinalMaterialName(localPath, matId);
+                    var matName = GenerateFinalMaterialName(localPath, material.Key);
                     var foundMaterial = loadedMaterials.FirstOrDefault(x => x.Location == new UFile(matName, null));
                     if (foundMaterial != null)
-                    {
-                        var matReference = new AssetReference<MaterialAsset>(foundMaterial.Id, foundMaterial.Location);
-                        meshParams.Material = matReference;
-                    }
-                    asset.MeshParameters.Add(model.MeshName, meshParams);
+                        asset.Materials.Add(new ModelMaterial { Name = material.Key, Material = new AssetReference<MaterialAsset>(foundMaterial.Id, foundMaterial.Location) });
                 }
             }
 
@@ -267,7 +191,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             return assetItem;
         }
 
-        private static void ImportMaterials(List<AssetItem> assetReferences, UFile localPath, Dictionary<string, MaterialDescription> materials)
+        private static void ImportMaterials(List<AssetItem> assetReferences, UFile localPath, Dictionary<string, MaterialAsset> materials)
         {
             if (materials != null)
             {
@@ -279,20 +203,24 @@ namespace SiliconStudio.Paradox.Assets.Model
                     AdjustForTransparency(materialKeyValue.Value);
                     var material = materialKeyValue.Value;
                     var materialUrl = new UFile(GenerateFinalMaterialName(localPath, materialKeyValue.Key), null);
-                    var asset = new MaterialAsset { Material = material };
 
                     // patch texture name and ids
-                    var textureVisitor = new MaterialTextureVisitor(material);
-                    var textures = textureVisitor.GetAllTextureValues();
-                    foreach (var texture in textures)
+                    var materialAssetReferences = AssetReferenceAnalysis.Visit(material);
+                    foreach (var materialAssetReferenceLink in materialAssetReferences)
                     {
+                        var materialAssetReference = materialAssetReferenceLink.Reference as AssetReference;
+                        if (materialAssetReference == null)
+                            continue;
+
                         // texture location is #nameOfTheModel_#nameOfTheTexture at this point in the material
-                        var foundTexture = loadedTextures.FirstOrDefault(x => x.Location == GenerateFinalTextureUrl(localPath, texture.TextureReference.Location));
+                        var foundTexture = loadedTextures.FirstOrDefault(x => x.Location == GenerateFinalTextureUrl(localPath, materialAssetReference.Location));
                         if (foundTexture != null)
-                            texture.TextureReference = new AssetReference<TextureAsset>(foundTexture.Id, foundTexture.Location);
+                        {
+                            materialAssetReferenceLink.UpdateReference(foundTexture.Id, foundTexture.Location);
+                        }
                     }
 
-                    var assetReference = new AssetItem(materialUrl, asset);
+                    var assetReference = new AssetItem(materialUrl, material);
                     assetReferences.Add(assetReference);
                 }
             }
@@ -302,56 +230,56 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// Modify the material to comply with its transparency parameters.
         /// </summary>
         /// <param name="material">The material/</param>
-        private static void AdjustForTransparency(MaterialDescription material)
+        private static void AdjustForTransparency(MaterialAsset material)
         {
-            // Note: at this point, there is no other nodes than diffuse, specular, transparent, normal and displacement
-            if (material.ColorNodes.ContainsKey(MaterialParameters.AlbedoDiffuse))
-            {
-                var diffuseNode = material.GetMaterialNode(MaterialParameters.AlbedoDiffuse);
-                if (material.ColorNodes.ContainsKey(MaterialParameters.TransparencyMap))
-                {
-                    var diffuseNodeName = material.ColorNodes[MaterialParameters.AlbedoDiffuse];
-                    var transparentNodeName = material.ColorNodes[MaterialParameters.TransparencyMap];
+            //// Note: at this point, there is no other nodes than diffuse, specular, transparent, normal and displacement
+            //if (material.ColorNodes.ContainsKey(MaterialParameters.AlbedoDiffuse))
+            //{
+            //    var diffuseNode = material.GetMaterialNode(MaterialParameters.AlbedoDiffuse);
+            //    if (material.ColorNodes.ContainsKey(MaterialParameters.TransparencyMap))
+            //    {
+            //        var diffuseNodeName = material.ColorNodes[MaterialParameters.AlbedoDiffuse];
+            //        var transparentNodeName = material.ColorNodes[MaterialParameters.TransparencyMap];
 
-                    var transparentNode = material.GetMaterialNode(MaterialParameters.TransparencyMap);
+            //        var transparentNode = material.GetMaterialNode(MaterialParameters.TransparencyMap);
 
-                    if (diffuseNode == null || transparentNode == null)
-                        return;
+            //        if (diffuseNode == null || transparentNode == null)
+            //            return;
 
-                    var foundTextureDiffuse = FindTextureNode(material, diffuseNodeName);
-                    var foundTextureTransparent = FindTextureNode(material, transparentNodeName);
+            //        var foundTextureDiffuse = FindTextureNode(material, diffuseNodeName);
+            //        var foundTextureTransparent = FindTextureNode(material, transparentNodeName);
 
-                    if (foundTextureDiffuse != null && foundTextureTransparent != null)
-                    {
-                        if (foundTextureDiffuse != foundTextureTransparent)
-                        {
-                            var alphaMixNode = new MaterialBinaryNode(diffuseNode, transparentNode, MaterialBinaryOperand.SubstituteAlpha);
-                            material.AddColorNode(MaterialParameters.AlbedoDiffuse, "pdx_diffuseWithAlpha", alphaMixNode);
-                        }
-                    }
+            //        if (foundTextureDiffuse != null && foundTextureTransparent != null)
+            //        {
+            //            if (foundTextureDiffuse != foundTextureTransparent)
+            //            {
+            //                var alphaMixNode = new MaterialBinaryComputeNode(diffuseNode, transparentNode, BinaryOperand.SubstituteAlpha);
+            //                material.AddColorNode(MaterialParameters.AlbedoDiffuse, "pdx_diffuseWithAlpha", alphaMixNode);
+            //            }
+            //        }
 
-                    // set the key if it was missing
-                    material.Parameters.Set(MaterialParameters.UseTransparent, true);
-                }
-                else
-                {
-                    // NOTE: MaterialParameters.UseTransparent is mostly runtime
-                    var isTransparent = false;
-                    if (material.Parameters.ContainsKey(MaterialParameters.UseTransparent))
-                        isTransparent = (bool)material.Parameters[MaterialParameters.UseTransparent];
+            //        // set the key if it was missing
+            //        material.Parameters.Set(MaterialParameters.UseTransparent, true);
+            //    }
+            //    else
+            //    {
+            //        // NOTE: MaterialParameters.UseTransparent is mostly runtime
+            //        var isTransparent = false;
+            //        if (material.Parameters.ContainsKey(MaterialParameters.UseTransparent))
+            //            isTransparent = (bool)material.Parameters[MaterialParameters.UseTransparent];
                     
-                    if (!isTransparent)
-                    {
-                        // remove the diffuse node
-                        var diffuseName = material.ColorNodes[MaterialParameters.AlbedoDiffuse];
-                        material.Nodes.Remove(diffuseName);
+            //        if (!isTransparent)
+            //        {
+            //            // remove the diffuse node
+            //            var diffuseName = material.ColorNodes[MaterialParameters.AlbedoDiffuse];
+            //            material.Nodes.Remove(diffuseName);
 
-                        // add the new one
-                        var opaqueNode = new MaterialBinaryNode(diffuseNode, null, MaterialBinaryOperand.Opaque);
-                        material.AddColorNode(MaterialParameters.AlbedoDiffuse, "pdx_diffuseOpaque", opaqueNode);
-                    }
-                }
-            }
+            //            // add the new one
+            //            var opaqueNode = new MaterialBinaryComputeNode(diffuseNode, null, BinaryOperand.Opaque);
+            //            material.AddColorNode(MaterialParameters.AlbedoDiffuse, "pdx_diffuseOpaque", opaqueNode);
+            //        }
+            //    }
+            //}
         }
 
         /// <summary>
@@ -360,16 +288,17 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <param name="material">The material.</param>
         /// <param name="startNode">The name of the stating node.</param>
         /// <returns>The MaterialTextureNode if found.</returns>
-        private static MaterialTextureNode FindTextureNode(MaterialDescription material, string startNode)
+        private static ComputeTextureColor FindTextureNode(MaterialAsset material, string startNode)
         {
-            var currentNode = material.FindNode(startNode);
-            while (currentNode is MaterialReferenceNode)
-            {
-                var currentReferenceNode = (MaterialReferenceNode)currentNode;
-                currentNode = material.FindNode(currentReferenceNode.Name);
-            }
+            //var currentNode = material.FindNode(startNode);
+            //while (currentNode is MaterialReferenceNode)
+            //{
+            //    var currentReferenceNode = (MaterialReferenceNode)currentNode;
+            //    currentNode = material.FindNode(currentReferenceNode.Name);
+            //}
 
-            return currentNode as MaterialTextureNode;
+            //return currentNode as ComputeTextureColor;
+            return null;
         }
 
         private static string GenerateFinalMaterialName(UFile localPath, string materialId)
@@ -406,24 +335,6 @@ namespace SiliconStudio.Paradox.Assets.Model
 
             // Create asset reference
             assetReferences.Add(new AssetItem(textureUrl, texture));
-        }
-
-        /// <summary>
-        /// Used only for category purpose, there is no such thing as a Camera asset (it will be a CameraComponent inside an EntityAsset).
-        /// </summary>
-        [AssetDescription("Camera", "A camera")]
-        class CameraAsset : Asset
-        {
-
-        }
-
-        /// <summary>
-        /// Used only for category purpose, there is no such thing as a Light asset (it will be a LightComponent inside an EntityAsset).
-        /// </summary>
-        [AssetDescription("Light", "A light")]
-        class LightAsset : Asset
-        {
-
         }
     }
 }

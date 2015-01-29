@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Effects
     {
         public static readonly ParameterKey<bool> UseDeferred = ParameterKeys.New<bool>();
         public static readonly ParameterKey<bool> UseTransparent = ParameterKeys.New<bool>();
-        public static readonly ParameterKey<RenderLayers> RenderLayer = ParameterKeys.New<RenderLayers>(RenderLayers.RenderLayerAll);
-        public static readonly ParameterKey<RenderLayers> ActiveRenderLayer = ParameterKeys.New<RenderLayers>(RenderLayers.RenderLayerAll);
+        public static readonly ParameterKey<RenderLayers> RenderLayer = ParameterKeys.New<RenderLayers>(RenderLayers.All);
+        public static readonly ParameterKey<RenderLayers> ActiveRenderLayer = ParameterKeys.New<RenderLayers>(RenderLayers.All);
     };
 }

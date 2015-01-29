@@ -2,7 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Globalization;
-using System.Text.RegularExpressions;
+
+using SiliconStudio.Presentation.Core;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
@@ -18,7 +19,7 @@ namespace SiliconStudio.Presentation.ValueConverters
                 return null;
 
             string strVal = value.ToString();
-            return Regex.Replace(strVal, "([a-z](?=[A-Z])|[A-Z](?=[A-Z][a-z]))", "$1 ");
+            return Utils.SplitCamelCase(strVal);
         }
     }
 }

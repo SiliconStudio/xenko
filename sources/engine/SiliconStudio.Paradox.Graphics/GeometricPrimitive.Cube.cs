@@ -83,7 +83,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// A cube has six faces, each one pointing in a different direction.
         /// </summary>
-        public struct Cube
+        public static class Cube
         {
             private const int CubeFaceCount = 6;
 

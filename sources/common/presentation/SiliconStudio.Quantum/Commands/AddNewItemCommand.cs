@@ -1,9 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Linq;
 
 using SiliconStudio.ActionStack;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Quantum.Attributes;
 
 namespace SiliconStudio.Quantum.Commands
@@ -44,7 +46,8 @@ namespace SiliconStudio.Quantum.Commands
         public object Invoke(object currentValue, ITypeDescriptor descriptor, object parameter, out UndoToken undoToken)
         {
             var collectionDescriptor = (CollectionDescriptor)descriptor;
-            if (collectionDescriptor.ElementType.IsAbstract || collectionDescriptor.ElementType.IsNullable())
+            // TODO: Find a better solution for ContentSerializerAttribute that doesn't require to reference Core.Serialization (and unreference this assembly)
+            if (collectionDescriptor.ElementType.IsAbstract || collectionDescriptor.ElementType.IsNullable() || collectionDescriptor.ElementType.GetCustomAttributes(typeof(ContentSerializerAttribute), true).Any())
             {
                 undoToken = new UndoToken(true, collectionDescriptor.GetCollectionCount(currentValue));
                 collectionDescriptor.Add(currentValue, parameter);
@@ -56,7 +59,7 @@ namespace SiliconStudio.Quantum.Commands
             }
             else
             {
-                var newItem = Activator.CreateInstance(collectionDescriptor.ElementType);
+                var newItem = ObjectFactory.NewInstance(collectionDescriptor.ElementType);
                 undoToken = new UndoToken(true, collectionDescriptor.GetCollectionCount(currentValue));
                 collectionDescriptor.Add(currentValue, parameter ?? newItem);
             }

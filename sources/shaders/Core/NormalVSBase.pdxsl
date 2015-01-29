@@ -24,15 +24,10 @@ class NormalVSBase : NormalStream, ShaderBase
 
     stage void GenerateNormalVS_VS()
     {
-        streams.vNormalVS = 0.0f;
+        streams.normalVS = 0.0f;
     }
 
     stage void GenerateNormalVS_PS()
     {
-    }
-
-    float3 NormalVS()
-    {
-        return normalize(streams.vNormalVS);
     }
 };

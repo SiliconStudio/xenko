@@ -18,13 +18,17 @@ namespace SiliconStudio.Assets.Serializers
 
         public override bool CanVisit(Type type)
         {
-            return (typeof(ContentReference).IsAssignableFrom(type));
+            // TODO: Quite inefficient, probably need an attribute
+            var serializer = SerializerSelector.AssetWithReuse.GetSerializer(type);
+            if (serializer == null)
+                return false;
+
+            var serializerType = serializer.GetType();
+            return serializerType.IsGenericType && serializerType.GetGenericTypeDefinition() == typeof(ReferenceSerializer<>);
         }
 
         public override object ConvertFrom(ref ObjectContext context, Scalar fromScalar)
         {
-            var contentReference = (ContentReference)context.Instance ?? (ContentReference)Activator.CreateInstance(context.Descriptor.Type);
-
             Guid guid;
             UFile location;
             if (!AssetReference.TryParse(fromScalar.Value, out guid, out location))
@@ -32,14 +36,15 @@ namespace SiliconStudio.Assets.Serializers
                 throw new YamlException(fromScalar.Start, fromScalar.End, "Unable to decode asset reference [{0}]. Expecting format GUID:LOCATION".ToFormat(fromScalar.Value));
             }
 
-            contentReference.Id = guid;
-            contentReference.Location = location;
-            return contentReference;
+            return AttachedReferenceManager.CreateSerializableVersion(context.Descriptor.Type, guid, location);
         }
         public override string ConvertTo(ref ObjectContext objectContext)
         {
-            var contentReference = ((ContentReference)objectContext.Instance);
-            return string.Format("{0}:{1}", contentReference.Id, contentReference.Location);
+            var attachedReference = AttachedReferenceManager.GetAttachedReference(objectContext.Instance);
+            if (attachedReference == null)
+                throw new YamlException(string.Format("Unable to extract asset reference from object [{0}]", objectContext.Instance));
+
+            return string.Format("{0}:{1}", attachedReference.Id, attachedReference.Url);
         }
     }
 }

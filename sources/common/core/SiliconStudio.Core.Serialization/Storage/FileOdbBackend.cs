@@ -14,6 +14,7 @@ namespace SiliconStudio.Core.Storage
     /// </summary>
     public class FileOdbBackend : IOdbBackend
     {
+        private static readonly object LockOnMove = new object();
         private const int WriteBufferSize = 1024;
         private bool isReadOnly;
 
@@ -71,27 +72,14 @@ namespace SiliconStudio.Core.Storage
             if (!virtualFileProvider.FileExists(url))
             {
                 if (mode == VirtualFileMode.Open || mode == VirtualFileMode.Truncate)
-                    return null;
+                    throw new FileNotFoundException();
 
                 // Otherwise, file creation is allowed, so make sure directory exists
                 virtualFileProvider.CreateDirectory(ExtractPath(url));
 
             }
 
-            try
-            {
-                return virtualFileProvider.OpenStream(url, mode, access, share);
-            }
-            catch (FileNotFoundException)
-            {
-                return null;
-            }
-#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
-            catch (DirectoryNotFoundException)
-            {
-                return null;
-            }
-#endif
+            return virtualFileProvider.OpenStream(url, mode, access, share);
         }
 
         /// <inheritdoc/>
@@ -169,31 +157,34 @@ namespace SiliconStudio.Core.Storage
 
             string temporaryFilePath = stream.TemporaryName;
 
-            // File may already exists, in this case we decide to not override it.
-            if (!virtualFileProvider.FileExists(fileUrl))
+            lock (LockOnMove)
             {
-                try
+                // File may already exists, in this case we decide to not override it.
+                if (!virtualFileProvider.FileExists(fileUrl))
                 {
-                    // Remove the second part of ObjectId to get the path (cf BuildUrl)
-                    virtualFileProvider.CreateDirectory(fileUrl.Substring(0, fileUrl.Length - (ObjectId.HashStringLength - 2)));
-                    virtualFileProvider.FileMove(temporaryFilePath, BuildUrl(vfsRootUrl, objId));
-                }
-                catch (IOException e)
-                {
-                    // Ignore only IOException "The destination file already exists."
-                    // because other exceptions that we want to catch might inherit from IOException.
-                    // This happens if two FileMove were performed at the same time.
-                    if (e.GetType() != typeof(IOException))
-                        throw;
+                    try
+                    {
+                        // Remove the second part of ObjectId to get the path (cf BuildUrl)
+                        virtualFileProvider.CreateDirectory(fileUrl.Substring(0, fileUrl.Length - (ObjectId.HashStringLength - 2)));
+                        virtualFileProvider.FileMove(temporaryFilePath, BuildUrl(vfsRootUrl, objId));
+                    }
+                    catch (IOException e)
+                    {
+                        // Ignore only IOException "The destination file already exists."
+                        // because other exceptions that we want to catch might inherit from IOException.
+                        // This happens if two FileMove were performed at the same time.
+                        if (e.GetType() != typeof(IOException))
+                            throw;
 
+                        // But we should still clean our temporary file
+                        virtualFileProvider.FileDelete(temporaryFilePath);
+                    }
+                }
+                else
+                {
                     // But we should still clean our temporary file
                     virtualFileProvider.FileDelete(temporaryFilePath);
                 }
-            }
-            else
-            {
-                // But we should still clean our temporary file
-                virtualFileProvider.FileDelete(temporaryFilePath);
             }
 
             return objId;

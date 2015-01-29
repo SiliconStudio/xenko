@@ -7,6 +7,7 @@ using SiliconStudio.Paradox.Effects.Data;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics.Data;
 
 namespace SiliconStudio.Paradox.Extensions
@@ -22,7 +23,7 @@ namespace SiliconStudio.Paradox.Extensions
         /// </summary>
         /// <param name="vertexBufferBindingData">The vertex buffer binding data.</param>
         /// <returns></returns>
-        public static bool IsSimple(this VertexBufferBindingData vertexBufferBindingData)
+        public static bool IsSimple(this VertexBufferBinding vertexBufferBindingData)
         {
             if (vertexBufferBindingData.Offset != 0)
                 return false;
@@ -32,7 +33,7 @@ namespace SiliconStudio.Paradox.Extensions
                 && vertexBufferBindingData.Stride != stride)
                 return false;
 
-            var buffer = vertexBufferBindingData.Buffer.Value;
+            var buffer = vertexBufferBindingData.Buffer.GetSerializationData();
             if (buffer.Content.Length != stride * vertexBufferBindingData.Count)
                 return false;
 
@@ -48,7 +49,7 @@ namespace SiliconStudio.Paradox.Extensions
         /// </summary>
         /// <param name="indexBufferBindingData">The index buffer binding data.</param>
         /// <returns></returns>
-        public static bool IsSimple(this IndexBufferBindingData indexBufferBindingData)
+        public static bool IsSimple(this IndexBufferBinding indexBufferBindingData)
         {
             if (indexBufferBindingData.Offset != 0)
                 return false;
@@ -56,7 +57,7 @@ namespace SiliconStudio.Paradox.Extensions
             if (!indexBufferBindingData.Is32Bit)
                 return false;
 
-            var buffer = indexBufferBindingData.Buffer.Value;
+            var buffer = indexBufferBindingData.Buffer.GetSerializationData();
             if (buffer.Content.Length != sizeof(int) * indexBufferBindingData.Count)
                 return false;
 
@@ -73,7 +74,7 @@ namespace SiliconStudio.Paradox.Extensions
         /// </summary>
         /// <param name="meshDrawData">The mesh draw data.</param>
         /// <returns></returns>
-        public static bool IsSimple(this MeshDrawData meshDrawData)
+        public static bool IsSimple(this MeshDraw meshDrawData)
         {
             if (meshDrawData.VertexBuffers.Length != 1)
                 return false;

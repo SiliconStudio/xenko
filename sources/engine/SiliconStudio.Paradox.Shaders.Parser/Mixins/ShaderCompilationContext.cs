@@ -359,7 +359,10 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <param name="mixin">the ModuleMixin to check</param>
         private void CheckStageClass(ModuleMixin mixin)
         {
-            mixin.StageOnlyClass = mixin.VirtualTable.Variables.All(x => x.Variable.Qualifiers.Contains(ParadoxStorageQualifier.Stage)) && mixin.VirtualTable.Methods.All(x => x.Method.Qualifiers.Contains(ParadoxStorageQualifier.Stage) && !x.Method.Qualifiers.Contains(ParadoxStorageQualifier.Clone));
+            mixin.StageOnlyClass = mixin.VirtualTable.Variables.All(x => x.Variable.Qualifiers.Contains(ParadoxStorageQualifier.Stage)
+                                                                      && !x.Variable.Qualifiers.Contains(ParadoxStorageQualifier.Compose)) // composition variable can be stage but the classes behind may not be.
+                                && mixin.VirtualTable.Methods.All(x => x.Method.Qualifiers.Contains(ParadoxStorageQualifier.Stage)
+                                                                    && !x.Method.Qualifiers.Contains(ParadoxStorageQualifier.Clone));
         }
 
         /// <summary>

@@ -11,7 +11,7 @@ namespace SiliconStudio.Paradox.Graphics.Data
     [ContentSerializerExtension("tga")]
     public class TextureFileTGASerializer : ContentSerializerBase<Image>
     {
-        public override unsafe void Serialize(ContentSerializerContext context, SerializationStream stream, ref Image textureData)
+        public override unsafe void Serialize(ContentSerializerContext context, SerializationStream stream, Image textureData)
         {
             if (context.Mode != ArchiveMode.Deserialize)
                 throw new NotSupportedException("Texture needs to be in package to be saved.");

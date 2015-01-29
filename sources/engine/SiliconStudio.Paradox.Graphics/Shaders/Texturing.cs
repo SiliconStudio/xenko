@@ -42,9 +42,14 @@ namespace SiliconStudio.Paradox.Effects
         public static readonly ParameterKey<Texture> TextureCube1 = ParameterKeys.New<Texture>();
         public static readonly ParameterKey<Texture> TextureCube2 = ParameterKeys.New<Texture>();
         public static readonly ParameterKey<Texture> TextureCube3 = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<Texture> Texture3D0 = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<Texture> Texture3D1 = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<Texture> Texture3D2 = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<Texture> Texture3D3 = ParameterKeys.New<Texture>();
         public static readonly ParameterKey<SamplerState> Sampler = ParameterKeys.New<SamplerState>();
         public static readonly ParameterKey<SamplerState> PointSampler = ParameterKeys.New<SamplerState>();
         public static readonly ParameterKey<SamplerState> LinearSampler = ParameterKeys.New<SamplerState>();
+        public static readonly ParameterKey<SamplerState> LinearBorderSampler = ParameterKeys.New<SamplerState>();
         public static readonly ParameterKey<SamplerState> AnisotropicSampler = ParameterKeys.New<SamplerState>();
         public static readonly ParameterKey<SamplerState> AnisotropicRepeatSampler = ParameterKeys.New<SamplerState>();
         public static readonly ParameterKey<SamplerState> PointRepeatSampler = ParameterKeys.New<SamplerState>();

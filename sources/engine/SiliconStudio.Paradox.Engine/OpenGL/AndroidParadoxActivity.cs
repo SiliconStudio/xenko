@@ -6,7 +6,6 @@ using System;
 using Android.App;
 using Android.Graphics;
 using Android.OS;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Android.Content;
@@ -19,7 +18,11 @@ using SiliconStudio.Paradox.UI;
 
 namespace SiliconStudio.Paradox.Starter
 {
-    public class AndroidParadoxActivity : Activity, View.IOnSystemUiVisibilityChangeListener, View.IOnTouchListener
+    // NOTE: the class should implement View.IOnSystemUiVisibilityChangeListener but doing so will prevent the engine to work on Android below 3.0 (API Level 11 is mandatory).
+    // So the methods are implemented but the class does not implement View.IOnSystemUiVisibilityChangeListener.
+    // Maybe this will change when support for API Level 10 is dropped
+    // TODO: make this class implement View.IOnSystemUiVisibilityChangeListener when support of Android < 3.0 is dropped.
+    public class AndroidParadoxActivity : Activity, View.IOnTouchListener
     {
         private AndroidGameView gameView;
 
@@ -66,8 +69,12 @@ namespace SiliconStudio.Paradox.Starter
             ringerModeIntentReceiver = new RingerModeIntentReceiver((AudioManager)GetSystemService(AudioService));
             RegisterReceiver(ringerModeIntentReceiver, new IntentFilter(AudioManager.RingerModeChangedAction));
 
-            SetFullscreenView();
-            InitializeFullscreenViewCallback();
+            // TODO: remove the Kitkat requirement once the class implements View.IOnSystemUiVisibilityChangeListener.
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.Kitkat)
+            {
+                SetFullscreenView();
+                InitializeFullscreenViewCallback();
+            }
         }
 
         public void OnSystemUiVisibilityChange(StatusBarVisibility visibility)
@@ -165,7 +172,8 @@ namespace SiliconStudio.Paradox.Starter
             if ((Build.VERSION.SdkInt >= BuildVersionCodes.IceCreamSandwich) && (Build.VERSION.SdkInt < BuildVersionCodes.Kitkat))
             {
                 setFullscreenViewCallback = SetFullscreenView;
-                Window.DecorView.SetOnSystemUiVisibilityChangeListener(this);
+                // TODO: uncomment this once the class implements View.IOnSystemUiVisibilityChangeListener. Right now only Kitkat supports full screen    
+                //Window.DecorView.SetOnSystemUiVisibilityChangeListener(this);
             }
         }
 

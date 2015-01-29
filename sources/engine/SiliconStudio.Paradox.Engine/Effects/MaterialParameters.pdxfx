@@ -7,36 +7,10 @@ namespace SiliconStudio.Paradox.Effects
         // The following part is coming from MaterialSHaderPlugin.cs
         bool HasSkinningPosition;
         bool HasSkinningNormal;
+        bool HasNormalMap;
         bool HasSkinningTangent;
+        bool UseTransparent;
         int SkinningMaxBones = 56; //GraphicsDevice.Features.Profile <= GraphicsProfile.Level_9_3 ? 56 : 200;
         int SkinningBones = 0;
-
-        ShaderMixinSource AlbedoMaterial;
-
-        // transparency
-        bool UseTransparent;
-        bool UseTransparentMask;
-        float AlphaDiscardThreshold;
-
-        // environment mapping
-        bool UseSpecularEnvironmentMapping;
-        bool UseDiffuseEnvironmentMapping;
-
-        ShaderMixinSource DiffuseShader;
-        ShaderMixinSource SpecularShader;
-        ShaderMixinSource BumpMap;
-        ShaderMixinSource NormalMap;
-        ShaderMixinSource DisplacementMap;
-        ShaderMixinSource TransparencyMap;
-        ShaderMixinSource EmissiveMap;
-        ShaderMixinSource ReflectionMap;
-        ShaderMixinSource AmbientMap;
-        ShaderMixinSource AlbedoDiffuse;
-        ShaderMixinSource AlbedoSpecular;
-        ShaderMixinSource SpecularPowerMap;
-        ShaderMixinSource SpecularIntensityMap;
-        ShaderMixinSource RoughnessMap;
-        ShaderMixinSource ReflectanceMap;
-        ShaderMixinSource LightMap;
     };
 }

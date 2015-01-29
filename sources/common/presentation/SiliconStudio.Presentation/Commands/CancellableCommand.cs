@@ -12,7 +12,7 @@ namespace SiliconStudio.Presentation.Commands
     /// </summary>
     public abstract class CancellableCommand : CommandBase
     {
-        private readonly IActionStack actionStack;
+        private readonly IViewModelServiceProvider serviceProvider;
         private readonly IEnumerable<IDirtiableViewModel> dirtiables;
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace SiliconStudio.Presentation.Commands
         protected CancellableCommand(IViewModelServiceProvider serviceProvider, IEnumerable<IDirtiableViewModel> dirtiables)
             : base(serviceProvider)
         {
-            actionStack = serviceProvider.Get<IActionStack>();
+            this.serviceProvider = serviceProvider;
             this.dirtiables = dirtiables;
         }
 
@@ -31,7 +31,9 @@ namespace SiliconStudio.Presentation.Commands
         /// The name of this command.
         /// </summary>
         public abstract string Name { get; }
-        
+
+        private IActionStack ActionStack { get { return serviceProvider.Get<IActionStack>(); } }
+
         /// <inheritdoc/>
         public override void Execute(object parameter)
         {
@@ -57,7 +59,7 @@ namespace SiliconStudio.Presentation.Commands
         public UndoToken ExecuteCommand(object parameter, bool createActionItem)
         {
             // TODO: Improve this - we're discarding any change made directly by the command invoke and create a CommandActionItem after.
-            var transactionalActionStack = actionStack as ITransactionalActionStack;
+            var transactionalActionStack = ActionStack as ITransactionalActionStack;
             if (transactionalActionStack != null)
                 transactionalActionStack.BeginTransaction();
 
@@ -69,7 +71,7 @@ namespace SiliconStudio.Presentation.Commands
             if (token.CanUndo && createActionItem)
             {
                 var actionItem = new CommandActionItem(this, parameter, token, dirtiables);
-                actionStack.Add(actionItem);
+                ActionStack.Add(actionItem);
             }
             return token;
         }

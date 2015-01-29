@@ -2,16 +2,15 @@ using System;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Core.Serialization.Converters;
 
 namespace SiliconStudio.Paradox.Physics
 {
-    public class PhysicsColliderShapeDataConverter : DataConverter<PhysicsColliderShapeData, PhysicsColliderShape>
+    public class PhysicsColliderShapeDataConverter //: DataConverter<PhysicsColliderShapeData, PhysicsColliderShape>
     {
-        public override void ConstructFromData(ConverterContext converterContext, PhysicsColliderShapeData data, ref PhysicsColliderShape obj)
-        {
-            throw new NotImplementedException();
-        }
+        //public override void ConstructFromData(ConverterContext converterContext, PhysicsColliderShapeData data, ref PhysicsColliderShape obj)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         private static ColliderShape CreateShape(IColliderShapeDesc desc)
         {
@@ -142,26 +141,26 @@ namespace SiliconStudio.Paradox.Physics
             return shape;
         }
 
-        public override void ConvertFromData(ConverterContext converterContext, PhysicsColliderShapeData data, ref PhysicsColliderShape obj)
-        {           
-            if (data.ColliderShapes.Count == 1) //single shape case
-            {
-                obj = new PhysicsColliderShape(CreateShape(data.ColliderShapes[0]));
-            }
-            else if (data.ColliderShapes.Count > 1) //need a compound shape in this case
-            {
-                obj = new PhysicsColliderShape(new CompoundColliderShape());
-                var compound = (CompoundColliderShape)obj.Shape;
-                foreach (var desc in data.ColliderShapes)
-                {
-                    compound.AddChildShape(CreateShape(desc));   
-                }
-            }
-        }
-
-        public override void ConvertToData(ConverterContext converterContext, ref PhysicsColliderShapeData data, PhysicsColliderShape obj)
-        {
-            throw new NotImplementedException();
-        }
+        //public override void ConvertFromData(ConverterContext converterContext, PhysicsColliderShapeData data, ref PhysicsColliderShape obj)
+        //{           
+        //    if (data.ColliderShapes.Count == 1) //single shape case
+        //    {
+        //        obj = new PhysicsColliderShape(CreateShape(data.ColliderShapes[0]));
+        //    }
+        //    else if (data.ColliderShapes.Count > 1) //need a compound shape in this case
+        //    {
+        //        obj = new PhysicsColliderShape(new CompoundColliderShape());
+        //        var compound = (CompoundColliderShape)obj.Shape;
+        //        foreach (var desc in data.ColliderShapes)
+        //        {
+        //            compound.AddChildShape(CreateShape(desc));   
+        //        }
+        //    }
+        //}
+        //
+        //public override void ConvertToData(ConverterContext converterContext, ref PhysicsColliderShapeData data, PhysicsColliderShape obj)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }

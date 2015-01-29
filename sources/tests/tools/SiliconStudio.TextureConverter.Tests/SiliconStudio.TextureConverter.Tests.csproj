@@ -40,6 +40,7 @@
     <Compile Include="TexImageTest.cs" />
     <Compile Include="TexLibraryTest.cs" />
     <Compile Include="TexThread.cs" />
+    <Compile Include="TextureTool.Extensions.cs" />
     <Compile Include="TextureToolTest.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Paradox.Graphics.Font;
 
 namespace SiliconStudio.Paradox.Graphics

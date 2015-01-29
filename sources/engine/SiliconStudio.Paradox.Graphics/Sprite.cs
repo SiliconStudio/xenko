@@ -3,14 +3,12 @@
 using System;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization.Converters;
 
 namespace SiliconStudio.Paradox.Graphics
 {
     /// <summary>
     /// A sprite represents a series frames in an atlas forming an animation. 
     /// </summary>
-    [DataConverter(AutoGenerate = true, ContentReference = false)]
     public class Sprite : ImageFragment
     {
         /// <summary>
@@ -33,7 +31,6 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// The position of the center of the image in pixels.
         /// </summary>
-        [DataMemberConvert]
         public Vector2 Center;
 
         /// <summary>

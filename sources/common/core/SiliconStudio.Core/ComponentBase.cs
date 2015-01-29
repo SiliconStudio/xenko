@@ -50,6 +50,7 @@ namespace SiliconStudio.Core
         /// <value>
         /// The name.
         /// </value>
+        [DataMember(10)]
         public string Name
         {
             get
@@ -147,6 +148,7 @@ namespace SiliconStudio.Core
         /// <summary>
         /// Gets the attached properties to this component.
         /// </summary>
+        [DataMemberIgnore] // Do not try to recreate object (preserve Tags.Owner)
         public PropertyContainer Tags;
     }
 }

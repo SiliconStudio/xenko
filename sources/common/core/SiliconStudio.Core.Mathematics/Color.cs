@@ -632,7 +632,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Converts the color from a packed BGRA integer.
+        /// Converts the color from a packed RGBA integer.
         /// </summary>
         /// <param name="color">A packed integer containing all four color components in RGBA order</param>
         /// <returns>A color.</returns>
@@ -642,7 +642,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Converts the color from a packed BGRA integer.
+        /// Converts the color from a packed RGBA integer.
         /// </summary>
         /// <param name="color">A packed integer containing all four color components in RGBA order</param>
         /// <returns>A color.</returns>

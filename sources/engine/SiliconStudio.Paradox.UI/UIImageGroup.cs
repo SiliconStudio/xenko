@@ -1,4 +1,5 @@
-﻿using SiliconStudio.Core.Serialization.Converters;
+﻿using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.UI
@@ -6,7 +7,8 @@ namespace SiliconStudio.Paradox.UI
     /// <summary>
     /// Represent of group of <see cref="UIImage"/>
     /// </summary>
-    [DataConverter(AutoGenerate = false, ContentReference = true)]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<UIImageGroup>), Profile = "Asset")]
+    [ContentSerializer(typeof(DataContentSerializer<UIImageGroup>))]
     public class UIImageGroup : ImageGroup<UIImage>
     {
     }

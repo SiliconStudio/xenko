@@ -18,11 +18,9 @@
 // http://go.microsoft.com/fwlink/?LinkId=248926
 //--------------------------------------------------------------------------------------
 
-#if defined(_MSC_VER) && (_MSC_VER > 1000)
 #pragma once
-#endif
 
-#if defined(_XBOX_ONE) && defined(_TITLE) && MONOLITHIC
+#if defined(_XBOX_ONE) && defined(_TITLE)
 #include <d3d11_x.h>
 #else
 #include <dxgiformat.h>

@@ -25,7 +25,7 @@ namespace Test
             {
                 context.Mixin(mixin, "ShaderBase");
                 context.Mixin(mixin, "TransformationWAndVP");
-                context.Mixin(mixin, "PositionVSStream");
+                context.Mixin(mixin, "PositionVSPerVertex");
                 context.Mixin(mixin, "NormalVSStream");
                 mixin.Mixin.AddMacro("RENDER_TARGET_COUNT", 3);
                 context.Mixin(mixin, "ShadingBase");

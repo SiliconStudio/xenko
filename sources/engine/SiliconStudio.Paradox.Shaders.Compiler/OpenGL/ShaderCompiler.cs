@@ -152,7 +152,20 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
                 // Add std140 layout
                 foreach (var constantBuffer in glslShader.Declarations.OfType<ConstantBuffer>())
                 {
-                    constantBuffer.Qualifiers |= new LayoutQualifier(new LayoutKeyValue("std140"));
+                    if (isOpenGLES3) // TODO: for OpenGL too?
+                    {
+                        var layoutQualifier = constantBuffer.Qualifiers.OfType<SiliconStudio.Shaders.Ast.Glsl.LayoutQualifier>().FirstOrDefault();
+                        if (layoutQualifier == null)
+                        {
+                            layoutQualifier = new SiliconStudio.Shaders.Ast.Glsl.LayoutQualifier();
+                            constantBuffer.Qualifiers |= layoutQualifier;
+                        }
+                        layoutQualifier.Layouts.Add(new LayoutKeyValue("std140"));
+                    }
+                    else
+                    {
+                        constantBuffer.Qualifiers |= new LayoutQualifier(new LayoutKeyValue("std140"));
+                    }
                 }
 
                 // Output the result
@@ -164,21 +177,24 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
 
                     glslShaderWriter.GenerateUniformBlocks = generateUniformBlocks;
 
-                    foreach (var variable in glslShader.Declarations.OfType<Variable>())
+                    if (!isOpenGLES3)
                     {
-                        if (variable.Qualifiers.Contains(ParameterQualifier.In))
+                        foreach (var variable in glslShader.Declarations.OfType<Variable>())
                         {
-                            variable.Qualifiers.Values.Remove(ParameterQualifier.In);
-                            // "in" becomes "attribute" in VS, "varying" in other stages
-                            variable.Qualifiers.Values.Add(
-                                pipelineStage == PipelineStage.Vertex
-                                    ? global::SiliconStudio.Shaders.Ast.Glsl.ParameterQualifier.Attribute
-                                    : global::SiliconStudio.Shaders.Ast.Glsl.ParameterQualifier.Varying);
-                        }
-                        if (variable.Qualifiers.Contains(ParameterQualifier.Out))
-                        {
-                            variable.Qualifiers.Values.Remove(ParameterQualifier.Out);
-                            variable.Qualifiers.Values.Add(global::SiliconStudio.Shaders.Ast.Glsl.ParameterQualifier.Varying);
+                            if (variable.Qualifiers.Contains(ParameterQualifier.In))
+                            {
+                                variable.Qualifiers.Values.Remove(ParameterQualifier.In);
+                                // "in" becomes "attribute" in VS, "varying" in other stages
+                                variable.Qualifiers.Values.Add(
+                                    pipelineStage == PipelineStage.Vertex
+                                        ? global::SiliconStudio.Shaders.Ast.Glsl.ParameterQualifier.Attribute
+                                        : global::SiliconStudio.Shaders.Ast.Glsl.ParameterQualifier.Varying);
+                            }
+                            if (variable.Qualifiers.Contains(ParameterQualifier.Out))
+                            {
+                                variable.Qualifiers.Values.Remove(ParameterQualifier.Out);
+                                variable.Qualifiers.Values.Add(global::SiliconStudio.Shaders.Ast.Glsl.ParameterQualifier.Varying);
+                            }
                         }
                     }
                 }
@@ -200,7 +216,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
                         .AppendLine("#version 300 es") // TODO: 310 version?
                         .AppendLine();
 
-                if (generateUniformBlocks)
+                if (generateUniformBlocks) // TODO: is it really needed? It produces only a warning.
                     glslShaderCode
                         .AppendLine("#extension GL_ARB_gpu_shader5 : enable")
                         .AppendLine();
@@ -215,11 +231,14 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
                 glslShaderCode
                     .AppendLine("#version 420")
                     .AppendLine();
+            }
 
-                if (pipelineStage == PipelineStage.Pixel)
-                    glslShaderCode
-                        .AppendLine("out vec4 gl_FragData[" + renderTargetCount + "];")
-                        .AppendLine();
+            if ((!isOpenGLES || isOpenGLES3) && pipelineStage == PipelineStage.Pixel)
+            {
+                // TODO: identifiers starting with "gl_" should be reserved. Compilers usually accept them but it may should be prevented.
+                glslShaderCode
+                    .AppendLine("out vec4 gl_FragData[" + renderTargetCount + "];")
+                    .AppendLine();
             }
 
             glslShaderCode.Append(shaderString);

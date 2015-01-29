@@ -39,9 +39,14 @@ namespace SiliconStudio.Quantum.Contents
         bool IsReference { get; }
 
         /// <summary>
-        /// Gets or sets the reference hold by this content, if applicable.
+        /// Gets the reference hold by this content, if applicable.
         /// </summary>
         IReference Reference { get; }
+
+        /// <summary>
+        /// Gets whether the <see cref="Reference"/> contained in this content should lead to the creation of model node for the referenced object.
+        /// </summary>
+        bool ShouldProcessReference { get; }
 
         /// <summary>
         /// Gets or sets the loading state.

@@ -1,19 +1,16 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Runtime.InteropServices;
-using SiliconStudio.Core.Serialization.Converters;
+
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Games;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Engine
 {
-    [Display("Particle Emitter")]
+    [Display(90, "Particle Emitter")]
     public class ParticleEmitterComponent : EntityComponent
     {
         public static PropertyKey<ParticleEmitterComponent> Key = new PropertyKey<ParticleEmitterComponent>("Key", typeof(ParticleEmitterComponent));
@@ -30,7 +27,6 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets or sets the particle count.
         /// </summary>
         /// <value>The particle count.</value>
-        [DataMemberConvert]
         [Display]
         public int Count { get; set; }
 
@@ -38,7 +34,6 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets or sets the type of this emitter..
         /// </summary>
         /// <value>The type.</value>
-        [DataMemberConvert]
         [Display]
         public ParticleEmitterType Type { get; set; }
 
@@ -46,7 +41,6 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets or sets the shader.
         /// </summary>
         /// <value>The shader.</value>
-        [DataMemberConvert]
         public ShaderClassSource Shader { get; set; }
 
         /// <summary>

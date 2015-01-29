@@ -36,6 +36,9 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\common\core\SiliconStudio.Core.Design.Tests\TestMemberPathBase.cs">
+      <Link>TestMemberPathBase.cs</Link>
+    </Compile>
     <Compile Include="CustomParameterCollection.cs" />
     <Compile Include="Diff\TestDiff.cs">
       <SubType>Code</SubType>
@@ -48,6 +51,7 @@
     <Compile Include="AssetObjectTest.cs" />
     <Compile Include="TestAssetImport.cs" />
     <Compile Include="TestAssetReferenceCollection.cs" />
+    <Compile Include="TestAssetUpdater.cs" />
     <Compile Include="TestAssetUpgrade.cs" />
     <Compile Include="TestBase.cs" />
     <Compile Include="TestDependencyManager.cs" />

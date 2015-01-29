@@ -4,7 +4,6 @@
 using System.ComponentModel;
 
 using SiliconStudio.Core;
-using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
 
@@ -13,8 +12,8 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
     /// <summary>
     /// Performs a blend at the location of the containing entity. When enabled, takes the up to the MaxBlendCount-most important cubemaps and blends them.
     /// </summary>
-    [DataConverter(AutoGenerate = true)]
     [DataContract("CubemapBlendComponent")]
+    [Display(50, "Cubemap Blend")]
     public sealed class CubemapBlendComponent : EntityComponent
     {
         public static PropertyKey<CubemapBlendComponent> Key = new PropertyKey<CubemapBlendComponent>("Key", typeof(CubemapBlendComponent));
@@ -36,22 +35,14 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
         }
 
         /// <summary>
-        /// Enables the computation of the cubemap.
-        /// </summary>
-        [DataMemberConvert]
-        public bool Enabled { get; set; }
-
-        /// <summary>
         /// The size of the target cubemap.
         /// </summary>
-        [DataMemberConvert]
         [DefaultValue(256)]
         public int Size { get; set; }
 
         /// <summary>
         /// The maximum number of cubemaps that can be blended. 0 means as much as possible.
         /// </summary>
-        [DataMemberConvert]
         [DefaultValue(0)]
         public int MaxBlendCount { get; set; }
 
@@ -96,7 +87,6 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
         /// <summary>
         /// The parameter key the texture will be associated to.
         /// </summary>
-        [DataMemberConvert]
         [DefaultValue(null)]
         public ParameterKey<Texture> TextureKey { get; set; }
 

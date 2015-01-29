@@ -36,7 +36,8 @@ namespace SiliconStudio.Presentation.ViewModel
         protected EditableViewModel(IViewModelServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            ActionStack = serviceProvider.Get<ITransactionalActionStack>();
+            if (serviceProvider.TryGet<ITransactionalActionStack>() == null)
+                throw new ArgumentException("The given IViewModelServiceProvider instance does not contain an ITransactionalActionStack service.");
         }
         
         /// <summary>
@@ -48,7 +49,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <summary>
         /// Gets the transactional action stack used by this view model.
         /// </summary>
-        public ITransactionalActionStack ActionStack { get; private set; }
+        public ITransactionalActionStack ActionStack { get { return ServiceProvider.Get<ITransactionalActionStack>(); } }
 
         /// <summary>
         /// Registers the given collection to create <see cref="CollectionChangedViewModelActionItem"/> in the action stack when it is modified.

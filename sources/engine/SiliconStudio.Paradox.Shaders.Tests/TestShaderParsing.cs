@@ -31,7 +31,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
             sourceManager = new ShaderSourceManager();
             sourceManager.LookupDirectoryList.Add(@"shaders");
             shaderLoader = new ShaderLoader(sourceManager);
-            shaderMixinParser = new ShaderMixinParser();
+            shaderMixinParser = new ShaderMixinParser(AssetManager.FileProvider);
             shaderMixinParser.SourceManager.LookupDirectoryList.Add(@"shaders");
         }
 

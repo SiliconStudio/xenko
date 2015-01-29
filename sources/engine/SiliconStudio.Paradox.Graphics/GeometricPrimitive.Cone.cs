@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// A cone with a circular base and rolled face.
         /// </summary>
-        public struct Cone
+        public static class Cone
         {
             /// <summary>
             /// Creates a cone a circular base and a rolled face.

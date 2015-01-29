@@ -1,0 +1,22 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Paradox.Effects.Materials
+{
+    // Temporary code for testing IMaterialSurface
+    class MaterialSurfaceVertexStageCompositor : ShaderBase, MaterialVertexStream
+    {
+        compose IMaterialSurface materialVertexStage;
+
+        stage override void VSMain()
+        {
+            base.VSMain();
+
+            // Reset material streams (TODO: move this to composition)
+            ResetMaterialVertexStream();
+
+            // Compute the shading of the surface
+            // TODO: separate between material attributes blending and material lighting/shadow shading
+            materialVertexStage.Compute();
+        }
+    };
+}

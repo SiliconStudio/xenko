@@ -163,7 +163,7 @@ namespace SiliconStudio.Paradox.Effects
             builder.Append(index);
             builder.Append(']');
 
-            return ComposeWith(key, builder.ToString());
+            return ComposeWith(key, builder);
         }
 
         private static T ComposeWith<T>(this T key, StringBuilder builder) where T : ParameterKey
@@ -175,6 +175,21 @@ namespace SiliconStudio.Paradox.Effects
                 throw new ArgumentException("Key [{0}] must be a registered key".ToFormat(key));
             }
             return newKey;
+        }
+
+        public static ParameterKey TryFindByName(string name)
+        {
+            if (name == null)
+            {
+                return null;
+            }
+
+            lock (keyByNames)
+            {
+                ParameterKey key;
+                keyByNames.TryGetValue(name, out key);
+                return key;
+            }
         }
 
         public static ParameterKey FindByName(string name)

@@ -522,10 +522,6 @@ namespace SiliconStudio.Paradox.Effects.Renderers
                 // set default depth stencil test
                 GraphicsDevice.SetDepthStencilState(GraphicsDevice.DepthStencilStates.None);
 
-                // TODO: remove this?
-                // override specular intensity
-                context.Parameters.Set(MaterialKeys.SpecularIntensity, 1.0f);
-
                 UpdateTiles(Pass.Parameters);
 
                 // direct lighting

@@ -6,14 +6,13 @@ using System.ComponentModel;
 using System.Linq;
 
 using SharpYaml;
-using SharpYaml.Serialization;
 
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
+using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Yaml;
 using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.Assets.Model
@@ -21,9 +20,8 @@ namespace SiliconStudio.Paradox.Assets.Model
     [DataContract("Model")]
     [AssetFileExtension(FileExtension)]
     [AssetCompiler(typeof(ModelAssetCompiler))]
-    [ThumbnailCompiler(PreviewerCompilerNames.ModelThumbnailCompilerQualifiedName)]
-    [AssetFactory((Type)null)]
-    [AssetDescription("Model", "A 3D model", true)]
+    [ThumbnailCompiler(PreviewerCompilerNames.ModelThumbnailCompilerQualifiedName, true)]
+    [Display("Model", "A 3D model")]
     [AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
     public sealed class ModelAsset : AssetImportTracked
     {
@@ -39,10 +37,20 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// </summary>
         public ModelAsset()
         {
-            MeshParameters = new Dictionary<string, MeshMaterialParameters>();
+            SerializedVersion = AssetFormatVersion;
+            Materials = new List<ModelMaterial>();
             Nodes = new List<NodeInformation>();
             SetDefaults();
         }
+        
+        /// <summary>
+        /// The materials.
+        /// </summary>
+        /// <userdoc>
+        /// The list of materials in the model.
+        /// </userdoc>
+        [DataMember(40)]
+        public List<ModelMaterial> Materials { get; private set; }
 
         /// <summary>
         /// List that stores if a node should be preserved
@@ -50,46 +58,8 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <userdoc>
         /// The nodes of the model.
         /// </userdoc>
-        [DataMember(20)]
+        [DataMember(50), DiffUseAsset2]
         public List<NodeInformation> Nodes { get; private set; }
-        
-            /// <summary>
-        /// Gets or sets the view direction to use when the importer is finding transparent polygons. Default is float3(0, 0, -1)
-        /// </summary>
-        /// <value>The view direction for transparent z sort.</value>
-        /// <userdoc>
-        /// The direction used to sort the polygons of the mesh.
-        /// </userdoc>
-        [DataMember(30)]
-        [DefaultValue(null)]
-        public Vector3? ViewDirectionForTransparentZSort { get; set; }
-        
-        /// <summary>
-        /// Gets or sets the axis representing the up axis of the object
-        /// </summary>
-        /// <userdoc>
-        /// The up axis of the model (for editor preview only).
-        /// </userdoc>
-        [DataMember(35)]
-        public Vector3 UpAxis { get; set; }
-
-        /// <summary>
-        /// Gets or sets the axis representing the up axis of the object
-        /// </summary>
-        /// <userdoc>
-        /// The front axis of the model (for editor preview only).
-        /// </userdoc>
-        [DataMember(38)]
-        public Vector3 FrontAxis { get; set; }
-
-        /// <summary>
-        /// The mesh parameters.
-        /// </summary>
-        /// <userdoc>
-        /// The list of all the meshes in the model.
-        /// </userdoc>
-        [DataMember(40)]
-        public Dictionary<string, MeshMaterialParameters> MeshParameters { get; private set; }
 
         /// <summary>
         /// Gets or sets if the mesh will be compacted (meshes will be merged).
@@ -164,8 +134,6 @@ namespace SiliconStudio.Paradox.Assets.Model
         public override void SetDefaults()
         {
             BuildOrder = 500;
-            UpAxis = Vector3.UnitY;
-            FrontAxis = Vector3.UnitZ;
             if (Nodes != null)
                 Nodes.Clear();
         }

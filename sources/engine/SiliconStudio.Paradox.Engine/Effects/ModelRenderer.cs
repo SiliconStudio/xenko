@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Effects
     /// </summary>
     public class ModelRenderer : Renderer
     {
-        private int meshPassSlot;
+        private ModelRendererSlot modelRenderSlot;
 
         private readonly FastList<RenderMesh> meshesToRender;
 
@@ -178,12 +178,13 @@ namespace SiliconStudio.Paradox.Effects
 
             var pipelineModelState = Pass.GetOrCreateModelRendererState();
 
-            // Get the slot for the pass of this processor
-            meshPassSlot = pipelineModelState.GetModelSlot(Pass, EffectName);
+            // Allocate (or reuse) a slot for the pass of this processor
+            // Note: The slot is passed as out, so that when ModelRendererState.ModelSlotAdded callback is fired,
+            // ModelRenderer.modelRenderSlot is valid (it might call PrepareModelForRendering recursively).
+            pipelineModelState.AllocateModelSlot(Pass, EffectName, PrepareModelForRendering, out modelRenderSlot);
 
-            // Register callbacks used by the MeshProcessor
+            // Register callback used by the MeshProcessor
             pipelineModelState.AcceptModel += OnAcceptModel;
-            pipelineModelState.PrepareRenderModel += PrepareModelForRendering;
         }
 
         public override void Unload()
@@ -192,9 +193,12 @@ namespace SiliconStudio.Paradox.Effects
 
             var pipelineModelState = Pass.GetOrCreateModelRendererState();
 
-            // Unregister callbacks
+            // Release the slot (note: if shared, it will wait for all its usage to be released)
+            pipelineModelState.ReleaseModelSlot(modelRenderSlot);
+            modelRenderSlot = null;
+
+            // Unregister callback
             pipelineModelState.AcceptModel -= OnAcceptModel;
-            pipelineModelState.PrepareRenderModel -= PrepareModelForRendering;
         }
 
         protected override void OnRendering(RenderContext context)
@@ -210,7 +214,7 @@ namespace SiliconStudio.Paradox.Effects
                     continue;
                 }
 
-                var meshes = renderModel.RenderMeshes[meshPassSlot];
+                var meshes = renderModel.RenderMeshes[modelRenderSlot.Slot];
                 if (meshes != null)
                     meshesToRender.AddRange(meshes);
             }
@@ -243,7 +247,7 @@ namespace SiliconStudio.Paradox.Effects
                 }
 
                 // Update Effect and mesh
-                UpdateEffect(mesh);
+                UpdateEffect(mesh, Pass.Parameters);
 
                 // PostEffectUpdate callbacks
                 foreach (var postEffectUpdate in postEffectUpdates)
@@ -268,11 +272,11 @@ namespace SiliconStudio.Paradox.Effects
             // We keep it that way for now since we only have two ModelRenderer with the same effect in the deferrent pipeline (splitting between opaque and transparent objects) and their acceptance tests are exclusive.
 
             // Create the list of RenderMesh objects
-            var renderMeshes = renderModel.RenderMeshes[meshPassSlot];
+            var renderMeshes = renderModel.RenderMeshes[modelRenderSlot.Slot];
             if (renderMeshes == null)
             {
                 renderMeshes = new List<RenderMesh>();
-                renderModel.RenderMeshes[meshPassSlot] = renderMeshes;
+                renderModel.RenderMeshes[modelRenderSlot.Slot] = renderMeshes;
             }
 
             foreach (var mesh in renderModel.Model.Meshes)
@@ -283,7 +287,7 @@ namespace SiliconStudio.Paradox.Effects
                 }
 
                 var renderMesh = new RenderMesh(renderModel, mesh);
-                UpdateEffect(renderMesh);
+                UpdateEffect(renderMesh, null);
 
                 // Register mesh for rendering
                 renderMeshes.Add(renderMesh);
@@ -299,7 +303,10 @@ namespace SiliconStudio.Paradox.Effects
                 if (!mesh.Enabled || (acceptRenderMeshes.Count > 0 && !OnAcceptRenderMesh(context, mesh)))
                 {
                     meshes.SwapRemoveAt(i--);
+                    continue;
                 }
+
+                mesh.UpdateMaterial();
             }
         }
 
@@ -364,9 +371,9 @@ namespace SiliconStudio.Paradox.Effects
         /// <summary>
         /// Create or update the Effect of the effect mesh.
         /// </summary>
-        protected void UpdateEffect(RenderMesh renderMesh)
+        protected void UpdateEffect(RenderMesh renderMesh, ParameterCollection passParameters)
         {
-            if (dynamicEffectCompiler.Update(renderMesh))
+            if (dynamicEffectCompiler.Update(renderMesh, passParameters))
             {
                 renderMesh.Initialize(GraphicsDevice);
             }
@@ -425,10 +432,10 @@ namespace SiliconStudio.Paradox.Effects
                     return 0;
 
                 // TODO: Add a kind of associated data to an effect mesh to speed up this test?
-                var leftMaterial = left.Mesh.Material;
+                var leftMaterial = left.Material;
                 var isLeftTransparent = (leftMaterial != null && leftMaterial.Parameters.Get(MaterialParameters.UseTransparent));
 
-                var rightMaterial = right.Mesh.Material;
+                var rightMaterial = right.Material;
                 var isRightTransparent = (rightMaterial != null && rightMaterial.Parameters.Get(MaterialParameters.UseTransparent));
 
                 if (isLeftTransparent && !isRightTransparent)

@@ -1,24 +1,24 @@
 !Entity
-Id: 0b4f06b5-01ff-4959-8d5d-74bbce5e33be
+Id: 1423931a-7924-4a01-8931-1c58d668079b
+SerializedVersion: 1
 Tags: []
-Data:
-    Name: factory
-    Components:
-        ModelComponent.Key: !ModelComponentData
-            DrawOrder: 0
-            Enabled: true
-            Model: 6b50839d-cf0f-4703-8077-bf036b340ccd:factory_model
-            Parameters: null
-~Base:
-    Location: --import--
-    Asset: !Entity
-        Id: 00000000-0000-0000-0000-000000000000
-        Tags: []
-        Data:
-            Name: factory
-            Components:
-                ModelComponent.Key: !ModelComponentData
-                    DrawOrder: 0
-                    Enabled: true
-                    Model: 6b50839d-cf0f-4703-8077-bf036b340ccd:factory_model
-                    Parameters: null
+Hierarchy:
+    RootEntity: 62ad31e5-292b-4953-b4b3-9d0b39d13d66
+    Entities:
+        SyncRoot: null
+        ~Items:
+            -   Id: 62ad31e5-292b-4953-b4b3-9d0b39d13d66
+                Name: Root
+                Components:
+                    TransformationComponent.Key: !TransformationComponentData
+                        Children: []
+                        Rotation: {W: 1, X: 0, Y: 0, Z: 0}
+                        Scaling: {X: 1, Y: 1, Z: 1}
+                        Translation: {X: 0, Y: 0, Z: 0}
+                        UseTRS: true
+                    ModelComponent.Key: !ModelComponentData
+                        DrawOrder: 0
+                        Enabled: true
+                        Model: ddb8f78e-58f5-4c3d-b22f-259ffd5d6be3:factory_model
+                        Parameters: {}
+AssetBases: {}

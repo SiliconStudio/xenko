@@ -1,23 +1,26 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Serialization.Serializers;
+using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Paradox.EntityModel
 {
-    [DataConverter(AutoGenerate = false, ContentReference = true)]
-    [DataSerializer(typeof(EntityComponentSerializer<>), Mode = DataSerializerGenericMode.Type)]
-    public class EntityComponent : IContentUrl
+    [DataSerializer(typeof(EntityComponent.Serializer))]
+    [DataContract]
+    public abstract class EntityComponent
     {
+        private bool enabled;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityComponent"/> class.
         /// </summary>
-        public EntityComponent()
+        protected EntityComponent()
         {
+            Enabled = true;
         }
 
         /// <summary>
@@ -26,13 +29,35 @@ namespace SiliconStudio.Paradox.EntityModel
         /// <value>
         /// The owner entity.
         /// </value>
+        [DataMemberIgnore]
         public Entity Entity { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="EntityComponent"/> is enabled.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if enabled; otherwise, <c>false</c>.
+        /// </value>
+        [DataMember(-10)]
+        [DefaultValue(true)]
+        public bool Enabled
+        {
+            get
+            {
+                return enabled;
+            }
+            set
+            {
+                enabled = value;
+            }
+        }
 
         /// <summary>
         /// Gets the entity and throws an exception if the entity is null.
         /// </summary>
         /// <value>The entity.</value>
         /// <exception cref="System.InvalidOperationException">Entity on this instance is null</exception>
+        [DataMemberIgnore]
         protected Entity EnsureEntity
         {
             get
@@ -43,18 +68,11 @@ namespace SiliconStudio.Paradox.EntityModel
             }
         }
 
-        string IContentUrl.Url { get; set; }
-
         /// <summary>
         /// The default key this component is associated to.
         /// </summary>
-        public virtual PropertyKey DefaultKey
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        [DataMemberIgnore]
+        public abstract PropertyKey DefaultKey { get; }
 
         /// <summary>
         /// Gets the default key for the specified entity component type.
@@ -70,6 +88,18 @@ namespace SiliconStudio.Paradox.EntityModel
         struct EntityComponentHelper<T> where T : EntityComponent, new()
         {
             public static readonly PropertyKey DefaultKey = new T().DefaultKey;
+        }
+
+        internal class Serializer : DataSerializer<EntityComponent>
+        {
+            public override void Serialize(ref EntityComponent obj, ArchiveMode mode, SerializationStream stream)
+            {
+                var entity = obj.Entity;
+
+                stream.Serialize(ref entity, mode);
+                stream.Serialize(ref obj.enabled, mode);
+                obj.Entity = entity;
+            }
         }
     }
 }

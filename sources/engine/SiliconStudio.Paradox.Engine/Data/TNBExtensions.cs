@@ -3,12 +3,10 @@
 using System;
 using System.IO;
 using System.Linq;
-using SiliconStudio.Paradox.Effects.Data;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Serializers;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics.Data;
 
 namespace SiliconStudio.Paradox.Extensions
@@ -23,7 +21,7 @@ namespace SiliconStudio.Paradox.Extensions
         /// More info at http://www.terathon.com/code/tangent.html
         /// </summary>
         /// <param name="meshData">The mesh data.</param>
-        public static unsafe void GenerateTangentBinormal(this MeshDrawData meshData)
+        public static unsafe void GenerateTangentBinormal(this MeshDraw meshData)
         {
             if (!meshData.IsSimple())
                 throw new ArgumentException("meshData is not simple.");
@@ -32,15 +30,15 @@ namespace SiliconStudio.Paradox.Extensions
                 && meshData.PrimitiveType != PrimitiveType.TriangleListWithAdjacency)
                 throw new NotImplementedException();
 
-            var vertexBufferBinding = meshData.VertexBuffers[0];
+            var oldVertexBufferBinding = meshData.VertexBuffers[0];
             var indexBufferBinding = meshData.IndexBuffer;
-            var indexData = indexBufferBinding != null ? indexBufferBinding.Buffer.Value.Content : null;
+            var indexData = indexBufferBinding != null ? indexBufferBinding.Buffer.GetSerializationData().Content : null;
 
-            var oldVertexStride = vertexBufferBinding.Declaration.VertexStride;
-            var bufferData = vertexBufferBinding.Buffer.Value.Content;
+            var oldVertexStride = oldVertexBufferBinding.Declaration.VertexStride;
+            var bufferData = oldVertexBufferBinding.Buffer.GetSerializationData().Content;
 
             // TODO: Usage index in key
-            var offsetMapping = vertexBufferBinding.Declaration
+            var offsetMapping = oldVertexBufferBinding.Declaration
                 .EnumerateWithOffsets()
                 .ToDictionary(x => x.VertexElement.SemanticAsText, x => x.Offset);
 
@@ -49,32 +47,32 @@ namespace SiliconStudio.Paradox.Extensions
             var normalOffset = offsetMapping[VertexElementUsage.Normal];
 
             // Add tangent to vertex declaration
-            var vertexElements = vertexBufferBinding.Declaration.VertexElements.ToList();
+            var vertexElements = oldVertexBufferBinding.Declaration.VertexElements.ToList();
             if (!offsetMapping.ContainsKey(VertexElementUsage.Tangent))
                 vertexElements.Add(VertexElement.Tangent<Vector4>());
-            vertexBufferBinding.Declaration = new VertexDeclaration(vertexElements.ToArray());
-            var newVertexStride = vertexBufferBinding.Declaration.VertexStride;
+            var vertexDeclaration = new VertexDeclaration(vertexElements.ToArray());
+            var newVertexStride = vertexDeclaration.VertexStride;
 
             // Update mapping
-            offsetMapping = vertexBufferBinding.Declaration
+            offsetMapping = vertexDeclaration
                 .EnumerateWithOffsets()
                 .ToDictionary(x => x.VertexElement.SemanticAsText, x => x.Offset);
 
             var tangentOffset = offsetMapping[VertexElementUsage.Tangent];
 
-            var newBufferData = new byte[vertexBufferBinding.Count * newVertexStride];
+            var newBufferData = new byte[oldVertexBufferBinding.Count * newVertexStride];
 
-            var tangents = new Vector3[vertexBufferBinding.Count];
-            var bitangents = new Vector3[vertexBufferBinding.Count];
+            var tangents = new Vector3[oldVertexBufferBinding.Count];
+            var bitangents = new Vector3[oldVertexBufferBinding.Count];
 
             fixed (byte* indexBufferStart = indexData)
-            fixed (byte* oldBuffer = &bufferData[vertexBufferBinding.Offset])
+            fixed (byte* oldBuffer = &bufferData[oldVertexBufferBinding.Offset])
             fixed (byte* newBuffer = &newBufferData[0])
             {
                 var indexBuffer32 = indexBufferBinding != null && indexBufferBinding.Is32Bit ? (int*)indexBufferStart : null;
                 var indexBuffer16 = indexBufferBinding != null && !indexBufferBinding.Is32Bit ? (short*)indexBufferStart : null;
 
-                var indexCount = indexBufferBinding != null ? indexBufferBinding.Count : vertexBufferBinding.Count;
+                var indexCount = indexBufferBinding != null ? indexBufferBinding.Count : oldVertexBufferBinding.Count;
 
                 for (int i = 0; i < indexCount; i += 3)
                 {
@@ -131,7 +129,7 @@ namespace SiliconStudio.Paradox.Extensions
 
                 var oldVertexOffset = 0;
                 var newVertexOffset = 0;
-                for (int i = 0; i < vertexBufferBinding.Count; ++i)
+                for (int i = 0; i < oldVertexBufferBinding.Count; ++i)
                 {
                     Utilities.CopyMemory(new IntPtr(&newBuffer[newVertexOffset]), new IntPtr(&oldBuffer[oldVertexOffset]), oldVertexStride);
 
@@ -152,8 +150,8 @@ namespace SiliconStudio.Paradox.Extensions
                 }
             }
 
-            vertexBufferBinding.Offset = 0;
-            vertexBufferBinding.Buffer = new BufferData(BufferFlags.VertexBuffer, newBufferData);
+            // Replace new vertex buffer binding
+            meshData.VertexBuffers[0] = new VertexBufferBinding(new BufferData(BufferFlags.VertexBuffer, newBufferData).ToSerializableVersion(), vertexDeclaration, oldVertexBufferBinding.Count);
         }
     }
 }

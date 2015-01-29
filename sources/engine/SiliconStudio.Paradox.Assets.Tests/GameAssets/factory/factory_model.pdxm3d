@@ -11,20 +11,11 @@ Nodes:
     - {Name: Plane01, Depth: 1, Preserve: false}
     - {Name: group1, Depth: 1, Preserve: false}
     - {Name: Factory_02, Depth: 2, Preserve: false}
-UpAxis: {X: 0, Y: 1, Z: 0}
-MeshParameters:
-    Factory_02:
-        NodeName: Factory_02
+Materials:
+    -   Name: blinn1
         Material: bdbd421a-c801-47b9-807b-9c3be7915054:factory/factory_material_blinn1
-        Parameters:
-            Capacity: 0
-            ~Items: {}
-    Plane01:
-        NodeName: Plane01
+    -   Name: blinn2
         Material: 0c67993e-6a1b-4f3c-81bb-24ec84024893:factory/factory_material_blinn2
-        Parameters:
-            Capacity: 0
-            ~Items: {}
 ~Base:
     Location: --import--
     Asset: !Model
@@ -37,17 +28,8 @@ MeshParameters:
             - {Name: Plane01, Depth: 1, Preserve: false}
             - {Name: group1, Depth: 1, Preserve: false}
             - {Name: Factory_02, Depth: 2, Preserve: false}
-        UpAxis: {X: 0, Y: 1, Z: 0}
-        MeshParameters:
-            Factory_02:
-                NodeName: Factory_02
-                Material: bdbd421a-c801-47b9-807b-9c3be7915054:factory_material_blinn1
-                Parameters:
-                    Capacity: 0
-                    ~Items: {}
-            Plane01:
-                NodeName: Plane01
-                Material: 0c67993e-6a1b-4f3c-81bb-24ec84024893:factory_material_blinn2
-                Parameters:
-                    Capacity: 0
-                    ~Items: {}
+        Materials:
+            -   Name: blinn1
+                Material: bdbd421a-c801-47b9-807b-9c3be7915054:factory/factory_material_blinn1
+            -   Name: blinn2
+                Material: 0c67993e-6a1b-4f3c-81bb-24ec84024893:factory/factory_material_blinn2

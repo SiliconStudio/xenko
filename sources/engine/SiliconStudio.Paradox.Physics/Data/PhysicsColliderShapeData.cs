@@ -5,8 +5,6 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Core.Serialization.Converters;
-using SiliconStudio.Paradox.Physics;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -16,7 +14,6 @@ namespace SiliconStudio.Paradox.Physics
 
     [DataContract("PhysicsColliderShapeData")]
     [ContentSerializer(typeof(DataContentSerializer<PhysicsColliderShapeData>))]
-    [ContentSerializer(typeof(DataContentConverterSerializer<PhysicsColliderShape>))]
     public class PhysicsColliderShapeData
     {
         public PhysicsColliderShapeData()

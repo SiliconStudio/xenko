@@ -5,6 +5,7 @@ using System;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
@@ -31,7 +32,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Initializes a new instance of the <see cref="GaussianBlur"/> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        public GaussianBlur(ImageEffectContext context)
+        public GaussianBlur(DrawEffectContext context)
             : base(context)
         {
             // Use shared SharedParameters for blurH and blurV
@@ -105,7 +106,9 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             // Get a temporary texture for the intermediate pass
             // This texture will be allocated only in the scope of this draw and returned to the pool at the exit of this method
-            var outputTextureH = NewScopedRenderTarget2D(inputTexture.Description);
+            var desc = inputTexture.Description;
+            desc.MultiSampleLevel = MSAALevel.None; // TODO we should have a method to get a non-MSAA RT
+            var outputTextureH = NewScopedRenderTarget2D(desc);
 
             if (offsetsWeights == null)
             {

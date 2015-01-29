@@ -6,6 +6,7 @@ using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Assets.Textures
@@ -16,8 +17,8 @@ namespace SiliconStudio.Paradox.Assets.Textures
     [DataContract("Texture")]
     [AssetFileExtension(FileExtension)]
     [AssetCompiler(typeof(TextureAssetCompiler))]
-    [ThumbnailCompiler(PreviewerCompilerNames.TextureThumbnailCompilerQualifiedName)]
-    [AssetDescription("Texture", "A texture", true)]
+    [ThumbnailCompiler(PreviewerCompilerNames.TextureThumbnailCompilerQualifiedName, true)]
+    [Display("Texture", "A texture")]
     public sealed class TextureAsset : AssetImport
     {
         /// <summary>
@@ -42,7 +43,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// </userdoc>
         [DataMember(20)]
         [DefaultValue(100.0f)]
-        [StepRange(0, 10000, 1, 10)]
+        [DataMemberRange(0, 10000, 1, 10)]
         public float Width { get; set; }
 
         /// <summary>
@@ -54,7 +55,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// </userdoc>
         [DataMember(30)]
         [DefaultValue(100.0f)]
-        [StepRange(0, 10000, 1, 10)]
+        [DataMemberRange(0, 10000, 1, 10)]
         public float Height { get; set; }
 
         /// <summary>
@@ -126,6 +127,16 @@ namespace SiliconStudio.Paradox.Assets.Textures
         [DataMember(60)]
         [DefaultValue(true)]
         public bool GenerateMipmaps { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value indicating whether to the input texture is encoded into the standard RGB color space.
+        /// </summary>
+        /// <userdoc>
+        /// If checked, the input image is considered as an sRGB image.
+        /// </userdoc>
+        [DataMember(65)]
+        [DefaultValue(false)]
+        public bool SRgb { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to convert the texture in premultiply alpha.

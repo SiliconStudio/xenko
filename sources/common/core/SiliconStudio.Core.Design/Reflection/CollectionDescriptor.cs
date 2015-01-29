@@ -3,7 +3,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace SiliconStudio.Core.Reflection
 {
@@ -12,14 +11,18 @@ namespace SiliconStudio.Core.Reflection
     /// </summary>
     public class CollectionDescriptor : ObjectDescriptor
     {
-        private static readonly List<string> ListOfMembersToRemove = new List<string> { "Capacity", "Count", "IsReadOnly", "IsFixedSize", "IsSynchronized", "SyncRoot" };
+        private static readonly object[] EmptyObjects = new object[0];
+        private static readonly List<string> ListOfMembersToRemove = new List<string> { "Capacity", "Count", "IsReadOnly", "IsFixedSize", "IsSynchronized", "SyncRoot", "Comparer" };
 
         private readonly Func<object, bool> IsReadOnlyFunction;
         private readonly Func<object, int> GetCollectionCountFunction;
+        private readonly Func<object, int, object> GetIndexedItem;
+        private readonly Action<object, int, object> SetIndexedItem;
         private readonly Action<object, object> CollectionAddFunction;
         private readonly Action<object, int, object> CollectionInsertFunction;
         private readonly Action<object, int> CollectionRemoveAtFunction;
-        private readonly bool hasIndexerSetter;
+        private readonly Action<object> CollectionClearFunction;
+        private readonly bool hasIndexerAccessors;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CollectionDescriptor" /> class.
@@ -44,6 +47,8 @@ namespace SiliconStudio.Core.Reflection
             {
                 var add = itype.GetMethod("Add", new[] {ElementType});
                 CollectionAddFunction = (obj, value) => add.Invoke(obj, new[] {value});
+                var clear = itype.GetMethod("Clear", Type.EmptyTypes);
+                CollectionClearFunction = obj => clear.Invoke(obj, EmptyObjects);
                 var countMethod = itype.GetProperty("Count").GetGetMethod();
                 GetCollectionCountFunction = o => (int)countMethod.Invoke(o, null);
                 var isReadOnly = itype.GetProperty("IsReadOnly").GetGetMethod();
@@ -58,16 +63,24 @@ namespace SiliconStudio.Core.Reflection
                 CollectionInsertFunction = (obj, index, value) => insert.Invoke(obj, new[] { index, value });
                 var removeAt = itype.GetMethod("RemoveAt", new[] { typeof(int) });
                 CollectionRemoveAtFunction = (obj, index) => removeAt.Invoke(obj, new object[] { index });
+                var getItem = itype.GetMethod("get_Item", new[] { typeof(int) });
+                var setItem = itype.GetMethod("set_Item", new[] { typeof(int), ElementType });
+                GetIndexedItem = (obj, index) => getItem.Invoke(obj, new object[] { index });
+                SetIndexedItem = (obj, index, value) => setItem.Invoke(obj, new[] { index, value });
+                hasIndexerAccessors = true;
             }
             // implements IList
             if (!typeSupported && typeof(IList).IsAssignableFrom(type))
             {
                 CollectionAddFunction = (obj, value) => ((IList)obj).Add(value);
+                CollectionClearFunction = obj => ((IList)obj).Clear();
                 CollectionInsertFunction = (obj, index, value) => ((IList)obj).Insert(index, value);
                 CollectionRemoveAtFunction = (obj, index) => ((IList)obj).RemoveAt(index);
                 GetCollectionCountFunction = o => ((IList)o).Count;
+                GetIndexedItem = (obj, index) => ((IList)obj)[index];
+                SetIndexedItem = (obj, index, value) => ((IList)obj)[index] = value;
                 IsReadOnlyFunction = obj => ((IList)obj).IsReadOnly;
-                hasIndexerSetter = true;
+                hasIndexerAccessors = true;
                 typeSupported = true;
             }
 
@@ -120,14 +133,15 @@ namespace SiliconStudio.Core.Reflection
         }
 
         /// <summary>
-        /// Gets a value indicating whether this collection type has a valid indexer setter. If so, <see cref="SetValue"/> can be invoked.
+        /// Gets a value indicating whether this collection type has valid indexer accessors.
+        /// If so, <see cref="SetValue"/> and <see cref="GetValue"/> can be invoked.
         /// </summary>
         /// <value><c>true</c> if this instance has a valid indexer setter; otherwise, <c>false</c>.</value>
-        public bool HasIndexerSetter
+        public bool HasIndexerAccessors
         {
             get
             {
-                return hasIndexerSetter;
+                return hasIndexerAccessors;
             }
         }
 
@@ -151,8 +165,7 @@ namespace SiliconStudio.Core.Reflection
         public object GetValue(object list, int index)
         {
             if (list == null) throw new ArgumentNullException("list");
-            var iList = (IList)list;
-            return iList[index];
+            return GetIndexedItem(list, index);
         }
 
         public void SetValue(object list, object index, object value)
@@ -165,8 +178,16 @@ namespace SiliconStudio.Core.Reflection
         public void SetValue(object list, int index, object value)
         {
             if (list == null) throw new ArgumentNullException("list");
-            var iList = (IList)list;
-            iList[index] = value;
+            SetIndexedItem(list, index, value);
+        }
+
+        /// <summary>
+        /// Clears the specified collection.
+        /// </summary>
+        /// <param name="collection">The collection.</param>
+        public void Clear(object collection)
+        {
+            CollectionClearFunction(collection);
         }
 
         /// <summary>

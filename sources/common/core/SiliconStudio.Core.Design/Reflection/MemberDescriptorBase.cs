@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace SiliconStudio.Core.Reflection
@@ -10,6 +11,15 @@ namespace SiliconStudio.Core.Reflection
     /// </summary>
     public abstract class MemberDescriptorBase : IMemberDescriptor
     {
+        protected MemberDescriptorBase(ITypeDescriptorFactory factory, string name)
+        {
+            if (factory == null) throw new ArgumentNullException("factory");
+            if (name == null) throw new ArgumentNullException("name");
+
+            Factory = factory;
+            Name = name;
+        }
+
         protected MemberDescriptorBase(ITypeDescriptorFactory factory, MemberInfo memberInfo)
         {
             if (factory == null) throw new ArgumentNullException("factory");
@@ -31,13 +41,14 @@ namespace SiliconStudio.Core.Reflection
         /// <value>The type of the declaring.</value>
         public Type DeclaringType { get; private set; }
 
-        public ITypeDescriptor TypeDescriptor { get; internal set; }
+        public ITypeDescriptor TypeDescriptor { get; protected set; }
 
         public ITypeDescriptorFactory Factory { get; private set; }
         public DataMemberMode Mode { get; internal set; }
         public abstract object Get(object thisObject);
         public abstract void Set(object thisObject, object value);
         public abstract bool HasSet { get; }
+        public abstract IEnumerable<T> GetCustomAttributes<T>(bool inherit) where T : Attribute;
         public DataStyle Style { get; internal set; }
 
         /// <summary>

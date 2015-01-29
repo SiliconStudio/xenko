@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="colorCombinerShaderName">Name of the color combiner shader.</param>
-        public ColorCombiner(ImageEffectContext context, string colorCombinerShaderName = "ColorCombinerEffect")
+        public ColorCombiner(DrawEffectContext context, string colorCombinerShaderName = "ColorCombinerEffect")
             : base(context, colorCombinerShaderName)
         {
             factors = new float[TexturingKeys.DefaultTextures.Count];

@@ -12,7 +12,7 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Assets.Materials;
-using SiliconStudio.Paradox.Assets.Materials.Nodes;
+using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
 using SiliconStudio.Paradox.Assets.Model;
 using SiliconStudio.Paradox.Effects;
@@ -78,7 +78,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
             var reducedTrees = materialReducer.ReducedTrees;
 
-            Assert.IsTrue(reducedTrees["diffuse"] is MaterialFloat4Node);
+            Assert.IsTrue(reducedTrees["diffuse"] is ComputeFloat4);
         }
 
         [Test]
@@ -94,13 +94,13 @@ namespace SiliconStudio.Paradox.Assets.Tests
             tree.BuildSlotList();
             Assert.AreEqual(4, tree.MaterialSlots.Count);
 
-            var nodeToReplace = ((tree.RootNode as MaterialBinaryNode).RightChild as MaterialUnaryNode).Node;
+            var nodeToReplace = ((tree.RootNode as MaterialBinaryComputeNode).RightChild as MaterialUnaryNode).Node;
 
-            (nodeToReplace as MaterialFloatNode).Value = 0.666f;
-            var rightNode = new MaterialFloatNode(5.0f);
-            var newNode = new MaterialBinaryNode(nodeToReplace, rightNode, MaterialBinaryOperand.Add);
+            (nodeToReplace as ComputeFloat).Value = 0.666f;
+            var rightNode = new ComputeFloat(5.0f);
+            var newNode = new MaterialBinaryComputeNode(nodeToReplace, rightNode, BinaryOperand.Add);
 
-            var newNode2 = new MaterialFloat4Node(new Vector4(0.1f, 0.2f, 0.3f, 0.4f));
+            var newNode2 = new ComputeFloat4(new Vector4(0.1f, 0.2f, 0.3f, 0.4f));
 
             tree.ReplaceNode(nodeToReplace, newNode2);
 
@@ -263,13 +263,13 @@ namespace SiliconStudio.Paradox.Assets.Tests
             orderedNames.Add("thirdValue");
             orderedNames.Add("fourthValue");
 
-            var orderedGen = new List<INodeParameter>();
-            orderedGen.Add(new NodeParameter());
-            orderedGen.Add(new NodeParameterFloat());
-            orderedGen.Add(new NodeParameterSampler());
-            orderedGen.Add(new NodeParameterFloat4());
+            var orderedGen = new List<IComputeColorParameter>();
+            orderedGen.Add(new ComputeColorParameter());
+            orderedGen.Add(new ComputeColorParameterFloat());
+            orderedGen.Add(new ComputeColorParameterSampler());
+            orderedGen.Add(new ComputeColorParameterFloat4());
 
-            var testDict = new GenericDictionary();
+            var testDict = new ComputeColorParameters();
             testDict.Add(orderedNames[0], orderedGen[0]);
             testDict.Add(orderedNames[1], orderedGen[1]);
             testDict.Add(orderedNames[2], orderedGen[2]);
@@ -286,9 +286,9 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
             //test serialization
             var clonedObject = AssetCloner.Clone(testDict);
-            Assert.IsTrue(clonedObject is GenericDictionary);
+            Assert.IsTrue(clonedObject is ComputeColorParameters);
             counter = 0;
-            foreach (var dictElem in (GenericDictionary)clonedObject)
+            foreach (var dictElem in (ComputeColorParameters)clonedObject)
             {
                 Assert.AreEqual(dictElem.Key, orderedNames[counter]);
                 counter++;

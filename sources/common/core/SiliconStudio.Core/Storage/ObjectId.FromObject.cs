@@ -32,6 +32,7 @@ namespace SiliconStudio.Core.Storage
         {
             var stream = new MemoryStream();
             var writer = new BinarySerializationWriter(stream);
+            writer.Context.SerializerSelector = SerializerSelector.Asset;
             writer.Serialize(ref obj, ArchiveMode.Serialize);
             stream.Position = 0;
             buffer = stream.ToArray();

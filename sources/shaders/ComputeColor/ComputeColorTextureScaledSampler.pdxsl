@@ -9,11 +9,17 @@
 /// TScale: generic float2 - the scaling factor of the texture coordinates.
 /// TSampler: generic SamplerState - the custom sampler.
 /// </remarks>
-class ComputeColorTextureScaledSampler<Texture2D TTexture, Semantic TStream, float2 TScale, SamplerState TSampler> : ComputeColor
+class ComputeColorTextureScaledSampler<LinkType TTextureName, 
+                                       Semantic TStream, 
+                                       LinkType TSampler, 
+                                       MemberName TRgba, 
+                                       float2 TScale> : ComputeColor, 
+                                                        DynamicTexture<TTextureName>, 
+                                                        DynamicSampler<TSampler>, 
+                                                        DynamicTextureStream<TStream>
 {
-    stream float2 TexCoord : TStream;
-
-    override float4 Compute() {
-        return TTexture.Sample(TSampler, streams.TexCoord * TScale);
+    override float4 Compute() 
+    {
+        return Texture.Sample(Sampler, streams.TexCoord * TScale).TRgba;
     }
 };

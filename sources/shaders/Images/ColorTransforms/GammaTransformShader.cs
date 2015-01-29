@@ -18,6 +18,6 @@ namespace SiliconStudio.Paradox.Effects.Images
 {
     internal static partial class GammaTransformShaderKeys
     {
-        public static readonly ParameterKey<float> Gamma = ParameterKeys.New<float>(2.2f);
+        public static readonly ParameterKey<float> Gamma = ParameterKeys.New<float>(2.2333333f);
     }
 }

@@ -10,6 +10,4 @@ Material:
             Offset: {X: 0, Y: 0}
     ColorNodes:
         MaterialParameters.AlbedoDiffuse: diffuse
-    Parameters:
-        Capacity: 0
-        ~Items: {}
+    Parameters: {}

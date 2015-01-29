@@ -31,7 +31,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// A plane primitive.
         /// </summary>
-        public struct Plane
+        public static class Plane
         {
             /// <summary>
             /// Creates a Plane primitive on the X/Y plane with a normal equal to -<see cref="Vector3.UnitZ"/>.

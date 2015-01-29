@@ -21,6 +21,7 @@ namespace SiliconStudio.Paradox.Effects
         public static readonly ParameterKey<Matrix> View = ParameterKeys.New<Matrix>();
         public static readonly ParameterKey<Matrix> ViewInverse = ParameterKeys.New<Matrix>();
         public static readonly ParameterKey<Matrix> Projection = ParameterKeys.New<Matrix>();
+        public static readonly ParameterKey<Matrix> ProjectionInverse = ParameterKeys.New<Matrix>();
         public static readonly ParameterKey<Matrix> ViewProjection = ParameterKeys.New<Matrix>();
         public static readonly ParameterKey<Vector2> ProjScreenRay = ParameterKeys.New<Vector2>();
         public static readonly ParameterKey<Vector4> Eye = ParameterKeys.New<Vector4>();

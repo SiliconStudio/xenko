@@ -1,8 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
+
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.DataModel;
 
 namespace SiliconStudio.Paradox.Assets.Model
@@ -10,9 +14,9 @@ namespace SiliconStudio.Paradox.Assets.Model
     [DataContract("Animation")]
     [AssetFileExtension(FileExtension)]
     [AssetCompiler(typeof(AnimationAssetCompiler))]
-    [AssetFactory(typeof(AnimationFactory))]
+    [ObjectFactory(typeof(AnimationFactory))]
     [ThumbnailCompiler(PreviewerCompilerNames.AnimationThumbnailCompilerQualifiedName)]
-    [AssetDescription("Animation", "A skeletal animation", false)]
+    [Display("Animation", "A skeletal animation")]
     public class AnimationAsset : AssetImport
     {
         /// <summary>
@@ -35,9 +39,9 @@ namespace SiliconStudio.Paradox.Assets.Model
             RepeatMode = AnimationRepeatMode.LoopInfinite;
         }
 
-        private class AnimationFactory : IAssetFactory
+        private class AnimationFactory : IObjectFactory
         {
-            public Asset New()
+            public object New(Type type)
             {
                 return new AnimationAsset();
             }

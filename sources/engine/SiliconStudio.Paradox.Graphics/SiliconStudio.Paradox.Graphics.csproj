@@ -92,30 +92,27 @@
   <ItemGroup>
     <Compile Include="AppContextType.cs" />
     <Compile Include="BatchBase.cs" />
+    <Compile Include="BlendStateSerializer.cs" />
     <Compile Include="DataOld\GpuBlendStateSerializer.cs" />
     <Compile Include="DataOld\GpuDepthStencilStateSerializer.cs" />
     <Compile Include="DataOld\GpuRasterizerStateSerializer.cs" />
     <Compile Include="DataOld\GpuSamplerStateSerializer2.cs" />
     <Compile Include="DataOld\GpuTextureSerializer2.cs" />
+    <Compile Include="GraphicsDeviceServiceLocal.cs" />
+    <Compile Include="RasterizerStateSerializer.cs" />
     <Compile Include="Data\BufferData.cs" />
-    <Compile Include="Data\BufferDataConverter.cs" />
-    <Compile Include="Data\CustomConverters.cs" />
-    <Compile Include="Data\GraphicsData.cs">
-      <DependentUpon>GraphicsData.pdxdata</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Data\ImageGroupData.cs" />
-    <Compile Include="Data\SpriteGroupData.cs" />
+    <Compile Include="Data\GraphicsSerializerExtensions.cs" />
+    <Compile Include="Data\BufferSerializer.cs" />
+    <Compile Include="Data\TextureSerializer.cs" />
     <Compile Include="Direct3D\DisplayMode.Direct3D.cs" />
     <Compile Include="Direct3D\EffectInputSignature.Direct3D.cs" />
     <Compile Include="Direct3D\GraphicsOutput.Direct3D.cs" />
     <Compile Include="Direct3D\InputLayoutManager.cs" />
     <Compile Include="Direct3D\Rational.Direct3D.cs" />
-    <Compile Include="FakeDepthStencilState.cs" />
-    <Compile Include="FakeRasterizerState.cs" />
+    <Compile Include="DepthStencilStateSerializer.cs" />
+    <Compile Include="WorkingSpace.cs" />
     <Compile Include="Font\FontAntiAliasMode.cs" />
+    <Compile Include="Font\FontStyleExtensions.cs" />
     <Compile Include="GeometricMultiTexcoordPrimitive.cs" />
     <Compile Include="GeometricMultiTexcoordPrimitive.Cube.cs" />
     <Compile Include="GeometricMultiTexcoordPrimitive.Cylinder.cs" />
@@ -139,12 +136,11 @@
     <Compile Include="Effects\ConstantBufferData.cs" />
     <Compile Include="Effects\Effect.cs" />
     <Compile Include="EffectInputSignature.cs" />
-    <Compile Include="Effects\EffectConverter.cs" />
+    <Compile Include="Effects\EffectSerializer.cs" />
     <Compile Include="Effects\EffectParameterResourceBinding.cs" />
     <Compile Include="Effects\EffectStateBindings.cs" />
     <Compile Include="Effects\ParameterConstantBuffer.cs" />
     <Compile Include="Effects\StageStatus.cs" />
-    <Compile Include="FakeBlendState.cs" />
     <Compile Include="Font\FontHelper.cs" />
     <Compile Include="Font\FontManager.cs" />
     <Compile Include="Font\CharacterBitmap.cs" />
@@ -368,7 +364,7 @@
     <Compile Include="GraphicsResourceBase.cs" />
     <Compile Include="GraphicsAdapterFactory.cs" />
     <Compile Include="IndexBufferBinding.cs" />
-    <Compile Include="FakeSamplerState.cs" />
+    <Compile Include="SamplerStateSerializer.cs" />
     <Compile Include="Texture.Extensions1D.cs" />
     <Compile Include="DataOld\TextureFileTGASerializer.cs" />
     <Compile Include="DepthStencilStencilOpDescription.cs" />
@@ -465,10 +461,6 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <None Include="Data\GraphicsData.pdxdata">
-      <Generator>ParadoxDataCodeGenerator</Generator>
-      <LastGenOutput>GraphicsData.cs</LastGenOutput>
-    </None>
     <None Include="Shaders.Bytecodes\CompileShaders.cmd" />
     <None Include="Shaders.Bytecodes\Graphics.pdxpkg" />
     <None Include="Shaders.Bytecodes\Shaders.pdxfxlib" />

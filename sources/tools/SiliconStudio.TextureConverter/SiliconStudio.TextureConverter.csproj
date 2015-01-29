@@ -32,6 +32,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Backend\PixelFormat.Extensions.cs" />
     <Compile Include="Backend\Requests\ArrayCreationRequest.cs" />
     <Compile Include="Backend\Requests\ArrayExtractionRequest.cs" />
     <Compile Include="Backend\Requests\ArrayInsertionRequest.cs" />

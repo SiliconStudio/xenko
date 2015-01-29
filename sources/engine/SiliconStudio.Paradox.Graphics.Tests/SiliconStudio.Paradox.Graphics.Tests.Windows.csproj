@@ -49,7 +49,7 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SiliconStudio.Paradox.Graphics.Tests.TestCubemapDisplay</StartupObject>
+    <StartupObject>SiliconStudio.Paradox.Graphics.Tests.TestRadiancePrefilteringGGX</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
@@ -144,6 +144,30 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\ComputeShaderTestEffect.cs">
+      <DependentUpon>ComputeShaderTestEffect.pdxfx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Assets\HammersleyTest.cs">
+      <DependentUpon>HammersleyTest.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Assets\SpriteEffectWithGamma.cs">
+      <DependentUpon>SpriteEffectWithGamma.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Assets\ComputeShaderTest.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ComputeShaderTest.pdxsl</DependentUpon>
+    </Compile>
     <Compile Include="Assets\CustomEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -167,6 +191,12 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>CustomShader.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Assets\CubemapSprite.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapSprite.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Compiler\CubemapEffect.cs">
       <AutoGen>True</AutoGen>
@@ -232,9 +262,14 @@
     <Compile Include="TestExternSpriteFont.cs" />
     <Compile Include="TestFontManager.cs" />
     <Compile Include="TestGraphicsResourceAllocator.cs" />
+    <Compile Include="TestHammersley.cs" />
     <Compile Include="TestImageEffect.cs" />
     <Compile Include="TestImageLoad.cs" />
+    <Compile Include="TestLambertPrefilteringSHPass2.cs" />
+    <Compile Include="TestLambertPrefilteringSH.cs" />
+    <Compile Include="TestComputeShader.cs" />
     <Compile Include="TestMultipleRenderTargets.cs" />
+    <Compile Include="TestRadiancePrefilteringGGX.cs" />
     <Compile Include="TestSprite.cs" />
     <Compile Include="TestSpriteBatchResolution.cs" />
     <Compile Include="TestSpriteBatchToTexture.cs" />
@@ -253,6 +288,22 @@
     <Compile Include="TestTexture.cs" />
     <Compile Include="TestGraphicsApiCheck.cs" />
     <Compile Include="TestTextureSampling.cs" />
+    <None Include="Assets\ComputeShaderTestEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeShaderTestEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Assets\HammersleyTest.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>HammersleyTest.cs</LastGenOutput>
+    </None>
+    <None Include="Assets\SpriteEffectWithGamma.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>SpriteEffectWithGamma.cs</LastGenOutput>
+    </None>
+    <None Include="Assets\ComputeShaderTest.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeShaderTest.cs</LastGenOutput>
+    </None>
     <None Include="Assets\CustomEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CustomEffect.cs</LastGenOutput>
@@ -268,6 +319,10 @@
     <None Include="Assets\CustomShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CustomShader.cs</LastGenOutput>
+    </None>
+    <None Include="Assets\CubemapSprite.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapSprite.cs</LastGenOutput>
     </None>
     <None Include="Compiler\CubemapEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>

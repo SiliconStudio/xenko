@@ -113,6 +113,11 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 var data = Owner.ObservableViewModelService.RequestAssociatedData(this, isUpdating);
                 SetValue(ref associatedData, data, "AssociatedData");
+                // TODO: we add associatedData added to SingleObservableNode this way, but it's a bit dangerous. Maybe we should check that all combined nodes have this data entry, and all with the same value.
+                foreach (var singleData in CombinedNodes.SelectMany(x => x.AssociatedData).Where(x => !associatedData.ContainsKey(x.Key)))
+                {
+                    associatedData.Add(singleData.Key, singleData.Value);
+                }
             }
             CheckDynamicMemberConsistency();
         }
@@ -313,7 +318,7 @@ namespace SiliconStudio.Presentation.Quantum
         public CombinedObservableNode(ObservableViewModel ownerViewModel, string name, CombinedObservableNode parentNode, IEnumerable<SingleObservableNode> combinedNodes, object index)
             : base(ownerViewModel, name, parentNode, combinedNodes, index)
         {
-            DependentProperties.Add(Tuple.Create("TypedValue", "Value"));
+            DependentProperties.Add("TypedValue", new[] { "Value" });
         }
 
         /// <summary>

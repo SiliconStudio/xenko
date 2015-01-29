@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Initializes a new instance of the <see cref="ImageScaler"/> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        public ImageScaler(ImageEffectContext context) : base(context, "ImageScalerEffect")
+        public ImageScaler(DrawEffectContext context) : base(context, "ImageScalerEffect")
         {
         }
 

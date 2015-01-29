@@ -32,13 +32,6 @@ namespace SiliconStudio.Quantum
         void RegisterGuid(Guid guid, object obj);
 
         /// <summary>
-        /// Removes a <see cref="Guid"/> that was previously registered.
-        /// </summary>
-        /// <param name="guid">The <see cref="Guid"/> to remove.</param>
-        /// <returns><c>true</c> if a <see cref="Guid"/> has been actually removed, <c>false</c> otherwise.</returns>
-        bool UnregisterGuid(Guid guid);
-
-        /// <summary>
         /// Clear the <see cref="IGuidContainer"/>, removing everything it references.
         /// </summary>
         void Clear();

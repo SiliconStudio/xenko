@@ -63,15 +63,15 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 var mesh = new Mesh()
                 {
                     Draw = primitives[i].Item1.ToMeshDraw(),
-                    Material = material
+                    MaterialIndex = 0,
                 };
-                mesh.Parameters.Set(RenderingParameters.RenderLayer, RenderLayers.RenderLayer1);
+                mesh.Parameters.Set(RenderingParameters.RenderLayer, RenderLayers.Layer1);
 
                 var entity = new Entity()
                 {
                     new ModelComponent()
                     {
-                        Model = new Model() { mesh }
+                        Model = new Model() { mesh, material }
                     },
                     new TransformationComponent() { Translation = primitives[i].Item2 }
                 };
@@ -85,7 +85,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             {
                 Draw = reflectivePrimitive.ToMeshDraw(),
             };
-            reflectiveMesh.Parameters.Set(RenderingParameters.RenderLayer, RenderLayers.RenderLayer2);
+            reflectiveMesh.Parameters.Set(RenderingParameters.RenderLayer, RenderLayers.Layer2);
 
             var reflectEntity = new Entity()
             {
@@ -94,7 +94,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                     Model = new Model() { reflectiveMesh }
                 },
                 new TransformationComponent(),
-                new CubemapSourceComponent() { IsDynamic = true, Enabled = true, Size = 128 }
+                new CubemapSourceComponent() { IsDynamic = true, Size = 128 }
             };
             Entities.Add(reflectEntity);
             reflectEntity.Get<ModelComponent>().Parameters.Set(TexturingKeys.TextureCube0, reflectEntity.Get<CubemapSourceComponent>().Texture);
@@ -132,7 +132,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             // Rendering pipeline
             var cubeMapPipeline = new RenderPipeline("CubeMap");
-            cubeMapPipeline.Renderers.Add(new ModelRenderer(Services, renderInOnePass ? "CubemapGeomEffect" : "CubemapEffect").AddLayerFilter(RenderLayers.RenderLayer1));
+            cubeMapPipeline.Renderers.Add(new ModelRenderer(Services, renderInOnePass ? "CubemapGeomEffect" : "CubemapEffect").AddLayerFilter(RenderLayers.Layer1));
             RenderSystem.Pipeline.Renderers.Add(new CubemapRenderer(Services, cubeMapPipeline, renderInOnePass));
             RenderSystem.Pipeline.Renderers.Add(new CameraSetter(Services));
             RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services) { ClearColor = Color.CornflowerBlue });

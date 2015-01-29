@@ -324,7 +324,36 @@ namespace SiliconStudio.Paradox.Shaders
         /// <param name="shaderMixinSource">The shader mixin source.</param>
         public void Mixin(ShaderMixinSourceTree mixinTree, ShaderMixinSource shaderMixinSource)
         {
-            mixinTree.Mixin.CloneFrom(shaderMixinSource);
+            if (shaderMixinSource != null)
+            {
+                mixinTree.Mixin.CloneFrom(shaderMixinSource);
+            }
+        }
+
+        /// <summary>
+        /// Mixins a <see cref="ShaderMixinSource"/> into the specified mixin tree.
+        /// </summary>
+        /// <param name="mixinTree">The mixin tree.</param>
+        /// <param name="shaderSource">The shader source.</param>
+        public void Mixin(ShaderMixinSourceTree mixinTree, ShaderSource shaderSource)
+        {
+            if (shaderSource == null)
+            {
+                return;
+            }
+
+            if (shaderSource is ShaderMixinSource)
+            {
+                Mixin(mixinTree, (ShaderMixinSource)shaderSource);
+            }
+            else if (shaderSource is ShaderClassSource)
+            {
+                mixinTree.Mixin.Mixins.Add((ShaderClassSource)shaderSource);
+            }
+            else
+            {
+                throw new InvalidOperationException("ShaderSource [{0}] is not supported (Only ShaderMixinSource and ShaderClassSource)".ToFormat(shaderSource.GetType()));
+            }
         }
     }
 }

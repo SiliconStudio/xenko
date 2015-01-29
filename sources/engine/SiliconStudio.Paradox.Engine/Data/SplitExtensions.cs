@@ -4,17 +4,19 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Data;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Graphics.Data;
+using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 namespace SiliconStudio.Paradox.Extensions
 {
     public static class SplitExtensions
     {
-        public static List<MeshData> SplitMeshes(List<MeshData> meshes, bool can32bitIndex)
+        public static List<Mesh> SplitMeshes(List<Mesh> meshes, bool can32bitIndex)
         {
-            var finalList = new List<MeshData>();
+            var finalList = new List<Mesh>();
             foreach (var mesh in meshes)
             {
                 var drawDatas = SplitMesh(mesh.Draw, can32bitIndex);
@@ -26,9 +28,9 @@ namespace SiliconStudio.Paradox.Extensions
                 {
                     foreach (var draw in drawDatas)
                     {
-                        var newMeshData = new MeshData
+                        var newMeshData = new Mesh
                             {
-                                Material = mesh.Material,
+                                MaterialIndex = mesh.MaterialIndex,
                                 Parameters = mesh.Parameters,
                                 Name = mesh.Name,
                                 Draw = draw,
@@ -49,33 +51,33 @@ namespace SiliconStudio.Paradox.Extensions
         /// <param name="meshDrawData">The mesh to analyze.</param>
         /// <param name="can32bitIndex">A flag stating if 32 bit indices are allowed.</param>
         /// <returns>A list of meshes.</returns>
-        public unsafe static List<MeshDrawData> SplitMesh(MeshDrawData meshDrawData, bool can32bitIndex)
+        public unsafe static List<MeshDraw> SplitMesh(MeshDraw meshDrawData, bool can32bitIndex)
         {
             if (meshDrawData.IndexBuffer == null)
-                return new List<MeshDrawData> { meshDrawData };
+                return new List<MeshDraw> { meshDrawData };
 
             if (!meshDrawData.IndexBuffer.Is32Bit) // already 16 bits buffer
-                return new List<MeshDrawData> { meshDrawData };
+                return new List<MeshDraw> { meshDrawData };
 
             var verticesCount = meshDrawData.VertexBuffers[0].Count;
             if (verticesCount <= ushort.MaxValue) // can be put in a 16 bits buffer - 65535 = 0xFFFF is kept for primitive restart in strip
             {
                 meshDrawData.CompactIndexBuffer();
-                return new List<MeshDrawData> { meshDrawData };
+                return new List<MeshDraw> { meshDrawData };
             }
 
             // now, we only have a 32 bits buffer that is justified because of a large vertex buffer
 
             if (can32bitIndex) // do nothing
-                return new List<MeshDrawData> { meshDrawData };
+                return new List<MeshDraw> { meshDrawData };
 
             // TODO: handle primitives other than triangle list
             if (meshDrawData.PrimitiveType != PrimitiveType.TriangleList)
-                return new List<MeshDrawData> { meshDrawData };
+                return new List<MeshDraw> { meshDrawData };
 
             // Split the mesh
-            var finalList = new List<MeshDrawData>();
-            fixed (byte* indicesByte = &meshDrawData.IndexBuffer.Buffer.Value.Content[0])
+            var finalList = new List<MeshDraw>();
+            fixed (byte* indicesByte = &meshDrawData.IndexBuffer.Buffer.GetSerializationData().Content[0])
             {
                 var indicesUint = (uint*)indicesByte;
 
@@ -108,11 +110,11 @@ namespace SiliconStudio.Paradox.Extensions
                 foreach (var splitInfo in splitInfos)
                 {
                     var triangleCount = splitInfo.LastTriangleIndex - splitInfo.StartTriangleIndex + 1;
-                    var newMeshDrawData = new MeshDrawData
+                    var newMeshDrawData = new MeshDraw
                     {
                         PrimitiveType = PrimitiveType.TriangleList,
                         DrawCount = 3 * triangleCount,
-                        VertexBuffers = new VertexBufferBindingData[meshDrawData.VertexBuffers.Length]
+                        VertexBuffers = new VertexBufferBinding[meshDrawData.VertexBuffers.Length]
                     };
 
                     // vertex buffers
@@ -123,7 +125,7 @@ namespace SiliconStudio.Paradox.Extensions
                             stride = meshDrawData.VertexBuffers[vbIndex].Declaration.VertexStride;
                         var newVertexBuffer = new byte[splitInfo.UsedIndices.Count * stride];
 
-                        fixed (byte* vertexBufferPtr = &meshDrawData.VertexBuffers[vbIndex].Buffer.Value.Content[0])
+                        fixed (byte* vertexBufferPtr = &meshDrawData.VertexBuffers[vbIndex].Buffer.GetSerializationData().Content[0])
                         fixed (byte* newVertexBufferPtr = &newVertexBuffer[vbIndex])
                         {
                             //copy vertex buffer
@@ -131,14 +133,10 @@ namespace SiliconStudio.Paradox.Extensions
                                 Utilities.CopyMemory((IntPtr)(newVertexBufferPtr + stride * splitInfo.IndexRemapping[index]), (IntPtr)(vertexBufferPtr + stride * index), stride);
                         }
 
-                        newMeshDrawData.VertexBuffers[vbIndex] = new VertexBufferBindingData
-                        {
-                            Offset = 0,
-                            Count = splitInfo.UsedIndices.Count,
-                            Buffer = new BufferData(BufferFlags.VertexBuffer, newVertexBuffer),
-                            Declaration = meshDrawData.VertexBuffers[vbIndex].Declaration,
-                            Stride = 0
-                        };
+                        newMeshDrawData.VertexBuffers[vbIndex] = new VertexBufferBinding(
+                            new BufferData(BufferFlags.VertexBuffer, newVertexBuffer).ToSerializableVersion(),
+                            meshDrawData.VertexBuffers[vbIndex].Declaration,
+                            splitInfo.UsedIndices.Count);
                     }
 
                     // index buffer
@@ -163,13 +161,10 @@ namespace SiliconStudio.Paradox.Extensions
                         }
                     }
 
-                    newMeshDrawData.IndexBuffer = new IndexBufferBindingData
-                    {
-                        Offset = 0,
-                        Count = triangleCount * 3,
-                        Buffer = new BufferData(BufferFlags.IndexBuffer, newIndexBuffer),
-                        Is32Bit = false
-                    };
+                    newMeshDrawData.IndexBuffer = new IndexBufferBinding(
+                        new BufferData(BufferFlags.IndexBuffer, newIndexBuffer).ToSerializableVersion(),
+                        false,
+                        triangleCount*3);
 
                     finalList.Add(newMeshDrawData);
                 }

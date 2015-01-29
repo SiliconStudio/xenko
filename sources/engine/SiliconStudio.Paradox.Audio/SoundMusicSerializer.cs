@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Audio
             audioEngine = engine;
         }
 
-        public override void Serialize(ContentSerializerContext context, SerializationStream stream, ref SoundMusic obj)
+        public override void Serialize(ContentSerializerContext context, SerializationStream stream, SoundMusic obj)
         {
             if (context.Mode == ArchiveMode.Deserialize)
             {

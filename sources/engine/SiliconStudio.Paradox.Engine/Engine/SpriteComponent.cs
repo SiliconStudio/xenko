@@ -5,9 +5,6 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Converters;
-using SiliconStudio.Core.Serialization.Serializers;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
 
@@ -16,8 +13,8 @@ namespace SiliconStudio.Paradox.Engine
     /// <summary>
     /// Add a <see cref="Sprite"/> to an <see cref="Entity"/>. It could be an animated sprite.
     /// </summary>
-    [DataConverter(AutoGenerate = true)]
     [DataContract("SpriteComponent")]
+    [Display(100, "Sprite")]
     public sealed class SpriteComponent : EntityComponent
     {
         public static PropertyKey<SpriteComponent> Key = new PropertyKey<SpriteComponent>("Key", typeof(SpriteComponent));
@@ -25,19 +22,16 @@ namespace SiliconStudio.Paradox.Engine
         /// <summary>
         /// The sprites to play.
         /// </summary>
-        [DataMemberConvert]
         internal SpriteGroup SpriteGroupInternal;
 
         /// <summary>
         /// The color to apply on the sprite.
         /// </summary>
-        [DataMemberConvert]
         public Color Color = Color.White;
 
         /// <summary>
         /// The effect to apply on the sprite.
         /// </summary>
-        [DataMemberConvert]
         public SpriteEffects SpriteEffect;
 
         /// <summary>
@@ -46,6 +40,7 @@ namespace SiliconStudio.Paradox.Engine
         [DataMemberCustomSerializer]
         public Effect Effect;
 
+        [DataMemberIgnore]
         internal double ElapsedTime;
 
         private int currentFrame;
@@ -53,7 +48,6 @@ namespace SiliconStudio.Paradox.Engine
         /// <summary>
         /// The group of sprites associated to the component.
         /// </summary>
-        [DataMemberCustomSerializer]
         public SpriteGroup SpriteGroup
         {
             get { return SpriteGroupInternal; }
@@ -70,6 +64,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <summary>
         /// Gets or sets the current frame of the animation.
         /// </summary>
+        [DataMemberIgnore]
         public int CurrentFrame
         {
             get { return currentFrame; }
@@ -101,11 +96,14 @@ namespace SiliconStudio.Paradox.Engine
         }
 
         private readonly static Queue<List<int>> SpriteIndicesPool = new Queue<List<int>>();
-        
+
+        [DataMemberIgnore]
         internal double AnimationTime;
 
+        [DataMemberIgnore]
         internal int CurrentIndexIndex;
 
+        [DataMemberIgnore]
         internal bool IsPaused;
 
         internal struct AnimationInfo

@@ -8,7 +8,7 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
     /// <remarks>
     /// TTextureBasic: generic TextureCube - The cubemap to sample.
     /// </remarks>
-    class ComputeColorTextureCubeBasic<TextureCube TTextureBasic> : ComputeColorTextureCube<TTextureBasic>, NormalWSStream, PositionVSStream, Transformation
+    class ComputeColorTextureCubeBasic<TextureCube TTextureBasic> : ComputeColorTextureCube<TTextureBasic>, NormalWSStream, Transformation
     {
         override float3 GetSamplingDir()
         {

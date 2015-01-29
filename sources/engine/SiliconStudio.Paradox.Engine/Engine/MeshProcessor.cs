@@ -36,6 +36,19 @@ namespace SiliconStudio.Paradox.Engine
         protected internal override void OnSystemAdd()
         {
             renderSystem = Services.GetSafeServiceAs<RenderSystem>();
+
+            foreach (var pipeline in renderSystem.Pipelines)
+                RegisterPipelineForEvents(pipeline);
+
+            renderSystem.Pipelines.CollectionChanged += Pipelines_CollectionChanged;
+        }
+
+        protected internal override void OnSystemRemove()
+        {
+            renderSystem.Pipelines.CollectionChanged -= Pipelines_CollectionChanged;
+
+            foreach (var pipeline in renderSystem.Pipelines)
+                UnregisterPipelineForEvents(pipeline);
         }
 
         protected override AssociatedData GenerateAssociatedData(Entity entity)
@@ -48,32 +61,142 @@ namespace SiliconStudio.Paradox.Engine
             associatedData.RenderModels = new List<KeyValuePair<ModelRendererState, RenderModel>>();
 
             // Initialize a RenderModel for every pipeline
-            // TODO: Track added/removed pipelines?
-            var modelInstance = associatedData.ModelComponent;
-
             foreach (var pipeline in renderSystem.Pipelines)
             {
-                var modelRenderState = pipeline.GetOrCreateModelRendererState();
+                CreateRenderModel(associatedData, pipeline);
+            }
+        }
 
-                // If the model is not accepted
-                if (!modelRenderState.IsValid || !modelRenderState.AcceptModel(modelInstance))
+        private static void CreateRenderModel(AssociatedData associatedData, RenderPipeline pipeline)
+        {
+            var modelInstance = associatedData.ModelComponent;
+            var modelRenderState = pipeline.GetOrCreateModelRendererState();
+
+            // If the model is not accepted
+            if (modelRenderState.AcceptModel == null || !modelRenderState.AcceptModel(modelInstance))
+            {
+                return;
+            }
+
+            var renderModel = new RenderModel(pipeline, modelInstance);
+
+            // Register RenderModel
+            associatedData.RenderModels.Add(new KeyValuePair<ModelRendererState, RenderModel>(modelRenderState, renderModel));
+        }
+
+        private static void DestroyRenderModel(AssociatedData associatedData, RenderPipeline pipeline)
+        {
+            // Not sure if it's worth making RenderModels a Dictionary<RenderPipeline, List<X>>
+            // (rationale: reloading of pipeline is probably rare enough and we don't want to add so many objects and slow normal rendering)
+            // Probably need to worry only if it comes out in a VTune
+            for (int index = 0; index < associatedData.RenderModels.Count; index++)
+            {
+                var renderModel = associatedData.RenderModels[index];
+                if (renderModel.Value.Pipeline == pipeline)
                 {
-                    continue;
+                    DestroyRenderModel(renderModel.Value);
+                    associatedData.RenderModels.SwapRemoveAt(index--);
+                }
+            }
+        }
+
+        private static void DestroyRenderModel(RenderModel renderModel)
+        {
+            // TODO: Unload resources (need opposite of ModelRenderer.PrepareModelForRendering)
+            // (not sure if we actually create anything non-managed?)
+        }
+
+        private void Pipelines_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        {
+            var pipeline = (RenderPipeline)e.Item;
+
+            // Instantiate/destroy render model for every tracked entity
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    foreach (var matchingEntity in enabledEntities)
+                        CreateRenderModel(matchingEntity.Value, pipeline);
+                    RegisterPipelineForEvents(pipeline);
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    UnregisterPipelineForEvents(pipeline);
+                    foreach (var matchingEntity in enabledEntities)
+                        DestroyRenderModel(matchingEntity.Value, pipeline);
+                    break;
+            }
+        }
+
+        private void RegisterPipelineForEvents(RenderPipeline pipeline)
+        {
+            pipeline.GetOrCreateModelRendererState().ModelSlotAdded += MeshProcessor_ModelSlotAdded;
+            pipeline.GetOrCreateModelRendererState().ModelSlotRemoved += MeshProcessor_ModelSlotRemoved;
+        }
+
+        private void UnregisterPipelineForEvents(RenderPipeline pipeline)
+        {
+            pipeline.GetOrCreateModelRendererState().ModelSlotAdded -= MeshProcessor_ModelSlotAdded;
+            pipeline.GetOrCreateModelRendererState().ModelSlotRemoved -= MeshProcessor_ModelSlotRemoved;
+        }
+
+        void MeshProcessor_ModelSlotAdded(ModelRendererState modelRendererState, ModelRendererSlot modelRendererSlot)
+        {
+            foreach (var matchingEntity in enabledEntities)
+            {
+                // Look for existing render model
+                RenderModel renderModel = null;
+                foreach (var renderModelKVP in matchingEntity.Value.RenderModels)
+                {
+                    if (renderModelKVP.Key == modelRendererState)
+                    {
+                        renderModel = renderModelKVP.Value;
+                        break;
+                    }
                 }
 
-                var renderModel = new RenderModel(pipeline, modelInstance);
-                if (renderModel.RenderMeshes == null)
-                {
+                // If it doesn't exist, it's because it wasn't accepted
+                if (renderModel == null)
                     continue;
+
+                // Ensure RenderMeshes is big enough to contain the new slot
+                renderModel.RenderMeshes.EnsureCapacity(modelRendererSlot.Slot + 1);
+
+                // Prepare the render meshes
+                modelRendererSlot.PrepareRenderModel(renderModel);
+            }
+        }
+
+        void MeshProcessor_ModelSlotRemoved(ModelRendererState modelRendererState, ModelRendererSlot modelRendererSlot)
+        {
+            foreach (var matchingEntity in enabledEntities)
+            {
+                // Look for existing render model
+                RenderModel renderModel = null;
+                foreach (var renderModelKVP in matchingEntity.Value.RenderModels)
+                {
+                    if (renderModelKVP.Key == modelRendererState)
+                    {
+                        renderModel = renderModelKVP.Value;
+                        break;
+                    }
                 }
-                
-                // Register RenderModel
-                associatedData.RenderModels.Add(new KeyValuePair<ModelRendererState, RenderModel>(modelRenderState, renderModel));
+
+                // If it doesn't exist, it's because it wasn't accepted
+                if (renderModel == null)
+                    continue;
+
+                // Remove the slot
+                // TODO: Free resources?
+                renderModel.RenderMeshes[modelRendererSlot.Slot] = null;
             }
         }
 
         protected override void OnEntityRemoved(Entity entity, AssociatedData data)
         {
+            foreach (var renderModel in data.RenderModels)
+            {
+                DestroyRenderModel(renderModel.Value);
+            }
+
             base.OnEntityRemoved(entity, data);
         }
 
@@ -121,8 +244,8 @@ namespace SiliconStudio.Paradox.Engine
             // Collect models for this frame
             foreach (var matchingEntity in enabledEntities)
             {
-                // Skip model not enabled
-                if (!matchingEntity.Value.ModelComponent.Enabled)
+                // Skip disabled model components, or model components without a proper model set
+                if (!matchingEntity.Value.ModelComponent.Enabled || matchingEntity.Value.ModelComponent.ModelViewHierarchy == null)
                 {
                     continue;
                 }

@@ -12,7 +12,7 @@ namespace SiliconStudio.Core.Reflection
         /// <summary>
         /// The OverrideType key.
         /// </summary>
-        private static readonly PropertyKey<OverrideType> OverrideKey = new PropertyKey<OverrideType>("Override", typeof(Override), DefaultValueMetadata.Static(OverrideType.New));
+        public static readonly PropertyKey<OverrideType> OverrideKey = new PropertyKey<OverrideType>("Override", typeof(Override), DefaultValueMetadata.Static(OverrideType.New));
 
         /// <summary>
         /// Gets the override for the specified member.

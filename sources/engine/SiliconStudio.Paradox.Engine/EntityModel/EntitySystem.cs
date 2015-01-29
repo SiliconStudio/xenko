@@ -238,7 +238,7 @@ namespace SiliconStudio.Paradox.EntityModel
 
             entity.AddReferenceInternal();
 
-            entity.Tags.PropertyUpdated += EntityPropertyUpdated;
+            entity.Components.PropertyUpdated += EntityPropertyUpdated;
 
             // Check which processor want this entity
             foreach (var system in processors)
@@ -274,7 +274,7 @@ namespace SiliconStudio.Paradox.EntityModel
                 system.EntityCheck(entity, entityProcessors, true);
             }
 
-            entity.Tags.PropertyUpdated -= EntityPropertyUpdated;
+            entity.Components.PropertyUpdated -= EntityPropertyUpdated;
 
             entity.ReleaseInternal();
         }

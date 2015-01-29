@@ -18,6 +18,7 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Paradox.Assets.Model;
 using SiliconStudio.Paradox.Assets.SpriteFont;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Assets.CompilerApp
@@ -56,9 +57,6 @@ namespace SiliconStudio.Assets.CompilerApp
             //project.Refresh();
 
             //args = new string[] { "test.pdxpkg", "-o:app_data", "-b:tmp", "-t:1" };
-
-            //hardcoded physics
-            Paradox.Physics.PhysicsEngine.InitializeConverters();
 
             var exeName = Path.GetFileName(Assembly.GetExecutingAssembly().Location);
             var showHelp = false;

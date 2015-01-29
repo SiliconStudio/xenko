@@ -16,6 +16,7 @@ using System.Threading;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
+    [Obsolete("This behavior is obsolete.")]
     public class RegisterKeyBindingBehavior : Behavior<FrameworkElement>
     {
         public KeyGesture KeyGesture

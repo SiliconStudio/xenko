@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using SiliconStudio.Assets.Diff;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Assets
@@ -22,8 +23,8 @@ namespace SiliconStudio.Assets
             Item = item;
             Merges = new List<AssetToImportMerge>();
             Enabled = true;
-            var assetDescription = AssetRegistry.GetDescription(item.Asset.GetType());
-            Log = new LoggerResult(string.Format("Import {0} {1}", assetDescription != null ? assetDescription.DisplayName : "Asset" , item));
+            var assetDescription = DisplayAttribute.GetDisplay(item.Asset.GetType());
+            Log = new LoggerResult(string.Format("Import {0} {1}", assetDescription != null ? assetDescription.Name : "Asset" , item));
         }
 
         /// <summary>

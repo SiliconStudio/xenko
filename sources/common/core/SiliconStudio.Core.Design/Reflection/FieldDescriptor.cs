@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace SiliconStudio.Core.Reflection
@@ -53,6 +54,11 @@ namespace SiliconStudio.Core.Reflection
         public override void Set(object thisObject, object value)
         {
             fieldInfo.SetValue(thisObject, value);
+        }
+
+        public override IEnumerable<T> GetCustomAttributes<T>(bool inherit)
+        {
+            return fieldInfo.GetCustomAttributes<T>(inherit);
         }
 
         public override bool HasSet

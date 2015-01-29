@@ -98,7 +98,29 @@ namespace SiliconStudio.Core.Yaml
                     var attribute = attributes[i] as DataMemberAttribute;
                     if (attribute != null)
                     {
-                        attributes[i] = new YamlMemberAttribute(attribute.Name) { Order = attribute.Order };
+                        SerializeMemberMode mode;
+                        switch (attribute.Mode)
+                        {
+                            case DataMemberMode.Default:
+                            case DataMemberMode.ReadOnly: // ReadOnly is better as default or content?
+                                mode = SerializeMemberMode.Default;
+                                break;
+                            case DataMemberMode.Assign:
+                                mode = SerializeMemberMode.Assign;
+                                break;
+                            case DataMemberMode.Content:
+                                mode = SerializeMemberMode.Content;
+                                break;
+                            case DataMemberMode.Binary:
+                                mode = SerializeMemberMode.Binary;
+                                break;
+                            case DataMemberMode.Never:
+                                mode = SerializeMemberMode.Never;
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+                        attributes[i] = new YamlMemberAttribute(attribute.Name, mode) { Order = attribute.Order };
                     }
                     else if (attributes[i] is DataMemberIgnoreAttribute)
                     {

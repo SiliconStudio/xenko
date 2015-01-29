@@ -22,6 +22,7 @@ namespace SiliconStudio.Quantum
         private readonly HashSet<IContent> referenceContents = new HashSet<IContent>();
         private ModelNode rootNode;
         private Guid rootGuid;
+        private IModelNode referencerNode;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultModelBuilder"/> class that can be used to construct a model for a data object.
@@ -30,6 +31,7 @@ namespace SiliconStudio.Quantum
         {
             PrimitiveTypes = new List<Type>();
             AvailableCommands = new List<INodeCommand>();
+            ContentFactory = new DefaultContentFactory();
         }
 
         /// <inheritdoc/>
@@ -38,8 +40,10 @@ namespace SiliconStudio.Quantum
         /// <inheritdoc/>
         public ICollection<INodeCommand> AvailableCommands { get; private set; }
 
+        public IContentFactory ContentFactory { get; set; }
+
         /// <inheritdoc/>
-        public IEnumerable<IContent> ReferenceContents { get { return referenceContents; } }
+        public IModelNode Referencer { get { return referencerNode;} }
 
         /// <inheritdoc/>
         public event EventHandler<NodeConstructingArgs> NodeConstructing;
@@ -60,9 +64,10 @@ namespace SiliconStudio.Quantum
         }
 
         /// <inheritdoc/>
-        public IModelNode Build(object obj, Type type, Guid guid)
+        public IModelNode Build(IModelNode referencer, object obj, Type type, Guid guid)
         {
             Reset();
+            referencerNode = referencer;
             rootGuid = guid;
             var typeDescriptor = TypeDescriptorFactory.Find(obj != null ? obj.GetType() : type);
             VisitObject(obj, typeDescriptor as ObjectDescriptor, true);
@@ -73,25 +78,28 @@ namespace SiliconStudio.Quantum
         /// <inheritdoc/>
         public override void VisitObject(object obj, ObjectDescriptor descriptor, bool visitMembers)
         {
+            ITypeDescriptor currentDescriptor = descriptor;
+
             bool isRootNode = contextStack.Count == 0;
             if (isRootNode)
             {
-                if (!NotifyNodeConstructing(descriptor))
+                bool shouldProcessReference;
+                if (!NotifyNodeConstructing(descriptor, out shouldProcessReference))
                     return;
 
                 // If we are in the case of a collection of collections, we might have a root node that is actually an enumerable reference
                 // This would be the case for each collection within the base collection.
-                IReference reference = CreateReferenceForNode(descriptor.Type, obj);
-                reference = reference is ReferenceEnumerable ? reference : null;
-                IContent content = descriptor.Type.IsStruct() ? new BoxedContent(obj, descriptor, IsPrimitiveType(descriptor.Type)) : new ObjectContent(obj, descriptor, IsPrimitiveType(descriptor.Type), reference);
-                rootNode = new ModelNode(descriptor.Type.Name, content, rootGuid);
-                if (reference != null && descriptor.Type.IsStruct())
+                IContent content = descriptor.Type.IsStruct() ? ContentFactory.CreateBoxedContent(this, obj, descriptor, IsPrimitiveType(descriptor.Type))
+                                                : ContentFactory.CreateObjectContent(this, obj, descriptor, IsPrimitiveType(descriptor.Type), shouldProcessReference);
+                currentDescriptor = content.Descriptor;
+                rootNode = new ModelNode(currentDescriptor.Type.Name, content, rootGuid);
+                if (content.IsReference && currentDescriptor.Type.IsStruct())
                     throw new QuantumConsistencyException("A collection type", "A structure type", rootNode);
 
-                if (reference != null)
+                if (content.IsReference)
                     referenceContents.Add(content);
 
-                AvailableCommands.Where(x => x.CanAttach(rootNode.Content.Descriptor, null)).ForEach(rootNode.AddCommand);
+                AvailableCommands.Where(x => x.CanAttach(currentDescriptor, null)).ForEach(rootNode.AddCommand);
                 NotifyNodeConstructed(content);
 
                 if (obj == null)
@@ -102,9 +110,9 @@ namespace SiliconStudio.Quantum
                 PushContextNode(rootNode);
             }
 
-            if (!IsPrimitiveType(descriptor.Type))
+            if (!IsPrimitiveType(currentDescriptor.Type))
             {
-                base.VisitObject(obj, descriptor, true);
+                base.VisitObject(obj, descriptor, (GetContextNode().Flags & ModelNodeFlags.DoNotVisitMembers) == 0);
             }
 
             if (isRootNode)
@@ -117,6 +125,9 @@ namespace SiliconStudio.Quantum
         /// <inheritdoc/>
         public override void VisitCollection(IEnumerable collection, CollectionDescriptor descriptor)
         {
+            if (!descriptor.HasIndexerAccessors)
+                throw new NotSupportedException("Collections that do not have indexer accessors are not supported in Quantum.");
+
             // Don't visit items unless they are primitive or enumerable (collections within collections)
             if (IsPrimitiveType(descriptor.ElementType, false) || IsEnumerable(descriptor.ElementType))
             {
@@ -141,17 +152,20 @@ namespace SiliconStudio.Quantum
         /// Raises the <see cref="NodeConstructing"/> event.
         /// </summary>
         /// <param name="descriptor">The descriptor of the root object being constructed.</param>
+        /// <param name="shouldProcessReference">Indicates whether the reference that will be created in the node should be processed or not.</param>
         /// <returns><c>true</c> if the node should be constructed, <c>false</c> if it should be discarded.</returns>
         /// <remarks>This method is internal so it can be used by the <see cref="ModelConsistencyCheckVisitor"/>.</remarks>
-        internal bool NotifyNodeConstructing(ObjectDescriptor descriptor)
+        internal bool NotifyNodeConstructing(ObjectDescriptor descriptor, out bool shouldProcessReference)
         {
             var handler = NodeConstructing;
             if (handler != null)
             {
                 var args = new NodeConstructingArgs(descriptor, null);
                 handler(this, args);
+                shouldProcessReference = !args.Discard && args.ShouldProcessReference;
                 return !args.Discard;
             }
+            shouldProcessReference = true;
             return true;
         }
 
@@ -160,17 +174,20 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="containerDescriptor">The descriptor of the container of the member being constructed, or of the object itself it is a root object.</param>
         /// <param name="member">The member descriptor of the member being constructed.</param>
+        /// <param name="shouldProcessReference">Indicates whether the reference that will be created in the node should be processed or not.</param>
         /// <returns><c>true</c> if the node should be constructed, <c>false</c> if it should be discarded.</returns>
         /// <remarks>This method is internal so it can be used by the <see cref="ModelConsistencyCheckVisitor"/>.</remarks>
-        internal bool NotifyNodeConstructing(ObjectDescriptor containerDescriptor, IMemberDescriptor member)
+        internal bool NotifyNodeConstructing(ObjectDescriptor containerDescriptor, IMemberDescriptor member, out bool shouldProcessReference)
         {
             var handler = NodeConstructing;
             if (handler != null)
             {
                 var args = new NodeConstructingArgs(containerDescriptor, (MemberDescriptorBase)member);
                 handler(this, args);
+                shouldProcessReference = !args.Discard && args.ShouldProcessReference;
                 return !args.Discard;
             }
+            shouldProcessReference = true;
             return true;
         }
 
@@ -192,27 +209,26 @@ namespace SiliconStudio.Quantum
         /// <inheritdoc/>
         public override void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
         {
-            if (!NotifyNodeConstructing(containerDescriptor, member))
+            bool shouldProcessReference;
+            if (!NotifyNodeConstructing(containerDescriptor, member, out shouldProcessReference))
                 return;
 
             // If this member should contains a reference, create it now.
-            IReference reference = CreateReferenceForNode(member.Type, value);
             ModelNode containerNode = GetContextNode();
-            ITypeDescriptor typeDescriptor = TypeDescriptorFactory.Find(member.Type);
-            IContent content = new MemberContent(containerNode.Content, member, typeDescriptor, IsPrimitiveType(member.Type), reference);
+            IContent content = ContentFactory.CreateMemberContent(this, containerNode.Content, member, IsPrimitiveType(member.Type), value, shouldProcessReference);
             var node = new ModelNode(member.Name, content, Guid.NewGuid());
             containerNode.AddChild(node);
 
-            if (reference != null)
+            if (content.IsReference)
                 referenceContents.Add(content);
 
-            if (!(reference is ObjectReference))
+            PushContextNode(node);
+            if (!(content.Reference is ObjectReference))
             {
                 // For enumerable references, we visit the member to allow VisitCollection or VisitDictionary to enrich correctly the node.
-                PushContextNode(node);
-                Visit(value);
-                PopContextNode();
+                Visit(content.Value);
             }
+            PopContextNode();
 
             AvailableCommands.Where(x => x.CanAttach(node.Content.Descriptor, (MemberDescriptorBase)member)).ForEach(node.AddCommand);
             NotifyNodeConstructed(content);
@@ -220,10 +236,10 @@ namespace SiliconStudio.Quantum
             node.Seal();
         }
 
-        private IReference CreateReferenceForNode(Type type, object value)
+        public IReference CreateReferenceForNode(Type type, object value)
         {
-            // Is it a reference?
-            if ((!type.IsClass && !type.IsInterface) || IsPrimitiveType(type))
+            // We don't create references for primitive types
+            if (IsPrimitiveType(type))
                 return null;
 
             ITypeDescriptor descriptor = value != null ? TypeDescriptorFactory.Find(value.GetType()) : null;

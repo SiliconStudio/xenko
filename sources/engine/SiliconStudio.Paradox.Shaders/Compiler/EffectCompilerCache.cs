@@ -47,7 +47,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
         public override EffectBytecode Compile(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters, LoggerResult log)
         {
-            var database = AssetManager.FileProvider;
+            var database = FileProvider ?? AssetManager.FileProvider;
             if (database == null)
             {
                 throw new NotSupportedException("Using the cache requires to AssetManager.FileProvider to be valid.");
@@ -70,7 +70,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 ObjectId bytecodeId;
                 if (database.AssetIndexMap.TryGetValue(compiledUrl, out bytecodeId))
                 {
-                    bytecode = LoadEffectBytecode(bytecodeId);
+                    bytecode = LoadEffectBytecode(database, bytecodeId);
                 }
 
                 // On non Windows platform, we are expecting to have the bytecode stored directly
@@ -94,7 +94,30 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                         if (stream.Read(objectIdBuffer, 0, ObjectId.HashSize) == ObjectId.HashSize)
                         {
                             var newBytecodeId = new ObjectId(objectIdBuffer);
-                            bytecode = LoadEffectBytecode(newBytecodeId);
+                            bytecode = LoadEffectBytecode(database, newBytecodeId);
+
+                            if (bytecode != null)
+                            {
+                                // If we successfully retrieved it from cache, add it to index map so that it won't be collected and available for faster lookup 
+                                database.AssetIndexMap[compiledUrl] = newBytecodeId;
+                            }
+                        }
+                    }
+                }
+
+                // ------------------------------------------------------------------------------------------------------------
+                // 2) Try to load from database cache
+                // ------------------------------------------------------------------------------------------------------------
+                if (bytecode == null && database.ObjectDatabase.Exists(mixinObjectId))
+                {
+                    using (var stream = database.ObjectDatabase.OpenStream(mixinObjectId))
+                    {
+                        // We have an existing stream, make sure the shader is compiled
+                        var objectIdBuffer = new byte[ObjectId.HashSize];
+                        if (stream.Read(objectIdBuffer, 0, ObjectId.HashSize) == ObjectId.HashSize)
+                        {
+                            var newBytecodeId = new ObjectId(objectIdBuffer);
+                            bytecode = LoadEffectBytecode(database, newBytecodeId);
 
                             if (bytecode != null)
                             {
@@ -142,7 +165,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     memoryStream.SetLength(0);
                     memoryStream.Write((byte[])newBytecodeId, 0, ObjectId.HashSize);
                     memoryStream.Position = 0;
-                    database.ObjectDatabase.Write(memoryStream, mixinObjectId);
+                    database.ObjectDatabase.Write(memoryStream, mixinObjectId, true);
 
                     if (!bytecodes.ContainsKey(newBytecodeId))
                     {
@@ -158,9 +181,8 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             return bytecode;
         }
 
-        private EffectBytecode LoadEffectBytecode(ObjectId bytecodeId)
+        private EffectBytecode LoadEffectBytecode(DatabaseFileProvider database, ObjectId bytecodeId)
         {
-            var database = AssetManager.FileProvider;
             EffectBytecode bytecode = null;
 
             if (!bytecodes.TryGetValue(bytecodeId, out bytecode))

@@ -18,16 +18,33 @@ namespace SiliconStudio.Core.Collections
     {
         private HashSet<T> innerHashSet = new HashSet<T>();
 
+        private EventHandler<TrackingCollectionChangedEventArgs> itemAdded;
+        private EventHandler<TrackingCollectionChangedEventArgs> itemRemoved;
+
         /// <inheritdoc/>
-        public event EventHandler<TrackingCollectionChangedEventArgs> CollectionChanged;
+        public event EventHandler<TrackingCollectionChangedEventArgs> CollectionChanged
+        {
+            add
+            {
+                // We keep a list in reverse order for removal, so that we can easily have multiple handlers depending on each others
+                itemAdded = (EventHandler<TrackingCollectionChangedEventArgs>)Delegate.Combine(itemAdded, value);
+                itemRemoved = (EventHandler<TrackingCollectionChangedEventArgs>)Delegate.Combine(value, itemRemoved);
+            }
+            remove
+            {
+                itemAdded = (EventHandler<TrackingCollectionChangedEventArgs>)Delegate.Remove(itemAdded, value);
+                itemRemoved = (EventHandler<TrackingCollectionChangedEventArgs>)Delegate.Remove(itemRemoved, value);
+            }
+        }
 
         /// <inheritdoc/>
         public bool Add(T item)
         {
             if (innerHashSet.Add(item))
             {
-                if (CollectionChanged != null)
-                    CollectionChanged(this, new TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, null, -1, true));
+                var collectionChanged = itemAdded;
+                if (collectionChanged != null)
+                    collectionChanged(this, new TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, null, -1, true));
                 return true;
             }
 
@@ -103,7 +120,7 @@ namespace SiliconStudio.Core.Collections
         /// <inheritdoc/>
         public void Clear()
         {
-            if (CollectionChanged != null)
+            if (itemRemoved != null)
             {
                 foreach (var item in innerHashSet.ToArray())
                 {
@@ -145,8 +162,9 @@ namespace SiliconStudio.Core.Collections
         {
             var result = innerHashSet.Remove(item);
 
-            if (CollectionChanged != null && result)
-                CollectionChanged(this, new TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, null, -1, true));
+            var collectionChanged = itemRemoved;
+            if (collectionChanged != null && result)
+                collectionChanged(this, new TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, null, -1, true));
 
             return result;
         }

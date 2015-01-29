@@ -3,6 +3,7 @@
 using System;
 
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
 
@@ -17,6 +18,8 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             AssetManager.FileProvider.AssetIndexMap.TryGetValue(url, out shaderSourceId);
             return shaderSourceId;
         }
+
+        public override DatabaseFileProvider FileProvider { get; set; }
 
         public override EffectBytecode Compile(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters, LoggerResult log)
         {

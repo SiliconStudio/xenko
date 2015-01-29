@@ -56,6 +56,8 @@ namespace SiliconStudio.Paradox.Graphics
     /// </summary>
     public partial class GraphicsDevice
     {
+        private const int MaxBoundRenderTargets = 16;
+
         // Used when locking asyncCreationLockObject
         private bool asyncCreationLockTaken;
 
@@ -102,10 +104,14 @@ namespace SiliconStudio.Paradox.Graphics
         private GraphicsDevice immediateContext;
         private GraphicsAdapter _adapter;
         private SwapChainBackend _defaultSwapChainBackend;
-        private Viewport[] _currentViewports = new Viewport[16];
-        private Rectangle[] _currentScissorRectangles = new Rectangle[16];
+        private Viewport[] _currentViewports = new Viewport[MaxBoundRenderTargets];
+        private Rectangle[] _currentScissorRectangles = new Rectangle[MaxBoundRenderTargets];
         private int contextBeginCounter = 0;
 
+#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+        private float[] _currentViewportsSetBuffer = new float[4 * MaxBoundRenderTargets];
+        private int[] _currentScissorsSetBuffer = new int[4 * MaxBoundRenderTargets];
+#endif
         private int activeTexture = 0;
 
         // TODO: Use some LRU scheme to clean up FBOs if not used frequently anymore.
@@ -155,7 +161,7 @@ namespace SiliconStudio.Paradox.Graphics
         private BlendState boundBlendState;
         private RasterizerState boundRasterizerState;
         private Texture boundDepthStencilBuffer;
-        private Texture[] boundRenderTargets = new Texture[16];
+        private Texture[] boundRenderTargets = new Texture[MaxBoundRenderTargets];
         private int boundFBO;
         internal bool hasRenderTarget, hasDepthStencilBuffer;
         private int boundFBOHeight;
@@ -847,7 +853,6 @@ namespace SiliconStudio.Paradox.Graphics
 #if DEBUG
             EnsureContextActive();
 #endif
-            //TODO: review code
             PreDraw();
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
@@ -1649,18 +1654,16 @@ namespace SiliconStudio.Paradox.Graphics
             for (var i = 0; i < scissorCount; ++i)
                 _currentScissorRectangles[i] = scissorRectangles[i];
 
-            var rectangleValues = new int[4 * scissorCount];
-
             for (int i = 0; i < scissorCount; ++i)
             {
                 var height = scissorRectangles[i].Height;
-                rectangleValues[4*i] = scissorRectangles[i].X;
-                rectangleValues[4 * i + 1] = GetScissorY(scissorRectangles[i].Y, height);
-                rectangleValues[4*i + 2] = scissorRectangles[i].Width;
-                rectangleValues[4*i + 3] = height;
+                _currentScissorsSetBuffer[4*i] = scissorRectangles[i].X;
+                _currentScissorsSetBuffer[4 * i + 1] = GetScissorY(scissorRectangles[i].Y, height);
+                _currentScissorsSetBuffer[4 * i + 2] = scissorRectangles[i].Width;
+                _currentScissorsSetBuffer[4 * i + 3] = height;
             }
 
-            GL.ScissorArray(0, scissorCount, rectangleValues);
+            GL.ScissorArray(0, scissorCount, _currentScissorsSetBuffer);
 #endif
         }
 
@@ -1846,16 +1849,15 @@ namespace SiliconStudio.Paradox.Graphics
         private void UpdateViewports()
         {
             int nbViewports = _currentViewports.Length;
-            float[] viewports = new float[nbViewports * 4];
             for (int i = 0; i < nbViewports; ++i)
             {
                 var currViewport = _currentViewports[i];
-                viewports[4 * i] = currViewport.X;
-                viewports[4 * i + 1] = GetViewportY(currViewport);
-                viewports[4 * i + 2] = currViewport.Width;
-                viewports[4 * i + 3] = currViewport.Height;
+                _currentViewportsSetBuffer[4 * i] = currViewport.X;
+                _currentViewportsSetBuffer[4 * i + 1] = GetViewportY(currViewport);
+                _currentViewportsSetBuffer[4 * i + 2] = currViewport.Width;
+                _currentViewportsSetBuffer[4 * i + 3] = currViewport.Height;
             }
-            GL.ViewportArray(0, nbViewports, viewports);
+            GL.ViewportArray(0, nbViewports, _currentViewportsSetBuffer);
         }
 #endif
 
@@ -2003,8 +2005,7 @@ namespace SiliconStudio.Paradox.Graphics
             if (buffer != null)
             {
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                // TODO: Maybe the second test is enough
-                if (IsOpenGLES2 || buffer.StagingData != IntPtr.Zero)
+                if (buffer.StagingData != IntPtr.Zero)
                 {
                     // Specific case for constant buffers
                     SiliconStudio.Core.Utilities.CopyMemory(buffer.StagingData, databox.DataPointer, buffer.Description.SizeInBytes);
@@ -2031,9 +2032,10 @@ namespace SiliconStudio.Paradox.Graphics
                     }
 
                     // TODO: Handle pitchs
+                    // TODO: handle other texture formats
                     var desc = texture.Description;
                     GL.BindTexture(TextureTarget.Texture2D, texture.ResourceId);
-                    boundTextures[0] = null;
+                    boundTextures[0] = null; // bound active texture 0 has changed
                     GL.TexImage2D(TextureTargetTexture2D, subResourceIndex, (PixelInternalFormat_TextureComponentCount)texture.InternalFormat, desc.Width, desc.Height, 0, texture.FormatGl, texture.Type, databox.DataPointer);
                 }
                 else // neither texture nor buffer
@@ -2101,7 +2103,7 @@ namespace SiliconStudio.Paradox.Graphics
                 // Update the texture region
                 GL.BindTexture(texture.Target, texture.resourceId);
                 GL.TexSubImage2D((TextureTarget_TextureTarget2d)texture.Target, subResourceIndex, region.Left, region.Top, width, height, texture.FormatGl, texture.Type, databox.DataPointer);
-                boundTextures[0] = null;
+                boundTextures[0] = null; // bound active texture 0 has changed
 
                 // reset the Unpack Alignment
                 GL.PixelStore(PixelStoreParameter.UnpackAlignment, previousPackAlignment);
@@ -2233,7 +2235,7 @@ namespace SiliconStudio.Paradox.Graphics
                     deviceCreationContext.Dispose();
                     deviceCreationWindowInfo.Dispose();
                 }
-                androidAsyncDeviceCreationContext = new AndroidAsyncGraphicsContext(androidGraphicsContext, (AndroidWindow)windowInfo);
+                androidAsyncDeviceCreationContext = new AndroidAsyncGraphicsContext(androidGraphicsContext, (AndroidWindow)windowInfo, versionMajor);
                 deviceCreationContext = OpenTK.Graphics.GraphicsContext.CreateDummyContext(androidAsyncDeviceCreationContext.Context);
                 deviceCreationWindowInfo = OpenTK.Platform.Utilities.CreateDummyWindowInfo();
             }

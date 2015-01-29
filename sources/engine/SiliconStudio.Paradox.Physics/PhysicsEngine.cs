@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine.Data;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Physics
@@ -78,21 +77,6 @@ namespace SiliconStudio.Paradox.Physics
             game = g;
         }
 
-        static bool convertersDone;
-
-        public static void InitializeConverters()
-        {
-            //init converters
-            // Register type PhysicsColliderShapeData
-            Core.Serialization.Converters.ConverterContext.RegisterConverter(new PhysicsColliderShapeDataConverter());
-            // Register type PhysicsComponentData
-            Core.Serialization.Converters.ConverterContext.RegisterConverter(new PhysicsComponentDataConverter());
-            // Register type PhysicsElementData
-            Core.Serialization.Converters.ConverterContext.RegisterConverter(new PhysicsElementDataConverter());
-
-            convertersDone = true;
-        }
-
         /// <summary>
         /// Initializes the Physics engine using the specified flags.
         /// </summary>
@@ -102,11 +86,6 @@ namespace SiliconStudio.Paradox.Physics
         {
             // Preload proper libbulletc native library (depending on CPU type)
             Core.NativeLibrary.PreloadLibrary("libbulletc.dll");
-
-            if (!convertersDone)
-            {
-                InitializeConverters();
-            }
 
             //add into processors pipeline
             game.Entities.Processors.Add(new PhysicsProcessor());
