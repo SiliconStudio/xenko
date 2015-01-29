@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics.Font;
@@ -16,8 +17,6 @@ namespace SiliconStudio.Paradox.Graphics
         public GameFontSystem(IServiceRegistry registry)
             : base(registry)
         {
-            Services.AddService(typeof(GameFontSystem), this);
-
             Visible = true;
         }
 
@@ -33,6 +32,8 @@ namespace SiliconStudio.Paradox.Graphics
             base.Initialize();
 
             FontSystem = new FontSystem(GraphicsDevice);
+
+            Services.AddService(typeof(FontSystem), FontSystem);
         }
 
         protected override void LoadContent()

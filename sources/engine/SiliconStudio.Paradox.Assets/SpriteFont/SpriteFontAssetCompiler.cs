@@ -12,19 +12,18 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Assets.SpriteFont.Compiler;
-using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Graphics.Font;
 
 using Font = SharpDX.DirectWrite.Font;
-using FontStyle = SiliconStudio.Paradox.Graphics.Font.FontStyle;
 
 namespace SiliconStudio.Paradox.Assets.SpriteFont
 {
     public class SpriteFontAssetCompiler : AssetCompilerBase<SpriteFontAsset>
     {
+        private static FontDataFactory fontDataFactory = new FontDataFactory();
+
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, SpriteFontAsset asset, AssetCompilerResult result)
         {
             if (asset.IsDynamic)
@@ -67,18 +66,16 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
                 assetClone.Source = asset.Source != null? UPath.Combine(assetDirectory, asset.Source): null;
                 assetClone.CharacterSet = asset.CharacterSet != null ? UPath.Combine(assetDirectory, asset.CharacterSet): null;
 
-                result.BuildSteps = new ListBuildStep { new StaticFontCommand(urlInStorage, assetAbsolutePath, assetClone) };
+                result.BuildSteps = new ListBuildStep { new StaticFontCommand(urlInStorage, assetClone) };
             }
         }
 
         internal class StaticFontCommand : AssetCommand<SpriteFontAsset>
         {
-            private readonly UFile assetAbsolutePath;
 
-            public StaticFontCommand(string url, UFile assetAbsolutePath, SpriteFontAsset description)
+            public StaticFontCommand(string url, SpriteFontAsset description)
                 : base(url, description)
             {
-                this.assetAbsolutePath = assetAbsolutePath;
             }
 
             public override IEnumerable<ObjectUrl> GetInputFiles()
@@ -95,10 +92,10 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 // try to import the font from the original bitmap or ttf file
-                StaticSpriteFontData data;
+                Graphics.SpriteFont staticFont;
                 try
                 {
-                    data = FontCompiler.Compile(asset);
+                    staticFont = StaticFontCompiler.Compile(fontDataFactory, asset);
                 }
                 catch (FontNotFoundException ex) 
                 {
@@ -107,19 +104,16 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
                 }
 
                 // check that the font data is valid
-                if (data == null || data.Bitmaps.Length == 0)
+                if (staticFont == null || staticFont.Textures.Count == 0)
                     return Task.FromResult(ResultStatus.Failed);
 
                 // save the data into the database
-                var imageUrl = Url + "__image";
-                data.Bitmaps[0].Location = imageUrl;
                 var assetManager = new AssetManager();
-                assetManager.Save(Url, data);
+                assetManager.Save(Url, staticFont);
 
-                var image = data.Bitmaps[0].Value;
-
-                // free the objects
-                image.Dispose();
+                // dispose textures allocated by the StaticFontCompiler
+                foreach (var texture in staticFont.Textures)
+                    texture.Dispose();
 
                 return Task.FromResult(ResultStatus.Successful);
             }
@@ -173,18 +167,9 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
-                var dynamicFont = new DynamicSpriteFontData
-                {
-                    Size = FontHelper.PointsToPixels(asset.Size),
-                    DefaultCharacter = asset.DefaultCharacter,
-                    FontName = asset.FontName,
-                    ExtraLineSpacing = asset.LineSpacing,
-                    DefaultSize = asset.Size,
-                    ExtraSpacing = asset.Spacing,
-                    Style = asset.Style,
-                    UseKerning = asset.UseKerning,
-                    AntiAlias = asset.AntiAlias,
-                };
+                var dynamicFont = fontDataFactory.NewDynamic(
+                    FontHelper.PointsToPixels(asset.Size), asset.FontName, asset.Style, 
+                    asset.AntiAlias, asset.UseKerning, asset.Spacing, asset.LineSpacing, asset.DefaultCharacter);
 
                 var assetManager = new AssetManager();
                 assetManager.Save(Url, dynamicFont);

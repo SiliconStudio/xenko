@@ -80,50 +80,39 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Graphics.Font;
 
 namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
 {
     // Writes the output sprite font binary file.
-    internal static class SpriteFontWriter
+    internal static class StaticSpriteFontWriter
     {
-        public static StaticSpriteFontData CreateSpriteFontData(SpriteFontAsset options, Glyph[] glyphs, float lineSpacing, float baseLine, Bitmap bitmap)
+        public static Graphics.SpriteFont CreateSpriteFontData(IFontFactory fontFactory, SpriteFontAsset options, Glyph[] glyphs, float lineSpacing, float baseLine, Bitmap bitmap)
         {
-            var spriteFontData = new StaticSpriteFontData
-                {
-                    Size = FontHelper.PointsToPixels(options.Size),
-                    BaseOffset = baseLine,
-                    FontDefaultLineSpacing = lineSpacing,
-                    ExtraLineSpacing = options.LineSpacing,
-                    ExtraSpacing = options.Spacing,
-                    DefaultCharacter = options.DefaultCharacter
-                };
+            var fontGlyphs = ConvertGlyphs(glyphs);
+            var images = new[] { GetImage(options, bitmap) };
+            var sizeInPixels = FontHelper.PointsToPixels(options.Size);
 
-            WriteGlyphs(spriteFontData, glyphs);
-                
-            spriteFontData.Bitmaps = new ContentReference<Graphics.Image>[1];
-            var image = GetImage(options, bitmap);
-            spriteFontData.Bitmaps[0] = new ContentReference<Graphics.Image> { Value = image };
-
-            return spriteFontData;
+            return fontFactory.NewStatic(sizeInPixels, fontGlyphs, images, baseLine, lineSpacing, null, options.Spacing, options.LineSpacing, options.DefaultCharacter);
         }
 
-        static void WriteGlyphs(StaticSpriteFontData spriteFont, Glyph[] glyphs)
+        static Graphics.Font.Glyph[] ConvertGlyphs(Glyph[] glyphs)
         {
-            spriteFont.Glyphs = new Graphics.Font.Glyph[glyphs.Length];
-            for (int i = 0; i < glyphs.Length; i++)
+            var fontGlyphs = new Graphics.Font.Glyph[glyphs.Length];
+
+            for  (var i=0; i<glyphs.Length; ++i)
             {
                 var glyph = glyphs[i];
-                spriteFont.Glyphs[i] = new Graphics.Font.Glyph
-                    {
-                        Character = glyph.Character,
-                        Subrect = new Core.Mathematics.Rectangle(glyph.Subrect.X, glyph.Subrect.Y, glyph.Subrect.Width, glyph.Subrect.Height),
-                        Offset = new Vector2(glyph.XOffset, glyph.YOffset),
-                        XAdvance = glyph.XAdvance,
-                    };
+                fontGlyphs[i] = new Graphics.Font.Glyph
+                {
+                    Character = glyph.Character,
+                    Subrect = new Core.Mathematics.Rectangle(glyph.Subrect.X, glyph.Subrect.Y, glyph.Subrect.Width, glyph.Subrect.Height),
+                    Offset = new Vector2(glyph.XOffset, glyph.YOffset),
+                    XAdvance = glyph.XAdvance,
+                };
             }
+
+            return fontGlyphs;
         }
 
         static Graphics.Image GetImage(SpriteFontAsset options, Bitmap bitmap)
@@ -239,13 +228,13 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
 
                     if (options.NoPremultiply)
                     {
-                        // If we are not premultiplied, RGB is always white and we have 4 bit alpha.
+                        // If we are not pre-multiplied, RGB is always white and we have 4 bit alpha.
                         alpha = value >> 4;
                         rgb = 0;
                     }
                     else
                     {
-                        // For premultiplied encoding, quantize the source value to 2 bit precision.
+                        // For pre-multiplied encoding, quantize the source value to 2 bit precision.
                         if (value < 256 / 6)
                         {
                             alpha = 0;

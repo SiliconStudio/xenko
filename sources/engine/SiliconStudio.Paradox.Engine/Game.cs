@@ -94,7 +94,7 @@ namespace SiliconStudio.Paradox
         /// </summary>
         /// <value>The font system.</value>
         /// <exception cref="System.InvalidOperationException">The font system is not initialized yet</exception>
-        public IFontSystem Font
+        public IFontFactory Font
         {
             get
             {

@@ -81,7 +81,6 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 
-using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Graphics.Font;
 
 using System.Linq;
@@ -91,19 +90,23 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
     /// <summary>
     /// Main class used to compile a Font file XML file.
     /// </summary>
-    public class FontCompiler
+    public class StaticFontCompiler
     {
         /// <summary>
-        /// Compiles the specified font description into a <see cref="SpriteFontData" /> object.
+        /// Compiles the specified font description into a <see cref="StaticSpriteFont" /> object.
         /// </summary>
+        /// <param name="fontFactory">The font factory used to create the fonts</param>
         /// <param name="fontAsset">The font description.</param>
         /// <returns>A SpriteFontData object.</returns>
-        public static StaticSpriteFontData Compile(SpriteFontAsset fontAsset)
+        public static Graphics.SpriteFont Compile(IFontFactory fontFactory, SpriteFontAsset fontAsset)
         {
+            if(fontAsset.IsDynamic)
+                throw new ArgumentException("Tried to compile a dynamic sprite font with compiler for static fonts");
+
             float lineSpacing;
             float baseLine;
 
-            Glyph[] glyphs = ImportFont(fontAsset, out lineSpacing, out baseLine);
+            var glyphs = ImportFont(fontAsset, out lineSpacing, out baseLine);
 
             // Optimize.
             foreach (Glyph glyph in glyphs)
@@ -120,7 +123,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
             //                                     FontTextureFormat.Rgba32;
             //}
 
-            // Convert to premultiplied alpha format.
+            // Convert to pre-multiplied alpha format.
             if (!fontAsset.NoPremultiply)
             {
                 if (fontAsset.AntiAlias == FontAntiAliasMode.ClearType)
@@ -133,7 +136,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
                 }
             }
 
-            return SpriteFontWriter.CreateSpriteFontData(fontAsset, glyphs, lineSpacing, baseLine, bitmap);
+            return StaticSpriteFontWriter.CreateSpriteFontData(fontFactory, fontAsset, glyphs, lineSpacing, baseLine, bitmap);
         }
 
         static Glyph[] ImportFont(SpriteFontAsset options, out float lineSpacing, out float baseLine)

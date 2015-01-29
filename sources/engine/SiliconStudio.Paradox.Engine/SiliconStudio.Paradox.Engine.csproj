@@ -168,10 +168,8 @@
     <Compile Include="Framework.Extensions\DictionaryExtensions.cs" />
     <Compile Include="GameSystem.cs" />
     <Compile Include="Game.cs" />
-    <Compile Include="Graphics\DynamicSpriteFontDataConverter.cs" />
     <Compile Include="Graphics\GameFontSystem.cs" />
     <Compile Include="Engine\SpriteProcessor.cs" />
-    <None Include="Graphics\StaticSpriteFontDataConverter.cs" />
     <Compile Include="Internals\LambdaReadOnlyCollection.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="OpenGL\AndroidParadoxActivity.cs" />

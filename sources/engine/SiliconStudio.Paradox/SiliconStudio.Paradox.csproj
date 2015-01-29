@@ -78,12 +78,10 @@
     <Compile Include="Graphics\PixelFormat.cs" />
     <Compile Include="Graphics\PixelFormat.Extensions.cs" />
     <Compile Include="Graphics\SamplerStateDescription.cs" />
-    <Compile Include="Graphics\SpriteFontData.cs" />
     <Compile Include="Graphics\StandardImageHelper.Android.cs" />
     <Compile Include="Graphics\StandardImageHelper.cs" />
     <Compile Include="Graphics\StandardImageHelper.WindowsRuntime.cs" />
     <Compile Include="Graphics\StandardImageHelper.Windows.cs" />
-    <Compile Include="Graphics\StaticSpriteFontData.cs" />
     <Compile Include="Graphics\TextureAddressMode.cs" />
     <Compile Include="Graphics\TextureDimension.cs" />
     <Compile Include="Graphics\TextureFilter.cs" />
