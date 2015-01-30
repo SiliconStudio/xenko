@@ -138,6 +138,8 @@
     <Compile Include="Effect\EffectCompositorAsset.cs" />
     <Compile Include="Effect\EffectShaderAssetCompiler.cs" />
     <Compile Include="Effect\EffectShaderAsset.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitiveAsset.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitiveAssetCompiler.cs" />
     <Compile Include="ImageGroupAsset.cs" />
     <Compile Include="Materials\ComputeColors\IComputeColorParameter.cs" />
     <Compile Include="Materials\ComputeColors\ComputeBinaryColor.cs" />

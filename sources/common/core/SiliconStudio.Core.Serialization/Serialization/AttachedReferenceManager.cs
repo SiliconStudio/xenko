@@ -55,6 +55,19 @@ namespace SiliconStudio.Core.Serialization
         }
 
         /// <summary>
+        /// Creates a proxy object with <see cref="AttachedReference" /> designing it as a proxy with a given id and location (that can be used with <see cref="Assets.AssetManager" />). This allows to construct and save object references without actually loading them.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="contentReference">The content reference.</param>
+        /// <returns>T.</returns>
+        /// <exception cref="System.ArgumentNullException">contentReference</exception>
+        public static T CreateSerializableVersion<T>(IContentReference contentReference) where T : class, new()
+        {
+            if (contentReference == null) throw new ArgumentNullException("contentReference");
+            return CreateSerializableVersion<T>(contentReference.Id, contentReference.Location);
+        }
+
+        /// <summary>
         /// Creates a proxy object with <see cref="AttachedReference"/> designing it as a proxy with a given id and location (that can be used with <see cref="Assets.AssetManager"/>). This allows to construct and save object references without actually loading them.
         /// </summary>
         /// <typeparam name="T"></typeparam>

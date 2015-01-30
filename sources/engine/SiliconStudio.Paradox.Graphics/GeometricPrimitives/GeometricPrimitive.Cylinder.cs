@@ -75,6 +75,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
@@ -87,6 +89,64 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         public static class Cylinder
         {
+            /// <summary>
+            /// A Cylinder descriptor
+            /// </summary>
+            [DataContract("GeometricPrimitive.Cylinder.Model")]
+            [Display("Cylinder")]
+            public class Model : IGeometricPrimitiveModel
+            {
+                /// <summary>
+                /// Initializes a new instance of the Cylinder descriptor class.
+                /// </summary>
+                public Model()
+                {
+                    Height = 1.0f;
+                    Diameter = 1.0f;
+                    Tessellation = 32;
+                    ScaleUV = 1;
+                }
+
+                //float height = 1.0f, float diameter = 1.0f, int tessellation = 32, float textureTiling = 1,
+
+                /// <summary>
+                /// Gets or sets the height.
+                /// </summary>
+                /// <value>The height.</value>
+                [DataMember(10)]
+                [DefaultValue(1.0f)]
+                public float Height { get; set; }
+
+                /// <summary>
+                /// Gets or sets the diameter of the base of the cylinder.
+                /// </summary>
+                /// <value>The diameter.</value>
+                [DataMember(20)]
+                [DefaultValue(1.0f)]
+                public float Diameter { get; set; }
+
+                /// <summary>
+                /// Gets or sets the tessellation factor.
+                /// </summary>
+                /// <value>The tessellation.</value>
+                [DataMember(30)]
+                [DefaultValue(32)]
+                public int Tessellation { get; set; }
+
+                /// <summary>
+                /// Gets or sets the scale to apply on texcoord uv.
+                /// </summary>
+                /// <value>The scale uv.</value>
+                [DataMember(40)]
+                [DefaultValue(1.0f)]
+                public float ScaleUV { get; set; }
+
+                public GeometricMeshData<VertexPositionNormalTexture> Create()
+                {
+                    return New(Height, Diameter, Tessellation, ScaleUV);
+                }
+            }
+
             // Helper computes a point on a unit circle, aligned to the x/z plane and centered on the origin.
             private static Vector3 GetCircleVector(int i, int tessellation)
             {

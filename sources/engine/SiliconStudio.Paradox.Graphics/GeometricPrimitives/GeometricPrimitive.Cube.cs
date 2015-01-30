@@ -73,11 +73,13 @@
 // contributors exclude the implied warranties of merchantability, fitness for a
 // particular purpose and non-infringement.
 
-
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Graphics
 {
+
+
     public partial class GeometricPrimitive
     {
         /// <summary>
@@ -85,6 +87,24 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         public static class Cube
         {
+            // TODO: Add support to tesselate the faces of the cube
+
+            [DataContract("GeometricPrimitive.Cube.Model")]
+            [Display("Cube")]
+            public class Model : IGeometricPrimitiveModel
+            {
+                /// <summary>
+                /// Gets or sets the size of the cube.
+                /// </summary>
+                /// <value>The size.</value>
+                public float Size { get; set; }
+
+                public GeometricMeshData<VertexPositionNormalTexture> Create()
+                {
+                    return New(Size);
+                }
+            }
+
             private const int CubeFaceCount = 6;
 
             private static readonly Vector3[] faceNormals = new Vector3[CubeFaceCount]

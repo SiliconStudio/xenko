@@ -22,6 +22,9 @@
 // THE SOFTWARE.
 
 using System;
+using System.ComponentModel;
+
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Graphics
@@ -33,6 +36,80 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         public static class Plane
         {
+            /// <summary>
+            /// The geometric descriptor for a plane.
+            /// </summary>
+            [DataContract("GeometricPrimitive.Plane.Model")]
+            [Display("Plane")]
+            public class Model : IGeometricPrimitiveModel
+            {
+                /// <summary>
+                /// Initializes a new instance of geometric descriptor for a plane.
+                /// </summary>
+                public Model()
+                {
+                    SizeX = 1.0f;
+                    SizeY = 1.0f;
+                    TesselationX = 1;
+                    TesselationY = 1;
+                    ScaleU = 1;
+                    ScaleV = 1;
+                }
+
+                /// <summary>
+                /// Gets or sets the size x.
+                /// </summary>
+                /// <value>The size x.</value>
+                [DataMember(10)]
+                [DefaultValue(1.0f)]
+                public float SizeX { get; set; }
+
+                /// <summary>
+                /// Gets or sets the size y.
+                /// </summary>
+                /// <value>The size y.</value>
+                [DataMember(20)]
+                [DefaultValue(1.0f)]
+                public float SizeY { get; set; }
+
+                /// <summary>
+                /// Gets or sets the tesselation x.
+                /// </summary>
+                /// <value>The tesselation x.</value>
+                [DataMember(30)]
+                [DefaultValue(1)]
+                public int TesselationX { get; set; }
+
+                /// <summary>
+                /// Gets or sets the tesselation y.
+                /// </summary>
+                /// <value>The tesselation y.</value>
+                [DataMember(40)]
+                [DefaultValue(1)]
+                public int TesselationY { get; set; }
+
+                /// <summary>
+                /// Gets or sets the scale u.
+                /// </summary>
+                /// <value>The scale u.</value>
+                [DataMember(50)]
+                [DefaultValue(1.0f)]
+                public float ScaleU { get; set; }
+
+                /// <summary>
+                /// Gets or sets the scale v.
+                /// </summary>
+                /// <value>The scale v.</value>
+                [DataMember(60)]
+                [DefaultValue(1.0f)]
+                public float ScaleV { get; set; }
+
+                public GeometricMeshData<VertexPositionNormalTexture> Create()
+                {
+                    return New(SizeX, SizeY, TesselationX, TesselationY, false, new Vector2(ScaleU, ScaleV));
+                }
+            }
+
             /// <summary>
             /// Creates a Plane primitive on the X/Y plane with a normal equal to -<see cref="Vector3.UnitZ"/>.
             /// </summary>

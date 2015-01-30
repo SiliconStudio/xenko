@@ -103,6 +103,7 @@
     <Compile Include="Font\StaticSpriteFontContentSerializer.cs" />
     <Compile Include="Font\StaticSpriteFontSerializer.cs" />
     <Compile Include="Font\DynamicSpriteFontSerializer.cs" />
+    <Compile Include="GeometricPrimitives\IGeometricPrimitiveModel.cs" />
     <Compile Include="GraphicsDeviceServiceLocal.cs" />
     <Compile Include="RasterizerStateSerializer.cs" />
     <Compile Include="Data\BufferData.cs" />
@@ -118,11 +119,11 @@
     <Compile Include="WorkingSpace.cs" />
     <Compile Include="Font\FontAntiAliasMode.cs" />
     <Compile Include="Font\FontStyleExtensions.cs" />
-    <Compile Include="GeometricMultiTexcoordPrimitive.cs" />
-    <Compile Include="GeometricMultiTexcoordPrimitive.Cube.cs" />
-    <Compile Include="GeometricMultiTexcoordPrimitive.Cylinder.cs" />
-    <Compile Include="GeometricMultiTexcoordPrimitive.Torus.cs" />
-    <Compile Include="GeometricPrimitive.Cone.cs" />
+    <Compile Include="GeometricPrimitives\GeometricMultiTexcoordPrimitive.cs" />
+    <Compile Include="GeometricPrimitives\GeometricMultiTexcoordPrimitive.Cube.cs" />
+    <Compile Include="GeometricPrimitives\GeometricMultiTexcoordPrimitive.Cylinder.cs" />
+    <Compile Include="GeometricPrimitives\GeometricMultiTexcoordPrimitive.Torus.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.Cone.cs" />
     <Compile Include="GraphicsDeviceExtensions.cs" />
     <Compile Include="GraphicsOutput.cs" />
     <Compile Include="GraphicsResourceAllocator.cs" />
@@ -162,17 +163,17 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="GeometricMeshData.cs" />
-    <Compile Include="GeometricMultiTexcoordPrimitive.Sphere.cs" />
-    <Compile Include="GeometricPrimitive.cs" />
-    <Compile Include="GeometricPrimitive.Capsule.cs" />
-    <Compile Include="GeometricPrimitive.Cube.cs" />
-    <Compile Include="GeometricPrimitive.Cylinder.cs" />
-    <Compile Include="GeometricPrimitive.GeoSphere.cs" />
-    <Compile Include="GeometricPrimitive.Plane.cs" />
-    <Compile Include="GeometricPrimitive.Sphere.cs" />
-    <Compile Include="GeometricPrimitive.Teapot.cs" />
-    <Compile Include="GeometricPrimitive.Torus.cs" />
+    <Compile Include="GeometricPrimitives\GeometricMeshData.cs" />
+    <Compile Include="GeometricPrimitives\GeometricMultiTexcoordPrimitive.Sphere.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.Capsule.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.Cube.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.Cylinder.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.GeoSphere.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.Plane.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.Sphere.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.Teapot.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.Torus.cs" />
     <Compile Include="GraphicsDeviceSharedDataType.cs" />
     <Compile Include="GraphicsResourceState.cs" />
     <Compile Include="IVertex.cs" />

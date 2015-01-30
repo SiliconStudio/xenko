@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using SiliconStudio.Paradox.Graphics;
@@ -37,8 +38,37 @@ namespace SiliconStudio.Paradox.Extensions
             var oldVertexStride = oldVertexBufferBinding.Declaration.VertexStride;
             var bufferData = oldVertexBufferBinding.Buffer.GetSerializationData().Content;
 
+            fixed (byte* indexBufferStart = indexData)
+            fixed (byte* oldBuffer = bufferData)
+            {
+                var result = GenerateTangentBinormal(oldVertexBufferBinding.Declaration, (IntPtr)oldBuffer, oldVertexBufferBinding.Count, oldVertexBufferBinding.Offset, oldVertexBufferBinding.Stride, (IntPtr)indexBufferStart, indexBufferBinding != null && indexBufferBinding.Is32Bit, indexBufferBinding != null ? indexBufferBinding.Count : 0);
+
+                // Replace new vertex buffer binding
+                meshData.VertexBuffers[0] = new VertexBufferBinding(new BufferData(BufferFlags.VertexBuffer, result.Value).ToSerializableVersion(), result.Key, oldVertexBufferBinding.Count);
+            }
+        }
+
+        /// <summary>
+        /// Generate Tangent BiNormal. TODO: Move this to Graphics. Make it more friendly to use.
+        /// </summary>
+        /// <param name="oldVertexDeclaration"></param>
+        /// <param name="vertexData"></param>
+        /// <param name="vertexCount"></param>
+        /// <param name="vertexOffset"></param>
+        /// <param name="vertexStride"></param>
+        /// <param name="indexData"></param>
+        /// <param name="is32BitIndex"></param>
+        /// <param name="indexCountArg"></param>
+        /// <returns></returns>
+        public static unsafe KeyValuePair<VertexDeclaration, byte[]> GenerateTangentBinormal(VertexDeclaration oldVertexDeclaration, IntPtr vertexData, int vertexCount, int vertexOffset,  int vertexStride, IntPtr indexData, bool is32BitIndex, int indexCountArg)
+        {
+            var indexBufferBinding = indexData;
+
+            var oldVertexStride = vertexStride;
+            var bufferData = vertexData;
+
             // TODO: Usage index in key
-            var offsetMapping = oldVertexBufferBinding.Declaration
+            var offsetMapping = oldVertexDeclaration
                 .EnumerateWithOffsets()
                 .ToDictionary(x => x.VertexElement.SemanticAsText, x => x.Offset);
 
@@ -47,7 +77,7 @@ namespace SiliconStudio.Paradox.Extensions
             var normalOffset = offsetMapping[VertexElementUsage.Normal];
 
             // Add tangent to vertex declaration
-            var vertexElements = oldVertexBufferBinding.Declaration.VertexElements.ToList();
+            var vertexElements = oldVertexDeclaration.VertexElements.ToList();
             if (!offsetMapping.ContainsKey(VertexElementUsage.Tangent))
                 vertexElements.Add(VertexElement.Tangent<Vector4>());
             var vertexDeclaration = new VertexDeclaration(vertexElements.ToArray());
@@ -60,19 +90,19 @@ namespace SiliconStudio.Paradox.Extensions
 
             var tangentOffset = offsetMapping[VertexElementUsage.Tangent];
 
-            var newBufferData = new byte[oldVertexBufferBinding.Count * newVertexStride];
+            var newBufferData = new byte[vertexCount * newVertexStride];
 
-            var tangents = new Vector3[oldVertexBufferBinding.Count];
-            var bitangents = new Vector3[oldVertexBufferBinding.Count];
+            var tangents = new Vector3[vertexCount];
+            var bitangents = new Vector3[vertexCount];
 
-            fixed (byte* indexBufferStart = indexData)
-            fixed (byte* oldBuffer = &bufferData[oldVertexBufferBinding.Offset])
-            fixed (byte* newBuffer = &newBufferData[0])
+            byte* indexBufferStart = (byte*)indexData;
+            byte* oldBuffer = (byte*)bufferData + vertexOffset;
+            fixed(byte* newBuffer = newBufferData)
             {
-                var indexBuffer32 = indexBufferBinding != null && indexBufferBinding.Is32Bit ? (int*)indexBufferStart : null;
-                var indexBuffer16 = indexBufferBinding != null && !indexBufferBinding.Is32Bit ? (short*)indexBufferStart : null;
+                var indexBuffer32 = indexBufferBinding != IntPtr.Zero && is32BitIndex ? (int*)indexBufferStart : null;
+                var indexBuffer16 = indexBufferBinding != IntPtr.Zero && !is32BitIndex ? (short*)indexBufferStart : null;
 
-                var indexCount = indexBufferBinding != null ? indexBufferBinding.Count : oldVertexBufferBinding.Count;
+                var indexCount = indexBufferBinding != IntPtr.Zero ? indexCountArg : vertexCount;
 
                 for (int i = 0; i < indexCount; i += 3)
                 {
@@ -129,7 +159,7 @@ namespace SiliconStudio.Paradox.Extensions
 
                 var oldVertexOffset = 0;
                 var newVertexOffset = 0;
-                for (int i = 0; i < oldVertexBufferBinding.Count; ++i)
+                for (int i = 0; i < vertexCount; ++i)
                 {
                     Utilities.CopyMemory(new IntPtr(&newBuffer[newVertexOffset]), new IntPtr(&oldBuffer[oldVertexOffset]), oldVertexStride);
 
@@ -148,10 +178,9 @@ namespace SiliconStudio.Paradox.Extensions
                     oldVertexOffset += oldVertexStride;
                     newVertexOffset += newVertexStride;
                 }
-            }
 
-            // Replace new vertex buffer binding
-            meshData.VertexBuffers[0] = new VertexBufferBinding(new BufferData(BufferFlags.VertexBuffer, newBufferData).ToSerializableVersion(), vertexDeclaration, oldVertexBufferBinding.Count);
+                return new KeyValuePair<VertexDeclaration, byte[]>(vertexDeclaration, newBufferData);
+            }
         }
     }
 }
