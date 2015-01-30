@@ -124,7 +124,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         private void NodePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (ChangeInProgress)
+            if (ChangeInProgress && e.PropertyName == "Value")
             {
                 ChangedNodes.Add(this);
             }
