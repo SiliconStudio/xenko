@@ -7,6 +7,8 @@ using SiliconStudio.Assets.Templates;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Effects.Skyboxes;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Assets
 {
@@ -20,6 +22,8 @@ namespace SiliconStudio.Paradox.Assets
 
             AssemblyRegistry.Register(typeof(Module).Assembly, AssemblyCommonCategories.Assets);
             AssemblyRegistry.Register(typeof(ParameterKeys).Assembly, AssemblyCommonCategories.Assets);
+            AssemblyRegistry.Register(typeof(SkyboxComponent).Assembly, AssemblyCommonCategories.Assets);
+            AssemblyRegistry.Register(typeof(GeometricMultiTexcoordPrimitive.Cube).Assembly, AssemblyCommonCategories.Assets);
         }
     }
 }

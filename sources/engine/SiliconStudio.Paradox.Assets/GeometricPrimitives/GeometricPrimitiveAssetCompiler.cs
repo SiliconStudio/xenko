@@ -2,27 +2,18 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-
-using SharpDX;
 
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
-using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.ComputeEffect.GGXPrefiltering;
-using SiliconStudio.Paradox.Effects.ComputeEffect.LambertianPrefiltering;
-using SiliconStudio.Paradox.Effects.Images;
 using SiliconStudio.Paradox.Extensions;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Graphics.Data;
-using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.GeometricPrimitives
 {
@@ -71,12 +62,15 @@ namespace SiliconStudio.Paradox.Assets.GeometricPrimitives
                     var model = new Model();
                     var mesh = new Mesh { Draw = new MeshDraw { VertexBuffers = new VertexBufferBinding[1] } };
 
-                    var vertexBufferData = new BufferData(BufferFlags.VertexBuffer, result.Value);
+                    var newLayout = result.Key;
+                    var newVertexBuffer = result.Value;
+
+                    var vertexBufferData = new BufferData(BufferFlags.VertexBuffer, newVertexBuffer);
                     var indexBufferData = BufferData.New(BufferFlags.IndexBuffer, data.Indices);
 
                     mesh.Draw.VertexBuffers[0] = new VertexBufferBinding(
                         vertexBufferData.ToSerializableVersion(),
-                        layout,
+                        newLayout,
                         data.Vertices.Length);
 
                     mesh.Draw.IndexBuffer = new IndexBufferBinding(indexBufferData.ToSerializableVersion(), true, data.Indices.Length, 0);

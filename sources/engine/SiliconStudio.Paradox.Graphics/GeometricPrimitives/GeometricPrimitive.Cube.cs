@@ -73,6 +73,8 @@
 // contributors exclude the implied warranties of merchantability, fitness for a
 // particular purpose and non-infringement.
 
+using System.ComponentModel;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
@@ -94,9 +96,19 @@ namespace SiliconStudio.Paradox.Graphics
             public class Model : IGeometricPrimitiveModel
             {
                 /// <summary>
+                /// Initializes a new instance of the <see cref="Model"/> class.
+                /// </summary>
+                public Model()
+                {
+                    Size = 1.0f;
+                }
+
+                /// <summary>
                 /// Gets or sets the size of the cube.
                 /// </summary>
                 /// <value>The size.</value>
+                [DataMember(10)]
+                [DefaultValue(1.0f)]
                 public float Size { get; set; }
 
                 public GeometricMeshData<VertexPositionNormalTexture> Create()
