@@ -125,7 +125,7 @@ namespace SiliconStudio.Presentation.Quantum
         }
 
         /// <inheritdoc/>
-        public override int? Order { get { return CustomOrder ?? (sourceNode.Content is MemberContent && (!(sourceNode.Content.Reference is ReferenceEnumerable) || Index == null) ? ((MemberContent)sourceNode.Content).Member.Order : null); } }
+        public override int? Order { get { return CustomOrder ?? (sourceNode.Content is MemberContent && Index == null ? ((MemberContent)sourceNode.Content).Member.Order : null); } }
 
         /// <summary>
         /// Gets or sets a custom value for the <see cref="Order"/> of this node.
