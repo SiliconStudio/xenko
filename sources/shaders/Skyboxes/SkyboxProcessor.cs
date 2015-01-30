@@ -65,7 +65,7 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
 
             foreach (var skybox in skyboxes)
             {
-                if (skybox.Enabled)
+                if (skybox.Enabled && skybox.Skybox != null)
                 {
                     if (ActiveSkyboxBackground == null && skybox.Background.Enabled)
                     {
