@@ -89,7 +89,12 @@ namespace SiliconStudio.Presentation.Quantum
             if (rootNodes.Count < 2)
                 throw new ArgumentException(@"Called CombineViewModels with a collection of view models that is either empty or containt just a single item.", "viewModels");
 
-            CombinedObservableNode rootCombinedNode = CombinedObservableNode.Create(combinedViewModel, "Root", null, typeof(object), rootNodes, null);
+            // Find best match for the root node type
+            var rootNodeType = rootNodes.First().Root.Type;
+            if (rootNodes.Skip(1).Any(x => x.Type != rootNodeType))
+                rootNodeType = typeof(object);
+
+            CombinedObservableNode rootCombinedNode = CombinedObservableNode.Create(combinedViewModel, "Root", null, rootNodeType, rootNodes, null);
             combinedViewModel.Identifier = new ObservableViewModelIdentifier(rootNodes.Select(x => x.ModelGuid));
             rootCombinedNode.Initialize();
             combinedViewModel.RootNode = rootCombinedNode;

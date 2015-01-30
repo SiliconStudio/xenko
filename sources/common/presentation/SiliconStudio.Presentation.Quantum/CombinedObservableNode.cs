@@ -105,7 +105,8 @@ namespace SiliconStudio.Presentation.Quantum
                 var allChildren = GetAllChildrenByValue();
                 if (allChildren != null)
                 {
-                    GenerateListChildren(allChildren, isUpdating);
+                    // TODO: Disable list children for now - they need to be improved a lot (resulting combinaison is very random, especially for list of ints
+                    //GenerateListChildren(allChildren, isUpdating);
                 }
             }
 
@@ -124,7 +125,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         private void NodePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (ChangeInProgress)
+            if (ChangeInProgress && e.PropertyName == "Value")
             {
                 ChangedNodes.Add(this);
             }
@@ -141,9 +142,9 @@ namespace SiliconStudio.Presentation.Quantum
 
         public IReadOnlyCollection<SingleObservableNode> CombinedNodes { get { return combinedNodes; } }
 
-        public bool HasMultipleValues { get { if (Type.IsValueType || Type == typeof(string)) return CombinedNodes.Any(x => !Equals(x.Value, CombinedNodes.First().Value)); return Children.Any(x => ((CombinedObservableNode)x).HasMultipleValues); } }
+        public bool HasMultipleValues { get { return ComputeHasMultipleValues(); } }
 
-        public bool HasMultipleInitialValues { get { if (Type.IsValueType || Type == typeof(string)) return distinctCombinedNodeInitialValues.Count > 1; return Children.Any(x => ((CombinedObservableNode)x).HasMultipleInitialValues); } }
+        public bool HasMultipleInitialValues { get { return ComputeHasMultipleInitialValues(); } }
 
         public ICommandBase ResetInitialValues { get; private set; }
 
@@ -310,6 +311,63 @@ namespace SiliconStudio.Presentation.Quantum
             }
 
             return allChildNodes;
+        }
+
+        private bool ComputeHasMultipleValues()
+        {
+            // TODO: check IsPrimitive might be better?
+            if (Type.IsValueType || Type == typeof(string))
+                return CombinedNodes.Any(x => !Equals(x.Value, CombinedNodes.First().Value));
+
+            return !AreAllValuesOfTheSameType(CombinedNodes.Select(x => x.Value));
+        }
+
+        private bool ComputeHasMultipleInitialValues()
+        {
+            // TODO: check IsPrimitive might be better?
+            if (Type.IsValueType || Type == typeof(string))
+                return distinctCombinedNodeInitialValues.Count > 1;
+
+            return !AreAllValuesOfTheSameType(distinctCombinedNodeInitialValues);
+        }
+
+        private static bool AreAllValuesOfTheSameType(IEnumerable<object> values)
+        {
+            bool first = true;
+            bool isNull = false;
+            Type type = null;
+
+            foreach (var value in values)
+            {
+                // Check status of the first value
+                if (first)
+                {
+                    first = false;
+                    if (value == null)
+                        isNull = true;
+                    else
+                        type = value.GetType();
+                    continue;
+                }
+
+                // For every other values...
+                if (value != null)
+                {
+                    // Check if it should be null
+                    if (isNull)
+                        return false;
+
+                    // Check if its type matches
+                    if (type != value.GetType())
+                        return false;
+                }
+                else if (!isNull)
+                {
+                    // Check if it should be non-null
+                    return false;
+                }
+            }
+            return true;
         }
     }
 

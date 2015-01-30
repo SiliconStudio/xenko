@@ -282,7 +282,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
             for (int i = 1; i <= maxDownscale; i++)
             {
-                var downSizedTexture = GetScopedRenderTarget(originalColorBuffer.Description, 1f / (float)Math.Pow(2f, i));
+                var downSizedTexture = GetScopedRenderTarget(originalColorBuffer.Description, 1f / (float)Math.Pow(2f, i), originalColorBuffer.Description.Format);
                 var input = downscaledSources[i - 1];
                 textureScaler.SetInput(0, downscaledSources[i - 1]);
                 textureScaler.SetOutput(downSizedTexture);
@@ -323,7 +323,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                 var levelConfig = cocLevels[i];
                 var textureToBlur = downscaledSources[levelConfig.downscaleFactor];
                 float downscaleFactor = 1f / (float)(Math.Pow(2f, levelConfig.downscaleFactor));
-                var blurOutput = GetScopedRenderTarget(originalColorBuffer.Description, downscaleFactor);
+                var blurOutput = GetScopedRenderTarget(originalColorBuffer.Description, downscaleFactor, originalColorBuffer.Description.Format);
                 float blurRadius = MaxBokehSize * levelConfig.CoCValue * downscaleFactor * originalColorBuffer.Width;
                 if (blurRadius < 1f) blurRadius = 1f;
                 BokehBlur levelBlur = levelConfig.blurEffect;
@@ -347,7 +347,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
 
         // Gets a new temporary render target matching the description, but with scale and format overridable.
-        private Texture GetScopedRenderTarget(TextureDescription desc, float scale = 1f, PixelFormat format = PixelFormat.R8G8B8A8_UNorm) 
+        private Texture GetScopedRenderTarget(TextureDescription desc, float scale, PixelFormat format) 
         {
             return NewScopedRenderTarget2D(
                         (int)(desc.Width  * scale),

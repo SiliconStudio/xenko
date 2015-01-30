@@ -22,7 +22,7 @@ namespace SiliconStudio.Quantum.Commands
         public string Name { get { return "AddNewItem"; } }
 
         /// <inheritdoc/>
-        public CombineMode CombineMode { get { return CombineMode.CombineOnlyForAll; } }
+        public CombineMode CombineMode { get { return CombineMode.DoNotCombine; } }
 
         /// <inheritdoc/>
         public bool CanAttach(ITypeDescriptor typeDescriptor, MemberDescriptorBase memberDescriptor)

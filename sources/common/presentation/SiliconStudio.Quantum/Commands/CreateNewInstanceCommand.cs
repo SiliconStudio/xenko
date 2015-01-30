@@ -37,7 +37,8 @@ namespace SiliconStudio.Quantum.Commands
             if (parameter == SetToNull)
                 return null;
 
-            return parameter != null ? ObjectFactory.NewInstance((Type)parameter) : currentValue;
+            var type = parameter as Type;
+            return type != null && (currentValue == null || currentValue.GetType() != type) ? ObjectFactory.NewInstance(type) : currentValue;
         }
     }
 }
