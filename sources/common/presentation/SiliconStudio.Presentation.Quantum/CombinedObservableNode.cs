@@ -105,7 +105,8 @@ namespace SiliconStudio.Presentation.Quantum
                 var allChildren = GetAllChildrenByValue();
                 if (allChildren != null)
                 {
-                    GenerateListChildren(allChildren, isUpdating);
+                    // TODO: Disable list children for now - they need to be improved a lot (resulting combinaison is very random, especially for list of ints
+                    //GenerateListChildren(allChildren, isUpdating);
                 }
             }
 
