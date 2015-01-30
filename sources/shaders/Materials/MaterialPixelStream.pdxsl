@@ -90,6 +90,14 @@ namespace SiliconStudio.Paradox.Effects.Materials
             // Make sure alphaRoughness is not going below a certain value as it can generate Infinity with some specular model
             streams.alphaRoughness = max(roughness * roughness, 0.0001); 
             // TODO: precalculate alphaRoughness^2
+
+            // Allow to adjust roughness based on vMF
+            float r = length(streams.matNormal);
+			float roughnessAdjust = 0.0f;
+			if (r < 1.0f) 
+				roughnessAdjust = (1 - r * r) / (3 * r - r * r * r);
+
+            streams.alphaRoughness += roughnessAdjust;
         }
     };
 }

@@ -29,7 +29,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
             }
 
             // Normalize after sampling it
-            streams.matNormal = normalize(streams.matNormal);
+            //streams.matNormal = normalize(streams.matNormal);
         }
     };
 }

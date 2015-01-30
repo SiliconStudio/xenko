@@ -35,9 +35,14 @@ class NormalUtil
 
     float3 BlendRNM(float3 n1, float3 n2)
     {
+        // TEMP try to keep length
+        var length_n1n2 = length(n1+n2);
+        n1 = normalize(n1);
+        n2 = normalize(n2);
+
         float3 t = n1 + float3(0, 0,  1);
         float3 u = float3(-n2.x, -n2.y, n2.z);
         float3 r = t*dot(t, u) - u*t.z;
-        return normalize(r);
+        return normalize(r) * length_n1n2;
     }
 };

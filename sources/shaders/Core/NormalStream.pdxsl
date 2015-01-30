@@ -47,6 +47,6 @@ class NormalStream
     // This method is called by the MaterialSurfaceLightingAndShading to calculate the effective normal
     stage void UpdateNormalVSFromTangentToView(float3 normalInTangentSpace)
     {
-        streams.normalVS = normalize(mul(normalInTangentSpace, streams.tangentToView));
+        streams.normalVS = normalize(mul(normalize(normalInTangentSpace), streams.tangentToView));
     }
 };
