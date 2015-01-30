@@ -168,137 +168,140 @@ namespace SiliconStudio.Paradox.Graphics
                     IsStencilBuffer = false;
                 }
 
-                // Depth texture are render buffer for now
-                // TODO: enable switch
-                if ((Description.Flags & TextureFlags.DepthStencil) != 0 && (Description.Flags & TextureFlags.ShaderResource) == 0)
+                using (GraphicsDevice.UseOpenGLCreationContext())
                 {
-                    RenderbufferStorage depth, stencil;
-                    ConvertDepthFormat(GraphicsDevice, Description.Format, out depth, out stencil);
-
-                    GL.GenRenderbuffers(1, out resourceId);
-                    GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, resourceId);
-                    GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, depth, Width, Height);
-
-                    // separate stencil
-                    if (stencil != 0)
+                    // Depth texture are render buffer for now
+                    // TODO: enable switch
+                    if ((Description.Flags & TextureFlags.DepthStencil) != 0 && (Description.Flags & TextureFlags.ShaderResource) == 0)
                     {
-                        GL.GenRenderbuffers(1, out resourceIdStencil);
-                        GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, resourceIdStencil);
-                        GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, stencil, Width, Height);
+                        RenderbufferStorage depth, stencil;
+                        ConvertDepthFormat(GraphicsDevice, Description.Format, out depth, out stencil);
+
+                        GL.GenRenderbuffers(1, out resourceId);
+                        GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, resourceId);
+                        GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, depth, Width, Height);
+
+                        // separate stencil
+                        if (stencil != 0)
+                        {
+                            GL.GenRenderbuffers(1, out resourceIdStencil);
+                            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, resourceIdStencil);
+                            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, stencil, Width, Height);
+                        }
+
+                        GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
+
+                        IsRenderbuffer = true;
+                        return;
+                    }
+                    else
+                    {
+                        GL.GenTextures(1, out resourceId);
+                        GL.BindTexture(Target, resourceId);
+
+                        IsRenderbuffer = false;
                     }
 
-                    GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
-                    
-                    IsRenderbuffer = true;
-                    return;
-                }
-                else
-                {
-                    GL.GenTextures(1, out resourceId);
-                    GL.BindTexture(Target, resourceId);
-
-                    IsRenderbuffer = false;
-                }
-
-                // No filtering on depth buffer
-                if ((Description.Flags & (TextureFlags.RenderTarget | TextureFlags.DepthStencil)) !=
-                    TextureFlags.None)
-                {
-                    GL.TexParameter(Target, TextureParameterName.TextureMinFilter,
-                                    (int)TextureMinFilter.Nearest);
-                    GL.TexParameter(Target, TextureParameterName.TextureMagFilter,
-                                    (int)TextureMagFilter.Nearest);
-                    GL.TexParameter(Target, TextureParameterName.TextureWrapS,
-                                    (int)TextureWrapMode.ClampToEdge);
-                    GL.TexParameter(Target, TextureParameterName.TextureWrapT,
-                                    (int)TextureWrapMode.ClampToEdge);
-                }
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                else if (Description.MipLevels <= 1)
-                {
-                    GL.TexParameter(Target, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-                    GL.TexParameter(Target, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-                }
-#endif
-
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                if (!GraphicsDevice.IsOpenGLES2)
-#endif
-                {
-                    GL.TexParameter(Target, TextureParameterName.TextureBaseLevel, 0);
-                    GL.TexParameter(Target, TextureParameterName.TextureMaxLevel, Description.MipLevels - 1);
-                }
-
-                if (Description.MipLevels == 0)
-                    throw new NotImplementedException();
-
-                var setSize = TextureSetSize(Target);
-
-                for (var arrayIndex = 0; arrayIndex < Description.ArraySize; ++arrayIndex)
-                {
-                    var offsetArray = arrayIndex * Description.MipLevels;
-                    for (int i = 0; i < Description.MipLevels; ++i)
+                    // No filtering on depth buffer
+                    if ((Description.Flags & (TextureFlags.RenderTarget | TextureFlags.DepthStencil)) !=
+                        TextureFlags.None)
                     {
-                        IntPtr data = IntPtr.Zero;
-                        var width = CalculateMipSize(Description.Width, i);
-                        var height = CalculateMipSize(Description.Height, i);
-                        if (dataBoxes != null && i < dataBoxes.Length)
+                        GL.TexParameter(Target, TextureParameterName.TextureMinFilter,
+                            (int)TextureMinFilter.Nearest);
+                        GL.TexParameter(Target, TextureParameterName.TextureMagFilter,
+                            (int)TextureMagFilter.Nearest);
+                        GL.TexParameter(Target, TextureParameterName.TextureWrapS,
+                            (int)TextureWrapMode.ClampToEdge);
+                        GL.TexParameter(Target, TextureParameterName.TextureWrapT,
+                            (int)TextureWrapMode.ClampToEdge);
+                    }
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                    else if (Description.MipLevels <= 1)
+                    {
+                        GL.TexParameter(Target, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+                        GL.TexParameter(Target, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+                    }
+#endif
+
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                    if (!GraphicsDevice.IsOpenGLES2)
+#endif
+                    {
+                        GL.TexParameter(Target, TextureParameterName.TextureBaseLevel, 0);
+                        GL.TexParameter(Target, TextureParameterName.TextureMaxLevel, Description.MipLevels - 1);
+                    }
+
+                    if (Description.MipLevels == 0)
+                        throw new NotImplementedException();
+
+                    var setSize = TextureSetSize(Target);
+
+                    for (var arrayIndex = 0; arrayIndex < Description.ArraySize; ++arrayIndex)
+                    {
+                        var offsetArray = arrayIndex*Description.MipLevels;
+                        for (int i = 0; i < Description.MipLevels; ++i)
                         {
-                            if (setSize > 1 && !compressed && dataBoxes[i].RowPitch != width * pixelSize)
-                                throw new NotSupportedException("Can't upload texture with pitch in glTexImage2D.");
-                            // Might be possible, need to check API better.
-                            data = dataBoxes[offsetArray + i].DataPointer;
-                        }
-                        
-                        if (setSize == 2)
-                        {
-                            var dataSetTarget = GetTextureTargetForDataSet2D(Target, arrayIndex);
-                            if (compressed)
+                            IntPtr data = IntPtr.Zero;
+                            var width = CalculateMipSize(Description.Width, i);
+                            var height = CalculateMipSize(Description.Height, i);
+                            if (dataBoxes != null && i < dataBoxes.Length)
                             {
-                                GL.CompressedTexImage2D(dataSetTarget, i, (CompressedInternalFormat2D)internalFormat,
-                                    width, height, 0, dataBoxes[offsetArray + i].SlicePitch, data);
+                                if (setSize > 1 && !compressed && dataBoxes[i].RowPitch != width*pixelSize)
+                                    throw new NotSupportedException("Can't upload texture with pitch in glTexImage2D.");
+                                // Might be possible, need to check API better.
+                                data = dataBoxes[offsetArray + i].DataPointer;
                             }
-                            else
+
+                            if (setSize == 2)
                             {
-                                GL.TexImage2D(dataSetTarget, i, (TextureComponentCount2D)internalFormat,
-                                    width, height, 0, format, type, data);
+                                var dataSetTarget = GetTextureTargetForDataSet2D(Target, arrayIndex);
+                                if (compressed)
+                                {
+                                    GL.CompressedTexImage2D(dataSetTarget, i, (CompressedInternalFormat2D)internalFormat,
+                                        width, height, 0, dataBoxes[offsetArray + i].SlicePitch, data);
+                                }
+                                else
+                                {
+                                    GL.TexImage2D(dataSetTarget, i, (TextureComponentCount2D)internalFormat,
+                                        width, height, 0, format, type, data);
+                                }
                             }
-                        }
-                        else if (setSize == 3)
-                        {
-                            var dataSetTarget = GetTextureTargetForDataSet3D(Target);
-                            var depth = Target == TextureTarget.Texture2DArray ? Description.Depth : CalculateMipSize(Description.Depth, i); // no depth mipmaps in Texture2DArray
-                            if (compressed)
+                            else if (setSize == 3)
                             {
-                                GL.CompressedTexImage3D(dataSetTarget, i, (CompressedInternalFormat3D)internalFormat,
-                                    width, height, depth, 0, dataBoxes[offsetArray + i].SlicePitch, data);
+                                var dataSetTarget = GetTextureTargetForDataSet3D(Target);
+                                var depth = Target == TextureTarget.Texture2DArray ? Description.Depth : CalculateMipSize(Description.Depth, i); // no depth mipmaps in Texture2DArray
+                                if (compressed)
+                                {
+                                    GL.CompressedTexImage3D(dataSetTarget, i, (CompressedInternalFormat3D)internalFormat,
+                                        width, height, depth, 0, dataBoxes[offsetArray + i].SlicePitch, data);
+                                }
+                                else
+                                {
+                                    GL.TexImage3D(dataSetTarget, i, (TextureComponentCount3D)internalFormat,
+                                        width, height, depth, 0, format, type, data);
+                                }
                             }
-                            else
-                            {
-                                GL.TexImage3D(dataSetTarget, i, (TextureComponentCount3D)internalFormat,
-                                    width, height, depth, 0, format, type, data);
-                            }
-                        }
 #if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                        else if (setSize == 1)
-                        {
-                            if (compressed)
+                            else if (setSize == 1)
                             {
-                                GL.CompressedTexImage1D(TextureTarget.Texture1D, i, internalFormat,
-                                    width, 0, dataBoxes[offsetArray + i].SlicePitch, data);
+                                if (compressed)
+                                {
+                                    GL.CompressedTexImage1D(TextureTarget.Texture1D, i, internalFormat,
+                                        width, 0, dataBoxes[offsetArray + i].SlicePitch, data);
+                                }
+                                else
+                                {
+                                    GL.TexImage1D(TextureTarget.Texture1D, i, internalFormat,
+                                        width, 0, format, type, data);
+                                }
                             }
-                            else
-                            {
-                                GL.TexImage1D(TextureTarget.Texture1D, i, internalFormat,
-                                    width, 0, format, type, data);
-                            }
-                        }
 #endif
+                        }
                     }
-                }
-                GL.BindTexture(Target, 0);
+                    GL.BindTexture(Target, 0);
 
-                InitializePixelBufferObject();
+                    InitializePixelBufferObject();
+                }
             }
         }
 
