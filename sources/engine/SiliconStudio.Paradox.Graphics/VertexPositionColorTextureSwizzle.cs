@@ -52,7 +52,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// Defines structure byte size.
         /// </summary>
-        public static readonly int Size = 28;
+        public static readonly int Size = 32;
 
         /// <summary>
         /// The vertex layout of this struct.
