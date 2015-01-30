@@ -109,6 +109,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             if (tapWeights == null || tapWeights.Length != tapCount)
             {
                 tapWeights = DoFUtil.GetUniformWeightBlurArray(tapCount);
+                calculateRhombiOffsets();
             }
 
             if (!useOptimizedPath)
