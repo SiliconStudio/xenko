@@ -91,13 +91,16 @@ namespace SiliconStudio.Paradox.Effects.Materials
             streams.alphaRoughness = max(roughness * roughness, 0.0001); 
             // TODO: precalculate alphaRoughness^2
 
-            // Allow to adjust roughness based on vMF
+            // Normal/roughness specular anti-aliasing using vMF 
+            // See http://blog.selfshadow.com/2011/07/22/specular-showdown/
+            // See https://mynameismjp.wordpress.com/2013/07/28/siggraph-follow-up/
+            // TODO: This is generating a pattern when zooming, we may have to do this at compile time + try to find a smoother function that avoid a r >= 1.0 
             float r = length(streams.matNormal);
 			float roughnessAdjust = 0.0f;
 			if (r < 1.0f) 
-				roughnessAdjust = (1 - r * r) / (3 * r - r * r * r);
+			    roughnessAdjust = 0.5 * (1 - r * r) / (3 * r - r * r * r);
 
-            streams.alphaRoughness += roughnessAdjust;
+            //streams.alphaRoughness = sqrt(streams.alphaRoughness * streams.alphaRoughness + roughnessAdjust);
         }
     };
 }
