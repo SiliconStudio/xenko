@@ -23,6 +23,24 @@ namespace SiliconStudio.Paradox.Effects.Lights
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="LightColorRgb"/> class.
+        /// </summary>
+        /// <param name="color">The color.</param>
+        public LightColorRgb(Color3 color)
+        {
+            Color = color;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LightColorRgb"/> class.
+        /// </summary>
+        /// <param name="color">The color.</param>
+        public LightColorRgb(Color color)
+        {
+            Color = (Color3)color;
+        }
+
+        /// <summary>
         /// Gets or sets the light color in rgb.
         /// </summary>
         /// <value>The color.</value>

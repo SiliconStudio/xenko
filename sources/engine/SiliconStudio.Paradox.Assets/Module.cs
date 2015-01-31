@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Assets
             AssemblyRegistry.Register(typeof(Module).Assembly, AssemblyCommonCategories.Assets);
             AssemblyRegistry.Register(typeof(ParameterKeys).Assembly, AssemblyCommonCategories.Assets);
             AssemblyRegistry.Register(typeof(SkyboxComponent).Assembly, AssemblyCommonCategories.Assets);
-            AssemblyRegistry.Register(typeof(GeometricMultiTexcoordPrimitive.Cube).Assembly, AssemblyCommonCategories.Assets);
+            AssemblyRegistry.Register(typeof(Texture).Assembly, AssemblyCommonCategories.Assets);
         }
     }
 }

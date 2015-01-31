@@ -75,6 +75,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Graphics
@@ -292,7 +293,7 @@ namespace SiliconStudio.Paradox.Graphics
                 var indices = new List<int>();
 
                 if (tessellation < 1)
-                    throw new ArgumentOutOfRangeException("tessellation", "tessellation must be > 0");
+                    tessellation = 1;
 
                 var scaleVector = new Vector3(size, size, size);
                 var scaleNegateX = scaleVector;

@@ -74,6 +74,7 @@
 // particular purpose and non-infringement.
 
 using System;
+
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Graphics
@@ -109,7 +110,7 @@ namespace SiliconStudio.Paradox.Graphics
             /// <exception cref="System.ArgumentOutOfRangeException">tessellation;Must be >= 3</exception>
             public static GeometricMeshData<VertexPositionNormalTexture> New(float diameter = 1.0f, int tessellation = 16, bool toLeftHanded = false)
             {
-                if (tessellation < 3) throw new ArgumentOutOfRangeException("tessellation", "Must be >= 3");
+                if (tessellation < 3) tessellation = 3;
 
                 int verticalSegments = tessellation;
                 int horizontalSegments = tessellation * 2;

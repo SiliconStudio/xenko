@@ -103,7 +103,6 @@
     <Compile Include="Font\StaticSpriteFontContentSerializer.cs" />
     <Compile Include="Font\StaticSpriteFontSerializer.cs" />
     <Compile Include="Font\DynamicSpriteFontSerializer.cs" />
-    <Compile Include="GeometricPrimitives\IGeometricPrimitiveModel.cs" />
     <Compile Include="GraphicsDeviceServiceLocal.cs" />
     <Compile Include="RasterizerStateSerializer.cs" />
     <Compile Include="Data\BufferData.cs" />
@@ -119,10 +118,6 @@
     <Compile Include="WorkingSpace.cs" />
     <Compile Include="Font\FontAntiAliasMode.cs" />
     <Compile Include="Font\FontStyleExtensions.cs" />
-    <Compile Include="GeometricPrimitives\GeometricMultiTexcoordPrimitive.cs" />
-    <Compile Include="GeometricPrimitives\GeometricMultiTexcoordPrimitive.Cube.cs" />
-    <Compile Include="GeometricPrimitives\GeometricMultiTexcoordPrimitive.Cylinder.cs" />
-    <Compile Include="GeometricPrimitives\GeometricMultiTexcoordPrimitive.Torus.cs" />
     <Compile Include="GeometricPrimitives\GeometricPrimitive.Cone.cs" />
     <Compile Include="GraphicsDeviceExtensions.cs" />
     <Compile Include="GraphicsOutput.cs" />
@@ -164,7 +159,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="GeometricPrimitives\GeometricMeshData.cs" />
-    <Compile Include="GeometricPrimitives\GeometricMultiTexcoordPrimitive.Sphere.cs" />
     <Compile Include="GeometricPrimitives\GeometricPrimitive.cs" />
     <Compile Include="GeometricPrimitives\GeometricPrimitive.Capsule.cs" />
     <Compile Include="GeometricPrimitives\GeometricPrimitive.Cube.cs" />
@@ -307,7 +301,6 @@
     <Compile Include="VertexPositionColorTexture.cs" />
     <Compile Include="VertexPositionColorTextureSwizzle.cs" />
     <Compile Include="VertexPositionNormalColor.cs" />
-    <Compile Include="VertexPositionNormalTangentMultiTexture.cs" />
     <Compile Include="VertexPositionNormalTexture.cs" />
     <Compile Include="VertexPositionTexture.cs" />
     <Compile Include="WindowContext.cs" />

@@ -74,6 +74,7 @@
 // particular purpose and non-infringement.
 
 using System;
+
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Graphics
@@ -89,11 +90,12 @@ namespace SiliconStudio.Paradox.Graphics
             /// Creates a sphere primitive.
             /// </summary>
             /// <param name="device">The device.</param>
-            /// <param name="diameter">The diameter.</param>
+            /// <param name="height">The height.</param>
+            /// <param name="radius">The radius.</param>
             /// <param name="tessellation">The tessellation.</param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
             /// <returns>A sphere primitive.</returns>
-            /// <exception cref="System.ArgumentOutOfRangeException">tessellation;Must be >= 3</exception>
+            /// <exception cref="System.ArgumentOutOfRangeException">tessellation;Must be &gt;= 3</exception>
             public static GeometricPrimitive New(GraphicsDevice device, float height = 1.0f, float radius = 0.5f, int tessellation = 16, bool toLeftHanded = false)
             {
                 return new GeometricPrimitive(device, New(height, radius, tessellation, toLeftHanded));
@@ -102,14 +104,15 @@ namespace SiliconStudio.Paradox.Graphics
             /// <summary>
             /// Creates a sphere primitive.
             /// </summary>
-            /// <param name="diameter">The diameter.</param>
+            /// <param name="height">The height.</param>
+            /// <param name="radius">The radius.</param>
             /// <param name="tessellation">The tessellation.</param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
             /// <returns>A sphere primitive.</returns>
-            /// <exception cref="System.ArgumentOutOfRangeException">tessellation;Must be >= 3</exception>
+            /// <exception cref="System.ArgumentOutOfRangeException">tessellation;Must be &gt;= 3</exception>
             public static GeometricMeshData<VertexPositionNormalTexture> New(float height = 1.0f, float radius = 0.5f, int tessellation = 16, bool toLeftHanded = false)
             {
-                if (tessellation < 3) throw new ArgumentOutOfRangeException("tessellation", "Must be >= 3");
+                if (tessellation < 3) tessellation = 3;
 
                 int verticalSegments = tessellation;
                 int horizontalSegments = tessellation * 2;

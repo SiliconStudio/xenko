@@ -121,7 +121,7 @@ namespace SiliconStudio.Paradox.Effects
             return meshes.Cast<object>().Concat(materials).GetEnumerator();
         }
 
-        public static Model FromGeometricMeshData(GraphicsDevice graphicsDevice, GeometricMeshData<VertexPositionNormalTexture> geometryMesh, string effectName = "Default")
+        public static Model FromGeometricMeshData(GraphicsDevice graphicsDevice, GeometricMeshData<VertexPositionNormalTexture> geometryMesh)
         {
             var vertices = geometryMesh.Vertices;
 
@@ -130,22 +130,10 @@ namespace SiliconStudio.Paradox.Effects
             for (int i = 0; i < vertices.Length; i++)
                 BoundingBox.Merge(ref boundingBox, ref vertices[i].Position, out boundingBox);
 
-            return FromGeometricMeshData(graphicsDevice, geometryMesh, boundingBox, VertexPositionNormalTexture.Layout, effectName);
+            return FromGeometricMeshData(graphicsDevice, geometryMesh, boundingBox, VertexPositionNormalTexture.Layout);
         }
 
-        public static Model FromGeometricMeshData(GraphicsDevice graphicsDevice, GeometricMeshData<VertexPositionNormalTangentMultiTexture> geometryMesh, string effectName = "Default")
-        {
-            var vertices = geometryMesh.Vertices;
-
-            // compute the bounding box of the primitive
-            var boundingBox = new BoundingBox();
-            for (int i = 0; i < vertices.Length; i++)
-                BoundingBox.Merge(ref boundingBox, ref vertices[i].Position, out boundingBox);
-
-            return FromGeometricMeshData(graphicsDevice, geometryMesh, boundingBox, VertexPositionNormalTangentMultiTexture.Layout, effectName);
-        }
-
-        public static Model FromGeometricMeshData<T>(GraphicsDevice graphicsDevice, GeometricMeshData<T> geometryMesh, BoundingBox boundingBox, VertexDeclaration layout, string effectName = "Default") where T : struct, IVertex
+        public static Model FromGeometricMeshData<T>(GraphicsDevice graphicsDevice, GeometricMeshData<T> geometryMesh, BoundingBox boundingBox, VertexDeclaration layout) where T : struct, IVertex
         {
             var meshDraw = new MeshDraw();
 

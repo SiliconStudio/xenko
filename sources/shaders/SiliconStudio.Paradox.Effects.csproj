@@ -120,6 +120,25 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="ProceduralModels\CameraCube.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CameraCube.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="ProceduralModels\CapsuleProceduralModel.cs" />
+    <Compile Include="ProceduralModels\ConeProceduralModel.cs" />
+    <Compile Include="ProceduralModels\CubeProceduralModel.cs" />
+    <Compile Include="ProceduralModels\CylinderProceduralModel.cs" />
+    <Compile Include="ProceduralModels\IProceduralModel.cs" />
+    <Compile Include="ProceduralModels\ProceduralModelDescriptorContentSerializer.cs" />
+    <Compile Include="ProceduralModels\ProceduralModelDescriptor.cs" />
+    <Compile Include="ProceduralModels\GeoSphereProceduralModel.cs" />
+    <Compile Include="ProceduralModels\PrimitiveProceduralModelBase.cs" />
+    <Compile Include="ProceduralModels\PlaneProceduralModel.cs" />
+    <Compile Include="ProceduralModels\SphereProceduralModel.cs" />
+    <Compile Include="ProceduralModels\TeapotProceduralModel.cs" />
+    <Compile Include="ProceduralModels\TorusProceduralModel.cs" />
     <Compile Include="Images\AntiAliasing\FXAAEffect.cs" />
     <Compile Include="Images\AntiAliasing\FXAAShader.cs">
       <AutoGen>True</AutoGen>
@@ -1353,12 +1372,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>MaterialRoughnessGBuffer.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Geometry\CameraCube.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>CameraCube.pdxsl</DependentUpon>
-    </Compile>
     <Compile Include="MRT\LinearDepth.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -2006,6 +2019,10 @@
     <None Include="Core\DynamicTextureCube.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>DynamicTextureCube.cs</LastGenOutput>
+    </None>
+    <None Include="ProceduralModels\CameraCube.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CameraCube.cs</LastGenOutput>
     </None>
     <None Include="Images\AntiAliasing\FXAAShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -2810,10 +2827,6 @@
     <None Include="Deferred\MaterialRoughnessGBuffer.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialRoughnessGBuffer.cs</LastGenOutput>
-    </None>
-    <None Include="Geometry\CameraCube.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>CameraCube.cs</LastGenOutput>
     </None>
     <None Include="MRT\LinearDepth.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

@@ -75,6 +75,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Graphics
@@ -116,7 +117,7 @@ namespace SiliconStudio.Paradox.Graphics
                 var indices = new List<int>();
 
                 if (tessellation < 3)
-                    throw new ArgumentOutOfRangeException("tessellation", "tessellation parameter out of range");
+                    tessellation = 3;
 
                 int stride = tessellation + 1;
 
@@ -167,5 +168,5 @@ namespace SiliconStudio.Paradox.Graphics
                 return new GeometricMeshData<VertexPositionNormalTexture>(vertices.ToArray(), indices.ToArray(), toLeftHanded) { Name = "Torus" };
             }
         }
-   }
+    }
 }

@@ -204,6 +204,11 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
 
         private void Update(RenderContext renderContext)
         {
+            if (!UseLighting)
+            {
+                LightingKeys.EnableFixedAmbientLight(renderContext.CurrentPass.Parameters, true);
+            }
+
            // If Hdr
             if (useHdr)
             {
@@ -244,8 +249,7 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
             {
                 directLightRenderRenderProcessor.Enabled = useLighting;
                 skyboxLightingRenderer.Enabled = useLighting;
-
-                LightingKeys.EnableFixedAmbientLight(GraphicsDevice.Parameters, !useLighting);
+                useLightingChanged = false;
             }
         }
 

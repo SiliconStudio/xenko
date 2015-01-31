@@ -75,6 +75,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
@@ -164,6 +165,9 @@ namespace SiliconStudio.Paradox.Graphics
                 /// <returns>A Geodesic sphere.</returns>
                 public unsafe GeometricMeshData<VertexPositionNormalTexture> Create(float diameter = 1.0f, int tessellation = 3, bool toLeftHanded = false)
                 {
+                    if (tessellation < 3)
+                        tessellation = 3;
+
                     subdividedEdges = new Dictionary<UndirectedEdge, int>();
 
                     float radius = diameter / 2.0f;
@@ -474,5 +478,5 @@ namespace SiliconStudio.Paradox.Graphics
                 }
             }
         }
-   }
+    }
 }

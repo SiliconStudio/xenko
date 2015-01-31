@@ -160,9 +160,11 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
                 cameraViewProjMatrices[i] = worldToCamera * projection;
             }
 
+            throw new NotImplementedException("TODO: TO REIMPLEMENT");
+
             // TODO: set parameters on another collection?
-            GraphicsDevice.Parameters.Set(CameraCubeKeys.CameraViewProjectionMatrices, cameraViewProjMatrices);
-            GraphicsDevice.Parameters.Set(CameraCubeKeys.CameraWorldPosition, cameraPos);
+            //GraphicsDevice.Parameters.Set(CameraCubeKeys.CameraViewProjectionMatrices, cameraViewProjMatrices);
+            //GraphicsDevice.Parameters.Set(CameraCubeKeys.CameraWorldPosition, cameraPos);
 
             if (component.RenderTarget == null)
                 component.CreateFullViewRenderTarget();
@@ -176,8 +178,8 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
 
             GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
 
-            GraphicsDevice.Parameters.Remove(CameraCubeKeys.CameraViewProjectionMatrices);
-            GraphicsDevice.Parameters.Remove(CameraCubeKeys.CameraWorldPosition);
+            //GraphicsDevice.Parameters.Remove(CameraCubeKeys.CameraViewProjectionMatrices);
+            //GraphicsDevice.Parameters.Remove(CameraCubeKeys.CameraWorldPosition);
         }
 
         #endregion
