@@ -5,12 +5,7 @@ using System;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Paradox.Extensions;
-using SiliconStudio.Paradox.Graphics;
-
-using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 namespace SiliconStudio.Paradox.Effects.ProceduralModels
 {
@@ -27,7 +22,7 @@ namespace SiliconStudio.Paradox.Effects.ProceduralModels
         /// </summary>
         public ProceduralModelDescriptor()
         {
-            ProceduralModel = new CubeProceduralModel();
+            Type = new CubeProceduralModel();
         }
 
         /// <summary>
@@ -36,8 +31,8 @@ namespace SiliconStudio.Paradox.Effects.ProceduralModels
         /// <value>The type of geometric primitive.</value>
         [DataMember(10)]
         [NotNull]
-        [Display("Procedural Model")]
-        public IProceduralModel ProceduralModel { get; set; }
+        [Display("Type")]
+        public IProceduralModel Type { get; set; }
 
         /// <summary>
         /// Gets or sets the material.
@@ -52,12 +47,12 @@ namespace SiliconStudio.Paradox.Effects.ProceduralModels
         {
             if (services == null) throw new ArgumentNullException("services");
 
-            if (ProceduralModel == null)
+            if (Type == null)
             {
                 throw new InvalidOperationException("Invalid GeometricPrimitive [{0}]. Expecting a non-null Type");
             }
 
-            var model = ProceduralModel.Create(services);
+            var model = Type.Create(services);
 
             if (Material != null)
             {
