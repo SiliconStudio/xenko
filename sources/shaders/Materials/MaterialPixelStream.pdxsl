@@ -73,6 +73,20 @@ namespace SiliconStudio.Paradox.Effects.Materials
             streams.matCavitySpecular = 0.0f;
         }
 
+        float GetFilterSquareRoughnessAdjustment(float3 averageNormal)
+        {
+            // Normal/roughness specular anti-aliasing using vMF 
+            // See http://blog.selfshadow.com/2011/07/22/specular-showdown/
+            // See https://mynameismjp.wordpress.com/2013/07/28/siggraph-follow-up/
+            // TODO: Make this part pluggable/modifiable via mixin
+            float r = length(streams.matNormal);
+			float roughnessAdjust = 0.0f;
+			if (r < 1.0f) 
+			    roughnessAdjust = 0.5 * (1 - r*r) / (3 * r - r * r * r);
+
+            return roughnessAdjust;            
+        }
+
         void PrepareMaterialForLightingAndShading()
         {
             // Direct lighting can be slightly influenced by AO map
@@ -85,22 +99,15 @@ namespace SiliconStudio.Paradox.Effects.Materials
             streams.NdotV = max(dot(streams.normalVS, streams.shadingView), 0.0001f);
 
             // Calculate shading roughtness using Disney-Burley method
-            // roughness-burley = roughness^2 = (1 - glossy)^2
             var roughness = 1.0f - streams.matGlossiness;
+
+            // Calculate roughness adjustment based on normal average
+			float roughnessAdjust = GetFilterSquareRoughnessAdjustment(streams.matNormal);
+
             // Make sure alphaRoughness is not going below a certain value as it can generate Infinity with some specular model
-            streams.alphaRoughness = max(roughness * roughness, 0.0001); 
+            // roughness-burley = roughness^2 = (1 - glossy)^2
+            streams.alphaRoughness = max(roughness * roughness + roughnessAdjust, 0.0001); 
             // TODO: precalculate alphaRoughness^2
-
-            // Normal/roughness specular anti-aliasing using vMF 
-            // See http://blog.selfshadow.com/2011/07/22/specular-showdown/
-            // See https://mynameismjp.wordpress.com/2013/07/28/siggraph-follow-up/
-            // TODO: This is generating a pattern when zooming, we may have to do this at compile time + try to find a smoother function that avoid a r >= 1.0 
-            float r = length(streams.matNormal);
-			float roughnessAdjust = 0.0f;
-			if (r < 1.0f) 
-			    roughnessAdjust = 0.5 * (1 - r * r) / (3 * r - r * r * r);
-
-            //streams.alphaRoughness = sqrt(streams.alphaRoughness * streams.alphaRoughness + roughnessAdjust);
         }
     };
 }
