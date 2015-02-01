@@ -1221,25 +1221,23 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="result">When the method completes, contains the transpose of the specified matrix.</param>
         public static void Transpose(ref Matrix value, out Matrix result)
         {
-            Matrix temp = new Matrix();
-            temp.M11 = value.M11;
-            temp.M21 = value.M12;
-            temp.M31 = value.M13;
-            temp.M41 = value.M14;
-            temp.M12 = value.M21;
-            temp.M22 = value.M22;
-            temp.M32 = value.M23;
-            temp.M42 = value.M24;
-            temp.M13 = value.M31;
-            temp.M23 = value.M32;
-            temp.M33 = value.M33;
-            temp.M43 = value.M34;
-            temp.M14 = value.M41;
-            temp.M24 = value.M42;
-            temp.M34 = value.M43;
-            temp.M44 = value.M44;
-
-            result = temp;
+            result =  new Matrix(
+                value.M11,
+                value.M12,
+                value.M13,
+                value.M14,
+                value.M12,
+                value.M22,
+                value.M32,
+                value.M42,
+                value.M13,
+                value.M23,
+                value.M33,
+                value.M43,
+                value.M14,
+                value.M24,
+                value.M34,
+                value.M44);
         }
 
         /// <summary>
