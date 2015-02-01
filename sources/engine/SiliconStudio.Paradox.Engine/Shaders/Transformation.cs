@@ -27,6 +27,7 @@ namespace SiliconStudio.Paradox.Effects
         public static readonly ParameterKey<Vector4> Eye = ParameterKeys.New<Vector4>();
         public static readonly ParameterKey<Vector4> EyeMS = ParameterKeys.New<Vector4>();
         public static readonly ParameterKey<Matrix> World = ParameterKeys.New<Matrix>();
+        public static readonly ParameterKey<Matrix> WorldInverseTranspose = ParameterKeys.New<Matrix>();
         public static readonly ParameterKey<Matrix> WorldInverse = ParameterKeys.New<Matrix>();
         public static readonly ParameterKey<Matrix> WorldView = ParameterKeys.New<Matrix>();
         public static readonly ParameterKey<Matrix> WorldViewInverse = ParameterKeys.New<Matrix>();

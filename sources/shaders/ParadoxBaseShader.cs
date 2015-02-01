@@ -41,14 +41,14 @@ namespace SiliconStudio.Paradox.Effects
                 context.Mixin(mixin, "TransformationBase");
                 context.Mixin(mixin, "NormalStream");
                 context.Mixin(mixin, "TransformationWAndVP");
-                context.Mixin(mixin, "PositionVSPerVertex");
+                context.Mixin(mixin, "PositionVertexTransform");
                 if (context.GetParam(MaterialParameters.HasNormalMap))
                 {
-                    context.Mixin(mixin, "NormalVSFromNormalMapping");
+                    context.Mixin(mixin, "NormalFromNormalMapping");
                 }
                 else
                 {
-                    context.Mixin(mixin, "NormalVSFromMesh");
+                    context.Mixin(mixin, "NormalFromMesh");
                 }
                 if (context.GetParam(MaterialParameters.HasSkinningPosition))
                 {

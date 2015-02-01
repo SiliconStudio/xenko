@@ -3,11 +3,6 @@
 /// <summary>
 /// Computes skinned normals in view space.
 /// </summary>
-class NormalVSSkinningFromMesh : NormalVSFromMesh
+class NormalVSSkinningFromMesh : NormalFromMesh
 {
-    override stage void GenerateNormalVS_VS()
-    {
-        // Perform normal generation at the end in case vNormal is modified
-        streams.normalVS = mul((float3x3)ViewInverse, streams.meshNormal);
-    }
 };

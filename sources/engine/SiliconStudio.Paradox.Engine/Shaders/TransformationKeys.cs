@@ -21,6 +21,7 @@ namespace SiliconStudio.Paradox.Effects
             Eye = ParameterKeys.NewDynamic(ParameterDynamicValue.New<Vector4, Matrix>(View, ViewToEye));
             EyeMS = ParameterKeys.NewDynamic(ParameterDynamicValue.New<Vector4, Matrix>(WorldView, WorldViewToEyeMS));
             WorldInverse = ParameterKeys.NewDynamic(ParameterDynamicValue.New<Matrix, Matrix>(World, InvertMatrix));
+            WorldInverseTranspose = ParameterKeys.NewDynamic(ParameterDynamicValue.New<Matrix, Matrix>(World, InverseTransposeMatrix));
             ViewInverse = ParameterKeys.NewDynamic(ParameterDynamicValue.New<Matrix, Matrix>(View, InvertMatrix));
             ProjectionInverse = ParameterKeys.NewDynamic(ParameterDynamicValue.New<Matrix, Matrix>(Projection, InvertMatrix));
             WorldViewInverse = ParameterKeys.NewDynamic(ParameterDynamicValue.New<Matrix, Matrix>(WorldView, InvertMatrix));
@@ -64,6 +65,12 @@ namespace SiliconStudio.Paradox.Effects
             Matrix inverseWorldView;
             Matrix.Invert(ref worldView, out inverseWorldView);
             eyeMS = new Vector4(inverseWorldView.M41, inverseWorldView.M42, inverseWorldView.M43, 1.0f);
+        }
+
+        private static void InverseTransposeMatrix(ref Matrix inMatrix, ref Matrix outMatrix)
+        {
+            Matrix.Invert(ref inMatrix, out outMatrix);
+            Matrix.Transpose(ref outMatrix, out outMatrix);
         }
 
         /// <summary>

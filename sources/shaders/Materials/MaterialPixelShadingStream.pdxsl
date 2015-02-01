@@ -7,7 +7,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
         // Output of shading a material surface
         stage stream float3 shadingColor;
 
-        // Half vector (sum of normalVS + lightDirectionVS)
+        // Half vector (sum of normalWS + lightDirectionWS)
         stage stream float3 H;
 
         // normal dot light
@@ -28,12 +28,12 @@ namespace SiliconStudio.Paradox.Effects.Materials
             // TODO: This is not plug-n-play
 
             // Used by microfacet
-            streams.H = normalize(streams.shadingView + streams.lightDirectionVS);
+            streams.H = normalize(streams.viewWS + streams.lightDirectionWS);
             // Make sure that NdotL and NdotV != 0 as they are used as denominator in BRDF and causing NANs if not correctly clamped
-            streams.NdotL = max(dot(streams.normalVS, streams.lightDirectionVS), 0.0001f);
-            streams.NdotV = max(dot(streams.normalVS, streams.shadingView), 0.0001f);
-            streams.NdotH = saturate(dot(streams.normalVS, streams.H));
-            streams.LdotH = saturate(dot(streams.lightDirectionVS, streams.H));
+            streams.NdotL = max(dot(streams.normalWS, streams.lightDirectionWS), 0.0001f);
+            streams.NdotV = max(dot(streams.normalWS, streams.viewWS), 0.0001f);
+            streams.NdotH = saturate(dot(streams.normalWS, streams.H));
+            streams.LdotH = saturate(dot(streams.lightDirectionWS, streams.H));
             streams.VdotH = streams.LdotH;
         }
     };

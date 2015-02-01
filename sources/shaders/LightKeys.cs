@@ -40,17 +40,5 @@ namespace SiliconStudio.Paradox.Effects
         /// Light direction.
         /// </summary>
         public static readonly ParameterKey<Vector3> LightDirection = ParameterKeys.New(new Vector3(-1.0f, -1.0f, -1.0f));
-
-        /// <summary>
-        /// Light direction VS.
-        /// </summary>
-        public static readonly ParameterKey<Vector3> LightDirectionVS = ParameterKeys.NewDynamic(ParameterDynamicValue.New<Vector3, Vector3, Matrix>(LightDirection, TransformationKeys.WorldView, LightDirectionVSUpdate));
-
-        public static void LightDirectionVSUpdate(ref Vector3 lightDirection, ref Matrix viewProj, ref Vector3 lightDirectionVS)
-        {
-            var temp = Vector3.TransformNormal(lightDirection, viewProj);
-            temp.Normalize();
-            lightDirectionVS = temp;
-        }
     }
 }

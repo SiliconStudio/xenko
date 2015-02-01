@@ -12,8 +12,8 @@
 #ifndef InputControlPointCount
 # define InputControlPointCount 3
 #endif
-
-class TessellationDisplacement<float TFactor, float TBase> : ShaderBaseTessellation, TessellationFlat, Texturing, NormalVSBase
+// TODO: REWRITE in WS
+class TessellationDisplacement<float TFactor, float TBase> : ShaderBaseTessellation, TessellationFlat, Texturing, NormalBase
 {
     compose ComputeColor tessellationDisplacement;
 
@@ -29,6 +29,6 @@ class TessellationDisplacement<float TFactor, float TBase> : ShaderBaseTessellat
     override void TessellateDomain()
     {
         float height = (tessellationDisplacement.Compute().r - TBase) * TFactor;
-        streams.vPositionVS.xyz += streams.vNormalVS * height;
+        streams.PositionWS.xyz += streams.normalWS * height;
     }
 };

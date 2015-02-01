@@ -38,18 +38,18 @@ namespace SiliconStudio.Paradox.Effects
         mixin TransformationBase;
         mixin NormalStream;
         mixin TransformationWAndVP;
-        mixin PositionVSPerVertex;
+        mixin PositionVertexTransform;
 
         // -----------------------------------------------
         // Performs normal mapping (in case of no-skinning, otherwise it is overloaded below)
         // -----------------------------------------------
         if (MaterialParameters.HasNormalMap)
         {
-            mixin NormalVSFromNormalMapping;
+            mixin NormalFromNormalMapping;
         }
         else
         {
-            mixin NormalVSFromMesh;
+            mixin NormalFromMesh;
         }
 
         // -----------------------------------------------

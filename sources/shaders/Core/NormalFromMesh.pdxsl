@@ -3,21 +3,21 @@
 /// <summary>
 /// Computes normals in view space.
 /// </summary>
-class NormalVSFromMesh : NormalVSBase, Transformation
+class NormalFromMesh : NormalBase, Transformation
 {
-    override stage void GenerateNormalVS_VS()
+    override stage void GenerateNormal_VS()
     {
-        // Perform normal generation at the end in case vNormal is modified
-        streams.normalVS = mul((float3x3)WorldViewInverse, streams.meshNormal);
+        // Perform normal generation at the end in case meshNormal is modified
+        streams.normalWS = mul(streams.meshNormal, (float3x3)WorldInverseTranspose);
     }
 
-    override stage void GenerateNormalVS_PS()
+    override stage void GenerateNormal_PS()
     {
         // Normalize just once the normal coming from the vertex shader
-        streams.normalVS = normalize(streams.normalVS);
+        streams.normalWS = normalize(streams.normalWS);
     }
     
-    stage override void UpdateNormalVSFromTangentToView(float3 normalInTangentSpace)
+    stage override void UpdateNormalFromTangentSpace(float3 normalInTangentSpace)
     {
         // Override the default behavior, as we are not changing the NormalVS calculated at vertex stage when normal mapping is not used
     }

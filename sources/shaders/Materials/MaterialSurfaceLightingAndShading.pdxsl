@@ -13,10 +13,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
         {
             // Before performing the shading for all lights, update the NormalVS with the latest normal
             // In case normal mapping is not used, this is a no-op
-            UpdateNormalVSFromTangentToView(streams.matNormal);
-
-            // TODO: Try to see if we could not do the whole calculation in WS instead of VS
-            streams.normalWS = mul(streams.normalVS, (float3x3)ViewInverse);
+            UpdateNormalFromTangentSpace(streams.matNormal);
 
             // Make sure that light stream is reset
             ResetLightStream();

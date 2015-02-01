@@ -35,8 +35,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             // TODO: This could be optimized by having a flag to allow rotation only if necessary
             // Rotate the skybox
             // TODO: Sample into "Importance Sampling" direction instead of the "reflect" direction
-            sampleDirection = reflect( -streams.shadingView, streams.normalVS );
-            sampleDirection = mul(sampleDirection, ViewInverse);
+            sampleDirection = reflect( -streams.viewWS, streams.normalWS );
             sampleDirection = mul(sampleDirection, (float3x3)SkyMatrix);
             sampleDirection = float3(sampleDirection.xy, -sampleDirection.z);
 

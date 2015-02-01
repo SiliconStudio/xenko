@@ -9,7 +9,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
     {
         cbuffer PerObject
         {
-            float3 LightDirectionsVS[TMaxLightCount] = null;
+            float3 LightDirectionsWS[TMaxLightCount] = null;
             [Color]
             float3 LightColor[TMaxLightCount] = null;
         }
@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         {
             streams.lightColor = LightColor[lightIndex];
             // TODO: Add support for disk based Directional light
-            streams.lightDirectionVS = -normalize(LightDirectionsVS[lightIndex]);
+            streams.lightDirectionWS = -normalize(LightDirectionsWS[lightIndex]);
 
             // Base will compute shadow and Color with NdotL
             base.PrepareDirectLight(lightIndex);

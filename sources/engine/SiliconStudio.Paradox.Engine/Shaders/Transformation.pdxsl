@@ -24,6 +24,8 @@ class Transformation
     cbuffer PerObject {
         // World matrix. Default to Matrix.Identity.
         stage float4x4 World;
+        // World matrix. Default to Matrix.Identity.
+        stage float4x4 WorldInverseTranspose;
         // Inverse World matrix. Default to Matrix.Inverse(World).
         stage float4x4 WorldInverse;
         // WorldView matrix. Default to = World * View.

@@ -9,7 +9,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
     {
         override float3 ComputeDirectLightContribution()
         {
-            float k = BRDFBlinnPhong.Compute(streams.lightDirectionVS, streams.normalVS, streams.shadingView, streams.matSpecularPower);
+            float k = BRDFBlinnPhong.Compute(streams.lightDirectionWS, streams.normalWS, streams.viewWS, streams.matSpecularPower);
 
             var specularColor = streams.matSpecular * streams.matCavity * streams.matCavitySpecular;
 

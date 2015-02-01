@@ -3,10 +3,6 @@
 /// <summary>
 /// Computes the transformation matrix from tangent to view space when skinning occured.
 /// </summary>
-class NormalVSSkinningNormalMapping : NormalVSFromNormalMapping
+class NormalVSSkinningNormalMapping : NormalFromNormalMapping
 {
-    override float3x3 GetTangentViewTransform()
-    {
-        return (float3x3)View;
-    }
 };

@@ -33,7 +33,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
         stage stream float   matEmissiveIntensity;
 
         // Inputs while shading a material surface
-        stage stream float3 shadingView;
+        stage stream float3 viewWS;
     
         // --------------------------------------------------
         // Values Precomputed before lighting
@@ -96,7 +96,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
             streams.matDiffuseVisible = streams.matDiffuse.rgb * lerp(1.0f, streams.matCavity, streams.matCavityDiffuse);
             streams.matSpecularVisible = streams.matSpecular.rgb * streams.matSpecularIntensity * lerp(1.0f, streams.matCavity, streams.matCavitySpecular);
 
-            streams.NdotV = max(dot(streams.normalVS, streams.shadingView), 0.0001f);
+            streams.NdotV = max(dot(streams.normalWS, streams.viewWS), 0.0001f);
 
             // Calculate shading roughtness using Disney-Burley method
             var roughness = 1.0f - streams.matGlossiness;

@@ -9,8 +9,9 @@
 #ifndef InputControlPointCount
 # define InputControlPointCount 3
 #endif
+// TODO: REWRITE in WS
 
-class TessellationPN : TessellationFlat, NormalVSBase, TransformationBase, Transformation
+class TessellationPN : TessellationFlat, NormalBase, TransformationBase, Transformation
 {
     patchstream float3 f3ViewB111;
     stream float3 nextPositionVS1;

@@ -11,14 +11,11 @@ class NormalStream
     // The tangent attribute from the mesh
     stage stream float4 meshTangent : TANGENT;
     
-    // The normal in view space
-    stage stream float3 normalVS : NORMALVS;
-
     // The normal in world space
     stage stream float3 normalWS : NORMALWS;
 
     // The tangent to view matrix to transform a tangent normal vector to normal vector in viewspace
-    stage stream float3x3 tangentToView;
+    stage stream float3x3 tangentToWorld;
 
     float3x3 GetTangentMatrix()
     {
@@ -32,22 +29,22 @@ class NormalStream
         return tangentMatrix;
     }
 
-    stage void UpdateTangentToView()
+    stage void UpdateTangentToWorld()
     {
         var tangentMatrix = GetTangentMatrix();
-        var viewTransform = GetTangentViewTransform();
-        streams.tangentToView =  mul(tangentMatrix, viewTransform);
+        var tangentWorldTransform = GetTangentWorldTransform();
+        streams.tangentToWorld =  mul(tangentMatrix, tangentWorldTransform);
     }
 
-    float3x3 GetTangentViewTransform()
+    float3x3 GetTangentWorldTransform()
     {
         // Must be implemented when performing normal mapping
-        return 0;
+        return 1;
     }
 
     // This method is called by the MaterialSurfaceLightingAndShading to calculate the effective normal
-    stage void UpdateNormalVSFromTangentToView(float3 normalInTangentSpace)
+    stage void UpdateNormalFromTangentSpace(float3 normalInTangentSpace)
     {
-        streams.normalVS = normalize(mul(normalInTangentSpace, streams.tangentToView));
+        streams.normalWS = normalize(mul(normalInTangentSpace, streams.tangentToWorld));
     }
 };

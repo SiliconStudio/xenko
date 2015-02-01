@@ -11,7 +11,9 @@
 #define InputControlPointCount 3
 //#endif
 
-class TessellationFlat : ShaderBaseTessellation, PositionVSPerVertex, PositionStream4, TransformationBase, NormalVSStream, Camera
+// TODO: REWRITE in WS
+
+class TessellationFlat : ShaderBaseTessellation, PositionVertexTransform, PositionStream4, TransformationBase, NormalVSStream, Camera
 {
     [Link("Tessellation.DesiredTriangleSize")]
     stage float DesiredTriangleSize = 12.0f;

@@ -36,6 +36,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// </summary>
         protected bool VariableAsParameterKey = true;
 
+        protected bool IsPdxfx = false;
+
         /// <summary>
         /// Runs the code generation. Results is accessible from <see cref="ShaderWriter.Text"/> property.
         /// </summary>
@@ -52,10 +54,13 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             {
                 WriteVariableAsParameterKey(variable);
             }
-            //else
-            //{
-            //    base.Visit(variable);
-            //}
+            else
+            {
+                if (IsPdxfx)
+                {
+                    base.Visit(variable);
+                }
+            }
         }
 
         /// <summary>
@@ -74,6 +79,12 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             }
             CloseBrace();
         }
+
+        //[Visit]
+        //protected virtual void Visit(ConstantBuffer constantBuffer)
+        //{
+        //    Visit((Node)constantBuffer);
+        //}
 
         internal bool IsParameterKey(Variable variable)
         {

@@ -20,6 +20,11 @@ namespace SiliconStudio.Paradox.Effects.Lights
         public static PropertyKey<LightComponent> Key = new PropertyKey<LightComponent>("Key", typeof(LightComponent));
 
         /// <summary>
+        /// The default direction of a light vector is (x,y,z) = (0,0,-1)
+        /// </summary>
+        public static readonly Vector3 DefaultDirection = new Vector3(0, 0, -1);
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="LightComponent"/> class.
         /// </summary>
         public LightComponent()

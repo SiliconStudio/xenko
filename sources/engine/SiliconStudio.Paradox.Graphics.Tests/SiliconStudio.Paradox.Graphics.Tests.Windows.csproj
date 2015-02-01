@@ -204,12 +204,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>CubemapEffect.pdxfx</DependentUpon>
     </Compile>
-    <Compile Include="Compiler\MultipleRenderTargetsEffect.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>MultipleRenderTargetsEffect.pdxfx</DependentUpon>
-    </Compile>
     <Compile Label="Paradox.DoNotSync" Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Compiler\MultiTexturesSpriteEffect.cs">
       <AutoGen>True</AutoGen>
@@ -327,10 +321,6 @@
     <None Include="Compiler\CubemapEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CubemapEffect.cs</LastGenOutput>
-    </None>
-    <None Include="Compiler\MultipleRenderTargetsEffect.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MultipleRenderTargetsEffect.cs</LastGenOutput>
     </None>
     <None Include="Compiler\MultiTexturesSpriteEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>

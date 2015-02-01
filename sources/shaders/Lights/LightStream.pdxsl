@@ -7,7 +7,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
     /// </summary>
     class LightStream
     {
-        stage stream float3 lightDirectionVS;
+        stage stream float3 lightDirectionWS;
         stage stream float3 lightColor;
         stage stream float3 lightColorNdotL;
         stage stream float3 envLightDiffuseColor;
@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
         stage void ResetLightStream()
         {
-            streams.lightDirectionVS = 0;
+            streams.lightDirectionWS = 0;
             streams.lightColor = 0;
             streams.lightColorNdotL = 0;
             streams.envLightDiffuseColor = 0;

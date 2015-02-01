@@ -114,6 +114,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 return true;
             }
 
+            IsPdxfx = blockVisitor.HasMixin;
+
             // Header of usings declaration
             // TODO: Should probably be better to use fully qualified name of types to avoid conflicts.
 

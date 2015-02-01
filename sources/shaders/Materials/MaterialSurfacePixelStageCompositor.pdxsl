@@ -3,14 +3,14 @@
 namespace SiliconStudio.Paradox.Effects.Materials
 {
     // Temporary code for testing IMaterialSurface
-    class MaterialSurfacePixelStageCompositor : ShadingBase, PositionVSBase, MaterialPixelShadingStream, DirectLightGroupArray, EnvironmentLightArray
+    class MaterialSurfacePixelStageCompositor : ShadingBase, Transformation, PositionStream, MaterialPixelShadingStream, DirectLightGroupArray, EnvironmentLightArray
     {
         compose IMaterialSurface materialPixelStage;
 
         stage override float4 Shading()
         {
             // Prepare global streams (temp)
-            streams.shadingView = -normalize(PositionVS());
+            streams.viewWS = normalize(Eye.xyz - streams.PositionWS.xyz);
             streams.shadingColor = 0;
 
             // Reset material streams (TODO: move this to composition)
