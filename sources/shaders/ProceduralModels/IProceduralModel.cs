@@ -15,6 +15,6 @@ namespace SiliconStudio.Paradox.Effects.ProceduralModels
         /// </summary>
         /// <param name="services">The services registry.</param>
         /// <param name="model">A model instance to fill with procedural content.</param>
-        void CreateModel(IServiceRegistry services, Model model);
+        void Generate(IServiceRegistry services, Model model);
     }
 }

@@ -9,7 +9,7 @@ using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Effects.ProceduralModels;
 
 namespace SiliconStudio.Paradox.Assets.ProceduralModels
 {
@@ -36,7 +36,7 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 var assetManager = new AssetManager();
-                assetManager.Save(Url, asset.Descriptor);
+                assetManager.Save(Url, new ProceduralModelDescriptor(asset.Type));
 
                 return Task.FromResult(ResultStatus.Successful);
             }

@@ -48,6 +48,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The material attributes.</value>
         [DataMember(10)]
         [NotNull]
+        [Display("Attributes", AlwaysExpand = true)]
         public MaterialAttributes Attributes { get; set; }
 
 

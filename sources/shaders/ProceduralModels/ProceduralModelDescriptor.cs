@@ -22,7 +22,15 @@ namespace SiliconStudio.Paradox.Effects.ProceduralModels
         /// </summary>
         public ProceduralModelDescriptor()
         {
-            Type = new CubeProceduralModel();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProceduralModelDescriptor"/> class.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        public ProceduralModelDescriptor(IProceduralModel type)
+        {
+            Type = type;
         }
 
         /// <summary>
@@ -31,17 +39,8 @@ namespace SiliconStudio.Paradox.Effects.ProceduralModels
         /// <value>The type of geometric primitive.</value>
         [DataMember(10)]
         [NotNull]
-        [Display("Type")]
+        [Display("Type", AlwaysExpand = true)]
         public IProceduralModel Type { get; set; }
-
-        /// <summary>
-        /// Gets or sets the material.
-        /// </summary>
-        /// <value>The material.</value>
-        [DataMember(20)]
-        [NotNull]
-        [Display("Material")]
-        public Material Material { get; set; }
 
         public Model GenerateModel(IServiceRegistry services)
         {
@@ -60,12 +59,7 @@ namespace SiliconStudio.Paradox.Effects.ProceduralModels
                 throw new InvalidOperationException("Invalid GeometricPrimitive [{0}]. Expecting a non-null Type");
             }
 
-            Type.CreateModel(services, model);
-
-            if (Material != null)
-            {
-                model.Materials.Add(Material);
-            }
+            Type.Generate(services, model);
         }
     }
 }

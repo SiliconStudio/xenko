@@ -4,6 +4,7 @@
 using System;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Extensions;
 using SiliconStudio.Paradox.Graphics;
@@ -15,9 +16,19 @@ namespace SiliconStudio.Paradox.Effects.ProceduralModels
     /// <summary>
     /// Base class for primitive procedural model.
     /// </summary>
+    [DataContract]
     public abstract class PrimitiveProceduralModelBase : IProceduralModel
     {
-        public unsafe void CreateModel(IServiceRegistry services, Model model)
+        /// <summary>
+        /// Gets or sets the material.
+        /// </summary>
+        /// <value>The material.</value>
+        [DataMember(500)]
+        [NotNull]
+        [Display("Material")]
+        public Material Material { get; set; }
+
+        public unsafe void Generate(IServiceRegistry services, Model model)
         {
             if (services == null) throw new ArgumentNullException("services");
             if (model == null) throw new ArgumentNullException("model");
@@ -77,6 +88,11 @@ namespace SiliconStudio.Paradox.Effects.ProceduralModels
 
                 model.BoundingBox = boundingBox;
                 model.Add(mesh);
+
+                if (Material != null)
+                {
+                    model.Materials.Add(Material);
+                }
             }
         }
 

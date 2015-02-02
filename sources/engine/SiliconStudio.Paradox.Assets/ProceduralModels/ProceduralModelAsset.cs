@@ -4,6 +4,7 @@
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Paradox.Effects.ProceduralModels;
 
 namespace SiliconStudio.Paradox.Assets.ProceduralModels
@@ -15,7 +16,7 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
     [AssetFileExtension(FileExtension)]
     //[ThumbnailCompiler(PreviewerCompilerNames.MaterialThumbnailCompilerQualifiedName, true)] // TODO: Add preview
     [AssetCompiler(typeof(ProceduralModelAssetCompiler))]
-    [Display("3D Primitive", "A 3D primitive asset")]
+    [Display("Procedural Model", "A procedural model")]
     public sealed class ProceduralModelAsset : Asset
     {
         /// <summary>
@@ -28,14 +29,16 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
         /// </summary>
         public ProceduralModelAsset()
         {
-            Descriptor = new ProceduralModelDescriptor();
+            Type = new CubeProceduralModel();
         }
 
         /// <summary>
-        /// Gets the descriptor.
+        /// Gets or sets the type.
         /// </summary>
-        /// <value>The descriptor.</value>
+        /// <value>The type.</value>
         [DataMember(10)]
-        public ProceduralModelDescriptor Descriptor { get; private set; }
+        [NotNull]
+        [Display("Type", AlwaysExpand = true)]
+        public IProceduralModel Type { get; set; }
     }
 }
