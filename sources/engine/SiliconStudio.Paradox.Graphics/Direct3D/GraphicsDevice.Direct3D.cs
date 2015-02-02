@@ -31,6 +31,7 @@ namespace SiliconStudio.Paradox.Graphics
 
         private SharpDX.Direct3D11.Device nativeDevice;
         private SharpDX.Direct3D11.DeviceContext nativeDeviceContext;
+        private SharpDX.Direct3D11.UserDefinedAnnotation nativeDeviceProfiler;
         private SharpDX.Direct3D11.InputAssemblerStage inputAssembler;
         private SharpDX.Direct3D11.OutputMergerStage outputMerger;
 
@@ -58,6 +59,7 @@ namespace SiliconStudio.Paradox.Graphics
             InputLayoutManager = device.InputLayoutManager;
             nativeDevice = device.NativeDevice;
             nativeDeviceContext = new SharpDX.Direct3D11.DeviceContext(NativeDevice).DisposeBy(this);
+            nativeDeviceProfiler = SharpDX.ComObject.QueryInterfaceOrNull<UserDefinedAnnotation>(nativeDeviceContext.NativePointer);
             isDeferred = true;
             IsDebugMode = device.IsDebugMode;
             if (IsDebugMode)
@@ -199,7 +201,14 @@ namespace SiliconStudio.Paradox.Graphics
         public void BeginProfile(Color4 profileColor, string name)
         {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-            SharpDX.Direct3D.PixHelper.BeginEvent(new SharpDX.ColorBGRA(profileColor.ToBgra()), name);
+            if (nativeDeviceProfiler != null)
+            {
+                nativeDeviceProfiler.BeginEvent(name);
+            }
+            else
+            {
+                SharpDX.Direct3D.PixHelper.BeginEvent(new SharpDX.ColorBGRA(profileColor.ToBgra()), name);
+            }
 #endif
         }
 
@@ -534,7 +543,14 @@ namespace SiliconStudio.Paradox.Graphics
         public void EndProfile()
         {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-            SharpDX.Direct3D.PixHelper.EndEvent();
+            if (nativeDeviceProfiler != null)
+            {
+                nativeDeviceProfiler.EndEvent();
+            }
+            else
+            {
+                SharpDX.Direct3D.PixHelper.EndEvent();
+            }
 #endif
         }
 
