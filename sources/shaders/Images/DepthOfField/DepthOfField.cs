@@ -98,7 +98,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             set
             {
-                levelDownscaleFactors = LevelDownscaleFactors;
+                levelDownscaleFactors = value;
                 configurationDirty = true;
             }
         }

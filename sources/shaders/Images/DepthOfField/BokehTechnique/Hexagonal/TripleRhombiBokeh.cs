@@ -72,8 +72,6 @@ namespace SiliconStudio.Paradox.Effects.Images
             // Half-width of an hexagon pointing up (altitude of an equilateral triangle)
             float hexagonalHalfWidth = radius * (float)Math.Sqrt(3f) / 2f;
 
-            // TODO Looks fine in LDR, confirm all these offsets are correct with a real HDR scene.
-
             // TODO Check potential different behavior with OGL where vertical addressing (V)
             // is swapped compared to D3D textures. 
 
@@ -88,7 +86,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             };
 
             // Apply some bias to avoid the "upside-down" Y artifacts caused by rhombi overlapping.
-            var biasStrength = 0.25f;
+            var biasStrength = 0.4f;
             var bias = new Vector2[3] 
             { 
                 new Vector2( -biasStrength,   biasStrength), // top left rhombi
