@@ -17,8 +17,11 @@ namespace SiliconStudio.Paradox.Effects.ProceduralModels
     /// </summary>
     public abstract class PrimitiveProceduralModelBase : IProceduralModel
     {
-        public unsafe Model Create(IServiceRegistry services)
+        public unsafe void CreateModel(IServiceRegistry services, Model model)
         {
+            if (services == null) throw new ArgumentNullException("services");
+            if (model == null) throw new ArgumentNullException("model");
+
             var graphicsDevice = services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
 
             var data = this.CreatePrimitiveMeshData();
@@ -72,10 +75,8 @@ namespace SiliconStudio.Paradox.Effects.ProceduralModels
                 var mesh = new Mesh { Draw = meshDraw, BoundingBox = boundingBox };
                 mesh.Parameters.Set(RenderingParameters.RenderLayer, RenderLayers.All);
 
-                var model = new Model { BoundingBox = boundingBox };
+                model.BoundingBox = boundingBox;
                 model.Add(mesh);
-
-                return model;
             }
         }
 

@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.Effects.ProceduralModels
     /// </summary>
     [DataContract("ProceduralModelDescriptor")]
     [ContentSerializer(typeof(ProceduralModelDescriptorContentSerializer))]
-    //[DataSerializer(typeof(GeometricProceduralDescriptorSerializer))]
+    [ContentSerializer(typeof(DataContentSerializer<ProceduralModelDescriptor>))]    
     public class ProceduralModelDescriptor
     {
         /// <summary>
@@ -45,21 +45,27 @@ namespace SiliconStudio.Paradox.Effects.ProceduralModels
 
         public Model GenerateModel(IServiceRegistry services)
         {
+            var model = new Model();
+            GenerateModel(services, model);
+            return model;
+        }
+
+        public void GenerateModel(IServiceRegistry services, Model model)
+        {
             if (services == null) throw new ArgumentNullException("services");
+            if (model == null) throw new ArgumentNullException("model");
 
             if (Type == null)
             {
                 throw new InvalidOperationException("Invalid GeometricPrimitive [{0}]. Expecting a non-null Type");
             }
 
-            var model = Type.Create(services);
+            Type.CreateModel(services, model);
 
             if (Material != null)
             {
                 model.Materials.Add(Material);
             }
-
-            return model;
         }
     }
 }

@@ -31,7 +31,6 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
             {
                 base.ComputeParameterHash(writer);
-                writer.Write(1); // Change this number to recompute the hash when prefiltering algorithm are changed
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
