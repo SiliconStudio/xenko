@@ -6,6 +6,7 @@ using System.Reflection;
 
 namespace SiliconStudio.Core
 {
+    // ReSharper disable once CSharpWarnings::CS1584
     /// <summary>
     /// Portable DisplayAttribute equivalent to <see cref="System.ComponentModel.DataAnnotations.DisplayAttribute"/>.
     /// </summary>
@@ -26,10 +27,10 @@ namespace SiliconStudio.Core
         /// </summary>
         /// <param name="order">The order weight of the column.</param>
         /// <param name="name">A value that is used for display in the UI..</param>
-        /// <param name="category">A value that is used to group fields in the UI..</param>
         /// <param name="description">A value that is used to display a description in the UI..</param>
-        public DisplayAttribute(int order, string name = null, string category = null, string description = null)
-            : this(name, category, description)
+        /// <param name="category">A value that is used to group fields in the UI..</param>
+        public DisplayAttribute(int order, string name = null, string description = null, string category = null)
+            : this(name, description, category)
         {
             this.order = order;
         }
@@ -38,23 +39,13 @@ namespace SiliconStudio.Core
         /// Initializes a new instance of the <see cref="DisplayAttribute"/> class.
         /// </summary>
         /// <param name="name">A value that is used for display in the UI..</param>
-        /// <param name="category">A value that is used to group fields in the UI..</param>
         /// <param name="description">A value that is used to display a description in the UI.</param>
-        public DisplayAttribute(string name = null, string category = null, string description = null)
+        /// <param name="category">A value that is used to group fields in the UI..</param>
+        public DisplayAttribute(string name = null, string description = null, string category = null)
         {
             this.name = name;
             this.category = category;
             this.description = description;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DisplayAttribute"/> class.
-        /// </summary>
-        /// <param name="name">A value that is used for display in the UI..</param>
-        /// <param name="description">A value that is used to display a description in the UI.</param>
-        public DisplayAttribute(string name, string description)
-            : this(name, null, description)
-        {
         }
 
         /// <summary>
