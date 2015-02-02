@@ -106,6 +106,12 @@ namespace SiliconStudio.Core
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the property must be expanded by default in the editor.
+        /// </summary>
+        /// <value><c>true</c> if [automatic expand]; otherwise, <c>false</c>.</value>
+        public bool AlwaysExpand { get; set; }
+
+        /// <summary>
         /// Gets the display attribute attached to the specified member info.
         /// </summary>
         /// <param name="memberInfo">Member type (Property, Field or Type).</param>
