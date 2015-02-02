@@ -99,7 +99,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
-        protected override void DrawCore()
+        protected override void DrawCore(ParameterCollection contextParameters)
         {
             // Input texture
             var inputTexture = GetSafeInput(0);
@@ -124,12 +124,12 @@ namespace SiliconStudio.Paradox.Effects.Images
             blurH.SetInput(inputTexture);
             blurH.SetOutput(outputTextureH);
             var size = Radius * 2 + 1;
-            blurH.Draw("GaussianBlurH{0}x{0}", size);
+            blurH.Draw(contextParameters, "GaussianBlurH{0}x{0}", size);
 
             // Vertical pass
             blurV.SetInput(outputTextureH);
             blurV.SetOutput(GetSafeOutput(0));
-            blurV.Draw("GaussianBlurV{0}x{0}", size);
+            blurV.Draw(contextParameters, "GaussianBlurV{0}x{0}", size);
         }
     }
 }

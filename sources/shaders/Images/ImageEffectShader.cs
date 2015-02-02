@@ -22,6 +22,8 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         private readonly List<ParameterCollection> parameterCollections;
 
+        private readonly List<ParameterCollection> appliedParameterCollections;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageEffectShader" /> class.
         /// </summary>
@@ -51,6 +53,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                 parameterCollections.AddRange(sharedParameterCollections);
             }
             parameterCollections.Add(Parameters);
+            appliedParameterCollections = new List<ParameterCollection>();
 
             // Setup the effect compiler
             EffectInstance = new DefaultEffectInstance(parameterCollections);
@@ -117,12 +120,20 @@ namespace SiliconStudio.Paradox.Effects.Images
             effectCompiler.Update(EffectInstance, null);
         }
 
-        protected override void DrawCore()
+        protected override void DrawCore(ParameterCollection contextParameters)
         {
             UpdateEffect();
 
+            // Update parameters
+            appliedParameterCollections.Clear();
+            if (contextParameters != null)
+            {
+                appliedParameterCollections.Add(contextParameters);
+            }
+            appliedParameterCollections.AddRange(parameterCollections);
+
             // Draw a full screen quad
-            GraphicsDevice.DrawQuad(EffectInstance.Effect, parameterCollections);
+            GraphicsDevice.DrawQuad(EffectInstance.Effect, appliedParameterCollections);
         }
     }
 }

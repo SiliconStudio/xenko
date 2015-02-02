@@ -102,7 +102,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <summary>
         /// Draws a full screen quad using iterating on each pass of this effect.
         /// </summary>
-        public void Draw(string name = null)
+        public void Draw(ParameterCollection contextParameters, string name = null)
         {
             if (!Enabled)
             {
@@ -113,7 +113,7 @@ namespace SiliconStudio.Paradox.Effects
 
             // Allow scoped allocation RenderTargets
             isInDrawCore = true;
-            DrawCore();
+            DrawCore(contextParameters);
             isInDrawCore = false;
 
             // Release scoped RenderTargets
@@ -125,10 +125,27 @@ namespace SiliconStudio.Paradox.Effects
         /// <summary>
         /// Draws a full screen quad using iterating on each pass of this effect.
         /// </summary>
+        public void Draw(string name = null)
+        {
+            Draw((ParameterCollection)null, name);
+        }
+
+        /// <summary>
+        /// Draws a full screen quad using iterating on each pass of this effect.
+        /// </summary>
         public void Draw(string nameFormat, params object[] args)
         {
             // TODO: this is alocating a string, we should try to not allocate here.
             Draw(string.Format(nameFormat, args));
+        }
+
+        /// <summary>
+        /// Draws a full screen quad using iterating on each pass of this effect.
+        /// </summary>
+        public void Draw(ParameterCollection contextParameters, string nameFormat, params object[] args)
+        {
+            // TODO: this is alocating a string, we should try to not allocate here.
+            Draw(contextParameters, string.Format(nameFormat, args));
         }
 
         /// <summary>
@@ -160,7 +177,8 @@ namespace SiliconStudio.Paradox.Effects
         /// <summary>
         /// Draws this post effect for a specific pass, implementation dependent.
         /// </summary>
-        protected virtual void DrawCore()
+        /// <param name="contextParameters"></param>
+        protected virtual void DrawCore(ParameterCollection contextParameters)
         {
         }
 

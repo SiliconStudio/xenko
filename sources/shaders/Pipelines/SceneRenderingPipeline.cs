@@ -73,6 +73,7 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
             postEffects.ColorTransform.Enabled = true;
             postEffects.ToneMap.AutoKeyValue = false;
             postEffects.ToneMap.Operator = new ToneMapU2FilmicOperator();
+            postEffects.DepthOfField.Enabled = false;
 
             skyboxBackgroundRenderer = new SkyboxBackgroundRenderer(Services);
             modelRenderer = new ModelRenderer(serviceRegistry, sceneEffect);
@@ -112,13 +113,18 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
 
         public Texture DepthStencilBuffer { get; set; }
 
-        private void ApplyPostEffects(RenderContext obj)
+        private void ApplyPostEffects(RenderContext context)
         {
             Texture msaaRenderTargetRersolve = null;
 
             if (Input.IsKeyReleased(Keys.L))
             {
                 postEffects.Antialiasing.Enabled = !postEffects.Antialiasing.Enabled;
+            }
+
+            if (Input.IsKeyReleased(Keys.F))
+            {
+                postEffects.DepthOfField.Enabled = !postEffects.DepthOfField.Enabled;
             }
 
             // Resolve multisampling 
@@ -135,9 +141,9 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
             // TODO allow posteffects on backbuffer
             if (useHdr)
             {
-                postEffects.SetInput(msaaRenderTargetRersolve ?? renderTargetHDR);
+                postEffects.SetInput(msaaRenderTargetRersolve ?? renderTargetHDR, DepthStencilBuffer);
                 postEffects.SetOutput(RenderTarget);
-                postEffects.Draw();
+                postEffects.Draw(context.CurrentPass.Parameters);
             }
 
             // Release the temporary texture for MSAA resolve

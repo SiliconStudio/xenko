@@ -44,15 +44,18 @@ namespace SiliconStudio.Paradox.Effects.Images
             fxaa = new FXAAEffect(Context);
             toneMap = new ToneMap();
             colorTransformGroup.Transforms.Add(toneMap);
-            depthOfField = new DepthOfField(context);
+
+            // TODO: Add presets instead
+            depthOfField = new DepthOfField(context)
+            {
+                Technique = BokehTechnique.HexagonalTripleRhombi,
+                DOFAreas = new Vector4(0.5f, 6f, 50f, 200f),
+                LevelCoCValues = new float[] { 0.25f, 0.5f, 1.0f },
+                LevelDownscaleFactors = new int[] { 1, 1, 1 },
+                MaxBokehSize = 10f / 1280f // Make parameter ratio relative to input texture size?
+            };
             // Example of DoF configuration
-            depthOfField.Technique = BokehTechnique.HexagonalTripleRhombi;
-            depthOfField.DOFAreas = new Vector4(17f, 34f, 50f, 100f);
-            depthOfField.LevelCoCValues = new float[] { 0.25f, 0.5f, 1.0f };
-            depthOfField.LevelDownscaleFactors = new int[] { 1, 1, 1 };
-            depthOfField.MaxBokehSize = 10f / 1280f;
         }
-        public CameraComponent cameraComponentTmp; // TODO automatically pass the camera
 
         public BrightFilter BrightFilter
         {
@@ -102,7 +105,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
-        protected override void DrawCore()
+        protected override void DrawCore(ParameterCollection contextParameters)
         {
             var input = GetInput(0);
             var output = GetOutput(0);
@@ -110,22 +113,17 @@ namespace SiliconStudio.Paradox.Effects.Images
             {
                 return;
             }
-
             
             var currentInput = input;
 
-            if (depthOfField.Enabled 
-                && InputCount > 1 // needs the depth
-                && cameraComponentTmp != null // needs camera configuration
-                )
+            if (depthOfField.Enabled && InputCount > 1 && GetInput(1) != null && GetInput(1).IsDepthStencil)
             {
                 // DoF
                 var dofOutput = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
                 var inputDepthTexture = GetInput(1); // Depth
                 depthOfField.SetColorDepthInput(input, inputDepthTexture);
                 depthOfField.SetOutput(dofOutput);
-                depthOfField.Camera = cameraComponentTmp;
-                depthOfField.Draw();
+                depthOfField.Draw(contextParameters);
                 currentInput = dofOutput;
             }
 
@@ -138,7 +136,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
                 luminanceEffect.SetInput(currentInput);
                 luminanceEffect.SetOutput(luminanceTexture);
-                luminanceEffect.Draw();
+                luminanceEffect.Draw(contextParameters);
 
                 // Set this parameter that will be used by the tone mapping
                 colorTransformGroup.Parameters.Set(LuminanceEffect.LuminanceResult, new LuminanceResult(luminanceEffect.AverageLuminance, luminanceTexture));
@@ -152,11 +150,11 @@ namespace SiliconStudio.Paradox.Effects.Images
 
                 brightFilter.SetInput(currentInput);
                 brightFilter.SetOutput(brightTexture);
-                brightFilter.Draw();
+                brightFilter.Draw(contextParameters);
 
                 bloom.SetInput(brightTexture);
                 bloom.SetOutput(currentInput);
-                bloom.Draw();
+                bloom.Draw(contextParameters);
             }
 
             var outputForLastEffectBeforeAntiAliasing = output;
@@ -170,13 +168,13 @@ namespace SiliconStudio.Paradox.Effects.Images
             var lastEffect = colorTransformGroup.Enabled ? (ImageEffect)colorTransformGroup: Scaler;
             lastEffect.SetInput(currentInput);
             lastEffect.SetOutput(outputForLastEffectBeforeAntiAliasing);
-            lastEffect.Draw();
+            lastEffect.Draw(contextParameters);
 
             if (fxaa.Enabled)
             {
                 fxaa.SetInput(outputForLastEffectBeforeAntiAliasing);
                 fxaa.SetOutput(output);
-                fxaa.Draw();
+                fxaa.Draw(contextParameters);
             }
 
             // TODO: Add anti aliasing pass

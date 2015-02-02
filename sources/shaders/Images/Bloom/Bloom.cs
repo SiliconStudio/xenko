@@ -52,7 +52,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         private int MaxMip { get; set; }
 
-        protected override void DrawCore()
+        protected override void DrawCore(ParameterCollection contextParameters)
         {
             var input = GetInput(0);
             var output = GetOutput(0) ?? input;
@@ -69,7 +69,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             var startRenderTarget = NewScopedRenderTarget2D(nextSize.Width, nextSize.Height, input.Format);
             Scaler.SetInput(input);
             Scaler.SetOutput(startRenderTarget);
-            Scaler.Draw("Down/2");
+            Scaler.Draw(contextParameters, "Down/2");
 
             // ----------------------------------------
             // Downscale / 4 up to Downscale / xx
@@ -91,13 +91,13 @@ namespace SiliconStudio.Paradox.Effects.Images
                 // Downscale
                 Scaler.SetInput(previousRenderTarget);
                 Scaler.SetOutput(nextRenderTarget);
-                Scaler.Draw("Down/2");
+                Scaler.Draw(contextParameters, "Down/2");
 
                 // Blur it
                 blur.Radius = Radius;
                 blur.SetInput(nextRenderTarget);
                 blur.SetOutput(nextRenderTarget);
-                blur.Draw();
+                blur.Draw(contextParameters);
 
                 // TODO: Use the MultiScaler for this part instead of recoding it here
                 // Only blur after 2nd downscale
@@ -107,7 +107,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                     renderTargetToCombine = NewScopedRenderTarget2D(upscaleSize.Width, upscaleSize.Height, input.Format);
                     multiScaler.SetInput(nextRenderTarget);
                     multiScaler.SetOutput(renderTargetToCombine);
-                    multiScaler.Draw();
+                    multiScaler.Draw(contextParameters);
                 }
                 resultList.Add(renderTargetToCombine);
                 previousRenderTarget = nextRenderTarget;
@@ -127,7 +127,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             {
                 Scaler.SetInput(resultList[0]);
                 Scaler.SetOutput(output);
-                Scaler.Draw();
+                Scaler.Draw(contextParameters);
             }
             else if (resultList.Count > 1)
             {
@@ -144,7 +144,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                 }
 
                 blurCombine.SetOutput(output);
-                blurCombine.Draw();
+                blurCombine.Draw(contextParameters);
             }
             GraphicsDevice.SetBlendState(GraphicsDevice.BlendStates.Default);
         }

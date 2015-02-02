@@ -38,7 +38,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             EnableSetRenderTargets = false;
         }
 
-        protected override void DrawCore()
+        protected override void DrawCore(ParameterCollection contextParameters)
         {
             var inputTexture = GetSafeInput(0);
 
@@ -80,7 +80,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                 // Down or UpScale
                 Scaler.SetInput(previousMipMap);
                 Scaler.SetOutput(mipmap);
-                Scaler.Draw( scalingDirection < 0 ? "Down2" : "Up2");
+                Scaler.Draw(contextParameters, scalingDirection < 0 ? "Down2" : "Up2");
 
                 previousMipMap = mipmap;
             }

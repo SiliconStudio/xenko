@@ -21,6 +21,8 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect
 
         private readonly List<ParameterCollection> parameterCollections;
 
+        private readonly List<ParameterCollection> appliedParameterCollections;
+
         public ComputeEffectShader(DrawEffectContext context)
             : this(context, null)
         {
@@ -35,6 +37,8 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect
                 parameterCollections.AddRange(sharedParameterCollections);
             }
             parameterCollections.Add(Parameters);
+
+            appliedParameterCollections = new List<ParameterCollection>();
 
             // Setup the effect compiler
             EffectInstance = new DefaultEffectInstance(parameterCollections);
@@ -101,7 +105,7 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect
             effectCompiler.Update(EffectInstance, null);
         }
 
-        protected override void DrawCore()
+        protected override void DrawCore(ParameterCollection contextParameters)
         {
             if (string.IsNullOrEmpty(ShaderSourceName))
                 return;
@@ -112,8 +116,15 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect
 
             UpdateEffect();
 
+            appliedParameterCollections.Clear();
+            if (contextParameters != null)
+            {
+                appliedParameterCollections.Add(contextParameters);
+            }
+            appliedParameterCollections.AddRange(parameterCollections);
+
             // Apply the effect
-            EffectInstance.Effect.Apply(GraphicsDevice, parameterCollections, false);
+            EffectInstance.Effect.Apply(GraphicsDevice, appliedParameterCollections, false);
 
             // Draw a full screen quad
             GraphicsDevice.Dispatch(ThreadGroupCounts.X, ThreadGroupCounts.Y, ThreadGroupCounts.Z);

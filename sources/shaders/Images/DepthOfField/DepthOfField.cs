@@ -21,11 +21,6 @@ namespace SiliconStudio.Paradox.Effects.Images
     public sealed class DepthOfField : ImageEffect
     {
         /// <summary>
-        /// Camera configuration used to render the original scene.
-        /// </summary>
-        public CameraComponent Camera { get; set; }
-
-        /// <summary>
         /// Areas of the depth of field: [nearStart, nearEnd, farStart, farEnd] expressed as a 
         /// distance from the camera.
         /// </summary>
@@ -193,12 +188,6 @@ namespace SiliconStudio.Paradox.Effects.Images
         public void SetupTechnique()
         {
             // Sanity checks
-
-            if (Camera == null)
-            {
-                throw new ArgumentNullException("You need to provide a camera to the depth-of-field!");
-            }
-
             if (levelCoCValues == null && levelDownscaleFactors != null)
             {
                 throw new ArgumentOutOfRangeException("You cannot provide downscale factors without CoC values first.");
@@ -260,7 +249,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         // Match: downscale level -> Texture
         private Dictionary<int, Texture> downscaledSources = new Dictionary<int, Texture>();
 
-        protected override void DrawCore()
+        protected override void DrawCore(ParameterCollection contextParameters)
         {
             var originalColorBuffer = GetSafeInput(0);
             var originalDepthBuffer = GetSafeInput(1);
@@ -286,7 +275,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                 var input = downscaledSources[i - 1];
                 textureScaler.SetInput(0, downscaledSources[i - 1]);
                 textureScaler.SetOutput(downSizedTexture);
-                textureScaler.Draw("DownScale_Factor{0}", i);
+                textureScaler.Draw(contextParameters, "DownScale_Factor{0}", i);
                 downscaledSources[i] = downSizedTexture;
             }
 
@@ -297,9 +286,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             coclinearDepthMapEffect.SetInput(0, originalDepthBuffer);
             coclinearDepthMapEffect.SetOutput(cocLinearDepthTexture);
             coclinearDepthMapEffect.Parameters.Set(CircleOfConfusionKeys.depthAreas, DOFAreas);
-            coclinearDepthMapEffect.Parameters.Set(CameraKeys.NearClipPlane, Camera.NearPlane); // TODO automate this
-            coclinearDepthMapEffect.Parameters.Set(CameraKeys.FarClipPlane, Camera.FarPlane);   // TODO automate this
-            coclinearDepthMapEffect.Draw("CoC_LinearDepth");
+            coclinearDepthMapEffect.Draw(contextParameters, "CoC_LinearDepth");
 
             // We create a blurred version of the CoC map. 
             // This is useful to avoid silhouettes appearing when the CoC changes abruptly.
@@ -307,7 +294,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             cocMapBlur.Radius = 6f / 720f * cocLinearDepthTexture.Description.Height; // 6 pixels at 720p
             cocMapBlur.SetInput(0, cocLinearDepthTexture);
             cocMapBlur.SetOutput(blurredCoCTexture);
-            cocMapBlur.Draw("CoC_BlurredMap");
+            cocMapBlur.Draw(contextParameters, "CoC_BlurredMap");
 
             // Creates all the levels with different CoC strengths.
             // (Skips level with CoC 0 which is always the original buffer.)
@@ -331,7 +318,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                 levelBlur.SetInput(0, textureToBlur);
                 levelBlur.SetInput(1, cocLinearDepthTexture);
                 levelBlur.SetOutput(blurOutput);
-                levelBlur.Draw("CoC_LoD_Layer_{0}", i);
+                levelBlur.Draw(contextParameters, "CoC_LoD_Layer_{0}", i);
                 combineLevelsEffect.SetInput(i + 2, blurOutput);
             }
 
@@ -339,7 +326,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             // the original color buffer and blurred buffer(s). 
             combineLevelsEffect.Parameters.Set(CombineLevelsFromCoCShaderKeys.CoCLevelValues, combineShaderCocLevelValues);
             combineLevelsEffect.SetOutput(outputTexture);
-            combineLevelsEffect.Draw("CoCLevelCombineInterpolation");
+            combineLevelsEffect.Draw(contextParameters, "CoCLevelCombineInterpolation");
 
             // Release any reference
             downscaledSources.Clear();

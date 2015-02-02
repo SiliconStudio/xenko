@@ -69,9 +69,9 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect.GGXPrefiltering
             }
         }
 
-        protected override void DrawCore()
+        protected override void DrawCore(ParameterCollection contextParameters)
         {
-            base.DrawCore();
+            base.DrawCore(contextParameters);
 
             var output = PrefilteredRadiance;
             if(output == null || (output.Dimension != TextureDimension.Texture2D && output.Dimension != TextureDimension.TextureCube) || output.ArraySize != 6)
@@ -110,7 +110,7 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect.GGXPrefiltering
                     computeShader.Parameters.Set(RadiancePrefilteringGGXShaderKeys.RadianceMapSize, input.Width);
                     computeShader.Parameters.Set(RadiancePrefilteringGGXShaderKeys.FilteredRadiance, outputView);
                     computeShader.Parameters.Set(RadiancePrefilteringGGXParams.NbOfSamplings, SamplingsCount);
-                    computeShader.Draw();
+                    computeShader.Draw(contextParameters);
 
                     outputView.Dispose();
                 }

@@ -42,7 +42,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             weightsDirty = (oldRadius != radius);
         }
 
-        protected override void DrawCore()
+        protected override void DrawCore(ParameterCollection contextParameters)
         {
             // Update the weight array if necessary
             if (weightsDirty || tapCount == 0)
@@ -76,7 +76,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             directionalBlurEffect.SetInput(0, originalTexture);
             directionalBlurEffect.SetInput(1, originalDepthBuffer);
             directionalBlurEffect.SetOutput(firstBlurTexture);
-            directionalBlurEffect.Draw("GaussianBokehPass1_tap{0}_radius{1}", tapNumber, (int)radius);
+            directionalBlurEffect.Draw(contextParameters, "GaussianBokehPass1_tap{0}_radius{1}", tapNumber, (int)radius);
 
             // Second blur pass to ouput the final result
             blurAngle = MathUtil.PiOverTwo;
@@ -85,7 +85,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             directionalBlurEffect.SetInput(0, firstBlurTexture);
             directionalBlurEffect.SetInput(1, originalDepthBuffer);
             directionalBlurEffect.SetOutput(outputTexture);
-            directionalBlurEffect.Draw("GaussianBokehPass2_tap{0}_radius{1}", tapNumber, (int)radius);
+            directionalBlurEffect.Draw(contextParameters, "GaussianBokehPass2_tap{0}_radius{1}", tapNumber, (int)radius);
         }
 
     }

@@ -60,7 +60,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
-        protected override void DrawCore()
+        protected override void DrawCore(ParameterCollection contextParameters)
         {
             // Updates the weight array if necessary
             if (weightsDirty || tapCount == 0)
@@ -86,7 +86,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             var firstBlurTexture = NewScopedRenderTarget2D(originalTexture.Description);
             cocBlurEffect.SetInput(0, originalTexture);
             cocBlurEffect.SetOutput(firstBlurTexture);
-            cocBlurEffect.Draw("CoCMapBlurPass1_tap{0}_radius{1}", tapNumber, (int)radius);
+            cocBlurEffect.Draw(contextParameters, "CoCMapBlurPass1_tap{0}_radius{1}", tapNumber, (int)radius);
 
             // Second blur pass to ouput the final result
             blurAngle = MathUtil.PiOverTwo;
@@ -94,7 +94,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             cocBlurEffect.SetInput(0, firstBlurTexture);
             cocBlurEffect.SetOutput(outputTexture);
-            cocBlurEffect.Draw("CoCMapBlurPass2_tap{0}_radius{1}", tapNumber, (int)radius);
+            cocBlurEffect.Draw(contextParameters, "CoCMapBlurPass2_tap{0}_radius{1}", tapNumber, (int)radius);
         }
 
     }

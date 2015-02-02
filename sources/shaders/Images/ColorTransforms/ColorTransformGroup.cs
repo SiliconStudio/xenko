@@ -72,7 +72,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
-        protected override void DrawCore()
+        protected override void DrawCore(ParameterCollection contextParameters)
         {
             var output = GetOutput(0);
             if (output == null)
@@ -88,7 +88,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                 transformGroupEffect.SetInput(i, context.Inputs[i]);
             }
             transformGroupEffect.SetOutput(output);
-            transformGroupEffect.Draw(Name);
+            transformGroupEffect.Draw(contextParameters, Name);
         }
 
         protected virtual void CollectPreTransforms()

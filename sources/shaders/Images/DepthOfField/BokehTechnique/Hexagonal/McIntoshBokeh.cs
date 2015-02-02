@@ -59,7 +59,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             tapCount = (int)radius + 1;
         }
 
-        protected override void DrawCore()
+        protected override void DrawCore(ParameterCollection contextParameters)
         {
             // Make sure we keep our uniform weights in synchronization with the number of taps
             if (tapWeights == null || tapWeights.Length != tapCount)
@@ -69,16 +69,16 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             if (!useOptimizedPath)
             {
-                DrawCoreNaive();
+                DrawCoreNaive(contextParameters);
             }
             else
             {
-                DrawCoreOptimized();
+                DrawCoreOptimized(contextParameters);
             }
         }
 
         // Naive approach: 4 passes. (Reference version)
-        private void DrawCoreNaive()
+        private void DrawCoreNaive(ParameterCollection contextParameters)
         {
 
             var originalTexture = GetSafeInput(0);
@@ -100,7 +100,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             directionalBlurEffect.SetInput(0, originalTexture);
             directionalBlurEffect.SetInput(1, originalDepthBuffer);
             directionalBlurEffect.SetOutput(firstBlurTexture);
-            directionalBlurEffect.Draw("McIntoshBokehPass1_tap{0}_radius{1}", tapNumber, (int)radius);
+            directionalBlurEffect.Draw(contextParameters, "McIntoshBokehPass1_tap{0}_radius{1}", tapNumber, (int)radius);
 
             // Diagonal blur A
             blurAngle = MathUtil.Pi / 3f + Phase;
@@ -110,7 +110,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             directionalBlurEffect.SetInput(0, firstBlurTexture);
             directionalBlurEffect.SetInput(1, originalDepthBuffer);
             directionalBlurEffect.SetOutput(diagonalBlurA);
-            directionalBlurEffect.Draw("McIntoshBokehPass2A_tap{0}_radius{1}", tapNumber, (int)radius);
+            directionalBlurEffect.Draw(contextParameters, "McIntoshBokehPass2A_tap{0}_radius{1}", tapNumber, (int)radius);
 
             // Diagonal blur B
             blurAngle = -MathUtil.Pi / 3f + Phase;
@@ -120,17 +120,17 @@ namespace SiliconStudio.Paradox.Effects.Images
             directionalBlurEffect.SetInput(0, firstBlurTexture);
             directionalBlurEffect.SetInput(1, originalDepthBuffer);
             directionalBlurEffect.SetOutput(diagonalBlurB);
-            directionalBlurEffect.Draw("McIntoshBokehPass2B_tap{0}_radius{1}", tapNumber, (int)radius);
+            directionalBlurEffect.Draw(contextParameters, "McIntoshBokehPass2B_tap{0}_radius{1}", tapNumber, (int)radius);
 
             // Final pass outputting the min of A and B
             finalCombineEffect.SetInput(0, diagonalBlurA);
             finalCombineEffect.SetInput(1, diagonalBlurB);
             finalCombineEffect.SetOutput(outputTexture);
-            finalCombineEffect.Draw("McIntoshBokehPassCombine");
+            finalCombineEffect.Draw(contextParameters, "McIntoshBokehPassCombine");
         }
 
         // Optimized approach: 2 passes.
-        private void DrawCoreOptimized()
+        private void DrawCoreOptimized(ParameterCollection contextParameters)
         {
             var originalTexture = GetSafeInput(0);
             var originalDepthBuffer = GetSafeInput(1);
@@ -151,7 +151,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             directionalBlurEffect.SetInput(0, originalTexture);
             directionalBlurEffect.SetInput(1, originalDepthBuffer);
             directionalBlurEffect.SetOutput(firstBlurTexture);
-            directionalBlurEffect.Draw("McIntoshBokehPass1_tap{0}_radius{1}", tapNumber, (int)radius);
+            directionalBlurEffect.Draw(contextParameters, "McIntoshBokehPass1_tap{0}_radius{1}", tapNumber, (int)radius);
 
             // Calculates the 2 diagonal blurs and keep the min of them
             var diagonalBlurAngleA =  MathUtil.Pi / 3f + Phase;
@@ -168,7 +168,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             optimizedEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Radius.ComposeWith("directionalBlurB"), radius);
             optimizedEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Direction.ComposeWith("directionalBlurB"), new Vector2((float)Math.Cos(diagonalBlurAngleB), (float)Math.Sin(diagonalBlurAngleB)));
             optimizedEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.TapWeights.ComposeWith("directionalBlurB"), tapWeights);
-            optimizedEffect.Draw("McIntoshBokehPass2_BlurABCombine_tap{0}_radius{1}", tapNumber, (int)radius);
+            optimizedEffect.Draw(contextParameters, "McIntoshBokehPass2_BlurABCombine_tap{0}_radius{1}", tapNumber, (int)radius);
         }
 
     }

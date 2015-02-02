@@ -57,9 +57,9 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect.LambertianPrefiltering
             HarmonicOrder = 3;
         }
 
-        protected override void DrawCore()
+        protected override void DrawCore(ParameterCollection contextParameters)
         {
-            base.DrawCore();
+            base.DrawCore(contextParameters);
 
             var inputTexture = RadianceMap;
             if (inputTexture == null)
@@ -87,7 +87,7 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect.LambertianPrefiltering
             firstPassEffect.Parameters.Set(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
             firstPassEffect.Parameters.Set(LambertianPrefilteringSHPass1Keys.RadianceMap, inputTexture);
             firstPassEffect.Parameters.Set(LambertianPrefilteringSHPass1Keys.OutputBuffer, partialSumBuffer);
-            firstPassEffect.Draw();
+            firstPassEffect.Draw(contextParameters);
 
             // Recursively applies the pass2 (sums the coefficients together) as long as needed. Swap input/output buffer at each iteration.
             var secondPassInputBuffer = partialSumBuffer;
@@ -123,7 +123,7 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect.LambertianPrefiltering
                 secondPassEffect.Parameters.Set(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
                 secondPassEffect.Parameters.Set(LambertianPrefilteringSHPass2Keys.InputBuffer, secondPassInputBuffer);
                 secondPassEffect.Parameters.Set(LambertianPrefilteringSHPass2Keys.OutputBuffer, secondPassOutputBuffer);
-                secondPassEffect.Draw();
+                secondPassEffect.Draw(contextParameters);
 
                 // swap second pass input/output buffers.
                 var swapTemp = secondPassOutputBuffer;
