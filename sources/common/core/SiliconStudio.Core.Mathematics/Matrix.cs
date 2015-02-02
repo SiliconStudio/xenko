@@ -1223,9 +1223,9 @@ namespace SiliconStudio.Core.Mathematics
         {
             result =  new Matrix(
                 value.M11,
-                value.M12,
-                value.M13,
-                value.M14,
+                value.M21,
+                value.M31,
+                value.M41,
                 value.M12,
                 value.M22,
                 value.M32,
