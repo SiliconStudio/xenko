@@ -28,6 +28,35 @@ namespace SiliconStudio.ActionStack
         }
 
         /// <inheritdocs/>
+        public IEnumerable<IActionItem> ActionItems { get { return Enumerable.Empty<IActionItem>(); } }
+
+        /// <inheritdocs/>
+        public bool CanUndo { get { return false; } }
+
+        /// <inheritdocs/>
+        public bool CanRedo { get { return false; } }
+
+        // The following events are intentionally never invoked.
+#pragma warning disable 67
+
+        /// <inheritdocs/>
+        public event EventHandler<ActionItemsEventArgs<IActionItem>> ActionItemsAdded;
+
+        /// <inheritdocs/>
+        public event EventHandler ActionItemsCleared;
+
+        /// <inheritdocs/>
+        public event EventHandler<DiscardedActionItemsEventArgs<IActionItem>> ActionItemsDiscarded;
+
+        /// <inheritdocs/>
+        public event EventHandler<ActionItemsEventArgs<IActionItem>> Undone;
+
+        /// <inheritdocs/>
+        public event EventHandler<ActionItemsEventArgs<IActionItem>> Redone;
+
+#pragma warning restore 67
+        
+        /// <inheritdocs/>
         public IDisposable BeginEndTransaction(string name)
         {
             return new NullDisposable();
@@ -82,32 +111,6 @@ namespace SiliconStudio.ActionStack
             // Returns an empty list
             return ActionItems.ToList();
         }
-
-        /// <inheritdocs/>
-        public IEnumerable<IActionItem> ActionItems
-        {
-            get { return Enumerable.Empty<IActionItem>(); }
-        }
-
-        // The following events are intentionally never invoked.
-#pragma warning disable 67
-
-        /// <inheritdocs/>
-        public event EventHandler<ActionItemsEventArgs<IActionItem>> ActionItemsAdded;
-
-        /// <inheritdocs/>
-        public event EventHandler ActionItemsCleared;
-
-        /// <inheritdocs/>
-        public event EventHandler<DiscardedActionItemsEventArgs<IActionItem>> ActionItemsDiscarded;
-
-        /// <inheritdocs/>
-        public event EventHandler<ActionItemsEventArgs<IActionItem>> Undone;
-
-        /// <inheritdocs/>
-        public event EventHandler<ActionItemsEventArgs<IActionItem>> Redone;
-
-#pragma warning restore 67
 
         /// <inheritdocs/>
         public void Add(IActionItem item)

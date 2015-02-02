@@ -74,11 +74,12 @@ namespace SiliconStudio.ActionStack
         /// <inheritdoc/>
         protected override void UndoAction()
         {
+            int i = 0;
             switch (actionToUndo)
             {
                 case NotifyCollectionChangedAction.Add:
                     actionToUndo = NotifyCollectionChangedAction.Remove;
-                    for (int i = 0; i < items.Count(); ++i)
+                    for (i = 0; i < items.Count(); ++i)
                     {
                         list.RemoveAt(index);
                     }
@@ -87,17 +88,17 @@ namespace SiliconStudio.ActionStack
                     actionToUndo = NotifyCollectionChangedAction.Add;
                     foreach (var item in items)
                     {
-                        list.Insert(index, item);
+                        list.Insert(index + i, item);
+                        ++i;
                     }
                     break;
                 case NotifyCollectionChangedAction.Replace:
                     var replacedItems = new List<object>();
-                    int j = 0;
                     foreach (var item in items)
                     {
-                        replacedItems.Add(list[index+j]);
-                        list[index + j] = item;
-                        ++j;
+                        replacedItems.Add(list[index + i]);
+                        list[index + i] = item;
+                        ++i;
                     }
                     items = replacedItems;
                     break;
