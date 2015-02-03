@@ -298,7 +298,6 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             {
                 if (variable.Qualifiers.Contains(ParadoxStorageQualifier.Extern))
                 {
-                    var baselink = context + "." + variable.Name.Text;
                     List<ModuleMixin> mixins;
                     if (CompositionsPerVariable.TryGetValue(variable, out mixins))
                     {
@@ -306,11 +305,13 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                         {
                             for (var i = 0; i < mixins.Count; ++i)
                             {
-                                LinkVariables(mixins[i], baselink + "[" + i + "]", visitedMixins);
+                                var baselink = "." + variable.Name.Text + "[" + i + "]" + context;
+                                LinkVariables(mixins[i], baselink, visitedMixins);
                             }
                         }
                         else
                         {
+                            var baselink = "." + variable.Name.Text + context;
                             LinkVariables(mixins[0], baselink, visitedMixins);
                         }
                     }
@@ -1067,9 +1068,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                         {
                             (varRef.Expression as MemberReferenceExpression).Member = variable.Key.Name;
 
-                            var type = (varRef.Expression as MemberReferenceExpression).Target.TypeInference.TargetType;
-                            if (!(type == ParadoxType.Input || type == ParadoxType.Input2 || type == ParadoxType.Output))
-                                (varRef.Expression as MemberReferenceExpression).Target = new VariableReferenceExpression(new Identifier("streams"));
+                            var type = (varRef.Expression as MemberReferenceExpression).Target.TypeInference.TargetType as StreamsType;
+                            if (type == null || !type.IsInputOutput)
+                                (varRef.Expression as MemberReferenceExpression).Target = new VariableReferenceExpression(StreamsType.ThisStreams);
                         }
                         else if (variable.Key.Qualifiers.Contains(ParadoxStorageQualifier.PatchStream))
                         {

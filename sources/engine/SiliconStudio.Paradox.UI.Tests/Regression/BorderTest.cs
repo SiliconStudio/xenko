@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            border = new Border { Width = 200, Height = 150, Content = new Button { NotPressedImage = new UIImage(Asset.Load<Texture2D>("uv"))}};
+            border = new Border { Width = 200, Height = 150, Content = new Button { NotPressedImage = new UIImage(Asset.Load<Texture>("uv"))}};
             border.SetCanvasPinOrigin(new Vector3(0.5f));
             
             border.BackgroundColor = Color.Red;

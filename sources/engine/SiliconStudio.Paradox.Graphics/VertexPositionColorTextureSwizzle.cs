@@ -10,7 +10,7 @@ namespace SiliconStudio.Paradox.Graphics
     /// <summary>
     /// Describes a custom vertex format structure that contains position, color, texture and swizzle information. 
     /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct VertexPositionColorTextureSwizzle : IEquatable<VertexPositionColorTextureSwizzle>
     {
         /// <summary>
@@ -52,7 +52,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// Defines structure byte size.
         /// </summary>
-        public static readonly int Size = 28;
+        public static readonly int Size = 32;
 
         /// <summary>
         /// The vertex layout of this struct.

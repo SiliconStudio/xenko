@@ -13,6 +13,8 @@ namespace SiliconStudio.Presentation.Controls
     {
         private static readonly Dictionary<DependencyProperty, int> PropertyToIndex;
         private bool interlock;
+        private bool templateApplied;
+        private DependencyProperty initializingProperty;
 
         /// <summary>
         /// Identifies the <see cref="Matrix"/> dependency property.
@@ -108,6 +110,7 @@ namespace SiliconStudio.Presentation.Controls
                 { M41Property, 12 }, { M42Property, 13 }, { M43Property, 14 }, { M44Property, 15 },
             };
         }
+    
         /// <summary>
         /// The <see cref="Matrix"/> associated to this control.
         /// </summary>
@@ -193,11 +196,23 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         public float M44 { get { return (float)GetValue(M44Property); } set { SetValue(M44Property, value); } }
 
+        /// <inheritdoc/>
+        public override void OnApplyTemplate()
+        {
+            templateApplied = false;
+            base.OnApplyTemplate();
+            templateApplied = true;
+        }
+
         /// <summary>
         /// Raised when the <see cref="Matrix"/> property is modified.
         /// </summary>
         private void OnMatrixValueChanged()
         {
+            bool isInitializing = !templateApplied && initializingProperty == null;
+            if (isInitializing)
+                initializingProperty = MatrixProperty;
+
             if (!interlock)
             {
                 interlock = true;
@@ -209,6 +224,8 @@ namespace SiliconStudio.Presentation.Controls
             }
 
             UpdateBinding(MatrixProperty);
+            if (isInitializing)
+                initializingProperty = null;
         }
 
         /// <summary>
@@ -217,6 +234,10 @@ namespace SiliconStudio.Presentation.Controls
         /// <param name="e">The dependency property that has changed.</param>
         private void OnElementValueChanged(DependencyPropertyChangedEventArgs e)
         {
+            bool isInitializing = !templateApplied && initializingProperty == null;
+            if (isInitializing)
+                initializingProperty = e.Property;
+            
             if (!interlock)
             {
                 interlock = true;
@@ -231,6 +252,8 @@ namespace SiliconStudio.Presentation.Controls
             }
 
             UpdateBinding(e.Property);
+            if (isInitializing)
+                initializingProperty = null;
         }
 
         /// <summary>
@@ -239,9 +262,12 @@ namespace SiliconStudio.Presentation.Controls
         /// <param name="dependencyProperty">The dependency property.</param>
         private void UpdateBinding(DependencyProperty dependencyProperty)
         {
-            BindingExpression expression = GetBindingExpression(dependencyProperty);
-            if (expression != null)
-                expression.UpdateSource();
+            if (dependencyProperty != initializingProperty)
+            {
+                BindingExpression expression = GetBindingExpression(dependencyProperty);
+                if (expression != null)
+                    expression.UpdateSource();
+            }
         }
 
         /// <summary>

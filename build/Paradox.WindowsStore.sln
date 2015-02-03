@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "30-Core", "30-Core", "{2E93E2B5-4500-4E47-9B65-E705218AB578}"
 EndProject
@@ -68,7 +68,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.AssemblyProce
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.AssemblyProcessor.Common", "..\sources\common\core\SiliconStudio.AssemblyProcessor.Common\SiliconStudio.AssemblyProcessor.Common.csproj", "{5D778003-7C87-47AC-A6C2-358CCCD8416E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Effects.Modules", "..\sources\shaders\SiliconStudio.Paradox.Effects.Modules.csproj", "{0342C3E7-4A38-46B4-A8EC-E728D50085D3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Effects", "..\sources\shaders\SiliconStudio.Paradox.Effects.csproj", "{0342C3E7-4A38-46B4-A8EC-E728D50085D3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Games", "..\sources\engine\SiliconStudio.Paradox.Games\SiliconStudio.Paradox.Games.csproj", "{42780CBD-3FE7-48E3-BD5B-59945EA20137}"
 EndProject

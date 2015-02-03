@@ -2,7 +2,15 @@
 Id: 053DD57E-8B6A-4F46-938F-9929B9A0CCC2
 Permutations:
     Keys:
-        CompilerParameters.GraphicsProfileKey: Level_9_1
+        MaterialAsset.GenerateShader: true
     Children:
         - Keys: 
-            Effect.Name: CustomEffect
+            Effect.Name:
+                - CustomEffect
+                - CubemapDisplayEffect
+            CompilerParameters.GraphicsProfileKey:
+                - Level_9_1
+                - Level_11_0
+        - Keys: 
+            Effect.Name: MultipleRenderTargetsEffect
+            CompilerParameters.GraphicsProfileKey: Level_11_0

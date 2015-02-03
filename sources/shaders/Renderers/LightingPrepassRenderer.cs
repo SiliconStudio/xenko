@@ -7,8 +7,8 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Effects.Modules.Processors;
-using SiliconStudio.Paradox.Effects.Modules.Shadowmap;
+using SiliconStudio.Paradox.Effects.Processors;
+using SiliconStudio.Paradox.Effects.ShadowMaps;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
@@ -16,7 +16,7 @@ using SiliconStudio.Paradox.Shaders.Compiler;
 
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-namespace SiliconStudio.Paradox.Effects.Modules.Renderers
+namespace SiliconStudio.Paradox.Effects.Renderers
 {
     public class LightingPrepassRenderer : Renderer
     {
@@ -25,22 +25,22 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// <summary>
         /// The key linking the parameters of each point light.
         /// </summary>
-        public static readonly ParameterKey<PointLightData[]> PointLightInfos = ParameterKeys.New(new PointLightData[64]);
+        public static readonly ParameterKey<PointLightData[]> PointLightInfos = ParameterKeys.New(new PointLightData[LightingKeys.MaxDeferredPointLights]);
 
         /// <summary>
         /// The key linking the parameters of each directional light.
         /// </summary>
-        public static readonly ParameterKey<DirectLightData[]> DirectLightInfos = ParameterKeys.New(new DirectLightData[64]);
+        public static readonly ParameterKey<DirectLightData[]> DirectLightInfos = ParameterKeys.New(new DirectLightData[LightingKeys.MaxDeferredPointLights]);
 
         /// <summary>
         /// The key linking the parameters of each spot light.
         /// </summary>
-        public static readonly ParameterKey<SpotLightData[]> SpotLightInfos = ParameterKeys.New(new SpotLightData[64]);
+        public static readonly ParameterKey<SpotLightData[]> SpotLightInfos = ParameterKeys.New(new SpotLightData[LightingKeys.MaxDeferredPointLights]);
 
         /// <summary>
         /// The key setting the number of lights.
         /// </summary>
-        public static readonly ParameterKey<int> LightCount = ParameterKeys.New(64);
+        public static readonly ParameterKey<int> LightCount = ParameterKeys.New(LightingKeys.MaxDeferredPointLights);
 
         #endregion
 
@@ -66,7 +66,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         public const float AttenuationCutoff = 0.1f;
 
         // TODO: make this configurable or extract from the effect
-        public const int MaxPointLightsPerTileDrawCall = 64;
+        public const int MaxPointLightsPerTileDrawCall = LightingKeys.MaxDeferredPointLights;
         
         public const int MaxDirectLightsPerTileDrawCall = 1;
 
@@ -122,7 +122,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         private DirectLightData[] currentDirectShadowLights = new DirectLightData[MaxDirectShadowLightsPerTileDrawCall];
 
-        private RenderTarget lightRenderTarget;
+        private Texture lightTexture;
 
         private BlendState accumulationBlendState;
 
@@ -149,10 +149,10 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         private MeshDraw meshDraw;
 
         // External references
-        private Texture2D depthStencilTexture;
+        private Texture depthStencilTexture;
         
         // External references
-        private Texture2D gbufferTexture;
+        private Texture gbufferTexture;
 
         #endregion
 
@@ -165,7 +165,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         /// <param name="effectName">The name of the effect used to compute lighting.</param>
         /// <param name="depthStencilTexture">The depth texture.</param>
         /// <param name="gbufferTexture">The gbuffer texture.</param>
-        public LightingPrepassRenderer(IServiceRegistry services, string effectName, Texture2D depthStencilTexture, Texture2D gbufferTexture)
+        public LightingPrepassRenderer(IServiceRegistry services, string effectName, Texture depthStencilTexture, Texture gbufferTexture)
             : base(services)
         {
             validLights = new List<EntityLightShadow>();
@@ -209,40 +209,29 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             for (int i = 0; i < tilesGroups.Length; ++i)
                 tilesGroups[i] = new List<PointLightData>();
 
-            pointLightingPrepassEffect = EffectSystem.LoadEffect(effectName + ".ParadoxPointPrepassLighting");
+            var compilerParameters = GetDefaultCompilerParameters();
+            // point lights
+            pointLightingPrepassEffect = EffectSystem.LoadEffect(effectName + ".ParadoxPointPrepassLighting", compilerParameters);
             CreateLightingUpdateInfo(pointLightingPrepassEffect);
 
-            spotLightingPrepassEffect = EffectSystem.LoadEffect(effectName + ".ParadoxSpotPrepassLighting");
+            // spot lights
+            spotLightingPrepassEffect = EffectSystem.LoadEffect(effectName + ".ParadoxSpotPrepassLighting", compilerParameters);
             CreateLightingUpdateInfo(spotLightingPrepassEffect);
 
-            // TODO: find a way to enumerate available shaders
-            /*var parameters = new CompilerParameters();
-            for (var i = 2; i <= 64; i = i + 62)
-            {
-                parameters.Set(LightingKeys.MaxDeferredLights, i);
-                var effect = EffectSystem.LoadEffect("LightPrepassEffect", parameters);
-                lightPrepassEffects.Add(i, effect);
-                lightConfigurations.Add(i);
-
-                CreateLightingUpdateInfo(effect);
-            }*/
-
             // directional lights
-            directLightingPrepassEffect = EffectSystem.LoadEffect(effectName + ".ParadoxDirectPrepassLighting");
+            directLightingPrepassEffect = EffectSystem.LoadEffect(effectName + ".ParadoxDirectPrepassLighting", compilerParameters);
             CreateLightingUpdateInfo(directLightingPrepassEffect);
 
             // shadow lights
-            var parameters = new CompilerParameters();
             for (var cascadeCount = 1; cascadeCount < 5; ++cascadeCount)
             {
-                AddShadowEffect(cascadeCount, ShadowMapFilterType.Nearest, parameters);
-                AddShadowEffect(cascadeCount, ShadowMapFilterType.PercentageCloserFiltering, parameters);
-                AddShadowEffect(cascadeCount, ShadowMapFilterType.Variance, parameters);
+                AddShadowEffect(cascadeCount, ShadowMapFilterType.Nearest, compilerParameters);
+                AddShadowEffect(cascadeCount, ShadowMapFilterType.PercentageCloserFiltering, compilerParameters);
+                AddShadowEffect(cascadeCount, ShadowMapFilterType.Variance, compilerParameters);
             }
 
             // Create lighting accumulation texture
-            var lightTexture = Texture2D.New(GraphicsDevice, GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
-            lightRenderTarget = lightTexture.ToRenderTarget();
+            lightTexture = Texture.New2D(GraphicsDevice, GraphicsDevice.BackBuffer.ViewWidth, GraphicsDevice.BackBuffer.ViewHeight, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
 
             // Set GBuffer and depth stencil as input, as well as light texture
             Pass.Parameters.Set(RenderTargetKeys.DepthStencilSource, depthStencilTexture);
@@ -298,23 +287,22 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         {
             base.Unload();
 
-            lightRenderTarget.Dispose();
-            lightRenderTarget.Texture.Dispose();
-            lightRenderTarget = null;
+            lightTexture.Dispose();
+            lightTexture = null;
         }
 
         #endregion
 
         #region Private methods
 
-        private void AddShadowEffect(int cascadeCount, ShadowMapFilterType filterType, CompilerParameters  parameters)
+        private void AddShadowEffect(int cascadeCount, ShadowMapFilterType filterType, CompilerParameters parameters)
         {
-            parameters.Set(ShadowMapParameters.ShadowMapCascadeCount, cascadeCount);
+            parameters.Set(ShadowMapParameters.ShadowMapCascadeCount.ComposeWith("shadows[0]"), cascadeCount);
             parameters.Set(ShadowMapParameters.FilterType, filterType);
 
             //////////////////////////////////////////////
             // DIRECTIONAL LIGHT
-            parameters.Set(ShadowMapParameters.LightType, LightType.Directional);
+            parameters.Set(ShadowMapParameters.LightType.ComposeWith("shadows[0]"), LightType.Directional);
 
             ShadowEffectInfo seiDirect;
             seiDirect.LightType = LightType.Directional;
@@ -324,7 +312,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
             //////////////////////////////////////////////
             // SPOT LIGHT
-            parameters.Set(ShadowMapParameters.LightType, LightType.Spot);
+            parameters.Set(ShadowMapParameters.LightType.ComposeWith("shadows[0]"), LightType.Spot);
 
             ShadowEffectInfo seiSpot;
             seiSpot.LightType = LightType.Spot;
@@ -519,13 +507,13 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             // if there is no light, use albedo
             if (pointLights.Count == 0 && spotLights.Count == 0 && directionalLights.Count == 0 && directionalShadowLights.Count == 0 && spotShadowLights.Count == 0)
             {
-                GraphicsDevice.Clear(lightRenderTarget, new Color4(1.0f, 1.0f, 1.0f, 0.0f));
+                GraphicsDevice.Clear(lightTexture, new Color4(1.0f, 1.0f, 1.0f, 0.0f));
             }
             else
             {
                 // Clear and set light accumulation target
-                GraphicsDevice.Clear(lightRenderTarget, new Color4(0.0f, 0.0f, 0.0f, 0.0f));
-                GraphicsDevice.SetRenderTarget(lightRenderTarget); // no depth buffer
+                GraphicsDevice.Clear(lightTexture, new Color4(0.0f, 0.0f, 0.0f, 0.0f));
+                GraphicsDevice.SetRenderTarget(lightTexture); // no depth buffer
                 // TODO: make sure that the lightRenderTarget.Texture is not bound to any shader to prevent some warnings
 
                 // Set default blend state
@@ -645,7 +633,10 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
             context.Parameters.Set(shadowUpdateInfo.ShadowMapLightCountKey, lightCount);
             // TODO: change texture set when multiple shadow maps will be handled.
             if (varianceShadowMap)
+            {
+                context.Parameters.Set((ParameterKey<ShadowMapReceiverVsmInfo[]>)shadowUpdateInfo.ShadowMapReceiverVsmInfoKey, receiverVsmInfos, 0, cascadeCount);
                 context.Parameters.Set(shadowUpdateInfo.ShadowMapTextureKey, lights[startLightIndex].ShadowMap.Texture.ShadowMapTargetTexture);
+            }
             else
                 context.Parameters.Set(shadowUpdateInfo.ShadowMapTextureKey, lights[startLightIndex].ShadowMap.Texture.ShadowMapDepthTexture);
 
@@ -1099,7 +1090,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
 
         private bool SearchLightingGroup(Effect effect, int index, string groupName, List<LightingDeferredParameters> finalList)
         {
-            var constantBuffers = effect.ConstantBuffers;
+            var constantBuffers = effect.Bytecode.Reflection.ConstantBuffers;
             var info = new LightingDeferredParameters();
 
             LightingDeferredSemantic foundParameterSemantic;
@@ -1149,10 +1140,11 @@ namespace SiliconStudio.Paradox.Effects.Modules.Renderers
         private void UpdateLightingParameterSemantics(int index, string compositionName)
         {
             lightingParameterSemantics.Clear();
-            var lightGroupSubKey = string.Format("." + compositionName + "[{0}]", index);
+            // TODO: use StringBuilder instead
+            var lightGroupSubKey = string.Format(compositionName + "[{0}]", index);
             foreach (var param in LightParametersDict)
             {
-                lightingParameterSemantics.Add(param.Key.AppendKey(lightGroupSubKey), param.Value);
+                lightingParameterSemantics.Add(param.Key.ComposeWith(lightGroupSubKey), param.Value);
             }
         }
 

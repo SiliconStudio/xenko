@@ -6,7 +6,6 @@ using System;
 using Android.App;
 using Android.Graphics;
 using Android.OS;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Android.Content;
@@ -19,7 +18,11 @@ using SiliconStudio.Paradox.UI;
 
 namespace SiliconStudio.Paradox.Starter
 {
-    public class AndroidParadoxActivity : Activity, View.IOnSystemUiVisibilityChangeListener, View.IOnTouchListener
+    // NOTE: the class should implement View.IOnSystemUiVisibilityChangeListener but doing so will prevent the engine to work on Android below 3.0 (API Level 11 is mandatory).
+    // So the methods are implemented but the class does not implement View.IOnSystemUiVisibilityChangeListener.
+    // Maybe this will change when support for API Level 10 is dropped
+    // TODO: make this class implement View.IOnSystemUiVisibilityChangeListener when support of Android < 3.0 is dropped.
+    public class AndroidParadoxActivity : Activity, View.IOnTouchListener
     {
         private AndroidGameView gameView;
 
@@ -69,7 +72,7 @@ namespace SiliconStudio.Paradox.Starter
             SetFullscreenView();
             InitializeFullscreenViewCallback();
         }
-
+        
         public void OnSystemUiVisibilityChange(StatusBarVisibility visibility)
         {
             //Log.Debug("Paradox", "OnSystemUiVisibilityChange: visibility=0x{0:X8}", (int)visibility);
@@ -96,7 +99,8 @@ namespace SiliconStudio.Paradox.Starter
                     SetFullscreenView();
                 }
             }
-            else if (Build.VERSION.SdkInt >= BuildVersionCodes.IceCreamSandwich)
+            // TODO: uncomment this once the class implements View.IOnSystemUiVisibilityChangeListener.
+            /*else if (Build.VERSION.SdkInt >= BuildVersionCodes.IceCreamSandwich)
             {
                 // use fullscreen low profile mode, with a delay
                 if (hasFocus)
@@ -108,7 +112,7 @@ namespace SiliconStudio.Paradox.Starter
                 {
                     RemoveFullscreenViewCallback();
                 }
-            }
+            }*/
         }
 
         private void SetupGameViewAndGameContext()
@@ -165,7 +169,8 @@ namespace SiliconStudio.Paradox.Starter
             if ((Build.VERSION.SdkInt >= BuildVersionCodes.IceCreamSandwich) && (Build.VERSION.SdkInt < BuildVersionCodes.Kitkat))
             {
                 setFullscreenViewCallback = SetFullscreenView;
-                Window.DecorView.SetOnSystemUiVisibilityChangeListener(this);
+                // TODO: uncomment this once the class implements View.IOnSystemUiVisibilityChangeListener. Right now only Kitkat supports fullscreen
+                //Window.DecorView.SetOnSystemUiVisibilityChangeListener(this);
             }
         }
 

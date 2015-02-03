@@ -12,7 +12,7 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Assets.Materials;
-using SiliconStudio.Paradox.Assets.Texture;
+using SiliconStudio.Paradox.Assets.Textures;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Graphics.Data;
 
@@ -40,7 +40,7 @@ namespace SiliconStudio.Paradox.Assets
             result.BuildSteps = new ListBuildStep();
             
             // Evaluate if we need to use a separate the alpha texture
-            SeparateAlphaTexture = context.Platform == PlatformType.Android && asset.Alpha != AlphaFormat.None && asset.Format == TextureFormat.Compressed;
+            SeparateAlphaTexture = TextureCommandHelper.ShouldSeparateAlpha(asset.Alpha, asset.Format, context.Platform, context.GetGraphicsProfile());
 
             // create the registry containing the sprite assets texture index association
             SpriteToTextureIndex = new Dictionary<TImageInfo, int>();
@@ -148,12 +148,12 @@ namespace SiliconStudio.Paradox.Assets
                 if (UseSeparateAlphaTexture)
                 {
                     var baseLocation = ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]);
-                    newImage.Texture = new ContentReference<Texture2D> { Location = TextureAlphaComponentSplitter.GenerateColorTextureURL(baseLocation) };
-                    newImage.TextureAlpha = new ContentReference<Texture2D> { Location = TextureAlphaComponentSplitter.GenerateAlphaTextureURL(baseLocation) };
+                    newImage.Texture = new ContentReference<Graphics.Texture> { Location = TextureAlphaComponentSplitter.GenerateColorTextureURL(baseLocation) };
+                    newImage.TextureAlpha = new ContentReference<Graphics.Texture> { Location = TextureAlphaComponentSplitter.GenerateAlphaTextureURL(baseLocation) };
                 }
                 else
                 {
-                    newImage.Texture = new ContentReference<Texture2D> { Location = ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]) };
+                    newImage.Texture = new ContentReference<Graphics.Texture> { Location = ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]) };
                 }
 
                 SetImageSpecificFields(uiImage, newImage);
@@ -173,7 +173,7 @@ namespace SiliconStudio.Paradox.Assets
     }
     
     /// <summary>
-    /// Parameters used for converting/processing the texture in the storage.
+    /// SharedParameters used for converting/processing the texture in the storage.
     /// </summary>
     [DataContract]
     public class ImageGroupParameters<T>

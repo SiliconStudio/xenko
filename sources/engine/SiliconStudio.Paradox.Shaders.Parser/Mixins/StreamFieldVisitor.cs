@@ -29,7 +29,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         {
             Visit((Node)expression);
 
-            if ((expression is VariableReferenceExpression || expression is MemberReferenceExpression || expression is IndexerExpression) && expression.TypeInference.TargetType is ParadoxType) // TODO: exclude constants, test real type
+            if ((expression is VariableReferenceExpression || expression is MemberReferenceExpression || expression is IndexerExpression) && expression.TypeInference.TargetType is StreamsType) // TODO: exclude constants, test real type
             {
                 var mre = new MemberReferenceExpression(expression, typeInference.Name) { TypeInference = { Declaration = typeInference, TargetType = typeInference.Type.ResolveType() } };
                 if (arrayIndex == null)

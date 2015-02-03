@@ -170,11 +170,10 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         {
             Visit((Node)variableReferenceExpression);
             // HACK: force types on base, this and stream keyword to eliminate errors in the log an use the standard type inference
-            var name = variableReferenceExpression.Name.Text;
-            if (name == "streams")
+            if (variableReferenceExpression.Name == StreamsType.ThisStreams)
             {
                 if (!(ParentNode is MemberReferenceExpression)) // streams is alone
-                    currentStreamUsageList.Add(new StreamUsageInfo { CallType = StreamCallType.Direct, Variable = ParadoxSemanticAnalysis.StreamsVariable, Expression = variableReferenceExpression, Usage = currentStreamUsage });
+                    currentStreamUsageList.Add(new StreamUsageInfo { CallType = StreamCallType.Direct, Variable = StreamsType.ThisStreams, Expression = variableReferenceExpression, Usage = currentStreamUsage });
             }
         }
 
@@ -229,9 +228,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
             if (assignmentExpression.Operator == AssignmentOperator.Default)
             {
-                if (assignmentExpression.Target is VariableReferenceExpression && (assignmentExpression.Target as VariableReferenceExpression).Name.Text == "streams") // "streams = ...;"
+                if (assignmentExpression.Target is VariableReferenceExpression && (assignmentExpression.Target as VariableReferenceExpression).TypeInference.TargetType is StreamsType) // "streams = ...;"
                     StreamAssignations.Add(assignmentExpression);
-                else if (assignmentExpression.Value is VariableReferenceExpression && (assignmentExpression.Value as VariableReferenceExpression).Name.Text == "streams") // "... = streams;"
+                else if (assignmentExpression.Value is VariableReferenceExpression && (assignmentExpression.Value as VariableReferenceExpression).TypeInference.TargetType is StreamsType) // "... = streams;"
                     AssignationsToStream.Add(assignmentExpression);
             }
         }
@@ -251,14 +250,14 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
     }
 
     [Flags]
-    public enum StreamUsage
+    internal enum StreamUsage
     {
         Unknown = 0,
         Read = 1,
         Write = 2
     }
 
-    public enum StreamCallType
+    internal enum StreamCallType
     {
         Unknown = 0,
         Member = 1,
@@ -266,7 +265,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         Direct = 3
     }
 
-    public class StreamUsageInfo
+    internal class StreamUsageInfo
     {
         public StreamUsage Usage = StreamUsage.Unknown;
         public StreamCallType CallType = StreamCallType.Unknown;

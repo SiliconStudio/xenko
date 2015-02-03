@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "90-Tools", "90-Tools", "{1AE1AC60-5D2F-4CA7-AE20-888F44551185}"
 EndProject
@@ -93,7 +93,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Engin
 	ProjectSection(ProjectDependencies) = postProject
 		{7F348346-8AFE-4555-A14D-2290028D7B11} = {7F348346-8AFE-4555-A14D-2290028D7B11}
 		{39AE9C77-E94B-404F-8768-B6261B3C1E0E} = {39AE9C77-E94B-404F-8768-B6261B3C1E0E}
-		{72B86E84-E69D-46E4-A51E-DD4D5686EEC9} = {72B86E84-E69D-46E4-A51E-DD4D5686EEC9}
 		{50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698} = {50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698}
 	EndProjectSection
 EndProject
@@ -133,7 +132,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.AssemblyProce
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.AssemblyProcessor.Common", "..\sources\common\core\SiliconStudio.AssemblyProcessor.Common\SiliconStudio.AssemblyProcessor.Common.csproj", "{5D778003-7C87-47AC-A6C2-358CCCD8416E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Effects.Modules", "..\sources\shaders\SiliconStudio.Paradox.Effects.Modules.csproj", "{0342C3E7-4A38-46B4-A8EC-E728D50085D3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Effects", "..\sources\shaders\SiliconStudio.Paradox.Effects.csproj", "{0342C3E7-4A38-46B4-A8EC-E728D50085D3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SiliconStudio.Paradox.Importer.Assimp", "..\sources\tools\SiliconStudio.Paradox.Importer.Assimp\SiliconStudio.Paradox.Importer.Assimp.vcxproj", "{C2306552-6C42-464C-8981-32FEF4F9458D}"
 EndProject
@@ -159,8 +158,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.BuildEngine.Tests", "..\sources\common\buildengine\SiliconStudio.BuildEngine.Tests\SiliconStudio.BuildEngine.Tests.csproj", "{09F32307-595A-4CBB-BF7C-F055DA1F70EE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.BuildEngine.Common", "..\sources\common\buildengine\SiliconStudio.BuildEngine.Common\SiliconStudio.BuildEngine.Common.csproj", "{7732CB84-A39A-4ADF-B740-FD32A352FA8A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.BuildEngine.Paradox.FBX", "..\sources\tools\SiliconStudio.BuildEngine.Paradox.FBX\SiliconStudio.BuildEngine.Paradox.FBX.csproj", "{72B86E84-E69D-46E4-A51E-DD4D5686EEC9}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SiliconStudio.Paradox.Assimp.Translation", "..\sources\tools\SiliconStudio.Paradox.Assimp.Translation\SiliconStudio.Paradox.Assimp.Translation.vcxproj", "{FCDF1B87-1C76-46EB-AD6A-D55EF5F195B8}"
 EndProject
@@ -198,9 +195,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Shaders.Compiler", "..\sources\engine\SiliconStudio.Paradox.Shaders.Compiler\SiliconStudio.Paradox.Shaders.Compiler.csproj", "{E8B3553F-A79F-4E50-B75B-ACEE771C320C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Shaders.Tests.Windows", "..\sources\engine\SiliconStudio.Paradox.Shaders.Tests\SiliconStudio.Paradox.Shaders.Tests.Windows.csproj", "{1BE90177-FE4D-4519-839E-7EB7D78AC973}"
-	ProjectSection(ProjectDependencies) = postProject
-		{50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698} = {50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Input", "..\sources\engine\SiliconStudio.Paradox.Input\SiliconStudio.Paradox.Input.csproj", "{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}"
 EndProject
@@ -516,14 +510,6 @@ Global
 		{7732CB84-A39A-4ADF-B740-FD32A352FA8A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{7732CB84-A39A-4ADF-B740-FD32A352FA8A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{7732CB84-A39A-4ADF-B740-FD32A352FA8A}.Release|Win32.ActiveCfg = Release|Any CPU
-		{72B86E84-E69D-46E4-A51E-DD4D5686EEC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{72B86E84-E69D-46E4-A51E-DD4D5686EEC9}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{72B86E84-E69D-46E4-A51E-DD4D5686EEC9}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{72B86E84-E69D-46E4-A51E-DD4D5686EEC9}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{72B86E84-E69D-46E4-A51E-DD4D5686EEC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{72B86E84-E69D-46E4-A51E-DD4D5686EEC9}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{72B86E84-E69D-46E4-A51E-DD4D5686EEC9}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{72B86E84-E69D-46E4-A51E-DD4D5686EEC9}.Release|Win32.ActiveCfg = Release|Any CPU
 		{FCDF1B87-1C76-46EB-AD6A-D55EF5F195B8}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{FCDF1B87-1C76-46EB-AD6A-D55EF5F195B8}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
 		{FCDF1B87-1C76-46EB-AD6A-D55EF5F195B8}.Debug|Mixed Platforms.Build.0 = Debug|Win32
@@ -978,7 +964,6 @@ Global
 		{F61D86B5-7C3D-4441-957D-A0A6D2FA69CA} = {47FFA9CA-781D-427E-9A41-365D789DD4B1}
 		{09F32307-595A-4CBB-BF7C-F055DA1F70EE} = {9B4A82AF-00C0-43A5-B5E2-C00F55E72530}
 		{7732CB84-A39A-4ADF-B740-FD32A352FA8A} = {9B4A82AF-00C0-43A5-B5E2-C00F55E72530}
-		{72B86E84-E69D-46E4-A51E-DD4D5686EEC9} = {9B4A82AF-00C0-43A5-B5E2-C00F55E72530}
 		{FCDF1B87-1C76-46EB-AD6A-D55EF5F195B8} = {47FFA9CA-781D-427E-9A41-365D789DD4B1}
 		{0E916AB7-5A6C-4820-8AB1-AA492FE66D68} = {2E93E2B5-4500-4E47-9B65-E705218AB578}
 		{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A} = {2E93E2B5-4500-4E47-9B65-E705218AB578}

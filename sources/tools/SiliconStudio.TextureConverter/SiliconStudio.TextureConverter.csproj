@@ -159,22 +159,6 @@
       <Link>FreeImageNET.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="$(ParadoxDependenciesDir)NvidiaTextureTools\cudart32_41_28.dll">
-      <Link>cudart32_41_28.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(ParadoxDependenciesDir)NvidiaTextureTools\libpng12.dll">
-      <Link>libpng12.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(ParadoxDependenciesDir)NvidiaTextureTools\nvtt.dll">
-      <Link>nvtt.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(ParadoxDependenciesDir)NvidiaTextureTools\zlib1.dll">
-      <Link>zlib1.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="$(ParadoxDependenciesDir)PVRTT\PVRTexLib.dll">
       <Link>PVRTexLib.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

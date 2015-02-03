@@ -179,12 +179,11 @@ namespace SiliconStudio.Paradox.Effects
             var pipelineModelState = Pass.GetOrCreateModelRendererState();
 
             // Get the slot for the pass of this processor
-            meshPassSlot = pipelineModelState.GetModelSlot(Pass);
+            meshPassSlot = pipelineModelState.GetModelSlot(Pass, EffectName);
 
             // Register callbacks used by the MeshProcessor
             pipelineModelState.AcceptModel += OnAcceptModel;
             pipelineModelState.PrepareRenderModel += PrepareModelForRendering;
-            pipelineModelState.AcceptRenderModel += OnAcceptRenderModel;
         }
 
         public override void Unload()
@@ -196,7 +195,6 @@ namespace SiliconStudio.Paradox.Effects
             // Unregister callbacks
             pipelineModelState.AcceptModel -= OnAcceptModel;
             pipelineModelState.PrepareRenderModel -= PrepareModelForRendering;
-            pipelineModelState.AcceptRenderModel -= OnAcceptRenderModel;
         }
 
         protected override void OnRendering(RenderContext context)
@@ -207,6 +205,11 @@ namespace SiliconStudio.Paradox.Effects
             meshesToRender.Clear();
             foreach (var renderModel in state.RenderModels)
             {
+                if (!OnAcceptRenderModel(renderModel))
+                {
+                    continue;
+                }
+
                 var meshes = renderModel.RenderMeshes[meshPassSlot];
                 if (meshes != null)
                     meshesToRender.AddRange(meshes);
@@ -260,6 +263,18 @@ namespace SiliconStudio.Paradox.Effects
 
         private void PrepareModelForRendering(RenderModel renderModel)
         {
+            // TODO: this is obviously wrong since a pipeline can have several ModelRenderer with the same effect.
+            // In that case, a Mesh may be added several times to the list and as a result rendered several time in a single ModelRenderer.
+            // We keep it that way for now since we only have two ModelRenderer with the same effect in the deferrent pipeline (splitting between opaque and transparent objects) and their acceptance tests are exclusive.
+
+            // Create the list of RenderMesh objects
+            var renderMeshes = renderModel.RenderMeshes[meshPassSlot];
+            if (renderMeshes == null)
+            {
+                renderMeshes = new List<RenderMesh>();
+                renderModel.RenderMeshes[meshPassSlot] = renderMeshes;
+            }
+
             foreach (var mesh in renderModel.Model.Meshes)
             {
                 if (acceptPrepareMeshForRenderings.Count > 0 && !OnAcceptPrepareMeshForRendering(renderModel, mesh))
@@ -267,15 +282,11 @@ namespace SiliconStudio.Paradox.Effects
                     continue;
                 }
 
-                var effectMesh = new RenderMesh(renderModel, mesh);
-                UpdateEffect(effectMesh);
+                var renderMesh = new RenderMesh(renderModel, mesh);
+                UpdateEffect(renderMesh);
 
                 // Register mesh for rendering
-                if (renderModel.RenderMeshes[meshPassSlot] == null)
-                {
-                    renderModel.RenderMeshes[meshPassSlot] = new List<RenderMesh>();
-                }
-                renderModel.RenderMeshes[meshPassSlot].Add(effectMesh);
+                renderMeshes.Add(renderMesh);
             }
         }
 
@@ -295,7 +306,7 @@ namespace SiliconStudio.Paradox.Effects
         private void DefaultSort(RenderContext context, FastList<RenderMesh> meshes)
         {
             // Sort based on ModelComponent.DrawOrder
-            meshes.Sort(ModelComponentSorter.Default);
+            DefaultRenderMeshSorter.Default.Sort(meshes);
         }
 
         private bool OnAcceptRenderModel(RenderModel renderModel)
@@ -396,38 +407,34 @@ namespace SiliconStudio.Paradox.Effects
 
         #region Helper class
 
-        private class ModelComponentSorter : IComparer<RenderMesh>
+        /// <summary>
+        /// Sorts meshes, using material transparency and then <see cref="Engine.ModelComponent.DrawOrder"/>
+        /// </summary>
+        private class DefaultRenderMeshSorter : RenderMeshSorter
         {
-            #region Constants and Fields
+            public static readonly RenderMeshSorter Default = new DefaultRenderMeshSorter();
 
-            public static readonly ModelComponentSorter Default = new ModelComponentSorter();
-
-            #endregion
-
-            public int Compare(RenderMesh left, RenderMesh right)
+            /// <inheritdoc />
+            public override int GenerateSortKey(RenderMesh renderMesh)
             {
-                var xModelComponent = left.RenderModel.ModelInstance;
-                var yModelComponent = right.RenderModel.ModelInstance;
+                int result = 0;
 
-                // Ignore if no associated mesh component
-                if (xModelComponent == null || yModelComponent == null)
-                    return 0;
+                // First, sort using material transparency
+                var material = renderMesh.Mesh.Material;
+                if (material != null && material.Parameters.Get(MaterialParameters.UseTransparent))
+                    result += 0x10000000;
 
-                // TODO: Add a kind of associated data to an effect mesh to speed up this test?
-                var leftMaterial = left.Mesh.Material;
-                var isLeftTransparent = (leftMaterial != null && leftMaterial.Parameters.Get(MaterialParameters.UseTransparent));
+                // Then sort using DrawOrder
+                var modelComponent = renderMesh.RenderModel.ModelInstance;
+                if (modelComponent != null)
+                {
+                    var drawOrder = modelComponent.DrawOrder;
+                    if (((uint)drawOrder & 0xF0000000) != 0)
+                        throw new InvalidOperationException("ModelComponent.DrawOrder is too big for this mesh sorter.");
+                    result += drawOrder;
+                }
 
-                var rightMaterial = right.Mesh.Material;
-                var isRightTransparent = (rightMaterial != null && rightMaterial.Parameters.Get(MaterialParameters.UseTransparent));
-
-                if (isLeftTransparent && !isRightTransparent)
-                    return 1;
-
-                if (!isLeftTransparent && isRightTransparent)
-                    return -1;
-
-                // Use draw order
-                return Math.Sign(xModelComponent.DrawOrder - yModelComponent.DrawOrder);
+                return result;
             }
         }
 

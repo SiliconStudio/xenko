@@ -3,7 +3,7 @@
 
 using System;
 
-namespace SiliconStudio.Paradox.Effects.Modules.Renderers
+namespace SiliconStudio.Paradox.Effects.Renderers
 {
     [Flags]
     public enum LightParamSemantic

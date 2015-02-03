@@ -80,14 +80,7 @@ namespace SiliconStudio.Paradox.Effects
         {
             bool effectChanged = false;
 
-            if (effectInstance.Effect != null && effectInstance.Effect.Changed)
-            {
-                effectInstance.UpdaterDefinition.Initialize(effectInstance.Effect);
-                UpdateLevels(effectInstance);
-                effectChanged = true;
-            }
-
-            if (effectInstance.Effect == null || HasCollectionChanged(effectInstance))
+            if (effectInstance.Effect == null || !EffectSystem.IsValid(effectInstance.Effect) || HasCollectionChanged(effectInstance))
             {
                 CreateEffect(effectInstance);
                 effectChanged = true;
@@ -130,15 +123,6 @@ namespace SiliconStudio.Paradox.Effects
 
             if (!ReferenceEquals(effect, effectInstance.Effect))
             {
-                // Copy back parameters set on previous effect to new effect
-                if (effectInstance.Effect != null)
-                {
-                    foreach (var parameter in effectInstance.Effect.Parameters.InternalValues)
-                    {
-                        effect.Parameters.SetObject(parameter.Key, parameter.Value.Object);
-                    }
-                }
-
                 effectInstance.Effect = effect;
                 effectInstance.UpdaterDefinition = new EffectParameterUpdaterDefinition(effect);
             }
@@ -166,7 +150,7 @@ namespace SiliconStudio.Paradox.Effects
         private void PrepareUpdater(DynamicEffectInstance effectInstance)
         {
             parameterCollections.Clear(true);
-            parameterCollections.Add(effectInstance.Effect.DefaultCompilationParameters);
+            parameterCollections.Add(effectInstance.Effect.CompilationParameters);
             effectInstance.FillParameterCollections(parameterCollections);
             parameterCollections.Add(GraphicsDevice.Parameters);
 

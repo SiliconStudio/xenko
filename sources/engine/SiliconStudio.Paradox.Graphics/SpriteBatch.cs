@@ -5,7 +5,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Text;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.Graphics
 {
@@ -86,7 +86,7 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         /// <summary>
-        /// Begins a sprite batch operation using deferred sort and default state objects (BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise).
+        /// Begins a sprite batch operation using deferred sort and default state objects (BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullCounterClockwise).
         /// </summary>
         /// <param name="sortMode">The sprite drawing order to use for the batch session</param>
         /// <param name="effect">The effect to use for the batch session</param>
@@ -97,7 +97,7 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         /// <summary>
-        /// Begins a sprite batch rendering using the specified sorting mode and blend state, sampler, depth stencil and rasterizer state objects, plus a custom effect. Passing null for any of the state objects selects the default default state objects (BlendState.AlphaBlend, DepthStencilState.None, RasterizerState.CullCounterClockwise, SamplerState.LinearClamp). Passing a null effect selects the default SpriteBatch Class shader.
+        /// Begins a sprite batch rendering using the specified sorting mode and blend state, sampler, depth stencil and rasterizer state objects, plus a custom effect. Passing null for any of the state objects selects the default default state objects (BlendState.AlphaBlend, DepthStencilState.Default, RasterizerState.CullCounterClockwise, SamplerState.LinearClamp). Passing a null effect selects the default SpriteBatch Class shader.
         /// </summary>
         /// <param name="sortMode">The sprite drawing order to use for the batch session</param>
         /// <param name="effect">The effect to use for the batch session</param>
@@ -113,7 +113,7 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         /// <summary>
-        /// Begins a sprite batch rendering using the specified sorting mode and blend state, sampler, depth stencil, rasterizer state objects, plus a custom effect and a 2D transformation matrix. Passing null for any of the state objects selects the default default state objects (BlendState.AlphaBlend, DepthStencilState.None, RasterizerState.CullCounterClockwise, SamplerState.LinearClamp). Passing a null effect selects the default SpriteBatch Class shader. 
+        /// Begins a sprite batch rendering using the specified sorting mode and blend state, sampler, depth stencil, rasterizer state objects, plus a custom effect and a 2D transformation matrix. Passing null for any of the state objects selects the default default state objects (BlendState.AlphaBlend, DepthStencilState.Default, RasterizerState.CullCounterClockwise, SamplerState.LinearClamp). Passing a null effect selects the default SpriteBatch Class shader. 
         /// </summary>
         /// <param name="sortMode">The sprite drawing order to use for the batch session</param>
         /// <param name="effect">The effect to use for the batch session</param>
@@ -130,7 +130,7 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         /// <summary>
-        /// Begins a sprite batch rendering using the specified sorting mode and blend state, sampler, depth stencil, rasterizer state objects, plus a custom effect and a 2D transformation matrix. Passing null for any of the state objects selects the default default state objects (BlendState.AlphaBlend, DepthStencilState.None, RasterizerState.CullCounterClockwise, SamplerState.LinearClamp). Passing a null effect selects the default SpriteBatch Class shader. 
+        /// Begins a sprite batch rendering using the specified sorting mode and blend state, sampler, depth stencil, rasterizer state objects, plus a custom effect and a 2D transformation matrix. Passing null for any of the state objects selects the default default state objects (BlendState.AlphaBlend, DepthStencilState.Default, RasterizerState.CullCounterClockwise, SamplerState.LinearClamp). Passing a null effect selects the default SpriteBatch Class shader. 
         /// </summary>
         /// <param name="sortMode">The sprite drawing order to use for the batch session</param>
         /// <param name="effect">The effect to use for the batch session</param>
@@ -528,8 +528,8 @@ namespace SiliconStudio.Paradox.Graphics
                 // Else, use directly the size of the texture
                 spriteInfo->Source.X = 0.0f;
                 spriteInfo->Source.Y = 0.0f;
-                width = texture.Width;
-                height = texture.Height;
+                width = texture.ViewWidth;
+                height = texture.ViewHeight;
             }
 
             // Sets the width and height
@@ -562,8 +562,8 @@ namespace SiliconStudio.Paradox.Graphics
             spriteInfo->SpriteEffects = effects;
             spriteInfo->Color = color;
             spriteInfo->Swizzle = swizzle;
-            spriteInfo->TextureSize.X = texture.Width;
-            spriteInfo->TextureSize.Y = texture.Height;
+            spriteInfo->TextureSize.X = texture.ViewWidth;
+            spriteInfo->TextureSize.Y = texture.ViewHeight;
             spriteInfo->Orientation = orientation;
 
             elementInfo.VertexCount = StaticQuadBufferInfo.VertexByElement;
@@ -620,7 +620,7 @@ namespace SiliconStudio.Paradox.Graphics
 
             // Setup effect states and parameters: SamplerState and MatrixTransform
             // Sets the sampler state
-            Effect.Parameters.Set(SpriteBaseKeys.MatrixTransform, viewProjection);
+            Parameters.Set(SpriteBaseKeys.MatrixTransform, viewProjection);
 
             base.PrepareForRendering();
         }

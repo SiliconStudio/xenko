@@ -84,12 +84,17 @@ namespace SiliconStudio.Paradox.Effects
         public static readonly ParameterKey<LightingConfigurationsSet> LightingConfigurations = ParameterKeys.New<LightingConfigurationsSet>();
 
         /// <summary>
+        /// The maximum number of deferred point lights that can be rendered at the same time (in one draw call).
+        /// </summary>
+        public const int MaxDeferredPointLights = 32;
+
+        /// <summary>
         /// Maximum number of deferred lights.
         /// </summary>
         /// <userdoc>
         /// Maximum number of deferred point lights.
         /// </userdoc>
-        public static readonly ParameterKey<int> MaxDeferredLights = ParameterKeys.New(64);
+        public static readonly ParameterKey<int> MaxDeferredLights = ParameterKeys.New(MaxDeferredPointLights);
 
         /// <summary>
         /// A flag stating if deferred light loop should be unrolled.

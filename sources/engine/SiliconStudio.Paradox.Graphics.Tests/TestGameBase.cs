@@ -11,7 +11,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 {
     public class TestGameBase : GraphicsTestBase
     {
-        public Texture2D UVTexture { get; private set; }
+        public Texture UVTexture { get; private set; }
 
         public TestGameBase()
         {
@@ -22,14 +22,14 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             GraphicsDeviceManager.PreferredBackBufferHeight = 480;
             GraphicsDeviceManager.PreferredDepthStencilFormat = PixelFormat.D24_UNorm_S8_UInt;
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.None;
-            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0 };
+            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0, GraphicsProfile.Level_9_1 };
         }
 
         protected override async Task LoadContent()
         {
             await base.LoadContent();
 
-            UVTexture = Asset.Load<Texture2D>("uv");
+            UVTexture = Asset.Load<Texture>("uv");
         }
 
         protected override void Update(GameTime gameTime)

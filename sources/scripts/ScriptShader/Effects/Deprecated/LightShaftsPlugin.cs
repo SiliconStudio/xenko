@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.Effects.Data;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core;
@@ -162,7 +162,7 @@ namespace SiliconStudio.Paradox.Effects
 
             // BoundingBox prepass
             var gbufferDesc = RenderTarget.Description;
-            var bbRenderTarget = Texture2D.New(GraphicsDevice, gbufferDesc.Width / 8, gbufferDesc.Height / 8, PixelFormat.R32G32_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
+            var bbRenderTarget = Texture.New2D(GraphicsDevice, gbufferDesc.Width / 8, gbufferDesc.Height / 8, PixelFormat.R32G32_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
 
             // Use MinMax Plugin
             bbRenderTargetPlugin.RenderTarget = bbRenderTarget.ToRenderTarget();
@@ -182,7 +182,7 @@ namespace SiliconStudio.Paradox.Effects
             }
 
             // MinMax render target
-            var minMaxRenderTarget = Texture2D.New(GraphicsDevice, 256, 256, PixelFormat.R32G32_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
+            var minMaxRenderTarget = Texture.New2D(GraphicsDevice, 256, 256, PixelFormat.R32G32_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
             minMaxPass.Parameters = new ParameterCollection(null);
             minMaxPass.Parameters.AddSources(ShadowMap.Parameters);
             minMaxPass.Parameters.AddSources(Parameters);
@@ -217,7 +217,7 @@ namespace SiliconStudio.Paradox.Effects
             var additiveBlending = BlendState.New(GraphicsDevice, blendStateDesc);
             additiveBlending.Name = "LightShaftAdditiveBlend";
 
-            var shaftRenderTarget = useUpScaling ? Texture2D.New(GraphicsDevice, gbufferDesc.Width / 2, gbufferDesc.Height / 2, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget).ToRenderTarget() : RenderTarget;
+            var shaftRenderTarget = useUpScaling ? Texture.New2D(GraphicsDevice, gbufferDesc.Width / 2, gbufferDesc.Height / 2, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget).ToRenderTarget() : RenderTarget;
             
 
             lightShaftPass.Parameters = new ParameterCollection();
@@ -241,7 +241,7 @@ namespace SiliconStudio.Paradox.Effects
             // Bilateral Gaussian filtering for up-sampling
             if (useUpScaling)
             {
-                var bbRenderTargetUpScaleH = Texture2D.New(GraphicsDevice, gbufferDesc.Width, gbufferDesc.Height / 2, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
+                var bbRenderTargetUpScaleH = Texture.New2D(GraphicsDevice, gbufferDesc.Width, gbufferDesc.Height / 2, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
                 var bbRenderTargetUpScaleV = RenderTarget;
                 //var bbRenderTargetUpScaleV = GraphicsDevice.RenderTarget2D.New(gbufferDesc.Width, gbufferDesc.Height, PixelFormat.HalfVector4);
 

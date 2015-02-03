@@ -63,21 +63,9 @@
     <Compile Include="PackageBuildMonitorRemote.cs" />
     <Compile Include="ParadoxCommands.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Shaders\PreprocessorHelper.cs" />
-    <Compile Include="Shaders\ShaderKeyClass.cs" />
     <Compile Include="Shaders\ShaderKeyFileHelper.cs" />
-    <Compile Include="Shaders\ShaderKeySourceGenerator.cs">
-      <DependentUpon>ShaderKeySourceGenerator.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Shaders\ShaderKeySourceGenerator.Partial.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\assets\SiliconStudio.Assets.CompilerApp\SiliconStudio.Assets.CompilerApp.csproj">
-      <Project>{50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698}</Project>
-      <Name>SiliconStudio.Assets.CompilerApp</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\assets\SiliconStudio.Assets\SiliconStudio.Assets.csproj">
       <Project>{1e54a9a2-4439-4444-ae57-6d2ed3c0dc47}</Project>
       <Name>SiliconStudio.Assets</Name>
@@ -128,34 +116,9 @@
       <Name>SiliconStudio.Shaders</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Paradox.Assets\SiliconStudio.Paradox.Assets.csproj">
-      <Project>{39ae9c77-e94b-404f-8768-b6261b3c1e0e}</Project>
-      <Name>SiliconStudio.Paradox.Assets</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Paradox.Audio\SiliconStudio.Paradox.Audio.csproj">
-      <Project>{de042125-c270-4d1d-9270-0759c167567a}</Project>
-      <Name>SiliconStudio.Paradox.Audio</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\engine\SiliconStudio.Paradox.Engine\SiliconStudio.Paradox.Engine.csproj">
       <Project>{c121a566-555e-42b9-9b0a-1696529a9088}</Project>
       <Name>SiliconStudio.Paradox.Engine</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Paradox.Games\SiliconStudio.Paradox.Games.csproj">
-      <Project>{42780cbd-3fe7-48e3-bd5b-59945ea20137}</Project>
-      <Name>SiliconStudio.Paradox.Games</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Paradox.Graphics\SiliconStudio.Paradox.Graphics.csproj">
-      <Project>{fb06c76a-6bb7-40be-9afa-fec13b045fb5}</Project>
-      <Name>SiliconStudio.Paradox.Graphics</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Paradox.Assets.Model\SiliconStudio.Paradox.Assets.Model.csproj">
-      <Project>{c904d2c6-5a15-4e0b-8432-33967e1735aa}</Project>
-      <Name>SiliconStudio.Paradox.Assets.Model</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\engine\SiliconStudio.Paradox.Shaders.Parser\SiliconStudio.Paradox.Shaders.Parser.csproj">
@@ -173,24 +136,9 @@
       <Name>SiliconStudio.Paradox.Shaders</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Paradox\SiliconStudio.Paradox.csproj">
-      <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
-      <Name>SiliconStudio.Paradox</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\shaders\SiliconStudio.Paradox.Effects.Modules.csproj">
+    <ProjectReference Include="..\..\shaders\SiliconStudio.Paradox.Effects.csproj">
       <Project>{0342c3e7-4a38-46b4-a8ec-e728d50085d3}</Project>
-      <Name>SiliconStudio.Paradox.Effects.Modules</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\shaders\SiliconStudio.Paradox.Effects.Modules.csproj">
-      <Project>{0342c3e7-4a38-46b4-a8ec-e728d50085d3}</Project>
-      <Name>SiliconStudio.Paradox.Effects.Modules</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.Importer.FBX\SiliconStudio.Paradox.Importer.FBX.vcxproj">
-      <Project>{0467d515-fd66-4b8a-a128-cb642c2ed03f}</Project>
-      <Name>SiliconStudio.Paradox.Importer.FBX</Name>
+      <Name>SiliconStudio.Paradox.Effects</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Paradox.VisualStudio.Package\SiliconStudio.Paradox.VisualStudio.Package.csproj">
@@ -203,10 +151,6 @@
     <None Include="DataGenerator\DataConverterGenerator.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>DataConverterGenerator.cs</LastGenOutput>
-    </None>
-    <None Include="Shaders\ShaderKeySourceGenerator.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>ShaderKeySourceGenerator.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>

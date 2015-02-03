@@ -44,6 +44,11 @@
 
     <SolidColorBrush x:Key="PressedBrush" Color="#7E000000"/>
 
+    <SolidColorBrush x:Key="RedBrush" Color="#FFDC4E4E"/>
+    <SolidColorBrush x:Key="GreenBrush" Color="#FF65C36A"/>
+    <SolidColorBrush x:Key="BlueBrush" Color="#FF3F74D1"/>
+    <SolidColorBrush x:Key="AlphaBrush" Color="#FFBCBCBC"/>
+
     <SolidColorBrush x:Key="ControlBackgroundBrush" Color="#FF333333" />
 
     <SolidColorBrush x:Key="SelectedBackgroundBrush" Color="#FF969696"/>
@@ -527,8 +532,8 @@
                                 <ctrl:KeyValueGrid x:Name="RGBGrid" HorizontalAlignment="Stretch" Focusable="False">
                                     <TextBlock Margin="4,0" Text="R:" ToolTipService.ToolTip="Red" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
                                     <StackPanel Margin="0,2">
-                                        <ctrl:NumericTextBox x:Name="RedTextBox" Value="{Binding Red, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="#FFF95A5A" Minimum="0" Maximum="255" Margin="0" MouseValidationTrigger="OnMouseMove"/>
-                                        <Rectangle Height="3" Fill="#FFF95A5A" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                        <ctrl:NumericTextBox x:Name="RedTextBox" Value="{Binding Red, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="{StaticResource RedBrush}" Minimum="0" Maximum="255" Margin="0" MouseValidationTrigger="OnMouseMove"/>
+                                        <Rectangle Height="3" Fill="{StaticResource RedBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                                             <Rectangle.RenderTransform>
                                                 <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=RedTextBox}"/>
                                             </Rectangle.RenderTransform>
@@ -536,8 +541,8 @@
                                     </StackPanel>
                                     <TextBlock Margin="4,0" Text="G:" ToolTipService.ToolTip="Green" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
                                     <StackPanel Margin="0,2">
-                                        <ctrl:NumericTextBox x:Name="GreenTextBox" Value="{Binding Green, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="#FF64ED6C" Minimum="0" Maximum="255" Margin="0" MouseValidationTrigger="OnMouseMove"/>
-                                        <Rectangle Height="3" Fill="#FF64ED6C" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                        <ctrl:NumericTextBox x:Name="GreenTextBox" Value="{Binding Green, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="{StaticResource GreenBrush}" Minimum="0" Maximum="255" Margin="0" MouseValidationTrigger="OnMouseMove"/>
+                                        <Rectangle Height="3" Fill="{StaticResource GreenBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                                             <Rectangle.RenderTransform>
                                                 <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=GreenTextBox}"/>
                                             </Rectangle.RenderTransform>
@@ -545,8 +550,8 @@
                                     </StackPanel>
                                     <TextBlock Margin="4,0" Text="B:" ToolTipService.ToolTip="Blue" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
                                     <StackPanel Margin="0,2">
-                                        <ctrl:NumericTextBox x:Name="BlueTextBox" Value="{Binding Blue, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="CornflowerBlue" Minimum="0" Maximum="255" Margin="0" MouseValidationTrigger="OnMouseMove"/>
-                                        <Rectangle Height="3" Fill="CornflowerBlue" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                        <ctrl:NumericTextBox x:Name="BlueTextBox" Value="{Binding Blue, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="{StaticResource BlueBrush}" Minimum="0" Maximum="255" Margin="0" MouseValidationTrigger="OnMouseMove"/>
+                                        <Rectangle Height="3" Fill="{StaticResource BlueBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                                             <Rectangle.RenderTransform>
                                                 <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=BlueTextBox}"/>
                                             </Rectangle.RenderTransform>
@@ -554,8 +559,8 @@
                                     </StackPanel>
                                     <TextBlock Margin="4,0" Text="A:" ToolTipService.ToolTip="Alpha" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
                                     <StackPanel Margin="0,2">
-                                        <ctrl:NumericTextBox x:Name="AlphaTextBox" Value="{Binding Alpha, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="#FFBCBCBC" Minimum="0" Maximum="255" Margin="0"/>
-                                        <Rectangle Height="3" Fill="#FFBCBCBC" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                        <ctrl:NumericTextBox x:Name="AlphaTextBox" Value="{Binding Alpha, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="{StaticResource AlphaBrush}" Minimum="0" Maximum="255" Margin="0"/>
+                                        <Rectangle Height="3" Fill="{StaticResource AlphaBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                                             <Rectangle.RenderTransform>
                                                 <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=AlphaTextBox}"/>
                                             </Rectangle.RenderTransform>
@@ -567,8 +572,8 @@
                                 <ctrl:KeyValueGrid Focusable="False">
                                     <TextBlock Margin="4,0" Text="H:" ToolTipService.ToolTip="Hue" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
                                     <StackPanel Margin="0,2">
-                                        <ctrl:NumericTextBox x:Name="HueTextBox" Value="{Binding Hue, RelativeSource={RelativeSource Mode=TemplatedParent}}" DecimalPlaces="0" SelectionBrush="#FFBCBCBC" Minimum="0" Maximum="360" Margin="0" MouseValidationTrigger="OnMouseMove"/>
-                                        <Rectangle Height="3" Fill="#FFBCBCBC" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                        <ctrl:NumericTextBox x:Name="HueTextBox" Value="{Binding Hue, RelativeSource={RelativeSource Mode=TemplatedParent}}" DecimalPlaces="0" SelectionBrush="{StaticResource AlphaBrush}" Minimum="0" Maximum="360" Margin="0" MouseValidationTrigger="OnMouseMove"/>
+                                        <Rectangle Height="3" Fill="{StaticResource AlphaBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                                             <Rectangle.RenderTransform>
                                                 <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=HueTextBox}"/>
                                             </Rectangle.RenderTransform>
@@ -576,8 +581,8 @@
                                     </StackPanel>
                                     <TextBlock Margin="4,0" Text="S:" ToolTipService.ToolTip="Saturation" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
                                     <StackPanel Margin="0,2">
-                                        <ctrl:NumericTextBox x:Name="SaturationTextBox" Value="{Binding Saturation, RelativeSource={RelativeSource Mode=TemplatedParent}}" DecimalPlaces="0" SelectionBrush="#FFBCBCBC" Minimum="0" Maximum="100" Margin="0" MouseValidationTrigger="OnMouseMove"/>
-                                        <Rectangle Height="3" Fill="#FFBCBCBC" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                        <ctrl:NumericTextBox x:Name="SaturationTextBox" Value="{Binding Saturation, RelativeSource={RelativeSource Mode=TemplatedParent}}" DecimalPlaces="0" SelectionBrush="{StaticResource AlphaBrush}" Minimum="0" Maximum="100" Margin="0" MouseValidationTrigger="OnMouseMove"/>
+                                        <Rectangle Height="3" Fill="{StaticResource AlphaBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                                             <Rectangle.RenderTransform>
                                                 <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=SaturationTextBox}"/>
                                             </Rectangle.RenderTransform>
@@ -585,8 +590,8 @@
                                     </StackPanel>
                                     <TextBlock Margin="4,0" Text="B:" ToolTipService.ToolTip="Value" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
                                     <StackPanel Margin="0,2">
-                                        <ctrl:NumericTextBox x:Name="BrightnessTextBox" Value="{Binding Brightness, RelativeSource={RelativeSource Mode=TemplatedParent}}" DecimalPlaces="0" SelectionBrush="#FFBCBCBC" Minimum="0" Maximum="100" Margin="0" MouseValidationTrigger="OnMouseMove"/>
-                                        <Rectangle Height="3" Fill="#FFBCBCBC" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                        <ctrl:NumericTextBox x:Name="BrightnessTextBox" Value="{Binding Brightness, RelativeSource={RelativeSource Mode=TemplatedParent}}" DecimalPlaces="0" SelectionBrush="{StaticResource AlphaBrush}" Minimum="0" Maximum="100" Margin="0" MouseValidationTrigger="OnMouseMove"/>
+                                        <Rectangle Height="3" Fill="{StaticResource AlphaBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                                             <Rectangle.RenderTransform>
                                                 <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=BrightnessTextBox}"/>
                                             </Rectangle.RenderTransform>
@@ -1797,8 +1802,8 @@
                         </EventTrigger>
                         <Trigger Property="IsIndeterminate" Value="True">
                             <Trigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard x:Name="IndeterminateOnStoryboard">
+                                <BeginStoryboard x:Name="IndeterminateOnStoryboard">
+                                    <Storyboard>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="IndeterminateGradientFill" Storyboard.TargetProperty="(Shape.Fill).(Brush.Transform).(TransformGroup.Children)[0].X">
                                             <SplineDoubleKeyFrame KeyTime="0" Value="0" />
                                             <SplineDoubleKeyFrame KeyTime="00:00:2.4" Value="145" />
@@ -3711,14 +3716,32 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="X" Margin="3,0" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <ctrl:NumericTextBox Grid.Column="1" Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <TextBlock Grid.Column="2" Text="Y" Margin="3,0" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <ctrl:NumericTextBox Grid.Column="3" Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <TextBlock Grid.Column="0" Text="Length" Margin="3,0" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:VisibleOrCollapsed}}"/>
-                        <ctrl:NumericTextBox Grid.Column="1" Value="{Binding Length, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:VisibleOrCollapsed}}"/>
-                        <TextBlock Grid.Column="2" Text="Angle" Margin="3,0" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:VisibleOrCollapsed}}"/>
-                        <ctrl:NumericTextBox Grid.Column="3" Value="{Binding Angle, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:VisibleOrCollapsed}}"/>
+                        <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource RedBrush}" BorderThickness="1" BorderBrush="Transparent"
+                                Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}">
+                            <DockPanel>
+                                <TextBlock Text="X" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="3" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource GreenBrush}" BorderThickness="1" BorderBrush="Transparent"
+                                Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}">
+                            <DockPanel>
+                                <TextBlock Text="Y" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="0" Margin="2,0,0,0" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:VisibleOrCollapsed}}">
+                            <TextBlock Text="Length" Margin="3,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                        </Border>
+                        <ctrl:NumericTextBox Grid.Column="1" Value="{Binding Length, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:VisibleOrCollapsed}}"/>
+                        <Border Grid.Column="2" Margin="2,0,0,0" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:VisibleOrCollapsed}}">
+                            <TextBlock Text="Angle" Margin="3,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                        </Border>
+                        <ctrl:NumericTextBox Grid.Column="3" Value="{Binding Angle, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:VisibleOrCollapsed}}"/>
                         <ToggleButton Grid.Column="4" x:Name="ToggleButtonPolarCoordinates" Width="22" Height="22">
                             <ToggleButton.Style>
                             <Style TargetType="{x:Type ToggleButton}">
@@ -3767,14 +3790,35 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="X" Margin="3,0" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <ctrl:NumericTextBox Grid.Column="1" Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <TextBlock Grid.Column="2" Text="Y" Margin="3,0" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <ctrl:NumericTextBox Grid.Column="3" Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <TextBlock Grid.Column="4" Text="Z" Margin="3,0" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <ctrl:NumericTextBox Grid.Column="5" Value="{Binding Z, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
+                        <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource RedBrush}" BorderThickness="1" BorderBrush="Transparent"
+                                Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}">
+                            <DockPanel>
+                                <TextBlock Text="X" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="3" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource GreenBrush}" BorderThickness="1" BorderBrush="Transparent"
+                                Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}">
+                            <DockPanel>
+                                <TextBlock Text="Y" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="5" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource BlueBrush}" BorderThickness="1" BorderBrush="Transparent"
+                                Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}">
+                            <DockPanel>
+                                <TextBlock Text="Z" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding Z, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
                         <TextBlock Grid.Column="0" Text="Length:" Margin="3,0" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:VisibleOrCollapsed}}"/>
-                        <ctrl:NumericTextBox Grid.Column="1" Grid.ColumnSpan="5" Value="{Binding Length, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:VisibleOrCollapsed}}"/>
+                        <ctrl:NumericTextBox Grid.Column="1" Grid.ColumnSpan="5" Value="{Binding Length, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:VisibleOrCollapsed}}"/>
                         <ToggleButton Grid.Column="6" x:Name="ToggleButtonPolarCoordinates" Width="22" Height="22">
                             <ToggleButton.Style>
                                 <Style TargetType="{x:Type ToggleButton}">
@@ -3825,16 +3869,44 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="X" Margin="3,0" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <ctrl:NumericTextBox Grid.Column="1" Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <TextBlock Grid.Column="2" Text="Y" Margin="3,0" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <ctrl:NumericTextBox Grid.Column="3" Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <TextBlock Grid.Column="4" Text="Z" Margin="3,0" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <ctrl:NumericTextBox Grid.Column="5" Value="{Binding Z, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <TextBlock Grid.Column="6" Text="W" Margin="3,0" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <ctrl:NumericTextBox Grid.Column="7" Value="{Binding W, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <TextBlock Grid.Column="0" Text="Length:" Margin="3,0" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:VisibleOrCollapsed}}"/>
-                        <ctrl:NumericTextBox Grid.Column="1" Grid.ColumnSpan="7" Value="{Binding Length, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:VisibleOrCollapsed}}"/>                        
+                        <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource RedBrush}" BorderThickness="1" BorderBrush="Transparent"
+                                Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}">
+                            <DockPanel>
+                                <TextBlock Text="X" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="3" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource GreenBrush}" BorderThickness="1" BorderBrush="Transparent"
+                                Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}">
+                            <DockPanel>
+                                <TextBlock Text="Y" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="5" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource BlueBrush}" BorderThickness="1" BorderBrush="Transparent"
+                                Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}">
+                            <DockPanel>
+                                <TextBlock Text="Z" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding Z, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="7" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource AlphaBrush}" BorderThickness="1" BorderBrush="Transparent"
+                                Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}">
+                            <DockPanel>
+                                <TextBlock Text="W" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding W, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <TextBlock Grid.Column="0" Text="Length:" Margin="3,0" VerticalAlignment="Center" TextAlignment="Center" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:VisibleOrCollapsed}}"/>
+                        <ctrl:NumericTextBox Grid.Column="1" Grid.ColumnSpan="7" Value="{Binding Length, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:VisibleOrCollapsed}}"/>                        
                         <ToggleButton Grid.Column="8" x:Name="ToggleButtonPolarCoordinates" Width="22" Height="22">
                             <ToggleButton.Style>
                                 <Style TargetType="{x:Type ToggleButton}">
@@ -3868,28 +3940,73 @@
         </Setter>
     </Style>
 
+    <Style TargetType="ctrl:RotationEditor">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ctrl:RotationEditor">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource RedBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="X" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="3" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource GreenBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="Y" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="5" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource BlueBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="Z" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding Z, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
     <Style TargetType="ctrl:MatrixEditor">
         <Setter Property="Focusable" Value="False"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ctrl:MatrixEditor">
                     <UniformGrid Rows="4" Columns="4">
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M11, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M12, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M13, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M14, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M21, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M22, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M23, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M24, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M31, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M32, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M33, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M34, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M41, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M42, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M43, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M44, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M11, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M12, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M13, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M14, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M21, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M22, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M23, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M24, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M31, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M32, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M33, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M34, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M41, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M42, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M43, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M44, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
                     </UniformGrid>
                 </ControlTemplate>
             </Setter.Value>

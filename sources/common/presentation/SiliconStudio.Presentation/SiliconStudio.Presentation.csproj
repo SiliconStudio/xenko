@@ -57,6 +57,7 @@
     <Compile Include="Controls\PropertyView.cs" />
     <Compile Include="Controls\PropertyViewItem.cs" />
     <Compile Include="Controls\PropertyViewItemEventArgs.cs" />
+    <Compile Include="Controls\RotationEditor.cs" />
     <Compile Include="Controls\TextBoxBase.cs" />
     <Compile Include="Core\AnonymousComparer.cs" />
     <Compile Include="Core\AnonymousEqualityComparer.cs" />

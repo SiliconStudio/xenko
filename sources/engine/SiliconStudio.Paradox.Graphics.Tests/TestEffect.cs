@@ -166,7 +166,7 @@ namespace SiliconStudio.Paradox.Graphics
                 compiler.SourceDirectories.Add("assets/shaders");
                 var compilerCache = new EffectCompilerCache(compiler);
 
-                var compilerParameters = new CompilerParameters { Platform = GraphicsPlatform.OpenGLES20 };
+                var compilerParameters = new CompilerParameters { Platform = GraphicsPlatform.OpenGLES };
 
                 var compilerResults = compilerCache.Compile(new ShaderMixinSource("ToGlslEffect"), compilerParameters);
                 Assert.That(compilerResults.HasErrors, Is.False);

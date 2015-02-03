@@ -8,7 +8,7 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Assets.Materials.Nodes;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Data;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 
@@ -102,7 +102,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
                 }
                 else
                 {
-                    Parameters.Set(texture.UsedParameterKey, new ContentReference<Texture2D>(texture.TextureReference.Id, texture.TextureReference.Location));
+                    Parameters.Set(texture.UsedParameterKey, new ContentReference<Graphics.Texture>(texture.TextureReference.Id, texture.TextureReference.Location));
                     AddSampler(texture.Sampler);
                 }
             }
@@ -128,7 +128,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
                             hasErrors = true;
                         }
                         else
-                            Parameters.Set(keyValue.Key, new ContentReference<Texture2D>(textureNode.TextureReference.Id, textureNode.TextureReference.Location));
+                            Parameters.Set(keyValue.Key, new ContentReference<Graphics.Texture>(textureNode.TextureReference.Id, textureNode.TextureReference.Location));
                     }
                 }
                 else if (keyValue.Value is NodeParameterSampler)
@@ -142,7 +142,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Processor.Visitors
                     Parameters.Set(keyValue.Key, keyValue.Value);
             }
 
-            // NOTE: this can set the shader uniforms and potentially override what was in Material.Parameters
+            // NOTE: this can set the shader uniforms and potentially override what was in Material.SharedParameters
             foreach (var keyValue in shaders)
             {
                 if (log != null && (keyValue.Key == MaterialParameters.BumpMap || keyValue.Key == MaterialParameters.EmissiveMap || keyValue.Key == MaterialParameters.ReflectionMap))

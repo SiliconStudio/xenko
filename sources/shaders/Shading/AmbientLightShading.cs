@@ -14,7 +14,7 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-namespace SiliconStudio.Paradox.Effects.Modules
+namespace SiliconStudio.Paradox.Effects
 {
     public static partial class AmbientLightShadingKeys
     {

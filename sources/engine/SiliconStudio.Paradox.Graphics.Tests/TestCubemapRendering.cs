@@ -8,9 +8,10 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Modules;
-using SiliconStudio.Paradox.Effects.Modules.Processors;
-using SiliconStudio.Paradox.Effects.Modules.Renderers;
+using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Effects.Cubemap;
+using SiliconStudio.Paradox.Effects.Processors;
+using SiliconStudio.Paradox.Effects.Renderers;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Extensions;
@@ -29,7 +30,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         public TestCubemapRendering()
         {
             // cannot render cubemap in level below 10.1
-            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_1 };
+            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0 };
         }
 
         protected override async Task LoadContent()

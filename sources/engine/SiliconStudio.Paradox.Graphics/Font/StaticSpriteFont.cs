@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.Graphics.Font
     {
         private readonly Dictionary<char, Glyph> characterToGlyph;
 
-        internal Texture2D[] StaticTextures;
+        internal Texture[] StaticTextures;
 
         public StaticSpriteFont(FontSystem fontSystem, StaticSpriteFontData spriteFontData)
             : base(fontSystem, spriteFontData, false)
@@ -40,11 +40,11 @@ namespace SiliconStudio.Paradox.Graphics.Font
             }
 
             // Read the texture data.
-            StaticTextures = new Texture2D[spriteFontData.Bitmaps.Length];
+            StaticTextures = new Texture[spriteFontData.Bitmaps.Length];
             for (int i = 0; i < StaticTextures.Length; i++)
             {
                 if (spriteFontData.Bitmaps[i].Value != null)
-                    StaticTextures[i] = Texture2D.New(fontSystem.GraphicsDevice, spriteFontData.Bitmaps[i].Value).DisposeBy(this);
+                    StaticTextures[i] = Texture.New(fontSystem.GraphicsDevice, spriteFontData.Bitmaps[i].Value).DisposeBy(this);
             }
             Textures = StaticTextures;
 

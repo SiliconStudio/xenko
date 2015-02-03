@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 
@@ -12,12 +12,23 @@ namespace SiliconStudio.Paradox.Physics
     {
         private static EffectBytecode bytecode;
 
+        private readonly ParameterCollection parameters;
+
         public PhysicsDebugEffect(GraphicsDevice graphicsDevice)
-            : base(graphicsDevice, bytecode ?? (bytecode = BinarySerialization.Read<EffectBytecode>(binaryBytecode)))
+            : base(graphicsDevice, bytecode ?? (bytecode = EffectBytecode.FromBytesSafe(binaryBytecode)))
         {
+            parameters = new ParameterCollection();
             Color = new Color4(1.0f);
             WorldViewProj = Matrix.Identity;
             UseUv = true;
+        }
+
+        public ParameterCollection Parameters
+        {
+            get
+            {
+                return parameters;
+            }
         }
 
         public Color4 Color

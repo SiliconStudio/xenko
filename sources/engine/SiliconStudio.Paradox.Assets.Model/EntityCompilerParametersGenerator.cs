@@ -108,11 +108,11 @@ namespace SiliconStudio.Paradox.Assets.Effect.Generators
                 return allEntityParameters;
             });
 
-            
-            if (entityParametersList.Count != 0)
+            var useMeshParameters = baseParameters.Get(MeshKeys.UseParameters);
+            var useMaterialParameters = baseParameters.Get(MaterialAssetKeys.UseParameters) && !baseParameters.Get(MaterialAssetKeys.GenerateShader);
+
+            if ((useMeshParameters || useMaterialParameters) && entityParametersList.Count != 0)
             {
-                var useMeshParameters = baseParameters.Get(MeshKeys.UseParameters);
-                var useMaterialParameters = baseParameters.Get(MaterialAssetKeys.UseParameters) && !baseParameters.Get(MaterialAssetKeys.GenerateShader);
                 var hashParameters = new HashSet<ObjectId>();
 
                 foreach (var entityParameters in entityParametersList)
@@ -158,13 +158,9 @@ namespace SiliconStudio.Paradox.Assets.Effect.Generators
         /// <returns>The material parameters.</returns>
         private ParameterCollectionData GetMeshMaterialParameters(MeshData meshData)
         {
-            if (meshData != null)
+            if (meshData != null && meshData.Material != null && meshData.Material.Value != null)
             {
-                var material = meshData.Material.Value;
-                if (material != null)
-                {
-                    return material.Parameters;
-                }
+                return meshData.Material.Value.Parameters;
             }
             return null;
         }

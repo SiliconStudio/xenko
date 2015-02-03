@@ -16,7 +16,6 @@ namespace SiliconStudio.LauncherApp
 {
     public class LauncherApp : IDisposable, IProgressProvider, ILogger
     {
-        private const string MainPackageKey = "mainPackage";
         private const string MainExecutableKey = "mainExecutable";
 
         private const string LauncherAppCallbackParam = "LauncherAppCallback";
@@ -100,12 +99,7 @@ namespace SiliconStudio.LauncherApp
             store.Manager.Logger = this;
             store.SourceRepository.Logger = this;
 
-            mainPackage = store.Settings.GetConfigValue(MainPackageKey);
-            if (string.IsNullOrWhiteSpace(mainPackage))
-            {
-                throw new LauncherAppException("Invalid configuration. Expecting [{0}] in config", MainPackageKey);
-            }
-            store.DefaultPackageId = mainPackage;
+            mainPackage = store.MainPackageId;
 
             mainExecutable = store.Settings.GetConfigValue(MainExecutableKey);
             if (string.IsNullOrWhiteSpace(mainExecutable))

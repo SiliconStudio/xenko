@@ -54,6 +54,23 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
+        /// Gets a value for the specified key, null if not found.
+        /// </summary>
+        /// <typeparam name="T">Type of the value</typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// A value for the specified key, null if not found.
+        /// </returns>
+        public bool TryGet<T>(PropertyKey<T> key, out T value)
+        {
+            object valueObject;
+            var result = TryGetValue((PropertyKey)key, out valueObject);
+            value = valueObject == null ? default(T) : (T)valueObject;
+            return result;
+        }
+
+        /// <summary>
         /// Sets a value for the specified key.
         /// </summary>
         /// <param name="key">The key.</param>

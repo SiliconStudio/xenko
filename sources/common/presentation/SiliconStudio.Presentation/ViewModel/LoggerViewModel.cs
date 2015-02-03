@@ -209,7 +209,7 @@ namespace SiliconStudio.Presentation.ViewModel
                 if (!updatePending)
                 {
                     updatePending = true;
-                    Dispatcher.InvokeAsync(UpdateMessages);
+                    Dispatcher.BeginInvoke(UpdateMessages);
                 }
             }
         }

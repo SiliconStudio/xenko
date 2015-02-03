@@ -10,12 +10,6 @@ namespace SiliconStudio.Presentation.ViewModel
     public interface IViewModelServiceProvider
     {
         /// <summary>
-        /// Clones this <see cref="IViewModelServiceProvider"/> using shallow copy.
-        /// </summary>
-        /// <returns></returns>
-        IViewModelServiceProvider Clone();
-
-        /// <summary>
         /// Gets a service of the given type, if available.
         /// </summary>
         /// <param name="serviceType">The type of service to retrieve.</param>

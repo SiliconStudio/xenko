@@ -70,8 +70,8 @@
         <Reference Include="SiliconStudio.Paradox.Audio">
           <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Paradox.Audio.dll</HintPath>
         </Reference>
-        <Reference Include="SiliconStudio.Paradox.Effects.Modules">
-          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Paradox.Effects.Modules.dll</HintPath>
+        <Reference Include="SiliconStudio.Paradox.Effects">
+          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Paradox.Effects.dll</HintPath>
         </Reference>
         <Reference Include="SiliconStudio.Paradox.Engine">
           <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Paradox.Engine.dll</HintPath>
@@ -140,7 +140,7 @@
   Compile Asset 
   *****************************************************************************************************************************
   -->
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(SiliconStudioCurrentPackagePath)' != ''">
     <PrepareForRunDependsOn>
       $(PrepareForRunDependsOn);
       SiliconStudioCompileAsset;

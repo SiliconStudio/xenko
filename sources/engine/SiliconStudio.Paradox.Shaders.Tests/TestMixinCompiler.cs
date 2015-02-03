@@ -7,8 +7,10 @@ using NUnit.Framework;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders.Compiler;
+using SiliconStudio.Paradox.Shaders.Parser.Mixins;
 
 namespace SiliconStudio.Paradox.Shaders.Tests
 {
@@ -19,23 +21,43 @@ namespace SiliconStudio.Paradox.Shaders.Tests
     public partial class TestMixinCompiler
     {
         /// <summary>
-        /// Tests a simple mixin.
+        /// Tests mixin and compose keys with compilation.
         /// </summary>
         [Test]
-        public void TestSimple()
+        public void TestMixinAndComposeKeys()
         {
-            VirtualFileSystem.RemountFileSystem("/shaders", "../../../../shaders");
-            VirtualFileSystem.RemountFileSystem("/compiler", "Compiler");
-
-
-            var compiler = new EffectCompiler();
-
-            compiler.SourceDirectories.Add("shaders");
-            compiler.SourceDirectories.Add("compiler");
+            var compiler = new EffectCompiler { UseFileSystem = true };
+            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Paradox.Graphics\Shaders");
+            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Paradox.Shaders.Tests\GameAssets\Mixins");
 
             var compilerParameters = new CompilerParameters {Platform = GraphicsPlatform.Direct3D11};
 
-            var results = compiler.Compile(new ShaderMixinGeneratorSource("SimpleEffect"), compilerParameters, null, null);
+            var subCompute1Key = TestABC.TestParameters.UseComputeColor2.ComposeWith("SubCompute1");
+            var subCompute2Key = TestABC.TestParameters.UseComputeColor2.ComposeWith("SubCompute2");
+            var subComputesKey = TestABC.TestParameters.UseComputeColorRedirect.ComposeWith("SubComputes[0]");
+
+            compilerParameters.Set(subCompute1Key, true);
+            compilerParameters.Set(subComputesKey, true);
+
+            var results = compiler.Compile(new ShaderMixinGeneratorSource("test_mixin_compose_keys"), compilerParameters);
+
+            Assert.IsFalse(results.HasErrors);
+
+            Assert.NotNull(results.MainBytecode.Reflection.ConstantBuffers);
+            Assert.AreEqual(1, results.MainBytecode.Reflection.ConstantBuffers.Count);
+            var cbuffer = results.MainBytecode.Reflection.ConstantBuffers[0];
+
+            Assert.NotNull(cbuffer.Members);
+            Assert.AreEqual(2, cbuffer.Members.Length);
+
+
+            // Check that ComputeColor2.Color is correctly composed for variables
+            var computeColorSubCompute2 = ComputeColor2Keys.Color.ComposeWith("SubCompute1");
+            var computeColorSubComputes = ComputeColor2Keys.Color.ComposeWith("ColorRedirect.SubComputes[0]");
+
+            var members = cbuffer.Members.Select(member => member.Param.KeyName).ToList();
+            Assert.IsTrue(members.Contains(computeColorSubCompute2.Name));
+            Assert.IsTrue(members.Contains(computeColorSubComputes.Name));
         }
 
         private void CopyStream(DatabaseFileProvider database, string fromFilePath)
@@ -103,8 +125,8 @@ namespace SiliconStudio.Paradox.Shaders.Tests
 
                 var compilerParameters = new CompilerParameters {Platform = GraphicsPlatform.Direct3D11};
 
-                left = compilerCache.Compile(new ShaderMixinGeneratorSource("SimpleEffect"), compilerParameters, null, null);
-                right = compilerCache.Compile(new ShaderMixinGeneratorSource("SimpleEffect"), compilerParameters, null, null);
+                left = compilerCache.Compile(new ShaderMixinGeneratorSource("SimpleEffect"), compilerParameters);
+                right = compilerCache.Compile(new ShaderMixinGeneratorSource("SimpleEffect"), compilerParameters);
             }
         }
 
@@ -124,7 +146,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
 
             var compilerParameters = new CompilerParameters { Platform = GraphicsPlatform.OpenGL };
 
-            var results = compiler.Compile(new ShaderMixinGeneratorSource("ToGlslEffect"), compilerParameters, null, null);
+            var results = compiler.Compile(new ShaderMixinGeneratorSource("ToGlslEffect"), compilerParameters);
         }
 
         [Test]
@@ -142,7 +164,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
 
             var compilerParameters = new CompilerParameters { Platform = GraphicsPlatform.OpenGLES };
 
-            var results = compiler.Compile(new ShaderMixinGeneratorSource("ToGlslEffect"), compilerParameters, null, null);
+            var results = compiler.Compile(new ShaderMixinGeneratorSource("ToGlslEffect"), compilerParameters);
         }
     }
 }

@@ -5,7 +5,6 @@ using System;
 
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects.Modules;
 
 namespace SiliconStudio.Paradox.Effects
 {
@@ -24,7 +23,7 @@ namespace SiliconStudio.Paradox.Effects
         public static ModelRenderer AddTransparentFilter(this ModelRenderer modelRenderer)
         {
             modelRenderer.AcceptPrepareMeshForRendering.Add((model, mesh) => IsTransparent(mesh));
-            modelRenderer.AcceptRenderMesh.Add((context, effectMesh) => IsTransparent(effectMesh.Mesh));
+            modelRenderer.AcceptRenderMesh.Add((context, renderMesh) => IsTransparent(renderMesh.Mesh));
             modelRenderer.AppendDebugName("Transparent");
             return modelRenderer;
         }
@@ -37,7 +36,7 @@ namespace SiliconStudio.Paradox.Effects
         public static ModelRenderer AddOpaqueFilter(this ModelRenderer modelRenderer)
         {
             modelRenderer.AcceptPrepareMeshForRendering.Add((model, mesh) => !IsTransparent(mesh));
-            modelRenderer.AcceptRenderMesh.Add((context, effectMesh) => !IsTransparent(effectMesh.Mesh));
+            modelRenderer.AcceptRenderMesh.Add((context, renderMesh) => !IsTransparent(renderMesh.Mesh));
             modelRenderer.AppendDebugName("Opaque");
             return modelRenderer;
         }
@@ -55,7 +54,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <returns>ModelRenderer.</returns>
         public static ModelRenderer AddLayerFilter(this ModelRenderer modelRenderer, RenderLayers activelayers)
         {
-            modelRenderer.AcceptRenderMesh.Add((context, effectMesh) => (effectMesh.Mesh.Parameters.Get(RenderingParameters.RenderLayer) & activelayers) != RenderLayers.RenderLayerNone);
+            modelRenderer.AcceptRenderMesh.Add((context, renderMesh) => (renderMesh.Parameters.Get(RenderingParameters.RenderLayer) & activelayers) != RenderLayers.RenderLayerNone);
             modelRenderer.AppendDebugName("Layer " + activelayers);
             return modelRenderer;
         }
@@ -67,7 +66,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <returns>ModelRenderer.</returns>
         public static ModelRenderer AddContextActiveLayerFilter(this ModelRenderer modelRenderer)
         {
-            modelRenderer.AcceptRenderMesh.Add((context, effectMesh) => (context.Parameters.Get(RenderingParameters.ActiveRenderLayer) & effectMesh.Mesh.Parameters.Get(RenderingParameters.RenderLayer)) != RenderLayers.RenderLayerNone);
+            modelRenderer.AcceptRenderMesh.Add((context, renderMesh) => (context.Parameters.Get(RenderingParameters.ActiveRenderLayer) & renderMesh.Parameters.Get(RenderingParameters.RenderLayer)) != RenderLayers.RenderLayerNone);
             modelRenderer.AppendDebugName("Active Layer");
             return modelRenderer;
         }
@@ -80,17 +79,17 @@ namespace SiliconStudio.Paradox.Effects
         public static ModelRenderer AddShadowCasterFilter(this ModelRenderer modelRenderer)
         {
             modelRenderer.AcceptPrepareMeshForRendering.Add((model, mesh) => mesh.Parameters.Get(LightingKeys.CastShadows));
-            modelRenderer.AcceptRenderMesh.Add((context, effectMesh) => effectMesh.Mesh.Parameters.Get(LightingKeys.CastShadows));
+            modelRenderer.AcceptRenderMesh.Add((context, renderMesh) => renderMesh.Parameters.Get(LightingKeys.CastShadows));
             modelRenderer.AppendDebugName("ShadowMapCaster");
             return modelRenderer;
         }
 
         /// <summary>
-        /// Adds a default frustrum culling for rendering only meshes that are only inside the frustrum/
+        /// Adds a default frustum culling for rendering only meshes that are only inside the frustum/
         /// </summary>
         /// <param name="modelRenderer">The model renderer.</param>
         /// <returns>ModelRenderer.</returns>
-        public static ModelRenderer AddDefaultFrustrumCulling(this ModelRenderer modelRenderer)
+        public static ModelRenderer AddDefaultFrustumCulling(this ModelRenderer modelRenderer)
         {
             return modelRenderer.UpdateMeshes.Add(
                 (context, meshes) =>

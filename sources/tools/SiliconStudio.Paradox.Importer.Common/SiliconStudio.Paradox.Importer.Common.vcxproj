@@ -121,7 +121,7 @@
     <ProjectReference Include="..\..\engine\SiliconStudio.Paradox\SiliconStudio.Paradox.csproj">
       <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\shaders\SiliconStudio.Paradox.Effects.Modules.csproj">
+    <ProjectReference Include="..\..\shaders\SiliconStudio.Paradox.Effects.csproj">
       <Project>{0342c3e7-4a38-46b4-a8ec-e728d50085d3}</Project>
     </ProjectReference>
   </ItemGroup>

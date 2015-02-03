@@ -104,7 +104,7 @@ namespace SiliconStudio.Paradox.Effects
             var vertices = geometryMesh.Vertices;
 
             // compute the bounding box of the primitive
-            var boundingBox = new BoundingBox();
+            var boundingBox = BoundingBox.Empty;
             for (int i = 0; i < vertices.Length; i++)
                 BoundingBox.Merge(ref boundingBox, ref vertices[i].Position, out boundingBox);
 
@@ -116,7 +116,7 @@ namespace SiliconStudio.Paradox.Effects
             var vertices = geometryMesh.Vertices;
 
             // compute the bounding box of the primitive
-            var boundingBox = new BoundingBox();
+            var boundingBox = BoundingBox.Empty;
             for (int i = 0; i < vertices.Length; i++)
                 BoundingBox.Merge(ref boundingBox, ref vertices[i].Position, out boundingBox);
 
@@ -182,7 +182,8 @@ namespace SiliconStudio.Paradox.Effects
             foreach (var mesh in Meshes)
             {
                 var meshCopy = new Mesh(mesh);
-                meshCopy.Parameters = meshCopy.Parameters.Clone();
+                if (meshCopy.Parameters != null)
+                    meshCopy.Parameters = meshCopy.Parameters.Clone();
                 result.Meshes.Add(meshCopy);
             }
 

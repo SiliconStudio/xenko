@@ -53,8 +53,10 @@
     <Compile Include="AccessorMetadata.cs" />
     <Compile Include="AnonymousDisposable.cs" />
     <Compile Include="Collections\KeyedSortedList.cs" />
+    <Compile Include="Collections\SafeList.cs" />
     <Compile Include="IO\NativeFile.cs" />
     <Compile Include="IO\NativeFile.WindowsRuntime.cs" />
+    <Compile Include="PlatformFolders.cs" />
     <Compile Include="ThreadHelper.WindowsRuntime.cs" />
     <Compile Include="Collections\PriorityNodeQueue.cs" />
     <Compile Include="DataMemberCustomSerializerAttribute.cs" />

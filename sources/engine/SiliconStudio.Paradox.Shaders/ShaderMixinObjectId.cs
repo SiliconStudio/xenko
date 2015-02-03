@@ -49,7 +49,7 @@ namespace SiliconStudio.Paradox.Shaders
         /// <param name="mixin">The mixin.</param>
         /// <param name="mixinParameters">The mixin parameters.</param>
         /// <returns>EffectObjectIds.</returns>
-        public static EffectObjectIds Compute(ShaderMixinSource mixin, ShaderMixinParameters mixinParameters)
+        public static ObjectId Compute(ShaderMixinSource mixin, ShaderMixinParameters mixinParameters)
         {
             lock (generatorLock)
             {
@@ -61,10 +61,11 @@ namespace SiliconStudio.Paradox.Shaders
             }
         }
 
-        private unsafe EffectObjectIds ComputeInternal(ShaderMixinSource mixin, ShaderMixinParameters mixinParameters)
+        private unsafe ObjectId ComputeInternal(ShaderMixinSource mixin, ShaderMixinParameters mixinParameters)
         {
             // Write to memory stream
             memStream.Position = 0;
+            writer.Write(EffectBytecode.MagicHeader); // Write the effect bytecode magic header
             writer.Write(mixin);
 
             parameters.Clear();
@@ -77,24 +78,7 @@ namespace SiliconStudio.Paradox.Shaders
             objectIdBuilder.Reset();
             objectIdBuilder.Write((byte*)buffer, (int)memStream.Position);
 
-            EffectObjectIds ids;
-            
-            ids.CompileParametersId = objectIdBuilder.ComputeHash();
-
-            memStream.Position = 0;
-            writer.Write(mixin);
-            writer.Write(mixinParameters);
-            objectIdBuilder.Reset();
-            objectIdBuilder.Write((byte*)buffer, (int)memStream.Position);
-            ids.FullParametersId = objectIdBuilder.ComputeHash();
-
-            return ids;
+            return objectIdBuilder.ComputeHash();
         }
-    }
-
-    public struct EffectObjectIds
-    {
-        public ObjectId CompileParametersId;
-        public ObjectId FullParametersId;
     }
 }

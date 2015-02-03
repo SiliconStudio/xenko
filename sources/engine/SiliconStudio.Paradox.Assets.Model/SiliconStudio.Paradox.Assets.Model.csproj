@@ -20,6 +20,9 @@
     <Compile Include="EntityAssetCompiler.cs" />
     <Compile Include="FbxAssetImporter.cs" />
     <Compile Include="EntityCompilerParametersGenerator.cs" />
+    <Compile Include="ImportAssimpCommand.cs" />
+    <Compile Include="ImportFbxCommand.cs" />
+    <Compile Include="ImportModelCommand.cs" />
     <Compile Include="MeshMaterialParameters.cs" />
     <Compile Include="ModelAsset.cs" />
     <Compile Include="ModelAssetCompiler.cs" />
@@ -61,10 +64,6 @@
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
       <Name>SiliconStudio.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\tools\SiliconStudio.BuildEngine.Paradox.FBX\SiliconStudio.BuildEngine.Paradox.FBX.csproj">
-      <Project>{72b86e84-e69d-46e4-a51e-dd4d5686eec9}</Project>
-      <Name>SiliconStudio.BuildEngine.Paradox.FBX</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\tools\SiliconStudio.Paradox.Importer.Assimp\SiliconStudio.Paradox.Importer.Assimp.vcxproj">
       <Project>{c2306552-6c42-464c-8981-32fef4f9458d}</Project>
       <Name>SiliconStudio.Paradox.Importer.Assimp</Name>
@@ -84,6 +83,10 @@
     <ProjectReference Include="..\SiliconStudio.Paradox.Engine\SiliconStudio.Paradox.Engine.csproj">
       <Project>{c121a566-555e-42b9-9b0a-1696529a9088}</Project>
       <Name>SiliconStudio.Paradox.Engine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Paradox.Graphics\SiliconStudio.Paradox.Graphics.csproj">
+      <Project>{fb06c76a-6bb7-40be-9afa-fec13b045fb5}</Project>
+      <Name>SiliconStudio.Paradox.Graphics</Name>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Paradox.Shaders\SiliconStudio.Paradox.Shaders.csproj">
       <Project>{273bdd15-7392-4078-91f0-af23594a3d7b}</Project>

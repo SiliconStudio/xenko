@@ -13,7 +13,7 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Assets.Materials;
 using SiliconStudio.Paradox.Assets.Materials.Nodes;
 using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
-using SiliconStudio.Paradox.Assets.Texture;
+using SiliconStudio.Paradox.Assets.Textures;
 using SiliconStudio.Paradox.Data;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Data;

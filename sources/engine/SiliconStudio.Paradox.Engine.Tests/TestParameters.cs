@@ -1168,24 +1168,6 @@ namespace SiliconStudio.Paradox.Engine.Tests
         }
 
         [Test, Ignore]
-        public void TestCollections5()
-        {
-            var paramP = new ParameterKey<float>("Proj");
-            var paramV = new ParameterKey<float>("View");
-            var paramV2 = new ParameterKey<float>("View2");
-            var root1 = new ParameterCollection("Root1");
-            var root2 = new ParameterCollection("Root2");
-
-            root2.AddSources(new InheritanceDefinition(root1) { { paramV, paramV2 } });
-
-            root1.Set(paramP, 2.0f);
-            root1.Set(paramV, 3.0f);
-
-            Assert.AreEqual(3.0f, root2.Get(paramV2));
-            Assert.AreEqual(false, root2.ContainsKey(paramP));
-        }
-
-        [Test, Ignore]
         public void TestCollectionsEngine()
         {
             // RPP   <-  EP  <-  EMP
@@ -1200,7 +1182,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
             var effectPassDefault = new ParameterCollection("EffectPassDefault");
             var effectPass = new ParameterCollection("EffectPass");
             var effectMeshPass = new ParameterCollection("EffectMeshPass");
-            var effectMesh = new ParameterCollection("RenderMesh");
+            var renderMesh = new ParameterCollection("RenderMesh");
             var effect = new ParameterCollection("Effect");
 
             effectPassDefault.Set(paramV, new Vector3(2.0f, 2.0f, 2.0f));
@@ -1212,9 +1194,9 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
             Assert.AreEqual(new Vector3(2.0f, 1.0f, 1.0f), effectPass.Get(paramV2));
 
-            effectMesh.AddSources(effect);
+            renderMesh.AddSources(effect);
 
-            effectMeshPass.AddSources(effectPass, effectMesh);
+            effectMeshPass.AddSources(effectPass, renderMesh);
 
 
             Assert.AreEqual(new Vector3(2.0f, 1.0f, 1.0f), effectMeshPass.Get(paramV2));

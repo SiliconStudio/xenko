@@ -102,6 +102,20 @@ namespace SiliconStudio.Shaders.Ast
 
         #endregion
 
+        public override TypeBase ToNonGenericType(SourceSpan? span = null)
+        {
+            var typeName = new TypeName();
+            var name = string.Format("{0}{1}x{2}", Type.Name, ColumnCount, RowCount);
+            typeName.Name = new Identifier(name);
+            if (span.HasValue)
+            {
+                typeName.Span = span.Value;
+                typeName.Name.Span = span.Value;
+            };
+            typeName.TypeInference.TargetType = this;
+            return typeName;
+        }
+
         /// <inheritdoc/>
         public bool Equals(MatrixType other)
         {

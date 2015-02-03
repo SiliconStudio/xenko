@@ -74,7 +74,6 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             var mesh = new Mesh
             {
                 Draw = meshDraw,
-                Parameters = new ParameterCollection()
             };
 
             simpleEffect = new SimpleEffect(GraphicsDevice);
@@ -104,7 +103,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             // Clears the screen 
             GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.LightBlue);
             GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
-            GraphicsDevice.SetRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
             GraphicsDevice.SetRasterizerState(GraphicsDevice.RasterizerStates.CullNone);
 
             GraphicsDevice.SetVertexArrayObject(vao);

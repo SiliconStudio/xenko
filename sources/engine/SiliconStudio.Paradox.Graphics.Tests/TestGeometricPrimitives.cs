@@ -62,9 +62,9 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         {
             base.Update(gameTime);
 
-            projection = Matrix.PerspectiveFovRH((float)Math.PI / 4.0f, (float)GraphicsDevice.BackBuffer.Width / GraphicsDevice.BackBuffer.Height, 0.1f, 100.0f);
+            projection = Matrix.PerspectiveFovRH((float)Math.PI / 4.0f, (float)GraphicsDevice.BackBuffer.ViewWidth / GraphicsDevice.BackBuffer.ViewHeight, 0.1f, 100.0f);
 
-            if (GraphicsDevice.BackBuffer.Width < GraphicsDevice.BackBuffer.Height) // the screen is standing up on Android{
+            if (GraphicsDevice.BackBuffer.ViewWidth < GraphicsDevice.BackBuffer.ViewHeight) // the screen is standing up on Android{
                 view = Matrix.LookAtRH(new Vector3(0, 0, 10), new Vector3(0, 0, 0), Vector3.UnitX);
         }
 
@@ -91,7 +91,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
             GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.CornflowerBlue);
 
-            GraphicsDevice.SetRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
 
             // Render each primitive
             for (int i = 0; i < primitives.Count; i++)

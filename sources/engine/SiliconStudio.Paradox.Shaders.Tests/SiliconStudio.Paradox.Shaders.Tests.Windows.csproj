@@ -24,10 +24,8 @@
   <!--Import Local Pre Settings for the solution being loaded -->
   <Import Project="$(SolutionDir)$(SolutionName).PreSettings.Local.targets" Condition="Exists('$(SolutionDir)$(SolutionName).PreSettings.Local.targets')" />
   <PropertyGroup>
-    <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Paradox.Shaders.Tests.pdxpkg</SiliconStudioCurrentPackagePath>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject>SiliconStudio.Paradox.Shaders.Tests.TestMixinMacros</StartupObject>
+    <StartupObject>
+    </StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -79,11 +77,6 @@
       <Name>SiliconStudio.Core.Mathematics</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Paradox.Input\SiliconStudio.Paradox.Input.csproj">
-      <Project>{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}</Project>
-      <Name>SiliconStudio.Paradox.Input</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\engine\SiliconStudio.Paradox.Shaders.Compiler\SiliconStudio.Paradox.Shaders.Compiler.csproj">
       <Project>{E8B3553F-A79F-4E50-B75B-ACEE771C320C}</Project>
       <Name>SiliconStudio.Paradox.Shaders.Compiler</Name>
@@ -104,29 +97,14 @@
       <Name>SiliconStudio.Paradox</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\sources\shaders\SiliconStudio.Paradox.Effects.Modules.csproj">
-      <Project>{0342C3E7-4A38-46B4-A8EC-E728D50085D3}</Project>
-      <Name>SiliconStudio.Paradox.Effects.Modules</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Paradox.Engine\SiliconStudio.Paradox.Engine.csproj">
-      <Project>{C121A566-555E-42B9-9B0A-1696529A9088}</Project>
-      <Name>SiliconStudio.Paradox.Engine</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Paradox.Graphics\SiliconStudio.Paradox.Graphics.csproj">
-      <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
-      <Name>SiliconStudio.Paradox.Graphics</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\common\shaders\SiliconStudio.Shaders\SiliconStudio.Shaders.csproj">
       <Project>{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}</Project>
       <Name>SiliconStudio.Shaders</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.Games\SiliconStudio.Paradox.Games.csproj">
-      <Project>{42780CBD-3FE7-48E3-BD5B-59945EA20137}</Project>
-      <Name>SiliconStudio.Paradox.Games</Name>
+    <ProjectReference Include="..\SiliconStudio.Paradox.Graphics\SiliconStudio.Paradox.Graphics.csproj">
+      <Project>{fb06c76a-6bb7-40be-9afa-fec13b045fb5}</Project>
+      <Name>SiliconStudio.Paradox.Graphics</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -135,11 +113,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GameAssets\Compiler\SimpleEffect.cs">
-      <DependentUpon>SimpleEffect.pdxfx</DependentUpon>
-      <SubType>Code</SubType>
+      <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
+      <DependentUpon>SimpleEffect.pdxfx</DependentUpon>
     </Compile>
     <Compile Include="GameAssets\Compiler\SimpleShader.cs">
       <AutoGen>True</AutoGen>
@@ -147,12 +124,11 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>SimpleShader.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="GameAssets\Compiler\ToGlslEffect1.cs">
-      <DependentUpon>ToGlslEffect.pdxfx</DependentUpon>
-      <SubType>Code</SubType>
+    <Compile Include="GameAssets\Compiler\ToGlslEffect.cs">
+      <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
+      <DependentUpon>ToGlslEffect.pdxfx</DependentUpon>
     </Compile>
     <Compile Include="GameAssets\Compiler\ToGlslShader.cs">
       <AutoGen>True</AutoGen>
@@ -160,54 +136,95 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ToGlslShader.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="GameAssets\Mixins\ComputeColorRedirect.cs">
+      <DependentUpon>ComputeColorRedirect.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="GameAssets\Mixins\test_mixin_compose_keys.cs">
+      <DependentUpon>test_mixin_compose_keys.pdxfx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="GameAssets\Mixins\ComputeColor2.cs">
+      <DependentUpon>ComputeColor2.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="GameAssets\Mixins\ComputeColor.cs">
+      <DependentUpon>ComputeColor.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="GameAssets\Mixins\C1.cs">
+      <DependentUpon>C1.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="GameAssets\Mixins\C.cs">
+      <DependentUpon>C.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="GameAssets\Mixins\B.cs">
+      <DependentUpon>B.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="GameAssets\Mixins\A.cs">
+      <DependentUpon>A.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="GameAssets\Mixins\test_mixin_complex_params.cs">
-      <DependentUpon>test_mixin_complex_params.pdxfx</DependentUpon>
-      <SubType>Code</SubType>
+      <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
+      <DependentUpon>test_mixin_complex_params.pdxfx</DependentUpon>
     </Compile>
     <Compile Include="GameAssets\Mixins\test_mixin_simple.cs">
-      <DependentUpon>test_mixin_simple.pdxfx</DependentUpon>
-      <SubType>Code</SubType>
+      <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
+      <DependentUpon>test_mixin_simple.pdxfx</DependentUpon>
     </Compile>
     <Compile Include="GameAssets\Mixins\test_mixin_simple_child.cs">
-      <DependentUpon>test_mixin_simple_child.pdxfx</DependentUpon>
-      <SubType>Code</SubType>
+      <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
+      <DependentUpon>test_mixin_simple_child.pdxfx</DependentUpon>
     </Compile>
     <Compile Include="GameAssets\Mixins\test_mixin_simple_child_params.cs">
-      <DependentUpon>test_mixin_simple_child_params.pdxfx</DependentUpon>
-      <SubType>Code</SubType>
+      <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
+      <DependentUpon>test_mixin_simple_child_params.pdxfx</DependentUpon>
     </Compile>
     <Compile Include="GameAssets\Mixins\test_mixin_simple_clone.cs">
-      <DependentUpon>test_mixin_simple_clone.pdxfx</DependentUpon>
-      <SubType>Code</SubType>
+      <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
+      <DependentUpon>test_mixin_simple_clone.pdxfx</DependentUpon>
     </Compile>
     <Compile Include="GameAssets\Mixins\test_mixin_simple_compose.cs">
-      <DependentUpon>test_mixin_simple_compose.pdxfx</DependentUpon>
-      <SubType>Code</SubType>
+      <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
+      <DependentUpon>test_mixin_simple_compose.pdxfx</DependentUpon>
     </Compile>
     <Compile Include="GameAssets\Mixins\test_mixin_simple_params.cs">
-      <DependentUpon>test_mixin_simple_params.pdxfx</DependentUpon>
-      <SubType>Code</SubType>
+      <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
+      <DependentUpon>test_mixin_simple_params.pdxfx</DependentUpon>
     </Compile>
     <Compile Include="GameAssets\Shaders\GenericClass2.cs">
       <AutoGen>True</AutoGen>
@@ -272,20 +289,6 @@
       <DependentUpon>TestMacros.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="TestCodeGen.cs" />
-    <Compile Include="TestGenericClass.cs" />
-    <Compile Include="TestMixinCompiler.cs" />
-    <Compile Include="TestMixinGenerator.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="TestMixinGenerator.Extensions.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="TestMixinGenerator.Helpers.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="TestMixinMacros.cs" />
-    <Compile Include="TestParallelShaderMixer.cs" />
-    <Compile Include="TestShaderLoading.cs" />
     <Compile Include="GameAssets\Shaders\CloneTestBase.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -640,48 +643,103 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>TestVertexStream.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="TestGenericClass.cs" />
+    <Compile Include="TestMixinCompiler.cs" />
+    <Compile Include="TestMixinGenerator.cs" />
+    <Compile Include="TestMixinGenerator.Extensions.cs" />
+    <Compile Include="TestMixinGenerator.Helpers.cs" />
+    <Compile Include="TestMixinMacros.cs" />
+    <Compile Include="TestParallelShaderMixer.cs" />
+    <Compile Include="TestRealMix.cs" />
+    <Compile Include="TestShaderLoading.cs" />
     <Compile Include="TestShaderMixer.cs" />
-    <Compile Include="TestShaderParsing.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="TestShaderMixer2.cs" />
+    <Compile Include="TestShaderParsing.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Label="Paradox.DoNotSync" Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="GameAssets\Compiler\SimpleEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>SimpleEffect.cs</LastGenOutput>
+    </None>
+    <None Include="GameAssets\Compiler\SimpleShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>SimpleShader.cs</LastGenOutput>
+    </None>
+    <None Include="GameAssets\Compiler\ToGlslEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ToGlslEffect.cs</LastGenOutput>
+    </None>
+    <None Include="GameAssets\Compiler\ToGlslShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ToGlslShader.cs</LastGenOutput>
+    </None>
+    <Content Include="GameAssets\Mixins\A.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>A.cs</LastGenOutput>
+    </Content>
+    <Content Include="GameAssets\Mixins\B.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>B.cs</LastGenOutput>
+    </Content>
+    <Content Include="GameAssets\Mixins\C.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>C.cs</LastGenOutput>
+    </Content>
+    <Content Include="GameAssets\Mixins\C1.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>C1.cs</LastGenOutput>
+    </Content>
+    <Content Include="GameAssets\Mixins\ComputeColor.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColor.cs</LastGenOutput>
+    </Content>
+    <Content Include="GameAssets\Mixins\ComputeColor2.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColor2.cs</LastGenOutput>
+    </Content>
+    <Content Include="GameAssets\Mixins\ComputeColorRedirect.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorRedirect.cs</LastGenOutput>
+    </Content>
+    <None Include="GameAssets\Mixins\test_mixin_compose_keys.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>test_mixin_compose_keys.cs</LastGenOutput>
+    </None>
     <None Include="GameAssets\Mixins\test_mixin_complex_params.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>test_mixin_complex_params.cs</LastGenOutput>
+    </None>
+    <None Include="GameAssets\Mixins\test_mixin_simple.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>test_mixin_simple.cs</LastGenOutput>
+    </None>
+    <None Include="GameAssets\Mixins\test_mixin_simple_child.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>test_mixin_simple_child.cs</LastGenOutput>
+    </None>
+    <None Include="GameAssets\Mixins\test_mixin_simple_child_params.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>test_mixin_simple_child_params.cs</LastGenOutput>
+    </None>
+    <None Include="GameAssets\Mixins\test_mixin_simple_clone.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>test_mixin_simple_clone.cs</LastGenOutput>
+    </None>
+    <None Include="GameAssets\Mixins\test_mixin_simple_compose.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>test_mixin_simple_compose.cs</LastGenOutput>
+    </None>
+    <None Include="GameAssets\Mixins\test_mixin_simple_params.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>test_mixin_simple_params.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\TestMacrosArray.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>TestMacrosArray1.cs</LastGenOutput>
     </None>
-    <Content Include="GameAssets\Mixins\test_mixin_simple.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>test_mixin_simple.cs</LastGenOutput>
-    </Content>
-    <Content Include="GameAssets\Mixins\test_mixin_simple_child.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>test_mixin_simple_child.cs</LastGenOutput>
-    </Content>
-    <Content Include="GameAssets\Mixins\test_mixin_simple_child_params.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>test_mixin_simple_child_params.cs</LastGenOutput>
-    </Content>
-    <Content Include="GameAssets\Mixins\test_mixin_simple_clone.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>test_mixin_simple_clone.cs</LastGenOutput>
-    </Content>
-    <Content Include="GameAssets\Mixins\test_mixin_simple_compose.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>test_mixin_simple_compose.cs</LastGenOutput>
-    </Content>
-    <Content Include="GameAssets\Mixins\test_mixin_simple_params.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>test_mixin_simple_params.cs</LastGenOutput>
-    </Content>
     <Content Include="GameAssets\Shaders\BaseTestChild.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>BaseTestChild.cs</LastGenOutput>
@@ -778,24 +836,6 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>TestGenerics.cs</LastGenOutput>
     </Content>
-    <None Include="GameAssets\Compiler\SimpleShader.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>SimpleShader.cs</LastGenOutput>
-    </None>
-    <None Include="GameAssets\Compiler\SimpleEffect.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>SimpleEffect.cs</LastGenOutput>
-    </None>
-    <None Include="GameAssets\Compiler\ToGlslEffect.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ToGlslEffect1.cs</LastGenOutput>
-    </None>
-    <None Include="GameAssets\Compiler\ToGlslShader.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ToGlslShader.cs</LastGenOutput>
-    </None>
-    <None Include="SiliconStudio.Paradox.Shaders.Tests.pdxpkg" />
-    <ParadoxProject Include="GameAssets\Assets.pdxprj" />
     <None Include="GameAssets\Shaders\GenericClass2.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>GenericClass2.cs</LastGenOutput>

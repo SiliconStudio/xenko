@@ -116,6 +116,7 @@
     <Compile Include="FakeDepthStencilState.cs" />
     <Compile Include="FakeRasterizerState.cs" />
     <Compile Include="Font\FontAntiAliasMode.cs" />
+    <Compile Include="Font\FontStyleExtensions.cs" />
     <Compile Include="GeometricMultiTexcoordPrimitive.cs" />
     <Compile Include="GeometricMultiTexcoordPrimitive.Cube.cs" />
     <Compile Include="GeometricMultiTexcoordPrimitive.Cylinder.cs" />
@@ -123,9 +124,14 @@
     <Compile Include="GeometricPrimitive.Cone.cs" />
     <Compile Include="GraphicsDeviceExtensions.cs" />
     <Compile Include="GraphicsOutput.cs" />
+    <Compile Include="GraphicsResourceAllocator.cs" />
+    <Compile Include="GraphicsResourceAllocatorExtensions.cs" />
+    <Compile Include="GraphicsResourceLink.cs" />
+    <Compile Include="GraphicsResourceRecyclePolicyDelegate.cs" />
     <Compile Include="ImageFragment.cs" />
     <Compile Include="ImageGroup.cs" />
     <Compile Include="ImageOrientation.cs" />
+    <Compile Include="OpenGL\OpenGLUtils.cs" />
     <Compile Include="OpenGL\GraphicsOutput.OpenGL.cs" />
     <Compile Include="OpenGL\VertexArrayObjectInstance.cs" />
     <Compile Include="OpenGL\VertexAttrib.cs" />
@@ -264,27 +270,21 @@
     <Compile Include="OpenGL\EffectProgram.OpenGL.cs" />
     <Compile Include="OpenGL\OpenGLShaderBytecodeData.cs" />
     <Compile Include="Shader.cs" />
-    <Compile Include="Direct3D\FakeTexture.Direct3D.cs" />
     <Compile Include="Direct3D\GraphicsDeviceFeatures.Direct3D.cs" />
-    <Compile Include="Direct3D\Texture2DBase.Direct3D.cs" />
     <Compile Include="FormatSupport.cs" />
     <Compile Include="GraphicsDeviceFeatures.cs" />
     <Compile Include="Null\GraphicsDeviceFeatures.Null.cs" />
     <Compile Include="Null\Texture2DBase.Null.cs" />
     <Compile Include="OpenGL\GraphicsDeviceFeatures.OpenGL.cs" />
     <Compile Include="OpenGL\Shader.OpenGL.cs" />
-    <Compile Include="OpenGL\TextureCube.OpenGL.cs" />
-    <Compile Include="OpenGL\Texture2DBase.OpenGL.cs" />
     <Compile Include="Rational.cs" />
     <Compile Include="Direct3D\SwapChainGraphicsPresenter.Direct3D.cs" />
     <Compile Include="SwizzleMode.cs" />
     <Compile Include="TextAlignment.cs" />
-    <Compile Include="Texture2DBase.cs" />
     <Compile Include="Direct3D\BlendState.Direct3D.cs" />
     <Compile Include="Direct3D\Buffer.Direct3D.cs" />
     <Compile Include="Direct3D\ColorHelper.cs" />
     <Compile Include="Direct3D\CommandList.cs" />
-    <Compile Include="Direct3D\DepthStencilBuffer.Direct3D.cs" />
     <Compile Include="Direct3D\DepthStencilState.Direct3D.cs" />
     <Compile Include="Direct3D\EffectSignatureLayout.cs" />
     <Compile Include="Direct3D\GraphicsAdapter.Direct3D.cs" />
@@ -293,14 +293,15 @@
     <Compile Include="Direct3D\GraphicsProfileHelper.cs" />
     <Compile Include="Direct3D\GraphicsResourceBase.Direct3D.cs" />
     <Compile Include="Direct3D\RasterizerState.Direct3D.cs" />
-    <Compile Include="Direct3D\RenderTarget.Direct3D.cs" />
     <Compile Include="Direct3D\SamplerState.Direct3D.cs" />
     <Compile Include="Direct3D\Texture.Direct3D.cs" />
-    <Compile Include="Direct3D\Texture1D.Direct3D.cs" />
-    <Compile Include="Direct3D\Texture2D.Direct3D.cs" />
-    <Compile Include="Direct3D\Texture3D.Direct3D.cs" />
-    <Compile Include="Direct3D\TextureCube.Direct3D.cs" />
     <Compile Include="Direct3D\VertexArrayObject.Direct3D.cs" />
+    <Compile Include="TextureDescription.ExtensionsCube.cs" />
+    <Compile Include="TextureDescription.Extensions3D.cs" />
+    <Compile Include="TextureDescription.Extensions2D.cs" />
+    <Compile Include="TextureDescription.Extensions1D.cs" />
+    <Compile Include="Texture.Extensions.cs" />
+    <Compile Include="TextureViewDescription.cs" />
     <Compile Include="UIBatch.cs" />
     <Compile Include="VertexPosition2.cs" />
     <Compile Include="VertexPositionColorTexture.cs" />
@@ -335,7 +336,6 @@
   <ItemGroup>
     <Compile Include="OpenGL\BlendState.OpenGL.cs" />
     <Compile Include="OpenGL\Buffer.OpenGL.cs" />
-    <Compile Include="OpenGL\DepthStencilBuffer.OpenGL.cs" />
     <Compile Include="OpenGL\DepthStencilState.OpenGL.cs" />
     <Compile Include="OpenGL\GraphicsAdapter.OpenGL.cs" />
     <Compile Include="OpenGL\GraphicsAdapterFactory.OpenGL.cs" />
@@ -343,12 +343,8 @@
     <Compile Include="OpenGL\GraphicsResourceBase.OpenGL.cs" />
     <Compile Include="OpenGL\OpenGLConvertExtensions.cs" />
     <Compile Include="OpenGL\RasterizerState.OpenGL.cs" />
-    <Compile Include="OpenGL\RenderTarget.OpenGL.cs" />
     <Compile Include="OpenGL\SamplerState.OpenGL.cs" />
     <Compile Include="OpenGL\Texture.OpenGL.cs" />
-    <Compile Include="OpenGL\Texture1D.OpenGL.cs" />
-    <Compile Include="OpenGL\Texture2D.OpenGL.cs" />
-    <Compile Include="OpenGL\Texture3D.OpenGL.cs" />
     <Compile Include="OpenGL\VertexArrayObject.OpenGL.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -374,8 +370,7 @@
     <Compile Include="GraphicsAdapterFactory.cs" />
     <Compile Include="IndexBufferBinding.cs" />
     <Compile Include="FakeSamplerState.cs" />
-    <Compile Include="FakeTexture.cs" />
-    <Compile Include="Texture1D.cs" />
+    <Compile Include="Texture.Extensions1D.cs" />
     <Compile Include="DataOld\TextureFileTGASerializer.cs" />
     <Compile Include="DepthStencilStencilOpDescription.cs" />
     <Compile Include="GraphicsResourceMap.cs" />
@@ -399,7 +394,6 @@
     <Compile Include="ColorWriteChannels.cs" />
     <Compile Include="CubeMapFace.cs" />
     <Compile Include="CullMode.cs" />
-    <Compile Include="DepthStencilBuffer.cs" />
     <Compile Include="DepthStencilStateDescription.cs" />
     <Compile Include="DisplayMode.cs" />
     <Compile Include="FillMode.cs" />
@@ -414,12 +408,11 @@
     <Compile Include="PrimitiveType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RasterizerState.cs" />
-    <Compile Include="RenderTarget.cs" />
     <Compile Include="StencilOperation.cs" />
     <Compile Include="Texture.cs" />
-    <Compile Include="Texture2D.cs" />
-    <Compile Include="Texture3D.cs" />
-    <Compile Include="TextureCube.cs" />
+    <Compile Include="Texture.Extensions2D.cs" />
+    <Compile Include="Texture.Extensions3D.cs" />
+    <Compile Include="Texture.ExtensionsCube.cs" />
     <Compile Include="VertexBufferBinding.cs" />
     <Compile Include="VertexDeclaration.cs" />
     <Compile Include="VertexElement.cs" />

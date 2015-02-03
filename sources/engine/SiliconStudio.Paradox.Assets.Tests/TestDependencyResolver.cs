@@ -10,7 +10,7 @@ using NUnit.Framework;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Paradox.Assets.SpriteFont;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 
 using System.Linq;
 

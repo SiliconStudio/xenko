@@ -14,40 +14,22 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-
-#line 3 "D:\Code\Paradox\sources\engine\SiliconStudio.Paradox.Shaders.Tests\GameAssets\Mixins\test_mixin_simple_child_params.pdxfx"
 namespace Test4
 {
-    [DataContract]
-#line 5
-    public partial class TestParameters : ShaderMixinParameters
+    [DataContract]public partial class TestParameters : ShaderMixinParameters
     {
-
-        #line 7
         public static readonly ParameterKey<int> TestCount = ParameterKeys.New<int>();
+        public static readonly ParameterKey<bool> UseComputeColorEffect = ParameterKeys.New<bool>();
     };
-
-    #line 10
     internal static partial class ShaderMixins
     {
         internal partial class ChildParamsMixin  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-
-                #line 14
-                context.CloneProperties();
-
-                #line 14
-                mixin.Mixin.CloneFrom(mixin.Parent.Mixin);
-
-                #line 15
+                context.CloneParentMixinToCurrent();
                 context.SetParam(TestParameters.TestCount, 1);
-
-                #line 16
                 if (context.GetParam(TestParameters.TestCount) == 1)
-
-                    #line 17
                     context.Mixin(mixin, "C1");
             }
 
@@ -59,44 +41,23 @@ namespace Test4
             }
         }
     }
-
-    #line 20
     internal static partial class ShaderMixins
     {
         internal partial class DefaultSimpleChildParams  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-
-                #line 24
                 context.Mixin(mixin, "A");
-
-                #line 25
                 if (context.GetParam(TestParameters.TestCount) == 0)
-
-                    #line 26
                     context.Mixin(mixin, "B");
 
                 {
-
-                    #line 28
-                    var __subMixin = new ShaderMixinSourceTree() { Name = "ChildParamsMixin", Parent = mixin };
-                    mixin.Children.Add(__subMixin);
-
-                    #line 28
+                    var __subMixin = new ShaderMixinSourceTree() { Name = "ChildParamsMixin" };
                     context.BeginChild(__subMixin);
-
-                    #line 28
                     context.Mixin(__subMixin, "ChildParamsMixin");
-
-                    #line 28
                     context.EndChild();
                 }
-
-                #line 30
                 if (context.GetParam(TestParameters.TestCount) == 0)
-
-                    #line 31
                     context.Mixin(mixin, "C");
             }
 

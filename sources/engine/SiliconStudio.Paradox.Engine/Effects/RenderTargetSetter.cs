@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects
@@ -37,7 +37,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <value>
         /// The render target key.
         /// </value>
-        public RenderTarget RenderTarget { get; set; }
+        public Texture RenderTarget { get; set; }
 
         /// <summary>
         /// Gets or sets the key to get the depth stencil from <see cref="RenderPipeline.Parameters"/>.
@@ -45,7 +45,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <value>
         /// The depth stencil key.
         /// </value>
-        public DepthStencilBuffer DepthStencil { get; set; }
+        public Texture DepthStencil { get; set; }
 
         /// <summary>
         /// Gets or sets the viewport.
@@ -137,7 +137,7 @@ namespace SiliconStudio.Paradox.Effects
             // set the targets
             if (EnableSetTargets)
             {
-                graphicsDevice.SetRenderTarget(DepthStencil, RenderTarget);
+                graphicsDevice.SetDepthAndRenderTarget(DepthStencil, RenderTarget);
                 var viewPort = Viewport;
                 if (viewPort != Viewport.Empty)
                     graphicsDevice.SetViewport(viewPort);

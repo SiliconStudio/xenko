@@ -45,6 +45,9 @@ namespace SiliconStudio.Shaders.Utility
         public static readonly MessageCode ErrorNoTypeReferenceMember               = new MessageCode("E0007", "Unable to find type reference for member [{0}]");
         public static readonly MessageCode ErrorNoTypeReferenceTypename             = new MessageCode("E0008", "Unable to find type reference for typename [{0}]");
 
+        public static readonly MessageCode ErrorUnexpectedException                 = new MessageCode("E0009", "Unexpected exception: {0}");
+
+
         #endregion
     }
 }

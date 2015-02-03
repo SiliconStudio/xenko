@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
@@ -15,7 +16,6 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 {
     public class TestMultipleRenderTargets : TestGameBase
     {
-        private RenderTarget[] renderTargets = new RenderTarget[3];
         private Texture[] textures;
         private int renderTargetToDisplayIndex = 0;
         private Entity teapot;
@@ -82,20 +82,20 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             // Create render targets
             textures = new Texture[3]
             {
-                Texture2D.New(GraphicsDevice, 800, 480, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource),
-                Texture2D.New(GraphicsDevice, 800, 480, PixelFormat.R32_Float, TextureFlags.RenderTarget | TextureFlags.ShaderResource),
-                Texture2D.New(GraphicsDevice, 800, 480, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource),
+                Texture.New2D(GraphicsDevice, 800, 480, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource),
+                Texture.New2D(GraphicsDevice, 800, 480, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource),
+                Texture.New2D(GraphicsDevice, 800, 480, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource),
             };
-            renderTargets[0] = textures[0].ToRenderTarget();
-            renderTargets[1] = textures[1].ToRenderTarget();
-            renderTargets[2] = textures[2].ToRenderTarget();
+
+            var depthBuffer = Texture.New2D(GraphicsDevice, 800, 480, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil);
 
             // Setup the default rendering pipeline
             RenderSystem.Pipeline.Renderers.Add(new CameraSetter(Services));
             RenderSystem.Pipeline.Renderers.Add(new MultipleRenderTargetsSetter(Services)
             {
                 ClearColor = Color.CornflowerBlue,
-                RenderTargets = renderTargets,
+                RenderTargets = textures,
+                DepthStencil = depthBuffer,
                 ClearColors = new Color[] { Color.Black, Color.White, Color.Black }
             });
             RenderSystem.Pipeline.Renderers.Add(new ModelRenderer(Services, "MultipleRenderTargetsEffect"));
@@ -118,7 +118,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 var period = (float) (2 * Math.PI * UpdateTime.Total.TotalMilliseconds / 15000);
                 teapot.Transformation.Rotation = Quaternion.RotationAxis(Vector3.UnitY, period);
 
-                if (Input.IsKeyPressed(Keys.Space))
+                if (Input.PointerEvents.Any(x => x.State == PointerState.Down))
                     renderTargetToDisplayIndex = (renderTargetToDisplayIndex + 1) % 3;
             }
         }

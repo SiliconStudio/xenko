@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.Effects.Data;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core;
@@ -140,7 +140,7 @@ namespace SiliconStudio.Paradox.Effects
             // BoundingBox prepass
             // ------------------------------------------
             var renderTargetDesc = RenderSource.Description;
-            var bbRenderTarget = Texture2D.New(GraphicsDevice, renderTargetDesc.Width, renderTargetDesc.Height, PixelFormat.R32G32_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget).KeepAliveBy(ActiveObjects);
+            var bbRenderTarget = Texture.New2D(GraphicsDevice, renderTargetDesc.Width, renderTargetDesc.Height, PixelFormat.R32G32_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget).KeepAliveBy(ActiveObjects);
 
             bbRenderTargetPlugin.RenderTarget = bbRenderTarget.ToRenderTarget();
 
@@ -158,7 +158,7 @@ namespace SiliconStudio.Paradox.Effects
             // ------------------------------------------
             // Heat Compute
             // ------------------------------------------
-            var shimmerTexture = Texture2D.New(GraphicsDevice, renderTargetDesc.Width, renderTargetDesc.Height, PixelFormat.R8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
+            var shimmerTexture = Texture.New2D(GraphicsDevice, renderTargetDesc.Width, renderTargetDesc.Height, PixelFormat.R8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
             var shimmerRenderTarget = shimmerTexture.ToRenderTarget();
             heatShimmerPass.StartPass += context => context.GraphicsDevice.Clear(shimmerRenderTarget, Color.Black);
 

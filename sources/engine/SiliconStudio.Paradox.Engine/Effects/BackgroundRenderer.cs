@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <summary>
         /// Gets or sets the texture displayed as background.
         /// </summary>
-        public Texture2D BackgroundTexture { get; set; }
+        public Texture BackgroundTexture { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BackgroundRenderer"/> with null texture.
@@ -45,7 +45,7 @@ namespace SiliconStudio.Paradox.Effects
             if (!string.IsNullOrEmpty(backgroundTexturePath))
             {
                 var assetManager = (IAssetManager)Services.GetService(typeof(IAssetManager));
-                BackgroundTexture = assetManager.Load<Texture2D>(backgroundTexturePath);
+                BackgroundTexture = assetManager.Load<Texture>(backgroundTexturePath);
             }
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -56,11 +56,11 @@ namespace SiliconStudio.Paradox.Effects
             if(BackgroundTexture == null)
                 return;
 
-            var destination = new RectangleF(0, 0, GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height);
+            var destination = new RectangleF(0, 0, GraphicsDevice.BackBuffer.ViewWidth, GraphicsDevice.BackBuffer.ViewHeight);
 
-            var imageBufferMinRatio = Math.Min(BackgroundTexture.Width / (float)GraphicsDevice.BackBuffer.Width, BackgroundTexture.Height / (float)GraphicsDevice.BackBuffer.Height);
-            var sourceSize = new Int2((int)(GraphicsDevice.BackBuffer.Width * imageBufferMinRatio), (int)(GraphicsDevice.BackBuffer.Height * imageBufferMinRatio));
-            var source = new Rectangle((BackgroundTexture.Width - sourceSize.X) / 2, (BackgroundTexture.Height - sourceSize.Y) / 2, sourceSize.X, sourceSize.Y);
+            var imageBufferMinRatio = Math.Min(BackgroundTexture.ViewWidth / (float)GraphicsDevice.BackBuffer.ViewWidth, BackgroundTexture.ViewHeight / (float)GraphicsDevice.BackBuffer.ViewHeight);
+            var sourceSize = new Int2((int)(GraphicsDevice.BackBuffer.ViewWidth * imageBufferMinRatio), (int)(GraphicsDevice.BackBuffer.ViewHeight * imageBufferMinRatio));
+            var source = new Rectangle((BackgroundTexture.ViewWidth - sourceSize.X) / 2, (BackgroundTexture.ViewHeight - sourceSize.Y) / 2, sourceSize.X, sourceSize.Y);
 
             spriteBatch.Begin(SpriteSortMode.FrontToBack, GraphicsDevice.BlendStates.Opaque, GraphicsDevice.SamplerStates.LinearClamp, GraphicsDevice.DepthStencilStates.None);
             spriteBatch.Draw(BackgroundTexture, destination, source, Color.White, 0, Vector2.Zero, SpriteEffects.None, ImageOrientation.AsIs, 0);

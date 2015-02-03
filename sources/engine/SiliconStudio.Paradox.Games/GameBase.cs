@@ -128,6 +128,7 @@ namespace SiliconStudio.Paradox.Games
             Services.AddService(typeof(IGame), this);
             Services.AddService(typeof(IVirtualResolution), this);
             Services.AddService(typeof(IAssetManager), Asset);
+            Services.AddService(typeof(AssetManager), Asset);
             Services.AddService(typeof(IGamePlatform), gamePlatform);
 
             IsActive = true;
@@ -401,6 +402,9 @@ namespace SiliconStudio.Paradox.Games
                         throw new InvalidOperationException("No GraphicsDevice found");
                     }
 
+                    // Bind Graphics Context enabling initialize to use GL API eg. SetData to texture ...etc
+                    BeginDraw();
+
                     // Initialize this instance and all game systems
                     Initialize();
 
@@ -424,6 +428,9 @@ namespace SiliconStudio.Paradox.Games
 
                     // Reset PlayTime
                     playTimer.Reset();
+
+                    // Unbind Graphics Context without presenting
+                    EndDraw(false);
                 }
             }
             catch (Exception ex)
@@ -463,6 +470,7 @@ namespace SiliconStudio.Paradox.Games
                 Context.RequestedHeight = graphicsDeviceManagerImpl.PreferredBackBufferHeight;
                 Context.RequestedBackBufferFormat = graphicsDeviceManagerImpl.PreferredBackBufferFormat;
                 Context.RequestedDepthStencilFormat = graphicsDeviceManagerImpl.PreferredDepthStencilFormat;
+                Context.RequestedGraphicsProfile = graphicsDeviceManagerImpl.PreferredGraphicsProfile;
 
                 gamePlatform.Run(Context);
 
@@ -743,7 +751,7 @@ namespace SiliconStudio.Paradox.Games
             // TODO: Check how we can handle this more cleanly
             if (GraphicsDevice != null && GraphicsDevice.BackBuffer != null)
             {
-                GraphicsDevice.SetRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+                GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
             }
         }
 

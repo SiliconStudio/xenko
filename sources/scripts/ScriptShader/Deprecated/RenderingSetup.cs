@@ -11,7 +11,7 @@ using SiliconStudio.Core.Xaml;
 using SiliconStudio.Paradox;
 using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 #if PARADOX_YEBIS
 using SiliconStudio.Paradox.Effects.Yebis;
 #endif
@@ -95,7 +95,7 @@ namespace ScriptTest
             MainPlugin.RenderTarget = graphicsDevice.BackBuffer;
             
             // Depth Stencil target needs to be shader resource only if Yebis or GBuffer is active (need more robust way to decide)
-            var depthStencilTexture = Texture2D.New(graphicsDevice, mainBackBuffer.Width, mainBackBuffer.Height, PixelFormat.D32_Float,
+            var depthStencilTexture = Texture.New2D(graphicsDevice, mainBackBuffer.Width, mainBackBuffer.Height, PixelFormat.D32_Float,
                 (RenderConfigContext.RenderPassPlugins.Any(x => x.Value is YebisPlugin || x.Value is GBufferPlugin) ? TextureFlags.ShaderResource : 0) | TextureFlags.DepthStencil);
             MainPlugin.DepthStencil = depthStencilTexture.ToDepthStencilBuffer(false);
 
@@ -137,7 +137,7 @@ namespace ScriptTest
                 {
                     if (sourcePlugin.RenderSource == null)
                     {
-                        sourcePlugin.RenderSource = Texture2D.New(graphicsDevice, mainBackBuffer.Width, mainBackBuffer.Height, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
+                        sourcePlugin.RenderSource = Texture.New2D(graphicsDevice, mainBackBuffer.Width, mainBackBuffer.Height, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
                     }
 
                     currentTarget = sourcePlugin.RenderSource.ToRenderTarget();

@@ -6,25 +6,24 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.Effects.Modules
+namespace SiliconStudio.Paradox.Effects
 {
     public class GBufferRenderProcessor : RecursiveRenderer
     {
-        private RenderTarget gbufferTextureRenderTarget;
-        private Texture2D gbufferTexture;
-        private Texture2D gbufferRenormTexture;
-        private DepthStencilBuffer depthStencilBuffer;
+        private Texture gbufferTexture;
+        private Texture gbufferRenormTexture;
+        private Texture depthStencilBuffer;
 
         private bool useNormalPack;
 
-        public GBufferRenderProcessor(IServiceRegistry services, RenderPipeline recursivePipeline, DepthStencilBuffer depthStencilBuffer, bool normalPack)
+        public GBufferRenderProcessor(IServiceRegistry services, RenderPipeline recursivePipeline, Texture depthStencilBuffer, bool normalPack)
             : base(services, recursivePipeline)
         {
             this.depthStencilBuffer = depthStencilBuffer;
             useNormalPack = normalPack;
         }
 
-        public Texture2D GBufferTexture
+        public Texture GBufferTexture
         {
             get { return gbufferTexture; }
         }
@@ -32,9 +31,9 @@ namespace SiliconStudio.Paradox.Effects.Modules
         protected override void OnRendering(RenderContext context)
         {
             // Setup render target
-            GraphicsDevice.Clear(gbufferTextureRenderTarget, Color.Transparent);
-            GraphicsDevice.Clear(depthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
-            GraphicsDevice.SetRenderTarget(depthStencilBuffer, gbufferTextureRenderTarget);
+            GraphicsDevice.Clear(gbufferTexture, Color.Transparent);
+            GraphicsDevice.Clear(depthStencilBuffer, DepthStencilClearOptions.DepthBuffer); // only clear depth since we do not know the format of the depth buffer. It might not contain stencil
+            GraphicsDevice.SetDepthAndRenderTarget(depthStencilBuffer, gbufferTexture);
 
             base.OnRendering(context);
         }
@@ -44,11 +43,9 @@ namespace SiliconStudio.Paradox.Effects.Modules
             base.Load();
 
             // Prepare GBuffer target
-            gbufferTexture = Texture2D.New(GraphicsDevice, GraphicsDevice.BackBuffer.Width,
-                GraphicsDevice.BackBuffer.Height, PixelFormat.R32G32B32A32_Float,
+            gbufferTexture = Texture.New2D(GraphicsDevice, GraphicsDevice.BackBuffer.ViewWidth,
+                GraphicsDevice.BackBuffer.ViewHeight, PixelFormat.R32G32B32A32_Float,
                 TextureFlags.RenderTarget | TextureFlags.ShaderResource);
-
-            gbufferTextureRenderTarget = gbufferTexture.ToRenderTarget();
 
             if (useNormalPack)
             {
@@ -61,7 +58,7 @@ namespace SiliconStudio.Paradox.Effects.Modules
                     var texData = new byte[texFileLength];
                     texDataStream.Read(texData, 0, (int)texFileLength);
 
-                    gbufferRenormTexture = Texture2D.New(GraphicsDevice, 1024, 1024, PixelFormat.A8_UNorm, texData);
+                    gbufferRenormTexture = Texture.New2D(GraphicsDevice, 1024, 1024, PixelFormat.A8_UNorm, texData);
                     gbufferRenormTexture.Name = "Renorm";
                 }
 
@@ -83,7 +80,6 @@ namespace SiliconStudio.Paradox.Effects.Modules
             Pass.Parameters.Remove(GBufferBaseKeys.GBufferTexture);
 
             // Dispose GPU objects
-            Utilities.Dispose(ref gbufferTextureRenderTarget);
             Utilities.Dispose(ref gbufferTexture);
             Utilities.Dispose(ref gbufferRenormTexture);
         }

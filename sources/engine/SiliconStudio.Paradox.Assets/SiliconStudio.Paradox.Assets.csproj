@@ -49,9 +49,9 @@
       <Name>SiliconStudio.Core.Design</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\shaders\SiliconStudio.Paradox.Effects.Modules.csproj">
+    <ProjectReference Include="..\..\shaders\SiliconStudio.Paradox.Effects.csproj">
       <Project>{0342C3E7-4A38-46B4-A8EC-E728D50085D3}</Project>
-      <Name>SiliconStudio.Paradox.Effects.Modules</Name>
+      <Name>SiliconStudio.Paradox.Effects</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\tools\SiliconStudio.TextureConverter\SiliconStudio.TextureConverter.csproj">
@@ -206,8 +206,8 @@
     <Compile Include="Sprite\SpriteInfo.cs" />
     <Compile Include="Sprite\SpriteGroupAsset.cs" />
     <Compile Include="Sprite\SpriteGroupCompiler.cs" />
-    <Compile Include="Texture\TextureCommandHelper.cs" />
-    <Compile Include="Texture\TextureQuality.cs" />
+    <Compile Include="Textures\TextureCommandHelper.cs" />
+    <Compile Include="Textures\TextureQuality.cs" />
     <Compile Include="Serializers\GenericDictionarySerializer.cs" />
     <Compile Include="Serializers\ParameterKeySerializer.cs" />
     <Compile Include="SpriteFont\CharacterRegion.cs" />
@@ -227,11 +227,11 @@
     <Compile Include="SpriteFont\SpriteFontAssetCompiler.cs" />
     <Compile Include="SpriteFont\FontTextureFormat.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Texture\AlphaFormat.cs" />
-    <Compile Include="Texture\TextureAsset.cs" />
-    <Compile Include="Texture\TextureAssetCompiler.cs" />
-    <Compile Include="Texture\TextureFormat.cs" />
-    <Compile Include="Texture\TextureImporter.cs" />
+    <Compile Include="Textures\AlphaFormat.cs" />
+    <Compile Include="Textures\TextureAsset.cs" />
+    <Compile Include="Textures\TextureAssetCompiler.cs" />
+    <Compile Include="Textures\TextureFormat.cs" />
+    <Compile Include="Textures\TextureImporter.cs" />
     <Compile Include="PreviewerCompilerNames.cs" />
     <Compile Include="UIImage\UIImageGroupCompiler.cs" />
     <Compile Include="UIImage\UIImageGroupAsset.cs" />

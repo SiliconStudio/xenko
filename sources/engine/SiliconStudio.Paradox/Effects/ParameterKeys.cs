@@ -3,6 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
+
+using SiliconStudio.Core;
 
 namespace SiliconStudio.Paradox.Effects
 {
@@ -13,17 +16,44 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="defaultValue">The default value.</param>
-        /// <param name="name"></param>
-        /// <returns></returns>
+        /// <param name="name">The name.</param>
+        /// <returns>ParameterKey{``0}.</returns>
         public static ParameterKey<T> New<T>(T defaultValue, string name = null)
         {
             if (name == null)
                 name = string.Empty;
 
             var length = typeof(T).IsArray ? (defaultValue != null ? ((Array)(object)defaultValue).Length : -1) : 1;
-            var metadata = new ParameterKeyMetadata<T>(defaultValue);
-            var result = new ParameterKey<T>(name, length, metadata);
-            return result;
+            return new ParameterKey<T>(name, length, new ParameterKeyValueMetadata<T>(defaultValue));
+        }
+
+
+        /// <summary>
+        /// Creates a value key.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>ParameterKey{``0}.</returns>
+        public static ParameterKey<T> NewWithMetas<T>(PropertyKeyMetadata metadata)
+        {
+            return NewWithMetas<T>(new[] { metadata });
+        }
+
+        /// <summary>
+        /// Creates a value key.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="metadatas">The metadatas.</param>
+        /// <returns>ParameterKey{``0}.</returns>
+        public static ParameterKey<T> NewWithMetas<T>(PropertyKeyMetadata[] metadatas)
+        {
+            if (metadatas.Length > 0)
+            {
+                var list = new List<PropertyKeyMetadata>(metadatas) { new ParameterKeyValueMetadata<T>(default(T)) };
+                metadatas = list.ToArray();
+            }
+
+            return new ParameterKey<T>(string.Empty, -1, metadatas);
         }
 
         public static ParameterKey<T> New<T>()
@@ -41,7 +71,7 @@ namespace SiliconStudio.Paradox.Effects
             if (name == null)
                 name = string.Empty;
 
-            var metadata = new ParameterKeyMetadata<T>(dynamicValue);
+            var metadata = new ParameterKeyValueMetadata<T>(dynamicValue);
             var result = new ParameterKey<T>(name, 1, metadata);
             return result;
         }
@@ -51,7 +81,7 @@ namespace SiliconStudio.Paradox.Effects
             if (name == null)
                 name = string.Empty;
 
-            var metadata = new ParameterKeyMetadata<T[]>(dynamicValue);
+            var metadata = new ParameterKeyValueMetadata<T[]>(dynamicValue);
             var result = new ParameterKey<T[]>(name, arraySize, metadata);
             return result;
         }
@@ -107,65 +137,98 @@ namespace SiliconStudio.Paradox.Effects
             return key;
         }
 
-        public static T AppendKey<T>(this T key, object name) where T : ParameterKey
+        public static T ComposeWith<T>(this T key, string name) where T : ParameterKey
         {
-            return (T)FindByName(key.Name + name);
+            if (name == null) throw new ArgumentNullException("name");
+
+            // TODO: cache this string builder to avoid allocation (using for example a thread local)
+            var builder = new StringBuilder(key.Name.Length + 1 + name.Length);
+            builder.Append(key.Name);
+            builder.Append('.');
+            builder.Append(name);
+
+            return ComposeWith(key, builder);
+        }
+
+        public static T ComposeIndexer<T>(this T key, string name, int index) where T : ParameterKey
+        {
+            if (name == null) throw new ArgumentNullException("name");
+
+            // TODO: cache this string builder to avoid allocation (using for example a thread local)
+            var builder = new StringBuilder(key.Name.Length + 10 + name.Length);
+            builder.Append(key.Name);
+            builder.Append('.');
+            builder.Append(name);
+            builder.Append('[');
+            builder.Append(index);
+            builder.Append(']');
+
+            return ComposeWith(key, builder.ToString());
+        }
+
+        private static T ComposeWith<T>(this T key, StringBuilder builder) where T : ParameterKey
+        {
+            if (builder == null) throw new ArgumentNullException("builder");
+            var newKey = (T)FindByName(builder.ToString());
+            if (newKey == null)
+            {
+                throw new ArgumentException("Key [{0}] must be a registered key".ToFormat(key));
+            }
+            return newKey;
         }
 
         public static ParameterKey FindByName(string name)
         {
+            // name must be XXX.YYY{.ZZZ}
+            // where ZZZ can be any identifiers separated by dots but we don't check this.
             lock (keyByNames)
             {
                 ParameterKey key;
                 keyByNames.TryGetValue(name, out key);
                 if (key == null)
                 {
+                    // firstDot index between XXX and YYY
                     var firstDot = name.IndexOf('.');
                     if (firstDot == -1)
                         return null;
 
-                    var subKeyNameIndex = name.IndexOfAny(new[] { '.', '[' }, firstDot + 1);
-                    if (subKeyNameIndex == -1)
-                        subKeyNameIndex = name.Length;
+                    // dot after YYY
+                    var subKeyNameIndex = name.IndexOf('.', firstDot + 1);
 
-                    // Ignore digits at ending
-                    while (subKeyNameIndex > 0 && char.IsDigit(name, subKeyNameIndex - 1))
-                        subKeyNameIndex--;
-
-                    if (subKeyNameIndex != name.Length)
+                    // keyName => XXX.YYY
+                    string keyName = name; 
+                    string subKeyName = null;
+                    if (subKeyNameIndex >= 0)
                     {
-                        string keyName = name.Substring(0, subKeyNameIndex);
-                        string subKeyName = subKeyNameIndex != -1 ? name.Substring(subKeyNameIndex) : null;
+                        keyName = name.Substring(0, subKeyNameIndex);
+                        // subKeyName => ZZZ
+                        subKeyName = name.Substring(subKeyNameIndex);
+                    }
 
-                        // It is possible this key has been appended with mixin path (i.e. Test becomes Test.mixin[0])
-                        // if it was not a "stage" value
-                        if (keyByNames.TryGetValue(keyName, out key) && subKeyName != "0")
+                    // It is possible this key has been appended with mixin path (i.e. Test becomes Test.mixin[0])
+                    // if it was not a "stage" value
+                    if (keyByNames.TryGetValue(keyName, out key) && subKeyName != null)
+                    {
+                        var baseParameterKeyType = key.GetType();
+                        while (baseParameterKeyType.GetGenericTypeDefinition() != typeof(ParameterKey<>))
+                            baseParameterKeyType = baseParameterKeyType.GetTypeInfo().BaseType;
+
+                        // Get default value and use it for the new subkey
+                        var defaultValue = key.DefaultValueMetadata.DefaultDynamicValue ?? key.DefaultValueMetadata.GetDefaultValue();
+
+                        // Create metadata
+                        var metadataParameters = defaultValue != null ? new[] { defaultValue } : new object[0]; 
+                        var metadata = Activator.CreateInstance(typeof(ParameterKeyValueMetadata<>).MakeGenericType(baseParameterKeyType.GetTypeInfo().GenericTypeArguments[0]), metadataParameters);
+
+                        var args = new[] { name, metadata };
+                        if (key.GetType().GetGenericTypeDefinition() == typeof(ParameterKey<>))
                         {
-                            var realName = key.Name != keyName ? key.Name + subKeyName : name;
-
-                            var baseParameterKeyType = key.GetType();
-                            while (baseParameterKeyType.GetGenericTypeDefinition() != typeof(ParameterKey<>))
-                                baseParameterKeyType = baseParameterKeyType.GetTypeInfo().BaseType;
-
-                            // Get default value and use it for the new subkey
-                            var defaultValue = key.DefaultMetadata.DefaultDynamicValue ?? key.DefaultMetadata.GetDefaultValue();
-
-                            // Create metadata
-                            var metadataParameters = defaultValue != null ? new[] { defaultValue } : new object[0]; 
-                            var metadata = Activator.CreateInstance(typeof(ParameterKeyMetadata<>).MakeGenericType(baseParameterKeyType.GetTypeInfo().GenericTypeArguments[0]), metadataParameters);
-
-                            var args = new[] { name, metadata };
-                            if (key.GetType().GetGenericTypeDefinition() == typeof(ParameterKey<>))
-                            {
-                                args = new[] { name, key.Length, metadata };
-                            }
-                            key = (ParameterKey)Activator.CreateInstance(key.GetType(), args);
-
-                            // Register key. Also register real name in case it was remapped.
-                            keyByNames[name] = key;
-                            if (name != realName)
-                                keyByNames[realName] = key;
+                            args = new[] { name, key.Length, metadata };
                         }
+                        key = (ParameterKey)Activator.CreateInstance(key.GetType(), args);
+
+                        // Register key. Also register real name in case it was remapped.
+                        keyByNames[name] = key;
                     }
                 }
 

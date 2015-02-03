@@ -26,6 +26,8 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         public readonly Mesh Mesh;
 
+        private readonly ParameterCollection parameters;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderMesh" /> class.
         /// </summary>
@@ -39,12 +41,32 @@ namespace SiliconStudio.Paradox.Effects
             RenderModel = renderModel;
             Mesh = mesh;
             Enabled = true;
+
+            // A RenderMesh is inheriting values from Mesh.Parameters
+            // We are considering that Mesh.Parameters is not updated frequently (should be almost immutable)
+            parameters = new ParameterCollection();
+            if (mesh.Parameters != null)
+            {
+                parameters.AddSources(mesh.Parameters);
+            }
         }
 
         /// <summary>
         /// Enable or disable this particular effect mesh.
         /// </summary>
         public bool Enabled { get; set; }
+
+        /// <summary>
+        /// Gets the parameters.
+        /// </summary>
+        /// <value>The parameters.</value>
+        public ParameterCollection Parameters
+        {
+            get
+            {
+                return parameters;
+            }
+        }
 
         /// <summary>
         /// Draw this effect mesh.
@@ -61,8 +83,8 @@ namespace SiliconStudio.Paradox.Effects
                 // - RenderPass.Parameters
                 // - ModelComponent.Parameters
                 // - RenderMesh.Parameters (originally copied from mesh parameters)
-                // The order is based on the granularity level of each element and how shared it can be. Material is heavily shared, a model contains many meshes. An effectMesh is unique.
-                // TODO: really copy mesh parameters into effectMesh instead of just referencing the meshDraw parameters.
+                // The order is based on the granularity level of each element and how shared it can be. Material is heavily shared, a model contains many meshes. An renderMesh is unique.
+                // TODO: really copy mesh parameters into renderMesh instead of just referencing the meshDraw parameters.
 
                 var modelComponent = this.RenderModel.ModelInstance;
                 var hasMaterialParams = this.Mesh.Material != null && this.Mesh.Material.Parameters != null;
@@ -70,14 +92,14 @@ namespace SiliconStudio.Paradox.Effects
                 if (hasMaterialParams)
                 {
                     if (hasModelComponentParams)
-                        this.Effect.Apply(currentPass.Parameters, this.Mesh.Material.Parameters, modelComponent.Parameters, this.Mesh.Parameters, true);
+                        this.Effect.Apply(currentPass.Parameters, this.Mesh.Material.Parameters, modelComponent.Parameters, parameters, true);
                     else
-                        this.Effect.Apply(currentPass.Parameters, this.Mesh.Material.Parameters, this.Mesh.Parameters, true);
+                        this.Effect.Apply(currentPass.Parameters, this.Mesh.Material.Parameters, parameters, true);
                 }
                 else if (hasModelComponentParams)
-                    this.Effect.Apply(currentPass.Parameters, modelComponent.Parameters, this.Mesh.Parameters, true);
+                    this.Effect.Apply(currentPass.Parameters, modelComponent.Parameters, parameters, true);
                 else
-                    this.Effect.Apply(currentPass.Parameters, this.Mesh.Parameters, true);
+                    this.Effect.Apply(currentPass.Parameters, parameters, true);
             }
 
             //using (Profiler.Begin(ProfilingKeys.RenderMesh))
@@ -102,7 +124,6 @@ namespace SiliconStudio.Paradox.Effects
 
         internal void Initialize(GraphicsDevice device)
         {
-            Utilities.Dispose(ref vertexArrayObject);
             vertexArrayObject = VertexArrayObject.New(device, Effect.InputSignature, Mesh.Draw.IndexBuffer, Mesh.Draw.VertexBuffers);
         }
 
@@ -119,10 +140,7 @@ namespace SiliconStudio.Paradox.Effects
                 parameterCollections.Add(modelInstance.Parameters);
             }
 
-            if (Mesh.Parameters != null)
-            {
-                parameterCollections.Add(Mesh.Parameters);
-            }            
+            parameterCollections.Add(parameters);
         }
     }
 }

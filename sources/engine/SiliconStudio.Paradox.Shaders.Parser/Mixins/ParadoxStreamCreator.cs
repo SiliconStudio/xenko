@@ -14,7 +14,7 @@ using ParameterQualifier = SiliconStudio.Shaders.Ast.ParameterQualifier;
 
 namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 {
-    internal class ParadoxStreamCreator
+    internal  class ParadoxStreamCreator
     {
         #region private static members
 
@@ -486,16 +486,16 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 // modify the entrypoint
                 if (inStreamStruct.Fields.Count != 0)
                 {
-                    entryPoint.Parameters.Add(new Parameter(new TypeName(inStreamStruct.Name), "input"));
+                    entryPoint.Parameters.Add(new Parameter(new TypeName(inStreamStruct.Name), "__input__"));
                     entryPoint.Parameters[0].Qualifiers.Values.Remove(ParameterQualifier.InOut);
                 }
 
                 // add the declaration statements to the entrypoint and fill with the values
-                entryPoint.Body.InsertRange(0, CreateStreamFromInput(intermediateStreamStruct, "streams", inStreamStruct, new VariableReferenceExpression("input")));
+                entryPoint.Body.InsertRange(0, CreateStreamFromInput(intermediateStreamStruct, "streams", inStreamStruct, new VariableReferenceExpression("__input__")));
                 if (outStreamStruct.Fields.Count != 0)
                 {
-                    entryPoint.Body.AddRange(CreateOutputFromStream(outStreamStruct, "output", intermediateStreamStruct, "streams"));
-                    entryPoint.Body.Add(new ReturnStatement { Value = new VariableReferenceExpression("output") });
+                    entryPoint.Body.AddRange(CreateOutputFromStream(outStreamStruct, "__output__", intermediateStreamStruct, "streams"));
+                    entryPoint.Body.Add(new ReturnStatement { Value = new VariableReferenceExpression("__output__") });
                     entryPoint.ReturnType = new TypeName(outStreamStruct.Name);
                 }
 
@@ -880,22 +880,22 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         {
             if (inputName != null)
             {
-                var replacor = new ParadoxReplaceVisitor(ParadoxType.Input, inputName);
+                var replacor = new ParadoxReplaceVisitor(StreamsType.Input, inputName);
                 replacor.Run(methodDeclaration);
             }
             if (input2Name != null)
             {
-                var replacor = new ParadoxReplaceVisitor(ParadoxType.Input2, input2Name);
+                var replacor = new ParadoxReplaceVisitor(StreamsType.Input2, input2Name);
                 replacor.Run(methodDeclaration);
             }
             if (outputName != null)
             {
-                var replacor = new ParadoxReplaceVisitor(ParadoxType.Output, outputName);
+                var replacor = new ParadoxReplaceVisitor(StreamsType.Output, outputName);
                 replacor.Run(methodDeclaration);
             }
             if (constantsName != null)
             {
-                var replacor = new ParadoxReplaceVisitor(ParadoxType.Constants, constantsName);
+                var replacor = new ParadoxReplaceVisitor(StreamsType.Constants, constantsName);
                 replacor.Run(methodDeclaration);
             }
         }

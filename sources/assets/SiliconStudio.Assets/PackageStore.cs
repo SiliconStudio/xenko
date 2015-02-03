@@ -22,7 +22,7 @@ namespace SiliconStudio.Assets
     {
         private static readonly Lazy<PackageStore> DefaultPackageStore = new Lazy<PackageStore>(() => new PackageStore());
 
-        private const string DefaultEnvironmentSdkDir = "SiliconStudioParadoxSdkDir";
+        private const string DefaultEnvironmentSdkDir = "SiliconStudioParadoxDir";
 
         private const string CommonTargets = @"Targets\SiliconStudio.Common.targets";
 
@@ -66,7 +66,7 @@ namespace SiliconStudio.Assets
 
             // Try to determine the root package manager from the current assembly
             var thisAssemblyLocation = typeof(PackageStore).Assembly.Location;
-            var binDirectory = new FileInfo(thisAssemblyLocation).Directory;
+            var binDirectory = !string.IsNullOrWhiteSpace(thisAssemblyLocation) ? new FileInfo(thisAssemblyLocation).Directory : null;
             if (binDirectory != null && binDirectory.Parent != null && binDirectory.Parent.Parent != null)
             {
                 var defaultPackageDirectoryTemp = binDirectory.Parent.Parent;
@@ -95,10 +95,6 @@ namespace SiliconStudio.Assets
                     }
                 }
             }
-            else
-            {
-                throw new InvalidOperationException("The current assembly [{0}] must be loaded from a valid installation".ToFormat(thisAssemblyLocation));
-            }
 
             // 3. Try from the environement variable
             if (globalInstallationPath == null)
@@ -107,6 +103,10 @@ namespace SiliconStudio.Assets
                 if (!string.IsNullOrWhiteSpace(rootDirectory) && IsRootDirectory(rootDirectory))
                 {
                     globalInstallationPath = rootDirectory;
+                    if (defaultPackageDirectory == null)
+                    {
+                        defaultPackageDirectory = globalInstallationPath;
+                    }
                 }
             }
 
@@ -133,7 +133,7 @@ namespace SiliconStudio.Assets
             if (NugetStore.IsStoreDirectory(globalInstallationPath))
             {
                 packagesDirectory = UPath.Combine(globalInstallationPath, (UDirectory)NugetStore.DefaultGamePackagesDirectory);
-                store = new NugetStore(globalInstallationPath) { DefaultPackageId = DefaultPackageName };
+                store = new NugetStore(globalInstallationPath);
             }
         }
 

@@ -1,10 +1,20 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Paradox.Effects.Data;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 
 namespace Test
 {
+    shader CubemapDisplayEffect
+    {
+        using params MaterialParameters;
+
+		mixin ShaderBase;
+		mixin TransformationWAndVP;
+		mixin AlbedoFlatShading;
+        mixin compose albedoDiffuse = ComputeColorTextureCubeBasic<TexturingKeys.TextureCube0>;
+    };
+
 	shader CubemapEffect
 	{
 		using params MaterialParameters;

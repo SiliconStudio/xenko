@@ -24,13 +24,10 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         [SetUp]
         public void Init()
         {
-            using (var profile = Profiler.Begin(GameProfilingKeys.ObjectDatabaseInitialize))
-            {
-                // Create and mount database file system
-                var objDatabase = new ObjectDatabase("/data/db", "index", "/local/db");
-                var databaseFileProvider = new DatabaseFileProvider(objDatabase);
-                AssetManager.GetFileProvider = () => databaseFileProvider;
-            }
+            // Create and mount database file system
+            var objDatabase = new ObjectDatabase("/data/db", "index", "/local/db");
+            var databaseFileProvider = new DatabaseFileProvider(objDatabase);
+            AssetManager.GetFileProvider = () => databaseFileProvider;
 
             sourceManager = new ShaderSourceManager();
             sourceManager.LookupDirectoryList.Add(@"shaders");
@@ -58,11 +55,11 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         {
             var log = new LoggerResult();
 
-            var simple = shaderLoader.LoadClassSource(new ShaderClassSource("Simple"), new SiliconStudio.Shaders.Parser.ShaderMacro[0], log);
+            var simple = shaderLoader.LoadClassSource(new ShaderClassSource("Simple"), new SiliconStudio.Shaders.Parser.ShaderMacro[0], log, false);
 
             Assert.That(simple.Members.Count, Is.EqualTo(1));
 
-            var simple2 = shaderLoader.LoadClassSource(new ShaderClassSource("Simple"), new SiliconStudio.Shaders.Parser.ShaderMacro[0], log);
+            var simple2 = shaderLoader.LoadClassSource(new ShaderClassSource("Simple"), new SiliconStudio.Shaders.Parser.ShaderMacro[0], log, false);
 
             // Make sure that a class is not duplicated in memory
             Assert.That(ReferenceEquals(simple, simple2), Is.True);

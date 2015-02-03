@@ -17,22 +17,23 @@ namespace SiliconStudio.Paradox.Effects
         public ulong HashCode;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ParameterKey"/> class.
+        /// Initializes a new instance of the <see cref="ParameterKey" /> class.
         /// </summary>
+        /// <param name="propertyType">Type of the property.</param>
         /// <param name="name">The name.</param>
-        /// <param name="parameterKeyMetadata">Associated metadatas</param>
-        protected ParameterKey(Type propertyType, string name, int length, ParameterKeyMetadata parameterKeyMetadata)
-            : base(name, propertyType, null, parameterKeyMetadata)
+        /// <param name="length">The length.</param>
+        /// <param name="metadatas">The metadatas.</param>
+        protected ParameterKey(Type propertyType, string name, int length, params PropertyKeyMetadata[] metadatas)
+            : base(name, propertyType, null, metadatas)
         {
             Length = length;
             // Cache hashCode for faster lookup (string is immutable)
             // TODO: Make it unique (global dictionary?)
             UpdateName();
-
-            DefaultMetadata = parameterKeyMetadata;
         }
 
-        public readonly ParameterKeyMetadata DefaultMetadata;
+        [DataMemberIgnore]
+        public new ParameterKeyValueMetadata DefaultValueMetadata { get; private set; }
 
         /// <summary>
         /// Gets the number of elements for this key.
@@ -163,6 +164,18 @@ namespace SiliconStudio.Paradox.Effects
             return value;
         }
 
+        protected override void SetupMetadata(PropertyKeyMetadata metadata)
+        {
+            if (metadata is ParameterKeyValueMetadata)
+            {
+                DefaultValueMetadata = (ParameterKeyValueMetadata)metadata;
+            }
+            else
+            {
+                base.SetupMetadata(metadata);
+            }
+        }
+
         internal abstract ParameterCollection.InternalValue CreateInternalValue();
     }
 
@@ -183,17 +196,29 @@ namespace SiliconStudio.Paradox.Effects
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ParameterKey{T}"/> class. 
+        /// Initializes a new instance of the <see cref="ParameterKey{T}"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <param name="parameterKeyMetadata">Associated metadatas</param>
-        public ParameterKey(string name, int length = 1, ParameterKeyMetadata<T> parameterKeyMetadata = null)
-            : base(typeof(T), name, length, parameterKeyMetadata = parameterKeyMetadata ?? new ParameterKeyMetadata<T>())
+        /// <param name="length">The length.</param>
+        /// <param name="metadata">The metadata.</param>
+        public ParameterKey(string name, int length, PropertyKeyMetadata metadata)
+            : this(name, length, new []{ metadata })
         {
-            DefaultMetadataT = parameterKeyMetadata;
         }
 
-        public readonly ParameterKeyMetadata<T> DefaultMetadataT;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ParameterKey{T}"/> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="length">The length.</param>
+        /// <param name="metadatas">The metadatas.</param>
+        public ParameterKey(string name, int length = 1, params PropertyKeyMetadata[] metadatas)
+            : base(typeof(T), name, length, metadatas.Length > 0 ? metadatas : new PropertyKeyMetadata[]{ new ParameterKeyValueMetadata<T>() })
+        {
+        }
+
+        [DataMemberIgnore]
+        public ParameterKeyValueMetadata<T> DefaultValueMetadataT { get; private set; }
 
         public override string ToString()
         {
@@ -205,7 +230,7 @@ namespace SiliconStudio.Paradox.Effects
             if (!typeof(T).IsArray)
                 throw new InvalidOperationException("Operation not valid on ParameterKey<T> if T is not an array type.");
             var elementType = typeof(T).GetElementType();
-            return new ParameterKey<T>(Name, length, new ParameterKeyMetadata<T>((T)(object)Array.CreateInstance(elementType, length)));
+            return new ParameterKey<T>(Name, length, new ParameterKeyValueMetadata<T>((T)(object)Array.CreateInstance(elementType, length)));
         }
 
         internal override ParameterCollection.InternalValue CreateInternalValue()
@@ -220,6 +245,16 @@ namespace SiliconStudio.Paradox.Effects
             }
 
             return new ParameterCollection.InternalValueBase<T>();
+        }
+
+        protected override void SetupMetadata(PropertyKeyMetadata metadata)
+        {
+            if (metadata is ParameterKeyValueMetadata<T>)
+            {
+                DefaultValueMetadataT = (ParameterKeyValueMetadata<T>)metadata;
+            }
+            // Run the always base as ParameterKeyValueMetadata<T> is also ParameterKeyValueMetadata used by the base
+            base.SetupMetadata(metadata);
         }
 
         internal override PropertyContainer.ValueHolder CreateValueHolder(object value)

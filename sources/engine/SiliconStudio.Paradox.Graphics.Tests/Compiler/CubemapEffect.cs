@@ -14,58 +14,60 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-
-#line 3 "D:\Code\Paradox\sources\engine\SiliconStudio.Paradox.Graphics.Tests\Compiler\CubemapEffect.pdxfx"
 using SiliconStudio.Paradox.Effects.Data;
-
-#line 4
-using SiliconStudio.Paradox.Effects.Modules;
-
-#line 6
+using SiliconStudio.Paradox.Effects;
 namespace Test
 {
+    internal static partial class ShaderMixins
+    {
+        internal partial class CubemapDisplayEffect  : IShaderMixinBuilder
+        {
+            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            {
+                context.Mixin(mixin, "ShaderBase");
+                context.Mixin(mixin, "TransformationWAndVP");
+                context.Mixin(mixin, "AlbedoFlatShading");
 
-    #line 8
+                {
+                    var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                    context.PushComposition(mixin, "albedoDiffuse", __subMixin);
+                    context.Mixin(__subMixin, "ComputeColorTextureCubeBasic", TexturingKeys.TextureCube0);
+                    context.PopComposition();
+                }
+            }
+
+            [ModuleInitializer]
+            internal static void __Initialize__()
+
+            {
+                ShaderMixinManager.Register("CubemapDisplayEffect", new CubemapDisplayEffect());
+            }
+        }
+    }
     internal static partial class ShaderMixins
     {
         internal partial class CubemapEffect  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-
-                #line 12
                 context.Mixin(mixin, "ShaderBase");
-
-                #line 13
                 context.Mixin(mixin, "TransformationWAndVP");
-
-                #line 14
                 context.Mixin(mixin, "AlbedoFlatShading");
-
-                #line 16
                 if (context.GetParam(MaterialParameters.AlbedoDiffuse) != null)
 
                     {
-
-                        #line 17
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-
-                        #line 17
+                        context.PushComposition(mixin, "albedoDiffuse", __subMixin);
                         context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoDiffuse));
-                        mixin.Mixin.AddComposition("albedoDiffuse", __subMixin.Mixin);
+                        context.PopComposition();
                     }
-
-                #line 19
                 else
 
                     {
-
-                        #line 19
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-
-                        #line 19
+                        context.PushComposition(mixin, "albedoDiffuse", __subMixin);
                         context.Mixin(__subMixin, "ComputeColorTextureCubeReflect", TexturingKeys.TextureCube0);
-                        mixin.Mixin.AddComposition("albedoDiffuse", __subMixin.Mixin);
+                        context.PopComposition();
                     }
             }
 
@@ -77,41 +79,24 @@ namespace Test
             }
         }
     }
-
-    #line 22
     internal static partial class ShaderMixins
     {
         internal partial class CubemapGeomEffect  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-
-                #line 26
                 context.Mixin(mixin, "ShaderBase");
-
-                #line 27
                 context.Mixin(mixin, "TransformationWAndVP");
-
-                #line 29
                 mixin.Mixin.AddMacro("MAX_VERTEX_COUNT", 9);
-
-                #line 30
                 context.Mixin(mixin, "CameraCube");
-
-                #line 32
                 context.Mixin(mixin, "AlbedoFlatShading");
-
-                #line 34
                 if (context.GetParam(MaterialParameters.AlbedoDiffuse) != null)
 
                     {
-
-                        #line 35
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-
-                        #line 35
+                        context.PushComposition(mixin, "albedoDiffuse", __subMixin);
                         context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoDiffuse));
-                        mixin.Mixin.AddComposition("albedoDiffuse", __subMixin.Mixin);
+                        context.PopComposition();
                     }
             }
 
@@ -123,31 +108,18 @@ namespace Test
             }
         }
     }
-
-    #line 38
     internal static partial class ShaderMixins
     {
         internal partial class CubemapIBLEffect  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-
-                #line 40
                 context.Mixin(mixin, "ParadoxBaseShader");
 
                 {
-
-                    #line 41
-                    var __subMixin = new ShaderMixinSourceTree() { Name = "ParadoxGBufferShaderPass", Parent = mixin };
-                    mixin.Children.Add(__subMixin);
-
-                    #line 41
+                    var __subMixin = new ShaderMixinSourceTree() { Name = "ParadoxGBufferShaderPass" };
                     context.BeginChild(__subMixin);
-
-                    #line 41
                     context.Mixin(__subMixin, "ParadoxGBufferShaderPass");
-
-                    #line 41
                     context.EndChild();
                 }
             }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
@@ -148,10 +148,10 @@ namespace SiliconStudio.Paradox.Effects
             var backBuffer = GraphicsDevice.BackBuffer; 
 
             int pickingArea = 1 + PickingDistance * 2;
-            renderTargets[0] = Texture2D.New(GraphicsDevice, pickingArea, pickingArea, PixelFormat.R32_UInt, TextureFlags.ShaderResource | TextureFlags.RenderTarget).ToRenderTarget().KeepAliveBy(ActiveObjects);
-            renderTargets[1] = Texture2D.New(GraphicsDevice, pickingArea, pickingArea, PixelFormat.R32G32B32A32_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget).ToRenderTarget().KeepAliveBy(ActiveObjects);
+            renderTargets[0] = Texture.New2D(GraphicsDevice, pickingArea, pickingArea, PixelFormat.R32_UInt, TextureFlags.ShaderResource | TextureFlags.RenderTarget).ToRenderTarget().KeepAliveBy(ActiveObjects);
+            renderTargets[1] = Texture.New2D(GraphicsDevice, pickingArea, pickingArea, PixelFormat.R32G32B32A32_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget).ToRenderTarget().KeepAliveBy(ActiveObjects);
 
-            depthStencilTexture = Texture2D.New(GraphicsDevice, pickingArea, pickingArea, PixelFormat.D32_Float, TextureFlags.ShaderResource | TextureFlags.DepthStencil).KeepAliveBy(ActiveObjects);
+            depthStencilTexture = Texture.New2D(GraphicsDevice, pickingArea, pickingArea, PixelFormat.D32_Float, TextureFlags.ShaderResource | TextureFlags.DepthStencil).KeepAliveBy(ActiveObjects);
             depthStencilBuffer = depthStencilTexture.ToDepthStencilBuffer(false);
 
             Parameters.AddDynamic(PickingMatrix, ParameterDynamicValue.New(PickingScreenPosition, (ref Vector2 pickingPosition, ref Matrix picking) =>
@@ -252,10 +252,10 @@ namespace SiliconStudio.Paradox.Effects
             // Create staging textures
             int pickingArea = 1 + PickingDistance * 2;
             request.ResultTextures = new Texture2D[2];
-            request.ResultTextures[0] = Texture2D.New(GraphicsDevice, pickingArea, pickingArea, PixelFormat.R32_UInt, TextureFlags.None, usage: GraphicsResourceUsage.Staging);
+            request.ResultTextures[0] = Texture.New2D(GraphicsDevice, pickingArea, pickingArea, PixelFormat.R32_UInt, TextureFlags.None, usage: GraphicsResourceUsage.Staging);
             request.ResultTextures[0].Name = "PickingTextureStaging";
 
-            request.ResultTextures[1] = Texture2D.New(GraphicsDevice, pickingArea, pickingArea, PixelFormat.R32G32B32A32_Float, TextureFlags.None, usage: GraphicsResourceUsage.Staging);
+            request.ResultTextures[1] = Texture.New2D(GraphicsDevice, pickingArea, pickingArea, PixelFormat.R32G32B32A32_Float, TextureFlags.None, usage: GraphicsResourceUsage.Staging);
             request.ResultTextures[1].Name = "PickingTextureStaging";
 
             request.ResultTextures[0].AddReference();

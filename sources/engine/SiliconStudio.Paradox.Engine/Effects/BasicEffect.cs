@@ -14,205 +14,112 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-
-#line 3 "D:\Code\Paradox\sources\engine\SiliconStudio.Paradox.Engine\Effects\BasicEffect.pdxfx"
 using SiliconStudio.Paradox.Effects.Data;
-
-#line 4
 using SiliconStudio.Paradox.Shaders.Compiler;
-
-#line 6
 namespace SiliconStudio.Paradox.Effects
 {
-
-    #line 8
     internal static partial class ShaderMixins
     {
         internal partial class BasicEffect  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
-
-                #line 15
                 context.Mixin(mixin, "ShaderBase");
-
-                #line 16
                 context.Mixin(mixin, "TransformationWAndVP");
-
-                #line 18
                 context.Mixin(mixin, "PositionVSStream");
-
-                #line 20
-
-                #line 20
                 var hasNormals = context.GetParam(MaterialParameters.NormalMap) != null;
-
-                #line 21
                 if (hasNormals)
                 {
-
-                    #line 23
                     context.Mixin(mixin, "NormalMapTexture");
 
                     {
-
-                        #line 24
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-
-                        #line 24
+                        context.PushComposition(mixin, "normalMap", __subMixin);
                         context.Mixin(__subMixin, context.GetParam(MaterialParameters.NormalMap));
-                        mixin.Mixin.AddComposition("normalMap", __subMixin.Mixin);
+                        context.PopComposition();
                     }
                 }
-
-                #line 27
                 else
                 {
-
-                    #line 28
                     context.Mixin(mixin, "NormalVSStream");
                 }
-
-                #line 31
                 context.Mixin(mixin, "BRDFDiffuseBase");
-
-                #line 32
                 context.Mixin(mixin, "BRDFSpecularBase");
-
-                #line 33
                 context.Mixin(mixin, "LightMultiDirectionalShadingPerPixel", 2);
-
-                #line 34
                 context.Mixin(mixin, "TransparentShading");
-
-                #line 35
                 context.Mixin(mixin, "DiscardTransparent");
-
-                #line 37
                 if (context.GetParam(MaterialParameters.AlbedoDiffuse) != null)
                 {
 
                     {
-
-                        #line 39
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-
-                        #line 39
+                        context.PushComposition(mixin, "DiffuseLighting", __subMixin);
                         context.Mixin(__subMixin, "ComputeBRDFDiffuseLambert");
-                        mixin.Mixin.AddComposition("DiffuseLighting", __subMixin.Mixin);
+                        context.PopComposition();
                     }
 
                     {
-
-                        #line 40
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-
-                        #line 40
+                        context.PushComposition(mixin, "albedoDiffuse", __subMixin);
                         context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoDiffuse));
-                        mixin.Mixin.AddComposition("albedoDiffuse", __subMixin.Mixin);
+                        context.PopComposition();
                     }
                 }
-
-                #line 43
                 if (context.GetParam(MaterialParameters.AlbedoSpecular) != null)
                 {
 
                     {
-
-                        #line 45
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-
-                        #line 45
+                        context.PushComposition(mixin, "SpecularLighting", __subMixin);
                         context.Mixin(__subMixin, "ComputeBRDFColorSpecularBlinnPhong");
-                        mixin.Mixin.AddComposition("SpecularLighting", __subMixin.Mixin);
+                        context.PopComposition();
                     }
 
                     {
-
-                        #line 46
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-
-                        #line 46
+                        context.PushComposition(mixin, "albedoSpecular", __subMixin);
                         context.Mixin(__subMixin, context.GetParam(MaterialParameters.AlbedoSpecular));
-                        mixin.Mixin.AddComposition("albedoSpecular", __subMixin.Mixin);
+                        context.PopComposition();
                     }
-
-                    #line 48
                     if (context.GetParam(MaterialParameters.SpecularPowerMap) != null)
                     {
-
-                        #line 50
                         context.Mixin(mixin, "SpecularPower");
 
                         {
-
-                            #line 51
                             var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-
-                            #line 51
+                            context.PushComposition(mixin, "SpecularPowerMap", __subMixin);
                             context.Mixin(__subMixin, context.GetParam(MaterialParameters.SpecularPowerMap));
-                            mixin.Mixin.AddComposition("SpecularPowerMap", __subMixin.Mixin);
+                            context.PopComposition();
                         }
                     }
-
-                    #line 54
                     if (context.GetParam(MaterialParameters.SpecularIntensityMap) != null)
                     {
 
                         {
-
-                            #line 56
                             var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
-
-                            #line 56
+                            context.PushComposition(mixin, "SpecularIntensityMap", __subMixin);
                             context.Mixin(__subMixin, context.GetParam(MaterialParameters.SpecularIntensityMap));
-                            mixin.Mixin.AddComposition("SpecularIntensityMap", __subMixin.Mixin);
+                            context.PopComposition();
                         }
                     }
                 }
-
-                #line 60
                 if (context.GetParam(MaterialParameters.HasSkinningPosition))
                 {
-
-                    #line 62
                     if (context.GetParam(MaterialParameters.SkinningBones) > context.GetParam(MaterialParameters.SkinningMaxBones))
                     {
-
-                        #line 65
                         context.SetParam(MaterialParameters.SkinningMaxBones, context.GetParam(MaterialParameters.SkinningBones));
                     }
-
-                    #line 67
                     mixin.Mixin.AddMacro("SkinningMaxBones", context.GetParam(MaterialParameters.SkinningMaxBones));
-
-                    #line 68
                     context.Mixin(mixin, "TransformationSkinning");
-
-                    #line 70
                     if (context.GetParam(MaterialParameters.HasSkinningNormal))
                     {
-
-                        #line 72
                         if (hasNormals)
-
-                            #line 73
                             context.Mixin(mixin, "TangentToViewSkinning");
-
-                        #line 75
                         else
-
-                            #line 75
                             context.Mixin(mixin, "NormalVSSkinning");
-
-                        #line 77
                         context.Mixin(mixin, "NormalSkinning");
                     }
-
-                    #line 80
                     if (context.GetParam(MaterialParameters.HasSkinningTangent))
-
-                        #line 81
                         context.Mixin(mixin, "TangentSkinning");
                 }
             }

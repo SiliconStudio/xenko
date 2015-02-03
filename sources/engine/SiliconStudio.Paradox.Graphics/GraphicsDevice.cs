@@ -122,7 +122,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <remarks>
         ///     Because this method is being called from a lock region, this method should not be time consuming.
         /// </remarks>
-        internal delegate T CreateSharedData<out T>() where T : class, IDisposable;
+        public delegate T CreateSharedData<out T>() where T : class, IDisposable;
 
         /// <summary>
         ///     Gets the adapter this instance is attached to.
@@ -135,7 +135,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <value>
         ///     The back buffer. The returned value may be null if no <see cref="GraphicsPresenter" /> are setup on this device.
         /// </value>
-        public RenderTarget BackBuffer
+        public Texture BackBuffer
         {
             get
             {
@@ -157,7 +157,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <value>
         ///     The depth stencil buffer. The returned value may be null if no <see cref="GraphicsPresenter" /> are setup on this device or no depth buffer was allocated.
         /// </value>
-        public DepthStencilBuffer DepthStencilBuffer
+        public Texture DepthStencilBuffer
         {
             get
             {
@@ -228,7 +228,7 @@ namespace SiliconStudio.Paradox.Graphics
                 if (presenter != null)
                 {
                     Begin();
-                    SetRenderTargets(presenter.DepthStencilBuffer, presenter.BackBuffer);
+                    SetDepthAndRenderTargets(presenter.DepthStencilBuffer, presenter.BackBuffer);
                     SetViewport(presenter.DefaultViewport);
                     End();
                 }
@@ -318,43 +318,47 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// Draws a fullscreen texture using a <see cref="SamplerStateFactory.LinearClamp"/> sampler. See <see cref="Draw+a+texture"/> to learn how to use it.
         /// </summary>
-        /// <param name="texture">The texture. Expecting an instance of <see cref="Texture2D"/>.</param>
-        public void DrawTexture(Texture texture)
+        /// <param name="texture">The texture. Expecting an instance of <see cref="Texture"/>.</param>
+        /// <param name="applyEffectStates">The flag to apply effect states.</param>
+        public void DrawTexture(Texture texture, bool applyEffectStates = false)
         {
-            DrawTexture(texture, null, Color4.White);
+            DrawTexture(texture, null, Color4.White, applyEffectStates);
         }
 
         /// <summary>
         /// Draws a fullscreen texture using the specified sampler. See <see cref="Draw+a+texture"/> to learn how to use it.
         /// </summary>
-        /// <param name="texture">The texture. Expecting an instance of <see cref="Texture2D"/>.</param>
+        /// <param name="texture">The texture. Expecting an instance of <see cref="Texture"/>.</param>
         /// <param name="sampler">The sampler.</param>
-        public void DrawTexture(Texture texture, SamplerState sampler)
+        /// <param name="applyEffectStates">The flag to apply effect states.</param>
+        public void DrawTexture(Texture texture, SamplerState sampler, bool applyEffectStates = false)
         {
-            DrawTexture(texture, sampler, Color4.White);
+            DrawTexture(texture, sampler, Color4.White, applyEffectStates);
         }
 
         /// <summary>
         /// Draws a fullscreen texture using a <see cref="SamplerStateFactory.LinearClamp"/> sampler
         /// and the texture color multiplied by a custom color. See <see cref="Draw+a+texture"/> to learn how to use it.
         /// </summary>
-        /// <param name="texture">The texture. Expecting an instance of <see cref="Texture2D"/>.</param>
+        /// <param name="texture">The texture. Expecting an instance of <see cref="Texture"/>.</param>
         /// <param name="color">The color.</param>
-        public void DrawTexture(Texture texture, Color4 color)
+        /// <param name="applyEffectStates">The flag to apply effect states.</param>
+        public void DrawTexture(Texture texture, Color4 color, bool applyEffectStates = false)
         {
-            DrawTexture(texture, null, color);
+            DrawTexture(texture, null, color, applyEffectStates);
         }
 
         /// <summary>
         /// Draws a fullscreen texture using the specified sampler
         /// and the texture color multiplied by a custom color. See <see cref="Draw+a+texture"/> to learn how to use it.
         /// </summary>
-        /// <param name="texture">The texture. Expecting an instance of <see cref="Texture2D"/>.</param>
+        /// <param name="texture">The texture. Expecting an instance of <see cref="Texture"/>.</param>
         /// <param name="sampler">The sampler.</param>
         /// <param name="color">The color.</param>
-        public void DrawTexture(Texture texture, SamplerState sampler, Color4 color)
+        /// <param name="applyEffectStates">The flag to apply effect states.</param>
+        public void DrawTexture(Texture texture, SamplerState sampler, Color4 color, bool applyEffectStates = false)
         {
-            primitiveQuad.Draw(texture, sampler, color);
+            primitiveQuad.Draw(texture, sampler, color, applyEffectStates);
         }
 
         /// <summary>
@@ -372,27 +376,27 @@ namespace SiliconStudio.Paradox.Graphics
         ///     Sets a new depthStencilBuffer to this GraphicsDevice. If there is any RenderTarget already bound, it will be unbinded. See <see cref="Textures+and+render+targets"/> to learn how to use it.
         /// </summary>
         /// <param name="depthStencilBuffer">The depth stencil.</param>
-        public void SetRenderTarget(DepthStencilBuffer depthStencilBuffer)
+        public void SetDepthTarget(Texture depthStencilBuffer)
         {
-            SetRenderTarget(depthStencilBuffer, null);
+            SetDepthAndRenderTarget(depthStencilBuffer, null);
         }
 
         /// <summary>
         /// Binds a single render target to the output-merger stage. See <see cref="Textures+and+render+targets"/> to learn how to use it.
         /// </summary>
         /// <param name="renderTargetView">A view of the render target to bind.</param>
-        public void SetRenderTarget(RenderTarget renderTargetView)
+        public void SetRenderTarget(Texture renderTargetView)
         {
-            SetRenderTarget(null, renderTargetView);
+            SetDepthAndRenderTarget(null, renderTargetView);
         }
 
         /// <summary>
         ///     <p>Bind one or more render targets atomically and the depth-stencil buffer to the output-merger stage. See <see cref="Textures+and+render+targets"/> to learn how to use it.</p>
         /// </summary>
         /// <param name="renderTargetViews">A set of render target views to bind.</param>
-        public void SetRenderTargets(params RenderTarget[] renderTargetViews)
+        public void SetRenderTargets(params Texture[] renderTargetViews)
         {
-            SetRenderTargets(null, renderTargetViews);
+            SetDepthAndRenderTargets(null, renderTargetViews);
         }
 
         /// <summary>
@@ -405,7 +409,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <returns>
         ///     An instance of the shared data. The shared data will be disposed by this <see cref="GraphicsDevice" /> instance.
         /// </returns>
-        internal T GetOrCreateSharedData<T>(GraphicsDeviceSharedDataType type, object key, CreateSharedData<T> sharedDataCreator) where T : class, IDisposable
+        public T GetOrCreateSharedData<T>(GraphicsDeviceSharedDataType type, object key, CreateSharedData<T> sharedDataCreator) where T : class, IDisposable
         {
             Dictionary<object, IDisposable> dictionary = (type == GraphicsDeviceSharedDataType.PerDevice) ? sharedDataPerDevice : sharedDataPerDeviceContext;
 

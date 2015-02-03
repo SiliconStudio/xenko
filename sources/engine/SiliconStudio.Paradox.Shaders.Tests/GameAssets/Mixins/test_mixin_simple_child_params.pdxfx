@@ -5,6 +5,7 @@ namespace Test4
     params TestParameters
     {
         int TestCount;
+        bool UseComputeColorEffect;
     };
 
     partial shader ChildParamsMixin

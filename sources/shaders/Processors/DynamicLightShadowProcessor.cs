@@ -7,12 +7,13 @@ using System.Text;
 
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.DataModel;
+using SiliconStudio.Paradox.Effects.ShadowMaps;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.Effects.Modules.Processors
+namespace SiliconStudio.Paradox.Effects.Processors
 {
     /// <summary>
     /// A class allocating as many shadow map as possible without any predefined memory budget.
@@ -91,11 +92,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
                 if (shadowMaps.Count == 0)
                 {
                     InternalShadowMapTextures.Remove(data.ShadowMap.Texture);
-                    Utilities.Dispose(ref data.ShadowMap.Texture.ShadowMapDepthBuffer);
                     Utilities.Dispose(ref data.ShadowMap.Texture.ShadowMapDepthTexture);
-                    Utilities.Dispose(ref data.ShadowMap.Texture.ShadowMapRenderTarget);
                     Utilities.Dispose(ref data.ShadowMap.Texture.ShadowMapTargetTexture);
-                    Utilities.Dispose(ref data.ShadowMap.Texture.IntermediateBlurRenderTarget);
                     Utilities.Dispose(ref data.ShadowMap.Texture.IntermediateBlurTexture);
 
                     if (!texturesDefault.Remove(data.ShadowMap.Texture))
@@ -145,7 +143,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
                 var shadowTexture = shadowMapTexture.Key;
                 var shadowMaps = shadowMapTexture.Value;
 
-                shadowTexture.GuillotinePacker.Clear(shadowTexture.ShadowMapDepthTexture.Width, shadowTexture.ShadowMapDepthTexture.Height);
+                shadowTexture.GuillotinePacker.Clear(shadowTexture.ShadowMapDepthTexture.ViewWidth, shadowTexture.ShadowMapDepthTexture.ViewHeight);
 
                 var useShadowTexture = true;
                 for (var i = 0; i < shadowMaps.Count && useShadowTexture; ++i)
@@ -166,7 +164,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
             {
                 // allocate a new texture
                 chosenTexture = new ShadowMapTexture(GraphicsDevice, newShadowMap.Filter, 2048);
-                chosenTexture.GuillotinePacker.Clear(chosenTexture.ShadowMapDepthTexture.Width, chosenTexture.ShadowMapDepthTexture.Height);
+                chosenTexture.GuillotinePacker.Clear(chosenTexture.ShadowMapDepthTexture.ViewWidth, chosenTexture.ShadowMapDepthTexture.ViewHeight);
 
                 // TODO: choose texture size based on the shadow map. For now throw exception
                 if (!chosenTexture.GuillotinePacker.TryInsert(newShadowMap.ShadowMapSize, newShadowMap.ShadowMapSize, newShadowMap.CascadeCount))

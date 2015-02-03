@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 using SiliconStudio.Paradox.BinPacking;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core;
@@ -355,7 +355,7 @@ namespace SiliconStudio.Paradox.Effects
             RenderPass.AddPass(PostPass);
 
 
-            var depthStencilTexture = Texture2D.New(GraphicsDevice, AtlasSize, AtlasSize, PixelFormat.D32_Float, TextureFlags.DepthStencil | TextureFlags.ShaderResource).KeepAliveBy(ActiveObjects);
+            var depthStencilTexture = Texture.New2D(GraphicsDevice, AtlasSize, AtlasSize, PixelFormat.D32_Float, TextureFlags.DepthStencil | TextureFlags.ShaderResource).KeepAliveBy(ActiveObjects);
             var depthStencilBuffer = depthStencilTexture.ToDepthStencilBuffer(false);
             ShadowMapDepth = depthStencilBuffer;
 
@@ -384,8 +384,8 @@ namespace SiliconStudio.Paradox.Effects
             // Variance Shadow Mapping
             // Create the blur temporary texture
             var shadowMapTextureDesc = ShadowMapDepth.Description;
-            var shadowMapBlurH = Texture2D.New(GraphicsDevice, shadowMapTextureDesc.Width, shadowMapTextureDesc.Height, PixelFormat.R32G32_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget).KeepAliveBy(ActiveObjects);
-            var shadowMapBlurV = Texture2D.New(GraphicsDevice, shadowMapTextureDesc.Width, shadowMapTextureDesc.Height, PixelFormat.R32G32_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget).KeepAliveBy(ActiveObjects);
+            var shadowMapBlurH = Texture.New2D(GraphicsDevice, shadowMapTextureDesc.Width, shadowMapTextureDesc.Height, PixelFormat.R32G32_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget).KeepAliveBy(ActiveObjects);
+            var shadowMapBlurV = Texture.New2D(GraphicsDevice, shadowMapTextureDesc.Width, shadowMapTextureDesc.Height, PixelFormat.R32G32_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget).KeepAliveBy(ActiveObjects);
 
             Texture2D textureSourceH = ShadowMapDepth.Texture;
             Texture2D textureSourceV = shadowMapBlurH;

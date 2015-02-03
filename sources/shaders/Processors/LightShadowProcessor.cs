@@ -1,17 +1,19 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.DataModel;
+using SiliconStudio.Paradox.Effects.ShadowMaps;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.Effects.Modules.Processors
+namespace SiliconStudio.Paradox.Effects.Processors
 {
     public abstract class LightShadowProcessor : EntityProcessor<EntityLightShadow>
     {
@@ -80,11 +82,8 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
             foreach (var texture in InternalShadowMapTextures)
             {
                 InternalShadowMapTextures.Remove(texture);
-                Utilities.Dispose(ref texture.ShadowMapDepthBuffer);
                 Utilities.Dispose(ref texture.ShadowMapDepthTexture);
-                Utilities.Dispose(ref texture.ShadowMapRenderTarget);
                 Utilities.Dispose(ref texture.ShadowMapTargetTexture);
-                Utilities.Dispose(ref texture.IntermediateBlurRenderTarget);
                 Utilities.Dispose(ref texture.IntermediateBlurTexture);
             }
             InternalShadowMapTextures.Clear();
@@ -127,7 +126,7 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
             var worldDir = Vector4.Transform(new Vector4(light.Light.LightDirection, 0), light.Entity.Transformation.WorldMatrix);
             light.ShadowMap.LightDirection = new Vector3(worldDir.X, worldDir.Y, worldDir.Z);
             light.ShadowMap.LightPosition = light.Entity.Transformation.Translation;
-            light.ShadowMap.Fov = light.Light.SpotFieldAngle;
+            light.ShadowMap.Fov = (float)(2 * Math.PI * light.Light.SpotFieldAngle / 180.0);
             light.ShadowMap.ReceiverInfo.ShadowLightDirection = light.ShadowMap.LightDirectionNormalized;
             light.ShadowMap.ShadowFarDistance = light.Light.ShadowFarDistance;
             light.ShadowMap.ReceiverInfo.ShadowMapDistance = light.Light.Type == LightType.Directional ? light.ShadowMap.ShadowFarDistance : light.ShadowMap.ShadowFarDistance - light.ShadowMap.ShadowNearDistance;

@@ -1,10 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Shaders.Ast;
@@ -19,10 +21,23 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
 {
     internal partial class ShaderCompiler : IShaderCompiler
     {
+        private static readonly object GlslOptimizerLock = new object();
+
         static ShaderCompiler()
         {
             // Preload proper glsl optimizer native library (depending on CPU type)
             Core.NativeLibrary.PreloadLibrary("glsl_optimizer.dll");
+        }
+
+        private int renderTargetCount;
+
+        /// <summary>
+        /// The constructor.
+        /// </summary>
+        /// <param name="rtCount">The number of render targets</param>
+        public ShaderCompiler(int rtCount)
+        {
+            renderTargetCount = rtCount;
         }
 
         /// <summary>
@@ -38,8 +53,54 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
         public ShaderBytecodeResult Compile(string shaderSource, string entryPoint, ShaderStage stage, ShaderMixinParameters compilerParameters, EffectReflection reflection, string sourceFilename = null)
         {
             var isOpenGLES = compilerParameters.Get(CompilerParameters.GraphicsPlatformKey) == GraphicsPlatform.OpenGLES;
+            var isOpenGLES3 = compilerParameters.Get(CompilerParameters.GraphicsProfileKey) >= GraphicsProfile.Level_10_0;
             var shaderBytecodeResult = new ShaderBytecodeResult();
+            byte[] rawData;
 
+            var shader = Compile(shaderSource, entryPoint, stage, isOpenGLES, isOpenGLES3, shaderBytecodeResult, sourceFilename);
+
+            if (shader == null)
+                return shaderBytecodeResult;
+
+            if (isOpenGLES)
+            {
+                // store both ES 2 and ES 3 on OpenGL ES platforms
+                var shaderBytecodes = new ShaderLevelBytecode();
+                if (isOpenGLES3)
+                {
+                    shaderBytecodes.DataES3 = shader;
+                    shaderBytecodes.DataES2 = null;
+                }
+                else
+                {
+                    shaderBytecodes.DataES2 = shader;
+                    shaderBytecodes.DataES3 = Compile(shaderSource, entryPoint, stage, true, true, shaderBytecodeResult, sourceFilename);
+                }
+                using (var stream = new MemoryStream())
+                {
+                    BinarySerialization.Write(stream, shaderBytecodes);
+                    rawData = stream.GetBuffer();
+                }
+            }
+            else
+            {
+                // store string on OpenGL platforms
+                rawData = Encoding.ASCII.GetBytes(shader);
+            }
+            
+            var bytecodeId = ObjectId.FromBytes(rawData);
+            var bytecode = new ShaderBytecode(bytecodeId, rawData);
+            bytecode.Stage = stage;
+
+            shaderBytecodeResult.Bytecode = bytecode;
+            
+            return shaderBytecodeResult;
+        }
+
+        private string Compile(string shaderSource, string entryPoint, ShaderStage stage, bool isOpenGLES, bool isOpenGLES3, ShaderBytecodeResult shaderBytecodeResult, string sourceFilename = null)
+        {
+            if (isOpenGLES && !isOpenGLES3 && renderTargetCount > 1)
+                shaderBytecodeResult.Error("OpenGL ES 2 does not support multiple render targets.");
 
             PipelineStage pipelineStage = PipelineStage.None;
             switch (stage)
@@ -68,132 +129,175 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
             }
 
             if (shaderBytecodeResult.HasErrors)
-                return shaderBytecodeResult;
-            
-            // Convert from HLSL to GLSL
-            // Note that for now we parse from shader as a string, but we could simply clone effectPass.Shader to avoid multiple parsing.
-            var glslConvertor = new ShaderConverter(isOpenGLES);
-            var glslShader = glslConvertor.Convert(shaderSource, entryPoint, pipelineStage, sourceFilename, shaderBytecodeResult);
+                return null;
 
-            // Add std140 layout
-            foreach (var constantBuffer in glslShader.Declarations.OfType<ConstantBuffer>())
+            string shaderString = null;
+            var generateUniformBlocks = isOpenGLES && isOpenGLES3;
+
+            // null entry point for pixel shader means no pixel shader. In that case, we return a default function.
+            if (entryPoint == null && stage == ShaderStage.Pixel && isOpenGLES)
             {
-                constantBuffer.Qualifiers |= new LayoutQualifier(new LayoutKeyValue("std140"));
+                shaderString = "void main(){}";
             }
-
-            // Output the result
-            var glslShaderWriter = new HlslToGlslWriter();
-
-            if (isOpenGLES)
+            else
             {
-                glslShaderWriter.TrimFloatSuffix = true;
-                glslShaderWriter.GenerateUniformBlocks = false;
-                foreach (var variable in glslShader.Declarations.OfType<Variable>())
+                // Convert from HLSL to GLSL
+                // Note that for now we parse from shader as a string, but we could simply clone effectPass.Shader to avoid multiple parsing.
+                var glslConvertor = new ShaderConverter(isOpenGLES, isOpenGLES3);
+                var glslShader = glslConvertor.Convert(shaderSource, entryPoint, pipelineStage, sourceFilename, shaderBytecodeResult);
+
+                if (glslShader == null || shaderBytecodeResult.HasErrors)
+                    return null;
+
+                // Add std140 layout
+                foreach (var constantBuffer in glslShader.Declarations.OfType<ConstantBuffer>())
                 {
-                    if (variable.Qualifiers.Contains(ParameterQualifier.In))
+                    if (isOpenGLES3) // TODO: for OpenGL too?
                     {
-                        variable.Qualifiers.Values.Remove(ParameterQualifier.In);
-                        // "in" becomes "attribute" in VS, "varying" in other stages
-                        variable.Qualifiers.Values.Add(
-                            pipelineStage == PipelineStage.Vertex
-                                ? global::SiliconStudio.Shaders.Ast.Glsl.ParameterQualifier.Attribute
-                                : global::SiliconStudio.Shaders.Ast.Glsl.ParameterQualifier.Varying);
+                        var layoutQualifier = constantBuffer.Qualifiers.OfType<SiliconStudio.Shaders.Ast.Glsl.LayoutQualifier>().FirstOrDefault();
+                        if (layoutQualifier == null)
+                        {
+                            layoutQualifier = new SiliconStudio.Shaders.Ast.Glsl.LayoutQualifier();
+                            constantBuffer.Qualifiers |= layoutQualifier;
+                        }
+                        layoutQualifier.Layouts.Add(new LayoutKeyValue("std140"));
                     }
-                    if (variable.Qualifiers.Contains(ParameterQualifier.Out))
+                    else
                     {
-                        variable.Qualifiers.Values.Remove(ParameterQualifier.Out);
-                        variable.Qualifiers.Values.Add(global::SiliconStudio.Shaders.Ast.Glsl.ParameterQualifier.Varying);
+                        constantBuffer.Qualifiers |= new LayoutQualifier(new LayoutKeyValue("std140"));
                     }
                 }
-            }
 
-            // Write shader
-            glslShaderWriter.Visit(glslShader);
+                // Output the result
+                var glslShaderWriter = new HlslToGlslWriter();
+
+                if (isOpenGLES)
+                {
+                    glslShaderWriter.TrimFloatSuffix = true;
+
+                    glslShaderWriter.GenerateUniformBlocks = generateUniformBlocks;
+
+                    if (!isOpenGLES3)
+                    {
+                        foreach (var variable in glslShader.Declarations.OfType<Variable>())
+                        {
+                            if (variable.Qualifiers.Contains(ParameterQualifier.In))
+                            {
+                                variable.Qualifiers.Values.Remove(ParameterQualifier.In);
+                                // "in" becomes "attribute" in VS, "varying" in other stages
+                                variable.Qualifiers.Values.Add(
+                                    pipelineStage == PipelineStage.Vertex
+                                        ? global::SiliconStudio.Shaders.Ast.Glsl.ParameterQualifier.Attribute
+                                        : global::SiliconStudio.Shaders.Ast.Glsl.ParameterQualifier.Varying);
+                            }
+                            if (variable.Qualifiers.Contains(ParameterQualifier.Out))
+                            {
+                                variable.Qualifiers.Values.Remove(ParameterQualifier.Out);
+                                variable.Qualifiers.Values.Add(global::SiliconStudio.Shaders.Ast.Glsl.ParameterQualifier.Varying);
+                            }
+                        }
+                    }
+                }
+
+                // Write shader
+                glslShaderWriter.Visit(glslShader);
+
+                shaderString = glslShaderWriter.Text;
+            }
 
             // Build shader source
             var glslShaderCode = new StringBuilder();
 
             // Append some header depending on target
-            if (!isOpenGLES)
-            {
-                glslShaderCode
-                    .AppendLine("#version 420")
-                    .AppendLine();
-
-                if (pipelineStage == PipelineStage.Pixel)
-                    glslShaderCode
-                        .AppendLine("out vec4 gl_FragData[1];")
-                        .AppendLine();
-            }
-
             if (isOpenGLES)
             {
+                if (isOpenGLES3)
+                    glslShaderCode
+                        .AppendLine("#version 300 es") // TODO: 310 version?
+                        .AppendLine();
+
+                if (generateUniformBlocks) // TODO: is it really needed? It produces only a warning.
+                    glslShaderCode
+                        .AppendLine("#extension GL_ARB_gpu_shader5 : enable")
+                        .AppendLine();
+
                 if (pipelineStage == PipelineStage.Pixel)
                     glslShaderCode
                         .AppendLine("precision highp float;")
                         .AppendLine();
             }
+            else
+            {
+                glslShaderCode
+                    .AppendLine("#version 420")
+                    .AppendLine();
+            }
 
-            glslShaderCode.Append(glslShaderWriter.Text);
+            if ((!isOpenGLES || isOpenGLES3) && pipelineStage == PipelineStage.Pixel && renderTargetCount > 0)
+            {
+                // TODO: identifiers starting with "gl_" should be reserved. Compilers usually accept them but it may should be prevented.
+                glslShaderCode
+                    .AppendLine("out vec4 gl_FragData[" + renderTargetCount + "];")
+                    .AppendLine();
+            }
+
+            glslShaderCode.Append(shaderString);
 
             var realShaderSource = glslShaderCode.ToString();
 
             // optimize shader
-            var optShaderSource = RunOptimizer(realShaderSource, isOpenGLES, false, pipelineStage == PipelineStage.Vertex);
+            var optShaderSource = RunOptimizer(realShaderSource, isOpenGLES, isOpenGLES3, pipelineStage == PipelineStage.Vertex);
             if (!String.IsNullOrEmpty(optShaderSource))
                 realShaderSource = optShaderSource;
 
-            var rawData = Encoding.ASCII.GetBytes(realShaderSource);
-            var bytecodeId = ObjectId.FromBytes(rawData);
-            var bytecode = new ShaderBytecode(bytecodeId, rawData);
-            bytecode.Stage = stage;
-
-            shaderBytecodeResult.Bytecode = bytecode;
-            return shaderBytecodeResult;
+            return realShaderSource;
         }
 
         private string RunOptimizer(string baseShader, bool openGLES, bool es30, bool vertex)
 	    {
-		    IntPtr ctx = IntPtr.Zero;
-            var inputShader = baseShader;
-            if (openGLES)
-		    {
-			    if (es30)
-                    ctx = glslopt_initialize(2);
-			    else
-                    ctx = glslopt_initialize(1);
-
-			    if (vertex)
-			    {
-                    var pre = "#define gl_Vertex _glesVertex\nattribute highp vec4 _glesVertex;\n";
-				    pre += "#define gl_Normal _glesNormal\nattribute mediump vec3 _glesNormal;\n";
-				    pre += "#define gl_MultiTexCoord0 _glesMultiTexCoord0\nattribute highp vec4 _glesMultiTexCoord0;\n";
-				    pre += "#define gl_MultiTexCoord1 _glesMultiTexCoord1\nattribute highp vec4 _glesMultiTexCoord1;\n";
-				    pre += "#define gl_Color _glesColor\nattribute lowp vec4 _glesColor;\n";
-                    inputShader = pre + inputShader;
-			    }
-		    }
-		    else
+            lock (GlslOptimizerLock)
             {
-                ctx = glslopt_initialize(0);
-		    }
+                IntPtr ctx = IntPtr.Zero;
+                var inputShader = baseShader;
+                if (openGLES)
+                {
+                    if (es30)
+                        ctx = glslopt_initialize(2);
+                    else
+                        ctx = glslopt_initialize(1);
 
-		    int type = vertex ? 0 : 1;
-            var shader = glslopt_optimize(ctx, type, inputShader, 0);
+                    if (vertex)
+                    {
+                        var pre = "#define gl_Vertex _glesVertex\nattribute highp vec4 _glesVertex;\n";
+                        pre += "#define gl_Normal _glesNormal\nattribute mediump vec3 _glesNormal;\n";
+                        pre += "#define gl_MultiTexCoord0 _glesMultiTexCoord0\nattribute highp vec4 _glesMultiTexCoord0;\n";
+                        pre += "#define gl_MultiTexCoord1 _glesMultiTexCoord1\nattribute highp vec4 _glesMultiTexCoord1;\n";
+                        pre += "#define gl_Color _glesColor\nattribute lowp vec4 _glesColor;\n";
+                        inputShader = pre + inputShader;
+                    }
+                }
+                else
+                {
+                    ctx = glslopt_initialize(0);
+                }
 
-		    bool optimizeOk = glslopt_get_status(shader);
+                int type = vertex ? 0 : 1;
+                var shader = glslopt_optimize(ctx, type, inputShader, 0);
 
-            string shaderAsString = null;
-		    if (optimizeOk)
-		    {
-                IntPtr optShader = glslopt_get_output(shader);
-                shaderAsString = Marshal.PtrToStringAnsi(optShader);
-		    }
+                bool optimizeOk = glslopt_get_status(shader);
 
-            glslopt_shader_delete(shader);
-            glslopt_cleanup(ctx);
+                string shaderAsString = null;
+                if (optimizeOk)
+                {
+                    IntPtr optShader = glslopt_get_output(shader);
+                    shaderAsString = Marshal.PtrToStringAnsi(optShader);
+                }
 
-            return shaderAsString;
+                glslopt_shader_delete(shader);
+                glslopt_cleanup(ctx);
+
+                return shaderAsString;
+            }
 	    }
 
         [DllImport("glsl_optimizer.dll", CallingConvention=CallingConvention.Cdecl)]

@@ -103,6 +103,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Utility
         public static readonly MessageCode StreamVariableWithoutPrefix              = new MessageCode("E3007", "Stream variable [{0}] is used without 'streams'. prefix");
         public static readonly MessageCode WrongGenericNumber                       = new MessageCode("E3008", "The class [{0}] could not be instanciated because the number of required generic does not match the number of passed generics.");
         public static readonly MessageCode SameNameGenerics                         = new MessageCode("E3009", "The generic [{0}] has the same name as [{1}]. Class [{2}] couldn't be instanciated.");
+        public static readonly MessageCode FileNameNotMatchingClassName             = new MessageCode("E3010", "The shader file name [{0}] is not matching the shader class name [{1}]");
+        public static readonly MessageCode ShaderMustContainSingleClassDeclaration  = new MessageCode("E3011", "The shader [{0}] must contain only a single shader class declaration");
 
         // compiler errors: E4###
         public static readonly MessageCode EntryPointNotFound                       = new MessageCode("E4000", "Entrypoint [{0}] was not found for stage [{1}] in Shader [{2}]");

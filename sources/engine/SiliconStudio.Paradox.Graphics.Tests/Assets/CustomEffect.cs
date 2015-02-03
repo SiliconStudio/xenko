@@ -14,10 +14,55 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-namespace SiliconStudio.Paradox.Effects.Modules
+namespace SiliconStudio.Paradox.Graphics.Tests
 {
-    public static partial class CustomEffectKeys
+    internal static partial class ShaderMixins
     {
-        public static readonly ParameterKey<Vector4> ColorFactor2 = ParameterKeys.New<Vector4>();
+        internal partial class CustomSubEffect  : IShaderMixinBuilder
+        {
+            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            {
+                context.CloneParentMixinToCurrent();
+                if (context.GetParam(CustomShaderKeys.SwitchEffectLevel) < 10)
+                {
+                    context.Mixin(mixin, "CustomShader");
+                }
+                else
+                {
+                    context.Mixin(mixin, "CustomShader2");
+                }
+            }
+
+            [ModuleInitializer]
+            internal static void __Initialize__()
+
+            {
+                ShaderMixinManager.Register("CustomSubEffect", new CustomSubEffect());
+            }
+        }
+    }
+    internal static partial class ShaderMixins
+    {
+        internal partial class CustomEffect  : IShaderMixinBuilder
+        {
+            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            {
+                context.Mixin(mixin, "CustomShader");
+
+                {
+                    var __subMixin = new ShaderMixinSourceTree() { Name = "CustomSubEffect" };
+                    context.BeginChild(__subMixin);
+                    context.Mixin(__subMixin, "CustomSubEffect");
+                    context.EndChild();
+                }
+            }
+
+            [ModuleInitializer]
+            internal static void __Initialize__()
+
+            {
+                ShaderMixinManager.Register("CustomEffect", new CustomEffect());
+            }
+        }
     }
 }

@@ -1,4 +1,4 @@
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core;
@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.Effects
             get
             {
                 if (renderSource == null)
-                    renderSource = Texture2D.New(GraphicsDevice, (int)(RenderTarget.Width / ResizeFactor), (int)(RenderTarget.Height / ResizeFactor), PixelFormat, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
+                    renderSource = Texture.New2D(GraphicsDevice, (int)(RenderTarget.Width / ResizeFactor), (int)(RenderTarget.Height / ResizeFactor), PixelFormat, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
                 return renderSource;
             }
             set { renderSource = value; }

@@ -84,7 +84,7 @@ namespace SiliconStudio.Paradox.UI
 
         private readonly IVirtualResolution gameVirtualResolution;
 
-        private float uiFrustrumHeight;
+        private float uiFrustumHeight;
 
         private Matrix inverseViewMatrix;
 
@@ -121,7 +121,7 @@ namespace SiliconStudio.Paradox.UI
 
             input = Services.GetSafeServiceAs<InputManager>();
 
-            VirtualResolution = new Vector3(GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height, 1000);
+            VirtualResolution = new Vector3(GraphicsDevice.BackBuffer.ViewWidth, GraphicsDevice.BackBuffer.ViewHeight, 1000);
 
             Enabled = true;
             Visible = true;
@@ -152,7 +152,7 @@ namespace SiliconStudio.Paradox.UI
 
         private Vector2 CalculateBackBufferVirtualResolutionRatio()
         {
-            return new Vector2(GraphicsDevice.BackBuffer.Width / virtualResolution.X, GraphicsDevice.BackBuffer.Height / virtualResolution.Y);
+            return new Vector2(GraphicsDevice.BackBuffer.ViewWidth / virtualResolution.X, GraphicsDevice.BackBuffer.ViewHeight / virtualResolution.Y);
         }
 
         protected override void LoadContent()
@@ -173,13 +173,22 @@ namespace SiliconStudio.Paradox.UI
                         StencilPass = StencilOperation.Keep,
                         StencilFunction = CompareFunction.Equal
                     },
+                    BackFace = new DepthStencilStencilOpDescription
+                    {
+                        StencilDepthBufferFail = StencilOperation.Keep,
+                        StencilFail = StencilOperation.Keep,
+                        StencilPass = StencilOperation.Keep,
+                        StencilFunction = CompareFunction.Equal
+                    },
                 };
             KeepStencilValueState = DepthStencilState.New(GraphicsDevice, depthStencilDescription);
 
             depthStencilDescription.FrontFace.StencilPass = StencilOperation.Increment;
+            depthStencilDescription.BackFace.StencilPass = StencilOperation.Increment;
             IncreaseStencilValueState = DepthStencilState.New(GraphicsDevice, depthStencilDescription);
 
             depthStencilDescription.FrontFace.StencilPass = StencilOperation.Decrement;
+            depthStencilDescription.BackFace.StencilPass = StencilOperation.Decrement;
             DecreaseStencilValueState = DepthStencilState.New(GraphicsDevice, depthStencilDescription);
 
             // set the default design of the UI elements.
@@ -253,7 +262,7 @@ namespace SiliconStudio.Paradox.UI
                 virtualResolution = value;
 
                 var uiFieldOfView = (float)Math.Atan2(virtualResolution.Y / 2, virtualResolution.Z + 1f) * 2;
-                uiFrustrumHeight = 2 * (float)Math.Tan(uiFieldOfView / 2);
+                uiFrustumHeight = 2 * (float)Math.Tan(uiFieldOfView / 2);
 
                 nearPlane = 1f;
                 farPlane = 1f + 2 * virtualResolution.Z;
@@ -534,7 +543,7 @@ namespace SiliconStudio.Paradox.UI
         {
             // calculate the ray corresponding to the click
             var touchPosition = position - new Vector2(0.5f);
-            var rayDirectionView = Vector3.Normalize(new Vector3(touchPosition.X * uiFrustrumHeight * virtualResolution.X / virtualResolution.Y, touchPosition.Y * uiFrustrumHeight, -1));
+            var rayDirectionView = Vector3.Normalize(new Vector3(touchPosition.X * uiFrustumHeight * virtualResolution.X / virtualResolution.Y, touchPosition.Y * uiFrustumHeight, -1));
             var clickRay = new Ray(inverseViewMatrix.TranslationVector, Vector3.TransformNormal(rayDirectionView, inverseViewMatrix));
 
             // perform the hit test

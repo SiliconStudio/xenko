@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Text;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Paradox.Shaders
@@ -46,6 +45,15 @@ namespace SiliconStudio.Paradox.Shaders
         {
             Id = id;
             Data = data;
+        }
+
+        /// <summary>
+        /// Shallow clones this instance.
+        /// </summary>
+        /// <returns>ShaderBytecode.</returns>
+        public ShaderBytecode Clone()
+        {
+            return (ShaderBytecode)MemberwiseClone();
         }
 
         /// <summary>

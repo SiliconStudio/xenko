@@ -43,13 +43,13 @@
     <Compile Include="Ast\ParadoxAttributes.cs" />
     <Compile Include="Ast\ParadoxStorageQualifier.cs" />
     <Compile Include="Ast\ParadoxTags.cs" />
-    <Compile Include="Ast\ParadoxType.cs" />
     <Compile Include="Ast\ParametersBlock.cs" />
     <Compile Include="Ast\SemanticType.cs" />
     <Compile Include="Ast\ShaderBlock.cs" />
     <Compile Include="Ast\ShaderClassType.cs" />
     <Compile Include="Ast\ShaderRootClassType.cs" />
     <Compile Include="Ast\ShaderTypeName.cs" />
+    <Compile Include="Ast\StreamsType.cs" />
     <Compile Include="Ast\TypelIdentifier.cs" />
     <Compile Include="Ast\UsingParametersStatement.cs" />
     <Compile Include="Ast\UsingStatement.cs" />
@@ -61,7 +61,7 @@
     <Compile Include="Mixins\ModuleMixin.cs" />
     <Compile Include="Mixins\ModuleMixinInfo.cs" />
     <Compile Include="Mixins\ParadoxAssignmentCloner.cs" />
-    <Compile Include="Mixins\ParadoxClassInstanciator.cs" />
+    <Compile Include="Mixins\ParadoxClassInstantiator.cs" />
     <Compile Include="Mixins\ParadoxReplaceAppend.cs" />
     <Compile Include="Mixins\ParadoxReplaceExtern.cs" />
     <Compile Include="Mixins\ParadoxReplaceVisitor.cs" />
@@ -95,6 +95,8 @@
     <Compile Include="ShaderMixinParser.cs" />
     <Compile Include="ShaderLinker.cs" />
     <Compile Include="ShaderMixinParsingResult.cs" />
+    <Compile Include="ShaderNavigation.cs" />
+    <Compile Include="ShaderNavigationResult.cs" />
     <Compile Include="Utility\ParadoxMessageCode.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace SiliconStudio.Presentation.ViewModel
@@ -27,7 +26,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// A list of couple of property names that are dependent. For each couple of this list, if the first property name is notified as being changed, then
         /// the second property name will also be notified has being changed.
         /// </summary>
-        protected List<Tuple<string, string>> DependentProperties = new List<Tuple<string, string>>();
+        protected readonly Dictionary<string, string[]> DependentProperties = new Dictionary<string, string[]>();
 
         protected ViewModelBase()
         {
@@ -230,8 +229,12 @@ namespace SiliconStudio.Presentation.ViewModel
                 {
                     propertyChanging(this, new PropertyChangingEventArgs(propertyName));
                 }
-                string name = propertyName;
-                OnPropertyChanging(DependentProperties.Where(x => x.Item1 == name).Select(x => x.Item2).Distinct().ToArray());
+
+                string[] dependentProperties;
+                if (DependentProperties.TryGetValue(propertyName, out dependentProperties))
+                {
+                    OnPropertyChanging(dependentProperties);
+                }
             }
         }
 
@@ -243,10 +246,17 @@ namespace SiliconStudio.Presentation.ViewModel
         {
             var propertyChanged = PropertyChanged;
 
-            foreach (string propertyName in propertyNames.Reverse())
+            for (int i = 0 ; i < propertyNames.Length; ++i)
             {
-                string name = propertyName;
-                OnPropertyChanged(DependentProperties.Where(x => x.Item1 == name).Select(x => x.Item2).Distinct().Reverse().ToArray());
+                string propertyName = propertyNames[propertyNames.Length - 1 - i];
+                string[] dependentProperties;
+                if (DependentProperties.TryGetValue(propertyName, out dependentProperties))
+                {
+                    var reverseList = new string[dependentProperties.Length];
+                    for (int j = 0; j < dependentProperties.Length; ++j)
+                        reverseList[j] = dependentProperties[dependentProperties.Length - 1 - j];
+                    OnPropertyChanged(reverseList);
+                }
                 if (propertyChanged != null)
                 {
                     propertyChanged(this, new PropertyChangedEventArgs(propertyName));

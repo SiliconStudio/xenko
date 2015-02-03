@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.Effects
 {
@@ -45,7 +45,7 @@ namespace SiliconStudio.Paradox.Effects
                     }
 
                     // Upload bones
-                    renderMesh.Mesh.Parameters.Set(TransformationSkinningKeys.BlendMatrixArray, boneMatrices, 0, bones.Length);
+                    renderMesh.Parameters.Set(TransformationSkinningKeys.BlendMatrixArray, boneMatrices, 0, bones.Length);
                 }
             }
         }

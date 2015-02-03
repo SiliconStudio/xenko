@@ -7,7 +7,7 @@
 class DepthBase : Camera, Texturing
 {
     // The depth stencil texture
-    [Map("RenderTargetKeys.DepthStencilSource")]
+    [Link("RenderTarget.DepthStencilSource")]
     //[Type("DepthStencilBuffer")]
     stage Texture2D DepthStencil;
 

@@ -34,9 +34,11 @@
     <Compile Include="Compiler\EffectCompilerCache.cs" />
     <Compile Include="Compiler\IEffectCompiler.cs" />
     <Compile Include="Compiler\EffectCompilerBase.cs" />
+    <Compile Include="IShaderMixinBuilderExtended.cs" />
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="ParameterKeyHashSerializer.cs" />
     <Compile Include="ShaderConstantBufferDescription.cs" />
+    <Compile Include="ShaderLevelBytecode.cs" />
     <Compile Include="ShaderMixinGeneratorSource.cs" />
     <Compile Include="ShaderMixinObjectId.cs" />
     <Compile Include="ShaderArraySource.cs" />

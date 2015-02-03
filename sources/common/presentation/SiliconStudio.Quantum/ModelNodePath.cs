@@ -37,6 +37,17 @@ namespace SiliconStudio.Quantum
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="ModelNodePath"/> with the given root node.
+        /// </summary>
+        /// <param name="rootNode">The root node to represent with this instance of <see cref="ModelNodePath"/>.</param>
+        /// <remarks>This constructor should be used for path to a root node only. To create a path to a child node, use <see cref="GetChildPath"/>.</remarks>
+        public ModelNodePath(IModelNode rootNode)
+        {
+            RootNode = rootNode;
+            targetIsRootNode = true;
+        }
+
+        /// <summary>
         /// Gets whether this path is a valid path.
         /// </summary>
         public bool IsValid { get { return path.Count > 0 || targetIsRootNode; } }
@@ -80,21 +91,20 @@ namespace SiliconStudio.Quantum
             }
             return node;
         }
-
+        
         /// <summary>
-        /// Gets a new instance of <see cref="ModelNodePath"/> corresponding to the path of the given target node relative to the given root node.
+        /// Computes a <see cref="ModelNodePath"/> corresponding to the given <see cref="target"/> node, which must be a direct child or a direct reference of the <see cref="parentNode"/>.
         /// </summary>
-        /// <param name="rootNode">The root node of the path.</param>
-        /// <param name="target">The target node of the path.</param>
-        /// <returns>A new instance of the <see cref="ModelNodePath"/>. This instance may not be valid if no path lead to the target node from the root node.</returns>
-        public static ModelNodePath GetPath(IModelNode rootNode, IModelNode target)
+        /// <param name="parentPath">The <see cref="ModelNodePath"/> corresponding to <see cref="parentNode"/>.</param>
+        /// <param name="parentNode">The parent node which must be a direct child or a direct reference of the <see cref="parentNode"/>.</param>
+        /// <param name="target">The target node for which to build a <see cref="ModelNodePath"/> instance.</param>
+        /// <returns></returns>
+        public static ModelNodePath GetChildPath(ModelNodePath parentPath, IModelNode parentNode, IModelNode target)
         {
-            var visitedNode = new HashSet<IModelNode>();
-            var result = GetPathRecursive(rootNode, target, visitedNode);
+            var result = GetNextPath(parentPath, parentNode, target);
             if (result != null)
             {
-                result.RootNode = rootNode;
-                result.targetIsRootNode = rootNode == target;
+                result.targetIsRootNode = result.RootNode == target;
             }
             return result;
         }
@@ -105,65 +115,67 @@ namespace SiliconStudio.Quantum
             return IsValid ? "(root)" + path.Select(x => x.ToString()).Aggregate((current, next) => current + next) : "(invalid)";
         }
 
-        private void Prepend(object item)
+        private ModelNodePath Clone()
         {
-            path.Insert(0, item);
+            var clone = new ModelNodePath { RootNode = RootNode, targetIsRootNode = targetIsRootNode };
+            clone.path.AddRange(path);
+            return clone;
         }
 
-        private static ModelNodePath GetPathRecursive(IModelNode modelNode, IModelNode target, ICollection<IModelNode> visitedNode)
+        private static ModelNodePath GetNextPath(ModelNodePath parentPath, IModelNode parentNode, IModelNode target)
         {
-            var member = modelNode.Children.Where(x => !visitedNode.Contains(x)).FirstOrDefault(x => x == target);
-            var objectReference = modelNode.Content.Reference as ObjectReference;
-            var enumerableReference = modelNode.Content.Reference as ReferenceEnumerable;
-            var result = new ModelNodePath();
+            var result = parentPath.Clone();
+            if (parentNode == target)
+                return result;
 
-            visitedNode.Add(modelNode);
-            
+            var member = parentNode.Children.FirstOrDefault(x => x == target);
             if (member != null)
             {
                 // The target is a direct member of the ModelNode
                 result.path.Add(new NodePathItemMember { Name = member.Name });
+                return result;
             }
-            else if (objectReference != null && objectReference.TargetNode != null)
+            var objectReference = parentNode.Content.Reference as ObjectReference;
+            if (objectReference != null && objectReference.TargetNode == target)
             {
-                // The target is the TargetNode of the ObjectReference contained in the ModelNode
-                if (objectReference.TargetNode != target)
-                    result = GetPathRecursive(objectReference.TargetNode, target, visitedNode);
+                result.path.Add(new NodePathItemTarget());
+                return result;
+            }
 
-                if (result.IsValid || target == objectReference.TargetNode)
+            member = parentNode.Children.FirstOrDefault(x => x.Content.Reference is ObjectReference && ((ObjectReference)x.Content.Reference).TargetNode == target);
+            if (member != null)
+            {
+                result.path.Add(new NodePathItemMember { Name = member.Name });
+                result.path.Add(new NodePathItemTarget());
+                return result;
+            }
+
+            var enumerableReference = parentNode.Content.Reference as ReferenceEnumerable;
+            if (enumerableReference != null)
+            {
+                ObjectReference reference = enumerableReference.FirstOrDefault(x => x.TargetNode == target);
+                if (reference != null)
                 {
-                    result.Prepend(new NodePathItemTarget());
+                    result.path.Add(new NodePathItemIndex { Value = reference.Index });
+                    return result;
                 }
             }
-            else if (enumerableReference != null)
+            
+            foreach (var child in parentNode.Children)
             {
-                foreach (ObjectReference reference in enumerableReference.Where(x => x.TargetNode != null))
+                enumerableReference = child.Content.Reference as ReferenceEnumerable;
+                if (enumerableReference != null)
                 {
-                    if (target != reference.TargetNode)
-                        result = GetPathRecursive(reference.TargetNode, target, visitedNode);
-                
-                    if (result.IsValid || target == reference.TargetNode)
+                    ObjectReference reference = enumerableReference.FirstOrDefault(x => x.TargetNode == target);
+                    if (reference != null)
                     {
-                        // The target is the TargetNode of an item of the ReferenceEnumerable contained in the ModelNode
-                        result.Prepend(new NodePathItemIndex { Value = reference.Index });
-                        break;
+                        result.path.Add(new NodePathItemMember { Name = child.Name });
+                        result.path.Add(new NodePathItemIndex { Value = reference.Index });
+                        return result;
                     }
                 }
             }
-            else
-            {
-                // The target is not directly accessible. Let's invoke this method recursively on each of the child of the ModelNode
-                foreach (var child in modelNode.Children.Where(x => !visitedNode.Contains(x)))
-                {
-                    result = GetPathRecursive(child, target, visitedNode);
-                    if (result.IsValid)
-                    {
-                        result.Prepend(new NodePathItemMember { Name = child.Name });
-                        break;
-                    }
-                }
-            } 
-            return result;
+            return null;
         }
     }
 }

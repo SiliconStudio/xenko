@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System.Collections.Generic;
+
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Paradox.Effects;
@@ -24,9 +26,9 @@ namespace SiliconStudio.Paradox.Assets.Effect.Generators
             }
         }
 
-        public IEnumerable<CompilerParameters> Generate(AssetCompilerContext context, CompilerParameters baseParameters, ILogger log)
+        public IEnumerable<CompilerParameters> Generate(AssetCompilerContext context, CompilerParameters parameters, ILogger log)
         {
-            return new List<CompilerParameters>() { baseParameters.Clone() };
+            yield return parameters.Clone();
         }
-    }
+   }
 }

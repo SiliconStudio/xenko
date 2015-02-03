@@ -22,152 +22,452 @@
 // THE SOFTWARE.
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.ReferenceCounting;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Core.Serialization.Converters;
+
 using Utilities = SiliconStudio.Core.Utilities;
 
 namespace SiliconStudio.Paradox.Graphics
 {
     /// <summary>
-    /// Base class for texture resources.
+    /// Class used for all Textures (1D, 2D, 3D, DepthStencil, RenderTargets...etc.)
     /// </summary>
-    /// <typeparam name="T">Type of the <see cref="N:SharpDX.Direct3D11"/> texture resource.</typeparam>
     [ContentSerializer]
-    public abstract partial class Texture : GraphicsResource
+    [DataConverter(AutoGenerate = false, ContentReference = true, DataType = false)]
+    [DebuggerDisplay("Texture {ViewWidth}x{ViewHeight}x{ViewDepth} {Format} ({ViewFlags})")]
+    public sealed partial class Texture : GraphicsResource
     {
+        internal const int DepthStencilReadOnlyFlags = 16;
+
+        private TextureDescription textureDescription;
+        private TextureViewDescription textureViewDescription;
+
         /// <summary>
-        /// Common description for the original texture.
+        /// Common description for the original texture. See remarks.
         /// </summary>
-        public readonly TextureDescription Description;
+        /// <remarks>
+        /// This field and the properties in TextureDessciption must be considered as readonly when accessing from this instance.
+        /// </remarks>
+        public TextureDescription Description
+        {
+            get
+            {
+                return textureDescription;
+            }
+        }
+
+        /// <summary>
+        /// Gets the view description.
+        /// </summary>
+        /// <value>The view description.</value>
+        public TextureViewDescription ViewDescription
+        {
+            get
+            {
+                return textureViewDescription;
+            }
+        }
+
+        /// <summary>
+        /// The dimension of a texture.
+        /// </summary>
+        public TextureDimension Dimension
+        {
+            get
+            {
+                return textureDescription.Dimension;
+            }
+        }
 
         /// <summary>
         /// The width of this texture view.
         /// </summary>
-        public int Width;
+        /// <value>The width of the view.</value>
+        public int ViewWidth { get; private set; }
 
         /// <summary>
         /// The height of this texture view.
         /// </summary>
-        public int Height;
+        /// <value>The height of the view.</value>
+        public int ViewHeight { get; private set; }
 
         /// <summary>
         /// The depth of this texture view.
         /// </summary>
-        public readonly int Depth;
+        /// <value>The view depth.</value>
+        public int ViewDepth { get; private set; }
 
         /// <summary>
         /// The format of this texture view.
         /// </summary>
-        public readonly PixelFormat ViewFormat;
+        /// <value>The view format.</value>
+        public PixelFormat ViewFormat
+        {
+            get
+            {
+                return textureViewDescription.Format;
+            }
+        }
 
         /// <summary>
         /// The format of this texture view.
         /// </summary>
-        public readonly ViewType ViewType;
+        /// <value>The type of the view.</value>
+        public TextureFlags ViewFlags
+        {
+            get
+            {
+                return textureViewDescription.Flags;
+            }
+        }
+
+        /// <summary>
+        /// The format of this texture view.
+        /// </summary>
+        /// <value>The type of the view.</value>
+        public ViewType ViewType
+        {
+            get
+            {
+                return textureViewDescription.Type;
+            }
+        }
 
         /// <summary>
         /// The miplevel index of this texture view.
         /// </summary>
-        public readonly int MipLevel;
+        /// <value>The mip level.</value>
+        public int MipLevel
+        {
+            get
+            {
+                return textureViewDescription.MipLevel;
+            }
+        }
 
         /// <summary>
         /// The array index of this texture view.
         /// </summary>
-        public readonly int ArraySlice;
+        /// <value>The array slice.</value>
+        public int ArraySlice
+        {
+            get
+            {
+                return textureViewDescription.ArraySlice;
+            }
+        }
+
+        /// <summary>
+        /// The width of the texture.
+        /// </summary>
+        /// <value>The width.</value>
+        public int Width
+        {
+            get
+            {
+                return textureDescription.Width;
+            }
+        }
+
+        /// <summary>
+        /// The height of the texture.
+        /// </summary>
+        /// <value>The height.</value>
+        public int Height
+        {
+            get
+            {
+                return textureDescription.Height;
+            }
+        }
+
+        /// <summary>
+        /// The depth of the texture.
+        /// </summary>
+        /// <value>The depth.</value>
+        public int Depth
+        {
+            get
+            {
+                return textureDescription.Depth;
+            }
+        }
+
+        /// <summary>
+        /// Number of textures in the array.
+        /// </summary>
+        /// <value>The size of the array.</value>
+        /// <remarks>This field is only valid for 1D, 2D and Cube <see cref="Texture" />.</remarks>
+        public int ArraySize
+        {
+            get
+            {
+                return textureDescription.ArraySize;
+            }
+        }
+
+        /// <summary>
+        /// The maximum number of mipmap levels in the texture.
+        /// </summary>
+        /// <value>The mip levels.</value>
+        public int MipLevels
+        {
+            get
+            {
+                return textureDescription.MipLevels;
+            }
+        }
+
+        /// <summary>
+        /// Texture format (see <see cref="PixelFormat" />)
+        /// </summary>
+        /// <value>The format.</value>
+        public PixelFormat Format
+        {
+            get
+            {
+                return textureDescription.Format;
+            }
+        }
+
+        /// <summary>
+        /// Structure that specifies multisampling parameters for the texture.
+        /// </summary>
+        /// <value>The multi sample level.</value>
+        /// <remarks>This field is only valid for a 2D <see cref="Texture" />.</remarks>
+        public MSAALevel MultiSampleLevel
+        {
+            get
+            {
+                return textureDescription.MultiSampleLevel;
+            }
+        }
+
+        /// <summary>	
+        /// Value that identifies how the texture is to be read from and written to.
+        /// </summary>	
+        public GraphicsResourceUsage Usage
+        {
+            get
+            {
+                return textureDescription.Usage;
+            }
+        }
+
+        /// <summary>	
+        /// Texture flags.
+        /// </summary>	
+        public TextureFlags Flags
+        {
+            get
+            {
+                return textureDescription.Flags;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is a render target.
+        /// </summary>
+        /// <value><c>true</c> if this instance is render target; otherwise, <c>false</c>.</value>
+        public bool IsRenderTarget
+        {
+            get
+            {
+                return (ViewFlags & TextureFlags.RenderTarget) != 0;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is a depth stencil.
+        /// </summary>
+        /// <value><c>true</c> if this instance is a depth stencil; otherwise, <c>false</c>.</value>
+        public bool IsDepthStencil
+        {
+            get
+            {
+                return (ViewFlags & TextureFlags.DepthStencil) != 0;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is a depth stencil readonly.
+        /// </summary>
+        /// <value><c>true</c> if this instance is a depth stencil readonly; otherwise, <c>false</c>.</value>
+        public bool IsDepthStencilReadOnly
+        {
+            get
+            {
+                return (ViewFlags & TextureFlags.DepthStencilReadOnly) == TextureFlags.DepthStencilReadOnly;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is a shader resource.
+        /// </summary>
+        /// <value><c>true</c> if this instance is a shader resource; otherwise, <c>false</c>.</value>
+        public bool IsShaderResource
+        {
+            get
+            {
+                return (ViewFlags & TextureFlags.ShaderResource) != 0;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is a shader resource.
+        /// </summary>
+        /// <value><c>true</c> if this instance is a shader resource; otherwise, <c>false</c>.</value>
+        public bool IsUnorderedAccess
+        {
+            get
+            {
+                return (ViewFlags & TextureFlags.UnorderedAccess) != 0;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is a multi sample texture.
+        /// </summary>
+        /// <value><c>true</c> if this instance is multi sample texture; otherwise, <c>false</c>.</value>
+        public bool IsMultiSample
+        {
+            get
+            {
+                return this.MultiSampleLevel > MSAALevel.None;
+            }
+        }
         
         /// <summary>
         /// Gets a boolean indicating whether this <see cref="Texture"/> is a using a block compress format (BC1, BC2, BC3, BC4, BC5, BC6H, BC7).
         /// </summary>
-        public readonly bool IsBlockCompressed;
+        public bool IsBlockCompressed { get; private set; }
+
+        /// <summary>
+        /// Gets the size of this texture.
+        /// </summary>
+        /// <value>The size.</value>
+        public Size3 Size
+        {
+            get
+            {
+                return new Size3(ViewWidth, ViewHeight, ViewDepth);
+            }
+        }
 
         /// <summary>
         /// The width stride in bytes (number of bytes per row).
         /// </summary>
-        internal readonly int RowStride;
+        private int RowStride { get; set; }
 
         /// <summary>
         /// The depth stride in bytes (number of bytes per depth slice).
         /// </summary>
-        internal readonly int DepthStride;
+        private int DepthStride { get; set; }
 
         /// <summary>
         /// The underlying parent texture (if this is a view).
         /// </summary>
-        internal readonly Texture ParentTexture;
+        private Texture ParentTexture { get; set; }
 
         private MipMapDescription[] mipmapDescriptions;
 
-        protected Texture()
+        internal Texture()
         {
         }
 
-        protected Texture(GraphicsDevice device, Texture parentTexture, ViewType viewType, int viewArraySlice, int viewMipLevel, PixelFormat viewFormat = PixelFormat.None)
-            : this(device, parentTexture.Description, viewType, viewArraySlice, viewMipLevel, viewFormat)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Texture"/> class.
+        /// </summary>
+        /// <param name="device">The device.</param>
+        internal Texture(GraphicsDevice device) : base(device)
         {
-            ParentTexture = parentTexture;
-            ParentTexture.AddReferenceInternal();
-        }
-
-        protected Texture(GraphicsDevice device, TextureDescription description, ViewType viewType, int viewArraySlice, int viewMipLevel, PixelFormat viewFormat = PixelFormat.None) : base(device)
-        {
-            Description = description;
-            IsBlockCompressed =  description.Format.IsCompressed();
-            RowStride = this.Description.Width * description.Format.SizeInBytes();
-            DepthStride = RowStride * this.Description.Height;
-            mipmapDescriptions = Image.CalculateMipMapDescription(description);
-
-            Width = Math.Max(1, Description.Width >> viewMipLevel);
-            Height = Math.Max(1, Description.Height >> viewMipLevel);
-            Depth = Math.Max(1, Description.Depth >> viewMipLevel);
-            MipLevel = viewMipLevel;
-            ViewFormat = viewFormat == PixelFormat.None ? description.Format : viewFormat;
-            ArraySlice = viewArraySlice;
-            ViewType = viewType;
-        }
-
-        protected virtual TextureDescription GetCloneableDescription()
-        {
-            var description = this.Description;
-            if (description.Usage == GraphicsResourceUsage.Immutable)
-                description.Usage = GraphicsResourceUsage.Default;
-            return description;
         }
 
         protected override void Destroy()
         {
             base.Destroy();
+            DestroyImpl();
             if (ParentTexture != null)
             {
                 ParentTexture.ReleaseInternal();
             }
         }
 
-        /// <summary>
-        /// Gets a view on this texture for a particular <see cref="ViewType"/>, array index (or zIndex for Texture3D), and mipmap index.
-        /// </summary>
-        /// <param name="viewType">The type of the view to create.</param>
-        /// <param name="arrayOrDepthSlice"></param>
-        /// <param name="mipMapSlice"></param>
-        /// <returns>A new texture object that is bouded to the requested view.</returns>
-        public T ToTexture<T>(ViewType viewType, int arrayOrDepthSlice, int mipMapSlice) where T : Texture
+        protected internal override bool OnRecreate()
         {
-            return (T)ToTexture(viewType, arrayOrDepthSlice, mipMapSlice);
+            base.OnRecreate();
+            OnRecreateImpl();
+            return true;
         }
 
-        /// <summary>
-        /// Gets a view on this texture for a particular <see cref="ViewType"/>, array index (or zIndex for Texture3D), and mipmap index.
-        /// </summary>
-        /// <param name="viewType">The type of the view to create.</param>
-        /// <param name="arraySlice"></param>
-        /// <param name="mipMapSlice"></param>
-        /// <returns>A new texture object that is bouded to the requested view.</returns>
-        public abstract Texture ToTexture(ViewType viewType, int arraySlice, int mipMapSlice);
-
-        public RenderTarget ToRenderTarget()
+        internal Texture InitializeFrom(TextureDescription description, DataBox[] textureDatas = null)
         {
-            return ToRenderTarget(ViewType.Single, 0, 0);
+            return InitializeFrom(null, description, new TextureViewDescription(), textureDatas);
+        }
+
+        internal Texture InitializeFrom(TextureDescription description, TextureViewDescription viewDescription, DataBox[] textureDatas = null)
+        {
+            return InitializeFrom(null, description, viewDescription, textureDatas);
+        }
+
+        internal Texture InitializeFrom(Texture parentTexture, TextureViewDescription viewDescription, DataBox[] textureDatas = null)
+        {
+            return InitializeFrom(parentTexture, parentTexture.Description, viewDescription, textureDatas);
+        }
+
+        internal Texture InitializeFrom(Texture parentTexture, TextureDescription description, TextureViewDescription viewDescription, DataBox[] textureDatas = null)
+        {
+            ParentTexture = parentTexture;
+            if (ParentTexture != null)
+            {
+                ParentTexture.AddReferenceInternal();
+            }
+
+            textureDescription = description;
+            textureViewDescription = viewDescription;
+            IsBlockCompressed = description.Format.IsCompressed();
+            RowStride = this.Width * description.Format.SizeInBytes();
+            DepthStride = RowStride * this.Height;
+            mipmapDescriptions = Image.CalculateMipMapDescription(description);
+
+            ViewWidth = Math.Max(1, Width >> MipLevel);
+            ViewHeight = Math.Max(1, Height >> MipLevel);
+            ViewDepth = Math.Max(1, Depth >> MipLevel);
+            if (ViewFormat == PixelFormat.None)
+            {
+                textureViewDescription.Format = description.Format;
+            }
+            if (ViewFlags == TextureFlags.None)
+            {
+                textureViewDescription.Flags = description.Flags;
+            }
+
+            // Check that the view is compatible with the parent texture
+            var filterViewFlags = (TextureFlags)((int)ViewFlags & (~DepthStencilReadOnlyFlags));
+            if ((Flags & filterViewFlags) != filterViewFlags)
+            {
+                throw new NotSupportedException("Cannot create a texture view with flags [{0}] from the parent texture [{1}] as the parent texture must include all flags defined by the view".ToFormat(ViewFlags, Flags));
+            }
+
+            InitializeFromImpl(textureDatas);
+
+            return this;
+        }
+
+
+        /// <summary>
+        /// Gets a view on this texture for a particular <see cref="ViewType" />, array index (or zIndex for Texture3D), and mipmap index.
+        /// </summary>
+        /// <param name="viewDescription">The view description.</param>
+        /// <returns>A new texture object that is bouded to the requested view.</returns>
+        public Texture ToTextureView(TextureViewDescription viewDescription)
+        {
+            return new Texture(GraphicsDevice).InitializeFrom(ParentTexture ?? this, viewDescription);
         }
 
         /// <summary>
@@ -180,11 +480,100 @@ namespace SiliconStudio.Paradox.Graphics
             return mipmapDescriptions[mipmap];
         }
 
-        public static int CalculateMipSize(int width, int mipLevel)
+        /// <summary>
+        /// Calculates the size of a particular mip.
+        /// </summary>
+        /// <param name="size">The size.</param>
+        /// <param name="mipLevel">The mip level.</param>
+        /// <returns>System.Int32.</returns>
+        public static int CalculateMipSize(int size, int mipLevel)
         {
-            mipLevel = Math.Min(mipLevel, Image.CountMips(width));
-            width = width >> mipLevel;
-            return width > 0 ? width : 1;
+            mipLevel = Math.Min(mipLevel, Image.CountMips(size));
+            return Math.Max(1, size >> mipLevel);
+        }
+
+        /// <summary>
+        /// Calculates the number of miplevels for a Texture 1D.
+        /// </summary>
+        /// <param name="width">The width of the texture.</param>
+        /// <param name="mipLevels">A <see cref="MipMapCount"/>, set to true to calculates all mipmaps, to false to calculate only 1 miplevel, or > 1 to calculate a specific amount of levels.</param>
+        /// <returns>The number of miplevels.</returns>
+        public static int CalculateMipLevels(int width, MipMapCount mipLevels)
+        {
+            if (mipLevels > 1)
+            {
+                int maxMips = CountMips(width);
+                if (mipLevels > maxMips)
+                    throw new InvalidOperationException(String.Format("MipLevels must be <= {0}", maxMips));
+            }
+            else if (mipLevels == 0)
+            {
+                mipLevels = CountMips(width);
+            }
+            else
+            {
+                mipLevels = 1;
+            }
+            return mipLevels;
+        }
+
+        /// <summary>
+        /// Calculates the number of miplevels for a Texture 2D.
+        /// </summary>
+        /// <param name="width">The width of the texture.</param>
+        /// <param name="height">The height of the texture.</param>
+        /// <param name="mipLevels">A <see cref="MipMapCount"/>, set to true to calculates all mipmaps, to false to calculate only 1 miplevel, or > 1 to calculate a specific amount of levels.</param>
+        /// <returns>The number of miplevels.</returns>
+        public static int CalculateMipLevels(int width, int height, MipMapCount mipLevels)
+        {
+            if (mipLevels > 1)
+            {
+                int maxMips = CountMips(width, height);
+                if (mipLevels > maxMips)
+                    throw new InvalidOperationException(String.Format("MipLevels must be <= {0}", maxMips));
+            }
+            else if (mipLevels == 0)
+            {
+                mipLevels = CountMips(width, height);
+            }
+            else
+            {
+                mipLevels = 1;
+            }
+            return mipLevels;
+        }
+
+        /// <summary>
+        /// Calculates the number of miplevels for a Texture 2D.
+        /// </summary>
+        /// <param name="width">The width of the texture.</param>
+        /// <param name="height">The height of the texture.</param>
+        /// <param name="depth">The depth of the texture.</param>
+        /// <param name="mipLevels">A <see cref="MipMapCount"/>, set to true to calculates all mipmaps, to false to calculate only 1 miplevel, or > 1 to calculate a specific amount of levels.</param>
+        /// <returns>The number of miplevels.</returns>
+        public static int CalculateMipLevels(int width, int height, int depth, MipMapCount mipLevels)
+        {
+            if (mipLevels > 1)
+            {
+                if (!MathUtil.IsPow2(width) || !MathUtil.IsPow2(height) || !MathUtil.IsPow2(depth))
+                    throw new InvalidOperationException("Width/Height/Depth must be power of 2");
+
+                int maxMips = CountMips(width, height, depth);
+                if (mipLevels > maxMips)
+                    throw new InvalidOperationException(String.Format("MipLevels must be <= {0}", maxMips));
+            }
+            else if (mipLevels == 0)
+            {
+                if (!MathUtil.IsPow2(width) || !MathUtil.IsPow2(height) || !MathUtil.IsPow2(depth))
+                    throw new InvalidOperationException("Width/Height/Depth must be power of 2");
+
+                mipLevels = CountMips(width, height, depth);
+            }
+            else
+            {
+                mipLevels = 1;
+            }
+            return mipLevels;
         }
 
         /// <summary>
@@ -195,7 +584,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <returns>A value equals to arraySlice * Description.MipLevels + mipSlice.</returns>
         public int GetSubResourceIndex(int arraySlice, int mipSlice)
         {
-            return arraySlice * Description.MipLevels + mipSlice;
+            return arraySlice * MipLevels + mipSlice;
         }
 
         /// <summary>
@@ -206,8 +595,8 @@ namespace SiliconStudio.Paradox.Graphics
         /// <exception cref="System.ArgumentException">If the size is invalid</exception>
         public int CalculateWidth<TData>(int mipLevel = 0) where TData : struct
         {
-            var widthOnMip = CalculateMipSize((int)Description.Width, mipLevel);
-            var rowStride = widthOnMip * Description.Format.SizeInBytes();
+            var widthOnMip = CalculateMipSize((int)Width, mipLevel);
+            var rowStride = widthOnMip * Format.SizeInBytes();
 
             var dataStrideInBytes = Utilities.SizeOf<TData>() * widthOnMip;
             var width = ((double)rowStride / dataStrideInBytes) * widthOnMip;
@@ -226,32 +615,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <remarks>This method is used to allocated a texture data buffer to hold pixel datas: var textureData = new T[ texture.CalculatePixelCount&lt;T&gt;() ] ;.</remarks>
         public int CalculatePixelDataCount<TData>(int mipLevel = 0) where TData : struct
         {
-            return CalculateWidth<TData>(mipLevel) * CalculateMipSize(Description.Height, mipLevel) * CalculateMipSize(Description.Depth, mipLevel);
-        }
-
-        /// <summary>
-        /// Makes a copy of this texture.
-        /// </summary>
-        /// <remarks>
-        /// This method doesn't copy the content of the texture.
-        /// </remarks>
-        /// <returns>
-        /// A copy of this texture.
-        /// </returns>
-        public abstract Texture Clone();
-
-        /// <summary>
-        /// Makes a copy of this texture with type casting.
-        /// </summary>
-        /// <remarks>
-        /// This method doesn't copy the content of the texture.
-        /// </remarks>
-        /// <returns>
-        /// A copy of this texture.
-        /// </returns>
-        public T Clone<T>() where T : Texture
-        {
-            return (T)this.Clone();
+            return CalculateWidth<TData>(mipLevel) * CalculateMipSize(Height, mipLevel) * CalculateMipSize(Depth, mipLevel);
         }
 
         /// <summary>
@@ -288,7 +652,7 @@ namespace SiliconStudio.Paradox.Graphics
         public bool GetData<TData>(TData[] toData, int arraySlice = 0, int mipSlice = 0, bool doNotWait = false) where TData : struct
         {
             // Get data from this resource
-            if (Description.Usage == GraphicsResourceUsage.Staging)
+            if (Usage == GraphicsResourceUsage.Staging)
             {
                 // Directly if this is a staging resource
                 return GetData(this, toData, arraySlice, mipSlice, doNotWait);
@@ -410,13 +774,13 @@ namespace SiliconStudio.Paradox.Graphics
 
             // Check size validity of data to copy to
             if (toData.Size > mipMapSize)
-                throw new ArgumentException(string.Format("Size of toData ({0} bytes) is not compatible expected size ({1} bytes) : Width * Height * Depth * sizeof(PixelFormat) size in bytes", toData.Size, mipMapSize));
+                throw new ArgumentException(String.Format("Size of toData ({0} bytes) is not compatible expected size ({1} bytes) : Width * Height * Depth * sizeof(PixelFormat) size in bytes", toData.Size, mipMapSize));
 
             // Copy the actual content of the texture to the staging resource
             if (!ReferenceEquals(this, stagingTexture))
                 device.Copy(this, stagingTexture);
 
-            // Calculate the subResourceIndex for a Texture2D
+            // Calculate the subResourceIndex for a Texture
             int subResourceIndex = this.GetSubResourceIndex(arraySlice, mipSlice);
 
             // Map the staging resource to a CPU accessible memory
@@ -429,8 +793,8 @@ namespace SiliconStudio.Paradox.Graphics
                 return false;
             }
 
-            // If depth == 1 (Texture1D, Texture2D or TextureCube), then depthStride is not used
-            var boxDepthStride = this.Description.Depth == 1 ? box.SlicePitch : textureDepthStride;
+            // If depth == 1 (Texture, Texture or TextureCube), then depthStride is not used
+            var boxDepthStride = this.Depth == 1 ? box.SlicePitch : textureDepthStride;
 
             var isFlippedTexture = IsFlippedTexture();
 
@@ -497,7 +861,7 @@ namespace SiliconStudio.Paradox.Graphics
         public unsafe void SetData(GraphicsDevice device, DataPointer fromData, int arraySlice = 0, int mipSlice = 0, ResourceRegion? region = null)
         {
             if (device == null) throw new ArgumentNullException("device");
-            if (region.HasValue && this.Description.Usage != GraphicsResourceUsage.Default)
+            if (region.HasValue && this.Usage != GraphicsResourceUsage.Default)
                 throw new ArgumentException("Region is only supported for textures with ResourceUsage.Default");
 
             // Get mipmap description for the specified mipSlice
@@ -514,11 +878,11 @@ namespace SiliconStudio.Paradox.Graphics
                 int newHeight = region.Value.Bottom - region.Value.Top;
                 int newDepth = region.Value.Back - region.Value.Front;
                 if (newWidth > width)
-                    throw new ArgumentException(string.Format("Region width [{0}] cannot be greater than mipmap width [{1}]", newWidth, width), "region");
+                    throw new ArgumentException(String.Format("Region width [{0}] cannot be greater than mipmap width [{1}]", newWidth, width), "region");
                 if (newHeight > height)
-                    throw new ArgumentException(string.Format("Region height [{0}] cannot be greater than mipmap height [{1}]", newHeight, height), "region");
+                    throw new ArgumentException(String.Format("Region height [{0}] cannot be greater than mipmap height [{1}]", newHeight, height), "region");
                 if (newDepth > depth)
-                    throw new ArgumentException(string.Format("Region depth [{0}] cannot be greater than mipmap depth [{1}]", newDepth, depth), "region");
+                    throw new ArgumentException(String.Format("Region depth [{0}] cannot be greater than mipmap depth [{1}]", newDepth, depth), "region");
 
                 width = newWidth;
                 height = newHeight;
@@ -526,7 +890,7 @@ namespace SiliconStudio.Paradox.Graphics
             }
 
             // Size per pixel
-            var sizePerElement = Description.Format.SizeInBytes();
+            var sizePerElement = Format.SizeInBytes();
 
             // Calculate depth stride based on mipmap level
             int rowStride;
@@ -535,20 +899,20 @@ namespace SiliconStudio.Paradox.Graphics
             int textureDepthStride;
 
             // Compute Actual pitch
-            Image.ComputePitch(this.Description.Format, width, height, out rowStride, out textureDepthStride, out width, out height);
+            Image.ComputePitch(this.Format, width, height, out rowStride, out textureDepthStride, out width, out height);
 
             // Size Of actual texture data
             int sizeOfTextureData = textureDepthStride * depth;
 
             // Check size validity of data to copy to
             if (fromData.Size != sizeOfTextureData)
-                throw new ArgumentException(string.Format("Size of toData ({0} bytes) is not compatible expected size ({1} bytes) : Width * Height * Depth * sizeof(PixelFormat) size in bytes", fromData.Size, sizeOfTextureData));
+                throw new ArgumentException(String.Format("Size of toData ({0} bytes) is not compatible expected size ({1} bytes) : Width * Height * Depth * sizeof(PixelFormat) size in bytes", fromData.Size, sizeOfTextureData));
 
             // Calculate the subResourceIndex for a Texture
             int subResourceIndex = this.GetSubResourceIndex(arraySlice, mipSlice);
 
             // If this texture is declared as default usage, we use UpdateSubresource that supports sub resource region.
-            if (this.Description.Usage == GraphicsResourceUsage.Default)
+            if (this.Usage == GraphicsResourceUsage.Default)
             {
                 // If using a specific region, we need to handle this case
                 if (region.HasValue)
@@ -578,11 +942,11 @@ namespace SiliconStudio.Paradox.Graphics
             }
             else
             {
-                var mappedResource = device.MapSubresource(this, subResourceIndex, this.Description.Usage == GraphicsResourceUsage.Dynamic ? MapMode.WriteDiscard : MapMode.Write);
+                var mappedResource = device.MapSubresource(this, subResourceIndex, this.Usage == GraphicsResourceUsage.Dynamic ? MapMode.WriteDiscard : MapMode.Write);
                 var box = mappedResource.DataBox;
 
-                // If depth == 1 (Texture1D, Texture2D or TextureCube), then depthStride is not used
-                var boxDepthStride = this.Description.Depth == 1 ? box.SlicePitch : textureDepthStride;
+                // If depth == 1 (Texture, Texture or TextureCube), then depthStride is not used
+                var boxDepthStride = this.Depth == 1 ? box.SlicePitch : textureDepthStride;
 
                 // The fast way: If same stride, we can directly copy the whole texture in one shot
                 if (box.RowPitch == rowStride && boxDepthStride == textureDepthStride)
@@ -615,10 +979,27 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         /// <summary>
+        /// Makes a copy of this texture.
+        /// </summary>
+        /// <remarks>
+        /// This method doesn't copy the content of the texture.
+        /// </remarks>
+        /// <returns>
+        /// A copy of this texture.
+        /// </returns>
+        public Texture Clone()
+        {
+            return new Texture(GraphicsDevice).InitializeFrom(textureDescription.ToCloneableDescription(), ViewDescription);
+        }
+
+        /// <summary>
         /// Return an equivalent staging texture CPU read-writable from this instance.
         /// </summary>
         /// <returns></returns>
-        public abstract Texture ToStaging();
+        public Texture ToStaging()
+        {
+            return new Texture(this.GraphicsDevice).InitializeFrom(textureDescription.ToStagingDescription(), ViewDescription.ToStagingDescription());
+        }
 
         /// <summary>
         /// Loads a texture from a stream.
@@ -647,19 +1028,8 @@ namespace SiliconStudio.Paradox.Graphics
         {
             if (device == null) throw new ArgumentNullException("device");
             if (image == null) throw new ArgumentNullException("image");
-            switch (image.Description.Dimension)
-            {
-                case TextureDimension.Texture1D:
-                    return Texture1D.New(device, image, textureFlags, usage);
-                case TextureDimension.Texture2D:
-                    return Texture2D.New(device, image, textureFlags, usage);
-                case TextureDimension.Texture3D:
-                    return Texture3D.New(device, image, textureFlags, usage);
-                case TextureDimension.TextureCube:
-                    return TextureCube.New(device, image, textureFlags, usage);
-            }
-            
-            throw new InvalidOperationException("Dimension not supported");
+
+            return New(device, image.Description, image.ToDataBox());
         }
 
         /// <summary>
@@ -667,25 +1037,31 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         /// <param name="graphicsDevice">The graphics device.</param>
         /// <param name="description">The description.</param>
+        /// <param name="boxes">The data boxes.</param>
         /// <returns>A Texture instance, either a RenderTarget or DepthStencilBuffer or Texture, depending on Binding flags.</returns>
-        public static Texture New(GraphicsDevice graphicsDevice, TextureDescription description)
+        /// <exception cref="System.ArgumentNullException">graphicsDevice</exception>
+        public static Texture New(GraphicsDevice graphicsDevice, TextureDescription description, params DataBox[] boxes)
+        {
+            return New(graphicsDevice, description, new TextureViewDescription(), boxes);
+        }
+
+        /// <summary>
+        /// Creates a new texture with the specified generic texture description.
+        /// </summary>
+        /// <param name="graphicsDevice">The graphics device.</param>
+        /// <param name="description">The description.</param>
+        /// <param name="viewDescription">The view description.</param>
+        /// <param name="boxes">The data boxes.</param>
+        /// <returns>A Texture instance, either a RenderTarget or DepthStencilBuffer or Texture, depending on Binding flags.</returns>
+        /// <exception cref="System.ArgumentNullException">graphicsDevice</exception>
+        public static Texture New(GraphicsDevice graphicsDevice, TextureDescription description, TextureViewDescription viewDescription, params DataBox[] boxes)
         {
             if (graphicsDevice == null)
             {
                 throw new ArgumentNullException("graphicsDevice");
             }
-            switch (description.Dimension)
-            {
-                case TextureDimension.Texture1D:
-                    return new Texture1D(graphicsDevice, description);
-                case TextureDimension.Texture2D:
-                    return new Texture2D(graphicsDevice, description);
-                case TextureDimension.Texture3D:
-                    return new Texture3D(graphicsDevice, description);
-                case TextureDimension.TextureCube:
-                    return new TextureCube(graphicsDevice, description);
-            }
-            return null;
+
+            return new Texture(graphicsDevice).InitializeFrom(description, viewDescription, boxes);
         }
 
         /// <summary>
@@ -717,7 +1093,7 @@ namespace SiliconStudio.Paradox.Graphics
         public Image GetDataAsImage(Texture stagingTexture)
         {
             if (stagingTexture == null) throw new ArgumentNullException("stagingTexture");
-            if (stagingTexture.Description.Usage != GraphicsResourceUsage.Staging)
+            if (stagingTexture.Usage != GraphicsResourceUsage.Staging)
                 throw new ArgumentException("Invalid texture used as staging. Must have Usage = GraphicsResourceUsage.Staging", "stagingTexture");
 
             var image = Image.New(stagingTexture.Description);
@@ -783,19 +1159,9 @@ namespace SiliconStudio.Paradox.Graphics
             return new DataBox(fixedPointer, rowPitch, slicePitch);
         }
 
-        internal static TextureDescription CreateTextureDescriptionFromImage(Image image, TextureFlags textureFlags, GraphicsResourceUsage usage)
-        {
-            var desc = (TextureDescription)image.Description;
-            desc.Flags = textureFlags;
-            desc.Usage = usage;
-            if ((textureFlags & TextureFlags.UnorderedAccess) != 0)
-                desc.Usage = GraphicsResourceUsage.Default;
-            return desc;
-        }
-
         internal void GetViewSliceBounds(ViewType viewType, ref int arrayOrDepthIndex, ref int mipIndex, out int arrayOrDepthCount, out int mipCount)
         {
-            int arrayOrDepthSize = this.Description.Depth > 1 ? this.Description.Depth : this.Description.ArraySize;
+            int arrayOrDepthSize = this.Depth > 1 ? this.Depth : this.ArraySize;
 
             switch (viewType)
             {
@@ -803,7 +1169,7 @@ namespace SiliconStudio.Paradox.Graphics
                     arrayOrDepthIndex = 0;
                     mipIndex = 0;
                     arrayOrDepthCount = arrayOrDepthSize;
-                    mipCount = this.Description.MipLevels;
+                    mipCount = this.MipLevels;
                     break;
                 case ViewType.Single:
                     arrayOrDepthCount = 1;
@@ -815,7 +1181,7 @@ namespace SiliconStudio.Paradox.Graphics
                     break;
                 case ViewType.ArrayBand:
                     arrayOrDepthCount = 1;
-                    mipCount = Description.MipLevels - mipIndex;
+                    mipCount = MipLevels - mipIndex;
                     break;
                 default:
                     arrayOrDepthCount = 0;
@@ -826,14 +1192,14 @@ namespace SiliconStudio.Paradox.Graphics
 
         internal int GetViewCount()
         {
-            int arrayOrDepthSize = this.Description.Depth > 1 ? this.Description.Depth : this.Description.ArraySize;
-            return GetViewIndex((ViewType)4, arrayOrDepthSize, this.Description.MipLevels);
+            int arrayOrDepthSize = this.Depth > 1 ? this.Depth : this.ArraySize;
+            return GetViewIndex((ViewType)4, arrayOrDepthSize, this.MipLevels);
         }
 
         internal int GetViewIndex(ViewType viewType, int arrayOrDepthIndex, int mipIndex)
         {
-            int arrayOrDepthSize = this.Description.Depth > 1 ? this.Description.Depth : this.Description.ArraySize;
-            return (((int)viewType) * arrayOrDepthSize + arrayOrDepthIndex) * this.Description.MipLevels + mipIndex;
+            int arrayOrDepthSize = this.Depth > 1 ? this.Depth : this.ArraySize;
+            return (((int)viewType) * arrayOrDepthSize + arrayOrDepthIndex) * this.MipLevels + mipIndex;
         }
 
         internal static GraphicsResourceUsage GetUsageWithFlags(GraphicsResourceUsage usage, TextureFlags flags)
@@ -842,6 +1208,63 @@ namespace SiliconStudio.Paradox.Graphics
             if ((flags & TextureFlags.RenderTarget) != 0 || (flags & TextureFlags.UnorderedAccess) != 0)
                 return GraphicsResourceUsage.Default;
             return usage;
+        }
+
+        private static int CountMips(int width)
+        {
+            int mipLevels = 1;
+
+            // TODO: Use Math.Log2 or a loop?
+            while (width > 1)
+            {
+                ++mipLevels;
+
+                if (width > 1)
+                    width >>= 1;
+            }
+
+            return mipLevels;
+        }
+
+        private static int CountMips(int width, int height)
+        {
+            int mipLevels = 1;
+
+            // TODO: Use Math.Log2 or a loop?
+            while (height > 1 || width > 1)
+            {
+                ++mipLevels;
+
+                if (height > 1)
+                    height >>= 1;
+
+                if (width > 1)
+                    width >>= 1;
+            }
+
+            return mipLevels;
+        }
+
+        private static int CountMips(int width, int height, int depth)
+        {
+            int mipLevels = 1;
+
+            // TODO: Use Math.Log2 or a loop?
+            while (height > 1 || width > 1 || depth > 1)
+            {
+                ++mipLevels;
+
+                if (height > 1)
+                    height >>= 1;
+
+                if (width > 1)
+                    width >>= 1;
+
+                if (depth > 1)
+                    depth >>= 1;
+            }
+
+            return mipLevels;
         }
     }
 }

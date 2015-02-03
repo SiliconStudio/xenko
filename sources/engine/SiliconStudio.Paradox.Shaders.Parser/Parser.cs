@@ -11,6 +11,7 @@ using SiliconStudio.Paradox.Shaders.Parser.Grammar;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Parser;
+using SiliconStudio.Shaders.Visitor;
 
 namespace SiliconStudio.Paradox.Shaders.Parser
 {
@@ -19,6 +20,14 @@ namespace SiliconStudio.Paradox.Shaders.Parser
     /// </summary>
     public static class ParadoxShaderParser
     {
+        /// <summary>
+        /// Preinitialize the parser.
+        /// </summary>
+        public static void Initialize()
+        {
+            ShaderParser.GetParser<ParadoxGrammar>();
+        }
+
         /// <summary>
         /// Preprocesses and parses the specified source.
         /// </summary>
@@ -105,7 +114,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
             }
 
             // Replace all variable in constant buffers by single variable with a constant buffer tag 
-            foreach (var classType in shader.Declarations.OfType<ShaderClassType>())
+            foreach (var classType in GetShaderClassTypes(shader.Declarations))
             {
                 var members = new List<Node>();
                 foreach (var member in classType.Members)
@@ -140,6 +149,29 @@ namespace SiliconStudio.Paradox.Shaders.Parser
                 classType.Members = members;
             }
             return shader;
+        }
+
+        internal static IEnumerable<ShaderClassType> GetShaderClassTypes(IEnumerable<SiliconStudio.Shaders.Ast.Node> nodes)
+        {
+            foreach (var node in nodes)
+            {
+                var namespaceBlock = node as NamespaceBlock;
+                if (namespaceBlock != null)
+                {
+                    foreach (var type in GetShaderClassTypes(namespaceBlock.Body))
+                    {
+                        yield return type;
+                    }
+                }
+                else
+                {
+                    var shaderClass = node as ShaderClassType;
+                    if (shaderClass != null)
+                    {
+                        yield return shaderClass;
+                    }
+                }
+            }
         }
     }
 }

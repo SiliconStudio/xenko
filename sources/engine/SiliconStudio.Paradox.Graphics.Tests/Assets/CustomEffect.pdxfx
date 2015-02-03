@@ -1,0 +1,28 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Paradox.Graphics.Tests
+{
+    partial shader CustomSubEffect
+    {
+        using params CustomShaderKeys;
+
+        mixin clone;
+		if (CustomShaderKeys.SwitchEffectLevel < 10)
+		{
+			mixin CustomShader;
+		}
+		else
+		{
+			mixin CustomShader2;
+		}
+    };
+
+    /// <summary>
+    /// A gaussian blur effect
+    /// </summary>
+    shader CustomEffect
+    {
+        mixin CustomShader;
+        mixin child CustomSubEffect;
+    };
+}

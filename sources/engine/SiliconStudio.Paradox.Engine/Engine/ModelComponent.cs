@@ -80,7 +80,7 @@ namespace SiliconStudio.Paradox.Engine
         /// The draw order.
         /// </value>
         [DataMemberConvert]
-        public float DrawOrder { get; set; }
+        public int DrawOrder { get; set; }
 
         /// <summary>
         /// Gets the parameters used to render this mesh.

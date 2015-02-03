@@ -17,8 +17,8 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         private SpriteFont dynamicFont;
         private SpriteBatch spriteBatch;
 
-        private Texture2D round;
-        private Texture2D colorTexture;
+        private Texture round;
+        private Texture colorTexture;
         private SpriteGroup spheres;
 
         public TestSpriteBatchResolution()
@@ -40,13 +40,13 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         {
             await base.LoadContent();
 
-            var virtualResolution = new Vector3(GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height, 200);
+            var virtualResolution = new Vector3(GraphicsDevice.BackBuffer.ViewWidth, GraphicsDevice.BackBuffer.ViewHeight, 200);
             spriteBatch = new SpriteBatch(GraphicsDevice) { VirtualResolution = virtualResolution };
             spheres = Asset.Load<SpriteGroup>("SpriteSphere");
-            round = Asset.Load<Texture2D>("round");
+            round = Asset.Load<Texture>("round");
             staticFont = Asset.Load<SpriteFont>("StaticFonts/CourierNew10");
             dynamicFont = Asset.Load<SpriteFont>("DynamicFonts/CourierNew10");
-            colorTexture = Texture2D.New(GraphicsDevice, 1, 1, PixelFormat.R8G8B8A8_UNorm, new[] { Color.White });
+            colorTexture = Texture.New2D(GraphicsDevice, 1, 1, PixelFormat.R8G8B8A8_UNorm, new[] { Color.White });
         }
 
         protected override void Draw(GameTime gameTime)
@@ -69,7 +69,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         private void SetVirtualResolutionAndDraw(Vector2 factor)
         {
-            spriteBatch.VirtualResolution = new Vector3(factor.X * GraphicsDevice.BackBuffer.Width, factor.Y*GraphicsDevice.BackBuffer.Height, 100);
+            spriteBatch.VirtualResolution = new Vector3(factor.X * GraphicsDevice.BackBuffer.ViewWidth, factor.Y*GraphicsDevice.BackBuffer.ViewHeight, 100);
 
             DrawSprites();
         }
@@ -78,7 +78,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         {
             GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Black);
             GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsDevice.SetRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
 
             spriteBatch.Begin();
             
@@ -92,14 +92,14 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             spriteBatch.Draw(round, new Vector2(x, y), Color.Red);
 
-            x += round.Width + 5;
+            x += round.ViewWidth + 5;
 
             var sphere = spheres[0];
             spriteBatch.Draw(sphere.Texture, new Vector2(x, y), sphere.Region, Color.White);
 
             x += spheres[0].Region.Width + 5;
 
-            spriteBatch.Draw(round, new RectangleF(x, y, round.Width / 2f, round.Height / 2f), Color.GreenYellow);
+            spriteBatch.Draw(round, new RectangleF(x, y, round.ViewWidth / 2f, round.ViewHeight / 2f), Color.GreenYellow);
             
             spriteBatch.End();
         }
@@ -108,7 +108,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         {
             var fontName = useDynamicFont ? "Dynamic" : "Static";
             var spriteFont = useDynamicFont ? dynamicFont : staticFont;
-            var targetSize = new Vector2(GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height);
+            var targetSize = new Vector2(GraphicsDevice.BackBuffer.ViewWidth, GraphicsDevice.BackBuffer.ViewHeight);
             var resolutionRatio = Vector2.One;
             if (useDynamicFont && spriteBatch.VirtualResolution.HasValue)
             {

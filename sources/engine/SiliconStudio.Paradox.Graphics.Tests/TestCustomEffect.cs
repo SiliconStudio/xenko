@@ -4,16 +4,25 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Modules;
 using SiliconStudio.Paradox.Games;
 
 namespace SiliconStudio.Paradox.Graphics.Tests
 {
+    public static partial class MyCustomShaderKeys
+    {
+        public static readonly ParameterKey<Vector4> ColorFactor2 = ParameterKeys.New<Vector4>();
+    }
+
     [TestFixture]
     public class TestCustomEffect : TestGameBase
     {
-        private Effect customEffect;
-        private PrimitiveQuad quad;
+        private ParameterCollection effectParameters;
+        private DynamicEffectCompiler dynamicEffectCompiler;
+
+        private DefaultEffectInstance effectInstance;
+
+        private float switchEffectLevel;
+
 
         public TestCustomEffect()
         {
@@ -31,8 +40,10 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         {
             await base.LoadContent();
 
-            customEffect = EffectSystem.LoadEffect("CustomEffect");
-            quad = new PrimitiveQuad(GraphicsDevice, customEffect);
+
+            dynamicEffectCompiler = new DynamicEffectCompiler(Services, "CustomEffect.CustomSubEffect");
+            effectParameters = new ParameterCollection();
+            effectInstance = new DefaultEffectInstance(effectParameters);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -47,9 +58,16 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         {
             GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Black);
             GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsDevice.SetRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
-            customEffect.Parameters.Set(CustomEffectKeys.ColorFactor2, (Vector4)Color.Red);
-            quad.Draw(UVTexture);
+            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+
+            effectParameters.Set(MyCustomShaderKeys.ColorFactor2, (Vector4)Color.Red);
+            effectParameters.Set(CustomShaderKeys.SwitchEffectLevel, switchEffectLevel);
+            effectParameters.Set(TexturingKeys.Texture0, UVTexture);
+            // TODO: Add switch Effect to test and capture frames
+            //switchEffectLevel++;
+            dynamicEffectCompiler.Update(effectInstance);
+
+            GraphicsDevice.DrawQuad(effectInstance.Effect, effectParameters);
         }
 
         public static void Main()

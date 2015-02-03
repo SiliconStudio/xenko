@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core.Mathematics;
@@ -106,10 +106,10 @@ namespace SiliconStudio.Paradox.Effects
             }
 
             fixed (void* ptr = SimplexCoords4)
-                this.Parameters.Set(SimplexNoiseKeys.SimplexTexture, Texture2D.New(GraphicsDevice, 64, 1, 1, PixelFormat.R8G8B8A8_UNorm, new [] { new DataBox((IntPtr)ptr, 64 * 4, 0) }));
+                this.Parameters.Set(SimplexNoiseKeys.SimplexTexture, Texture.New2D(GraphicsDevice, 64, 1, 1, PixelFormat.R8G8B8A8_UNorm, new [] { new DataBox((IntPtr)ptr, 64 * 4, 0) }));
 
             this.Parameters.Set(
-                NoiseBaseKeys.PermTexture, Texture2D.New(GraphicsDevice, 256, 256, PixelFormat.R8G8B8A8_UNorm, pixels));
+                NoiseBaseKeys.PermTexture, Texture.New2D(GraphicsDevice, 256, 256, PixelFormat.R8G8B8A8_UNorm, pixels));
         }
 
         protected override void Destroy()

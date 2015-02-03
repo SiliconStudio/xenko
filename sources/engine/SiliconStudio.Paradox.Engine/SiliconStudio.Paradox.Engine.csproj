@@ -103,6 +103,7 @@
     <Compile Include="DelegateHolder.cs" />
     <Compile Include="Effects\BackgroundRenderer.cs" />
     <Compile Include="Effects\CameraSetter.cs" />
+    <Compile Include="Effects\DefaultEffectInstance.cs" />
     <Compile Include="Effects\DelegateRenderer.cs" />
     <Compile Include="Effects\DynamicEffectCompiler.cs" />
     <Compile Include="Effects\DynamicEffectInstance.cs" />
@@ -146,6 +147,7 @@
     <Compile Include="Effects\RendererExtensions.cs" />
     <Compile Include="Effects\RenderLayers.cs" />
     <Compile Include="Effects\Renderer.cs" />
+    <Compile Include="Effects\RenderMeshSorter.cs" />
     <Compile Include="Effects\RenderModel.cs" />
     <Compile Include="Effects\RenderPipelineFactory.cs" />
     <Compile Include="Effects\RenderStateSetter.cs" />
@@ -179,8 +181,6 @@
     <Compile Include="Data\BoundingBoxExtensions.cs" />
     <Compile Include="Data\HalfBufferExtensions.cs" />
     <Compile Include="Data\PolySortExtensions.cs" />
-    <Compile Include="Engine\CubemapBlendComponent.cs" />
-    <Compile Include="Engine\CubemapSourceComponent.cs" />
     <Compile Include="Effects\IModelInstance.cs" />
     <Compile Include="Engine\LightProcessor.cs" />
     <Compile Include="Engine\PlayingAnimation.cs" />
@@ -226,8 +226,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Effects\InheritanceDefinition.cs" />
-    <Compile Include="Effects\InheritanceIndexer.cs" />
     <Compile Include="Effects\TessellationPermutation.cs" />
     <Compile Include="Effects\ParameterPath.cs" />
     <Compile Include="Engine\CameraComponent.cs" />

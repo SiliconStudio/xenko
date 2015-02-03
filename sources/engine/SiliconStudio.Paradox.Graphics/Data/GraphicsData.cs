@@ -48,12 +48,12 @@ namespace SiliconStudio.Paradox.Graphics.Data
         /// <summary>
         /// Data field for <see cref="SiliconStudio.Paradox.Graphics.ImageFragment.Texture"/>.
         /// </summary>
-        public SiliconStudio.Core.Serialization.ContentReference<SiliconStudio.Paradox.Graphics.Texture2D> Texture;
+        public SiliconStudio.Core.Serialization.ContentReference<SiliconStudio.Paradox.Graphics.Texture> Texture;
 
         /// <summary>
         /// Data field for <see cref="SiliconStudio.Paradox.Graphics.ImageFragment.TextureAlpha"/>.
         /// </summary>
-        public SiliconStudio.Core.Serialization.ContentReference<SiliconStudio.Paradox.Graphics.Texture2D> TextureAlpha;
+        public SiliconStudio.Core.Serialization.ContentReference<SiliconStudio.Paradox.Graphics.Texture> TextureAlpha;
 
         /// <summary>
         /// Data field for <see cref="SiliconStudio.Paradox.Graphics.ImageFragment.Region"/>.

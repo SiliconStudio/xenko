@@ -24,6 +24,6 @@ namespace SiliconStudio.Paradox.Effects
         /// Gets the draw order.
         /// </summary>
         /// <value>The draw order.</value>
-        float DrawOrder { get; }
+        int DrawOrder { get; }
     }
 }

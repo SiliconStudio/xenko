@@ -25,43 +25,10 @@ namespace SiliconStudio.Paradox.Assets.Effect
     /// </summary>
     internal class EffectCompileCommand : IndexFileCommand
     {
-        #region Static method
-        public static readonly PropertyKey<EffectCompilerBase> CompilerKey = new PropertyKey<EffectCompilerBase>("CompilerKey", typeof(EffectCompileCommand));
-
-        public static EffectCompilerBase GetOrCreateEffectCompiler(AssetCompilerContext context)
-        {
-            lock (context)
-            {
-                var compiler = context.Properties.Get(CompilerKey);
-                if (compiler == null)
-                {
-                    // Create compiler
-                    var effectCompiler = new Shaders.Compiler.EffectCompiler();
-                    effectCompiler.SourceDirectories.Add(EffectSystem.DefaultSourceShaderFolder);
-                    compiler = new EffectCompilerCache(effectCompiler);
-                    context.Properties.Set(CompilerKey, compiler);
-
-                    var shaderLocations = context.Properties.Get(EffectShaderAssetCompiler.ShaderLocationsKey);
-
-                    // Temp copy URL to absolute file path to inform the compiler the absolute file location
-                    // of all pdxsl files.
-                    if (shaderLocations != null)
-                    {
-                        foreach (var shaderLocation in shaderLocations)
-                        {
-                            effectCompiler.UrlToFilePath[shaderLocation.Key] = shaderLocation.Value;
-                        }
-                    }
-                }
-
-                return compiler;
-            }
-        }
-
-        #endregion
+        private static readonly PropertyKey<EffectCompilerBase> CompilerKey = new PropertyKey<EffectCompilerBase>("CompilerKey", typeof(EffectCompileCommand));
 
         private readonly AssetCompilerContext context;
-        private UDirectory baseUrl;
+        private readonly UDirectory baseUrl;
         private string effectName;
         private CompilerParameters compilerParameters;
         private static Dictionary<string, int> PermutationCount = new Dictionary<string, int>();
@@ -85,6 +52,8 @@ namespace SiliconStudio.Paradox.Assets.Effect
         protected override void ComputeParameterHash(BinarySerializationWriter writer)
         {
             base.ComputeParameterHash(writer);
+            uint effectbyteCodeMagicNumber = EffectBytecode.MagicHeader;
+            writer.Serialize(ref effectbyteCodeMagicNumber, ArchiveMode.Serialize);
             writer.Serialize(ref effectName, ArchiveMode.Serialize);
             writer.Serialize(ref compilerParameters, ArchiveMode.Serialize);
         }
@@ -92,9 +61,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
         protected override void ComputeAssemblyHash(BinarySerializationWriter writer)
         {
             writer.Write(DataSerializer.BinaryFormatVersion);
-
-            // Since EffectBytecode format is quite stable, we want to manually control it's assembly hash here
-            writer.Write(1);
+            writer.Write(EffectBytecode.MagicHeader);
         }
 
         protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
@@ -111,9 +78,9 @@ namespace SiliconStudio.Paradox.Assets.Effect
                 permutationCount++;
                 PermutationCount[effectName] = permutationCount;
             }
-            commandContext.Logger.Info("Create permutation #{0} for effect [{1}]: \n{2}", permutationCount, effectName, compilerParameters.ToStringDetailed());
+            commandContext.Logger.Info("Trying permutation #{0} for effect [{1}]: \n{2}", permutationCount, effectName, compilerParameters.ToStringDetailed());
 
-            var compilerResults = compiler.Compile(source, compilerParameters, null, null);
+            var compilerResults = compiler.Compile(source, compilerParameters);
 
             // Copy logs and if there are errors, exit directlry
             compilerResults.CopyTo(commandContext.Logger);
@@ -123,11 +90,10 @@ namespace SiliconStudio.Paradox.Assets.Effect
             }
 
             // Register all dependencies
-            var bytecode = compilerResults.MainBytecode;
-            foreach (var hashSource in bytecode.HashSources)
+            var allSources = new HashSet<string>(compilerResults.Bytecodes.SelectMany(bytecode => bytecode.Value.HashSources).Select(keyPair => keyPair.Key));
+            foreach (var className in allSources)
             {
-                commandContext.Logger.Verbose("Shader [{0}] is using [{1}]", effectName, hashSource.Key);
-                commandContext.RegisterInputDependency(new ObjectUrl(UrlType.Internal, hashSource.Key));
+                commandContext.RegisterInputDependency(new ObjectUrl(UrlType.Internal, EffectCompilerBase.GetStoragePathFromShaderType(className)));
             }
 
             // Generate sourcecode if configured
@@ -139,7 +105,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
 
                 commandContext.Logger.Info("Writing shader bytecode to .cs source [{0}]", fullOutputClassFile);
                 using (var stream = new FileStream(fullOutputClassFile, FileMode.Create, FileAccess.Write, FileShare.Write))
-                    EffectByteCodeToSourceCodeWriter.Write(effectName, compilerParameters, bytecode, new StreamWriter(stream, Encoding.UTF8));
+                    EffectByteCodeToSourceCodeWriter.Write(effectName, compilerParameters, compilerResults.MainBytecode, new StreamWriter(stream, Encoding.UTF8));
             }
 
             return Task.FromResult(ResultStatus.Successful);
@@ -148,6 +114,36 @@ namespace SiliconStudio.Paradox.Assets.Effect
         public override string ToString()
         {
             return Title;
+        }
+
+        private static EffectCompilerBase GetOrCreateEffectCompiler(AssetCompilerContext context)
+        {
+            lock (context)
+            {
+                var compiler = context.Properties.Get(CompilerKey);
+                if (compiler == null)
+                {
+                    // Create compiler
+                    var effectCompiler = new Shaders.Compiler.EffectCompiler();
+                    effectCompiler.SourceDirectories.Add(EffectCompilerBase.DefaultSourceShaderFolder);
+                    compiler = new EffectCompilerCache(effectCompiler);
+                    context.Properties.Set(CompilerKey, compiler);
+
+                    var shaderLocations = context.Properties.Get(EffectShaderAssetCompiler.ShaderLocationsKey);
+
+                    // Temp copy URL to absolute file path to inform the compiler the absolute file location
+                    // of all pdxsl files.
+                    if (shaderLocations != null)
+                    {
+                        foreach (var shaderLocation in shaderLocations)
+                        {
+                            effectCompiler.UrlToFilePath[shaderLocation.Key] = shaderLocation.Value;
+                        }
+                    }
+                }
+
+                return compiler;
+            }
         }
     }
 }

@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Paradox.Shaders.Compiler;
 using SiliconStudio.Paradox.Shaders.Parser.Ast;
 using SiliconStudio.Paradox.Shaders.Parser.Mixins;
 using SiliconStudio.Shaders.Utility;
@@ -44,7 +45,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         private MaterialNodeClassLoader()
         {
             manager = new ShaderSourceManager();
-            manager.LookupDirectoryList.Add(EffectSystem.DefaultSourceShaderFolder);
+            manager.LookupDirectoryList.Add(EffectCompilerBase.DefaultSourceShaderFolder);
             logger = new SiliconStudio.Shaders.Utility.LoggerResult();
             loader = new ShaderLoader(manager);
         }
@@ -61,7 +62,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 if (!loader.ClassExists(name))
                     return null;
 
-                var shader = loader.LoadClassSource(new ShaderClassSource(name), null, logger);
+                var shader = loader.LoadClassSource(new ShaderClassSource(name), null, logger, false);
                 if (logger.HasErrors)
                 {
                     // TODO: output messages

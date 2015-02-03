@@ -5,7 +5,7 @@ namespace SiliconStudio.Paradox.Graphics
     /// <summary>
     /// Type of shared data. <see cref="GraphicsDevice.GetOrCreateSharedData{T}"/>
     /// </summary>
-    internal enum GraphicsDeviceSharedDataType
+    public enum GraphicsDeviceSharedDataType
     {
         /// <summary>
         /// Data is shared within a <see cref="SharpDX.Direct3D11.Device"/>.

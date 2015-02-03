@@ -1,15 +1,18 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.Graphics
 {
     public class SimpleEffect : Effect
     {
+        private readonly ParameterCollection parameters;
+
         public SimpleEffect(GraphicsDevice graphicsDevice)
             : base(graphicsDevice, SpriteEffect.Bytecode)
         {
+            parameters = new ParameterCollection();
             Color = new Color4(1.0f);
             Sampler = graphicsDevice.SamplerStates.LinearClamp;
             Transform = Matrix.Identity;
@@ -23,12 +26,12 @@ namespace SiliconStudio.Paradox.Graphics
         {
             get
             {
-                return Parameters.Get(SpriteEffectKeys.Color);
+                return parameters.Get(SpriteEffectKeys.Color);
             }
 
             set
             {
-                Parameters.Set(SpriteEffectKeys.Color, value);
+                parameters.Set(SpriteEffectKeys.Color, value);
             }
         }
 
@@ -36,12 +39,12 @@ namespace SiliconStudio.Paradox.Graphics
         {
             get
             {
-                return Parameters.Get(SpriteBaseKeys.MatrixTransform);
+                return parameters.Get(SpriteBaseKeys.MatrixTransform);
             }
 
             set
             {
-                Parameters.Set(SpriteBaseKeys.MatrixTransform, value);
+                parameters.Set(SpriteBaseKeys.MatrixTransform, value);
             }
         }
 
@@ -49,12 +52,12 @@ namespace SiliconStudio.Paradox.Graphics
         {
             get
             {
-                return Parameters.Get(TexturingKeys.Texture0);
+                return parameters.Get(TexturingKeys.Texture0);
             }
 
             set
             {
-                Parameters.Set(TexturingKeys.Texture0, value);
+                parameters.Set(TexturingKeys.Texture0, value);
             }
         }
 
@@ -62,13 +65,18 @@ namespace SiliconStudio.Paradox.Graphics
         {
             get
             {
-                return Parameters.Get(TexturingKeys.Sampler);
+                return parameters.Get(TexturingKeys.Sampler);
             }
 
             set
             {
-                Parameters.Set(TexturingKeys.Sampler, value);
+                parameters.Set(TexturingKeys.Sampler, value);
             }
+        }
+
+        public void Apply()
+        {
+            Apply(parameters);
         }
     }
 }

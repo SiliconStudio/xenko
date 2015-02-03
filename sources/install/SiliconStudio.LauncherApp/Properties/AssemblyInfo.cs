@@ -26,7 +26,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // Assembly version for the launcher, used to generate the appropriate nuget package
-[assembly: AssemblyVersion("1.0.4.0")]
-[assembly: AssemblyInformationalVersion("1.0.4")]
+[assembly: AssemblyVersion("1.0.5.0")]
+[assembly: AssemblyInformationalVersion("1.0.5")]
 
 [assembly: NeutralResourcesLanguage("en-US")]

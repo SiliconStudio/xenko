@@ -20,6 +20,11 @@ namespace SiliconStudio.Assets.Compiler
         private int latestPriority;
 
         /// <summary>
+        /// Raised when a single asset has been compiled.
+        /// </summary>
+        public EventHandler<AssetCompiledArgs> AssetCompiled;
+
+        /// <summary>
         /// Create an instance of <see cref="ItemListCompiler"/> using the provided compiler registry.
         /// </summary>
         /// <param name="compilerRegistry">The registry that contains the compiler to use for each asset type</param>
@@ -133,10 +138,5 @@ namespace SiliconStudio.Assets.Compiler
                 }
             }
         }
-
-        /// <summary>
-        /// Raised when a single asset has been compiled.
-        /// </summary>
-        public EventHandler<AssetCompiledArgs> AssetCompiled;
     }
 }

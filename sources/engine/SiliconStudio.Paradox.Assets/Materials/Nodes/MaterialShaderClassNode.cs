@@ -165,7 +165,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
                 else if (generic.Type.Name.Text == "int")
                     AddKey<int>(generic.Name.Text, newGenerics);
                 else if (generic.Type.Name.Text == "Texture2D")
-                    AddKey<Texture2D>(generic.Name.Text, newGenerics);
+                    AddKey<Graphics.Texture>(generic.Name.Text, newGenerics);
                 else if (generic.Type.Name.Text == "SamplerState")
                     AddKey<SamplerState>(generic.Name.Text, newGenerics);
                 else
@@ -365,7 +365,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
                 else
                 {
                     expectedType = pk.PropertyType;
-                    defaultValue = pk.DefaultMetadataT.DefaultValue;
+                    defaultValue = pk.DefaultValueMetadataT.DefaultValue;
                 }
 
                 if (Members.ContainsKey(pk))
@@ -391,7 +391,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.Nodes
             var typeT = typeof(T);
             if (typeT == typeof(string))
                 nodeParameter = new NodeParameter();
-            else if (typeT == typeof(Texture2D))
+            else if (typeT == typeof(Graphics.Texture))
                 nodeParameter = new NodeParameterTexture();
             else if (typeT == typeof(float))
                 nodeParameter = new NodeParameterFloat();

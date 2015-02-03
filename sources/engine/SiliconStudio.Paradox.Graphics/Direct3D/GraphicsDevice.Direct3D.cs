@@ -37,6 +37,7 @@ namespace SiliconStudio.Paradox.Graphics
         private EffectInputSignature currentEffectInputSignature;
         private SharpDX.Direct3D11.InputLayout currentInputLayout;
         private SharpDX.Direct3D11.RenderTargetView currentRenderTargetView;
+        private VertexArrayObject currentVertexArrayObject;
         private VertexArrayLayout currentVertexArrayLayout;
         private SharpDX.ViewportF[] currentNativeViewports = new SharpDX.ViewportF[16];
         private Viewport[] currentViewports;
@@ -209,7 +210,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="depth">The depth.</param>
         /// <param name="stencil">The stencil.</param>
         /// <exception cref="System.InvalidOperationException"></exception>
-        public void Clear(DepthStencilBuffer depthStencilBuffer, DepthStencilClearOptions options, float depth = 1, byte stencil = 0)
+        public void Clear(Texture depthStencilBuffer, DepthStencilClearOptions options, float depth = 1, byte stencil = 0)
         {
             if (depthStencilBuffer == null) throw new ArgumentNullException("depthStencilBuffer");
 
@@ -219,7 +220,7 @@ namespace SiliconStudio.Paradox.Graphics
             if ((options & DepthStencilClearOptions.Stencil) != 0)
             {
                 if (!depthStencilBuffer.HasStencil)
-                    throw new InvalidOperationException(string.Format(FrameworkResources.NoStencilBufferForDepthFormat, depthStencilBuffer.Description.Format));
+                    throw new InvalidOperationException(string.Format(FrameworkResources.NoStencilBufferForDepthFormat, depthStencilBuffer.ViewFormat));
                 flags |= SharpDX.Direct3D11.DepthStencilClearFlags.Stencil;
             }
 
@@ -232,7 +233,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="renderTarget">The render target.</param>
         /// <param name="color">The color.</param>
         /// <exception cref="System.ArgumentNullException">renderTarget</exception>
-        public unsafe void Clear(RenderTarget renderTarget, Color4 color)
+        public unsafe void Clear(Texture renderTarget, Color4 color)
         {
             if (renderTarget == null) throw new ArgumentNullException("renderTarget");
 
@@ -347,9 +348,10 @@ namespace SiliconStudio.Paradox.Graphics
             currentEffectInputSignature = null;
             currentVertexArrayLayout = null;
             currentInputLayout = null;
+            currentVertexArrayObject = null;
             CurrentEffect = null;
 
-            SetRenderTarget(DepthStencilBuffer, BackBuffer);
+            SetDepthAndRenderTarget(DepthStencilBuffer, BackBuffer);
         }
 
         public void Copy(GraphicsResource source, GraphicsResource destination)
@@ -660,7 +662,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         /// <param name="depthStencilView">A view of the depth-stencil buffer to bind.</param>
         /// <param name="renderTargetView">A view of the render target to bind.</param>
-        public void SetRenderTarget(DepthStencilBuffer depthStencilView, RenderTarget renderTargetView)
+        public void SetDepthAndRenderTarget(Texture depthStencilView, Texture renderTargetView)
         {
             CommonSetRenderTargets(depthStencilView, renderTargetView);
             outputMerger.SetTargets(depthStencilView != null ? depthStencilView.NativeDepthStencilView : null, currentRenderTargetView);
@@ -672,7 +674,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="depthStencilView">A view of the depth-stencil buffer to bind.</param>
         /// <param name="renderTargetViews">A set of render target views to bind.</param>
         /// <exception cref="System.ArgumentNullException">renderTargetViews</exception>
-        public void SetRenderTargets(DepthStencilBuffer depthStencilView, params RenderTarget[] renderTargetViews)
+        public void SetDepthAndRenderTargets(Texture depthStencilView, params Texture[] renderTargetViews)
         {
             if (renderTargetViews == null) throw new ArgumentNullException("renderTargetViews");
             CommonSetRenderTargets(depthStencilView, renderTargetViews);
@@ -731,18 +733,6 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="vertexArrayObject">The vertex array object.</param>
         public void SetVertexArrayObject(VertexArrayObject vertexArrayObject)
         {
-            if (vertexArrayObject == null)
-            {
-                inputAssembler.InputLayout = null;
-                IntPtr vertexBufferPtr = IntPtr.Zero;
-                unsafe
-                {
-                    var ptrToNull = new IntPtr(&vertexBufferPtr);
-                    // TODO RESET MORE Vertex Buffers
-                    inputAssembler.SetVertexBuffers(0, 1, ptrToNull, ptrToNull, ptrToNull);
-                }
-            }
-
             newVertexArrayObject = vertexArrayObject;
         }
 
@@ -878,28 +868,28 @@ namespace SiliconStudio.Paradox.Graphics
             NativeDeviceContext.UpdateSubresource(*(SharpDX.DataBox*)Interop.Cast(ref databox), resource.NativeResource, subResourceIndex, *(SharpDX.Direct3D11.ResourceRegion*)Interop.Cast(ref region));
         }
 
-        private void CommonSetRenderTargets(DepthStencilBuffer depthStencilBuffer, RenderTarget rtv)
+        private void CommonSetRenderTargets(Texture depthStencilBuffer, Texture rtv)
         {
             currentRenderTargetView = rtv != null ? rtv.NativeRenderTargetView : null;
             // Setup the viewport from the rendertarget view
             if (rtv != null)
             {
-                SetViewport(new Viewport(0, 0, rtv.Width, rtv.Height));
+                SetViewport(new Viewport(0, 0, rtv.ViewWidth, rtv.ViewHeight));
             }
             else if (depthStencilBuffer != null)
             {
-                SetViewport(new Viewport(0, 0, depthStencilBuffer.Description.Width, depthStencilBuffer.Description.Height));
+                SetViewport(new Viewport(0, 0, depthStencilBuffer.Width, depthStencilBuffer.Height));
             }
         }
 
-        private void CommonSetRenderTargets(DepthStencilBuffer depthStencilBuffer, RenderTarget[] renderTargets)
+        private void CommonSetRenderTargets(Texture depthStencilBuffer, Texture[] renderTargets)
         {
             if (renderTargets.Length > currentRenderTargetViews.Length)
             {
                 throw new ArgumentOutOfRangeException(string.Format("RenderTargets count is exceeding maximum range [{0}]", renderTargets.Length), "renderTargets");
             }
 
-            RenderTarget rtv = renderTargets.Length > 0 ? renderTargets[0] : null;
+            Texture rtv = renderTargets.Length > 0 ? renderTargets[0] : null;
 
             for (int i = 0; i < renderTargets.Length; i++)
                 currentRenderTargetViews[i] = renderTargets[i] != null ? renderTargets[i].NativeRenderTargetView : null;
@@ -908,11 +898,11 @@ namespace SiliconStudio.Paradox.Graphics
             // Setup the viewport from the rendertarget view
             if (rtv != null)
             {
-                SetViewport(new Viewport(0, 0, rtv.Width, rtv.Height));
+                SetViewport(new Viewport(0, 0, rtv.ViewWidth, rtv.ViewHeight));
             }
             else if (depthStencilBuffer != null)
             {
-                SetViewport(new Viewport(0, 0, depthStencilBuffer.Description.Width, depthStencilBuffer.Description.Height));
+                SetViewport(new Viewport(0, 0, depthStencilBuffer.Width, depthStencilBuffer.Height));
             }
         }
 
@@ -1000,6 +990,7 @@ namespace SiliconStudio.Paradox.Graphics
 
             currentInputLayout = null;
             currentEffectInputSignature = null;
+            currentVertexArrayObject = null;
             currentRenderTargetView = null;
             currentVertexArrayLayout = null;
             nativeDevice.Dispose();
@@ -1025,6 +1016,9 @@ namespace SiliconStudio.Paradox.Graphics
 
             // Setup the primitive type
             PrimitiveType = primitiveType;
+
+            if (currentVertexArrayObject == newVertexArrayObject)
+                return;
 
             // If the vertex array object is null, simply set the InputLayout to null
             if (newVertexArrayObject == null)
@@ -1055,6 +1049,8 @@ namespace SiliconStudio.Paradox.Graphics
                 // Apply the VertexArrayObject
                 newVertexArrayObject.Apply(inputAssembler);
             }
+
+            currentVertexArrayObject = newVertexArrayObject;
 
             // Setup the input layout
             inputAssembler.InputLayout = currentInputLayout;

@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #include "stdafx.h"
+#include "../SiliconStudio.Paradox.Importer.Common/ImporterUtils.h"
 
 #include <algorithm>
 #include <string>
@@ -24,7 +25,6 @@ using namespace SiliconStudio::Paradox::EntityModel;
 using namespace SiliconStudio::Paradox::EntityModel::Data;
 using namespace SiliconStudio::Paradox::Effects;
 using namespace SiliconStudio::Paradox::Effects::Data;
-using namespace SiliconStudio::Paradox::Effects::Modules;
 using namespace SiliconStudio::Paradox::Engine;
 using namespace SiliconStudio::Paradox::Engine::Data;
 using namespace SiliconStudio::Paradox::Extensions;
@@ -540,32 +540,30 @@ public:
 			if (lMaterialElement != NULL && lMaterial != NULL)
 			{
 				auto isTransparent = IsTransparent(lMaterial);
-
-				auto meshName = meshNames[pMesh];
-				if (buildMeshes->Count > 1)
-					meshName = meshName + "_" + std::to_string(i+1);
-				meshData->Name = gcnew String(meshName.c_str());
-
 				bool sortTransparentMeshes = true;	// TODO transform into importer parameter
 				if (isTransparent && sortTransparentMeshes)
 				{
 					PolySortExtensions::SortMeshPolygons(drawData, ViewDirectionForTransparentZSort);
 				}
-
-				if (hasSkinningPosition || hasSkinningNormal || totalClusterCount > 0)
-				{
-					meshData->Parameters = gcnew ParameterCollectionData();
-
-					if (hasSkinningPosition)
-						meshData->Parameters->Set(MaterialParameters::HasSkinningPosition, true);
-					if (hasSkinningNormal)
-						meshData->Parameters->Set(MaterialParameters::HasSkinningNormal, true);
-					if (totalClusterCount > 0)
-						meshData->Parameters->Set(MaterialParameters::SkinningBones, totalClusterCount);
-				}
-
-				modelData->Meshes->Add(meshData);
 			}
+
+			auto meshName = meshNames[pMesh];
+			if (buildMeshes->Count > 1)
+				meshName = meshName + "_" + std::to_string(i + 1);
+			meshData->Name = gcnew String(meshName.c_str());
+			
+			if (hasSkinningPosition || hasSkinningNormal || totalClusterCount > 0)
+			{
+				meshData->Parameters = gcnew ParameterCollectionData();
+
+				if (hasSkinningPosition)
+					meshData->Parameters->Set(MaterialParameters::HasSkinningPosition, true);
+				if (hasSkinningNormal)
+					meshData->Parameters->Set(MaterialParameters::HasSkinningNormal, true);
+				if (totalClusterCount > 0)
+					meshData->Parameters->Set(MaterialParameters::SkinningBones, totalClusterCount);
+			}
+			modelData->Meshes->Add(meshData);
 		}
 	}
 
@@ -1819,7 +1817,7 @@ public:
 			config->ImportTextures = true;
 			config->ImportModels = false;
 			config->ImportAnimations = false;
-			config->ExtractEmbeddedData = false;
+			config->ExtractEmbeddedData = true;
 
 			return config;
 		}
@@ -1840,7 +1838,7 @@ public:
 			config->ImportTextures = true;
 			config->ImportModels = true;
 			config->ImportAnimations = true;
-			config->ExtractEmbeddedData = false;
+			config->ExtractEmbeddedData = true;
 
 			return config;
 		}
@@ -2092,13 +2090,9 @@ private:
 				materialName = materialName.substr(0, materialNameSplitPosition);
 			}
 
-			// TODO: remove all bad characters
-			int nextCharacterPos = materialName.find(':');
-			while (nextCharacterPos != std::string::npos)
-			{
-				materialName.replace(nextCharacterPos, 1, 1, '_');
-				nextCharacterPos = materialName.find(':', nextCharacterPos);
-			}
+			// remove all bad characters
+			ReplaceCharacter(materialName, ':', '_');
+			RemoveCharacter(materialName, ' ');
 			tempNames[lMaterial] = materialName;
 			
 			if (materialNameTotalCount.count(materialName) == 0)
@@ -2161,6 +2155,9 @@ private:
 		{
 			auto pMesh = *iter;
 			auto meshName = std::string(pMesh->GetNode()->GetName());
+
+			// remove all bad characters
+			RemoveCharacter(meshName, ' ');
 			tempNames[pMesh] = meshName;
 
 			if (meshNameTotalCount.count(meshName) == 0)
@@ -2330,11 +2327,16 @@ private:
 
 			for (int i = 0; i < buildMeshes->Count; ++i)
 			{
+				auto meshParams = gcnew MeshParameters();
+				auto meshName = meshNames[pMesh];
+				if (buildMeshes->Count > 1)
+					meshName = meshName + "_" + std::to_string(i + 1);
+				meshParams->MeshName = gcnew String(meshName.c_str());
+				meshParams->NodeName = gcnew String(nodeNames[pNode].c_str());
+
 				FbxGeometryElementMaterial* lMaterialElement = pMesh->GetElementMaterial();
 				if (lMaterialElement != NULL)
 				{
-					auto meshParams = gcnew MeshParameters();
-					
 					FbxSurfaceMaterial* lMaterial = pNode->GetMaterial(i);
 					std::map<std::string, int> uvElements;
 					auto uvNames = gcnew List<String^>();
@@ -2343,17 +2345,16 @@ private:
 						uvElements[pMesh->GetElementUV(j)->GetName()] = j;
 						uvNames->Add(gcnew String(pMesh->GetElementUV(j)->GetName()));
 					}
-					
+
 					auto material = GetOrCreateMaterial(lMaterial, uvNames, materialInstances, uvElements, materialNames);
-					auto meshName = meshNames[pMesh];
-					if (buildMeshes->Count > 1)
-						meshName = meshName + "_" + std::to_string(i+1);
-					
-					meshParams->MeshName = gcnew String(meshName.c_str());
 					meshParams->MaterialName = material->MaterialName;
-					meshParams->NodeName = gcnew String(nodeNames[pNode].c_str());
-					models->Add(meshParams);
 				}
+				else
+				{
+					logger->Warning("Mesh {0} do not have a material. It might not be displayed.", meshParams->MeshName);
+				}
+
+				models->Add(meshParams);
 			}
 		}
 		else if (pAttribute->GetAttributeType() == FbxNodeAttribute::eCamera)
@@ -2463,9 +2464,17 @@ private:
 				continue;
 			
 			auto texturePath = FindFilePath(texture);
-			if(!String::IsNullOrEmpty(texturePath)
+			if (!String::IsNullOrEmpty(texturePath)
 				&& File::Exists(texturePath))
+			{
+				if (texturePath->Contains(".fbm\\"))
+					logger->Info("Importer detected an embedded texture. It has been extracted at address '{0}'.", texturePath);
 				textureNames->Add(texturePath);
+			}
+			else
+			{
+				logger->Warning("Importer detected a texture not available on disk at address '{0}'", texturePath);
+			}
 		}
 
 		return textureNames;

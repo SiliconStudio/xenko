@@ -5,12 +5,13 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Paradox.DataModel;
+using SiliconStudio.Paradox.Effects.ShadowMaps;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.Effects.Modules.Processors
+namespace SiliconStudio.Paradox.Effects.Processors
 {
     /// <summary>
     /// A class handling the allocation of shadow maps with a fixed budget of shadow map textures. This class is meant to be inherited with the desired budget since it has no texture at all.
@@ -59,13 +60,13 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
                 // clear the virtual allocation
                 foreach (var texture in shadowMapDefaultTextures)
                 {
-                    texture.GuillotinePacker.Clear(texture.ShadowMapDepthBuffer.Texture.Width, texture.ShadowMapDepthBuffer.Texture.Height);
-                    texturesDefault[texture] = texture.ShadowMapDepthBuffer.Texture.Width * texture.ShadowMapDepthBuffer.Texture.Height;
+                    texture.GuillotinePacker.Clear(texture.ShadowMapDepthTexture.ViewWidth, texture.ShadowMapDepthTexture.ViewHeight);
+                    texturesDefault[texture] = texture.ShadowMapDepthTexture.ViewWidth * texture.ShadowMapDepthTexture.ViewHeight;
                 }
                 foreach (var texture in shadowMapVsmTextures)
                 {
-                    texture.GuillotinePacker.Clear(texture.ShadowMapDepthBuffer.Texture.Width, texture.ShadowMapDepthBuffer.Texture.Height);
-                    texturesVsm[texture] = texture.ShadowMapDepthBuffer.Texture.Width * texture.ShadowMapDepthBuffer.Texture.Height;
+                    texture.GuillotinePacker.Clear(texture.ShadowMapDepthTexture.ViewWidth, texture.ShadowMapDepthTexture.ViewHeight);
+                    texturesVsm[texture] = texture.ShadowMapDepthTexture.ViewWidth * texture.ShadowMapDepthTexture.ViewHeight;
                 }
 
                 // sort the textures based on the available size.
@@ -121,9 +122,9 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
 
                 // clear the virtual allocation again
                 foreach (var texture in shadowMapDefaultTextures)
-                    texture.GuillotinePacker.Clear(texture.ShadowMapDepthBuffer.Texture.Width, texture.ShadowMapDepthBuffer.Texture.Height);
+                    texture.GuillotinePacker.Clear(texture.ShadowMapDepthTexture.ViewWidth, texture.ShadowMapDepthTexture.ViewHeight);
                 foreach (var texture in shadowMapVsmTextures)
-                    texture.GuillotinePacker.Clear(texture.ShadowMapDepthBuffer.Texture.Width, texture.ShadowMapDepthBuffer.Texture.Height);
+                    texture.GuillotinePacker.Clear(texture.ShadowMapDepthTexture.ViewWidth, texture.ShadowMapDepthTexture.ViewHeight);
             }
         }
 
@@ -140,12 +141,12 @@ namespace SiliconStudio.Paradox.Effects.Modules.Processors
         {
             if (filterType == ShadowMapFilterType.Variance)
             {
-                texturesVsm.Add(shadowMapTexture, shadowMapTexture.ShadowMapDepthTexture.Width * shadowMapTexture.ShadowMapDepthTexture.Height);
+                texturesVsm.Add(shadowMapTexture, shadowMapTexture.ShadowMapDepthTexture.ViewWidth * shadowMapTexture.ShadowMapDepthTexture.ViewHeight);
                 shadowMapVsmTextures.Add(shadowMapTexture);
             }
             else
             {
-                texturesDefault.Add(shadowMapTexture, shadowMapTexture.ShadowMapDepthTexture.Width * shadowMapTexture.ShadowMapDepthTexture.Height);
+                texturesDefault.Add(shadowMapTexture, shadowMapTexture.ShadowMapDepthTexture.ViewWidth * shadowMapTexture.ShadowMapDepthTexture.ViewHeight);
                 shadowMapDefaultTextures.Add(shadowMapTexture);
             }
 

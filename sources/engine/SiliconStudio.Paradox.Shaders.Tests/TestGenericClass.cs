@@ -25,13 +25,10 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         [SetUp]
         public void Init()
         {
-            using (var profile = Profiler.Begin(GameProfilingKeys.ObjectDatabaseInitialize))
-            {
-                // Create and mount database file system
-                var objDatabase = new ObjectDatabase("/data/db", "index", "/local/db");
-                var databaseFileProvider = new DatabaseFileProvider(objDatabase);
-                AssetManager.GetFileProvider = () => databaseFileProvider;
-            }
+            // Create and mount database file system
+            var objDatabase = new ObjectDatabase("/data/db", "index", "/local/db");
+            var databaseFileProvider = new DatabaseFileProvider(objDatabase);
+            AssetManager.GetFileProvider = () => databaseFileProvider;
 
             manager = new ShaderSourceManager();
             manager.LookupDirectoryList.Add("shaders");
@@ -52,7 +49,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             generics[6] = "uint3(0,1,2)";
             generics[7] = "float4(5,4,3,2)";
             generics[8] = "StaticClass.staticFloat";
-            var shaderClass = loader.LoadClassSource(new ShaderClassSource("GenericClass", generics), null, logger);
+            var shaderClass = loader.LoadClassSource(new ShaderClassSource("GenericClass", generics), null, logger, false);
 
             Assert.IsNotNull(shaderClass);
 
@@ -95,7 +92,9 @@ namespace SiliconStudio.Paradox.Shaders.Tests
 
             var compiler = new EffectCompiler();
             compiler.SourceDirectories.Add("shaders");
-            var effectByteCode = compiler.Compile(mixinSource, "TestShaderCompilationGenericClass", compilerParameters, null, null, log);
+
+            var mixinTree = new ShaderMixinSourceTree() { Name = "TestShaderCompilationGenericClass", Mixin = mixinSource, UsedParameters = compilerParameters };
+            var effectByteCode = compiler.Compile(mixinTree, new CompilerParameters(), log);
         }
 
 
@@ -106,16 +105,13 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             //TestShaderCompilation();
         }
 
-        public static void Main()
+        public static void Main5()
         {
-            using (var profile = Profiler.Begin(GameProfilingKeys.ObjectDatabaseInitialize))
-            {
-                // Create and mount database file system
-                var objDatabase = new ObjectDatabase("/data/db");
-                var assetIndexMap = AssetIndexMap.Load();
-                var databaseFileProvider = new DatabaseFileProvider(assetIndexMap, objDatabase);
-                AssetManager.GetFileProvider = () => databaseFileProvider;
-            }
+            // Create and mount database file system
+            var objDatabase = new ObjectDatabase("/data/db");
+            var assetIndexMap = AssetIndexMap.Load();
+            var databaseFileProvider = new DatabaseFileProvider(assetIndexMap, objDatabase);
+            AssetManager.GetFileProvider = () => databaseFileProvider;
 
             var test = new TestGenericClass();
             test.Run();

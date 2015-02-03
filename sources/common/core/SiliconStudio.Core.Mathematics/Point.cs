@@ -31,7 +31,7 @@ namespace SiliconStudio.Core.Mathematics
     /// Structure using the same layout than <see cref="System.Drawing.Point"/>.
     /// </summary>
     [DataContract]
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct Point : IEquatable<Point>
     {
         /// <summary>

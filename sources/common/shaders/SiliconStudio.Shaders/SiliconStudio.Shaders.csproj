@@ -17,11 +17,8 @@
     <ParadoxBuildTags>Windows</ParadoxBuildTags>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SharpDX" Condition=" '$(SiliconStudioShaderUseSharpDX)' == 'true' ">
-      <HintPath>$(ParadoxSharpDXSdkBinDir)\SharpDX.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.D3DCompiler" Condition=" '$(SiliconStudioShaderUseSharpDX)' == 'true' ">
-      <HintPath>$(ParadoxSharpDXSdkBinDir)\SharpDX.D3DCompiler.dll</HintPath>
+    <Reference Include="CppNet">
+      <HintPath>..\..\deps\CppNet\CppNet.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -197,10 +194,7 @@
     <Compile Include="Grammar\TokenInfo.cs" />
     <Compile Include="Grammar\Tokenizer.cs" />
     <Compile Include="Grammar\TokenType.cs" />
-    <Compile Include="Parser\DefaultIncludeHandler.cs" />
     <Compile Include="Parser\Hlsl\HlslParser.cs" />
-    <Compile Include="Parser\IncludeHandler.cs" />
-    <Compile Include="Parser\IncludeType.cs" />
     <Compile Include="Utility\LoggerResult.cs" />
     <Compile Include="Parser\ParsingResult.cs" />
     <Compile Include="Parser\PreProcessor.cs" />

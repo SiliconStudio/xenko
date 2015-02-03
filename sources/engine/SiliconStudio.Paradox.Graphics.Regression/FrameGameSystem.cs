@@ -41,6 +41,8 @@ namespace SiliconStudio.Paradox.Graphics.Regression
 
         #region Public properties
 
+        private bool allTestsCompleted = false;
+
         /// <summary>
         /// Flag stating that all the tests have been rendered.
         /// </summary>
@@ -48,7 +50,18 @@ namespace SiliconStudio.Paradox.Graphics.Regression
         {
             get
             {
-                return frameCount > lastFrame;
+                return IsUnityTestFeeding ?  allTestsCompleted : frameCount > lastFrame;
+            }
+            set
+            {
+                if (IsUnityTestFeeding)
+                {
+                    allTestsCompleted = value;
+                }
+                else
+                {
+                    throw new InvalidOperationException("You can't modify AllTestsCompleted on a non UnityTestFeeding FrameGameSystem");
+                }
             }
         }
 
@@ -84,6 +97,12 @@ namespace SiliconStudio.Paradox.Graphics.Regression
                 return screenshotFrames.Count;
             }
         }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is test feeding.
+        /// </summary>
+        /// <value><c>true</c> if this instance is test feeding; otherwise, <c>false</c>.</value>
+        public bool IsUnityTestFeeding { get; set; }
 
         #endregion
 

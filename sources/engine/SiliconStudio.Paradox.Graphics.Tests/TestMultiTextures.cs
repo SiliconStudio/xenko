@@ -11,7 +11,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Paradox.Shaders.Compiler;
@@ -77,7 +77,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             
             var view = Matrix.LookAtLH(new Vector3(0, 0, -5), new Vector3(0, 0, 0), Vector3.UnitY);
             var projection = Matrix.PerspectiveFovLH((float)Math.PI / 4.0f, (float)GraphicsDevice.BackBuffer.Width / GraphicsDevice.BackBuffer.Height, 0.1f, 100.0f);
-            MultiTexturesEffect.Parameters.Set(TransformationKeys.WorldViewProjection, Matrix.Multiply(view, projection));
+            MultiTexturesEffect.SharedParameters.Set(TransformationKeys.WorldViewProjection, Matrix.Multiply(view, projection));
         }
 
         protected override void Draw(GameTime gameTime)
@@ -88,9 +88,9 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             base.Draw(gameTime);
 
             // Clears the screen with the Color.CornflowerBlue
-            GraphicsDevice.SetRenderTarget(GraphicsDevice.BackBuffer);
-            MultiTexturesEffect.Parameters.Set(TexturingKeys.Texture0, UVTexture);
-            MultiTexturesEffect.Parameters.Set(TexturingKeys.Texture1, UV2Texture);
+            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.BackBuffer);
+            MultiTexturesEffect.SharedParameters.Set(TexturingKeys.Texture0, UVTexture);
+            MultiTexturesEffect.SharedParameters.Set(TexturingKeys.Texture1, UV2Texture);
             MultiTexturesEffect.Apply();
             geometry.Draw();
         }

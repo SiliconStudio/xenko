@@ -45,11 +45,6 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// </summary>
         public HashSourceCollection SourceHashes = new HashSourceCollection();
 
-        /// <summary>
-        /// List of shaders that should be loaded from the disk.
-        /// </summary>
-        public HashSet<string> ModifiedShaders = new HashSet<string>();
-
         #endregion
 
         #region Private members
@@ -73,6 +68,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         #endregion
 
         #region Public methods
+
+
+        public bool AllowNonInstantiatedGenerics { get; set; }
 
         /// <summary>
         /// Explore the ShaderSource and add the necessary shaders
@@ -309,7 +307,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         {
             var classSource = (ShaderClassSource)mixinInfo.ShaderSource;
 
-            var shaderClass = ShaderLoader.LoadClassSource(classSource, mixinInfo.Macros, mixinInfo.Log, ModifiedShaders);
+            // If we allow to parse non instantiated generics, put empty generic arguments to let the ShaderLoader expanding correctly the class
+            var shaderClass = ShaderLoader.LoadClassSource(classSource, mixinInfo.Macros, mixinInfo.Log, AllowNonInstantiatedGenerics);
 
             // If result is null, there was some errors while parsing.
             if (shaderClass == null)
@@ -317,7 +316,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
             shaderClass = shaderClass.DeepClone();
 
-            if (shaderClass.ShaderGenerics != null && shaderClass.ShaderGenerics.Count != 0)
+            if (shaderClass.ShaderGenerics.Count > 0)
                 mixinInfo.Instanciated = false;
 
             mixinInfo.HashPreprocessSource = shaderClass.PreprocessedSourceHash;

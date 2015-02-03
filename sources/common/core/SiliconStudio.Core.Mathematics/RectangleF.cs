@@ -32,7 +32,7 @@ namespace SiliconStudio.Core.Mathematics
     /// internally storing Left,Top,Right,Bottom instead of Left,Top,Width,Height.
     /// </summary>
     [DataContract]
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct RectangleF : IEquatable<RectangleF>
     {
         private float _left;

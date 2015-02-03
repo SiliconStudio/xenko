@@ -514,7 +514,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         #endregion
     }
 
-    public class VTableReference
+    internal class VTableReference
     {
         public string Shader = "";
 

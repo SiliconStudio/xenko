@@ -447,7 +447,7 @@ class __OutputPatch<T,N> {
 // http://msdn.microsoft.com/en-us/library/ff471472%28v=VS.85%29.aspx
 class __RWBuffer<T> {
 	void GetDimensions(out  uint dim);
-	T operator []( in uint pos);
+	T operator[](in uint pos);
 };
 
 // RWByteAddressBuffer

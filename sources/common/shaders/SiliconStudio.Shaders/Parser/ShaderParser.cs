@@ -10,6 +10,8 @@ using Irony.Parsing;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Grammar;
 using SiliconStudio.Shaders.Utility;
+
+using SourceLocation = SiliconStudio.Shaders.Ast.SourceLocation;
 using SourceSpan = SiliconStudio.Shaders.Ast.SourceSpan;
 
 namespace SiliconStudio.Shaders.Parser
@@ -70,20 +72,31 @@ namespace SiliconStudio.Shaders.Parser
         /// <returns>Result of parsing</returns>
         public ParsingResult TryPreProcessAndParse(string source, string sourceFileName, ShaderMacro[] macros = null, params string[] includeDirectories)
         {
-            // Use a default include handler
-            var defaultHandler = new DefaultIncludeHandler();
+
+            var allIncludeDirectories = new List<string>();
 
             if (includeDirectories != null)
-                defaultHandler.AddDirectories(includeDirectories);
+                allIncludeDirectories.AddRange(includeDirectories);
 
-            defaultHandler.AddDirectory(Environment.CurrentDirectory);
+            allIncludeDirectories.Add(Environment.CurrentDirectory);
 
             var directoryName = Path.GetDirectoryName(sourceFileName);
             if (!string.IsNullOrEmpty(directoryName))
-                defaultHandler.AddDirectory(directoryName);
+                allIncludeDirectories.Add(directoryName);
 
             // Run the processor
-            var preprocessedSource = PreProcessor.Run(source, sourceFileName, macros, defaultHandler);
+            string preprocessedSource;
+
+            try
+            {
+                preprocessedSource = PreProcessor.Run(source, sourceFileName, macros, allIncludeDirectories.ToArray());
+            }
+            catch (Exception ex)
+            {
+                var result = new ParsingResult();
+                result.Error(MessageCode.ErrorUnexpectedException, new SourceSpan(new SourceLocation(sourceFileName, 0, 1, 1), 1), ex);
+                return result;
+            }
 
             // Parse the source
             return Parse(preprocessedSource, sourceFileName);
