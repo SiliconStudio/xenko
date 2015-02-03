@@ -201,7 +201,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                     var materialAssetReferences = AssetReferenceAnalysis.Visit(material);
                     foreach (var materialAssetReferenceLink in materialAssetReferences)
                     {
-                        var materialAssetReference = materialAssetReferenceLink.Reference as AssetReference;
+                        var materialAssetReference = materialAssetReferenceLink.Reference as IContentReference;
                         if (materialAssetReference == null)
                             continue;
 
