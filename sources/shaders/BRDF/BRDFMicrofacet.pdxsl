@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox.Effects.BRDF
         /// </summary>
         float NormalDistributionBlinnPhong(float alphaR, float nDotH) 
         {
-            var alphaR2 =  alphaR * alphaR;
+            var alphaR2 =  max(alphaR * alphaR, 0.1);  // Cap the value to avoid high exponents. TODO: Find an acceptable limit with 16 bits floats targets
             return pow(nDotH, 2/alphaR2 - 2) / (PI * alphaR2);
         }
 
@@ -35,7 +35,7 @@ namespace SiliconStudio.Paradox.Effects.BRDF
         /// </summary>
         float NormalDistributionBeckmann(float alphaR, float nDotH) 
         {
-            var alphaR2 =  alphaR * alphaR;
+            var alphaR2 =  max(alphaR * alphaR, 0.1);  // Cap the value to avoid high exponents. TODO: Find an acceptable limit with 16 bits floats targets
             var nDotH2 =  nDotH * nDotH;
             var nDotH4 =  nDotH2 * nDotH2;
             return exp((nDotH2 -1)/(alphaR2 * nDotH2))/(PI * alphaR2 * nDotH4);
