@@ -1,10 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.ComponentModel;
-
 using SiliconStudio.Core;
-using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
@@ -12,7 +10,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// Material overrides used in a <see cref="MaterialBlendLayer"/>
     /// </summary>
     [DataContract("MaterialBlendOverrides")]
-    [Display("Material Overrides")]
+    [Display("Layer Overrides")]
     public class MaterialBlendOverrides
     {
         /// <summary>
@@ -20,17 +18,15 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// </summary>
         public MaterialBlendOverrides()
         {
-            SurfaceContribution = 1.0f;
-            MicroSurfaceContribution = 1.0f;
-            DiffuseContribution = 1.0f;
-            SpecularContribution = 1.0f;
-            OcclusionContribution = 1.0f;
-            OffsetU = 0.0f;
-            OffsetV = 0.0f;
-            ScaleU = 1.0f;
-            ScaleV = 1.0f;
+            //SurfaceContribution = 1.0f;
+            //MicroSurfaceContribution = 1.0f;
+            //DiffuseContribution = 1.0f;
+            //SpecularContribution = 1.0f;
+            //OcclusionContribution = 1.0f;
+            UVScale = new Vector2(1.0f, 1.0f);
         }
 
+        /*
         /// <summary>
         /// Gets or sets the surface contribution.
         /// </summary>
@@ -80,39 +76,22 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [DataMember(50)]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
         public float OcclusionContribution { get; set; }
-
-        // TODO: Use Vector2 for uv Offset and uv Scales (Check how to integrate with range attribute)
-
-        /// <summary>
-        /// Gets or sets the offset u.
-        /// </summary>
-        /// <value>The offset u.</value>
-        [DefaultValue(0.0f)]
-        [DataMember(60)]
-        public float OffsetU { get; set; }
+        */
 
         /// <summary>
-        /// Gets or sets the offset v.
-        /// </summary>
-        /// <value>The offset v.</value>
-        [DefaultValue(0.0f)]
-        [DataMember(70)]
-        public float OffsetV { get; set; }
-
-        /// <summary>
-        /// Gets or sets the scale u.
+        /// Gets or sets the scale u and v.
         /// </summary>
         /// <value>The scale u.</value>
-        [DefaultValue(1.0f)]
         [DataMember(80)]
-        public float ScaleU { get; set; }
+        [Display("UV Scale")]
+        public Vector2 UVScale { get; set; }
 
-        /// <summary>
-        /// Gets or sets the scale v.
-        /// </summary>
-        /// <value>The scale v.</value>
-        [DefaultValue(1.0f)]
-        [DataMember(90)]
-        public float ScaleV { get; set; }
+        ///// <summary>
+        ///// Gets or sets the scale v.
+        ///// </summary>
+        ///// <value>The scale v.</value>
+        //[DefaultValue(1.0f)]
+        //[DataMember(90)]
+        //public float ScaleV { get; set; }
     }
 }

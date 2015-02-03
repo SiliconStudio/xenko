@@ -34,7 +34,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             context.Log = result;
 
             result.Parameters = context.Parameters;
-            context.PushLayer();
+            context.PushLayer(new MaterialBlendOverrides());
             material.Visit(context);
             context.PopLayer();
 

@@ -26,6 +26,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         Pixel
     }
 
+    // TODO REWRITE AND COMMENT THIS CLASS
     public class MaterialGeneratorContext : ShaderGeneratorContextBase
     {
         private readonly Dictionary<string, ShaderSource> registeredStreamBlend = new Dictionary<string, ShaderSource>();
@@ -72,14 +73,22 @@ namespace SiliconStudio.Paradox.Assets.Materials
             }
         }
 
-        public void PushLayer()
+        public void PushLayer(MaterialBlendOverrides overrides)
         {
-            var newLayer = new MaterialBlendLayerNode(this, Current);
+            var newLayer = new MaterialBlendLayerNode(this, Current, overrides);
             if (Current != null)
             {
                 Current.Children.Add(newLayer);
             }
             Current = newLayer;
+        }
+
+        public MaterialBlendOverrides CurrentOverrides
+        {
+            get
+            {
+                return Current != null ? Current.Overrides : null;
+            }
         }
 
         public void PopLayer()
@@ -257,15 +266,26 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
             private readonly MaterialBlendLayerNode parentNode;
 
-            public MaterialBlendLayerNode(MaterialGeneratorContext context, MaterialBlendLayerNode parentNode)
+            private readonly MaterialBlendOverrides overrides;
+
+            public MaterialBlendLayerNode(MaterialGeneratorContext context, MaterialBlendLayerNode parentNode, MaterialBlendOverrides overrides)
             {
                 this.context = context;
                 this.parentNode = parentNode;
+                this.overrides = overrides;
                 VertexStageSurfaceShaders = new List<ShaderSource>();
                 PixelStageSurfaceShaders = new List<ShaderSource>();
                 Children = new List<MaterialBlendLayerNode>();
                 Streams = new HashSet<string>();
                 ShadingModels = new MaterialShadingModelCollection();
+            }
+
+            public MaterialBlendOverrides Overrides
+            {
+                get
+                {
+                    return overrides;
+                }
             }
 
             public MaterialGeneratorContext Context

@@ -170,7 +170,14 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
             var samplerKey = context.GetSamplerKey(Sampler);
             UsedKey = textureKey;
 
-            var scaleStr = MaterialUtility.GetAsShaderString(Scale);
+            var scale = Scale;
+            var scaleFactor = context.CurrentOverrides.UVScale;
+            if (scaleFactor != Vector2.One)
+            {
+                scale *= scaleFactor;
+            }
+
+            var scaleStr = MaterialUtility.GetAsShaderString(scale);
             var offsetStr = MaterialUtility.GetAsShaderString(Offset);
             var channelStr = GetTextureChannelAsString();
 
@@ -182,7 +189,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
             {
                 if (Offset != Vector2.Zero)
                     shaderSource = new ShaderClassSource("ComputeColorTextureLodScaledOffsetSampler", textureKey, usedTexcoord, samplerKey, channelStr, scaleStr, offsetStr, 0.0f);
-                else if (Scale != Vector2.One)
+                else if (scale != Vector2.One)
                     shaderSource = new ShaderClassSource("ComputeColorTextureLodScaledSampler", textureKey, usedTexcoord, samplerKey, channelStr, scaleStr, 0.0f);
                 else
                     shaderSource = new ShaderClassSource("ComputeColorTextureLodSampler", textureKey, usedTexcoord, samplerKey, channelStr, 0.0f);
@@ -191,7 +198,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
             {
                 if (Offset != Vector2.Zero)
                     shaderSource = new ShaderClassSource("ComputeColorTextureScaledOffsetSampler", textureKey, usedTexcoord, samplerKey, channelStr, scaleStr, offsetStr);
-                else if (Scale != Vector2.One)
+                else if (scale != Vector2.One)
                     shaderSource = new ShaderClassSource("ComputeColorTextureScaledSampler", textureKey, usedTexcoord, samplerKey, channelStr, scaleStr);
                 else
                     shaderSource = new ShaderClassSource("ComputeColorTextureSampler", textureKey, usedTexcoord, samplerKey, channelStr);
