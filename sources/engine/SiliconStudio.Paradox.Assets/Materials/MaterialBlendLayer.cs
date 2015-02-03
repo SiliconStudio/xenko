@@ -5,6 +5,7 @@ using System.ComponentModel;
 
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Shaders;
@@ -27,7 +28,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         {
             Enabled = true;
             BlendMap = new ComputeTextureScalar();
-            // Overrides = new MaterialBlendOverrides();
+            Overrides = new MaterialBlendOverrides();
         }
 
         /// <summary>
@@ -61,14 +62,17 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [Display("Blend Map")]
         [DefaultValue(null)]
         [DataMember(40)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
         public IComputeScalar BlendMap { get; set; }
 
-        ///// <summary>
-        ///// Gets or sets the material overrides.
-        ///// </summary>
-        ///// <value>The overrides.</value>
-        //[DataMember(50)]
-        //public MaterialBlendOverrides Overrides { get; private set; }
+        /// <summary>
+        /// Gets or sets the material overrides.
+        /// </summary>
+        /// <value>The overrides.</value>
+        [DataMember(50)]
+        [Category]
+        [Display("Layer Overrides")]
+        public MaterialBlendOverrides Overrides { get; private set; }
 
         public virtual void Visit(MaterialGeneratorContext context)
         {
@@ -90,7 +94,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             // TODO: Handle MaterialOverrides
 
             // Push a layer for the sub-material
-            context.PushLayer();
+            context.PushLayer(Overrides);
 
             // Generate the material shaders into the current context
             material.Visit(context);
