@@ -392,11 +392,14 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 Owner.BeginCombinedAction();
                 ChangeInProgress = true;
-                CombinedNodes.Where(x => x.IsVisible).ForEach(x => x.Value = value);
+                CombinedNodes.ForEach(x => x.Value = value);
                 var changedNodes = ChangedNodes.Where(x => x != this).ToList();
                 ChangedNodes.Clear();
                 ChangeInProgress = false;
-                Refresh();
+                if (!IsPrimitive)
+                {
+                    Refresh();
+                }
                 changedNodes.ForEach(x => x.Refresh());
                 string displayName = Owner.FormatCombinedUpdateMessage(this, value);
                 Owner.EndCombinedAction(displayName, Path, value);
