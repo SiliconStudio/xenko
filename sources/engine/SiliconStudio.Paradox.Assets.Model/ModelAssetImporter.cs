@@ -1,22 +1,18 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
+
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Analysis;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Assets.Materials;
-using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
-using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
 using SiliconStudio.Paradox.Assets.Model.Analysis;
 using SiliconStudio.Paradox.Assets.Textures;
-using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Importer.Common;
@@ -48,7 +44,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <returns>A collection of assets.</returns>
         public override IEnumerable<AssetItem> Import(UFile localPath, AssetImporterParameters importParameters)
         {
-            var assetReferences = new List<AssetItem>();
+            var rawAssetReferences = new List<AssetItem>(); // the asset references without subdirectory path
 
             var entityInfo = GetEntityInfo(localPath, importParameters.Logger);
 
@@ -66,37 +62,37 @@ namespace SiliconStudio.Paradox.Assets.Model
             // 1. Textures
             if (isImportingTexture)
             {
-                ImportTextures(assetReferences, localPath, entityInfo.TextureDependencies);
+                ImportTextures(entityInfo.TextureDependencies, rawAssetReferences);
             }
 
             // 2. Animation
             if (importParameters.IsTypeSelectedForOutput<AnimationAsset>())
             {
-                ImportAnimation(assetReferences, localPath, entityInfo.AnimationNodes);
+                ImportAnimation(rawAssetReferences, localPath, entityInfo.AnimationNodes, isImportingModel);
             }
 
             // 3. Materials
             if (isImportingMaterial)
             {
-                ImportMaterials(assetReferences, localPath, entityInfo.Materials);
+                ImportMaterials(rawAssetReferences, entityInfo.Materials);
             }
 
             // 4. Model
             if (isImportingModel)
             {
-                var modelItem = ImportModel(assetReferences, localPath, localPath, entityInfo);
+                var modelItem = ImportModel(rawAssetReferences, localPath, localPath, entityInfo, isImportingEntity);
 
                 // 4. Entity
                 if (isImportingEntity)
                 {
-                    var entityAssetItem = ImportEntity(assetReferences, localPath, modelItem);
+                    var entityAssetItem = ImportEntity(rawAssetReferences, localPath, modelItem);
 
                     // Apply EntityAnalysis 
                     EntityAnalysis.UpdateEntityReferences(((EntityAsset)entityAssetItem.Asset).Hierarchy);
                 }
             }
 
-            return assetReferences;
+            return rawAssetReferences;
         }
 
         private static Entity CreateTrackingEntity(EntityAsset entityAsset, Entity rootEntityAsset, ModelAsset modelAsset, string nodeName)
@@ -147,20 +143,20 @@ namespace SiliconStudio.Paradox.Assets.Model
             return assetReference;
         }
 
-        private static void ImportAnimation(List<AssetItem> assetReferences, UFile localPath, List<string> animationNodes)
+        private static void ImportAnimation(List<AssetItem> assetReferences, UFile localPath, List<string> animationNodes, bool shouldPostFixName)
         {
             if (animationNodes != null && animationNodes.Count > 0)
             {
                 var assetSource = localPath;
-                var animUrl = new UFile(localPath.GetFileName() + "_anim", null);
 
                 var asset = new AnimationAsset { Source = assetSource };
+                var animUrl = localPath.GetFileName() + (shouldPostFixName? " Animation": "");
 
                 assetReferences.Add(new AssetItem(animUrl, asset));
             }
         }
 
-        private static AssetItem ImportModel(List<AssetItem> assetReferences, UFile assetSource, UFile localPath, EntityInfo entityInfo)
+        private static AssetItem ImportModel(List<AssetItem> assetReferences, UFile assetSource, UFile localPath, EntityInfo entityInfo, bool shouldPostFixName)
         {
             var asset = new ModelAsset { Source = assetSource };
 
@@ -169,8 +165,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                 var loadedMaterials = assetReferences.Where(x => x.Asset is MaterialAsset).ToList();
                 foreach (var material in entityInfo.Materials)
                 {
-                    var matName = GenerateFinalMaterialName(localPath, material.Key);
-                    var foundMaterial = loadedMaterials.FirstOrDefault(x => x.Location == new UFile(matName, null));
+                    var foundMaterial = loadedMaterials.FirstOrDefault(x => x.Location == new UFile(material.Key, null));
                     if (foundMaterial != null)
                         asset.Materials.Add(new ModelMaterial { Name = material.Key, Material = new AssetReference<MaterialAsset>(foundMaterial.Id, foundMaterial.Location) });
                 }
@@ -185,24 +180,22 @@ namespace SiliconStudio.Paradox.Assets.Model
             if (entityInfo.AnimationNodes != null && entityInfo.AnimationNodes.Count > 0)
                 asset.PreserveNodes(entityInfo.AnimationNodes);
 
-            var modelUrl = new UFile(localPath.GetFileName() + "_model", null);
+            var modelUrl = new UFile(localPath.GetFileName() + (shouldPostFixName?" Model": ""), null);
             var assetItem = new AssetItem(modelUrl, asset);
             assetReferences.Add(assetItem);
             return assetItem;
         }
 
-        private static void ImportMaterials(List<AssetItem> assetReferences, UFile localPath, Dictionary<string, MaterialAsset> materials)
+        private static void ImportMaterials(List<AssetItem> assetReferences, Dictionary<string, MaterialAsset> materials)
         {
             if (materials != null)
             {
-                var assetSource = localPath;
                 var loadedTextures = assetReferences.Where(x => x.Asset is TextureAsset).ToList();
 
                 foreach (var materialKeyValue in materials)
                 {
                     AdjustForTransparency(materialKeyValue.Value);
                     var material = materialKeyValue.Value;
-                    var materialUrl = new UFile(GenerateFinalMaterialName(localPath, materialKeyValue.Key), null);
 
                     // patch texture name and ids
                     var materialAssetReferences = AssetReferenceAnalysis.Visit(material);
@@ -213,14 +206,14 @@ namespace SiliconStudio.Paradox.Assets.Model
                             continue;
 
                         // texture location is #nameOfTheModel_#nameOfTheTexture at this point in the material
-                        var foundTexture = loadedTextures.FirstOrDefault(x => x.Location == GenerateFinalTextureUrl(localPath, materialAssetReference.Location));
+                        var foundTexture = loadedTextures.FirstOrDefault(x => x.Location == materialAssetReference.Location);
                         if (foundTexture != null)
                         {
                             materialAssetReferenceLink.UpdateReference(foundTexture.Id, foundTexture.Location);
                         }
                     }
 
-                    var assetReference = new AssetItem(materialUrl, material);
+                    var assetReference = new AssetItem(materialKeyValue.Key, material);
                     assetReferences.Add(assetReference);
                 }
             }
@@ -282,59 +275,21 @@ namespace SiliconStudio.Paradox.Assets.Model
             //}
         }
 
-        /// <summary>
-        /// Explore the material to find a MaterialTextureNode behind a name.
-        /// </summary>
-        /// <param name="material">The material.</param>
-        /// <param name="startNode">The name of the stating node.</param>
-        /// <returns>The MaterialTextureNode if found.</returns>
-        private static ComputeTextureColor FindTextureNode(MaterialAsset material, string startNode)
+        private static void ImportTextures(IEnumerable<string> textureDependencies, List<AssetItem> assetReferences)
         {
-            //var currentNode = material.FindNode(startNode);
-            //while (currentNode is MaterialReferenceNode)
-            //{
-            //    var currentReferenceNode = (MaterialReferenceNode)currentNode;
-            //    currentNode = material.FindNode(currentReferenceNode.Name);
-            //}
+            if (textureDependencies == null)
+                return;
 
-            //return currentNode as ComputeTextureColor;
-            return null;
-        }
-
-        private static string GenerateFinalMaterialName(UFile localPath, string materialId)
-        {
-            return localPath.GetFileName() + "_material_" + materialId;
-        }
-
-        private static UFile GenerateFinalTextureUrl(UFile localPath, string textureName)
-        {
-            return new UFile(localPath.GetFileName() + '_' + textureName, null);
-        }
-
-        private static void ImportTextures(List<AssetItem> assetReferences, UFile localPath, List<string> dependentTextures)
-        {
-            if (dependentTextures != null)
+            foreach (var textureFullPath in textureDependencies.Distinct(x => x))
             {
-                // Import each texture
-                foreach (var textureFullPath in dependentTextures.Distinct(x => x))
-                {
-                    ImportTexture(assetReferences, localPath, textureFullPath);
-                }
+                var texturePath = new UFile(textureFullPath);
+
+                var source = texturePath;
+                var texture = new TextureAsset { Source = source, PremultiplyAlpha = false };
+
+                // Create asset reference
+                assetReferences.Add(new AssetItem(texturePath.GetFileName(), texture));
             }
-        }
-
-        private static void ImportTexture(List<AssetItem> assetReferences, UFile localPath, string textureFullPath)
-        {
-            var texturePath = new UFile(textureFullPath);
-
-            var source = texturePath;
-            var texture = new TextureAsset { Source = source, PremultiplyAlpha = false };
-
-            // Creates the url to the texture
-            var textureUrl = GenerateFinalTextureUrl(localPath, texturePath.GetFileName());
-
-            // Create asset reference
-            assetReferences.Add(new AssetItem(textureUrl, texture));
         }
     }
 }
