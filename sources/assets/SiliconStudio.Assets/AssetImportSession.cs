@@ -885,10 +885,6 @@ namespace SiliconStudio.Assets
                     {
                         assetReferenceLink.UpdateReference(item.Id, newLocation);
                     }
-                    else if (AttachedReferenceManager.GetUrl(assetReferenceLink.Reference) == item.Location)
-                    {
-                        AttachedReferenceManager.SetUrl(assetReferenceLink.Reference, newLocation);
-                    }
                 }
             }
             item.Location = newLocation;

@@ -116,7 +116,7 @@ namespace SiliconStudio.Assets.Analysis
                     var attachedReference = AttachedReferenceManager.GetAttachedReference(obj);
                     if (attachedReference != null)
                     {
-                        AddLink(obj, (guid, location) =>
+                        AddLink(new AttachedContentReference(attachedReference), (guid, location) =>
                         {
                             if (guid.HasValue)
                                 attachedReference.Id = guid.Value;
