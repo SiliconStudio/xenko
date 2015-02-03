@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -13,9 +14,19 @@ namespace SiliconStudio.Presentation.Controls
         public static readonly DependencyProperty DecimalPlacesProperty = DependencyProperty.Register("DecimalPlaces", typeof(int), typeof(VectorEditor), new FrameworkPropertyMetadata(-1));
 
         /// <summary>
+        /// Identifies the <see cref="IsDropDownOpen"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty IsDropDownOpenProperty = DependencyProperty.Register("IsDropDownOpen", typeof(bool), typeof(VectorEditor), new PropertyMetadata(false));
+
+        /// <summary>
         /// Gets or sets the number of decimal places displayed in the <see cref="NumericTextBox"/>.
         /// </summary>
         public int DecimalPlaces { get { return (int)GetValue(DecimalPlacesProperty); } set { SetValue(DecimalPlacesProperty, value); } }
+
+        /// <summary>
+        /// Gets or sets whether the drop-down of this vector editor is currently open
+        /// </summary>
+        public bool IsDropDownOpen { get { return (bool)GetValue(IsDropDownOpenProperty); } set { SetValue(IsDropDownOpenProperty, value); } }
 
         /// <summary>
         /// Sets the vector value of this vector editor from a single float value.
@@ -24,6 +35,15 @@ namespace SiliconStudio.Presentation.Controls
         public abstract void SetVectorFromValue(float value);
 
         public abstract void ResetValue();
+
+        protected override void OnIsKeyboardFocusWithinChanged(DependencyPropertyChangedEventArgs e)
+        {
+            base.OnIsKeyboardFocusWithinChanged(e);
+            if (IsDropDownOpen && !IsKeyboardFocusWithin)
+            {
+                SetCurrentValue(IsDropDownOpenProperty, false);
+            }
+        }
     }
 
     public abstract class VectorEditor<T> : VectorEditor

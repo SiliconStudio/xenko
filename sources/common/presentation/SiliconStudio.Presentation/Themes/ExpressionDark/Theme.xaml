@@ -3746,10 +3746,11 @@
 
                             </DockPanel>
                         </Border>
-                        <ToggleButton Grid.Column="4" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16" Background="Transparent" ToolTip="Advanced options">
+                        <ToggleButton Grid.Column="4" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16" Background="Transparent" ToolTip="Advanced options"
+                                      ClickMode="Press" IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
                             <Image Width="16" Height="16" Margin="-1" Source="{StaticResource ImageAdvancedEditionVector}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
                         </ToggleButton>
-                        <Popup x:Name="Popup" IsOpen="{Binding IsChecked, ElementName=ToggleButtonAdvancedOptions, Mode=TwoWay}" Placement="Bottom" AllowsTransparency="True"
+                        <Popup x:Name="Popup" IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" AllowsTransparency="True"
                                        MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ctrl:Vector2Editor}}" StaysOpen="False"
                                        PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=ctrl:Vector2Editor}}" PopupAnimation="Slide" VerticalOffset="2">
                             <Border SnapsToDevicePixels="True" Background="{StaticResource BackgroundBrush}" BorderBrush="Black" BorderThickness="1">
@@ -3822,10 +3823,11 @@
 
                             </DockPanel>
                         </Border>
-                        <ToggleButton Grid.Column="6" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16" Background="Transparent" ToolTip="Advanced options">
+                        <ToggleButton Grid.Column="6" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16"
+                                      Background="Transparent" ToolTip="Advanced options" ClickMode="Press" IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
                             <Image Width="16" Height="16" Margin="-1" Source="{StaticResource ImageAdvancedEditionVector}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
                         </ToggleButton>
-                        <Popup x:Name="Popup" IsOpen="{Binding IsChecked, ElementName=ToggleButtonAdvancedOptions, Mode=TwoWay}" Placement="Bottom" AllowsTransparency="True"
+                        <Popup x:Name="Popup" Placement="Bottom" AllowsTransparency="True" IsOpen="{TemplateBinding IsDropDownOpen}"
                                        MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ctrl:Vector3Editor}}" StaysOpen="False"
                                        PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=ctrl:Vector3Editor}}" PopupAnimation="Slide" VerticalOffset="2">
                             <Border SnapsToDevicePixels="True" Background="{StaticResource BackgroundBrush}" BorderBrush="Black" BorderThickness="1">
@@ -3905,10 +3907,11 @@
 
                             </DockPanel>
                         </Border>
-                        <ToggleButton Grid.Column="8" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16" Background="Transparent" ToolTip="Advanced options">
+                        <ToggleButton Grid.Column="8" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16" Background="Transparent" ToolTip="Advanced options"
+                                      ClickMode="Press" IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
                             <Image Width="16" Height="16" Margin="-1" Source="{StaticResource ImageAdvancedEditionVector}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
                         </ToggleButton>
-                        <Popup x:Name="Popup" IsOpen="{Binding IsChecked, ElementName=ToggleButtonAdvancedOptions, Mode=TwoWay}" Placement="Bottom" AllowsTransparency="True"
+                        <Popup x:Name="Popup" IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" AllowsTransparency="True"
                                        MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ctrl:Vector4Editor}}" StaysOpen="False"
                                        PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=ctrl:Vector4Editor}}" PopupAnimation="Slide" VerticalOffset="2">
                             <Border SnapsToDevicePixels="True" Background="{StaticResource BackgroundBrush}" BorderBrush="Black" BorderThickness="1">
@@ -3977,10 +3980,11 @@
 
                             </DockPanel>
                         </Border>
-                        <ToggleButton Grid.Column="6" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16" Background="Transparent" ToolTip="Advanced options">
+                        <ToggleButton Grid.Column="6" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16" Background="Transparent" ToolTip="Advanced options"
+                                      ClickMode="Press" IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
                             <Image Width="16" Height="16" Margin="-1" Source="{StaticResource ImageAdvancedEditionVector}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
                         </ToggleButton>
-                        <Popup x:Name="Popup" IsOpen="{Binding IsChecked, ElementName=ToggleButtonAdvancedOptions, Mode=TwoWay}" Placement="Bottom" AllowsTransparency="True"
+                        <Popup x:Name="Popup" IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" AllowsTransparency="True"
                                        MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ctrl:RotationEditor}}" StaysOpen="False"
                                        PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=ctrl:RotationEditor}}" PopupAnimation="Slide" VerticalOffset="2">
                             <Border SnapsToDevicePixels="True" Background="{StaticResource BackgroundBrush}" BorderBrush="Black" BorderThickness="1">
