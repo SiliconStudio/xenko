@@ -233,7 +233,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
                     .AppendLine();
             }
 
-            if ((!isOpenGLES || isOpenGLES3) && pipelineStage == PipelineStage.Pixel)
+            if ((!isOpenGLES || isOpenGLES3) && pipelineStage == PipelineStage.Pixel && renderTargetCount > 0)
             {
                 // TODO: identifiers starting with "gl_" should be reserved. Compilers usually accept them but it may should be prevented.
                 glslShaderCode
