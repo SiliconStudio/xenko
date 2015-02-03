@@ -3,6 +3,7 @@
 Release date: 2015/02/03
 
 #### New Features
+- General: Paradox runtime now works in 64bit on Windows Desktop & Windows Store.
 - Android: Added ETC2 compression.
 - Android: Added texture compression for cubemaps.
 - FBX: Added support for embedded textures.
