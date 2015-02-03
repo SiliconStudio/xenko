@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.ComponentModel;
+
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
@@ -30,6 +32,8 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
         {
             Model = new SkyboxCubeMapModel();
             BuildOrder = 500;
+            DiffuseSHOrder = SkyboxPreFilteringDiffuseOrder.Order3;
+            SpecularSize = 256;
         }
 
         /// <summary>
@@ -41,6 +45,22 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
         [Display("Type")]
         public ISkyboxModel Model { get; set; }
 
-        // TODO: Add prefiltering options...etc.
+        /// <summary>
+        /// Gets or sets the diffuse sh order.
+        /// </summary>
+        /// <value>The diffuse sh order.</value>
+        [DefaultValue(SkyboxPreFilteringDiffuseOrder.Order3)]
+        [Display("Diffuse SH Order")]
+        [DataMember(20)]
+        public SkyboxPreFilteringDiffuseOrder DiffuseSHOrder { get; set; }
+
+        /// <summary>
+        /// Gets or sets the diffuse sh order.
+        /// </summary>
+        /// <value>The diffuse sh order.</value>
+        [DefaultValue(256)]
+        [Display("Specular CubeMap Size")]
+        [DataMember(30)]
+        public int SpecularSize { get; set; }
     }
 }
