@@ -38,8 +38,7 @@ class NormalStream
 
     float3x3 GetTangentWorldTransform()
     {
-        // Must be implemented when performing normal mapping
-        return 1;
+        return float3x3(1,0,0, 0,1,0, 0,0,1);
     }
 
     // This method is called by the MaterialSurfaceLightingAndShading to calculate the effective normal
