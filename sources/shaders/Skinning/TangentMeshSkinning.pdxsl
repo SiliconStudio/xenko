@@ -8,6 +8,6 @@ class TangentMeshSkinning : TransformationSkinning, NormalStream
     override void PreTransformPosition()
     {
         base.PreTransformPosition();
-        streams.meshTangent.xyz = mul(streams.meshTangent.xyz, streams.skinningBlendMatrix);
+        streams.meshTangent.xyz = mul(streams.meshTangent.xyz, (float3x3)streams.skinningBlendMatrix);
     }
 };
