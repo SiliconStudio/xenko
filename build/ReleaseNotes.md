@@ -1,6 +1,6 @@
-### Version 1.0.0-beta07
+### Version 1.0.0-beta08
 
-Release date: 2015/02/03
+Release date: 2015/02/04
 
 #### New Features
 - General: Paradox runtime now works in 64bit on Windows Desktop & Windows Store.
@@ -33,10 +33,11 @@ Release date: 2015/02/03
 
 #### Issues fixed
 - Graphics: Fix shared texture and sampler sets on OpenGL when combinations appear in shaders (a texture used with several samplers or a sampler used with several textures).
+- Graphics: Depth Stencil creation was failing on graphics feature level 10.0 (and 9.1 on Intel) [#163](https://github.com/SiliconStudio/paradox/issues/163)).
 - Importers: Remove whitespaces from fbx and assimp objects' names that resulted in compilation errors (e.g. unable to find the shader in the database).
 - Studio: Fix in the settings menu.
 - Samples: Fix SimpleTerrain increasing rotation speed along with code small mistakes.
-- Shaders: Fix code gen bug not allowing the usage of generic resources type in `pdxsl` files (like `Texture2D<int>` [#128](https://github.com/SiliconStudio/paradox/issues/128)).\
+- Shaders: Fix code gen bug not allowing the usage of generic resources type in `pdxsl` files (like `Texture2D<int>` [#128](https://github.com/SiliconStudio/paradox/issues/128)).
 - Shaders: Fix two-dimentional array linearization during conversion from HLSL to GLSL.
 - Shaders: Fix shader source change detection to get the correct precompiled shader and update existing ones.
 
