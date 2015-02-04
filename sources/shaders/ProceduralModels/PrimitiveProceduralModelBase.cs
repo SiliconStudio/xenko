@@ -6,7 +6,6 @@ using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Extensions;
 using SiliconStudio.Paradox.Graphics;
 
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
@@ -28,7 +27,7 @@ namespace SiliconStudio.Paradox.Effects.ProceduralModels
         [Display("Material")]
         public Material Material { get; set; }
 
-        public unsafe void Generate(IServiceRegistry services, Model model)
+        public void Generate(IServiceRegistry services, Model model)
         {
             if (services == null) throw new ArgumentNullException("services");
             if (model == null) throw new ArgumentNullException("model");
@@ -48,51 +47,51 @@ namespace SiliconStudio.Paradox.Effects.ProceduralModels
 
             var originalLayout = data.Vertices[0].GetLayout();
 
-            fixed (void* indexBuffer = data.Indices)
-            fixed (void* originalVertexBuffer = data.Vertices)
+            // Generate Tangent/BiNormal vectors
+            var resultWithTangentBiNormal = VertexHelper.GenerateTangentBinormal(originalLayout, data.Vertices, data.Indices);
+
+            // Generate Multitexcoords
+            var result = VertexHelper.GenerateMultiTextureCoordinates(resultWithTangentBiNormal);
+
+            var meshDraw = new MeshDraw();
+
+            var layout = result.Layout;
+            var vertexBuffer = result.VertexBuffer;
+            var indices = data.Indices;
+
+            if (indices.Length < 0xFFFF)
             {
-                var result = TNBExtensions.GenerateTangentBinormal(originalLayout, (IntPtr)originalVertexBuffer, data.Vertices.Length, 0, originalLayout.VertexStride, (IntPtr)indexBuffer, true, data.Indices.Length);
-
-                var meshDraw = new MeshDraw();
-
-                var layout = result.Key;
-                var vertexBuffer = result.Value;
-                var indices = data.Indices;
-
-                if (indices.Length < 0xFFFF)
+                var indicesShort = new ushort[indices.Length];
+                for (int i = 0; i < indicesShort.Length; i++)
                 {
-                    var indicesShort = new ushort[indices.Length];
-                    for (int i = 0; i < indicesShort.Length; i++)
-                    {
-                        indicesShort[i] = (ushort)indices[i];
-                    }
-                    meshDraw.IndexBuffer = new IndexBufferBinding(Buffer.Index.New(graphicsDevice, indicesShort).RecreateWith(indicesShort), false, indices.Length);
+                    indicesShort[i] = (ushort)indices[i];
                 }
-                else
+                meshDraw.IndexBuffer = new IndexBufferBinding(Buffer.Index.New(graphicsDevice, indicesShort).RecreateWith(indicesShort), false, indices.Length);
+            }
+            else
+            {
+                if (graphicsDevice.Features.Profile <= GraphicsProfile.Level_9_3)
                 {
-                    if (graphicsDevice.Features.Profile <= GraphicsProfile.Level_9_3)
-                    {
-                        throw new InvalidOperationException("Cannot generate more than 65535 indices on feature level HW <= 9.3");
-                    }
-
-                    meshDraw.IndexBuffer = new IndexBufferBinding(Buffer.Index.New(graphicsDevice, indices).RecreateWith(indices), true, indices.Length);
+                    throw new InvalidOperationException("Cannot generate more than 65535 indices on feature level HW <= 9.3");
                 }
 
-                meshDraw.VertexBuffers = new[] { new VertexBufferBinding(Buffer.New(graphicsDevice, vertexBuffer, BufferFlags.VertexBuffer).RecreateWith(vertexBuffer), layout, data.Vertices.Length) };
+                meshDraw.IndexBuffer = new IndexBufferBinding(Buffer.Index.New(graphicsDevice, indices).RecreateWith(indices), true, indices.Length);
+            }
 
-                meshDraw.DrawCount = indices.Length;
-                meshDraw.PrimitiveType = PrimitiveType.TriangleList;
+            meshDraw.VertexBuffers = new[] { new VertexBufferBinding(Buffer.New(graphicsDevice, vertexBuffer, BufferFlags.VertexBuffer).RecreateWith(vertexBuffer), layout, data.Vertices.Length) };
 
-                var mesh = new Mesh { Draw = meshDraw, BoundingBox = boundingBox };
-                mesh.Parameters.Set(RenderingParameters.RenderLayer, RenderLayers.All);
+            meshDraw.DrawCount = indices.Length;
+            meshDraw.PrimitiveType = PrimitiveType.TriangleList;
 
-                model.BoundingBox = boundingBox;
-                model.Add(mesh);
+            var mesh = new Mesh { Draw = meshDraw, BoundingBox = boundingBox };
+            mesh.Parameters.Set(RenderingParameters.RenderLayer, RenderLayers.All);
 
-                if (Material != null)
-                {
-                    model.Materials.Add(Material);
-                }
+            model.BoundingBox = boundingBox;
+            model.Add(mesh);
+
+            if (Material != null)
+            {
+                model.Materials.Add(Material);
             }
         }
 

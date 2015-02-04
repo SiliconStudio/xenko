@@ -105,4 +105,11 @@ class Texturing
     stage stream float2 TexCoord : TEXCOORD0;
     stage stream float2 TexCoord1 : TEXCOORD1;
     stage stream float2 TexCoord2 : TEXCOORD2;
+    stage stream float2 TexCoord3 : TEXCOORD3;
+    stage stream float2 TexCoord4 : TEXCOORD4;
+    stage stream float2 TexCoord5 : TEXCOORD5;
+    stage stream float2 TexCoord6 : TEXCOORD6;
+    stage stream float2 TexCoord7 : TEXCOORD7;
+    stage stream float2 TexCoord8 : TEXCOORD8;
+    stage stream float2 TexCoord9 : TEXCOORD9;
 };
