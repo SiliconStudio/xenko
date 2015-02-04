@@ -1,11 +1,10 @@
-﻿using System;
+﻿
 using System.Collections.Generic;
 
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.Data;
 
 namespace SiliconStudio.Paradox.Assets.Sprite
 {
@@ -16,10 +15,10 @@ namespace SiliconStudio.Paradox.Assets.Sprite
     {
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, SpriteGroupAsset asset, AssetCompilerResult result)
         {
-            base.Compile(context, urlInStorage, assetAbsolutePath, asset, result);
+            var imageToTextureIndex = CompileGroup(context, urlInStorage, assetAbsolutePath, asset, result);
 
             if (!result.HasErrors)
-                result.BuildSteps.Add(new SpriteGroupCommand(urlInStorage, new ImageGroupParameters<SpriteGroupAsset>(asset, context.Platform), SpriteToTextureIndex, SeparateAlphaTexture));
+                result.BuildSteps.Add(new SpriteGroupCommand(urlInStorage, new ImageGroupParameters<SpriteGroupAsset>(asset, context.Platform), imageToTextureIndex, SeparateAlphaTexture));
         }
 
         internal class SpriteGroupCommand : ImageGroupCommand<SpriteGroupAsset, SpriteInfo, SpriteGroup, Graphics.Sprite>

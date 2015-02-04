@@ -3,12 +3,16 @@
 using System;
 
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Paradox.Graphics
 {
     /// <summary>
     /// A sprite represents a series frames in an atlas forming an animation. 
     /// </summary>
+    [ContentSerializer(typeof(DataContentSerializer<Sprite>))]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<Sprite>), Profile = "Asset")]
     public class Sprite : ImageFragment
     {
         /// <summary>

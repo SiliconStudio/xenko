@@ -4,7 +4,7 @@ using System;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Serializers;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.UI
@@ -12,6 +12,7 @@ namespace SiliconStudio.Paradox.UI
     /// <summary>
     /// Class holding all the data required to define an UI image.
     /// </summary>
+    [ContentSerializer(typeof(DataContentSerializer<UIImage>))]
     [DataSerializerGlobal(typeof(ReferenceSerializer<UIImage>), Profile = "Asset")]
     public class UIImage : ImageFragment
     {

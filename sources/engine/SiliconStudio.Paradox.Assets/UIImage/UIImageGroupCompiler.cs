@@ -1,8 +1,9 @@
-﻿using System;
+﻿
 using System.Collections.Generic;
 
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Paradox.UI;
 
 namespace SiliconStudio.Paradox.Assets.UIImage
 {
@@ -13,26 +14,25 @@ namespace SiliconStudio.Paradox.Assets.UIImage
     {
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, UIImageGroupAsset asset, AssetCompilerResult result)
         {
-            base.Compile(context, urlInStorage, assetAbsolutePath, asset, result);
+            var imageToTextureIndex = CompileGroup(context, urlInStorage, assetAbsolutePath, asset, result);
 
-            throw new NotImplementedException();
-            //if(!result.HasErrors)
-            //    result.BuildSteps.Add(new UIImageGroupCommand(urlInStorage, new ImageGroupParameters<UIImageGroupAsset>(asset, context.Platform), SpriteToTextureIndex, SeparateAlphaTexture));
+            if(!result.HasErrors)
+                result.BuildSteps.Add(new UIImageGroupCommand(urlInStorage, new ImageGroupParameters<UIImageGroupAsset>(asset, context.Platform), imageToTextureIndex, SeparateAlphaTexture));
         }
 
-        //internal class UIImageGroupCommand : ImageGroupCommand<UIImageGroupAsset, UIImageInfo, UIImageGroupData, UIImageData>
-        //{
-        //    public UIImageGroupCommand(string url, ImageGroupParameters<UIImageGroupAsset> asset, Dictionary<UIImageInfo, int> imageToTextureIndex, bool separateAlpha)
-        //        : base(url, asset, imageToTextureIndex, separateAlpha)
-        //    {
-        //    }
-        //
-        //    protected override void SetImageSpecificFields(UIImageInfo imageInfo, UIImageData newImage)
-        //    {
-        //        base.SetImageSpecificFields(imageInfo, newImage);
-        //
-        //        newImage.Borders = imageInfo.Borders;
-        //    }
-        //}
+        internal class UIImageGroupCommand : ImageGroupCommand<UIImageGroupAsset, UIImageInfo, UIImageGroup, UI.UIImage>
+        {
+            public UIImageGroupCommand(string url, ImageGroupParameters<UIImageGroupAsset> asset, Dictionary<UIImageInfo, int> imageToTextureIndex, bool separateAlpha)
+                : base(url, asset, imageToTextureIndex, separateAlpha)
+            {
+            }
+        
+            protected override void SetImageSpecificFields(UIImageInfo imageInfo, UI.UIImage newImage)
+            {
+                base.SetImageSpecificFields(imageInfo, newImage);
+        
+                newImage.Borders = imageInfo.Borders;
+            }
+        }
     }
 }

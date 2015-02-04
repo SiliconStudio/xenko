@@ -3,7 +3,6 @@
 
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Core.Serialization.Serializers;
 
 namespace SiliconStudio.Paradox.Graphics
 {
