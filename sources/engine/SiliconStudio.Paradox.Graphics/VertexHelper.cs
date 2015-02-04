@@ -328,8 +328,18 @@ namespace SiliconStudio.Paradox.Graphics
                     var uvEdge1 = *uv2 - *uv1;
                     var uvEdge2 = *uv3 - *uv1;
 
-                    var t = Vector3.Normalize(uvEdge2.Y * edge1 - uvEdge1.Y * edge2);
-                    var b = Vector3.Normalize(uvEdge1.X * edge2 - uvEdge2.X * edge1);
+                    var dR = uvEdge1.X * uvEdge2.Y - uvEdge2.X * uvEdge1.Y;
+
+                    // Workaround to handle degenerated case
+                    // TODO: We need to understand more how we can handle this more accurately
+                    if (MathUtil.IsZero(dR))
+                    {
+                        dR = 1;
+                    }
+
+                    var r = 1.0f / dR;
+                    var t = (uvEdge2.Y * edge1 - uvEdge1.Y * edge2) * r;
+                    var b = (uvEdge1.X * edge2 - uvEdge2.X * edge1) * r;
 
                     // Contribute to every vertex
                     tangents[index1] += t;
@@ -348,16 +358,35 @@ namespace SiliconStudio.Paradox.Graphics
                     Utilities.CopyMemory(new IntPtr(&newBuffer[newVertexOffset]), new IntPtr(&oldBuffer[oldVertexOffset]), oldVertexStride);
 
                     var normal = *(Vector3*)&oldBuffer[oldVertexOffset + normalOffset];
-                    var target = ((float*)(&newBuffer[newVertexOffset + tangentOffset]));
+                    var newTangentPtr = ((float*)(&newBuffer[newVertexOffset + tangentOffset]));
 
                     var tangent = -tangents[i];
                     var bitangent = bitangents[i];
 
                     // Gram-Schmidt orthogonalize
-                    *((Vector3*)target) = Vector3.Normalize(tangent - normal * Vector3.Dot(normal, tangent));
+                    var newTangentUnormalized = tangent - normal * Vector3.Dot(normal, tangent);
+                    var length = newTangentUnormalized.Length();
+                    
+                    // Workaround to handle degenerated case
+                    // TODO: We need to understand more how we can handle this more accurately
+                    if (MathUtil.IsZero(length))
+                    {
+                        tangent = Vector3.Cross(normal, Vector3.UnitX);
+                        if (MathUtil.IsZero(tangent.Length()))
+                        {
+                            tangent = Vector3.Cross(normal, Vector3.UnitY);
+                        }
+                        tangent.Normalize();
+                        *((Vector3*)newTangentPtr) = tangent;
+                        bitangent = Vector3.Cross(normal, tangent);
+                    }
+                    else
+                    {
+                        *((Vector3*)newTangentPtr) = newTangentUnormalized / length;
+                    }
 
                     // Calculate handedness
-                    target[3] = Vector3.Dot(Vector3.Cross(normal, tangent), bitangent) < 0.0f ? -1.0f : 1.0f;
+                    newTangentPtr[3] = Vector3.Dot(Vector3.Cross(normal, tangent), bitangent) < 0.0f ? -1.0f : 1.0f;
 
                     oldVertexOffset += oldVertexStride;
                     newVertexOffset += newVertexStride;
