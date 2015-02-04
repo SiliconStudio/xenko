@@ -33,7 +33,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
             Model = new SkyboxCubeMapModel();
             BuildOrder = 500;
             DiffuseSHOrder = SkyboxPreFilteringDiffuseOrder.Order3;
-            SpecularSize = 256;
+            SpecularCubeMapSize = 256;
         }
 
         /// <summary>
@@ -61,6 +61,6 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
         [DefaultValue(256)]
         [Display("Specular CubeMap Size")]
         [DataMember(30)]
-        public int SpecularSize { get; set; }
+        public int SpecularCubeMapSize { get; set; }
     }
 }
