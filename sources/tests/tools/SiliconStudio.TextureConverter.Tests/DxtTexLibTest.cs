@@ -41,7 +41,7 @@ namespace SiliconStudio.TextureConverter.Tests
             Assert.IsTrue(libraryData.DxtImages.Length == image.SubImageArray.Length);
             for (int i = 0; i < libraryData.DxtImages.Length; ++i) // Checking on features
             {
-                Assert.IsTrue(libraryData.DxtImages[i].rowPitch == image.SubImageArray[i].RowPitch);
+                Assert.IsTrue(libraryData.DxtImages[i].RowPitch == image.SubImageArray[i].RowPitch);
             }
 
             image.CurrentLibrary = null; // If we don't set the CurrentLibrary to null, the Dispose() method of TexImage will try calling the EndMethod, which won't work if no operation has been made on the image since the StartLibrary call. This case can't happen.
