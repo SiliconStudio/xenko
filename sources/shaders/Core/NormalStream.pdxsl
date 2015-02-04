@@ -23,7 +23,7 @@ class NormalStream
 
         streams.meshNormal = normalize(streams.meshNormal);
         var tangent = normalize(streams.meshTangent.xyz);
-        float3 bitangent = normalize(streams.meshTangent.w * cross(streams.meshNormal, tangent));
+        float3 bitangent = streams.meshTangent.w * cross(streams.meshNormal, tangent);
         tangentMatrix = float3x3(tangent, bitangent, streams.meshNormal);
 
         return tangentMatrix;
