@@ -28,7 +28,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, SkyboxAsset asset, AssetCompilerResult result)
         {
             result.ShouldWaitForPreviousBuilds = true;
-            result.BuildSteps = new ListBuildStep { new SkyboxCompileCommand(urlInStorage, asset, context.Package) };
+            result.BuildSteps = new AssetBuildStep(AssetItem) { new SkyboxCompileCommand(urlInStorage, asset, context.Package) };
         }
 
         private class SkyboxCompileCommand : AssetCommand<SkyboxAsset>

@@ -25,7 +25,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
     {
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, ColliderShapeAsset asset, AssetCompilerResult result)
         {
-            result.BuildSteps = new ListBuildStep
+            result.BuildSteps = new AssetBuildStep(AssetItem)
             {
                 new ColliderShapeCombineCommand(urlInStorage, asset),
             };

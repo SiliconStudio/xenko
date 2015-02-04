@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
             var assetDirectory = assetAbsolutePath.GetParent();
             var assetSource = UPath.Combine(assetDirectory, asset.Source);
 
-            result.BuildSteps = new ListBuildStep { new TextureConvertCommand(urlInStorage, 
+            result.BuildSteps = new AssetBuildStep(AssetItem) { new TextureConvertCommand(urlInStorage, 
                 new TextureConvertParameters(assetSource, asset, context.Platform, context.GetGraphicsPlatform(), context.GetGraphicsProfile(), context.GetTextureQuality(), false)) };
         }
 

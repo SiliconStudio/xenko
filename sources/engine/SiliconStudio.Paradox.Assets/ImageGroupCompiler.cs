@@ -32,7 +32,7 @@ namespace SiliconStudio.Paradox.Assets
 
         protected Dictionary<TImageInfo, int> CompileGroup(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, TGroupAsset asset, AssetCompilerResult result)
         {
-            result.BuildSteps = new ListBuildStep();
+            result.BuildSteps = new AssetBuildStep(AssetItem);
             
             // Evaluate if we need to use a separate the alpha texture
             SeparateAlphaTexture = TextureCommandHelper.ShouldSeparateAlpha(asset.Alpha, asset.Format, context.Platform, context.GetGraphicsProfile());

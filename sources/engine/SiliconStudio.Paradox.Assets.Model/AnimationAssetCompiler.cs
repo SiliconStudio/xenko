@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             var assetDirectory = assetAbsolutePath.GetParent();
             var assetSource = UPath.Combine(assetDirectory, asset.Source);
             var extension = assetSource.GetFileExtension();
-            var buildStep = new ListBuildStep();
+            var buildStep = new AssetBuildStep(AssetItem);
 
             var additiveAnimationAsset = asset as AdditiveAnimationAsset;
             if (additiveAnimationAsset != null)

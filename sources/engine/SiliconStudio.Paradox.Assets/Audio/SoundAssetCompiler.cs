@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.Assets.Audio
             var assetDirectory = assetAbsolutePath.GetParent();
             var assetSource = UPath.Combine(assetDirectory, asset.Source);
 
-            result.BuildSteps = new ListBuildStep { new ImportStreamCommand
+            result.BuildSteps = new AssetBuildStep(AssetItem) { new ImportStreamCommand
                 {
                     DisableCompression = asset is SoundMusicAsset, // Media player need a not compressed file on Android and iOS
                     SourcePath = assetSource,

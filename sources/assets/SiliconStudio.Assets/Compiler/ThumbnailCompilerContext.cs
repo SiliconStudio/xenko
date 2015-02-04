@@ -57,6 +57,7 @@ namespace SiliconStudio.Assets.Compiler
         {
             try
             {
+                // TODO: this lock seems to be useless now, check if we can safely remove it
                 Monitor.Enter(thumbnailCounterLock);
                 var handler = ThumbnailBuilt;
                 if (handler != null)

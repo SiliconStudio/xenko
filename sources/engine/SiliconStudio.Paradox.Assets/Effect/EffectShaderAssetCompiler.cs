@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
             var url = EffectCompilerBase.DefaultSourceShaderFolder + "/" + Path.GetFileName(assetAbsolutePath);
 
             var originalSourcePath = asset.AbsoluteSourceLocation;
-            result.BuildSteps = new ListBuildStep { new ImportStreamCommand { SourcePath = originalSourcePath, Location = url, SaveSourcePath = true } };
+            result.BuildSteps = new AssetBuildStep(AssetItem) { new ImportStreamCommand { SourcePath = originalSourcePath, Location = url, SaveSourcePath = true } };
             var shaderLocations = (ConcurrentDictionary<string, string>)context.Properties.GetOrAdd(ShaderLocationsKey, key => new ConcurrentDictionary<string, string>());
 
             // Store directly this into the context TODO this this temporary

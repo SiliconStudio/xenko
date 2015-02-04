@@ -52,7 +52,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
                 }
                 var fontImportLocation = FontHelper.GetFontPath(asset.FontName, asset.Style);
 
-                result.BuildSteps = new ListBuildStep
+                result.BuildSteps = new AssetBuildStep(AssetItem)
                 {
                     new ImportStreamCommand { SourcePath = fontPathOnDisk, Location = fontImportLocation },
                     new DynamicFontCommand(urlInStorage, asset)
@@ -66,7 +66,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
                 assetClone.Source = asset.Source != null? UPath.Combine(assetDirectory, asset.Source): null;
                 assetClone.CharacterSet = asset.CharacterSet != null ? UPath.Combine(assetDirectory, asset.CharacterSet): null;
 
-                result.BuildSteps = new ListBuildStep { new StaticFontCommand(urlInStorage, assetClone) };
+                result.BuildSteps = new AssetBuildStep(AssetItem) { new StaticFontCommand(urlInStorage, assetClone) };
             }
         }
 

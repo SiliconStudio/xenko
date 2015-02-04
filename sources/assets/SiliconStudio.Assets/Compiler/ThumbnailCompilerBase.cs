@@ -2,12 +2,14 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
@@ -22,6 +24,11 @@ namespace SiliconStudio.Assets.Compiler
     {
         private class ThumbnailFailureBuildStep : BuildStep
         {
+            public ThumbnailFailureBuildStep(IEnumerable<ILogMessage> messages)
+            {
+                messages.ForEach(x => Logger.Log(x));
+            }
+
             public override string Title { get { return "FailureThumbnail"; } }
 
             public override Task<ResultStatus> Execute(IExecuteContext executeContext, BuilderContext builderContext)
@@ -31,7 +38,7 @@ namespace SiliconStudio.Assets.Compiler
 
             public override BuildStep Clone()
             {
-                return new ThumbnailFailureBuildStep();
+                return new ThumbnailFailureBuildStep(Enumerable.Empty<LogMessage>());
             }
 
             public override string ToString()
@@ -111,7 +118,7 @@ namespace SiliconStudio.Assets.Compiler
                 // that there is no thumbnail to build, which is incorrect. So we return a special build step
                 // that will always fail. If we don't, some asset ids will never be removed from the in progress
                 // list and thus never be updated again.
-                compilerResult.BuildSteps = new ListBuildStep { new ThumbnailFailureBuildStep() };
+                compilerResult.BuildSteps = new AssetBuildStep(AssetItem) { new ThumbnailFailureBuildStep(compilerResult.Messages) };
             }
 
             var currentAsset = AssetItem; // copy the current asset item and embrace it in the callback
@@ -149,11 +156,19 @@ namespace SiliconStudio.Assets.Compiler
                 thumbnailStream = AssetManager.FileProvider.OpenStream(thumbnailStorageUrl, VirtualFileMode.Open, VirtualFileAccess.Read);
                 thumbnailHash = AssetManager.FileProvider.AssetIndexMap[thumbnailStorageUrl];
             }
-            context.NotifyThumbnailBuilt(assetItem, result, changed, thumbnailStream, thumbnailHash);
 
-            // Close the image data stream if opened
-            if (thumbnailStream != null)
-                thumbnailStream.Dispose();
+            try
+            {
+                context.NotifyThumbnailBuilt(assetItem, result, changed, thumbnailStream, thumbnailHash);
+            }
+            finally
+            {
+                // Close the image data stream if opened
+                if (thumbnailStream != null)
+                {
+                    thumbnailStream.Dispose();
+                }
+            }
         }
 
         /// <summary>

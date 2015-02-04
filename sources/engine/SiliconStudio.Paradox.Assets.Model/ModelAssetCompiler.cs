@@ -35,7 +35,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 
             if (ImportFbxCommand.IsSupportingExtensions(extension))
             {
-                result.BuildSteps = new ListBuildStep
+                result.BuildSteps = new AssetBuildStep(AssetItem)
                     {
                         new ImportFbxCommand
                             {
@@ -52,7 +52,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             }
             else if (ImportAssimpCommand.IsSupportingExtensions(extension))
             {
-                result.BuildSteps = new ListBuildStep
+                result.BuildSteps = new AssetBuildStep(AssetItem)
                     {
                         new ImportAssimpCommand
                             {

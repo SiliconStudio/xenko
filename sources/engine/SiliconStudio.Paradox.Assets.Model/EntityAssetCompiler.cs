@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.Assets.Model
     {
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, EntityAsset asset, AssetCompilerResult result)
         {
-            result.BuildSteps = new ListBuildStep { new EntityCombineCommand(urlInStorage, asset) };
+            result.BuildSteps = new AssetBuildStep(AssetItem) { new EntityCombineCommand(urlInStorage, asset) };
         }
 
         private class EntityCombineCommand : AssetCommand<EntityAsset>
