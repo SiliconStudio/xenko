@@ -47,14 +47,23 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
             {
                 context.Parameters.Set((ParameterKey<Color4>)key, color);
             }
+            else if (key is ParameterKey<Vector4>)
+            {
+                context.Parameters.Set((ParameterKey<Vector4>)key, color);
+            }
             else if (key is ParameterKey<Color3>)
             {
                 
                 context.Parameters.Set((ParameterKey<Color3>)key, (Color3)color);
             }
+            else if (key is ParameterKey<Vector3>)
+            {
+
+                context.Parameters.Set((ParameterKey<Vector3>)key, (Vector3)color);
+            }
             else
             {
-                context.Log.Error("Unexpected ParameterKey type [{0}]. Expecting a [Color3] or [Color4]", key.PropertyType);
+                context.Log.Error("Unexpected ParameterKey [{0}] for type [{0}]. Expecting a [Vector3/Color3] or [Vector4/Color4]", key, key.PropertyType);
             }
             UsedKey = key;
 
