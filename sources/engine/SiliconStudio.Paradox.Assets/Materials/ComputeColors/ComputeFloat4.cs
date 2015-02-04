@@ -38,13 +38,37 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
 
         public override ShaderSource GenerateShaderSource(MaterialGeneratorContext context, MaterialComputeColorKeys baseKeys)
         {
-            var key = (ParameterKey<Vector4>)context.GetParameterKey(Key ?? baseKeys.ValueBaseKey ?? MaterialKeys.GenericValueVector4);
-            context.Parameters.Set(key, Value);
+            var key = context.GetParameterKey(Key ?? baseKeys.ValueBaseKey ?? MaterialKeys.GenericValueVector4);
+
+            // Store the color in Linear space
+            var color = Value;
+
+            // Convert from Vector4 to (Color4|Vector4|Color3|Vector3)
+            if (key is ParameterKey<Color4>)
+            {
+                context.Parameters.Set((ParameterKey<Color4>)key, (Color4)color);
+            }
+            else if (key is ParameterKey<Vector4>)
+            {
+                context.Parameters.Set((ParameterKey<Vector4>)key, color);
+            }
+            else if (key is ParameterKey<Color3>)
+            {
+
+                context.Parameters.Set((ParameterKey<Color3>)key, (Color3)(Vector3)color);
+            }
+            else if (key is ParameterKey<Vector3>)
+            {
+
+                context.Parameters.Set((ParameterKey<Vector3>)key, (Vector3)color);
+            }
+            else
+            {
+                context.Log.Error("Unexpected ParameterKey [{0}] for type [{0}]. Expecting a [Vector3/Color3] or [Vector4/Color4]", key, key.PropertyType);
+            }
             UsedKey = key;
 
-            return new ShaderClassSource("ComputeColorConstantLink", Key);
-            // TODO: 
-            // return new ShaderClassSource("ComputeColorFixed", MaterialUtility.GetAsShaderString(Value));
+            return new ShaderClassSource("ComputeColorConstantColorLink", key);
         }
     }
 }
