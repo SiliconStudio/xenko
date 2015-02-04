@@ -145,7 +145,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
                 // -------------------------------------------------------------------
                 var specularRadiancePrefilterGGX = new RadiancePrefilteringGGX(context.DrawEffectContext);
 
-                var textureSize = asset.SpecularSize <= 0 ? 64 : asset.SpecularSize;
+                var textureSize = asset.SpecularCubeMapSize <= 0 ? 64 : asset.SpecularCubeMapSize;
                 textureSize = (int)Math.Pow(2, Math.Round(Math.Log(textureSize, 2)));
                 if (textureSize < 64) textureSize = 64;
 
