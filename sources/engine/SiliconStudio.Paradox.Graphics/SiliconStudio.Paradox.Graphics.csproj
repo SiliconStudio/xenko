@@ -115,6 +115,7 @@
     <Compile Include="Direct3D\InputLayoutManager.cs" />
     <Compile Include="Direct3D\Rational.Direct3D.cs" />
     <Compile Include="DepthStencilStateSerializer.cs" />
+    <Compile Include="VertexHelper.cs" />
     <Compile Include="WorkingSpace.cs" />
     <Compile Include="Font\FontAntiAliasMode.cs" />
     <Compile Include="Font\FontStyleExtensions.cs" />
