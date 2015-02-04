@@ -34,6 +34,7 @@ namespace SiliconStudio.Paradox.Graphics
             FontSystem = new FontSystem(GraphicsDevice);
 
             Services.AddService(typeof(FontSystem), FontSystem);
+            Services.AddService(typeof(IFontFactory), FontSystem);
         }
 
         protected override void LoadContent()
