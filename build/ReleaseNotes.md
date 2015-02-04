@@ -1,3 +1,7 @@
+### Version 1.0.0-beta08
+
+Release date: 2015/02/??
+
 ### Version 1.0.0-beta07
 
 Release date: 2015/02/03
