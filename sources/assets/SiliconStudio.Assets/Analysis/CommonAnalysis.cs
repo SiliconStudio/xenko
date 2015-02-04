@@ -26,10 +26,10 @@ namespace SiliconStudio.Assets.Analysis
                     continue;
                 }
 
-                UPath newLocation = null;
+                UPath newLocation;
 
                 var uFile = currentLocation as UFile;
-                if (uFile != null)
+                if (!string.IsNullOrEmpty(uFile))
                 {
                     var previousLocationOnDisk = UPath.Combine(fileDirectory, uFile);
 
