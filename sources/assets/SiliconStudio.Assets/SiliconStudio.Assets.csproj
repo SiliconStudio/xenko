@@ -151,7 +151,6 @@
     <Compile Include="Compiler\ThumbnailCompilerBase.cs" />
     <Compile Include="Compiler\ThumbnailCompilerContext.cs" />
     <Compile Include="Compiler\ThumbnailCompilerRegistry.cs" />
-    <Compile Include="Compiler\ThumbnailListCompiler.cs" />
     <Compile Include="AssetBaseChangedEvent.cs" />
     <Compile Include="AssetBase.cs" />
     <Compile Include="PackageSessionProfilingKeys.cs" />

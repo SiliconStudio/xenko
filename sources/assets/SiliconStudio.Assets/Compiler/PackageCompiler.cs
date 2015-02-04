@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 using SiliconStudio.Assets.Analysis;
-using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Assets.Compiler
