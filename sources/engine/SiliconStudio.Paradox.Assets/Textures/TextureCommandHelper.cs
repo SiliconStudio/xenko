@@ -142,7 +142,10 @@ namespace SiliconStudio.Paradox.Assets.Textures
             if (textureAsset.SRgb && textureAsset.Format == TextureFormat.Compressed && parameters.GraphicsPlatform == GraphicsPlatform.OpenGLES)
                 throw new NotImplementedException("sRGB compression for OpenGl 3.0 is not implemented yet");
 
-            PixelFormat outputFormat;
+            var hint = textureAsset.Hint;
+
+            // Default output format
+            var outputFormat = PixelFormat.R8G8B8A8_UNorm;
             switch (textureAsset.Format)
             {
                 case TextureFormat.Compressed:
@@ -204,12 +207,27 @@ namespace SiliconStudio.Paradox.Assets.Textures
                             switch (parameters.GraphicsPlatform)
                             {
                                 case GraphicsPlatform.Direct3D11:
+
+
+                                    // https://msdn.microsoft.com/en-us/library/windows/desktop/hh308955%28v=vs.85%29.aspx
+                                    // http://www.reedbeta.com/blog/2012/02/12/understanding-bcn-texture-compression-formats/
+                                    // ----------------------------------------------    ----------------------------------------------------                        ---    ---------------------------------
+                                    // Source data                                       Minimum required data compression resolution 	                  Recommended format	Minimum supported feature level
+                                    // ----------------------------------------------    ----------------------------------------------------                        ---    ---------------------------------
+                                    // Three-channel color with alpha channel            Three color channels (5 bits:6 bits:5 bits), with 0 or 1 bit(s) of alpha    BC1    Direct3D 9.1     (color maps, cutout color maps - 1 bit alpha, normal maps if memory is tight)
+                                    // Three-channel color with alpha channel            Three color channels (5 bits:6 bits:5 bits), with 4 bits of alpha           BC2    Direct3D 9.1     (idem)
+                                    // Three-channel color with alpha channel            Three color channels (5 bits:6 bits:5 bits) with 8 bits of alpha            BC3    Direct3D 9.1     (color maps with alpha, packing color and mono maps together)
+                                    // One-channel color                                 One color channel (8 bits)                                                  BC4    Direct3D 10      (Height maps, gloss maps, font atlases, any gray scales image)
+                                    // Two-channel color	                             Two color channels (8 bits:8 bits)                                          BC5    Direct3D 10      (Tangent space normal maps)
+                                    // Three-channel high dynamic range (HDR) color      Three color channels (16 bits:16 bits:16 bits) in "half" floating point*    BC6H   Direct3D 11      (HDR images)
+                                    // Three-channel color, alpha channel optional       Three color channels (4 to 7 bits per channel) with 0 to 8 bits of alpha    BC7    Direct3D 11      (High quality color maps, Color maps with full alpha)
+
                                     switch (textureAsset.Alpha)
                                     {
                                         case AlphaFormat.None:
                                         case AlphaFormat.Mask:
                                             // DXT1 handles 1-bit alpha channel
-                                            outputFormat = textureAsset.SRgb? PixelFormat.BC1_UNorm_SRgb : PixelFormat.BC1_UNorm;
+                                            outputFormat = textureAsset.SRgb ? PixelFormat.BC1_UNorm_SRgb : PixelFormat.BC1_UNorm;
                                             break;
                                         case AlphaFormat.Explicit:
                                             // DXT3 is good at sharp alpha transitions
@@ -221,6 +239,27 @@ namespace SiliconStudio.Paradox.Assets.Textures
                                             break;
                                         default:
                                             throw new ArgumentOutOfRangeException();
+                                    }
+
+                                    // Overrides the format when profile is >= 10.0
+                                    // Support some specific optimized formats based on the hint or input type
+                                    if (parameters.GraphicsProfile >= GraphicsProfile.Level_10_0)
+                                    {
+                                        if (hint == TextureHint.NormalMap)
+                                        {
+                                            outputFormat = PixelFormat.BC5_SNorm;
+                                        }
+                                        else if (hint == TextureHint.Grayscale)
+                                        {
+                                            outputFormat = PixelFormat.BC4_UNorm;
+                                        }
+                                        else if (inputImageFormat.IsHDR())
+                                        {
+                                            // BC6H is too slow to compile
+                                            //outputFormat = parameters.GraphicsProfile >= GraphicsProfile.Level_11_0 && textureAsset.Alpha == AlphaFormat.None ? PixelFormat.BC6H_Uf16 : inputImageFormat;
+                                            outputFormat = inputImageFormat;
+                                        }
+                                        // TODO support the BC6/BC7 but they are so slow to compile that we can't use them right now
                                     }
                                     break;
                                 case GraphicsPlatform.OpenGLES: // OpenGLES on Windows
@@ -254,19 +293,28 @@ namespace SiliconStudio.Paradox.Assets.Textures
                             throw new NotSupportedException("Platform " + parameters.Platform + " is not supported by TextureTool");
                     }
                     break;
-                case TextureFormat.HighColor:
+                case TextureFormat.Color16Bits:
                     if (textureAsset.SRgb)
-                        throw new NotSupportedException("HighColor texture format does not support sRGB color encryption");
-
-                    if (textureAsset.Alpha == AlphaFormat.None)
-                        outputFormat = PixelFormat.B5G6R5_UNorm;
-                    else if (textureAsset.Alpha == AlphaFormat.Mask)
-                        outputFormat = PixelFormat.B5G5R5A1_UNorm;
+                    {
+                        outputFormat = PixelFormat.R8G8B8A8_UNorm_SRgb;
+                    }
                     else
-                        throw new NotImplementedException("This alpha format requires a TrueColor texture format.");
+                    {
+                        if (textureAsset.Alpha == AlphaFormat.None)
+                        {
+                            outputFormat = PixelFormat.B5G6R5_UNorm;
+                        }
+                        else if (textureAsset.Alpha == AlphaFormat.Mask)
+                        {
+                            outputFormat = PixelFormat.B5G5R5A1_UNorm;
+                        }
+                    }
                     break;
-                case TextureFormat.TrueColor:
-                    outputFormat = textureAsset.SRgb ? PixelFormat.R8G8B8A8_UNorm_SRgb : PixelFormat.R8G8B8A8_UNorm;
+                case TextureFormat.Color32Bits:
+                    if (textureAsset.SRgb)
+                    {
+                        outputFormat = PixelFormat.R8G8B8A8_UNorm_SRgb;
+                    }
                     break;
                 case TextureFormat.AsIs:
                     outputFormat = inputImageFormat;

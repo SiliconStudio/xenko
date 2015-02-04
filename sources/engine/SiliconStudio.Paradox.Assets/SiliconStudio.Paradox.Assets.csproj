@@ -240,6 +240,7 @@
     <Compile Include="Sprite\SpriteGroupAsset.cs" />
     <Compile Include="Sprite\SpriteGroupCompiler.cs" />
     <Compile Include="Textures\TextureCommandHelper.cs" />
+    <Compile Include="Textures\TextureHint.cs" />
     <Compile Include="Textures\TextureQuality.cs" />
     <Compile Include="Serializers\GenericDictionarySerializer.cs" />
     <Compile Include="Serializers\ParameterKeySerializer.cs" />

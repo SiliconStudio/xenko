@@ -107,6 +107,18 @@ namespace SiliconStudio.Paradox.Assets.Textures
         public TextureFormat Format { get; set; }
 
         /// <summary>
+        /// Gets or sets the hint to indicate the type of texture. See remarks.
+        /// </summary>
+        /// <value>The hint.</value>
+        /// <remarks>This hint helps the texture compressor to select the appropriate format based on the HW Level and 
+        /// platform.</remarks>
+        /// <userdodc>A hint to indicate the usage/type of texture. This hint helps the texture compressor to select the 
+        /// appropriate format based on the HW Level and platform.</userdoc>
+        [DataMember(51)]
+        [DefaultValue(TextureHint.Color)]
+        public TextureHint Hint { get; set; }
+
+        /// <summary>
         /// Gets or sets the alpha format.
         /// </summary>
         /// <value>The alpha format.</value>
@@ -129,12 +141,13 @@ namespace SiliconStudio.Paradox.Assets.Textures
         public bool GenerateMipmaps { get; set; }
 
         /// <summary>
-        /// Gets or sets the value indicating whether to the input texture is encoded into the standard RGB color space.
+        /// Gets or sets the value indicating whether the output texture is encoded into the standard RGB color space.
         /// </summary>
         /// <userdoc>
-        /// If checked, the input image is considered as an sRGB image.
+        /// If checked, the input image is considered as an sRGB image. This should be default for colored texture
+        /// with a HDR/gamma correct rendering.
         /// </userdoc>
-        [DataMember(65)]
+        [DataMember(70)]
         [DefaultValue(false)]
         public bool SRgb { get; set; }
 
@@ -145,7 +158,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// <userdoc>
         /// If checked, The color values will be pre-multiplied by the alpha value.
         /// </userdoc>
-        [DataMember(70)]
+        [DataMember(80)]
         [DefaultValue(true)]
         public bool PremultiplyAlpha { get; set; }
 
@@ -154,6 +167,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
             Width = 100.0f;
             Height = 100.0f;
             Format = TextureFormat.Compressed;
+            Hint = TextureHint.Color;
             Alpha = AlphaFormat.None;
             ColorKeyColor = new Color(255, 0, 255);
             ColorKeyEnabled = false;
