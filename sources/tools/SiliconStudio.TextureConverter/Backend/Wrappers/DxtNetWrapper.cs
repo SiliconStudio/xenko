@@ -355,11 +355,11 @@ namespace SiliconStudio.TextureConverter.DxtWrapper
     [StructLayout(LayoutKind.Sequential)]
     internal struct TexMetadata
     {
-        public int width;
-        public int height;     // Should be 1 for 1D textures
-        public int depth;      // Should be 1 for 1D or 2D textures
-        public int arraySize;  // For cubemap, this is a multiple of 6
-        public int mipLevels;
+        private IntPtr width;
+        private IntPtr height;     // Should be 1 for 1D textures
+        private IntPtr depth;      // Should be 1 for 1D or 2D textures
+        private IntPtr arraySize;  // For cubemap, this is a multiple of 6
+        private IntPtr mipLevels;
         public TEX_MISC_FLAG miscFlags;
         public int miscFlags2;
         public DXGI_FORMAT format;
@@ -367,49 +367,103 @@ namespace SiliconStudio.TextureConverter.DxtWrapper
 
         public TexMetadata(int width, int height, int depth, int arraySize, int mipLevels, TEX_MISC_FLAG miscFlags, int miscFlags2, DXGI_FORMAT format, TEX_DIMENSION dimension)
         {
-            this.width = width;
-            this.height = height;
-            this.depth = depth;
-            this.arraySize = arraySize;
-            this.mipLevels = mipLevels;
+            this.width = (IntPtr)width;
+            this.height = (IntPtr)height;
+            this.depth = (IntPtr)depth;
+            this.arraySize = (IntPtr)arraySize;
+            this.mipLevels = (IntPtr)mipLevels;
             this.miscFlags = miscFlags;
             this.miscFlags2 = miscFlags2;
             this.format = format;
             this.dimension = dimension;
         }
 
+        public int Width
+        {
+            get { return (int)width; }
+            set { width = (IntPtr)value; }
+        }
+
+        public int Height
+        {
+            get { return (int)height; }
+            set { height = (IntPtr)value; }
+        }
+
+        public int Depth
+        {
+            get { return (int)depth; }
+            set { depth = (IntPtr)value; }
+        }
+
+        public int ArraySize
+        {
+            get { return (int)arraySize; }
+            set { arraySize = (IntPtr)value; }
+        }
+
+        public int MipLevels
+        {
+            get { return (int)mipLevels; }
+            set { mipLevels = (IntPtr)value; }
+        }
+
         public override String ToString()
         {
-            return "width:" + width + "\nheight:" + height + "\ndepth:" + depth + "\narraySize:" + arraySize + "\nmipLevels:" + mipLevels + "\nmiscFlags:" + miscFlags + "\nformat:" + format + "\ndimension:" + dimension;
+            return "width:" + Width + "\nheight:" + Height + "\ndepth:" + Depth + "\narraySize:" + ArraySize + "\nmipLevels:" + MipLevels + "\nmiscFlags:" + miscFlags + "\nformat:" + format + "\ndimension:" + dimension;
         }
     }
 
     /// <summary>
     /// C# Equivalent of the DirectXTex structure Image
     /// </summary>
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential)]
     internal struct DxtImage
     {
-        public int width;
-        public int height;
+        private IntPtr width;
+        private IntPtr height;
         public DXGI_FORMAT format;
-        public int rowPitch;
-        public int slicePitch;
+        private IntPtr rowPitch;
+        private IntPtr slicePitch;
         public IntPtr pixels;
 
         public DxtImage(int width, int height, DXGI_FORMAT format, int rowPitch, int slicePitch, IntPtr pixels)
         {
-            this.width = width;
-            this.height = height;
+            this.width = (IntPtr)width;
+            this.height = (IntPtr)height;
             this.format = format;
-            this.rowPitch = rowPitch;
-            this.slicePitch = slicePitch;
+            this.rowPitch = (IntPtr)rowPitch;
+            this.slicePitch = (IntPtr)slicePitch;
             this.pixels = pixels;
+        }
+
+        public int Width
+        {
+            get { return (int)width; }
+            set { width = (IntPtr)value; }
+        }
+
+        public int Height
+        {
+            get { return (int)height; }
+            set { height = (IntPtr)value; }
+        }
+
+        public int RowPitch
+        {
+            get { return (int)rowPitch; }
+            set { rowPitch = (IntPtr)value; }
+        }
+
+        public int SlicePitch
+        {
+            get { return (int)slicePitch; }
+            set { slicePitch = (IntPtr)value; }
         }
 
         public override String ToString()
         {
-            return "width:" + width + "\nheight:" + height + "\nformat:" + format + "\nrowPitch:" + rowPitch + "\nslicePitch:" + slicePitch + "\npixels:" + pixels;
+            return "width:" + Width + "\nheight:" + Height + "\nformat:" + format + "\nrowPitch:" + RowPitch + "\nslicePitch:" + SlicePitch + "\npixels:" + pixels;
         }
     }
 

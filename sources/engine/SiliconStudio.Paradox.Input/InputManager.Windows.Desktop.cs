@@ -95,14 +95,14 @@ namespace SiliconStudio.Paradox.Input
             {
                 case Win32Native.WM_KEYDOWN:
                 case Win32Native.WM_SYSKEYDOWN:
-                    virtualKey = (WinFormsKeys)wParam.ToInt32();
-                    virtualKey = GetCorrectExtendedKey(virtualKey, lParam.ToInt32());
+                    virtualKey = (WinFormsKeys)wParam.ToInt64();
+                    virtualKey = GetCorrectExtendedKey(virtualKey, lParam.ToInt64());
                     OnKeyEvent(virtualKey, false);
                     break;
                 case Win32Native.WM_KEYUP:
                 case Win32Native.WM_SYSKEYUP:
-                    virtualKey = (WinFormsKeys)wParam.ToInt32();
-                    virtualKey = GetCorrectExtendedKey(virtualKey, lParam.ToInt32());
+                    virtualKey = (WinFormsKeys)wParam.ToInt64();
+                    virtualKey = GetCorrectExtendedKey(virtualKey, lParam.ToInt64());
                     OnKeyEvent(virtualKey, true);
                     break;
             }
@@ -111,7 +111,7 @@ namespace SiliconStudio.Paradox.Input
             return result;
         }
 
-        private static WinFormsKeys GetCorrectExtendedKey(WinFormsKeys virtualKey, int lParam)
+        private static WinFormsKeys GetCorrectExtendedKey(WinFormsKeys virtualKey, long lParam)
         {
             if (virtualKey == WinFormsKeys.ControlKey)
             {

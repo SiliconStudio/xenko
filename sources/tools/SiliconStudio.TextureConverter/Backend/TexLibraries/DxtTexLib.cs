@@ -260,9 +260,9 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             if (request.Format.IsCompressed())
             {
                 var topImage = libraryData.DxtImages[0];
-                if (topImage.width % 4 != 0 || topImage.height % 4 != 0)
+                if (topImage.Width % 4 != 0 || topImage.Height % 4 != 0)
                     throw new TextureToolsException(string.Format("The provided texture cannot be compressed into format '{0}' " +
-                                                                  "because its top resolution ({1}-{2}) is not a multiple of 4.", request.Format, topImage.width, topImage.height));
+                                                                  "because its top resolution ({1}-{2}) is not a multiple of 4.", request.Format, topImage.Width, topImage.Height));
 
                 hr = Utilities.Compress(libraryData.DxtImages, libraryData.DxtImages.Length, ref libraryData.Metadata, 
                                         RetrieveNativeFormat(request.Format), TEX_COMPRESS_FLAGS.TEX_COMPRESS_DEFAULT, 0.5f, scratchImage);
@@ -478,7 +478,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         {
             Log.Info("Exporting to " + request.FilePath + " ...");
 
-            if (request.MinimumMipMapSize > 1 && request.MinimumMipMapSize <= libraryData.Metadata.width && request.MinimumMipMapSize <= libraryData.Metadata.height) // if a mimimun mipmap size was requested
+            if (request.MinimumMipMapSize > 1 && request.MinimumMipMapSize <= libraryData.Metadata.Width && request.MinimumMipMapSize <= libraryData.Metadata.Height) // if a mimimun mipmap size was requested
             {
                 TexMetadata metadata = libraryData.Metadata;
                 DxtImage[] dxtImages;
@@ -493,7 +493,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                     {
                         curDepth = curDepth > 1 ? curDepth >>= 1 : curDepth;
 
-                        if (libraryData.DxtImages[ct].width <= request.MinimumMipMapSize || libraryData.DxtImages[ct].height <= request.MinimumMipMapSize)
+                        if (libraryData.DxtImages[ct].Width <= request.MinimumMipMapSize || libraryData.DxtImages[ct].Height <= request.MinimumMipMapSize)
                         {
                             ct += curDepth;
                             ++newMipMapCount;
@@ -506,8 +506,8 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                     int SubImagePerArrayElement = image.SubImageArray.Length / image.ArraySize; // number of SubImage in each texture array element.
 
                     // Initializing library native data according to the new mipmap level
-                    metadata.mipLevels = newMipMapCount;
-                    dxtImages = new DxtImage[metadata.arraySize * ct];
+                    metadata.MipLevels = newMipMapCount;
+                    dxtImages = new DxtImage[metadata.ArraySize * ct];
 
                     int ct2 = 0;
                     for (int i = 0; i < image.ArraySize; ++i)
@@ -521,10 +521,10 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                 }
                 else
                 {
-                    int newMipMapCount = libraryData.Metadata.mipLevels;
-                    for (int i = libraryData.Metadata.mipLevels - 1; i > 0; --i) // looking for the mipmap level corresponding to the minimum size requeted.
+                    int newMipMapCount = libraryData.Metadata.MipLevels;
+                    for (int i = libraryData.Metadata.MipLevels - 1; i > 0; --i) // looking for the mipmap level corresponding to the minimum size requeted.
                     {
-                        if (libraryData.DxtImages[i].width >= request.MinimumMipMapSize || libraryData.DxtImages[i].height >= request.MinimumMipMapSize)
+                        if (libraryData.DxtImages[i].Width >= request.MinimumMipMapSize || libraryData.DxtImages[i].Height >= request.MinimumMipMapSize)
                         {
                             break;
                         }
@@ -532,11 +532,11 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                     }
     
                     // Initializing library native data according to the new mipmap level
-                    metadata.mipLevels = newMipMapCount;
-                    dxtImages = new DxtImage[metadata.arraySize * newMipMapCount];
+                    metadata.MipLevels = newMipMapCount;
+                    dxtImages = new DxtImage[metadata.ArraySize * newMipMapCount];
 
                     // Assigning the right sub images for the texture to be exported (no need for memory to be adjacent)
-                    int gap = libraryData.Metadata.mipLevels - newMipMapCount;
+                    int gap = libraryData.Metadata.MipLevels - newMipMapCount;
                     int j = 0;
                     for (int i = 0; i < dxtImages.Length; ++i)
                     {
@@ -665,24 +665,24 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             {
                 image.SubImageArray[i] = new TexImage.SubImage();
                 image.SubImageArray[i].Data = libraryData.DxtImages[i].pixels;
-                image.SubImageArray[i].DataSize = libraryData.DxtImages[i].slicePitch;
-                image.SubImageArray[i].Width = libraryData.DxtImages[i].width;
-                image.SubImageArray[i].Height = libraryData.DxtImages[i].height;
-                image.SubImageArray[i].RowPitch = libraryData.DxtImages[i].rowPitch;
-                image.SubImageArray[i].SlicePitch = libraryData.DxtImages[i].slicePitch;
+                image.SubImageArray[i].DataSize = libraryData.DxtImages[i].SlicePitch;
+                image.SubImageArray[i].Width = libraryData.DxtImages[i].Width;
+                image.SubImageArray[i].Height = libraryData.DxtImages[i].Height;
+                image.SubImageArray[i].RowPitch = libraryData.DxtImages[i].RowPitch;
+                image.SubImageArray[i].SlicePitch = libraryData.DxtImages[i].SlicePitch;
                 dataSize += image.SubImageArray[i].SlicePitch;
             }
 
             image.Data = libraryData.DxtImages[0].pixels;
             image.DataSize = dataSize;
-            image.Width = libraryData.Metadata.width;
-            image.Height = libraryData.Metadata.height;
-            image.Depth = libraryData.Metadata.depth;
-            image.RowPitch = libraryData.DxtImages[0].rowPitch;
+            image.Width = libraryData.Metadata.Width;
+            image.Height = libraryData.Metadata.Height;
+            image.Depth = libraryData.Metadata.Depth;
+            image.RowPitch = libraryData.DxtImages[0].RowPitch;
             image.Format = (PixelFormat) libraryData.Metadata.format;
-            image.MipmapCount = libraryData.Metadata.mipLevels;
-            image.ArraySize = libraryData.Metadata.arraySize;
-            image.SlicePitch = libraryData.DxtImages[0].slicePitch;
+            image.MipmapCount = libraryData.Metadata.MipLevels;
+            image.ArraySize = libraryData.Metadata.ArraySize;
+            image.SlicePitch = libraryData.DxtImages[0].SlicePitch;
         }
 
 

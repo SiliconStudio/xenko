@@ -3,6 +3,8 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+
+using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
@@ -30,6 +32,16 @@ namespace SiliconStudio.TextureConverter
         private List<ITexLibrary> textureLibraries;
 
         private static Logger Log = GlobalLogger.GetLogger("TextureTool");
+
+        static TextureTool()
+        {
+            NativeLibrary.PreloadLibrary("AtitcWrapper.dll");
+            NativeLibrary.PreloadLibrary("DxtWrapper.dll");
+            NativeLibrary.PreloadLibrary("PVRTexLib.dll");
+            NativeLibrary.PreloadLibrary("PvrttWrapper.dll");
+            NativeLibrary.PreloadLibrary("FreeImage.dll");
+            NativeLibrary.PreloadLibrary("FreeImageNET.dll");
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureTool"/> class.

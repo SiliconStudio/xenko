@@ -155,7 +155,7 @@ namespace SiliconStudio.Presentation.Controls
                 case NativeHelper.WM_LBUTTONDOWN:
                 case NativeHelper.WM_RBUTTONDOWN:
                     // We need to change from the context menu coordinates to the HwndHost coordinates and re-encode lParam
-                    var position = new Point(-(short)(lParam.ToInt32() & 0xFFFF), -(lParam.ToInt32() >> 16));
+                    var position = new Point(-(short)(lParam.ToInt64() & 0xFFFF), -((lParam.ToInt64() & 0xFFFF0000) >> 16));
                     var offset = contextMenuPosition - position;
                     lParam = new IntPtr((short)offset.X + (((short)offset.Y) << 16));
                     var threadId = NativeHelper.GetWindowThreadProcessId(childHandle, IntPtr.Zero);
