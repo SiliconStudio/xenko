@@ -555,7 +555,7 @@ namespace SiliconStudio.Paradox.Graphics
                 else
                 {
                     // Determine TypeLess Format and ShaderResourceView Format
-                    if (GraphicsDevice.Features.Profile < GraphicsProfile.Level_11_0)
+                    if (GraphicsDevice.Features.Profile < GraphicsProfile.Level_10_0)
                     {
                         switch (textureDescription.Format)
                         {
