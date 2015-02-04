@@ -98,6 +98,47 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
+        /// <summary>
+        /// Affects a preset quality setting, between 0 (lowest quality) and 1 (highest quality).
+        /// This auto-configures <cref name="LevelCoCValues"/> and <cref name="LevelDownscaleFactors"/>.
+        /// </summary>
+        public float QualityPreset
+        {
+            set
+            {
+                if (value < 0f) value = 0f;
+                if (value > 1f) value = 1f;
+                int presetCount = 6;
+                int presetRequested = (int) (value * presetCount);
+                switch (presetRequested)
+                {
+                    case 0:
+                        // Single level, at 1/4 resolution
+                        LevelCoCValues = new float[] { 1f };
+                        LevelDownscaleFactors = new int[] { 2 };
+                        break;
+
+                    case 1:
+                        // Single level, at half the resolution
+                        LevelCoCValues = new float[] { 1f };
+                        LevelDownscaleFactors = new int[] { 1 };
+                        break;
+
+                    default: 
+                        // Multi-levels at half the resolution
+                        int lvlNumber = presetRequested;
+                        float levelSpacer = 1f / lvlNumber;
+                        LevelCoCValues = new float[lvlNumber];
+                        LevelDownscaleFactors = new int[lvlNumber];
+                        for (int i = 0; i < lvlNumber; i++)
+                        {
+                            LevelCoCValues[i] = (i + 1) * levelSpacer;
+                            LevelDownscaleFactors[i] = 1;
+                        }
+                        break;
+                }
+            }
+        }
 
         // Tells if we need to regenerate the "pipeline" of the DoF.
         // Set to true when the technique changes, or the number/resolution of layers is modified.
