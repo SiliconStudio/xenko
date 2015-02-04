@@ -12,7 +12,7 @@ namespace SiliconStudio.BuildEngine
 {
     public abstract class BuildStep
     {
-        private LoggerResult logger = new LoggerResult();
+        private readonly LoggerResult logger = new LoggerResult();
 
         protected BuildStep(ResultStatus status = ResultStatus.NotProcessed)
         {

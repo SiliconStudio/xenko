@@ -669,7 +669,7 @@ namespace SiliconStudio.BuildEngine
                 int threadId = 0;
                 foreach (var thread in threads)
                 {
-                    thread.Name = "Builder thread " + (++threadId);
+                    thread.Name = (BuilderName ?? "Builder") + " worker thread " + (++threadId);
                     thread.Start();
                 }
 

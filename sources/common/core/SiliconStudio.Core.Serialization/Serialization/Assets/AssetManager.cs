@@ -498,7 +498,7 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// </summary>
         /// <param name="url">The URL.</param>
         /// <exception cref="SiliconStudio.Core.Serialization.Assets.AssetManagerException"></exception>
-        private void HandleAssetNotFound(string url)
+        private static void HandleAssetNotFound(string url)
         {
             // If a debugger is attached, throw an exception (we do that instead of Debugger.Break so that user can easily ignore this specific type of exception)
             if (Debugger.IsAttached)

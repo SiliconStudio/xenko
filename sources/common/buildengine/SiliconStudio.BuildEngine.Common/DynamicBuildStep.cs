@@ -56,7 +56,6 @@ namespace SiliconStudio.BuildEngine
                 if (buildStep == null)
                 {
                     newWorkAvailable.WaitOne();
-
                     continue;
                 }
 
@@ -67,7 +66,7 @@ namespace SiliconStudio.BuildEngine
                 if (buildStep is WaitBuildStep)
                 {
                     // wait for all the task in execution to complete
-                    while (buildStepsToWait.Count>0)
+                    while (buildStepsToWait.Count > 0)
                         await CompleteOneBuildStep(executeContext, buildStepsToWait);
 
                     continue;
