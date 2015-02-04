@@ -43,18 +43,15 @@ namespace SiliconStudio.Paradox.Assets
             // create and add import texture commands
             if (asset.Images != null)
             {
-                // return compilation error if one or more of the sprite does not have a valid texture
-                var noSourceAsset = asset.Images.FirstOrDefault(x => !TextureFileIsValid(x.Source));
-                if (noSourceAsset != null)
-                {
-                    result.Error("The texture of image '{0}' either does not exist or is invalid", noSourceAsset.Name);
-                    return null;
-                }
-
                 // sort sprites by referenced texture.
                 var spriteByTextures = asset.Images.GroupBy(x => x.Source).ToArray();
                 for (int i = 0; i < spriteByTextures.Length; i++)
                 {
+                    // skip the texture if the file is not valid.
+                    var textureFile = spriteByTextures[i].Key;
+                    if(!TextureFileIsValid(textureFile))
+                        continue;
+
                     var spriteAssetArray = spriteByTextures[i].ToArray();
                     foreach (var spriteAsset in spriteAssetArray)
                         imageToTextureIndex[spriteAsset] = i;
@@ -149,7 +146,15 @@ namespace SiliconStudio.Paradox.Assets
                 }
                 else
                 {
-                    newImage.Texture = AttachedReferenceManager.CreateSerializableVersion<Texture>(Guid.Empty, ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]));
+                    int imageIndex;
+                    if (ImageToTextureIndex.TryGetValue(uiImage, out imageIndex))
+                    {
+                        newImage.Texture = AttachedReferenceManager.CreateSerializableVersion<Texture>(Guid.Empty, ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]));
+                    }
+                    else
+                    {
+                        commandContext.Logger.Warning("Image '{0}' has an invalid image source file '{1}', resulting texture will be null.", uiImage.Name, uiImage.Source);
+                    }
                 }
 
                 SetImageSpecificFields(uiImage, newImage);
