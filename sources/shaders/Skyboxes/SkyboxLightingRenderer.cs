@@ -84,8 +84,11 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
                         var cubeMapKey = RoughnessCubeMapEnvironmentColorKeys.CubeMap.ComposeWith(string.Format("lightSpecularColor.environmentLights[{0}]", index));
                         var mipCountKey = RoughnessCubeMapEnvironmentColorKeys.MipCount.ComposeWith(string.Format("lightSpecularColor.environmentLights[{0}]", index));
                         var specularCubemap = specularParameters.Get(SkyboxKeys.CubeMap);
-                        passParameters.Set(cubeMapKey, specularCubemap);
-                        passParameters.Set(mipCountKey, specularCubemap.MipLevels);
+                        if (specularCubemap != null)
+                        {
+                            passParameters.Set(cubeMapKey, specularCubemap);
+                            passParameters.Set(mipCountKey, specularCubemap.MipLevels);
+                        }
                     }
 
                     var mixin = new ShaderMixinSource();
