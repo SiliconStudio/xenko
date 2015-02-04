@@ -1028,7 +1028,7 @@ namespace SiliconStudio.Assets.Analysis
                 if (assetImport.Base != null && assetImport.Base.IsRootImport)
                 {
                     var pathToSourceRawAsset = assetImport.Source;
-                    if (pathToSourceRawAsset == null)
+                    if (string.IsNullOrEmpty(pathToSourceRawAsset))
                     {
                         return;
                     }
