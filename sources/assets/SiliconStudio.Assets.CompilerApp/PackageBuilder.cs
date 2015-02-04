@@ -147,7 +147,7 @@ namespace SiliconStudio.Assets.CompilerApp
             if (e.Result.BuildSteps == null)
                 return;
 
-            foreach (var buildStep in e.Result.BuildSteps.SelectDeep(x => x is EnumerableBuildStep && ((EnumerableBuildStep)x).Steps != null ? ((EnumerableBuildStep)x).Steps : Enumerable.Empty<BuildStep>()))
+            foreach (var buildStep in e.Result.BuildSteps.EnumerateRecursively())
             {
                 buildStep.Tag = e.Asset;
                 buildStep.StepProcessed += BuildStepProcessed;
