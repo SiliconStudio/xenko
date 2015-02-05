@@ -25,7 +25,10 @@ namespace SiliconStudio.Assets.Compiler
 
             AssetItem = assetItem;
 
-            var result = new AssetCompilerResult(GetType().Name);
+            var result = new AssetCompilerResult(GetType().Name)
+            {
+                BuildSteps = new AssetBuildStep(assetItem)
+            };
 
             // Only use the path to the asset without its extension
             var fullPath = assetItem.FullPath;

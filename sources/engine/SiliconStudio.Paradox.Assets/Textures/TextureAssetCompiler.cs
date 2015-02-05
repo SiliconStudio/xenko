@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.IO;
 using System.Threading.Tasks;
 
 using SiliconStudio.Assets.Compiler;
@@ -25,15 +24,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                 return;
         
             // Get absolute path of asset source on disk
-            var assetDirectory = assetAbsolutePath.GetParent();
-            var assetSource = UPath.Combine(assetDirectory, asset.Source);
-
-            // Ensure the file exists
-            if (!File.Exists(assetSource))
-            {
-                result.Error("Unable to find the source file '{1}' for Texture Asset [{0}]", asset, assetSource);
-                return;
-            }
+            var assetSource = GetAbsolutePath(assetAbsolutePath, asset.Source);
 
             var parameter = new TextureConvertParameters(assetSource, asset, context.Platform, context.GetGraphicsPlatform(), context.GetGraphicsProfile(), context.GetTextureQuality(), false);
             result.BuildSteps = new AssetBuildStep(AssetItem) { new TextureConvertCommand(urlInStorage, parameter) };

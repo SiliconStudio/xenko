@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 using SiliconStudio.Core.Extensions;
@@ -22,6 +24,22 @@ namespace SiliconStudio.BuildEngine
                 return buildStep.Yield();
 
             return enumerableBuildStep.Steps.SelectDeep(x => x is EnumerableBuildStep && ((EnumerableBuildStep)x).Steps != null ? ((EnumerableBuildStep)x).Steps : Enumerable.Empty<BuildStep>());
+        }
+
+        public static void Print(this BuildStep buildStep, TextWriter stream = null)
+        {
+            PrintRecursively(buildStep, 0, stream ?? Console.Out);
+        }
+
+        private static void PrintRecursively(this BuildStep buildStep, int offset, TextWriter stream)
+        {
+            stream.WriteLine("".PadLeft(offset) + buildStep);
+            var enumerable = buildStep as EnumerableBuildStep;
+            if (enumerable != null)
+            {
+                foreach (var child in enumerable.Steps)
+                    PrintRecursively(child, offset + 2, stream);
+            }
         }
     }
 }

@@ -70,7 +70,12 @@ namespace SiliconStudio.Assets.Compiler
             // Build the path of the thumbnail in the storage
             var assetStorageUrl = AssetItem.Location.GetDirectoryAndFileName();
             var thumbnailStorageUrl = assetStorageUrl.Insert(0, "__THUMBNAIL__");
-    
+
+            // Check if this asset produced any error
+            // (dependent assets errors are generally ignored as long as thumbnail could be generated,
+            // but we will add a thumbnail overlay to indicate the state is not good)
+            var currentAssetHasErrors = false;
+
             try
             {
                 // TODO: fix failures here (see TODOs in Compile and base.Compile)
@@ -82,13 +87,9 @@ namespace SiliconStudio.Assets.Compiler
             catch (Exception)
             {
                 // If an exception occurs, ensure that the build of thumbnail will fail.
-                compilerResult.BuildSteps = null;
+                compilerResult.Error(string.Format("An exception occurred while compiling the asset [{0}]", AssetItem.Location));
             }
 
-            // Check if this asset produced any error
-            // (dependent assets errors are generally ignored as long as thumbnail could be generated,
-            // but we will add a thumbnail overlay to indicate the state is not good)
-            var currentAssetHasErrors = false;
             foreach (var logMessage in compilerResult.Messages)
             {
                 // Ignore anything less than error
@@ -112,19 +113,25 @@ namespace SiliconStudio.Assets.Compiler
                     break;
                 }
             }
-            if (compilerResult.BuildSteps == null || currentAssetHasErrors)
+            if (currentAssetHasErrors)
             {
-                // if a problem occurs while compiling, we don't want to enqueue null because it would mean
-                // that there is no thumbnail to build, which is incorrect. So we return a special build step
-                // that will always fail. If we don't, some asset ids will never be removed from the in progress
-                // list and thus never be updated again.
-                compilerResult.BuildSteps = new AssetBuildStep(AssetItem) { new ThumbnailFailureBuildStep(compilerResult.Messages) };
+                // if a problem occurs while compiling, we add a special build step that will always fail.
+                compilerResult.BuildSteps.Add(new ThumbnailFailureBuildStep(compilerResult.Messages));
             }
 
             var currentAsset = AssetItem; // copy the current asset item and embrace it in the callback
+
+            lock (debugLock)
+            {
+                Console.WriteLine(AssetItem.Location);
+                compilerResult.BuildSteps.Print();
+            }
+
             compilerResult.BuildSteps.StepProcessed += (_, buildStepArgs) => OnThumbnailStepProcessed(thumbnailCompilerContext, currentAsset, thumbnailStorageUrl, buildStepArgs);
             return compilerResult;
         }
+
+        private object debugLock = new object();
 
         private static void OnThumbnailStepProcessed(ThumbnailCompilerContext context, AssetItem assetItem, string thumbnailStorageUrl, BuildStepEventArgs buildStepEventArgs)
         {

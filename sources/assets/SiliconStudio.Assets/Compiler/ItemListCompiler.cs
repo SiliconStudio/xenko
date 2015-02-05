@@ -87,20 +87,23 @@ namespace SiliconStudio.Assets.Compiler
                 if (handler != null)
                     handler(this, new AssetCompiledArgs(assetItem, resultPerAssetType));
 
-
                 // TODO: See if this can be unified with PackageBuilder.BuildStepProcessed
-                // Forward log messages to compilationResult
                 foreach (var message in resultPerAssetType.Messages)
                 {
                     var assetMessage = new AssetLogMessage(null, assetItem.ToReference(), message.Type, AssetMessageCode.CompilationMessage, assetItem.Location, message.Text)
                     {
                         Exception = message is LogMessage ? ((LogMessage)message).Exception : null
                     };
+                    // Forward log messages to compilationResult
                     compilationResult.Log(assetMessage);
+
+                    // Forward log messages to build step logger
+                    resultPerAssetType.BuildSteps.Logger.Log(assetMessage);
                 }
 
-                if (resultPerAssetType.BuildSteps == null)
-                    return null;
+                // Make the build step fail if there was an error during compiling (only when we are compiling the build steps of an asset)
+                if (resultPerAssetType.BuildSteps is AssetBuildStep && resultPerAssetType.BuildSteps.Logger.HasErrors)
+                    resultPerAssetType.BuildSteps.Add(new CommandBuildStep(new FailedCommand(assetItem.Location)));
 
                 // Build the module string
                 var assetAbsolutePath = assetItem.FullPath;
