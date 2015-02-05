@@ -4,12 +4,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Serializers;
+
 namespace SiliconStudio.Core.Collections
 {
     /// <summary>
     /// Represent a collection associated with a constraint. When an item is added to this collection, it is tested against the constraint.
     /// If the test fails, the item can either be discarded, or an exception can be thrown. The desired behavior can be defined with <see cref="ThrowException"/>.
     /// </summary>
+    [DataSerializer(typeof(ListAllSerializer<,>), Mode = DataSerializerGenericMode.TypeAndGenericArguments)]
     public class ConstrainedList<T> : IList<T>
     {
         private readonly List<T> innerList = new List<T>();
