@@ -120,18 +120,9 @@ namespace SiliconStudio.Assets.Compiler
             }
 
             var currentAsset = AssetItem; // copy the current asset item and embrace it in the callback
-
-            lock (debugLock)
-            {
-                Console.WriteLine(AssetItem.Location);
-                compilerResult.BuildSteps.Print();
-            }
-
             compilerResult.BuildSteps.StepProcessed += (_, buildStepArgs) => OnThumbnailStepProcessed(thumbnailCompilerContext, currentAsset, thumbnailStorageUrl, buildStepArgs);
             return compilerResult;
         }
-
-        private object debugLock = new object();
 
         private static void OnThumbnailStepProcessed(ThumbnailCompilerContext context, AssetItem assetItem, string thumbnailStorageUrl, BuildStepEventArgs buildStepEventArgs)
         {
