@@ -12,16 +12,16 @@ namespace SiliconStudio.BuildEngine
     {
         private readonly IExecuteContext executeContext;
 
-        private readonly Logger logger;
+        private readonly LoggerResult logger;
 
         public CommandBuildStep Step { get; protected set; }
 
-        public override Logger Logger { get { return logger; } }
+        public override LoggerResult Logger { get { return logger; } }
 
         public LocalCommandContext(IExecuteContext executeContext, CommandBuildStep step, BuilderContext builderContext) : base(step.Command, builderContext)
         {
             this.executeContext = executeContext;
-            logger = executeContext.Logger;
+            logger = new ForwardingLoggerResult(executeContext.Logger);
             Step = step;
         }
 

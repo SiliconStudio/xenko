@@ -60,7 +60,7 @@ namespace SiliconStudio.Assets.CompilerApp
 
             var exeName = Path.GetFileName(Assembly.GetExecutingAssembly().Location);
             var showHelp = false;
-            var options = new PackageBuilderOptions(GlobalLogger.GetLogger("BuildEngine"));
+            var options = new PackageBuilderOptions(new ForwardingLoggerResult(GlobalLogger.GetLogger("BuildEngine")));
 
             var p = new OptionSet
                 {

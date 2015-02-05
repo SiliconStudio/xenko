@@ -244,7 +244,7 @@ namespace SiliconStudio.Assets.CompilerApp
 
                 Builder.SetupBuildPath(buildPath);
 
-                Logger logger = builderOptions.Logger;
+                var logger = builderOptions.Logger;
                 MicroThread microthread = scheduler.Add(async () =>
                     {
                         // Deserialize command and parameters

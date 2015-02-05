@@ -82,6 +82,8 @@ namespace SiliconStudio.BuildEngine
         {
             // Safeguard, will throw an exception if a inherited command does not call base.PostCommand
             BasePostCommandCalled = true;
+
+            commandContext.RegisterCommandLog(commandContext.Logger.Messages);
         }
 
         public Command Clone()

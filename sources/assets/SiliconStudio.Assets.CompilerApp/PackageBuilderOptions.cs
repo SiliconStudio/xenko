@@ -11,7 +11,7 @@ namespace SiliconStudio.Assets.CompilerApp
 {
     public class PackageBuilderOptions
     {
-        public readonly Logger Logger;
+        public readonly LoggerResult Logger;
 
         public bool Verbose = false;
         public bool Debug = false;
@@ -38,7 +38,7 @@ namespace SiliconStudio.Assets.CompilerApp
 
         public string TestName;
 
-        public PackageBuilderOptions(Logger logger)
+        public PackageBuilderOptions(LoggerResult logger)
         {
             if (logger == null) throw new ArgumentNullException("logger");
             Logger = logger;

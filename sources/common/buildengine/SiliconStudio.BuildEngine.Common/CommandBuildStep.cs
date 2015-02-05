@@ -161,13 +161,18 @@ namespace SiliconStudio.BuildEngine
                         executeContext.ScheduleBuildStep(spawnedStep);
                     }
 
+                    // Re-output command log messages
+                    foreach (var message in matchingResult.LogMessages)
+                    {
+                        executeContext.Logger.Log(message);
+                    }
+
                     // Wait for all build steps to complete.
                     // TODO: Ideally, we should store and replicate the behavior of the command that spawned it
                     // (wait if it used ScheduleAndExecute, don't wait if it used RegisterSpawnedCommandWithoutScheduling)
                     await Task.WhenAll(SpawnedSteps.Select(x => x.ExecutedAsync()));
 
                     status = ResultStatus.NotTriggeredWasSuccessful;
-
                     RegisterCommandResult(commandResultEntries, matchingResult, status);
                 }
             }
@@ -370,6 +375,12 @@ namespace SiliconStudio.BuildEngine
                         foreach (var outputObject in processBuilderRemote.Result.OutputObjects)
                         {
                             commandContext.RegisterOutput(outputObject.Key, outputObject.Value);
+                        }
+
+                        // Register log messages
+                        foreach (var logMessage in processBuilderRemote.Result.LogMessages)
+                        {
+                            commandContext.Logger.Log(logMessage);
                         }
 
                         // Register tags
