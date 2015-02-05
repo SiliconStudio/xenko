@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.IO;
 using System.Threading.Tasks;
 
 using SiliconStudio.Assets.Compiler;
@@ -20,18 +21,22 @@ namespace SiliconStudio.Paradox.Assets.Textures
     {
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, TextureAsset asset, AssetCompilerResult result)
         {
-            if (string.IsNullOrEmpty(asset.Source))
-            {
-                result.Error("Source cannot be null for Texture Asset [{0}]", asset);
+            if (!EnsureSourceExists(result, asset, assetAbsolutePath))
                 return;
-            }
-
+        
             // Get absolute path of asset source on disk
             var assetDirectory = assetAbsolutePath.GetParent();
             var assetSource = UPath.Combine(assetDirectory, asset.Source);
 
-            result.BuildSteps = new AssetBuildStep(AssetItem) { new TextureConvertCommand(urlInStorage, 
-                new TextureConvertParameters(assetSource, asset, context.Platform, context.GetGraphicsPlatform(), context.GetGraphicsProfile(), context.GetTextureQuality(), false)) };
+            // Ensure the file exists
+            if (!File.Exists(assetSource))
+            {
+                result.Error("Unable to find the source file '{1}' for Texture Asset [{0}]", asset, assetSource);
+                return;
+            }
+
+            var parameter = new TextureConvertParameters(assetSource, asset, context.Platform, context.GetGraphicsPlatform(), context.GetGraphicsProfile(), context.GetTextureQuality(), false);
+            result.BuildSteps = new AssetBuildStep(AssetItem) { new TextureConvertCommand(urlInStorage, parameter) };
         }
 
         /// <summary>

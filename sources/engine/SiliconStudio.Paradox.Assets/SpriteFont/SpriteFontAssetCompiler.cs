@@ -22,14 +22,15 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
 {
     public class SpriteFontAssetCompiler : AssetCompilerBase<SpriteFontAsset>
     {
-        private static FontDataFactory fontDataFactory = new FontDataFactory();
+        private static readonly FontDataFactory FontDataFactory = new FontDataFactory();
 
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, SpriteFontAsset asset, AssetCompilerResult result)
         {
             if (asset.IsDynamic)
             {
                 UFile fontPathOnDisk;
-                if (asset.Source != null)
+
+                if (!string.IsNullOrEmpty(asset.Source))
                 {
                     var assetDirectory = assetAbsolutePath.GetParent();
                     fontPathOnDisk = UPath.Combine(assetDirectory, asset.Source);
@@ -63,7 +64,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
                 // copy the asset and transform the source and character set file path to absolute paths
                 var assetClone = (SpriteFontAsset)AssetCloner.Clone(asset);
                 var assetDirectory = assetAbsolutePath.GetParent();
-                assetClone.Source = asset.Source != null? UPath.Combine(assetDirectory, asset.Source): null;
+                assetClone.Source = !string.IsNullOrEmpty(asset.Source) ? UPath.Combine(assetDirectory, asset.Source): null;
                 assetClone.CharacterSet = asset.CharacterSet != null ? UPath.Combine(assetDirectory, asset.CharacterSet): null;
 
                 result.BuildSteps = new AssetBuildStep(AssetItem) { new StaticFontCommand(urlInStorage, assetClone) };
@@ -95,7 +96,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
                 Graphics.SpriteFont staticFont;
                 try
                 {
-                    staticFont = StaticFontCompiler.Compile(fontDataFactory, asset);
+                    staticFont = StaticFontCompiler.Compile(FontDataFactory, asset);
                 }
                 catch (FontNotFoundException ex) 
                 {
@@ -167,7 +168,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
-                var dynamicFont = fontDataFactory.NewDynamic(
+                var dynamicFont = FontDataFactory.NewDynamic(
                     FontHelper.PointsToPixels(asset.Size), asset.FontName, asset.Style, 
                     asset.AntiAlias, asset.UseKerning, asset.Spacing, asset.LineSpacing, asset.DefaultCharacter);
 

@@ -19,9 +19,12 @@ namespace SiliconStudio.Paradox.Assets.Model
     {
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AnimationAsset asset, AssetCompilerResult result)
         {
+            if (!EnsureSourceExists(result, asset, assetAbsolutePath))
+                return;
+
             // Get absolute path of asset source on disk
             var assetDirectory = assetAbsolutePath.GetParent();
-            var assetSource = UPath.Combine(assetDirectory, asset.Source);
+            var assetSource = GetAbsolutePath(assetAbsolutePath, asset.Source);
             var extension = assetSource.GetFileExtension();
             var buildStep = new AssetBuildStep(AssetItem);
 
