@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -16,8 +17,10 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// </summary>
     [DataContract("MaterialDiffuseMapFeature")]
     [Display("Diffuse Map")]
-    public class MaterialDiffuseMapFeature : IMaterialDiffuseFeature
+    public class MaterialDiffuseMapFeature : IMaterialDiffuseFeature, IMaterialStreamProvider
     {
+        private static readonly MaterialStreamDescriptor DiffuseStream = new MaterialStreamDescriptor("Diffuse", "matDiffuse", MaterialKeys.DiffuseValue.PropertyType);
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialDiffuseMapFeature"/> class.
         /// </summary>
@@ -47,7 +50,12 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         public void Visit(MaterialGeneratorContext context)
         {
-            context.SetStream("matDiffuse", DiffuseMap, MaterialKeys.DiffuseMap, MaterialKeys.DiffuseValue, Color.White);
+            context.SetStream(DiffuseStream.Stream, DiffuseMap, MaterialKeys.DiffuseMap, MaterialKeys.DiffuseValue, Color.White);
+        }
+
+        public IEnumerable<MaterialStreamDescriptor> GetStreams()
+        {
+            yield return DiffuseStream;
         }
     }
 }

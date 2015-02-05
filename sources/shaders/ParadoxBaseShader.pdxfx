@@ -95,6 +95,11 @@ namespace SiliconStudio.Paradox.Effects
         {
             mixin MaterialSurfacePixelStageCompositor;
             mixin compose materialPixelStage = MaterialKeys.PixelStageSurfaceShaders;
+
+            if (MaterialKeys.PixelStageSurfaceFilter != null)
+            {
+                mixin MaterialKeys.PixelStageSurfaceFilter;
+            }
         }
 
         // -----------------------------------------------

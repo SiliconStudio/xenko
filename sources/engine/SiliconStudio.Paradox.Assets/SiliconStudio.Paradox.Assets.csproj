@@ -138,6 +138,7 @@
     <Compile Include="Effect\EffectCompositorAsset.cs" />
     <Compile Include="Effect\EffectShaderAssetCompiler.cs" />
     <Compile Include="Effect\EffectShaderAsset.cs" />
+    <Compile Include="Materials\MaterialStreamFactory.cs" />
     <Compile Include="ProceduralModels\ProceduralModelAsset.cs" />
     <Compile Include="ProceduralModels\ProceduralModelAssetCompiler.cs" />
     <Compile Include="ImageGroupAsset.cs" />

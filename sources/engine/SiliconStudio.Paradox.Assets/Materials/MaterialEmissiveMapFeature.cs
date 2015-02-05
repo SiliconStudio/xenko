@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -13,8 +14,10 @@ namespace SiliconStudio.Paradox.Assets.Materials
 {
     [DataContract("MaterialEmissiveMapFeature")]
     [Display("Emissive Map")]
-    public class MaterialEmissiveMapFeature : IMaterialEmissiveFeature
+    public class MaterialEmissiveMapFeature : IMaterialEmissiveFeature, IMaterialStreamProvider
     {
+        private static readonly MaterialStreamDescriptor EmissiveStream = new MaterialStreamDescriptor("Emissive", "matEmissive", MaterialKeys.EmissiveValue.PropertyType);
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialEmissiveMapFeature"/> class.
         /// </summary>
@@ -60,7 +63,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         public void Visit(MaterialGeneratorContext context)
         {
-            context.SetStream("matEmissive", EmissiveMap, MaterialKeys.EmissiveMap, MaterialKeys.EmissiveValue);
+            context.SetStream(EmissiveStream.Stream, EmissiveMap, MaterialKeys.EmissiveMap, MaterialKeys.EmissiveValue);
             context.SetStream("matEmissiveIntensity", Intensity, MaterialKeys.EmissiveIntensityMap, MaterialKeys.EmissiveIntensity);
 
             context.AddShading(this, new ShaderClassSource("MaterialSurfaceEmissiveShading"));
@@ -69,6 +72,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
         public bool Equals(IMaterialShadingModelFeature other)
         {
             return other is MaterialEmissiveMapFeature;
+        }
+
+        public IEnumerable<MaterialStreamDescriptor> GetStreams()
+        {
+            yield return EmissiveStream;
         }
     }
 }

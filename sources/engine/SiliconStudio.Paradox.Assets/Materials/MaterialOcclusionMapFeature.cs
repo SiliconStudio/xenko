@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Collections.Generic;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
@@ -14,8 +16,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// </summary>
     [DataContract("MaterialOcclusionMapFeature")]
     [Display("Occlusion Map")]
-    public class MaterialOcclusionMapFeature : IMaterialOcclusionFeature
+    public class MaterialOcclusionMapFeature : IMaterialOcclusionFeature, IMaterialStreamProvider
     {
+        private static readonly MaterialStreamDescriptor OcclusionStream = new MaterialStreamDescriptor("Occlusion", "matAmbientOcclusion", MaterialKeys.AmbientOcclusionValue.PropertyType);
+        private static readonly MaterialStreamDescriptor CavityStream = new MaterialStreamDescriptor("Cavity", "matCavity", MaterialKeys.CavityValue.PropertyType);
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialOcclusionMapFeature"/> class.
         /// </summary>
@@ -79,15 +84,21 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         public void Visit(MaterialGeneratorContext context)
         {
-            context.SetStream("matAmbientOcclusion", AmbientOcclusionMap, MaterialKeys.AmbientOcclusionMap, MaterialKeys.AmbientOcclusionValue, Color.White);
+            context.SetStream(OcclusionStream.Stream, AmbientOcclusionMap, MaterialKeys.AmbientOcclusionMap, MaterialKeys.AmbientOcclusionValue, Color.White);
             context.SetStream("matAmbientOcclusionDirectLightingFactor", DirectLightingFactor, null, MaterialKeys.AmbientOcclusionDirectLightingFactorValue);
 
             if (CavityMap != null)
             {
-                context.SetStream("matCavity", CavityMap, MaterialKeys.CavityMap, MaterialKeys.CavityValue, Color.White);
+                context.SetStream(CavityStream.Stream, CavityMap, MaterialKeys.CavityMap, MaterialKeys.CavityValue, Color.White);
                 context.SetStream("matCavityDiffuse", DiffuseCavity, null, MaterialKeys.CavityDiffuseValue);
                 context.SetStream("matCavitySpecular", SpecularCavity, null, MaterialKeys.CavitySpecularValue);
             }
+        }
+
+        public IEnumerable<MaterialStreamDescriptor> GetStreams()
+        {
+            yield return OcclusionStream;
+            yield return CavityStream;
         }
     }
 }

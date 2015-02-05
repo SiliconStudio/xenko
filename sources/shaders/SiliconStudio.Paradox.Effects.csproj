@@ -145,6 +145,14 @@
     <Compile Include="Lights\LightAmbient.cs" />
     <Compile Include="Lights\LightShaderGroup.cs" />
     <Compile Include="Lights\LightSkybox.cs" />
+    <Compile Include="Materials\IMaterialStreamProvider.cs" />
+    <Compile Include="Materials\MaterialStreamDescriptor.cs" />
+    <Compile Include="Materials\MaterialSurfaceStreamShading.cs">
+      <DependentUpon>MaterialSurfaceStreamShading.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="ProceduralModels\CameraCube.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1835,6 +1843,10 @@
     <None Include="Core\DynamicTextureCube.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>DynamicTextureCube.cs</LastGenOutput>
+    </None>
+    <None Include="Materials\MaterialSurfaceStreamShading.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialSurfaceStreamShading.cs</LastGenOutput>
     </None>
     <None Include="ProceduralModels\CameraCube.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

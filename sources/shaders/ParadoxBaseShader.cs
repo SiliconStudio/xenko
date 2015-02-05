@@ -88,6 +88,10 @@ namespace SiliconStudio.Paradox.Effects
                         context.Mixin(__subMixin, context.GetParam(MaterialKeys.PixelStageSurfaceShaders));
                         context.PopComposition();
                     }
+                    if (context.GetParam(MaterialKeys.PixelStageSurfaceFilter) != null)
+                    {
+                        context.Mixin(mixin, context.GetParam(MaterialKeys.PixelStageSurfaceFilter));
+                    }
                 }
                 var directLightGroups = context.GetParam(LightingKeys.DirectLightGroups);
                 if (directLightGroups != null)

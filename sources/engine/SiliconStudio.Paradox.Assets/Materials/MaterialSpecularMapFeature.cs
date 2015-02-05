@@ -1,12 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Effects.Materials;
 
@@ -17,8 +16,10 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// </summary>
     [DataContract("MaterialSpecularMapFeature")]
     [Display("Specular Map")]
-    public class MaterialSpecularMapFeature : IMaterialSpecularFeature
+    public class MaterialSpecularMapFeature : IMaterialSpecularFeature, IMaterialStreamProvider
     {
+        private static readonly MaterialStreamDescriptor SpecularStream = new MaterialStreamDescriptor("Specular", "matSpecular", MaterialKeys.SpecularValue.PropertyType);
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialSpecularMapFeature"/> class.
         /// </summary>
@@ -58,8 +59,13 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         public void Visit(MaterialGeneratorContext context)
         {
-            context.SetStream("matSpecular", SpecularMap, MaterialKeys.SpecularMap, MaterialKeys.SpecularValue);
+            context.SetStream(SpecularStream.Stream, SpecularMap, MaterialKeys.SpecularMap, MaterialKeys.SpecularValue);
             context.SetStream("matSpecularIntensity", Intensity, null, MaterialKeys.SpecularIntensityValue);
+        }
+
+        public IEnumerable<MaterialStreamDescriptor> GetStreams()
+        {
+            yield return SpecularStream;
         }
     }
 }

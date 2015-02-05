@@ -1,14 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
-using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Shaders;
 
@@ -19,8 +17,10 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// </summary>
     [DataContract("MaterialGlossinessMapFeature")]
     [Display("Glossiness Map")]
-    public class MaterialGlossinessMapFeature : IMaterialMicroSurfaceFeature
+    public class MaterialGlossinessMapFeature : IMaterialMicroSurfaceFeature, IMaterialStreamProvider
     {
+        private static readonly MaterialStreamDescriptor GlossinessStream = new MaterialStreamDescriptor("Glossiness", "matGlossiness", MaterialKeys.GlossinessValue.PropertyType);
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialGlossinessMapFeature"/> class.
         /// </summary>
@@ -50,13 +50,18 @@ namespace SiliconStudio.Paradox.Assets.Materials
         {
             if (GlossinessMap != null)
             {
-                context.UseStream("matGlossiness");
+                context.UseStream(GlossinessStream.Stream);
                 var computeColorSource = GlossinessMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.GlossinessMap, MaterialKeys.GlossinessValue));
                 var mixin = new ShaderMixinSource();
                 mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceGlossinessMap", Invert));
                 mixin.AddComposition("glossinessMap", computeColorSource);
                 context.AddSurfaceShader(MaterialShaderStage.Pixel, mixin);
             }
+        }
+
+        public IEnumerable<MaterialStreamDescriptor> GetStreams()
+        {
+            yield return GlossinessStream;
         }
     }
 }

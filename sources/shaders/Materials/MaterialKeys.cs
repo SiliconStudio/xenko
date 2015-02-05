@@ -15,6 +15,8 @@ namespace SiliconStudio.Paradox.Effects.Materials
 
         public static readonly ParameterKey<ShaderSource> PixelStageSurfaceShaders = ParameterKeys.New<ShaderSource>();
 
+        public static readonly ParameterKey<ShaderSource> PixelStageSurfaceFilter = ParameterKeys.New<ShaderSource>();
+
         public static readonly ParameterKey<Texture> BlendMap = ParameterKeys.New<Texture>();
         public static readonly ParameterKey<float> BlendValue = ParameterKeys.New<float>();
 

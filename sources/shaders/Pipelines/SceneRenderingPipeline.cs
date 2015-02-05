@@ -4,11 +4,13 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects.Images;
 using SiliconStudio.Paradox.Effects.Lights;
+using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Effects.Skyboxes;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Input;
+using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Effects.Pipelines
 {
@@ -41,6 +43,8 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
         private GraphicsDevice GraphicsDevice { get; set; }
 
         private readonly ImageEffectBundle postEffects;
+
+        private readonly MaterialStreamDescriptor defaultMaterialUnlit = new MaterialStreamDescriptor("Diffuse", "matDiffuse");
 
         public SceneRenderingPipeline(IServiceRegistry serviceRegistry, RenderPipeline pipeline, string sceneEffect) : base(serviceRegistry, pipeline)
         {
@@ -109,6 +113,8 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
         public Texture RenderTarget { get; set; }
 
         public Texture DepthStencilBuffer { get; set; }
+
+        public MaterialStreamDescriptor MaterialStreamFilter { get; set; }
 
         private void ApplyPostEffects(RenderContext context)
         {
@@ -207,9 +213,16 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
 
         private void Update(RenderContext renderContext)
         {
+            // Update special shader for unlit mode
+            ShaderSource materialFilderShaderSource = null;
             if (!UseLighting)
             {
-                LightingKeys.EnableFixedAmbientLight(renderContext.CurrentPass.Parameters, true);
+                materialFilderShaderSource = (MaterialStreamFilter ?? defaultMaterialUnlit).Filter;
+            }
+            var currentFilter = renderContext.CurrentPass.Parameters.Get(MaterialKeys.PixelStageSurfaceFilter);
+            if (!ReferenceEquals(currentFilter, materialFilderShaderSource))
+            {
+                renderContext.CurrentPass.Parameters.Set(MaterialKeys.PixelStageSurfaceFilter, materialFilderShaderSource);
             }
 
            // If Hdr

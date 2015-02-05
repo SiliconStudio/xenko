@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Collections.Generic;
 using System.ComponentModel;
 
 using SiliconStudio.Core;
@@ -18,8 +19,10 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// </summary>
     [DataContract("MaterialNormalMapFeature")]
     [Display("Normal Map")]
-    public class MaterialNormalMapFeature : IMaterialSurfaceFeature
+    public class MaterialNormalMapFeature : IMaterialSurfaceFeature, IMaterialStreamProvider
     {
+        private static readonly MaterialStreamDescriptor NormalStream = new MaterialStreamDescriptor("Normal", "matNormal", MaterialKeys.NormalValue.PropertyType);
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialNormalMapFeature"/> class.
         /// </summary>
@@ -78,7 +81,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             if (NormalMap != null)
             {
                 // Inform the context that we are using matNormal (from the MaterialSurfaceNormalMap shader)
-                context.UseStreamWithCustomBlend("matNormal", new ShaderClassSource("MaterialStreamNormalBlend"));
+                context.UseStreamWithCustomBlend(NormalStream.Stream, new ShaderClassSource("MaterialStreamNormalBlend"));
                 context.Parameters.Set(MaterialParameters.HasNormalMap, true);
 
                 var computeColorSource = NormalMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.NormalMap, MaterialKeys.NormalValue, new Color(0x80, 0x80, 0xFF, 0xFF)));
@@ -87,6 +90,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 mixin.AddComposition("normalMap", computeColorSource);
                 context.AddSurfaceShader(MaterialShaderStage.Pixel, mixin);
             }
+        }
+
+        public IEnumerable<MaterialStreamDescriptor> GetStreams()
+        {
+            yield return NormalStream;
         }
     }
 }
