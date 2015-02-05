@@ -93,5 +93,17 @@ namespace SiliconStudio.Paradox.Assets.Materials
         //[DefaultValue(1.0f)]
         //[DataMember(90)]
         //public float ScaleV { get; set; }
+
+        /// <summary>
+        /// Implements the multiply operator in order to support correct calculation of overrides for a particular layer.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static MaterialBlendOverrides operator *(MaterialBlendOverrides left, MaterialBlendOverrides right)
+        {
+            var overrides = new MaterialBlendOverrides { UVScale = left.UVScale * right.UVScale };
+            return overrides;
+        }
     }
 }

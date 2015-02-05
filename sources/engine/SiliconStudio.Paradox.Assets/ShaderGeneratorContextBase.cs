@@ -42,17 +42,20 @@ namespace SiliconStudio.Paradox.Assets
 
         protected ShaderGeneratorContextBase(Package package) : this()
         {
-            FindAsset = reference =>
+            if (package != null)
             {
-                var assetItem = package.Session.FindAsset(reference.Id)
-                                ?? package.Session.FindAsset(reference.Location);
-
-                if (assetItem == null)
+                FindAsset = reference =>
                 {
-                    return null;
-                }
-                return assetItem.Asset;
-            };
+                    var assetItem = package.Session.FindAsset(reference.Id)
+                                    ?? package.Session.FindAsset(reference.Location);
+
+                    if (assetItem == null)
+                    {
+                        return null;
+                    }
+                    return assetItem.Asset;
+                };
+            }
         }
 
         public ParameterCollection Parameters { get; set; }

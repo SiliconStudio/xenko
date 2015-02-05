@@ -31,17 +31,19 @@ namespace SiliconStudio.Paradox.Assets.Materials
     {
         private readonly Dictionary<string, ShaderSource> registeredStreamBlend = new Dictionary<string, ShaderSource>();
         private int shadingModelCount;
+        private MaterialBlendOverrides currentOverrides;
 
         private readonly List<KeyValuePair<Type, ShaderSource>> vertexInputStreamModifiers = new List<KeyValuePair<Type, ShaderSource>>();
 
         public MaterialGeneratorContext()
-            : base()
+            : this(null)
         {
         }
 
         public MaterialGeneratorContext(Package package)
             : base(package)
         {
+            currentOverrides = new MaterialBlendOverrides();
         }
 
         public HashSet<string> Streams
@@ -89,13 +91,23 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 Current.Children.Add(newLayer);
             }
             Current = newLayer;
+
+            // Update overrides by squashing them using multiplication
+            currentOverrides = new MaterialBlendOverrides();
+            var current = Current;
+            while (current != null && current.Overrides != null)
+            {
+                // TODO: We are doing this bottom-up. We might have to do this top-down in case overrides multiplcation is not commutative
+                currentOverrides *= current.Overrides;
+                current = current.Parent;
+            }
         }
 
         public MaterialBlendOverrides CurrentOverrides
         {
             get
             {
-                return Current != null ? Current.Overrides : null;
+                return currentOverrides;
             }
         }
 
