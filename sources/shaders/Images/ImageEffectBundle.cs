@@ -3,8 +3,6 @@
 
 using System.ComponentModel;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects.Images
@@ -12,12 +10,13 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// A default bundle of <see cref="ImageEffect"/>.
     /// </summary>
-    public class ImageEffectBundle : ImageEffect
+    [DataContract("ImageEffectBundle")]
+    public sealed class ImageEffectBundle : ImageEffect
     {
         private readonly LuminanceEffect luminanceEffect;
         private readonly BrightFilter brightFilter;
         private readonly Bloom bloom;
-        private readonly ColorTransformGroup colorTransformGroup;
+        private readonly ColorTransformGroup colorTransformsGroup;
         private readonly ToneMap toneMap;
         private readonly FXAAEffect fxaa;
         private readonly DepthOfField depthOfField;
@@ -41,9 +40,9 @@ namespace SiliconStudio.Paradox.Effects.Images
             brightFilter        = ToDispose(new BrightFilter());
             bloom               = ToDispose(new Bloom());
             fxaa                = ToDispose(new FXAAEffect());
-            colorTransformGroup = ToDispose(new ColorTransformGroup());
+            colorTransformsGroup = ToDispose(new ColorTransformGroup());
             toneMap = new ToneMap();
-            colorTransformGroup.Transforms.Add(toneMap);
+            colorTransformsGroup.Transforms.Add(toneMap);
         }
 
         /// <summary>
@@ -55,7 +54,6 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             Initialize(context);
         }
-
 
         [DataMember(10)]
         [Category]
@@ -87,34 +85,35 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
+        [DataMemberIgnore]
+        public ToneMap ToneMap
+        {
+            get
+            {
+                return toneMap;  // ToneMap is already serialized by ColorTransforms
+            }
+        }
+
         [DataMember(40)]
+        [Category]
+        public ColorTransformGroup ColorTransforms
+        {
+            get
+            {
+                return colorTransformsGroup;
+            }
+        }
+
+
+        [DataMember(50)]
         [Category]
         public FXAAEffect Antialiasing
         {
             get
             {
-                return fxaa;
+                return fxaa; // TOOD: Allow to change the anti-aliasing technique
             }
         }
-
-        [DataMember(50)]
-        [Category]
-        public ToneMap ToneMap
-        {
-            get
-            {
-                return toneMap;
-            }
-        }
-
-        public ColorTransformGroup ColorTransform
-        {
-            get
-            {
-                return colorTransformGroup;
-            }
-        }
-
 
         protected override void DrawCore(ParameterCollection contextParameters)
         {
@@ -150,7 +149,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                 luminanceEffect.Draw(contextParameters);
 
                 // Set this parameter that will be used by the tone mapping
-                colorTransformGroup.Parameters.Set(LuminanceEffect.LuminanceResult, new LuminanceResult(luminanceEffect.AverageLuminance, luminanceTexture));
+                colorTransformsGroup.Parameters.Set(LuminanceEffect.LuminanceResult, new LuminanceResult(luminanceEffect.AverageLuminance, luminanceTexture));
             }
 
             // Bloom pass
@@ -176,7 +175,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
 
             // Color transform group pass (tonemap, color grading, gamma correction)
-            var lastEffect = colorTransformGroup.Enabled ? (ImageEffect)colorTransformGroup: Scaler;
+            var lastEffect = colorTransformsGroup.Enabled ? (ImageEffect)colorTransformsGroup: Scaler;
             lastEffect.SetInput(currentInput);
             lastEffect.SetOutput(outputForLastEffectBeforeAntiAliasing);
             lastEffect.Draw(contextParameters);

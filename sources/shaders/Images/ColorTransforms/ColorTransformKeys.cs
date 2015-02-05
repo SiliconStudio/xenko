@@ -3,17 +3,17 @@
 namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
-    /// Parameter keys used by <see cref="ColorTransform"/>
+    /// Parameter keys used by <see cref="ColorTransformBase"/>
     /// </summary>
     internal static class ColorTransformKeys
     {
         /// <summary>
-        /// A boolean indicating wheter a <see cref="ColorTransform"/> is active or not.
+        /// A boolean indicating wheter a <see cref="ColorTransformBase"/> is active or not.
         /// </summary>
         public static readonly ParameterKey<bool> Enabled = ParameterKeys.New(true);
 
         /// <summary>
-        /// The shader used by <see cref="ColorTransform"/>.
+        /// The shader used by <see cref="ColorTransformBase"/>.
         /// </summary>
         public static readonly ParameterKey<string> Shader = ParameterKeys.New("ColorTransformShader");
     }

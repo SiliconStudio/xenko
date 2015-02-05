@@ -140,6 +140,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Images\ColorTransforms\ColorTransform.cs" />
     <Compile Include="Lights\IDirectLight.cs" />
     <Compile Include="Lights\IEnvironmentLight.cs" />
     <Compile Include="Lights\LightAmbient.cs" />
@@ -1124,7 +1125,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Include="Images\ColorTransforms\ColorTransform.cs" />
+    <Compile Include="Images\ColorTransforms\ColorTransformBase.cs" />
     <Compile Include="Images\ColorTransforms\ColorTransformContext.cs" />
     <Compile Include="Images\ColorTransforms\ColorTransformGroup.cs" />
     <Compile Include="Images\ColorTransforms\ColorTransformGroupKeys.cs" />

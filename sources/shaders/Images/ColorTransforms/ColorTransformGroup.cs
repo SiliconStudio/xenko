@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 
+using SiliconStudio.Core;
+
 namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
@@ -12,6 +14,8 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <remarks>
     /// This effect and all <see cref="Transforms"/> are collected and compiled into a single shader.
     /// </remarks>
+    [DataContract("ColorTransformGroup")]
+    [Display("Color Transforms")]
     public class ColorTransformGroup : ImageEffect
     {
         private readonly ParameterCollection transformsParameters;
@@ -22,13 +26,20 @@ namespace SiliconStudio.Paradox.Effects.Images
         private readonly List<ColorTransform> enabledTransforms;
         private readonly GammaTransform gammaTransform;
         private ColorTransformContext context;
-        private string colorTransformGroupEffectName;
+        private readonly string colorTransformGroupEffectName;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ColorTransformGroup"/> class.
+        /// </summary>
+        public ColorTransformGroup() : this(null)
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ColorTransformGroup"/> class.
         /// </summary>
         /// <param name="colorTransformGroupEffect">The color transform group effect.</param>
-        public ColorTransformGroup(string colorTransformGroupEffect = "ColorTransformGroupEffect")
+        public ColorTransformGroup(string colorTransformGroupEffect)
             : base(colorTransformGroupEffect)
         {
             compositeKeys = new Dictionary<ParameterCompositeKey, ParameterKey>();
@@ -37,7 +48,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             collectTransforms = new List<ColorTransform>();
             transformsParameters = new ParameterCollection();
             gammaTransform = new GammaTransform();
-            colorTransformGroupEffectName = colorTransformGroupEffect;
+            colorTransformGroupEffectName = colorTransformGroupEffect ?? "ColorTransformGroupEffect";
         }
 
         /// <inheritdoc/>
@@ -59,6 +70,8 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Gets the color transforms.
         /// </summary>
         /// <value>The transforms.</value>
+        [DataMember(10)]
+        [Display("Transforms", AlwaysExpand = true)]
         public ColorTransformCollection Transforms
         {
             get
@@ -71,6 +84,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Gets the gamma transform that is applied after all <see cref="Transforms"/>
         /// </summary>
         /// <value>The gamma transform.</value>
+        [DataMember(20)]
         public GammaTransform GammaTransform
         {
             get
@@ -115,7 +129,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             collectTransforms.Add(transform);
         }
 
-        private List<ColorTransform> CollectTransforms()
+        private void CollectTransforms()
         {
             collectTransforms.Clear();
             CollectPreTransforms();
@@ -125,7 +139,6 @@ namespace SiliconStudio.Paradox.Effects.Images
             // Copy all parameters from ColorTransform to effect parameters
             enabledTransforms.Clear();
             enabledTransforms.AddRange(collectTransforms);
-            return enabledTransforms;
         }
 
         private void CollectTransformsParameters()

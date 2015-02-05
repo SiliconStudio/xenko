@@ -4,13 +4,13 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
-    /// A Gamma <see cref="ColorTransform"/>.
+    /// A Gamma <see cref="ColorTransformBase"/>.
     /// </summary>
     [DataContract("GammaTransform")]
     public class GammaTransform : ColorTransform
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ColorTransform" /> class.
+        /// Initializes a new instance of the <see cref="ColorTransformBase" /> class.
         /// </summary>
         /// <param name="colorTransformShader">Name of the shader.</param>
         public GammaTransform(string colorTransformShader = "GammaTransformShader") : base(colorTransformShader)

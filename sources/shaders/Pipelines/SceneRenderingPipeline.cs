@@ -72,7 +72,7 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
             postEffects = new ImageEffectBundle(serviceRegistry);
             postEffects.Bloom.Enabled = false;
             postEffects.BrightFilter.Enabled = false;
-            postEffects.ColorTransform.Enabled = true;
+            postEffects.ColorTransforms.Enabled = true;
             postEffects.ToneMap.AutoKeyValue = false;
             postEffects.ToneMap.Operator = new ToneMapU2FilmicOperator();
             postEffects.DepthOfField.Enabled = false;
