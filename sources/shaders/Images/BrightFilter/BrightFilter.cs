@@ -1,11 +1,15 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.ComponentModel;
+using SiliconStudio.Core;
+
 namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
     /// A bright pass filter.
     /// </summary>
+    [DataContract("BrightFilter")]
     public class BrightFilter : ImageEffectShader
     {
         /// <summary>
@@ -21,6 +25,8 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Gets or sets the threshold.
         /// </summary>
         /// <value>The threshold.</value>
+        [DataMember(10)]
+        [DefaultValue(2.0)]
         public float Threshold
         {
             get

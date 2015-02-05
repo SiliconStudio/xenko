@@ -58,17 +58,20 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <summary>
         /// Effect name.
         /// </summary>
+        [DataMemberIgnore]
         public string EffectName { get; set; }
 
         /// <summary>
         /// Optional shared parameters.
         /// </summary>
+        [DataMemberIgnore]
         public List<ParameterCollection> SharedParameterCollections { set; get; }
 
         /// <summary>
         /// Gets the parameter collections used by this effect.
         /// </summary>
         /// <value>The parameter collections.</value>
+        [DataMemberIgnore]
         public List<ParameterCollection> ParameterCollections
         {
             get

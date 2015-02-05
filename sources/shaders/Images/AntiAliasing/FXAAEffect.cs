@@ -8,6 +8,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// A FXAA anti-aliasing pass.
     /// </summary>
+    [DataContract("FXAAEffect")]
     public class FXAAEffect : ImageEffectShader
     {
         public FXAAEffect(string antialiasShaderName = "FXAAShader")

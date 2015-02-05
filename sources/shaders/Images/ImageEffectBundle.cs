@@ -57,6 +57,8 @@ namespace SiliconStudio.Paradox.Effects.Images
         }
 
 
+        [DataMember(10)]
+        [Category]
         public DepthOfField DepthOfField
         {
             get
@@ -65,6 +67,8 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
+        [DataMember(20)]
+        [Category]
         public BrightFilter BrightFilter
         {
             get
@@ -73,6 +77,8 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
+        [DataMember(30)]
+        [Category]
         public Bloom Bloom
         {
             get
@@ -81,6 +87,8 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
+        [DataMember(40)]
+        [Category]
         public FXAAEffect Antialiasing
         {
             get
@@ -89,6 +97,8 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
+        [DataMember(50)]
+        [Category]
         public ToneMap ToneMap
         {
             get
@@ -177,8 +187,6 @@ namespace SiliconStudio.Paradox.Effects.Images
                 fxaa.SetOutput(output);
                 fxaa.Draw(contextParameters);
             }
-
-            // TODO: Add anti aliasing pass
         }
 
     }

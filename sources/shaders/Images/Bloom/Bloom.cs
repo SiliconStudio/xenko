@@ -3,12 +3,15 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.ComponentModel;
+using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
+    [DataContract("Bloom")]
     public class Bloom : ImageEffect
     {
         private readonly GaussianBlur blur;
@@ -22,7 +25,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         public Bloom()
         {
-            Radius = 3;
+            Radius = 3f / 1280f;
             Amount = 1.0f;
             DownScale = 3;
 
@@ -31,18 +34,30 @@ namespace SiliconStudio.Paradox.Effects.Images
             blur = ToDispose(new GaussianBlur());
         }
 
-        public int Radius { get; set; }
+        /// <summary>
+        /// Radius of the bloom.
+        /// </summary>
+        [DataMember(10)]
+        [DefaultValue(3f / 1280f)]
+        [DataMemberRange(1f / 1280f, 0.5f)]
+        public float Radius { get; set; }
 
+        [DataMemberIgnore]
         public float Amount { get; set; }
 
+        [DataMemberIgnore]
         public bool ShowOnlyBloom { get; set; }
 
+        [DataMemberIgnore]
         public bool ShowOnlyMip { get; set; }
 
+        [DataMemberIgnore]
         public int MipIndex { get; set; }
 
+        [DataMemberIgnore]
         public int DownScale { get; set; }
 
+        [DataMemberIgnore]
         public int UpperMip
         {
             get { return Math.Max(0, MaxMip - 1); }
@@ -92,7 +107,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                 Scaler.Draw(contextParameters, "Down/2");
 
                 // Blur it
-                blur.Radius = Radius;
+                blur.Radius = Math.Max(1, (int)(Radius * input.Width));
                 blur.SetInput(nextRenderTarget);
                 blur.SetOutput(nextRenderTarget);
                 blur.Draw(contextParameters);

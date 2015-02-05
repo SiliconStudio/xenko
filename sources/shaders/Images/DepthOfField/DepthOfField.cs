@@ -2,8 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-
+using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 using System.Collections.Generic;
@@ -18,12 +19,14 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// You can optionally specify which bokeh technique should be used, the number of LOD levels with 
     /// their Circle-of-Confusion strengths and their resolution.
     /// </summary>
+    [DataContract("DepthOfField")]
     public sealed class DepthOfField : ImageEffect
     {
         /// <summary>
         /// Areas of the depth of field: [nearStart, nearEnd, farStart, farEnd] expressed as a 
         /// distance from the camera.
         /// </summary>
+        [DataMember(10)]
         public Vector4 DOFAreas { get; set; } // TODO provide an alternative control with physical lens parameters
 
         /// <summary>
@@ -35,6 +38,9 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Instead you should set it once for your scene and play with the DOF areas / lens parameters 
         /// to make out-of-focus objects create bigger bokeh shapes.
         /// </remarks>
+        [DataMember(20)]
+        [DefaultValue(10f / 1280f)]
+        [DataMemberRange(0f, 0.3f)]
         public float MaxBokehSize { get; set; }
 
         /// <summary>
@@ -43,6 +49,9 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <remarks>
         /// This influences the bokeh shape (circular, hexagonal...) as well as the performance.
         /// </remarks>
+        [DataMember(30)]
+        [DefaultValue(BokehTechnique.HexagonalTripleRhombi)]
+        [NotNull]
         public BokehTechnique Technique 
         {
             get
@@ -63,6 +72,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// level should always have a CoC of 1.0. Example: { 0.25f, 0.5f, 1.0f }
         /// The higher the number of levels is, the smoother the transition between 2 levels is, but at a performance cost.
         /// </summary>
+        [DataMemberIgnore]
         public float[] LevelCoCValues
         {
             get
@@ -84,6 +94,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Example: for { 1, 2 }, the first level will be processed at half the original resolution, and the second level at 1/4.
         /// The array provided must be of the same size as the <cref name="LevelCoCValues"/> array.
         /// </summary>
+        [DataMemberIgnore]
         public int[] LevelDownscaleFactors
         {
             get
@@ -102,6 +113,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Affects a preset quality setting, between 0 (lowest quality) and 1 (highest quality).
         /// This auto-configures <cref name="LevelCoCValues"/> and <cref name="LevelDownscaleFactors"/>.
         /// </summary>
+        [DataMember(5)]
         public float QualityPreset
         {
             set

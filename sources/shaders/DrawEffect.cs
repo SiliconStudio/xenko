@@ -17,6 +17,7 @@ namespace SiliconStudio.Paradox.Effects
     /// <summary>
     /// The base class in charge of applying and drawing an effect.
     /// </summary>
+    [DataContract]
     public abstract class DrawEffect : ComponentBase
     {
         private bool isInDrawCore;
@@ -80,35 +81,41 @@ namespace SiliconStudio.Paradox.Effects
         /// Gets or sets a value indicating whether this post effect is enabled.
         /// </summary>
         /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
+        [DataMember(-10)]
         public bool Enabled { get; set; }
 
         /// <summary>
         /// Gets the context.
         /// </summary>
         /// <value>The context.</value>
+        [DataMemberIgnore]
         public DrawEffectContext Context { get; private set; }
 
         /// <summary>
         /// Gets the parameters.
         /// </summary>
         /// <value>The parameters.</value>
+        [DataMemberIgnore]
         public ParameterCollection Parameters { get; private set; }
 
         /// <summary>
         /// Gets the <see cref="AssetManager"/>.
         /// </summary>
         /// <value>The content.</value>
+        [DataMemberIgnore]
         protected AssetManager Assets { get; private set; }
 
         /// <summary>
         /// Gets the graphics device.
         /// </summary>
         /// <value>The graphics device.</value>
+        [DataMemberIgnore]
         protected GraphicsDevice GraphicsDevice { get; private set; }
 
         /// <summary>
         /// Gets a shared <see cref="ImageScaler"/>.
         /// </summary>
+        [DataMemberIgnore]
         protected ImageScaler Scaler
         {
             get
