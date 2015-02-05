@@ -33,7 +33,8 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
         {
             base.Load();
 
-            skyboxEffect = new ImageEffectShader(DrawEffectContext.GetShared(Services), "SkyboxEffect");
+            skyboxEffect = new ImageEffectShader("SkyboxEffect");
+            skyboxEffect.Initialize(DrawEffectContext.GetShared(Services));
         }
 
         public override void Unload()

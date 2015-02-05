@@ -42,9 +42,12 @@ namespace SiliconStudio.Paradox.Effects.Images
         public McIntoshBokeh(DrawEffectContext context)
             : base(context)
         {
-            directionalBlurEffect = new ImageEffectShader(context, "DepthAwareDirectionalBlurEffect");
-            finalCombineEffect = new ImageEffectShader(context, "McIntoshCombineShader");
-            optimizedEffect = new ImageEffectShader(context, "McIntoshOptimizedEffect");
+            directionalBlurEffect = new ImageEffectShader("DepthAwareDirectionalBlurEffect");
+            directionalBlurEffect.Initialize(context);
+            finalCombineEffect = new ImageEffectShader("McIntoshCombineShader");
+            finalCombineEffect.Initialize(context);
+            optimizedEffect = new ImageEffectShader("McIntoshOptimizedEffect");
+            optimizedEffect.Initialize(context);
             Phase = 0f;
         }
 

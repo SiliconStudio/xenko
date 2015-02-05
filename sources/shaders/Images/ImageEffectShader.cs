@@ -16,51 +16,54 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <summary>
         /// The current effect instance.
         /// </summary>
-        protected readonly DefaultEffectInstance EffectInstance;
+        protected DefaultEffectInstance EffectInstance;
 
-        private readonly DynamicEffectCompiler effectCompiler;
+        private DynamicEffectCompiler effectCompiler;
 
-        private readonly List<ParameterCollection> parameterCollections;
+        private List<ParameterCollection> parameterCollections;
 
-        private readonly List<ParameterCollection> appliedParameterCollections;
+        private List<ParameterCollection> appliedParameterCollections;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageEffectShader" /> class.
         /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="effectName">Name of the shader.</param>
-        /// <exception cref="System.ArgumentNullException">effectName</exception>
-        public ImageEffectShader(DrawEffectContext context, string effectName)
-            : this(context, effectName, (ParameterCollection[])null)
+        public ImageEffectShader(string effectName = null)
         {
+            SharedParameterCollections = new List<ParameterCollection>();
+            EffectName = effectName;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ImageEffectShader" /> class.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="effectName">Name of the shader.</param>
-        /// <param name="sharedParameterCollections">The shared parameters.</param>
-        /// <exception cref="System.ArgumentNullException">effectName</exception>
-        public ImageEffectShader(DrawEffectContext context, string effectName, params ParameterCollection[] sharedParameterCollections)
-            : base(context)
+        /// <inheritdoc/>
+        public override void Initialize(DrawEffectContext context)
         {
-            if (effectName == null) throw new ArgumentNullException("effectName");
+            base.Initialize(context);
+
+            if (EffectName == null) throw new ArgumentNullException("No EffectName specified");
 
             parameterCollections = new List<ParameterCollection> { context.Parameters };
-            if (sharedParameterCollections != null)
+            if (SharedParameterCollections != null)
             {
-                parameterCollections.AddRange(sharedParameterCollections);
+                parameterCollections.AddRange(SharedParameterCollections);
             }
             parameterCollections.Add(Parameters);
             appliedParameterCollections = new List<ParameterCollection>();
 
             // Setup the effect compiler
             EffectInstance = new DefaultEffectInstance(parameterCollections);
-            effectCompiler = new DynamicEffectCompiler(context.Services, effectName);
+            effectCompiler = new DynamicEffectCompiler(context.Services, EffectName);
 
             SetDefaultParameters();
         }
+
+        /// <summary>
+        /// Effect name.
+        /// </summary>
+        public string EffectName { get; set; }
+
+        /// <summary>
+        /// Optional shared parameters.
+        /// </summary>
+        public List<ParameterCollection> SharedParameterCollections { set; get; }
 
         /// <summary>
         /// Gets the parameter collections used by this effect.

@@ -44,8 +44,10 @@ namespace SiliconStudio.Paradox.Effects.Images
         public TripleRhombiBokeh(DrawEffectContext context)
             : base(context)
         {
-            directionalBlurEffect = new ImageEffectShader(context, "DepthAwareDirectionalBlurEffect");
-            finalCombineEffect = new ImageEffectShader(context, "TripleRhombiCombineShader");
+            directionalBlurEffect = new ImageEffectShader("DepthAwareDirectionalBlurEffect");
+            directionalBlurEffect.Initialize(context);
+            finalCombineEffect = new ImageEffectShader("TripleRhombiCombineShader");
+            finalCombineEffect.Initialize(context);
             Phase = 0f;
         }
 

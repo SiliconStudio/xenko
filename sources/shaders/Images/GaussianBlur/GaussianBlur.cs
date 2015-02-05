@@ -19,8 +19,8 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// </remarks>
     public sealed class GaussianBlur : ImageEffect
     {
-        private readonly ImageEffectShader blurH;
-        private readonly ImageEffectShader blurV;
+        private ImageEffectShader blurH;
+        private ImageEffectShader blurV;
 
         private Vector2[] offsetsWeights;
 
@@ -31,21 +31,30 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <summary>
         /// Initializes a new instance of the <see cref="GaussianBlur"/> class.
         /// </summary>
-        /// <param name="context">The context.</param>
-        public GaussianBlur(DrawEffectContext context)
-            : base(context)
+        public GaussianBlur()
         {
+            Radius = 4;
+            SigmaRatio = 2.0f;
+        }
+
+        /// <inheritdoc/>
+        public override void Initialize(DrawEffectContext context)
+        {
+            base.Initialize(context);
+
             // Use shared SharedParameters for blurH and blurV
-            blurH = new ImageEffectShader(context, "GaussianBlurEffect", Parameters).DisposeBy(this);
+            blurH = new ImageEffectShader("GaussianBlurEffect").DisposeBy(this);
+            blurH.SharedParameterCollections.Add(Parameters);
+            blurH.Initialize(context);
+
             // Setup specific Horizontal parameter for blurH
             blurH.Parameters.Set(GaussianBlurKeys.VerticalBlur, false);
 
-            blurV = new ImageEffectShader(context, "GaussianBlurEffect", Parameters).DisposeBy(this);
+            blurV = new ImageEffectShader("GaussianBlurEffect").DisposeBy(this);
+            blurV.SharedParameterCollections.Add(Parameters);
+            blurV.Initialize(context);
             // Setup specific Vertical parameter for blurV
             blurV.Parameters.Set(GaussianBlurKeys.VerticalBlur, true);
-
-            Radius = 4;
-            SigmaRatio = 2.0f;
         }
 
         /// <summary>

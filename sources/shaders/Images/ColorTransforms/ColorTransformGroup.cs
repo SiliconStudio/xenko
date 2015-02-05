@@ -15,32 +15,39 @@ namespace SiliconStudio.Paradox.Effects.Images
     public class ColorTransformGroup : ImageEffect
     {
         private readonly ParameterCollection transformsParameters;
-        private readonly ImageEffectShader transformGroupEffect;
+        private ImageEffectShader transformGroupEffect;
         private readonly Dictionary<ParameterCompositeKey, ParameterKey> compositeKeys;
         private readonly ColorTransformCollection transforms;
         private readonly List<ColorTransform> collectTransforms;
         private readonly List<ColorTransform> enabledTransforms;
         private readonly GammaTransform gammaTransform;
-        private readonly ColorTransformContext context;
+        private ColorTransformContext context;
+        private string colorTransformGroupEffectName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ColorTransformGroup"/> class.
         /// </summary>
-        /// <param name="context">The context.</param>
         /// <param name="colorTransformGroupEffect">The color transform group effect.</param>
-        public ColorTransformGroup(DrawEffectContext context, string colorTransformGroupEffect = "ColorTransformGroupEffect")
-            : base(context, colorTransformGroupEffect)
+        public ColorTransformGroup(string colorTransformGroupEffect = "ColorTransformGroupEffect")
+            : base(colorTransformGroupEffect)
         {
             compositeKeys = new Dictionary<ParameterCompositeKey, ParameterKey>();
             transforms = new ColorTransformCollection();
             enabledTransforms = new List<ColorTransform>();
             collectTransforms = new List<ColorTransform>();
-
             transformsParameters = new ParameterCollection();
-
             gammaTransform = new GammaTransform();
+            colorTransformGroupEffectName = colorTransformGroupEffect;
+        }
 
-            transformGroupEffect = new ImageEffectShader(context, colorTransformGroupEffect, Parameters);
+        /// <inheritdoc/>
+        public override void Initialize(DrawEffectContext context)
+        {
+            base.Initialize(context);
+
+            transformGroupEffect = new ImageEffectShader(colorTransformGroupEffectName);
+            transformGroupEffect.SharedParameterCollections.Add(Parameters);
+            transformGroupEffect.Initialize(context);
 
             // we are adding parameter collections after as transform parameters should override previous parameters
             transformGroupEffect.ParameterCollections.Add(transformsParameters);

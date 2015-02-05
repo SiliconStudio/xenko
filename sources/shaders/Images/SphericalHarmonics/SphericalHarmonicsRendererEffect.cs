@@ -12,9 +12,9 @@ namespace SiliconStudio.Paradox.Effects.Images.SphericalHarmonics
         /// </summary>
         public Core.Mathematics.SphericalHarmonics InputSH { get; set; }
 
-        public SphericalHarmonicsRendererEffect(DrawEffectContext context)
-            : base(context, "SphericalHarmonicsRendererEffect")
+        public SphericalHarmonicsRendererEffect()
         {
+            EffectName = "SphericalHarmonicsRendererEffect";
         }
 
         protected override void UpdateParameters()

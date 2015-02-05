@@ -30,9 +30,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageMultiScaler"/> class.
         /// </summary>
-        /// <param name="context">The context.</param>
-        public ImageMultiScaler(DrawEffectContext context)
-            : base(context)
+        public ImageMultiScaler()
         {
             // We are not using the default output for render targets, so don't setup them
             EnableSetRenderTargets = false;

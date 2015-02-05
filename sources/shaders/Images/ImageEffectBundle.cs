@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
@@ -33,28 +34,35 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageEffectBundle"/> class.
         /// </summary>
-        /// <param name="context">The context.</param>
-        public ImageEffectBundle(DrawEffectContext context)
-            : base(context)
+        public ImageEffectBundle()
         {
-            luminanceEffect = new LuminanceEffect(Context);
-            brightFilter = new BrightFilter(Context);
-            bloom = new Bloom(Context);
-            colorTransformGroup = new ColorTransformGroup(Context);
-            fxaa = new FXAAEffect(Context);
+            depthOfField        = ToDispose(new DepthOfField()); 
+            luminanceEffect     = ToDispose(new LuminanceEffect());
+            brightFilter        = ToDispose(new BrightFilter());
+            bloom               = ToDispose(new Bloom());
+            fxaa                = ToDispose(new FXAAEffect());
+            colorTransformGroup = ToDispose(new ColorTransformGroup());
             toneMap = new ToneMap();
             colorTransformGroup.Transforms.Add(toneMap);
+        }
 
-            // TODO: Add presets instead
-            depthOfField = new DepthOfField(context)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImageEffectBundle"/> class.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        public ImageEffectBundle(DrawEffectContext context)
+            : this()
+        {
+            Initialize(context);
+        }
+
+
+        public DepthOfField DepthOfField
+        {
+            get
             {
-                Technique = BokehTechnique.HexagonalTripleRhombi,
-                DOFAreas = new Vector4(0.5f, 6f, 50f, 200f),
-                LevelCoCValues = new float[] { 0.25f, 0.5f, 1.0f },
-                LevelDownscaleFactors = new int[] { 1, 1, 1 },
-                MaxBokehSize = 10f / 1280f // Make parameter ratio relative to input texture size?
-            };
-            // Example of DoF configuration
+                return depthOfField;
+            }
         }
 
         public BrightFilter BrightFilter
@@ -73,19 +81,19 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
-        public ToneMap ToneMap
-        {
-            get
-            {
-                return toneMap;
-            }
-        }
-
         public FXAAEffect Antialiasing
         {
             get
             {
                 return fxaa;
+            }
+        }
+
+        public ToneMap ToneMap
+        {
+            get
+            {
+                return toneMap;
             }
         }
 
@@ -97,13 +105,6 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
-        public DepthOfField DepthOfField
-        {
-            get
-            {
-                return depthOfField;
-            }
-        }
 
         protected override void DrawCore(ParameterCollection contextParameters)
         {

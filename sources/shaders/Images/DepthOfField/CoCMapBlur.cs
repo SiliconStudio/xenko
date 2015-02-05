@@ -30,11 +30,10 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <summary>
         /// Initializes a new instance of the <see cref="CoCMapBlur"/> class.
         /// </summary>
-        /// <param name="context">The context.</param>
-        public CoCMapBlur(DrawEffectContext context)
-            : base(context)
+        public CoCMapBlur()
+            : base()
         {
-            cocBlurEffect = new ImageEffectShader(context, "CoCMapBlurEffect");
+            cocBlurEffect = ToDispose(new ImageEffectShader("CoCMapBlurEffect"));
             Radius = 5f;
         }
 

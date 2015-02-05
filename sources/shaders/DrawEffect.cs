@@ -25,22 +25,55 @@ namespace SiliconStudio.Paradox.Effects
 
         private ImageScaler scaler;
 
+        // Sub-effects needed by the DrawEffect
+        private readonly List<DrawEffect> subEffects;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImageEffect" /> class.
+        /// Initializes a <see cref="DrawEffect"/>.
+        /// </summary>
+        protected DrawEffect(String name):
+            base(name)
+        {
+            Enabled = true;
+            Parameters = new ParameterCollection();
+            subEffects = new List<DrawEffect>();
+        }
+
+        /// <summary>
+        /// Initializes the <see cref="DrawEffect"/> with the given <see cref="DrawEffectContext"/>.
+        /// </summary>
+        protected DrawEffect() :
+            this((string)null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DrawEffect" /> class.
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="name">The name.</param>
-        /// <exception cref="System.ArgumentNullException">context</exception>
-        protected DrawEffect(DrawEffectContext context, string name)
-            : base(name)
+        protected DrawEffect(DrawEffectContext context, string name = null)
+            : this(name)
+        {
+            Initialize(context);
+        }
+
+        /// <summary>
+        /// Initializes the <see cref="DrawEffect"/> with the given <see cref="DrawEffectContext"/>.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// /// <exception cref="System.ArgumentNullException">context</exception>
+        public virtual void Initialize(DrawEffectContext context)
         {
             if (context == null) throw new ArgumentNullException("context");
-
             Context = context;
             GraphicsDevice = Context.GraphicsDevice;
             Assets = context.Services.GetSafeServiceAs<AssetManager>();
-            Enabled = true;
-            Parameters = new ParameterCollection();
+            // Recursively initializes all our sub-effects
+            foreach (var drawEffect in subEffects)
+            {
+                drawEffect.Initialize(context);
+            }
         }
 
         /// <summary>
@@ -80,7 +113,14 @@ namespace SiliconStudio.Paradox.Effects
         {
             get
             {
-                return scaler ?? (scaler = Context.GetSharedEffect<ImageScaler>());
+                // TODO
+                // return scaler ?? (scaler = Context.GetSharedEffect<ImageScaler>());
+                if (scaler == null)
+                {
+                    scaler = new ImageScaler();
+                    scaler.Initialize(Context);
+                }
+                return scaler;
             }
         }
 
@@ -107,6 +147,11 @@ namespace SiliconStudio.Paradox.Effects
             if (!Enabled)
             {
                 return;
+            }
+
+            if (Context == null)
+            {
+                throw new NullReferenceException("No DrawEffectContext was provided for this DrawEffect! Did you call Initialize(context)?");
             }
 
             PreDrawCore(name);
@@ -223,6 +268,24 @@ namespace SiliconStudio.Paradox.Effects
             {
                 throw new InvalidOperationException("The method execution path is not within a DrawCore operation");
             }
+        }
+
+        protected override void Destroy()
+        {
+            foreach (var drawEffect in subEffects)
+            {
+                drawEffect.Dispose();
+            }
+            subEffects.Clear();
+
+            base.Destroy();
+        }
+
+        protected T ToDispose<T>(T effect) where T : DrawEffect
+        {
+            if (effect == null) throw new ArgumentNullException("effect");
+            subEffects.Add(effect);
+            return effect;
         }
     }
 }

@@ -22,14 +22,34 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageEffect" /> class.
         /// </summary>
-        /// <param name="context">The context.</param>
         /// <param name="name">The name.</param>
         /// <exception cref="System.ArgumentNullException">context</exception>
-        protected ImageEffect(DrawEffectContext context, string name = null) : base(context, name)
+        protected ImageEffect(string name)
+            : base(name)
         {
             inputTextures = new Texture[128];
             maxInputTextureIndex = -1;
             EnableSetRenderTargets = true;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImageEffect" /> class.
+        /// </summary>
+        protected ImageEffect()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImageEffect" /> class.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="name">The name.</param>
+        /// <exception cref="System.ArgumentNullException">context</exception>
+        protected ImageEffect(DrawEffectContext context, string name = null) 
+            : this(name)
+        {
+            Initialize(context);
         }
 
         /// <summary>

@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using SiliconStudio.Core;
+
 namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
@@ -8,9 +10,9 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// </summary>
     public class FXAAEffect : ImageEffectShader
     {
-        public FXAAEffect(DrawEffectContext context, string antialiasShaderName = "FXAAShader")
-            : base(context, antialiasShaderName)
+        public FXAAEffect(string antialiasShaderName = "FXAAShader")
         {
+            EffectName = antialiasShaderName;
         }
     }
 }

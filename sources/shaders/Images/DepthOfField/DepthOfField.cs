@@ -150,16 +150,16 @@ namespace SiliconStudio.Paradox.Effects.Images
         private int[] levelDownscaleFactors;
 
         // Util to scale images
-        private readonly ImageScaler textureScaler;
+        private ImageScaler textureScaler;
 
         // Transforms "Color and depth" -> "linear depth and CoC"
-        private readonly ImageEffectShader coclinearDepthMapEffect;
+        private ImageEffectShader coclinearDepthMapEffect;
 
         // Used to blur the CoC map
-        private readonly CoCMapBlur cocMapBlur;
+        private CoCMapBlur cocMapBlur;
 
         // Used for the final pass interpolating between some CoC levels.
-        private readonly ImageEffectShader combineLevelsEffect;
+        private ImageEffectShader combineLevelsEffect;
 
         // Represents a level of CoC
         private class CoCLevelConfig
@@ -181,34 +181,21 @@ namespace SiliconStudio.Paradox.Effects.Images
         // Cache the different CoC level values for the shader (avoid GC)
         private float[] combineShaderCocLevelValues;
 
-        
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DepthOfField"/> class.
         /// </summary>
-        /// <remarks>
-        /// By default this creates the lightest and simplest DoF effect possible by using a gaussian blur
-        /// and a single level of detail. 
-        /// You can further customize the effect, balance the quality/performance using <see cref="SetupTechnique"/>.
-        /// </remarks>
-        /// <param name="context">The context.</param>
-        public DepthOfField(DrawEffectContext context)
-            : base(context)
+        public DepthOfField()
         {
-            coclinearDepthMapEffect = new ImageEffectShader(context, "CoCLinearDepthShader");
-            combineLevelsEffect = new ImageEffectShader(context, "CombineLevelsFromCoCEffect");
-            textureScaler = new ImageScaler(context);
-            cocMapBlur = new CoCMapBlur(context);
+            coclinearDepthMapEffect = ToDispose(new ImageEffectShader("CoCLinearDepthShader"));
+            combineLevelsEffect     = ToDispose(new ImageEffectShader("CombineLevelsFromCoCEffect"));
+            textureScaler           = ToDispose(new ImageScaler());
+            cocMapBlur              = ToDispose(new CoCMapBlur());
 
-            // Some default values
-            DOFAreas = new Vector4(17f, 34f, 41f, 56f);
-            MaxBokehSize = 10f / 1280f; //ratio of the width
-            Technique = BokehTechnique.CircularGaussian;
-            LevelCoCValues = new float[] { 1.0f }; // Only 1 layer by default
-
-            // Other example of configuration:
-            // LevelCoCValues = new float[] { 0.33f, 0.66f, 1.0f }; 
-            // LevelDownscaleFactors = new int[] { 1, 2, 2 };
+            // Some preset values
+            DOFAreas = new Vector4(0.5f, 6f, 50f, 200f);
+            MaxBokehSize = 10f / 1280f; //ratio of the width (resolution independent)
+            Technique = BokehTechnique.HexagonalTripleRhombi;
+            QualityPreset = 0.5f;
         }
 
         /// <summary>

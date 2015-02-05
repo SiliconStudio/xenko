@@ -20,17 +20,15 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <summary>
         /// Initializes a new instance of the <see cref="Bloom"/> class.
         /// </summary>
-        /// <param name="context">The context.</param>
-        public Bloom(DrawEffectContext context)
-            : base(context)
+        public Bloom()
         {
-            blurCombine = new ColorCombiner(Context);
-            multiScaler = new ImageMultiScaler(Context);
-            blur = new GaussianBlur(context);
-
             Radius = 3;
             Amount = 1.0f;
             DownScale = 3;
+
+            blurCombine = ToDispose(new ColorCombiner());
+            multiScaler = ToDispose(new ImageMultiScaler());
+            blur = ToDispose(new GaussianBlur());
         }
 
         public int Radius { get; set; }

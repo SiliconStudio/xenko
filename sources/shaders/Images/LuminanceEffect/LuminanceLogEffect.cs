@@ -7,8 +7,9 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// </summary>
     public class LuminanceLogEffect : ImageEffectShader
     {
-        public LuminanceLogEffect(DrawEffectContext context, string luminanceShaderName = "LuminanceLogShader") : base(context, luminanceShaderName)
+        public LuminanceLogEffect(string luminanceShaderName = "LuminanceLogShader")
         {
+            EffectName = luminanceShaderName;
         }
     }
 }

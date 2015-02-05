@@ -31,7 +31,8 @@ namespace SiliconStudio.Paradox.Effects.Images
         public GaussianBokeh(DrawEffectContext context)
             : base(context)
         {
-            directionalBlurEffect = new ImageEffectShader(context, "DepthAwareDirectionalBlurEffect");
+            directionalBlurEffect = new ImageEffectShader("DepthAwareDirectionalBlurEffect");
+            directionalBlurEffect.Initialize(context);
         }
 
         /// <inheritdoc/>

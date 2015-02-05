@@ -17,14 +17,49 @@ namespace SiliconStudio.Paradox.Effects.Images
     {
         public static readonly ParameterKey<LuminanceResult> LuminanceResult = ParameterKeys.New<LuminanceResult>();
 
-        private readonly PixelFormat luminanceFormat;
-        private readonly ImageEffectShader luminanceLogEffect;
-        private readonly Texture luminance1x1;
-        private readonly GaussianBlur blur;
+        private PixelFormat luminanceFormat = PixelFormat.R16_Float;
+        private ImageEffectShader luminanceLogEffect;
+        private Texture luminance1x1;
+        private GaussianBlur blur;
 
-        private readonly ImageMultiScaler multiScaler;
-        private readonly ImageReadback<Half> readback;
+        private ImageMultiScaler multiScaler;
+        private ImageReadback<Half> readback;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LuminanceEffect" /> class.
+        /// </summary>
+        public LuminanceEffect()
+        {
+            LuminanceFormat = PixelFormat.R16_Float;
+            DownscaleCount = 6;
+            UpscaleCount = 4;
+            EnableAverageLuminanceReadback = true;
+        }
+
+        public override void Initialize(DrawEffectContext context)
+        {
+            base.Initialize(context);
+
+            LuminanceLogEffect = LuminanceLogEffect ?? new LuminanceLogEffect().DisposeBy(this);
+            LuminanceLogEffect.Initialize(context);
+
+            // Create 1x1 texture
+            luminance1x1 = Texture.New2D(GraphicsDevice, 1, 1, 1, luminanceFormat, TextureFlags.ShaderResource | TextureFlags.RenderTarget).DisposeBy(this);
+
+            // Use a multiscaler
+            multiScaler = new ImageMultiScaler().DisposeBy(this);
+            multiScaler.Initialize(context);
+
+            // Readback is always going to be done on the 1x1 texture
+            readback = new ImageReadback<Half>(context).DisposeBy(this);
+            readback.SetInput(luminance1x1);
+
+            // Blur used before upscaling 
+            blur = new GaussianBlur().DisposeBy(this);
+            blur.Initialize(context);
+            blur.Radius = 4;
+        }
+        /*
         /// <summary>
         /// Initializes a new instance of the <see cref="LuminanceEffect" /> class.
         /// </summary>
@@ -62,6 +97,42 @@ namespace SiliconStudio.Paradox.Effects.Images
             UpscaleCount = 4;
 
             EnableAverageLuminanceReadback = true;
+        }
+        */
+
+        /// <summary>
+        /// Luminance texture format.
+        /// </summary>
+        public PixelFormat LuminanceFormat
+        {
+            get
+            {
+                return luminanceFormat;
+            }
+
+            set
+            {
+                if (value.IsCompressed() || value.IsPacked() || value.IsTypeless() || value == PixelFormat.None)
+                {
+                    throw new ArgumentOutOfRangeException("luminanceFormat", "Unsupported format [{0}] (must be not none, compressed, packed or typeless)".ToFormat(luminanceFormat));
+                }
+                luminanceFormat = value;
+            }
+        }
+
+        /// <summary>
+        /// Luminance log effect.
+        /// </summary>
+        public ImageEffectShader LuminanceLogEffect
+        {
+            get
+            {
+                return luminanceLogEffect;
+            }
+            set
+            {
+                luminanceLogEffect = value;
+            }
         }
 
         /// <summary>
