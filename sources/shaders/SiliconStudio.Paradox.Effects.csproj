@@ -141,6 +141,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Images\ColorTransforms\ColorTransform.cs" />
+    <Compile Include="Layers\GraphicsLayer.cs" />
     <Compile Include="Lights\IDirectLight.cs" />
     <Compile Include="Lights\IEnvironmentLight.cs" />
     <Compile Include="Lights\LightAmbient.cs" />
