@@ -1,6 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.ComponentModel;
+using SiliconStudio.Core;
+
 namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
@@ -17,6 +20,8 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Gets or sets the luminance saturation.
         /// </summary>
         /// <value>The luminance saturation.</value>
+        [DataMember(5)]
+        [DefaultValue(1f)]
         public float LuminanceSaturation
         {
             get
@@ -33,6 +38,8 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Gets or sets the white level.
         /// </summary>
         /// <value>The white level.</value>
+        [DataMember(8)]
+        [DefaultValue(5f)]
         public float WhiteLevel
         {
             get

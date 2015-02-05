@@ -59,46 +59,6 @@ namespace SiliconStudio.Paradox.Effects.Images
             blur.Initialize(context);
             blur.Radius = 4;
         }
-        /*
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LuminanceEffect" /> class.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="luminanceFormat">The luminance format.</param>
-        /// <param name="luminanceLogEffect">The luminance log effect.</param>
-        /// <exception cref="System.ArgumentNullException">lunkinanceLogShader</exception>
-        public LuminanceEffect(DrawEffectContext context, PixelFormat luminanceFormat = PixelFormat.R16_Float, ImageEffectShader luminanceLogEffect = null) : base(context)
-        {
-            // Check luminance format
-            if (luminanceFormat.IsCompressed() || luminanceFormat.IsPacked() || luminanceFormat.IsTypeless() || luminanceFormat == PixelFormat.None)
-            {
-                throw new ArgumentOutOfRangeException("luminanceFormat", "Unsupported format [{0}] (must be not none, compressed, packed or typeless)".ToFormat(luminanceFormat));
-            }
-            this.luminanceFormat = luminanceFormat;
-            
-            // Use or create a default luminance log effect
-            this.luminanceLogEffect = luminanceLogEffect ?? new LuminanceLogEffect(context).DisposeBy(this);
-
-            // Create 1x1 texture
-            luminance1x1 = Texture.New2D(GraphicsDevice, 1, 1, 1, luminanceFormat, TextureFlags.ShaderResource | TextureFlags.RenderTarget).DisposeBy(this);
-
-            // Use a multiscaler
-            multiScaler = new ImageMultiScaler(context).DisposeBy(this);
-
-            // Readback is always going to be done on the 1x1 texture
-            readback = new ImageReadback<Half>(context).DisposeBy(this);
-            readback.SetInput(luminance1x1);
-
-            // Blur used before upscaling 
-            blur = new GaussianBlur(context).DisposeBy(this);
-            blur.Radius = 4;
-
-            DownscaleCount = 6;
-            UpscaleCount = 4;
-
-            EnableAverageLuminanceReadback = true;
-        }
-        */
 
         /// <summary>
         /// Luminance texture format.

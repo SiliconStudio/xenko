@@ -65,6 +65,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Gets or sets a value indicating whether this <see cref="ColorTransform"/> is enabled.
         /// </summary>
         /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
+        [DataMember(5)]
         public bool Enabled
         {
             get

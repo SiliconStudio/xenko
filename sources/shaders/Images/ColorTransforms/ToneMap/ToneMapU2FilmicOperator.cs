@@ -1,6 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.ComponentModel;
+using SiliconStudio.Core;
+
 namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
@@ -9,6 +12,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <remarks>
     /// http://filmicgames.com/archives/75
     /// </remarks>
+    [Display("U2-Filmic")]
     public class ToneMapU2FilmicOperator : ToneMapOperator
     {
         /// <summary>
@@ -23,6 +27,8 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Gets or sets the shoulder strength.
         /// </summary>
         /// <value>The shoulder strength.</value>
+        [DataMember(10)]
+        [DefaultValue(0.22f)]
         public float ShoulderStrength
         {
             get
@@ -39,6 +45,8 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Gets or sets the linear strength.
         /// </summary>
         /// <value>The linear strength.</value>
+        [DataMember(20)]
+        [DefaultValue(0.25f)]
         public float LinearStrength
         {
             get
@@ -55,6 +63,8 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Gets or sets the linear angle.
         /// </summary>
         /// <value>The linear angle.</value>
+        [DataMember(30)]
+        [DefaultValue(0.1f)]
         public float LinearAngle
         {
             get
@@ -71,6 +81,8 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Gets or sets the toe strength.
         /// </summary>
         /// <value>The toe strength.</value>
+        [DataMember(40)]
+        [DefaultValue(0.2f)]
         public float ToeStrength
         {
             get
@@ -87,6 +99,8 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Gets or sets the toe numerator.
         /// </summary>
         /// <value>The toe numerator.</value>
+        [DataMember(50)]
+        [DefaultValue(0.01f)]
         public float ToeNumerator
         {
             get
@@ -103,6 +117,8 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Gets or sets the toe denominator.
         /// </summary>
         /// <value>The toe denominator.</value>
+        [DataMember(60)]
+        [DefaultValue(0.3f)]
         public float ToeDenominator
         {
             get
@@ -119,6 +135,8 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Gets or sets the linear white.
         /// </summary>
         /// <value>The linear white.</value>
+        [DataMember(70)]
+        [DefaultValue(11.2f)]
         public float LinearWhite
         {
             get

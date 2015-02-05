@@ -3,13 +3,17 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
+using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
     /// A tonemap effect.
     /// </summary>
+    [DataContract("ToneMap")]
     public class ToneMap : ColorTransform
     {
         private readonly float[] weightedLuminances = new float[16];
@@ -37,12 +41,16 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Gets or sets the operator used for tonemap.
         /// </summary>
         /// <value>The operator.</value>
+        [DataMember(10)]
+        [NotNull]
         public ToneMapOperator Operator { get; set; }
 
         /// <summary>
         /// Gets or sets the key value.
         /// </summary>
         /// <value>The key value.</value>
+        [DataMember(20)]
+        [DefaultValue(0.18f)]
         public float KeyValue
         {
             get
@@ -59,6 +67,8 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Gets or sets a value indicating whether [automatic key value].
         /// </summary>
         /// <value><c>true</c> if [automatic key value]; otherwise, <c>false</c>.</value>
+        [DataMember(30)]
+        [DefaultValue(true)]
         public bool AutoKeyValue
         {
             get
@@ -75,12 +85,16 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Gets or sets the adaptation rate.
         /// </summary>
         /// <value>The adaptation rate.</value>
+        [DataMember(40)]
+        [DefaultValue(1.25f)]
         public float AdaptationRate { get; set; }
 
         /// <summary>
         /// Gets or sets the luminance local factor.
         /// </summary>
         /// <value>The luminance local factor.</value>
+        [DataMember(50)]
+        [DefaultValue(0.5f)]
         public float LuminanceLocalFactor
         {
             get
@@ -97,6 +111,8 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Gets or sets the contrast.
         /// </summary>
         /// <value>The contrast.</value>
+        [DataMember(60)]
+        [DefaultValue(0f)]
         public float Contrast
         {
             get
@@ -113,6 +129,8 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Gets or sets the brightness.
         /// </summary>
         /// <value>The brightness.</value>
+        [DataMember(70)]
+        [DefaultValue(0f)]
         public float Brightness
         {
             get

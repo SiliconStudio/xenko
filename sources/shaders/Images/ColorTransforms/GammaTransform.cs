@@ -1,8 +1,12 @@
-﻿namespace SiliconStudio.Paradox.Effects.Images
+﻿using System.ComponentModel;
+using SiliconStudio.Core;
+
+namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
     /// A Gamma <see cref="ColorTransform"/>.
     /// </summary>
+    [DataContract("GammaTransform")]
     public class GammaTransform : ColorTransform
     {
         /// <summary>
@@ -17,6 +21,8 @@
         /// Gets or sets the gamma value.
         /// </summary>
         /// <value>The value.</value>
+        [DataMember(10)]
+        [DefaultValue(2.2333333f)]
         public float Value
         {
             get

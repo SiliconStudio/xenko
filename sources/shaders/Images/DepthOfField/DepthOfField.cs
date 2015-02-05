@@ -51,7 +51,6 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </remarks>
         [DataMember(30)]
         [DefaultValue(BokehTechnique.HexagonalTripleRhombi)]
-        [NotNull]
         public BokehTechnique Technique 
         {
             get
@@ -114,6 +113,8 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// This auto-configures <cref name="LevelCoCValues"/> and <cref name="LevelDownscaleFactors"/>.
         /// </summary>
         [DataMember(5)]
+        [DefaultValue(0.5f)]
+        [DataMemberRange(0f, 1f)]
         public float QualityPreset
         {
             set

@@ -1,8 +1,12 @@
-﻿namespace SiliconStudio.Paradox.Effects.Images
+﻿using System.ComponentModel;
+using SiliconStudio.Core;
+
+namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
-    /// The tonemap Reinhard operator.
+    /// The tonemap Drago operator.
     /// </summary>
+    [Display("Drago")]
     public class ToneMapDragoOperator : ToneMapCommonOperator
     {
         /// <summary>
@@ -17,6 +21,8 @@
         /// Gets or sets the bias.
         /// </summary>
         /// <value>The bias.</value>
+        [DataMember(10)]
+        [DefaultValue(0.5f)]
         public float Bias
         {
             get

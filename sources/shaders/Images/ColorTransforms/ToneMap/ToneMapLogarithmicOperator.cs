@@ -1,8 +1,11 @@
-﻿namespace SiliconStudio.Paradox.Effects.Images
+﻿using SiliconStudio.Core;
+
+namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
-    /// The tonemap Reinhard operator.
+    /// The tonemap logarithmic operator.
     /// </summary>
+    [Display("Logarithmic")]
     public class ToneMapLogarithmicOperator : ToneMapCommonOperator
     {
         /// <summary>

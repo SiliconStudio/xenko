@@ -1,8 +1,11 @@
-﻿namespace SiliconStudio.Paradox.Effects.Images
+﻿using SiliconStudio.Core;
+
+namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
-    /// The tonemap Reinhard operator.
+    /// The tonemap exponential operator.
     /// </summary>
+    [Display("Exponential")]
     public class ToneMapExponentialOperator : ToneMapCommonOperator
     {
         /// <summary>

@@ -1,4 +1,6 @@
-﻿using SiliconStudio.Core.Mathematics;
+﻿using System.ComponentModel;
+using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
@@ -8,6 +10,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <remarks>
     /// https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/09/an-efficient-and-user-friendly-tone-mapping-operator.pdf
     /// </remarks>
+    [Display("Mike-Day")]
     public class ToneMapMikeDayOperator : ToneMapOperator
     {
         /// <summary>
@@ -27,30 +30,40 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Gets or sets the black point.
         /// </summary>
         /// <value>The black point.</value>
+        [DataMember(10)]
+        [DefaultValue(0.005f)]
         public float BlackPoint { get; set; }
 
         /// <summary>
         /// Gets or sets the cross over.
         /// </summary>
         /// <value>The cross over.</value>
+        [DataMember(20)]
+        [DefaultValue(0.8f)]
         public float CrossOver { get; set; }
 
         /// <summary>
         /// Gets or sets the white point.
         /// </summary>
         /// <value>The white point.</value>
+        [DataMember(30)]
+        [DefaultValue(4.0f)]
         public float WhitePoint { get; set; }
 
         /// <summary>
         /// Gets or sets the toe.
         /// </summary>
         /// <value>The toe.</value>
+        [DataMember(40)]
+        [DefaultValue(0.2f)]
         public float Toe { get; set; }
 
         /// <summary>
         /// Gets or sets the shoulder.
         /// </summary>
         /// <value>The shoulder.</value>
+        [DataMember(50)]
+        [DefaultValue(0.8f)]
         public float Shoulder { get; set; }
 
         public override void UpdateParameters(ColorTransformContext context)
