@@ -77,6 +77,16 @@ namespace SiliconStudio.Paradox.Effects.Materials
         public static readonly ParameterKey<Vector4> GenericValueVector4 = ParameterKeys.New<Vector4>();
 
         /// <summary>
+        /// Texture UV scaling
+        /// </summary>
+        public static readonly ParameterKey<Vector2> TextureScale = ParameterKeys.New<Vector2>();
+
+        /// <summary>
+        /// Texture UV offset
+        /// </summary>
+        public static readonly ParameterKey<Vector2> TextureOffset = ParameterKeys.New<Vector2>();
+
+        /// <summary>
         /// Generic texture key used by a material
         /// </summary>
         public static readonly ParameterKey<float> GenericValueFloat = ParameterKeys.New<float>();

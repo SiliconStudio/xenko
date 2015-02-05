@@ -59,6 +59,14 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         public bool IsVertexStage { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether materials will be optimized (textures blended together, generate optimized shader permutations, etc...).
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [materials are optimized]; otherwise, <c>false</c>.
+        /// </value>
+        public bool OptimizeMaterials { get; set; }
+
         public void AddVertexStreamModifier<T>(ShaderSource shaderSource)
         {
             if (shaderSource == null)

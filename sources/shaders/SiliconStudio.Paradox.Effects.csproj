@@ -28,6 +28,18 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeColorTextureLodSampler.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="ComputeColor\ComputeColorTextureLodScaledOffsetDynamicSampler.cs">
+      <DependentUpon>ComputeColorTextureLodScaledOffsetDynamicSampler.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="ComputeColor\ComputeColorTextureScaledOffsetDynamicSampler.cs">
+      <DependentUpon>ComputeColorTextureScaledOffsetDynamicSampler.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="ComputeEffect\ComputeEffectShaderKeys.cs" />
     <Compile Include="ComputeEffect\ComputeEffectShader.cs" />
     <Compile Include="ComputeEffect\ComputeShaderBaseKeys.cs" />
@@ -64,6 +76,14 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSH.cs" />
+    <None Include="ComputeColor\ComputeColorTextureLodScaledOffsetDynamicSampler.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorTextureLodScaledOffsetDynamicSampler.cs</LastGenOutput>
+    </None>
+    <None Include="ComputeColor\ComputeColorTextureScaledOffsetDynamicSampler.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorTextureScaledOffsetDynamicSampler.cs</LastGenOutput>
+    </None>
     <None Include="ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>RadiancePrefilteringGGXEffect.cs</LastGenOutput>
