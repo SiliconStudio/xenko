@@ -93,7 +93,8 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 //    }
                 //}
 
-                var materialContext = new MaterialGeneratorContext(package);
+                var assetManager = new AssetManager();
+                var materialContext = new MaterialGeneratorContext(package) { Assets = assetManager };
                 var materialClone = (MaterialAsset)AssetCloner.Clone(Asset);
                 var result = MaterialGenerator.Generate(materialClone, materialContext);
 
@@ -116,7 +117,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
                 var materialData = new Material { Parameters = materialContext.Parameters};
                 
-                var assetManager = new AssetManager();
                 assetManager.Save(assetUrl, materialData);
 
                 return Task.FromResult(ResultStatus.Successful);

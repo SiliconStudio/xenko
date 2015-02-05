@@ -5,6 +5,7 @@ using System;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Effects.Materials;
 
@@ -46,7 +47,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         public void Visit(MaterialGeneratorContext context)
         {
-            context.SetStream("matDiffuse", DiffuseMap, MaterialKeys.DiffuseMap, MaterialKeys.DiffuseValue);
+            context.SetStream("matDiffuse", DiffuseMap, MaterialKeys.DiffuseMap, MaterialKeys.DiffuseValue, Color.White);
         }
     }
 }

@@ -3,6 +3,7 @@
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Effects.Materials;
 
@@ -78,12 +79,12 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         public void Visit(MaterialGeneratorContext context)
         {
-            context.SetStream("matAmbientOcclusion", AmbientOcclusionMap, MaterialKeys.AmbientOcclusionMap, MaterialKeys.AmbientOcclusionValue);
+            context.SetStream("matAmbientOcclusion", AmbientOcclusionMap, MaterialKeys.AmbientOcclusionMap, MaterialKeys.AmbientOcclusionValue, Color.White);
             context.SetStream("matAmbientOcclusionDirectLightingFactor", DirectLightingFactor, null, MaterialKeys.AmbientOcclusionDirectLightingFactorValue);
 
             if (CavityMap != null)
             {
-                context.SetStream("matCavity", CavityMap, MaterialKeys.CavityMap, MaterialKeys.CavityValue);
+                context.SetStream("matCavity", CavityMap, MaterialKeys.CavityMap, MaterialKeys.CavityValue, Color.White);
                 context.SetStream("matCavityDiffuse", DiffuseCavity, null, MaterialKeys.CavityDiffuseValue);
                 context.SetStream("matCavitySpecular", SpecularCavity, null, MaterialKeys.CavitySpecularValue);
             }

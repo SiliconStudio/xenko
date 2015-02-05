@@ -39,8 +39,6 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
 
         public IServiceRegistry Services { get; private set; }
 
-        public AssetManager Assets { get; private set; }
-
         public EffectSystem EffectSystem { get; private set; }
 
         public GraphicsDevice GraphicsDevice { get; private set; }
