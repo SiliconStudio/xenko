@@ -57,10 +57,8 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
                 // Copy camera/pass parameters
                 context.CurrentPass.Parameters.CopySharedTo(skyboxEffect.Parameters);
 
-                // TODO: Find a way to switch more easily between irradiance/skybox
-
                 // Show irradiance in the background
-                if (skybox.Background.ShowIrrandiance)
+                if (skybox.Background == SkyboxBackground.Irradiance)
                 {
                     foreach (var parameterKeyValue in skybox.Skybox.DiffuseLightingParameters)
                     {
@@ -96,9 +94,7 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
                 }
 
                 // Setup the intensity
-                var intensity = skybox.Lighting.Enabled ? skybox.Lighting.Intensity : 1.0f;
-                intensity *= skybox.Background.Intensity;
-                skyboxEffect.Parameters.Set(SkyboxKeys.Intensity, intensity);
+                skyboxEffect.Parameters.Set(SkyboxKeys.Intensity, skybox.Intensity);
                     
                 // Setup the rotation
                 skyboxEffect.Parameters.Set(SkyboxKeys.SkyMatrix, Matrix.RotationQuaternion(skybox.Entity.Transformation.Rotation));

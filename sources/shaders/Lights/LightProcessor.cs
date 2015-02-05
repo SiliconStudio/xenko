@@ -28,7 +28,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
             lights = new LightComponentCollection(DefaultLightCapacityCount);
 
             // TODO: How should we handle RenderLayer? Should we precalculate layers here?
-            ActiveLights = new Dictionary<Type, LightComponentCollection>();
+            ActiveDirectLights = new Dictionary<Type, LightComponentCollection>();
+            ActiveEnvironmentLights = new Dictionary<Type, LightComponentCollection>();
             ActiveLightsWithShadow = new Dictionary<Type, LightComponentCollection>();
         }
 
@@ -54,7 +55,13 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// Gets the lights without shadow per light type.
         /// </summary>
         /// <value>The lights.</value>
-        public Dictionary<Type, LightComponentCollection> ActiveLights { get; private set; }
+        public Dictionary<Type, LightComponentCollection> ActiveDirectLights { get; private set; }
+
+        /// <summary>
+        /// Gets the lights without shadow per light type.
+        /// </summary>
+        /// <value>The lights.</value>
+        public Dictionary<Type, LightComponentCollection> ActiveEnvironmentLights { get; private set; }
 
         protected override void OnEntityAdding(Entity entity, LightComponent state)
         {
@@ -88,7 +95,12 @@ namespace SiliconStudio.Paradox.Effects.Lights
         public override void Draw(GameTime time)
         {
             // Instead of clearing the types, we are clearing the underlying list (keeping the allocated space)
-            foreach (var lightPair in ActiveLights)
+            foreach (var lightPair in ActiveDirectLights)
+            {
+                lightPair.Value.Clear();
+            }
+
+            foreach (var lightPair in ActiveEnvironmentLights)
             {
                 lightPair.Value.Clear();
             }
@@ -111,9 +123,16 @@ namespace SiliconStudio.Paradox.Effects.Lights
             {
                 return;
             }
-
             var type = light.Type.GetType();
-            AddLightComponent(light, type, light.Shadow != null && light.Shadow.Enabled ? ActiveLightsWithShadow : ActiveLights);
+            var directLight = light.Type as IDirectLight;
+            if (directLight != null)
+            {
+                AddLightComponent(light, type, directLight.Shadow != null && directLight.Shadow.Enabled ? ActiveLightsWithShadow : ActiveDirectLights);
+            }
+            else
+            {
+                AddLightComponent(light, type, ActiveEnvironmentLights);
+            }
         }
     }
 }

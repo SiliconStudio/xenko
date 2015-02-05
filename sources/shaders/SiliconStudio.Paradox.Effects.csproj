@@ -140,6 +140,11 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Lights\IDirectLight.cs" />
+    <Compile Include="Lights\IEnvironmentLight.cs" />
+    <Compile Include="Lights\LightAmbient.cs" />
+    <Compile Include="Lights\LightShaderGroup.cs" />
+    <Compile Include="Lights\LightSkybox.cs" />
     <Compile Include="ProceduralModels\CameraCube.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -199,9 +204,9 @@
     <Compile Include="Lights\ILightShadow.cs" />
     <Compile Include="Lights\LightColorRgb.cs" />
     <Compile Include="Lights\LightDirectional.cs" />
-    <Compile Include="Lights\LightDirectionalGroupRenderProcessor.cs" />
-    <Compile Include="Lights\DirectLightGroupRenderProcessorBase.cs" />
-    <Compile Include="Lights\DirectLightRenderProcessorBase.cs" />
+    <Compile Include="Lights\LightDirectionalGroupRenderer.cs" />
+    <Compile Include="Lights\LightGroupRendererBase.cs" />
+    <Compile Include="Lights\LightModelRendererBase.cs" />
     <Compile Include="Lights\EnvironmentLightArray.cs">
       <DependentUpon>EnvironmentLightArray.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -219,8 +224,8 @@
     <Compile Include="Lights\LightingKeys.cs" />
     <Compile Include="Lights\LightShadowMap.cs" />
     <Compile Include="Lights\LightShadowMapFilterType.cs" />
-    <Compile Include="Lights\LightSkybox.cs">
-      <DependentUpon>LightSkybox.pdxsl</DependentUpon>
+    <Compile Include="Lights\LightSkyboxShader.cs">
+      <DependentUpon>LightSkyboxShader.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -1281,7 +1286,7 @@
     </Compile>
     <Compile Include="Lights\LightComponentCollection.cs" />
     <Compile Include="Lights\LightProcessor.cs" />
-    <Compile Include="Lights\DirectLightForwardRenderProcessor.cs" />
+    <Compile Include="Lights\LightModelRendererForward.cs" />
     <Compile Include="Lights\DirectLightGroupArray.cs">
       <DependentUpon>DirectLightGroupArray.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -1364,7 +1369,7 @@
     </Compile>
     <Compile Include="Skyboxes\SkyboxComponentCollection.cs" />
     <Compile Include="Skyboxes\SkyboxKeys.cs" />
-    <Compile Include="Skyboxes\SkyboxLightingRenderer.cs" />
+    <Compile Include="Lights\LightSkyboxRenderer.cs" />
     <Compile Include="Skyboxes\SkyboxProcessor.cs" />
     <Compile Include="Skyboxes\IComputeEnvironmentColor.cs">
       <DependentUpon>IComputeEnvironmentColor.pdxsl</DependentUpon>
@@ -1387,7 +1392,6 @@
     <Compile Include="Skyboxes\SkyboxBackground.cs" />
     <Compile Include="Skyboxes\SkyboxComponent.cs" />
     <Compile Include="Skyboxes\Skybox.cs" />
-    <Compile Include="Skyboxes\SkyboxLighting.cs" />
     <Compile Include="Skyboxes\SkyboxBackgroundRenderer.cs" />
     <Compile Include="Particle\ParticleBase.cs">
       <AutoGen>True</AutoGen>
@@ -1864,9 +1868,9 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>EnvironmentLight.cs</LastGenOutput>
     </None>
-    <None Include="Lights\LightSkybox.pdxsl">
+    <None Include="Lights\LightSkyboxShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>LightSkybox.cs</LastGenOutput>
+      <LastGenOutput>LightSkyboxShader.cs</LastGenOutput>
     </None>
     <None Include="Lights\LightSimpleAmbient.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

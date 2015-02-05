@@ -4,6 +4,7 @@
 using System.ComponentModel;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Paradox.EntityModel;
 
 namespace SiliconStudio.Paradox.Effects.Skyboxes
@@ -12,7 +13,7 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
     /// Add a <see cref="Skybox"/> to an <see cref="Entity"/>, that will be used during rendering.
     /// </summary>
     [DataContract("SkyboxComponent")]
-    [Display(80, "Skybox")]
+    [Display(130, "Skybox")]  // More important than lights, as usually the Skybox is associated with a light
     public sealed class SkyboxComponent : EntityComponent
     {
         public static PropertyKey<SkyboxComponent> Key = new PropertyKey<SkyboxComponent>("Key", typeof(SkyboxComponent));
@@ -31,8 +32,8 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
         public SkyboxComponent(Skybox skybox)
         {
             Skybox = skybox;
-            Lighting = new SkyboxLighting();
-            Background = new SkyboxBackground();
+            Background = SkyboxBackground.Color;
+            Intensity = 1.0f;
         }
 
         /// <summary>
@@ -46,20 +47,21 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
         public Skybox Skybox { get; set; }
 
         /// <summary>
-        /// Gets the lighting parameters of this skybox.
-        /// </summary>
-        /// <value>The lighting.</value>
-        [DataMember(30)]
-        [Category]
-        public SkyboxLighting Lighting { get; private set; }
-
-        /// <summary>
-        /// Gets the background parameters for this skybox.
+        /// Gets or sets the background.
         /// </summary>
         /// <value>The background.</value>
+        [DataMember(30)]
+        [DefaultValue(SkyboxBackground.Color)]
+        public SkyboxBackground Background { get; set; }
+
+        /// <summary>
+        /// Gets or sets the intensity.
+        /// </summary>
+        /// <value>The intensity.</value>
         [DataMember(40)]
-        [Category]
-        public SkyboxBackground Background { get; private set; }
+        [DefaultValue(1.0f)]
+        [DataMemberRange(0.0, 100.0, 0.01f, 1.0f)]
+        public float Intensity { get; set; }
 
         public override PropertyKey DefaultKey
         {

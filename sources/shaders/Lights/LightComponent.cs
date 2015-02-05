@@ -30,7 +30,6 @@ namespace SiliconStudio.Paradox.Effects.Lights
         public LightComponent()
         {
             Type = new LightDirectional();
-            Color = new LightColorRgb();
             Intensity = 1.0f;
             Layers = RenderLayers.All;
         }
@@ -41,15 +40,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// <value>The type of the light.</value>
         [DataMember(10)]
         [NotNull]
+        [Display("Light", AlwaysExpand = true)]
         public ILight Type { get; set; }
-
-        /// <summary>
-        /// Gets or sets the light color.
-        /// </summary>
-        /// <value>The color.</value>
-        [DataMember(20)]
-        [NotNull]
-        public ILightColor Color { get; set; }
 
         /// <summary>
         /// Gets or sets the light intensity.
@@ -65,26 +57,9 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// <value>
         /// The layer mask.
         /// </value>
-        [DataMember(60)]
+        [DataMember(40)]
         [DefaultValue(RenderLayers.All)]
         public RenderLayers Layers { get; set; }
-        
-        /// <summary>
-        /// Gets or sets the shadow.
-        /// </summary>
-        /// <value>The shadow.</value>
-        [DataMember(50)]
-        [DefaultValue(null)]
-        public ILightShadow Shadow { get; set; }
-
-        /// <summary>
-        /// Computes the color with intensity, result is in linear space.
-        /// </summary>
-        /// <returns>Gets the color of this light in linear space.</returns>
-        public Color3 ComputeColorWithIntensity()
-        {
-            return (Color != null ? Color.ComputeColor() : new Color3(1.0f)).ToLinear() * Intensity;
-        }
 
         public override PropertyKey DefaultKey
         {

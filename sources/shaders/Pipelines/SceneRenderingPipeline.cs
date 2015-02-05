@@ -25,9 +25,7 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
 
         private readonly SkyboxBackgroundRenderer skyboxBackgroundRenderer;
 
-        private readonly DirectLightForwardRenderProcessor directLightRenderRenderProcessor;
-
-        private readonly SkyboxLightingRenderer skyboxLightingRenderer;
+        private readonly LightModelRendererForward lightModelRenderer;
 
         private readonly InputManager Input;
 
@@ -77,8 +75,7 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
 
             skyboxBackgroundRenderer = new SkyboxBackgroundRenderer(Services);
             modelRenderer = new ModelRenderer(serviceRegistry, sceneEffect);
-            directLightRenderRenderProcessor = new DirectLightForwardRenderProcessor(modelRenderer) { Enabled = false };
-            skyboxLightingRenderer = new SkyboxLightingRenderer(modelRenderer) { Enabled = false };
+            lightModelRenderer = new LightModelRendererForward(modelRenderer) { Enabled = false };
             postEffectRenderer = new DelegateRenderer(Services) { Render = ApplyPostEffects };
 
             // TODO: Add support for Push/Pop of DepthStencil/RenderTarget/States into the GraphicsDevice
@@ -253,8 +250,7 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
             // Upload lighting
             if (useLightingChanged)
             {
-                directLightRenderRenderProcessor.Enabled = useLighting;
-                skyboxLightingRenderer.Enabled = useLighting;
+                lightModelRenderer.Enabled = useLighting;
                 useLightingChanged = false;
             }
         }

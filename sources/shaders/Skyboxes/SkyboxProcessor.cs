@@ -13,8 +13,6 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
     public class SkyboxProcessor : EntityProcessor<SkyboxComponent>
     {
         private readonly SkyboxComponentCollection skyboxes;
-        private readonly SkyboxComponentCollection activeSkyboxLights;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="SkyboxProcessor" /> class.
         /// </summary>
@@ -22,7 +20,6 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
             : base(new PropertyKey[] { SkyboxComponent.Key })
         {
             skyboxes = new SkyboxComponentCollection();
-            activeSkyboxLights = new SkyboxComponentCollection();
         }
 
         /// <summary>
@@ -30,15 +27,6 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
         /// </summary>
         /// <value>The active skybox background.</value>
         public SkyboxComponent ActiveSkyboxBackground { get; private set; }
-
-        /// <summary>
-        /// Gets the active skybox lights.
-        /// </summary>
-        /// <value>The active skybox lights.</value>
-        public SkyboxComponentCollection ActiveSkyboxLights
-        {
-            get { return activeSkyboxLights; }
-        }
 
         protected override void OnEntityAdding(Entity entity, SkyboxComponent data)
         {
@@ -61,20 +49,13 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
         public override void Draw(GameTime time)
         {
             ActiveSkyboxBackground = null;
-            activeSkyboxLights.Clear();
-
             foreach (var skybox in skyboxes)
             {
                 if (skybox.Enabled && skybox.Skybox != null)
                 {
-                    if (ActiveSkyboxBackground == null && skybox.Background.Enabled)
-                    {
-                        ActiveSkyboxBackground = skybox;
-                    }
-                    if (skybox.Lighting.Enabled)
-                    {
-                        activeSkyboxLights.Add(skybox);
-                    }
+                    // Select the first active skybox
+                    ActiveSkyboxBackground = skybox;
+                    break;
                 }
             }
         }

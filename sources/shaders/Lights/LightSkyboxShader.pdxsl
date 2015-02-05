@@ -5,7 +5,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
     /// <summary>
     /// Defines a skybox environment light
     /// </summary>
-    class LightSkybox : EnvironmentLight, MaterialPixelShadingStream, NormalStream, Transformation
+    class LightSkyboxShader : EnvironmentLight, MaterialPixelShadingStream, NormalStream, Transformation
     {
         float4x4 SkyMatrix;
 

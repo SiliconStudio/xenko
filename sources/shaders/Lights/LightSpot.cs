@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
     /// </summary>
     [DataContract("LightSpot")]
     [Display("Spot")]
-    public class LightSpot : ILight
+    public class LightSpot : DirectLightBase
     {
         public LightSpot()
         {
