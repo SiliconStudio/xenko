@@ -40,14 +40,10 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <summary>
         /// Initializes a new instance of the <see cref="TripleRhombiBokeh"/> class.
         /// </summary>
-        /// <param name="context">The context.</param>
-        public TripleRhombiBokeh(DrawEffectContext context)
-            : base(context)
+        public TripleRhombiBokeh()
         {
-            directionalBlurEffect = new ImageEffectShader("DepthAwareDirectionalBlurEffect");
-            directionalBlurEffect.Initialize(context);
-            finalCombineEffect = new ImageEffectShader("TripleRhombiCombineShader");
-            finalCombineEffect.Initialize(context);
+            directionalBlurEffect = ToDispose(new ImageEffectShader("DepthAwareDirectionalBlurEffect"));
+            finalCombineEffect = ToDispose(new ImageEffectShader("TripleRhombiCombineShader"));
             Phase = 0f;
         }
 

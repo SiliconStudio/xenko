@@ -27,12 +27,9 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <summary>
         /// Initializes a new instance of the <see cref="GaussianBokeh"/> class.
         /// </summary>
-        /// <param name="context">The context.</param>
-        public GaussianBokeh(DrawEffectContext context)
-            : base(context)
+        public GaussianBokeh()
         {
-            directionalBlurEffect = new ImageEffectShader("DepthAwareDirectionalBlurEffect");
-            directionalBlurEffect.Initialize(context);
+            directionalBlurEffect = ToDispose(new ImageEffectShader("DepthAwareDirectionalBlurEffect"));
         }
 
         /// <inheritdoc/>

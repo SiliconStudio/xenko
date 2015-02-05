@@ -248,6 +248,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                 levelCount = levelCoCValues.Length + 1;
             }
 
+            CleanupEffects();
             cocLevels.Clear();
             combineShaderCocLevelValues = new float[levelCount];
             
@@ -258,11 +259,14 @@ namespace SiliconStudio.Paradox.Effects.Images
             // Add a description for each of the blur levels
             for (int i = 1; i < levelCount; i++)
             {
+                var blurEffect = Technique.ToBlurInstance();
+                blurEffect.Initialize(Context);
+
                 CoCLevelConfig lvlConfig = new CoCLevelConfig
                 {
                     CoCValue = (levelCoCValues != null) ? levelCoCValues[i - 1] : 1f,
                     downscaleFactor = (levelDownscaleFactors != null) ? levelDownscaleFactors[i - 1] : 1,
-                    blurEffect = Technique.ToBlurInstance(Context)
+                    blurEffect = blurEffect
                 };
                 cocLevels.Add(lvlConfig);
 
@@ -360,6 +364,21 @@ namespace SiliconStudio.Paradox.Effects.Images
             downscaledSources.Clear();
         }
 
+        protected override void Destroy()
+        {
+            CleanupEffects();
+            base.Destroy();
+        }
+
+        // Disposes the effect used by each LOD layer.
+        private void CleanupEffects()
+        {
+            foreach (var cocLevelConfig in cocLevels)
+            {
+                var blurEffect = cocLevelConfig.blurEffect;
+                if (blurEffect != null) blurEffect.Dispose();
+            }
+        }
 
         // Gets a new temporary render target matching the description, but with scale and format overridable.
         private Texture GetScopedRenderTarget(TextureDescription desc, float scale, PixelFormat format) 

@@ -44,20 +44,19 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Instantiates a new <see cref="BokehBlur"/> from a technique name.
         /// </summary>
         /// <param name="name"></param>
-        /// <param name="context"></param>
         /// <returns>A Bokeh blur corresponding to the tehcnique specified.</returns>
-        public static BokehBlur ToBlurInstance(this BokehTechnique name, DrawEffectContext context)
+        public static BokehBlur ToBlurInstance(this BokehTechnique name)
         {
             switch (name)
             {
                 case BokehTechnique.CircularGaussian:
-                    return new GaussianBokeh(context);
+                    return new GaussianBokeh();
 
                 case BokehTechnique.HexagonalMcIntosh:
-                    return new McIntoshBokeh(context);
+                    return new McIntoshBokeh();
 
                 case BokehTechnique.HexagonalTripleRhombi:
-                    return new TripleRhombiBokeh(context);
+                    return new TripleRhombiBokeh();
 
                 default:
                     throw new ArgumentOutOfRangeException("Unknown bokeh technique: " + name);
