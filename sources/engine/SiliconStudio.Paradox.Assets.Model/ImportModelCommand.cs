@@ -106,7 +106,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                     {
                         if (modelMaterial.Material == null)
                         {
-                            commandContext.Logger.Warning("A material is null in the list of materials.");
+                            commandContext.Logger.Warning(string.Format("The material [{0}] is null in the list of materials.", modelMaterial.Name));
                             continue;
                         }
                         model.Materials.Add(AttachedReferenceManager.CreateSerializableVersion<Material>(modelMaterial.Material.Id, modelMaterial.Material.Location));
