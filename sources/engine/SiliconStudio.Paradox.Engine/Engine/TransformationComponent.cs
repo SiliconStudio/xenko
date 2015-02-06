@@ -1,6 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Core;
@@ -15,8 +17,8 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     [DataContract("TransformationComponent")]
     [DataSerializerGlobal(null, typeof(TrackingCollection<TransformationComponent>))]
-    [Display(10, "Transformation")]
-    public sealed class TransformationComponent : EntityComponent
+    [Display(10, "Transform")]
+    public sealed class TransformationComponent : EntityComponent, IEnumerable<TransformationComponent>
     {
         public static PropertyKey<TransformationComponent> Key = new PropertyKey<TransformationComponent>("Key", typeof(TransformationComponent),
             new AccessorMetadata((ref PropertyContainer props) => ((Entity)props.Owner).Transform, (ref PropertyContainer props, object value) => ((Entity)props.Owner).Transform = (TransformationComponent)value));
@@ -331,6 +333,16 @@ namespace SiliconStudio.Paradox.Engine
         public override PropertyKey DefaultKey
         {
             get { return Key; }
+        }
+
+        public IEnumerator<TransformationComponent> GetEnumerator()
+        {
+            return Children.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable)Children).GetEnumerator();
         }
     }
 }
