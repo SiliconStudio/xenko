@@ -1017,43 +1017,61 @@ namespace SiliconStudio.Paradox.Graphics
             // Setup the primitive type
             PrimitiveType = primitiveType;
 
-            if (currentVertexArrayObject == newVertexArrayObject)
-                return;
-
             // If the vertex array object is null, simply set the InputLayout to null
             if (newVertexArrayObject == null)
             {
-                currentVertexArrayLayout = null;
-                currentEffectInputSignature = null;
-                currentInputLayout = null;
+                if (currentVertexArrayObject != null)
+                {
+                    currentVertexArrayObject = null;
+                    currentVertexArrayLayout = null;
+                    currentEffectInputSignature = null;
+                    inputAssembler.InputLayout = currentInputLayout = null;
+                }
             }
             else
             {
-                VertexArrayLayout newVertexArrayLayout = newVertexArrayObject.Layout;
-                EffectInputSignature newEffectInputSignature = CurrentEffect.InputSignature;
+                var newVertexArrayLayout = newVertexArrayObject.Layout;
+                var newEffectInputSignature = CurrentEffect.InputSignature;
+                var oldInputLayout = currentInputLayout;
+
+                // Apply the VertexArrayObject
+                if (newVertexArrayObject != currentVertexArrayObject)
+                {
+                    currentVertexArrayObject = newVertexArrayObject;
+                    newVertexArrayObject.Apply(inputAssembler);
+                }
 
                 // If the input layout of the effect or the vertex buffer has changed, get the associated new input layout
                 if (!ReferenceEquals(newVertexArrayLayout, currentVertexArrayLayout) || !ReferenceEquals(newEffectInputSignature, currentEffectInputSignature))
                 {
                     currentVertexArrayLayout = newVertexArrayLayout;
                     currentEffectInputSignature = newEffectInputSignature;
-                    currentInputLayout = newVertexArrayObject.InputLayout;
 
-                    // Slow path if the current VertexArrayObject is not optimized for the particular input
-                    if (currentInputLayout == null || !ReferenceEquals(newEffectInputSignature, newVertexArrayObject.EffectInputSignature))
+                    if (newVertexArrayObject.InputLayout != null && ReferenceEquals(newEffectInputSignature, newVertexArrayObject.EffectInputSignature))
+                    {
+                        // Default configuration
+                        currentInputLayout = newVertexArrayObject.InputLayout;
+                    }
+                    else if (ReferenceEquals(newEffectInputSignature, newVertexArrayObject.LastEffectInputSignature))
+                    {
+                        // Reuse previous configuration
+                        currentInputLayout = newVertexArrayObject.LastInputLayout;
+                    }
+                    // Slow path if the current VertexArrayObject is not optimized for the particular input (or not used right before)
+                    else
                     {
                         currentInputLayout = InputLayoutManager.GetInputLayout(newEffectInputSignature, currentVertexArrayLayout);
+
+                        // Store it in VAO since it will likely be used with same effect later
+                        newVertexArrayObject.LastInputLayout = currentInputLayout;
+                        newVertexArrayObject.LastEffectInputSignature = newEffectInputSignature;
                     }
+
+                    // Setup the input layout (if it changed)
+                    if (currentInputLayout != oldInputLayout)
+                        inputAssembler.InputLayout = currentInputLayout;
                 }
-
-                // Apply the VertexArrayObject
-                newVertexArrayObject.Apply(inputAssembler);
             }
-
-            currentVertexArrayObject = newVertexArrayObject;
-
-            // Setup the input layout
-            inputAssembler.InputLayout = currentInputLayout;
         }
     }
 }
