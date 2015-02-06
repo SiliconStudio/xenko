@@ -177,16 +177,16 @@ namespace SiliconStudio.Paradox.Physics
             Quaternion rotation;
             Vector3 translation;
 
-            if (!entity.Transformation.UseTRS)
+            if (!entity.Transform.UseTRS)
             {
                 //derive rotation and translation, scale is ignored for now
                 Vector3 scale;
-                entity.Transformation.WorldMatrix.Decompose(out scale, out rotation, out translation);
+                entity.Transform.WorldMatrix.Decompose(out scale, out rotation, out translation);
             }
             else
             {
-                rotation = entity.Transformation.Rotation;
-                translation = entity.Transformation.Translation;
+                rotation = entity.Transform.Rotation;
+                translation = entity.Transform.Translation;
             }
 
             //Invert up axis in the case of a Sprite
@@ -228,31 +228,31 @@ namespace SiliconStudio.Paradox.Physics
                 translation.Y = -translation.Y;
             }
 
-            if (entity.Transformation.UseTRS)
+            if (entity.Transform.UseTRS)
             {
-                entity.Transformation.Translation = translation;
-                entity.Transformation.Rotation = rotation;
+                entity.Transform.Translation = translation;
+                entity.Transform.Rotation = rotation;
             }
             else
             {
-                var worldMatrix = entity.Transformation.WorldMatrix;
+                var worldMatrix = entity.Transform.WorldMatrix;
 
                 Vector3 scale;
                 scale.X = (float)Math.Sqrt((worldMatrix.M11 * worldMatrix.M11) + (worldMatrix.M12 * worldMatrix.M12) + (worldMatrix.M13 * worldMatrix.M13));
                 scale.Y = (float)Math.Sqrt((worldMatrix.M21 * worldMatrix.M21) + (worldMatrix.M22 * worldMatrix.M22) + (worldMatrix.M23 * worldMatrix.M23));
                 scale.Z = (float)Math.Sqrt((worldMatrix.M31 * worldMatrix.M31) + (worldMatrix.M32 * worldMatrix.M32) + (worldMatrix.M33 * worldMatrix.M33));
 
-                TransformationComponent.CreateMatrixTRS(ref translation, ref rotation, ref scale, out entity.Transformation.WorldMatrix);
-                if (entity.Transformation.Parent == null)
+                TransformationComponent.CreateMatrixTRS(ref translation, ref rotation, ref scale, out entity.Transform.WorldMatrix);
+                if (entity.Transform.Parent == null)
                 {
-                    entity.Transformation.LocalMatrix = entity.Transformation.WorldMatrix;
+                    entity.Transform.LocalMatrix = entity.Transform.WorldMatrix;
                 }
                 else
                 {
                     //We are not root so we need to derive the local matrix as well
-                    var inverseParent = entity.Transformation.Parent.WorldMatrix;
+                    var inverseParent = entity.Transform.Parent.WorldMatrix;
                     inverseParent.Invert();
-                    entity.Transformation.LocalMatrix = Matrix.Multiply(entity.Transformation.WorldMatrix, inverseParent);
+                    entity.Transform.LocalMatrix = Matrix.Multiply(entity.Transform.WorldMatrix, inverseParent);
                 }
             }
         }

@@ -42,10 +42,10 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
             listComp1Entity = new Entity();
             listComp2Entity = new Entity();
 
-            rootSubEntity1.Transformation.Parent = rootEntity.Transformation;
-            rootSubEntity2.Transformation.Parent = rootEntity.Transformation;
-            listComp1Entity.Transformation.Parent = rootSubEntity1.Transformation;
-            listComp2Entity.Transformation.Parent = rootSubEntity2.Transformation;
+            rootSubEntity1.Transform.Parent = rootEntity.Transform;
+            rootSubEntity2.Transform.Parent = rootEntity.Transform;
+            listComp1Entity.Transform.Parent = rootSubEntity1.Transform;
+            listComp2Entity.Transform.Parent = rootSubEntity2.Transform;
         }
 
         private void CreateAndComponentToEntities()
@@ -76,16 +76,16 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
             audio.AddListener(listComp1);
             audio.AddListener(listComp2);
 
-            listComp2Entity.Transformation.RotationEulerXYZ = new Vector3((float)Math.PI/2,0,0);
+            listComp2Entity.Transform.RotationEulerXYZ = new Vector3((float)Math.PI/2,0,0);
         }
 
         private void EntityPositionUpdate(Game game, int loopCount, int loopCountSum)
         {
-            rootSubEntity1.Transformation.Translation += new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
-            rootSubEntity2.Transformation.Translation += new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
+            rootSubEntity1.Transform.Translation += new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
+            rootSubEntity2.Transform.Translation += new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
 
-            listComp1Entity.Transformation.Translation += new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
-            listComp2Entity.Transformation.Translation -= new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
+            listComp1Entity.Transform.Translation += new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
+            listComp2Entity.Transform.Translation -= new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
         }
 
         private void TestAddAudioSysThenEntitySysLoopImpl(Game game, int loopCount, int loopCountSum)
@@ -154,7 +154,7 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
             BuildEntityHierarchy();
             CreateAndComponentToEntities();
             
-            listComp2Entity.Transformation.RotationEulerXYZ = new Vector3((float)Math.PI / 2, 0, 0);
+            listComp2Entity.Transform.RotationEulerXYZ = new Vector3((float)Math.PI / 2, 0, 0);
 
             game.Entities.Add(rootEntity);
         }
@@ -259,7 +259,7 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
             audio.AddListener(listComp1);
             audio.AddListener(listComp2);
 
-            listComp2Entity.Transformation.RotationEulerXYZ = new Vector3((float)Math.PI / 2, 0, 0);
+            listComp2Entity.Transform.RotationEulerXYZ = new Vector3((float)Math.PI / 2, 0, 0);
 
             game.Entities.Add(rootEntity);
         }
@@ -388,16 +388,16 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
         /// <param name="loopCountSum">the current loop count sum</param>
         private void UpdateEntityPositionBfrUpdate(Game game, int loopCount, int loopCountSum)
         {
-            rootSubEntity1.Transformation.Translation += new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
-            rootSubEntity2.Transformation.Translation += 2 * new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
+            rootSubEntity1.Transform.Translation += new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
+            rootSubEntity2.Transform.Translation += 2 * new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
 
-            listComp1Entity.Transformation.Translation += new Vector3(loopCount + 1, 2 * loopCount + 1, 3 * loopCount + 1);
-            listComp2Entity.Transformation.Translation -= new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
+            listComp1Entity.Transform.Translation += new Vector3(loopCount + 1, 2 * loopCount + 1, 3 * loopCount + 1);
+            listComp2Entity.Transform.Translation -= new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
 
             if (loopCount >= 10)
             {
-                listComp1Entity.Transformation.RotationEulerXYZ = new Vector3((float)Math.PI / 2, 0, 0);
-                listComp2Entity.Transformation.RotationEulerXYZ = new Vector3(0, (float)Math.PI / 2, 0);
+                listComp1Entity.Transform.RotationEulerXYZ = new Vector3((float)Math.PI / 2, 0, 0);
+                listComp2Entity.Transform.RotationEulerXYZ = new Vector3(0, (float)Math.PI / 2, 0);
             }
         }
 

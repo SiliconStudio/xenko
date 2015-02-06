@@ -129,7 +129,7 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
                     continue;
 
                 var maxCubemapBlend = cubemap.Value.MaxBlendCount;
-                var position = cubemap.Key.Transformation.Translation;
+                var position = cubemap.Key.Transform.Translation;
 
                 maxCubemapBlend = maxCubemapBlend > textureCubes.Count ? textureCubes.Count : maxCubemapBlend;
                 
@@ -199,7 +199,7 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
         {
             foreach (var tex in textureCubes)
             {
-                var d = (tex.Key.Transformation.Translation - position).LengthSquared();
+                var d = (tex.Key.Transform.Translation - position).LengthSquared();
                 var influence = 1.0f / (d + 1);
                 var insertIndex = 0;
                 for (; insertIndex < maxCubemapBlend; ++insertIndex)
@@ -218,7 +218,7 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
             {
                 // compute influence
                 // TODO: other profile than linear?
-                var d = (tex.Key.Transformation.Translation - position).Length();
+                var d = (tex.Key.Transform.Translation - position).Length();
                 var influence = 1 - (d / tex.Value.InfluenceRadius);
                 if (influence > 1)
                     influence = 1;
@@ -248,7 +248,7 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
             foreach (var tex in textureCubes)
             {
                 // TODO: add boxes and inner boundaries
-                var d = (tex.Key.Transformation.Translation - position).Length();
+                var d = (tex.Key.Transform.Translation - position).Length();
                 inflSum += d;
                 invInflSum += 1 - d;
                 influences.Add(tex.Key, d);

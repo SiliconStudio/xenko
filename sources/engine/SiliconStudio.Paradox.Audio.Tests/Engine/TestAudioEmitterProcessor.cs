@@ -44,10 +44,10 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
             rootSubEntity2 = new Entity { Name = "Root sub entity 2" };
             compEntities = new List<Entity> { new Entity { Name = "Comp entity 1" }, new Entity { Name = "Comp entity 2" } };
 
-            rootSubEntity1.Transformation.Parent = rootEntity.Transformation;
-            rootSubEntity2.Transformation.Parent = rootEntity.Transformation;
-            compEntities[0].Transformation.Parent = rootSubEntity1.Transformation;
-            compEntities[1].Transformation.Parent = rootSubEntity2.Transformation;
+            rootSubEntity1.Transform.Parent = rootEntity.Transform;
+            rootSubEntity2.Transform.Parent = rootEntity.Transform;
+            compEntities[0].Transform.Parent = rootSubEntity1.Transform;
+            compEntities[1].Transform.Parent = rootSubEntity2.Transform;
         }
 
         /// <summary>
@@ -320,11 +320,11 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
         /// <param name="loopCountSum"></param>
         private void EntityPositionAndEmitterbfrUpdate(Game game, int loopCount, int loopCountSum)
         {
-            rootSubEntity1.Transformation.Translation += new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
-            rootSubEntity2.Transformation.Translation += 2*new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
+            rootSubEntity1.Transform.Translation += new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
+            rootSubEntity2.Transform.Translation += 2*new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
 
-            compEntities[0].Transformation.Translation += new Vector3(loopCount+1, 2 * loopCount+1, 3 * loopCount+1);
-            compEntities[1].Transformation.Translation -= new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
+            compEntities[0].Transform.Translation += new Vector3(loopCount+1, 2 * loopCount+1, 3 * loopCount+1);
+            compEntities[1].Transform.Translation -= new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
 
             emitComps[0].DistanceScale = loopCount;
             emitComps[0].DopplerScale = 2 * loopCount;

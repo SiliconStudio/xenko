@@ -90,7 +90,7 @@ namespace SiliconStudio.Paradox.EntityModel
         public void Add(Entity entity)
         {
             // Entity can't be a root because it already has a parent?
-            if (entity.Transformation != null && entity.Transformation.Parent != null)
+            if (entity.Transform != null && entity.Transform.Parent != null)
                 throw new ArgumentException("Entity shouldn't have a parent.", "entity");
 
             InternalAddEntity(entity);
@@ -265,7 +265,7 @@ namespace SiliconStudio.Paradox.EntityModel
             if (removeParent)
             {
                 // Force parent to be null, so that it is removed even if it is not a root node
-                entity.Transformation.Parent = null;
+                entity.Transform.Parent = null;
             }
 
             // Notify Processors thie entity has been removed

@@ -53,7 +53,7 @@ namespace SiliconStudio.Paradox.Engine
 
         protected override AssociatedData GenerateAssociatedData(Entity entity)
         {
-            return new AssociatedData { ModelComponent = entity.Get(ModelComponent.Key), TransformationComponent = entity.Transformation };
+            return new AssociatedData { ModelComponent = entity.Get(ModelComponent.Key), TransformationComponent = entity.Transform };
         }
 
         protected override void OnEntityAdding(Entity entity, AssociatedData associatedData)
@@ -209,8 +209,8 @@ namespace SiliconStudio.Paradox.Engine
             if (nodeIndex == -1)
                 return entityLink;
 
-            linkedEntity.Transformation.isSpecialRoot = true;
-            linkedEntity.Transformation.UseTRS = false;
+            linkedEntity.Transform.isSpecialRoot = true;
+            linkedEntity.Transform.UseTRS = false;
 
             if (modelEntityData.Links == null)
                 modelEntityData.Links = new List<EntityLink>();
@@ -267,7 +267,7 @@ namespace SiliconStudio.Paradox.Engine
                     // TODO: Ideally, we should order update (matchingEntities?) to avoid updating a ModelViewHierarchy before its transformation is updated.
                     foreach (var link in matchingEntity.Value.Links)
                     {
-                        var linkTransformation = link.Entity.Transformation;
+                        var linkTransformation = link.Entity.Transform;
                         linkTransformation.LocalMatrix = modelViewHierarchy.NodeTransformations[link.NodeIndex].WorldMatrix;
 
                         linkTransformationToUpdate.Clear();

@@ -83,7 +83,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
                     intensity *= skyboxComponent.Intensity;
                 }
 
-                var rotationMatrix = Matrix.RotationQuaternion(lightComponent.Entity.Transformation.Rotation);
+                var rotationMatrix = Matrix.RotationQuaternion(lightComponent.Entity.Transform.Rotation);
 
                 // global parameters
                 lightShaderGroup.Parameters.Set(LightSkyboxShaderKeys.Intensity, intensity);

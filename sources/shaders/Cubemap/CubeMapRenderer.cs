@@ -103,7 +103,7 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
         /// <param name="component">The CubemapSource component.</param>
         private void RenderInSixPasses(RenderContext context, Entity entity, CubemapSourceComponent component)
         {
-            var cameraPos = entity.Transformation.Translation;
+            var cameraPos = entity.Transform.Translation;
             for (var i = 0; i < 6; ++i)
             {
                 Matrix worldToCamera;
@@ -151,7 +151,7 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
         /// <param name="component">The CubemapSource component.</param>
         private void RenderInSinglePass(RenderContext context, Entity entity, CubemapSourceComponent component)
         {
-            var cameraPos = component.Entity.Transformation.Translation;
+            var cameraPos = component.Entity.Transform.Translation;
             for (var i = 0; i < 6; ++i)
             {
                 Matrix worldToCamera;

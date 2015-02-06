@@ -117,7 +117,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 await Script.NextFrame();
 
                 var period = (float) (2 * Math.PI * UpdateTime.Total.TotalMilliseconds / 15000);
-                teapot.Transformation.Rotation = Quaternion.RotationAxis(Vector3.UnitY, period);
+                teapot.Transform.Rotation = Quaternion.RotationAxis(Vector3.UnitY, period);
 
                 if (Input.PointerEvents.Any(x => x.State == PointerState.Down))
                     renderTargetToDisplayIndex = (renderTargetToDisplayIndex + 1) % 3;

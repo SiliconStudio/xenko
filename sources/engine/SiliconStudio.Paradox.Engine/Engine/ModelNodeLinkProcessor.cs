@@ -27,8 +27,8 @@ namespace SiliconStudio.Paradox.Engine
 
         protected override void OnEntityAdding(Entity entity, ModelNodeLinkComponent modelNodeLinkComponent)
         {
-            entity.Transformation.UseTRS = false;
-            entity.Transformation.isSpecialRoot = true;
+            entity.Transform.UseTRS = false;
+            entity.Transform.isSpecialRoot = true;
 
             modelNodeLinkComponent.Processor = this;
 

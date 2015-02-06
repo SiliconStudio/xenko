@@ -34,7 +34,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <inheritdoc/>
         protected override TransformationComponent GenerateAssociatedData(Entity entity)
         {
-            return entity.Transformation;
+            return entity.Transform;
         }
 
         /// <inheritdoc/>
@@ -45,7 +45,7 @@ namespace SiliconStudio.Paradox.Engine
 
         protected override void OnEnabledChanged(Entity entity, bool enabled)
         {
-            foreach (var child in entity.Transformation.Children)
+            foreach (var child in entity.Transform.Children)
             {
                 EntitySystem.SetEnabled(child.Entity, enabled);
             }

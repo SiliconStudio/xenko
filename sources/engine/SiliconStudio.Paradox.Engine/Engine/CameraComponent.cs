@@ -128,8 +128,8 @@ namespace SiliconStudio.Paradox.Engine
 
                 if (Entity != null && Target != null)
                 {
-                    var eye = Entity.Transformation.WorldMatrix.TranslationVector;
-                    var target = Target.Transformation.WorldMatrix.TranslationVector;
+                    var eye = Entity.Transform.WorldMatrix.TranslationVector;
+                    var target = Target.Transform.WorldMatrix.TranslationVector;
                     return Vector3.Distance(eye, target);
                 }
 
@@ -183,12 +183,12 @@ namespace SiliconStudio.Paradox.Engine
         {
             get
             {
-                return EnsureEntity.Transformation.Translation;
+                return EnsureEntity.Transform.Translation;
             }
 
             set
             {
-                EnsureEntity.Transformation.Translation = value;
+                EnsureEntity.Transform.Translation = value;
             }
         }
 
@@ -211,15 +211,15 @@ namespace SiliconStudio.Paradox.Engine
                 {
                     // Build a view matrix from the Entity position and Target
                     // Currently use Y in camera local space as Up axis (need separate TargetUp that we multiply with WorldMatrix?)
-                    var transformation = EnsureEntity.Transformation;
+                    var transformation = EnsureEntity.Transform;
                     var targetUp = TargetUp;
                     Vector3.TransformNormal(ref targetUp, ref transformation.WorldMatrix, out targetUp);
-                    viewMatrix = Matrix.LookAtRH(transformation.WorldMatrix.TranslationVector, Target.Transformation.WorldMatrix.TranslationVector, targetUp);
+                    viewMatrix = Matrix.LookAtRH(transformation.WorldMatrix.TranslationVector, Target.Transform.WorldMatrix.TranslationVector, targetUp);
                 }
                 else
                 {
                     // TODO: determine which axis of the camera to look from
-                    var worldMatrix = EnsureEntity.Transformation.WorldMatrix;
+                    var worldMatrix = EnsureEntity.Transform.WorldMatrix;
                     Matrix.Invert(ref worldMatrix, out viewMatrix);
                 }
             }

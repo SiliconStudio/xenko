@@ -41,8 +41,8 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
             listCompEntities = new List<Entity> { new Entity(), new Entity() };
             emitCompEntities = new List<Entity> { new Entity(), new Entity() };
 
-            listCompEntities[0].Transformation.Parent = rootEntity.Transformation;
-            emitCompEntities[0].Transformation.Parent = listCompEntities[0].Transformation;
+            listCompEntities[0].Transform.Parent = rootEntity.Transform;
+            emitCompEntities[0].Transform.Parent = listCompEntities[0].Transform;
         }
 
         private void CreateAndAddListenerComponentToEntities()

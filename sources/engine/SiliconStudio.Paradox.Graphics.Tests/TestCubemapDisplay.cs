@@ -94,7 +94,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 await Script.NextFrame();
 
                 var angle = Math.PI * UpdateTime.Total.TotalMilliseconds / 5000;
-                mainCamera.Transformation.Translation = new Vector3((float)(cameraDistance * Math.Cos(angle)), cameraHeight, (float)(cameraDistance * Math.Sin(angle)));
+                mainCamera.Transform.Translation = new Vector3((float)(cameraDistance * Math.Cos(angle)), cameraHeight, (float)(cameraDistance * Math.Sin(angle)));
             }
         }
 

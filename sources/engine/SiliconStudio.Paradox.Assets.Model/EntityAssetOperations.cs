@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 
             // clone the entities of the sub-tree
             var clonedHierarchy = (EntityHierarchyData)AssetCloner.Clone(subTreeHierarchy);
-            clonedHierarchy.Entities[clonedHierarchy.RootEntity].Transformation.Parent = null;
+            clonedHierarchy.Entities[clonedHierarchy.RootEntity].Transform.Parent = null;
 
             // set to null reference outside of the sub-tree
             EntityAnalysis.FixupEntityReferences(clonedHierarchy);

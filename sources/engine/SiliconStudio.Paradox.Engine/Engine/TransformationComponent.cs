@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.Engine
     public sealed class TransformationComponent : EntityComponent
     {
         public static PropertyKey<TransformationComponent> Key = new PropertyKey<TransformationComponent>("Key", typeof(TransformationComponent),
-            new AccessorMetadata((ref PropertyContainer props) => ((Entity)props.Owner).Transformation, (ref PropertyContainer props, object value) => ((Entity)props.Owner).Transformation = (TransformationComponent)value));
+            new AccessorMetadata((ref PropertyContainer props) => ((Entity)props.Owner).Transform, (ref PropertyContainer props, object value) => ((Entity)props.Owner).Transform = (TransformationComponent)value));
 
         // When false, transformation should be computed in TransformationProcessor (no dependencies).
         // When true, transformation is computed later by another system.

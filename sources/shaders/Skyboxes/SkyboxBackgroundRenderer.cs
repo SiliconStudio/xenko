@@ -98,7 +98,7 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
                 skyboxEffect.Parameters.Set(SkyboxKeys.Intensity, skybox.Intensity);
                     
                 // Setup the rotation
-                skyboxEffect.Parameters.Set(SkyboxKeys.SkyMatrix, Matrix.RotationQuaternion(skybox.Entity.Transformation.Rotation));
+                skyboxEffect.Parameters.Set(SkyboxKeys.SkyMatrix, Matrix.RotationQuaternion(skybox.Entity.Transform.Rotation));
 
                 skyboxEffect.SetOutput(Target ?? GraphicsDevice.BackBuffer);
                 skyboxEffect.Draw();

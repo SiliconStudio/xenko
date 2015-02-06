@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.EntityModel
     [DataStyle(DataStyle.Normal)]
     public class Entity : ComponentBase, IEnumerable
     {
-        protected TransformationComponent transformation;
+        protected TransformationComponent transform;
         internal List<Task> prepareTasks;
 
         /// <summary>
@@ -80,23 +80,23 @@ namespace SiliconStudio.Paradox.EntityModel
             Components = new PropertyContainer(this);
             Components.PropertyUpdated += EntityPropertyUpdated;
 
-            Transformation = new TransformationComponent();
-            transformation.Translation = position;
+            Transform = new TransformationComponent();
+            transform.Translation = position;
         }
 
         /// <summary>
-        /// Gets or sets the <see cref="Transformation"/> associated to this entity.
+        /// Gets or sets the <see cref="Transform"/> associated to this entity.
         /// Added for convenience over usual Get/Set method.
         /// </summary>
         [DataMemberIgnore]
-        public TransformationComponent Transformation
+        public TransformationComponent Transform
         {
-            get { return transformation; }
+            get { return transform; }
             set
             {
-                var transformationOld = transformation;
-                transformation = value;
-                Components.RaisePropertyContainerUpdated(TransformationComponent.Key, transformation, transformationOld);
+                var transformationOld = transform;
+                transform = value;
+                Components.RaisePropertyContainerUpdated(TransformationComponent.Key, transform, transformationOld);
             }
         }
 
@@ -231,7 +231,7 @@ namespace SiliconStudio.Paradox.EntityModel
             {
                 get
                 {
-                    var transformationComponent = entity.Transformation;
+                    var transformationComponent = entity.Transform;
                     if (transformationComponent == null)
                         return null;
 

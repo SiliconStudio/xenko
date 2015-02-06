@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <inheritdoc/>
         protected override AssociatedData GenerateAssociatedData(Entity entity)
         {
-            return new AssociatedData { TransformationComponent = entity.Transformation };
+            return new AssociatedData { TransformationComponent = entity.Transform };
         }
 
         /// <inheritdoc/>
@@ -51,7 +51,7 @@ namespace SiliconStudio.Paradox.Engine
             // Add transformation of existing root entities
             foreach (var entity in rootEntities)
             {
-                transformationRoots.Add(entity.Transformation);
+                transformationRoots.Add(entity.Transform);
             }
         }
 
@@ -179,10 +179,10 @@ namespace SiliconStudio.Paradox.Engine
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    transformationRoots.Add(((Entity)e.Item).Transformation);
+                    transformationRoots.Add(((Entity)e.Item).Transform);
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    transformationRoots.Remove(((Entity)e.Item).Transformation);
+                    transformationRoots.Remove(((Entity)e.Item).Transform);
                     break;
             }
         }
