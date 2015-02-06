@@ -148,9 +148,6 @@ namespace SiliconStudio.BuildEngine
             {
                 using (commandResultEntries)
                 {
-                    // the command was not started because it is already up-to-date (retrieved from cache and no change in external files since last execution)
-                    executeContext.Logger.Verbose("Command {0} is up-to-date, skipping...", Command.ToString());
-
                     // Replicate triggered builds
                     Debug.Assert(SpawnedStepsList.Count == 0);
 

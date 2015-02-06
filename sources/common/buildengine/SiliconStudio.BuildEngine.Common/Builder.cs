@@ -520,13 +520,17 @@ namespace SiliconStudio.BuildEngine
                                 logType = LogMessageType.Warning;
                                 logText = "BuildStep {0} cancelled.".ToFormat(buildStep.ToString());
                                 break;
+                            case ResultStatus.NotTriggeredWasSuccessful:
+                                logType = LogMessageType.Verbose;
+                                logText = "BuildStep {0} is up-to-date and has been skipped".ToFormat(buildStep.ToString());
+                                break;
                             case ResultStatus.NotProcessed:
                                 throw new InvalidDataException("BuildStep has neither succeeded, failed, nor been cancelled");
                         }
                         if (logText != null)
                         {
                             var logMessage = new LogMessage(buildStep.Module, logType, logText);
-                            executeContext.Logger.Log(logMessage);
+                            Logger.Log(logMessage);
                         }
 
                         buildStep.RegisterResult(executeContext, status);
