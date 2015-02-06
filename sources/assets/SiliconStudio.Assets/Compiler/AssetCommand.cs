@@ -47,7 +47,7 @@ namespace SiliconStudio.Assets.Compiler
             base.ComputeParameterHash(writer);
             
             var url = Url;
-            writer.Serialize(ref asset, ArchiveMode.Serialize);
+            writer.SerializeExtended(ref asset, ArchiveMode.Serialize);
             writer.Serialize(ref url, ArchiveMode.Serialize);
         }
 

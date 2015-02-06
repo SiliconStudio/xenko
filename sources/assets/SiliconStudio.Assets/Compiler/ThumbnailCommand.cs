@@ -30,6 +30,17 @@ namespace SiliconStudio.Assets.Compiler
             AssetsSession = assetsSession;
         }
 
+        protected override void ComputeParameterHash(BinarySerializationWriter writer)
+        {
+            base.ComputeParameterHash(writer);
+            var dependencies = AssetsSession.DependencyManager.ComputeDependencies(AssetItem, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive);
+            foreach (var assetReference in dependencies.LinksOut)
+            {
+                var refAsset = assetReference.Item.Asset;
+                writer.SerializeExtended(ref refAsset, ArchiveMode.Serialize);
+            }
+        }
+
         public override System.Collections.Generic.IEnumerable<ObjectUrl> GetInputFiles()
         {
             var dependencies = AssetsSession.DependencyManager.ComputeDependencies(AssetItem, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive);
