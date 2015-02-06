@@ -71,6 +71,9 @@ namespace SiliconStudio.Paradox.Effects.Materials
             streams.matCavity = 1.0f;
             streams.matCavityDiffuse = 0.0f;
             streams.matCavitySpecular = 0.0f;
+
+            streams.matEmissive = 0.0f;
+            streams.matEmissiveIntensity = 0.0f;
         }
 
         float GetFilterSquareRoughnessAdjustment(float3 averageNormal)
