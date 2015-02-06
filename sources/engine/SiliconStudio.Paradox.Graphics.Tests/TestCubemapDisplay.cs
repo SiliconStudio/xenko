@@ -40,7 +40,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 Draw = GeometricPrimitive.GeoSphere.New(GraphicsDevice).ToMeshDraw(),
                 Material = material
             };
-            mesh.Parameters.Set(RenderingParameters.RenderLayer, RenderLayers.Layer1);
+            mesh.Parameters.Set(RenderingParameters.RenderGroup, RenderGroups.Group1);
 
             var entity = new Entity()
             {
