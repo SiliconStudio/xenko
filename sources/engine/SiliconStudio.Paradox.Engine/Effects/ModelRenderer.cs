@@ -64,10 +64,12 @@ namespace SiliconStudio.Paradox.Effects
         public delegate void PostEffectUpdateDelegate(RenderContext context, RenderMesh renderMesh);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ModelRenderer"/> class.
+        /// Initializes a new instance of the <see cref="ModelRenderer" /> class.
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="effectName">Name of the effect.</param>
+        /// <param name="asyncDynamicEffectCompiler">if set to <c>true</c> it can compile effect asynchronously.</param>
+        /// <exception cref="System.ArgumentNullException">effectName</exception>
         public ModelRenderer(IServiceRegistry services, string effectName) : base(services)
         {
             if (effectName == null) throw new ArgumentNullException("effectName");
