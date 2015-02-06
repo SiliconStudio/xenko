@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
+using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
@@ -66,6 +67,11 @@ namespace SiliconStudio.Paradox.Assets.Model
                 assetManager.Save(Url, rootEntity);
 
                 return Task.FromResult(ResultStatus.Successful);
+            }
+
+            public override string ToString()
+            {
+                return "Entity combine command for entity asset '{0}'.".ToFormat(Url);
             }
         }
     }
