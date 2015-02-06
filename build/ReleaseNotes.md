@@ -1,6 +1,13 @@
-### Version 1.0.0-beta09
+### Version 1.0.0-beta10
 
-Release date: 2015/02/??
+Release date: 2015/02/06
+
+#### New Features
+- Graphics: SpriteBatch.Parameters is now public.
+
+#### Issues fixed
+- Graphics: VertexArrayObject were not properly cached in D3D renderer [#170](https://github.com/SiliconStudio/paradox/issues/170)).
+- Studio: Changing Settings->External Tools->Default Text/Shared Editor resulted in a crash [#137](https://github.com/SiliconStudio/paradox/issues/137)).
 
 ### Version 1.0.0-beta08
 
