@@ -3,6 +3,7 @@
 using System;
 
 using SiliconStudio.Assets.Analysis;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 
 namespace SiliconStudio.Assets.Compiler
