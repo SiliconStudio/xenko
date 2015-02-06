@@ -43,6 +43,9 @@ namespace SiliconStudio.ActionStack
         }
 
         /// <inheritdoc/>
+        public bool TransactionInProgress { get { return TransactionStack.Count > 0; } }
+
+        /// <inheritdoc/>
         public IDisposable BeginEndTransaction(string name)
         {
             BeginTransaction();
