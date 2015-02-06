@@ -3,11 +3,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Assets.Model.Analysis;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
@@ -20,22 +20,52 @@ namespace SiliconStudio.Paradox.Assets.Model
         {
             if (source == null) throw new ArgumentNullException("source");
 
-            if (source.Hierarchy.RootEntity != sourceRootEntity)
-                throw new NotImplementedException("Currently, only cloning a root entity is supported.");
+            // Note: Instead of copying the whole asset (with its potentially big hierarchy), we first copy the asset only (without the hierarchy), then the sub-hierarchy to extract.
 
-            return (EntityAsset)AssetCloner.Clone(source);
+            // create the hierarchy of the sub-tree
+            var subTreeRoot = source.Hierarchy.Entities[sourceRootEntity];
+            var subTreeHierarchy = new EntityHierarchyData { Entities = { subTreeRoot }, RootEntity = sourceRootEntity };
+            foreach (var subTreeEntity in subTreeRoot.EnumerateChildren(true))
+                subTreeHierarchy.Entities.Add(subTreeEntity);
+
+            // clone the entities of the sub-tree
+            var clonedHierarchy = (EntityHierarchyData)AssetCloner.Clone(subTreeHierarchy);
+            clonedHierarchy.Entities[clonedHierarchy.RootEntity].Transformation.Parent = null;
+
+            // set to null reference outside of the sub-tree
+            EntityAnalysis.FixupEntityReferences(clonedHierarchy);
+
+            // temporary nullify the hierarchy to avoid to clone it
+            var sourceHierarchy = source.Hierarchy;
+            source.Hierarchy = null;
+
+            // clone asset without hierarchy
+            var clonedAsset = (EntityAsset)AssetCloner.Clone(source);
+            clonedAsset.Hierarchy = clonedHierarchy;
+
+            // revert the source hierarchy
+            source.Hierarchy = sourceHierarchy;
+
+            return clonedAsset;
         }
 
-        static IEnumerable<Entity> EnumerateChildren(this Entity entity)
+        static IEnumerable<Entity> EnumerateChildren(this Entity entity, bool isRecursive)
         {
             var transformationComponent = entity.Get(TransformationComponent.Key);
             if (transformationComponent == null)
                 yield break;
-
-
+            
             foreach (var child in transformationComponent.Children)
             {
                 yield return child.Entity;
+
+                if (isRecursive)
+                {
+                    foreach (var childChild in child.Entity.EnumerateChildren(true))
+                    {
+                        yield return childChild;
+                    }
+                }
             }
         }
 
@@ -150,10 +180,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             if (source == null) throw new ArgumentNullException("source");
 
             // Extract the scene starting from given root
-            // Note: only extracting root is supported as of now
-            var clonedSource = ExtractSceneClone(source, sourceRootEntity);
-
-            var newAsset = (EntityAsset)AssetCloner.Clone(clonedSource);
+            var newAsset = ExtractSceneClone(source, sourceRootEntity);
 
             // Generate entity mapping
             var entityMapping = new Dictionary<Guid, Guid>();
@@ -176,7 +203,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             EntityAnalysis.RemapEntitiesId(newAsset.Hierarchy, reverseEntityMapping);
 
             // Add asset base
-            entityBase = new EntityBase { Base = new AssetBase(sourceUrl, clonedSource), SourceRoot = sourceRootEntity, IdMapping = entityMapping };
+            entityBase = new EntityBase { Base = new AssetBase(sourceUrl, newAsset), SourceRoot = sourceRootEntity, IdMapping = entityMapping };
 
             return newAsset.Hierarchy;
         }
