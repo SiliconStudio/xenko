@@ -1,6 +1,9 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
+using System.Linq;
+
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Core;
@@ -238,6 +241,12 @@ namespace SiliconStudio.Paradox.Engine
         public override PropertyKey DefaultKey
         {
             get { return Key; }
+        }
+
+        protected internal override IEnumerable<Type> GetDefaultProcessors()
+        {
+            // TODO: Do we need a processor?
+            return Enumerable.Empty<Type>();
         }
     }
 

@@ -70,12 +70,6 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
             }
             renderers.Clear();
 
-            foreach (var entityProcessor in entityProcessors)
-            {
-                Entities.Processors.Remove(entityProcessor);
-            }
-            entityProcessors.Clear();
-
             //foreach (var pipelineBuilder in pipelineBuilders)
             //{
             //    pipelineBuilder.Unload();

@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
@@ -33,6 +35,12 @@ namespace SiliconStudio.Paradox.Physics
         public override PropertyKey DefaultKey
         {
             get { return Key; }
+        }
+
+        private static readonly Type[] DefaultProcessors = new Type[] { typeof(PhysicsProcessor) };
+        protected override IEnumerable<Type> GetDefaultProcessors()
+        {
+            return DefaultProcessors;
         }
     }
 }

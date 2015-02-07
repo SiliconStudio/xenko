@@ -18,6 +18,7 @@ namespace SiliconStudio.Paradox.EntityModel
 
         internal ProfilingKey UpdateProfilingKey;
         internal ProfilingKey DrawProfilingKey;
+        private readonly PropertyKey[] requiredKeys;
 
         public bool Enabled
         {
@@ -29,10 +30,18 @@ namespace SiliconStudio.Paradox.EntityModel
 
         public IServiceRegistry Services { get; internal set; }
 
-        protected EntityProcessor()
+        protected EntityProcessor(PropertyKey[] requiredKeys)
         {
             UpdateProfilingKey = new ProfilingKey(GameProfilingKeys.GameUpdate, this.GetType().Name);
             DrawProfilingKey = new ProfilingKey(GameProfilingKeys.GameDraw, this.GetType().Name);
+            this.requiredKeys = requiredKeys;
+        }
+
+        /// <summary>Gets the required components for an entity to be added to this entity processor.</summary>
+        /// <value>The required keys.</value>
+        public PropertyKey[] RequiredKeys
+        {
+            get { return requiredKeys; }
         }
 
         /// <summary>
@@ -72,6 +81,11 @@ namespace SiliconStudio.Paradox.EntityModel
             
         }
 
+        internal virtual bool ShouldStopProcessorChain(Entity entity)
+        {
+            return false;
+        }
+
         /// <summary>
         /// Checks if <see cref="Entity"/> needs to be either added or removed.
         /// </summary>
@@ -109,18 +123,9 @@ namespace SiliconStudio.Paradox.EntityModel
         protected Dictionary<Entity, T> enabledEntities = new Dictionary<Entity, T>();
         protected Dictionary<Entity, T> matchingEntities = new Dictionary<Entity, T>();
         protected HashSet<Entity> reentrancyCheck = new HashSet<Entity>();
-        protected PropertyKey[] requiredKeys;
 
-        protected EntityProcessor(PropertyKey[] requiredKeys)
+        protected EntityProcessor(PropertyKey[] requiredKeys) : base(requiredKeys)
         {
-            this.requiredKeys = requiredKeys;
-        }
-
-        /// <summary>Gets the required components for an entity to be added to this entity processor.</summary>
-        /// <value>The required keys.</value>
-        protected virtual PropertyKey[] RequiredKeys
-        {
-            get { return requiredKeys; }
         }
 
         /// <inheritdoc/>

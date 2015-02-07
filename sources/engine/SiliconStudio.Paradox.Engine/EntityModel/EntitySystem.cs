@@ -29,7 +29,12 @@ namespace SiliconStudio.Paradox.EntityModel
         // Enabled entities
         private readonly TrackingHashSet<Entity> enabledEntities;
 
-        private readonly TrackingHashSet<EntityProcessor> processors;
+        private readonly TrackingCollection<EntityProcessor> processors;
+
+        private readonly HashSet<Type> autoRegisteredComponentTypes;
+        private readonly HashSet<Type> autoRegisteredProcessorTypes;
+
+        private bool isAutoRegisteringProcessors;
 
         public EntitySystem(IServiceRegistry registry)
             : base(registry)
@@ -41,17 +46,23 @@ namespace SiliconStudio.Paradox.EntityModel
             entities = new TrackingDictionary<Entity, List<EntityProcessor>>();
             enabledEntities = new TrackingHashSet<Entity>();
 
-            processors = new TrackingHashSet<EntityProcessor>();
+            processors = new TrackingCollection<EntityProcessor>();
             processors.CollectionChanged += new EventHandler<TrackingCollectionChangedEventArgs>(systems_CollectionChanged);
+
+            autoRegisteredComponentTypes = new HashSet<Type>();
+            autoRegisteredProcessorTypes = new HashSet<Type>();
+            newAutoRegisteredProcessors = new List<EntityProcessor>();
         }
 
         /// <summary>
         /// Gets the entity Processors.
         /// </summary>
-        public ISet<EntityProcessor> Processors
+        public FastCollection<EntityProcessor> Processors
         {
             get { return processors; }
         }
+
+        internal bool AutoRegisterDefaultProcessors { get; set; }
 
         public override void Update(GameTime gameTime)
         {
@@ -241,9 +252,12 @@ namespace SiliconStudio.Paradox.EntityModel
             entity.Components.PropertyUpdated += EntityPropertyUpdated;
 
             // Check which processor want this entity
-            foreach (var system in processors)
+            CheckEntityWithProcessors(entity, entityProcessors, false);
+
+            // Auto-register default processors
+            if (AutoRegisterDefaultProcessors)
             {
-                system.EntityCheck(entity, entityProcessors);
+                AutoRegisterProcessors(entity, entityProcessors);
             }
         }
 
@@ -269,24 +283,100 @@ namespace SiliconStudio.Paradox.EntityModel
             }
 
             // Notify Processors thie entity has been removed
-            foreach (var system in processors)
-            {
-                system.EntityCheck(entity, entityProcessors, true);
-            }
+            CheckEntityWithProcessors(entity, entityProcessors, true);
 
             entity.Components.PropertyUpdated -= EntityPropertyUpdated;
 
             entity.ReleaseInternal();
         }
 
-        private void AddSystem(EntityProcessor processor)
+        private readonly List<EntityProcessor> newAutoRegisteredProcessors;
+
+        private void AutoRegisterProcessors(Entity entity, List<EntityProcessor> entityProcessors)
+        {
+            newAutoRegisteredProcessors.Clear();
+
+            // TODO: Access to Components use a yield behind. Change this
+            foreach (var componentKeyPair in entity.Components)
+            {
+                var component = componentKeyPair.Value as EntityComponent;
+                if (component != null)
+                {
+                    RegisterComponentType(component, component.GetType());
+                }
+            }
+
+            isAutoRegisteringProcessors = true;
+            foreach (var processor in newAutoRegisteredProcessors)
+            {
+                processors.Add(processor);
+                processor.EntityCheck(entity, entityProcessors);
+            }
+            isAutoRegisteringProcessors = false;
+
+            newAutoRegisteredProcessors.Clear();
+        }
+
+        private void RegisterComponentType(EntityComponent entityComponent, Type componentType)
+        {
+            if (componentType == null) throw new ArgumentNullException("componentType");
+
+            if (autoRegisteredComponentTypes.Contains(componentType))
+            {
+                return;
+            }
+
+            autoRegisteredComponentTypes.Add(componentType);
+
+            if (entityComponent == null)
+            {
+                entityComponent = (EntityComponent)Activator.CreateInstance(componentType);
+            }
+
+            foreach (var processorType in entityComponent.GetDefaultProcessors())
+            {
+                // TODO: Log an error?
+                if (!typeof(EntityProcessor).IsAssignableFrom(processorType))
+                {
+                    continue;
+                }
+
+                if (!autoRegisteredProcessorTypes.Contains(processorType))
+                {
+                    var processor = (EntityProcessor)Activator.CreateInstance(processorType);
+
+                    foreach (var key in processor.RequiredKeys)
+                    {
+                        RegisterComponentType(null, key.OwnerType);
+                    }
+
+                    if (!autoRegisteredProcessorTypes.Contains(processorType))
+                    {
+                        InitializeProcessor(processor);
+                        newAutoRegisteredProcessors.Add(processor);
+                    }
+                }
+            }
+        }
+
+        private void InitializeProcessor(EntityProcessor processor)
         {
             processor.EntitySystem = this;
             processor.Services = Services;
             processor.OnSystemAdd();
-            foreach (var entity in entities)
+        }
+
+        private void AddSystem(EntityProcessor processor)
+        {
+            InitializeProcessor(processor);
+
+            // In case of auto-register, we don't have to iterate on existing entities as it is only valid for the entity being added
+            if (!isAutoRegisteringProcessors)
             {
-                processor.EntityCheck(entity.Key, entity.Value);
+                foreach (var entity in entities)
+                {
+                    processor.EntityCheck(entity.Key, entity.Value);
+                }
             }
         }
 
@@ -309,9 +399,18 @@ namespace SiliconStudio.Paradox.EntityModel
 
             var entity = (Entity)propertyContainer.Owner;
             var entityProcessors = entities[entity];
+            CheckEntityWithProcessors(entity, entityProcessors, false);
+        }
+
+        private void CheckEntityWithProcessors(Entity entity, List<EntityProcessor> entityProcessors, bool forceRemove)
+        {
             foreach (EntityProcessor system in processors)
             {
-                system.EntityCheck(entity, entityProcessors);
+                if (system.ShouldStopProcessorChain(entity))
+                {
+                    return;
+                }
+                system.EntityCheck(entity, entityProcessors, forceRemove);
             }
         }
 

@@ -1,5 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
+using System.Collections.Generic;
+
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.EntityModel;
 
@@ -22,6 +26,12 @@ namespace SiliconStudio.Paradox.Engine
         public override PropertyKey DefaultKey
         {
             get { return Key; }
+        }
+
+        private static readonly Type[] DefaultProcessors = new Type[] { typeof(AudioListenerProcessor) };
+        protected internal override IEnumerable<Type> GetDefaultProcessors()
+        {
+            return DefaultProcessors;
         }
     }
 }

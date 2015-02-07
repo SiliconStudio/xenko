@@ -335,6 +335,12 @@ namespace SiliconStudio.Paradox.Engine
             get { return Key; }
         }
 
+        private static readonly Type[] DefaultProcessors = new Type[] { typeof(HierarchicalProcessor), typeof(TransformationProcessor),  };
+        protected internal override IEnumerable<Type> GetDefaultProcessors()
+        {
+            return DefaultProcessors;
+        }
+
         //public IEnumerator<TransformationComponent> GetEnumerator()
         //{
         //    return Children.GetEnumerator();

@@ -1,7 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 using SiliconStudio.Core;
@@ -89,6 +92,11 @@ namespace SiliconStudio.Paradox.EntityModel
         {
             public static readonly PropertyKey DefaultKey = new T().DefaultKey;
         }
+
+        protected internal abstract IEnumerable<Type> GetDefaultProcessors();
+        //{
+        //    //return Enumerable.Empty<Type>();
+        //}
 
         internal class Serializer : DataSerializer<EntityComponent>
         {

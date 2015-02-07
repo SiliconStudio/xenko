@@ -87,9 +87,6 @@ namespace SiliconStudio.Paradox.Physics
             // Preload proper libbulletc native library (depending on CPU type)
             Core.NativeLibrary.PreloadLibrary("libbulletc.dll");
 
-            //add into processors pipeline
-            game.Entities.Processors.Add(new PhysicsProcessor());
-
             collisionConfiguration = new BulletSharp.DefaultCollisionConfiguration();
             dispatcher = new BulletSharp.CollisionDispatcher(collisionConfiguration);
             broadphase = new BulletSharp.DbvtBroadphase();

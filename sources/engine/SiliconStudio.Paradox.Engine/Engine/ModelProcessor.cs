@@ -1,24 +1,19 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
+
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
-using System.Threading.Tasks;
-using SiliconStudio.Core.Mathematics;
+
 using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Data;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Paradox.Engine
 {
-    public class MeshProcessor : EntityProcessor<MeshProcessor.AssociatedData>
+    public class ModelProcessor : EntityProcessor<ModelProcessor.AssociatedData>
     {
         private RenderSystem renderSystem;
 
@@ -28,7 +23,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <remarks>The collection is declared globally only to avoid allocation at each frames</remarks>
         private FastCollection<TransformationComponent> linkTransformationToUpdate = new FastCollection<TransformationComponent>();
 
-        public MeshProcessor()
+        public ModelProcessor()
             : base(new PropertyKey[] { ModelComponent.Key, TransformationComponent.Key })
         {
         }

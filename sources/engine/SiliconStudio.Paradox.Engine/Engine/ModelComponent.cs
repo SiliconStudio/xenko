@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.EntityModel;
@@ -16,6 +17,8 @@ namespace SiliconStudio.Paradox.Engine
     public sealed class ModelComponent : EntityComponent, IModelInstance
     {
         public static PropertyKey<ModelComponent> Key = new PropertyKey<ModelComponent>("Key", typeof(ModelComponent));
+
+        private static readonly Type[] DefaultProcessors = new Type[] { typeof(ModelProcessor) };
 
         private Model model;
         private ModelViewHierarchyUpdater modelViewHierarchy;
@@ -119,6 +122,11 @@ namespace SiliconStudio.Paradox.Engine
         public override PropertyKey DefaultKey
         {
             get { return Key; }
+        }
+
+        protected internal override IEnumerable<Type> GetDefaultProcessors()
+        {
+            return DefaultProcessors;
         }
     }
 }

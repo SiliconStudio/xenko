@@ -868,7 +868,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Materials\MaterialKeys.cs" />
-    <Compile Include="Cubemap\CubemapBlendComponent.cs" />
     <Compile Include="Cubemap\ComputeColorTextureCube.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -947,7 +946,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>CubemapSkybox.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Cubemap\CubemapSourceComponent.cs" />
     <Compile Include="Cubemap\CubemapUtils.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1340,13 +1338,9 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>PostEffectBack.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Cubemap\CubemapBlendProcessor.cs" />
-    <Compile Include="Cubemap\CubemapSourceProcessor.cs" />
-    <Compile Include="Cubemap\CubemapBlendRenderer.cs" />
     <Compile Include="Lights\GuillotinePacker.cs" />
     <Compile Include="Shadows\ShadowMap.cs" />
     <Compile Include="Shadows\ShadowMapTexture.cs" />
-    <Compile Include="Cubemap\CubeMapRenderer.cs" />
     <Compile Include="Skyboxes\LevelCubeMapEnvironmentColor.cs">
       <DependentUpon>LevelCubeMapEnvironmentColor.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>

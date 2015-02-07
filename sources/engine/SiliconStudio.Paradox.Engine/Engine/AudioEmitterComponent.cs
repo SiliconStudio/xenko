@@ -273,5 +273,11 @@ namespace SiliconStudio.Paradox.Engine
         {
             get { return Key; }
         }
+
+        private static readonly Type[] DefaultProcessors = new Type[] { typeof(AudioEmitterProcessor) };
+        protected internal override IEnumerable<Type> GetDefaultProcessors()
+        {
+            return DefaultProcessors;
+        }
     }
 }

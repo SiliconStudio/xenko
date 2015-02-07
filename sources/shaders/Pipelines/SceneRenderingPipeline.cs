@@ -57,12 +57,6 @@ namespace SiliconStudio.Paradox.Effects.Pipelines
             RenderTarget = GraphicsDevice.BackBuffer;
             DepthStencilBuffer = GraphicsDevice.DepthStencilBuffer; 
 
-            // Add light processor
-            Entities.Processors.Add(new LightProcessor());
-
-            // Add processor for rendering the skybox
-            Entities.Processors.Add(new SkyboxProcessor());
-
             cameraSetter = new CameraSetter(serviceRegistry);
             rootRenderTargetSetter = new RenderTargetSetter(serviceRegistry);
 

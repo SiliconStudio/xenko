@@ -157,5 +157,11 @@ namespace SiliconStudio.Paradox.Engine
         {
             get { return Key; }
         }
+
+        private static readonly Type[] DefaultProcessors = new Type[] { typeof(SpriteProcessor) };
+        protected internal override IEnumerable<Type> GetDefaultProcessors()
+        {
+            return DefaultProcessors;
+        }
     }
 }

@@ -22,8 +22,6 @@ using SiliconStudio.Paradox.Graphics.Font;
 using SiliconStudio.Paradox.Input;
 using SiliconStudio.Paradox.UI;
 
-using MeshProcessor = SiliconStudio.Paradox.Engine.MeshProcessor;
-
 namespace SiliconStudio.Paradox
 {
     /// <summary>
@@ -231,18 +229,8 @@ namespace SiliconStudio.Paradox
             RenderSystem = new RenderSystem(Services);
             GameSystems.Add(RenderSystem);
 
-            using (var profile = Profiler.Begin(GameProfilingKeys.EntityProcessorInitialize))
-            {
-                // TODO: Do we need to make this list data-driven?
-                Entities.Processors.Add(new HierarchicalProcessor());
-                Entities.Processors.Add(new AnimationProcessor());
-                Entities.Processors.Add(new ModelNodeLinkProcessor());
-                Entities.Processors.Add(new TransformationProcessor());              
-                Entities.Processors.Add(new MeshProcessor());
-                Entities.Processors.Add(new AudioListenerProcessor());
-                Entities.Processors.Add(new AudioEmitterProcessor());
-                Entities.Processors.Add(new SpriteProcessor());               
-            }
+            // Only the scene processor is registered
+            Entities.Processors.Add(new SceneProcessor());
 
             // TODO: data-driven?
             //Asset.Serializer.RegisterSerializer(new GpuTextureSerializer2(GraphicsDevice));
