@@ -22,6 +22,7 @@ namespace SiliconStudio.Presentation.Controls
         private readonly List<HwndSource> contextMenuSources = new List<HwndSource>();
         private int mouseMoveCount;
         private Point contextMenuPosition;
+        private Rect lastBoundingBox;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GameEngineHwndHost"/> class.
@@ -54,6 +55,15 @@ namespace SiliconStudio.Presentation.Controls
         {
             NativeHelper.SetParent(childHandle, IntPtr.Zero);
             NativeHelper.DestroyWindow(hwnd.Handle);
+        }
+
+        protected override void OnWindowPositionChanged(Rect rcBoundingBox)
+        {
+            if (rcBoundingBox != lastBoundingBox)
+            {
+                lastBoundingBox = rcBoundingBox;
+                base.OnWindowPositionChanged(rcBoundingBox);
+            }
         }
 
         /// <summary>
