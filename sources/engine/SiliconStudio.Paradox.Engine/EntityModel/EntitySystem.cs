@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.EntityModel
     /// <summary>
     /// Manage a collection of entities.
     /// </summary>
-    public class EntitySystem : GameSystemBase, IReadOnlySet<Entity>
+    public class EntitySystem : IReadOnlySet<Entity>
     {
         // TODO: Make this class threadsafe (current locks aren't sufficients)
 
@@ -37,11 +37,9 @@ namespace SiliconStudio.Paradox.EntityModel
         private bool isAutoRegisteringProcessors;
 
         public EntitySystem(IServiceRegistry registry)
-            : base(registry)
         {
-            Services.AddService(typeof(EntitySystem), this);
-            Enabled = true;
-            Visible = true;
+            if (registry == null) throw new ArgumentNullException("registry");
+            Services = registry;
 
             entities = new TrackingDictionary<Entity, List<EntityProcessor>>();
             enabledEntities = new TrackingHashSet<Entity>();
@@ -54,6 +52,8 @@ namespace SiliconStudio.Paradox.EntityModel
             newAutoRegisteredProcessors = new List<EntityProcessor>();
         }
 
+        public IServiceRegistry Services { get; private set; }
+
         /// <summary>
         /// Gets the entity Processors.
         /// </summary>
@@ -64,7 +64,7 @@ namespace SiliconStudio.Paradox.EntityModel
 
         internal bool AutoRegisterDefaultProcessors { get; set; }
 
-        public override void Update(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
             foreach (var processor in processors)
             {
@@ -78,7 +78,7 @@ namespace SiliconStudio.Paradox.EntityModel
             }
         }
 
-        public override void Draw(GameTime gameTime)
+        public void Draw(GameTime gameTime)
         {
             foreach (var processor in processors)
             {

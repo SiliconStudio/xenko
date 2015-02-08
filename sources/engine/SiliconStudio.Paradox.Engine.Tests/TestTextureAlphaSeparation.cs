@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Threading.Tasks;
 
 using NUnit.Framework;
@@ -39,8 +41,9 @@ namespace SiliconStudio.Paradox.Engine.Tests
             var cameraEntity = new Entity { Transform = { Translation = new Vector3(0, 0, -2) } };
             cameraEntity.Add(cameraComp);
 
-            Entities.Add(dice);
-            Entities.Add(cameraEntity);
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            //Entities.Add(dice);
+            //Entities.Add(cameraEntity);
         }
 
         protected override async Task LoadContent()

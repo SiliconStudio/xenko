@@ -29,7 +29,6 @@ namespace SiliconStudio.Paradox.Effects
             Services = services;
             RenderSystem = services.GetSafeServiceAs<RenderSystem>();
             EffectSystem = services.GetSafeServiceAs<EffectSystem>();
-            EntitySystem = services.GetSafeServiceAs<EntitySystem>();
             graphicsDeviceService = services.GetSafeServiceAs<IGraphicsDeviceService>();
             DebugName = GetType().Name;
         }

@@ -9,7 +9,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Paradox.Shaders;
 
-namespace SiliconStudio.Paradox.Effects.Composer
+namespace SiliconStudio.Paradox.Engine.Graphics.Composers
 {
     /// <summary>
     /// Defines the common interface for a graphics composer responsible to compose the scene to a final render target.

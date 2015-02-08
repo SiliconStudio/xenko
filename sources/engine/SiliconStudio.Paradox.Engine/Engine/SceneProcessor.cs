@@ -2,9 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.EntityModel;
+using SiliconStudio.Paradox.Games;
 
 namespace SiliconStudio.Paradox.Engine
 {
@@ -36,11 +38,30 @@ namespace SiliconStudio.Paradox.Engine
         {
             if (sceneEntityRoot == null) throw new ArgumentNullException("sceneEntityRoot");
             this.sceneEntityRoot = sceneEntityRoot;
+            Scenes = new List<SceneState>();
         }
+
+        public List<SceneState> Scenes { get; private set; }
 
         protected override SceneState GenerateAssociatedData(Entity entity)
         {
-            return new SceneState(this.EntitySystem.Services, entity);
+            return (entity == sceneEntityRoot) ? null : new SceneState(this.EntitySystem.Services, entity);
+        }
+
+        protected override void OnEntityAdding(Entity entity, SceneState data)
+        {
+            if (data != null)
+            {
+                Scenes.Add(data);
+            }
+        }
+
+        protected override void OnEntityRemoved(Entity entity, SceneState data)
+        {
+            if (data != null)
+            {
+                Scenes.Remove(data);
+            }
         }
 
         internal override bool ShouldStopProcessorChain(Entity entity)
@@ -50,17 +71,32 @@ namespace SiliconStudio.Paradox.Engine
             return !ReferenceEquals(entity, sceneEntityRoot);
         }
 
+        public override void Update(GameTime time)
+        {
+            foreach (var sceneEntityAndState in Scenes)
+            {
+                sceneEntityAndState.EntitySystem.Update(time);
+            }
+        }
+
+        public override void Draw(GameTime time)
+        {
+            foreach (var sceneEntityAndState in Scenes)
+            {
+                sceneEntityAndState.EntitySystem.Draw(time);
+            }
+        }
+
         public class SceneState
         {
             public SceneState(IServiceRegistry services, Entity sceneEntityRoot)
             {
                 if (services == null) throw new ArgumentNullException("services");
-
-                // When a scene root is used for an entity system, 
-                EntitySystem = new EntitySystem(services) { AutoRegisterDefaultProcessors = true };
-                EntitySystem.Processors.Add(new SceneProcessor(sceneEntityRoot));
-                EntitySystem.Add(sceneEntityRoot);
+                Scene = sceneEntityRoot;
+                EntitySystem = services.GetSafeServiceAs<SceneSystem>().CreateSceneEntitySystem(sceneEntityRoot);
             }
+
+            public Entity Scene { get; private set; }
 
             /// <summary>
             /// Entity System dedicated to this scene.

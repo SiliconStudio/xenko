@@ -41,7 +41,8 @@ namespace SiliconStudio.Paradox.Engine.Tests
             var factoryEntity = Asset.Load<Entity>("factory");
 
             // Add the model to the entity system.
-            Entities.Add(factoryEntity);
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer");
+            //Entities.Add(factoryEntity);
         }
 
         protected override void RegisterTests()

@@ -58,10 +58,10 @@ namespace SiliconStudio.Paradox
         public InputManager Input { get; internal set; }
 
         /// <summary>
-        /// Gets the entity system.
+        /// Gets the scene system.
         /// </summary>
-        /// <value>The entity system.</value>
-        public EntitySystem Entities { get; internal set; }
+        /// <value>The scene system.</value>
+        public SceneSystem SceneSystem { get; private set; }
 
         /// <summary>
         /// Gets the effect system.
@@ -163,8 +163,7 @@ namespace SiliconStudio.Paradox
             // Create and register all core services
             Input = new InputManager(Services);
             Script = new ScriptSystem(Services);
-            Entities = new EntitySystem(Services);
-
+            SceneSystem = new SceneSystem(Services);
             Audio = new AudioSystem(Services);
             UI = new UISystem(Services);
             gameFontSystem = new GameFontSystem(Services);
@@ -187,8 +186,8 @@ namespace SiliconStudio.Paradox
             // Add the UI System
             GameSystems.Add(UI);
 
-            // Add the entity manager
-            GameSystems.Add(Entities);
+            // Add the scene system
+            GameSystems.Add(SceneSystem);
 
             // Add the Audio System
             GameSystems.Add(Audio);
@@ -228,9 +227,6 @@ namespace SiliconStudio.Paradox
             // Add RenderSystem
             RenderSystem = new RenderSystem(Services);
             GameSystems.Add(RenderSystem);
-
-            // Only the scene processor is registered
-            Entities.Processors.Add(new SceneProcessor());
 
             // TODO: data-driven?
             //Asset.Serializer.RegisterSerializer(new GpuTextureSerializer2(GraphicsDevice));

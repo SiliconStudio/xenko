@@ -75,11 +75,12 @@ namespace SiliconStudio.Paradox.Engine.Tests
             background = new Entity();
             foreground.Add(new SpriteComponent { SpriteGroup = groundSprites, CurrentFrame = 1 });
             background.Add(new SpriteComponent { SpriteGroup = groundSprites, CurrentFrame = 0 });
-            
-            Entities.Add(camera);
-            Entities.Add(ball);
-            Entities.Add(foreground);
-            Entities.Add(background);
+
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            //Entities.Add(camera);
+            //Entities.Add(ball);
+            //Entities.Add(foreground);
+            //Entities.Add(background);
 
             spriteComponent = ball.Get(SpriteComponent.Key);
             transfoComponent = ball.Get(TransformationComponent.Key);

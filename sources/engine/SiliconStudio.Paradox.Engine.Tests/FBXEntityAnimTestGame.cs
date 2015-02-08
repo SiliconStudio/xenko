@@ -42,7 +42,8 @@ namespace SiliconStudio.Paradox.Engine.Tests
             var dudeEntity = Asset.Load<Entity>("AnimatedModel");
             animationComponent = dudeEntity.Get(AnimationComponent.Key);
 
-            Entities.Add(dudeEntity);
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer");
+            //Entities.Add(dudeEntity);
 
             // Setup view
             RenderSystem.Pipeline.Parameters.Set(TransformationKeys.View, Matrix.LookAtRH(new Vector3(200, 0.0f, 100f), new Vector3(0f, 0f, 80.0f), Vector3.UnitZ));

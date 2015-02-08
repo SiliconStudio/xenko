@@ -50,32 +50,33 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 },
                 new TransformationComponent()
             };
-            Entities.Add(teapot);
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            //Entities.Add(teapot);
 
-            var mainCameraTargetEntity = new Entity(Vector3.Zero);
-            Entities.Add(mainCameraTargetEntity);
-            var mainCamera = new Entity()
-            {
-                new CameraComponent
-                {
-                    AspectRatio = 8/4.8f,
-                    FarPlane = 5,
-                    NearPlane = 1,
-                    VerticalFieldOfView = 0.6f,
-                    Target = mainCameraTargetEntity,
-                    TargetUp = Vector3.UnitY,
-                },
-                new TransformationComponent
-                {
-                    Translation = new Vector3(2,1,2)
-                }
-            };
-            Entities.Add(mainCamera);
+            //var mainCameraTargetEntity = new Entity(Vector3.Zero);
+            //Entities.Add(mainCameraTargetEntity);
+            //var mainCamera = new Entity()
+            //{
+            //    new CameraComponent
+            //    {
+            //        AspectRatio = 8/4.8f,
+            //        FarPlane = 5,
+            //        NearPlane = 1,
+            //        VerticalFieldOfView = 0.6f,
+            //        Target = mainCameraTargetEntity,
+            //        TargetUp = Vector3.UnitY,
+            //    },
+            //    new TransformationComponent
+            //    {
+            //        Translation = new Vector3(2,1,2)
+            //    }
+            //};
+            //Entities.Add(mainCamera);
 
-            RenderSystem.Pipeline.SetCamera(mainCamera.Get<CameraComponent>());
+            //RenderSystem.Pipeline.SetCamera(mainCamera.Get<CameraComponent>());
 
-            // Add a custom script
-            Script.Add(GameScript1);
+            //// Add a custom script
+            //Script.Add(GameScript1);
         }
 
         private void CreatePipeline()
