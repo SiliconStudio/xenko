@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Paradox.Effects.Materials;
 
 using IServiceRegistry = SiliconStudio.Core.IServiceRegistry;
 
@@ -433,10 +434,10 @@ namespace SiliconStudio.Paradox.Effects
 
                 // TODO: Add a kind of associated data to an effect mesh to speed up this test?
                 var leftMaterial = left.Material;
-                var isLeftTransparent = (leftMaterial != null && leftMaterial.Parameters.Get(MaterialParameters.UseTransparent));
+                var isLeftTransparent = (leftMaterial != null && leftMaterial.Parameters.Get(MaterialKeys.UseTransparent));
 
                 var rightMaterial = right.Material;
-                var isRightTransparent = (rightMaterial != null && rightMaterial.Parameters.Get(MaterialParameters.UseTransparent));
+                var isRightTransparent = (rightMaterial != null && rightMaterial.Parameters.Get(MaterialKeys.UseTransparent));
 
                 if (isLeftTransparent && !isRightTransparent)
                     return 1;

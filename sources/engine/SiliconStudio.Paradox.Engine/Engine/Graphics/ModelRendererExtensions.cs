@@ -5,6 +5,7 @@ using System;
 
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Effects.Materials;
 
 namespace SiliconStudio.Paradox.Effects
 {
@@ -43,13 +44,13 @@ namespace SiliconStudio.Paradox.Effects
 
         private static bool IsTransparent(RenderModel model, Mesh mesh)
         {
-            return model.GetMaterial(mesh.MaterialIndex).Parameters.Get(MaterialParameters.UseTransparent);
+            return model.GetMaterial(mesh.MaterialIndex).Parameters.Get(MaterialKeys.UseTransparent);
         }
 
 
         private static bool IsTransparent(RenderMesh mesh)
         {
-            return mesh.Material.Parameters.Get(MaterialParameters.UseTransparent);
+            return mesh.Material.Parameters.Get(MaterialKeys.UseTransparent);
         }
 
         /// <summary>

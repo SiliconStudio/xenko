@@ -42,7 +42,7 @@ namespace SiliconStudio.Paradox.Effects
                 context.Mixin(mixin, "NormalStream");
                 context.Mixin(mixin, "TransformationWAndVP");
                 context.Mixin(mixin, "PositionVertexTransform");
-                if (context.GetParam(MaterialParameters.HasNormalMap))
+                if (context.GetParam(MaterialKeys.HasNormalMap))
                 {
                     context.Mixin(mixin, "NormalFromNormalMapping");
                 }
@@ -50,25 +50,25 @@ namespace SiliconStudio.Paradox.Effects
                 {
                     context.Mixin(mixin, "NormalFromMesh");
                 }
-                if (context.GetParam(MaterialParameters.HasSkinningPosition))
+                if (context.GetParam(MaterialKeys.HasSkinningPosition))
                 {
-                    if (context.GetParam(MaterialParameters.SkinningBones) > context.GetParam(MaterialParameters.SkinningMaxBones))
+                    if (context.GetParam(MaterialKeys.SkinningBones) > context.GetParam(MaterialKeys.SkinningMaxBones))
                     {
-                        context.SetParam(MaterialParameters.SkinningMaxBones, context.GetParam(MaterialParameters.SkinningBones));
+                        context.SetParam(MaterialKeys.SkinningMaxBones, context.GetParam(MaterialKeys.SkinningBones));
                     }
-                    mixin.Mixin.AddMacro("SkinningMaxBones", context.GetParam(MaterialParameters.SkinningMaxBones));
+                    mixin.Mixin.AddMacro("SkinningMaxBones", context.GetParam(MaterialKeys.SkinningMaxBones));
                     context.Mixin(mixin, "TransformationSkinning");
-                    if (context.GetParam(MaterialParameters.HasSkinningNormal))
+                    if (context.GetParam(MaterialKeys.HasSkinningNormal))
                     {
                         context.Mixin(mixin, "NormalMeshSkinning");
                     }
-                    if (context.GetParam(MaterialParameters.HasSkinningTangent))
+                    if (context.GetParam(MaterialKeys.HasSkinningTangent))
                     {
                         context.Mixin(mixin, "TangentMeshSkinning");
                     }
-                    if (context.GetParam(MaterialParameters.HasSkinningNormal))
+                    if (context.GetParam(MaterialKeys.HasSkinningNormal))
                     {
-                        if (context.GetParam(MaterialParameters.HasNormalMap))
+                        if (context.GetParam(MaterialKeys.HasNormalMap))
                         {
                             context.Mixin(mixin, "NormalVSSkinningNormalMapping");
                         }

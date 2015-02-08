@@ -12,7 +12,6 @@ namespace SiliconStudio.Paradox.Effects
     partial shader ParadoxBaseShader
     {
         using params LightingKeys;
-        using params MaterialParameters;
         using params MaterialKeys;
 
         // -----------------------------------------------
@@ -43,7 +42,7 @@ namespace SiliconStudio.Paradox.Effects
         // -----------------------------------------------
         // Performs normal mapping (in case of no-skinning, otherwise it is overloaded below)
         // -----------------------------------------------
-        if (MaterialParameters.HasNormalMap)
+        if (MaterialKeys.HasNormalMap)
         {
             mixin NormalFromNormalMapping;
         }
@@ -55,29 +54,29 @@ namespace SiliconStudio.Paradox.Effects
         // -----------------------------------------------
         // Performs animation skinning (position, normal and tangent)
         // -----------------------------------------------
-        if (MaterialParameters.HasSkinningPosition)
+        if (MaterialKeys.HasSkinningPosition)
         {
-            if (MaterialParameters.SkinningBones > MaterialParameters.SkinningMaxBones)
+            if (MaterialKeys.SkinningBones > MaterialKeys.SkinningMaxBones)
             {
                 // TODO: We should use next power of two minus constant to limit shader permutations?
-                MaterialParameters.SkinningMaxBones = MaterialParameters.SkinningBones;
+                MaterialKeys.SkinningMaxBones = MaterialKeys.SkinningBones;
             }
-            mixin macro MaterialParameters.SkinningMaxBones;
+            mixin macro MaterialKeys.SkinningMaxBones;
             mixin TransformationSkinning;
 
-            if (MaterialParameters.HasSkinningNormal)
+            if (MaterialKeys.HasSkinningNormal)
             {
                 mixin NormalMeshSkinning;
             }
 
-            if (MaterialParameters.HasSkinningTangent)
+            if (MaterialKeys.HasSkinningTangent)
             {
                 mixin TangentMeshSkinning;
             }
 
-            if (MaterialParameters.HasSkinningNormal)
+            if (MaterialKeys.HasSkinningNormal)
             {
-                if (MaterialParameters.HasNormalMap)
+                if (MaterialKeys.HasNormalMap)
                 {
                     mixin NormalVSSkinningNormalMapping;
                 }

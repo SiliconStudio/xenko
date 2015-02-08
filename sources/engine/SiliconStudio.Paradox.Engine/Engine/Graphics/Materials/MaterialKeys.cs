@@ -98,6 +98,20 @@ namespace SiliconStudio.Paradox.Effects.Materials
         /// </summary>
         public static readonly ParameterKey<SamplerState> Sampler = ParameterKeys.New<SamplerState>();
 
+        public static readonly ParameterKey<bool> HasSkinningPosition = ParameterKeys.New<bool>();
+
+        public static readonly ParameterKey<bool> HasSkinningNormal = ParameterKeys.New<bool>();
+
+        public static readonly ParameterKey<bool> HasNormalMap = ParameterKeys.New<bool>();
+
+        public static readonly ParameterKey<bool> HasSkinningTangent = ParameterKeys.New<bool>();
+
+        public static readonly ParameterKey<bool> UseTransparent = ParameterKeys.New<bool>();
+
+        public static readonly ParameterKey<int> SkinningMaxBones = ParameterKeys.New<int>(56);
+
+        public static readonly ParameterKey<int> SkinningBones = ParameterKeys.New<int>(0);
+
         static MaterialKeys()
         {
             //SpecularPowerScaled = ParameterKeys.NewDynamic(ParameterDynamicValue.New<float, float>(SpecularPower, ScaleSpecularPower));

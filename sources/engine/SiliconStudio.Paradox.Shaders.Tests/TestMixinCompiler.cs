@@ -89,7 +89,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             compilerParameters.Set(LightingKeys.CastShadows, false);
             //compilerParameters.Set(MaterialParameters.HasSkinningPosition, true);
             //compilerParameters.Set(MaterialParameters.HasSkinningNormal, true);
-            compilerParameters.Set(MaterialParameters.HasNormalMap, true);
+            compilerParameters.Set(MaterialKeys.HasNormalMap, true);
 
             var results = compiler.Compile(new ShaderMixinGeneratorSource("ParadoxBaseShader"), compilerParameters);
 

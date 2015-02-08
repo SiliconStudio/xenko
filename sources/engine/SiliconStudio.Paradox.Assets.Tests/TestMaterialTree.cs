@@ -17,6 +17,7 @@ using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
 using SiliconStudio.Paradox.Assets.Model;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Assets.Tests
@@ -138,7 +139,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
             }
 
             var model = new MaterialDescription();
-            model.SetParameter(MaterialParameters.UseTransparent, true);
+            model.SetParameter(MaterialKeys.UseTransparent, true);
             model.SetParameter(MaterialParameters.ShadingModel, MaterialShadingModel.Phong);
             model.SetParameter(MaterialParameters.DiffuseModel, MaterialDiffuseModel.Lambert);
             model.SetParameter(MaterialParameters.SpecularModel, MaterialSpecularModel.BlinnPhong);
@@ -160,7 +161,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
             var savedAsset = AssetSerializer.Load<MaterialAsset>("testMaterial2.pdxmat");
             var loadedMaterial = savedAsset.Material;
 
-            Assert.AreEqual(true, loadedMaterial.GetParameter(MaterialParameters.UseTransparent));
+            Assert.AreEqual(true, loadedMaterial.GetParameter(MaterialKeys.UseTransparent));
             Assert.AreEqual(MaterialShadingModel.Phong, loadedMaterial.GetParameter(MaterialParameters.ShadingModel));
             Assert.AreEqual(MaterialDiffuseModel.Lambert, loadedMaterial.GetParameter(MaterialParameters.DiffuseModel));
             Assert.AreEqual(MaterialSpecularModel.BlinnPhong, loadedMaterial.GetParameter(MaterialParameters.SpecularModel));
