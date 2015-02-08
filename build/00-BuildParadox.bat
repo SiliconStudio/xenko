@@ -17,9 +17,9 @@ SET ProgFiles86Root=%ProgramFiles(x86)%
 IF NOT "%ProgFiles86Root%"=="" GOTO win64
 SET ProgFiles86Root=%ProgramFiles%
 :win64
-set VS_VCVARSALL=%ProgFiles86Root%\Microsoft Visual Studio 11.0\vc\vcvarsall.bat
+set VS_VCVARSALL=%ProgFiles86Root%\Microsoft Visual Studio 12.0\vc\vcvarsall.bat
 IF EXIST "%VS_VCVARSALL%" GOTO :vcvarok
-echo Error, unable to find path Visual Studio 2012 Path: [%VS_VCVARSALL%]
+echo Error, unable to find path Visual Studio 2013 Path: [%VS_VCVARSALL%]
 exit /b
 :vcvarok
 call "%VS_VCVARSALL%" x86
@@ -29,11 +29,11 @@ IF EXIST "%PARADOX_OUTPUT_DIR%" rmdir /S /Q %PARADOX_OUTPUT_DIR%
 REM msbuild Clean
 IF EXIST "%PARADOX_BUILD_LOG%" del /F "%PARADOX_BUILD_LOG%"
 REM /p:GenerateDoc=true
-msbuild /nologo /tv:4.0 /t:Clean /verbosity:minimal /fl "/flp:Summary;Verbosity=minimal;logfile=%PARADOX_BUILD_LOG%" "/p:%PARADOX_PLATFORM%" %PARADOX_SOLUTION%
+msbuild /nologo /tv:12.0 /t:Clean /verbosity:minimal /fl "/flp:Summary;Verbosity=minimal;logfile=%PARADOX_BUILD_LOG%" "/p:%PARADOX_PLATFORM%" %PARADOX_SOLUTION%
 if %ERRORLEVEL% neq 0 GOTO :error_pause
 REM msbuild Build
 IF EXIST "%PARADOX_BUILD_LOG%" del /F "%PARADOX_BUILD_LOG%"
-msbuild /nologo /tv:4.0 /t:Build /verbosity:minimal /fl "/flp:Summary;Verbosity=minimal;logfile=%PARADOX_BUILD_LOG%" "/p:%PARADOX_PLATFORM%" %PARADOX_SOLUTION%
+msbuild /nologo /tv:12.0 /t:Build /verbosity:minimal /fl "/flp:Summary;Verbosity=minimal;logfile=%PARADOX_BUILD_LOG%" "/p:%PARADOX_PLATFORM%" %PARADOX_SOLUTION%
 if %ERRORLEVEL% neq 0 GOTO :error_pause
 GOTO :end
 :error_pause
