@@ -302,7 +302,7 @@ namespace SiliconStudio.Shaders.Grammar.Hlsl
             // HullShader/DomainShader InputPatch/OutputPatch
             patch_type.Rule = TypeName("InputPatch") | TypeName("OutputPatch");
 
-            patch_generic_type.Rule = patch_type + less_than + type_name + "," + number + ">";
+            patch_generic_type.Rule = patch_type + less_than + type + "," + number + ">";
 
             texture_type_list.Rule = texture_type | texture_generic_type;
 
