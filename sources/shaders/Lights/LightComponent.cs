@@ -64,7 +64,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         [DefaultValue(RenderGroups.All)]
         public RenderGroups Groups { get; set; }
 
-        public override PropertyKey DefaultKey
+        protected override PropertyKey DefaultKey
         {
             get { return Key; }
         }

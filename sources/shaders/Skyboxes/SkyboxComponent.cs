@@ -66,7 +66,7 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
         [DataMemberRange(0.0, 100.0, 0.01f, 1.0f)]
         public float Intensity { get; set; }
 
-        public override PropertyKey DefaultKey
+        protected override PropertyKey DefaultKey
         {
             get { return Key; }
         }

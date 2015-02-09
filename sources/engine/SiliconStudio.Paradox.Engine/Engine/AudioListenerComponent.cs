@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Engine
     {
         public static PropertyKey<AudioListenerComponent> Key = new PropertyKey<AudioListenerComponent>("Key", typeof(AudioListenerComponent));
 
-        public override PropertyKey DefaultKey
+        protected internal override PropertyKey DefaultKey
         {
             get { return Key; }
         }

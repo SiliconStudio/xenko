@@ -130,7 +130,7 @@ namespace SiliconStudio.Paradox.Engine
 
 
 
-        public override PropertyKey DefaultKey
+        protected internal override PropertyKey DefaultKey
         {
             get { return Key; }
         }

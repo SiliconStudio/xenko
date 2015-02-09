@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -22,6 +21,9 @@ namespace SiliconStudio.Paradox.Engine
         /// </summary>
         public static PropertyKey<SceneComponent> Key = new PropertyKey<SceneComponent>("Key", typeof(SceneComponent));
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SceneComponent"/> class.
+        /// </summary>
         public SceneComponent()
         {
             GraphicsComposer = new GraphicsComposerLayer();
@@ -31,13 +33,12 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets or sets the graphics composer for this scene.
         /// </summary>
         /// <value>The graphics composer.</value>
-        [NotNull]
         [DataMember(10)]
         [Display("Graphics Composition")]
-        [Category]
+        [NotNull]
         public IGraphicsComposer GraphicsComposer { get; set; }   // TODO: Should we move this to a special component?
 
-        public override PropertyKey DefaultKey
+        protected internal override PropertyKey DefaultKey
         {
             get
             {

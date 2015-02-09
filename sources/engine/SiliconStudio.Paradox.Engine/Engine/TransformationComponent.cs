@@ -330,7 +330,7 @@ namespace SiliconStudio.Paradox.Engine
             result.M44 = 1.0f;
         }
 
-        public override PropertyKey DefaultKey
+        protected internal override PropertyKey DefaultKey
         {
             get { return Key; }
         }
