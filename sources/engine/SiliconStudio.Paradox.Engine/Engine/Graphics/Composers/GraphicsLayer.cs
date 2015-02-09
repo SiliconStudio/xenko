@@ -303,7 +303,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         /// Gets the layers used for composing a scene.
         /// </summary>
         /// <value>The layers.</value>
-        [DataMember(100)]
+        [DataMember(45)]
         [Category]
         public GraphicsRendererCollection Layers { get; private set; }
     }
