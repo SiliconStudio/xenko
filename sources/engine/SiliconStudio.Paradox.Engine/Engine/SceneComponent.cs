@@ -3,8 +3,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
+using SiliconStudio.Paradox.Engine.Graphics.Composers;
 using SiliconStudio.Paradox.EntityModel;
 
 namespace SiliconStudio.Paradox.Engine
@@ -18,6 +21,21 @@ namespace SiliconStudio.Paradox.Engine
         /// The key of this component.
         /// </summary>
         public static PropertyKey<SceneComponent> Key = new PropertyKey<SceneComponent>("Key", typeof(SceneComponent));
+
+        public SceneComponent()
+        {
+            GraphicsComposer = new GraphicsComposerLayer();
+        }
+
+        /// <summary>
+        /// Gets or sets the graphics composer for this scene.
+        /// </summary>
+        /// <value>The graphics composer.</value>
+        [NotNull]
+        [DataMember(10)]
+        [Display("Graphics Composition")]
+        [Category]
+        public IGraphicsComposer GraphicsComposer { get; set; }   // TODO: Should we move this to a special component?
 
         public override PropertyKey DefaultKey
         {
