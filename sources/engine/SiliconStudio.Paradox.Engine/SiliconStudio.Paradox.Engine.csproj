@@ -409,7 +409,6 @@
     <Compile Include="Engine\Graphics\Model.cs" />
     <Compile Include="Engine\Graphics\EffectSystem.cs" />
     <Compile Include="Engine\Graphics\ModelRenderer.cs" />
-    <Compile Include="Engine\Graphics\RenderPipeline.cs" />
     <Compile Include="Engine\Graphics\SpriteRenderer.cs" />
     <Compile Include="Engine\Graphics\TransformTRS.cs" />
     <Compile Include="Engine\Graphics\UIRenderer.cs" />
@@ -477,11 +476,8 @@
     <Compile Include="EntityModel\ParameterContainerExtensions.cs" />
     <Compile Include="Diffs\ThreeWayMergeOrdered.cs" />
     <Compile Include="Diffs\ThreeWayConflictType.cs" />
-    <Compile Include="Engine\Graphics\PipelineManager.cs" />
     <Compile Include="Engine\Graphics\GraphicsResizeContext.cs" />
     <Compile Include="Engine\Graphics\GraphicsResizeExtensions.cs" />
-    <Compile Include="Engine\Graphics\RenderPass.cs" />
-    <Compile Include="Engine\Graphics\RenderPass.Extensions.cs" />
     <Compile Include="Engine\Graphics\RenderMesh.cs" />
     <Compile Include="Engine\Graphics\RenderContext.cs" />
     <Compile Include="Engine\AnimationComponent.cs" />

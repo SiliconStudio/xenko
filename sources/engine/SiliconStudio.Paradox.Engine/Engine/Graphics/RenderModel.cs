@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Paradox.Engine.Graphics.Composers;
 
 namespace SiliconStudio.Paradox.Effects
 {
@@ -14,19 +15,19 @@ namespace SiliconStudio.Paradox.Effects
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderModel" /> class.
         /// </summary>
-        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="sceneRenderer">The scene renderer.</param>
         /// <param name="modelInstance">The model instance.</param>
         /// <exception cref="System.ArgumentNullException">pipeline</exception>
-        public RenderModel(RenderPipeline pipeline, IModelInstance modelInstance)
+        public RenderModel(SceneRenderer sceneRenderer, IModelInstance modelInstance)
         {
-            if (pipeline == null) throw new ArgumentNullException("pipeline");
+            if (sceneRenderer == null) throw new ArgumentNullException("sceneRenderer");
 
-            Pipeline = pipeline;
+            SceneRenderer = sceneRenderer;
             ModelInstance = modelInstance;
             Model = modelInstance.Model;
             Parameters = modelInstance.Parameters;
 
-            var modelRendererState = Pipeline.GetOrCreateModelRendererState();
+            var modelRendererState = sceneRenderer.GetOrCreateModelRendererState();
             RenderMeshes = new List<RenderMesh>[modelRendererState.ModelSlotMapping.Count];
 
             if (Model != null)
@@ -39,18 +40,18 @@ namespace SiliconStudio.Paradox.Effects
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RenderModel"/> class.
+        /// Initializes a new instance of the <see cref="RenderModel" /> class.
         /// </summary>
-        /// <param name="pipeline">The pipeline.</param>
+        /// <param name="sceneRenderer">The scene renderer.</param>
         /// <param name="model">The model.</param>
         /// <exception cref="System.ArgumentNullException">pipeline</exception>
         [Obsolete]
-        public RenderModel(RenderPipeline pipeline, Model model)
+        public RenderModel(SceneRenderer sceneRenderer, Model model)
         {
-            if (pipeline == null) throw new ArgumentNullException("pipeline");
-            Pipeline = pipeline;
+            if (sceneRenderer == null) throw new ArgumentNullException("pipeline");
+            SceneRenderer = sceneRenderer;
             Model = model;
-            var slotCount = Pipeline.GetOrCreateModelRendererState().ModelSlotMapping.Count;
+            var slotCount = sceneRenderer.GetOrCreateModelRendererState().ModelSlotMapping.Count;
             RenderMeshes = new List<RenderMesh>[slotCount];
         }
 
@@ -89,7 +90,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <value>
         /// The render pipeline.
         /// </value>
-        public readonly RenderPipeline Pipeline;
+        public readonly SceneRenderer SceneRenderer;
 
         public Material GetMaterial(int materialIndex)
         {

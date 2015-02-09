@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.EntityModel;
 
@@ -23,7 +24,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
             Scene = sceneComponent.Entity;
             SceneComponent = sceneComponent;
             EntitySystem = entitySystem;
-            PipelineManager = new PipelineManager();
+            Renderers = new TrackingCollection<Renderer>();
         }
 
         public Entity Scene { get; private set; }
@@ -34,7 +35,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
 
         public EntitySystem EntitySystem { get; private set; }
 
-        public PipelineManager PipelineManager { get; private set; }
+        public TrackingCollection<Renderer> Renderers { get; private set; }
 
         protected override void OnRendering(RenderContext context)
         {

@@ -11,7 +11,7 @@ namespace SiliconStudio.Paradox.Effects
     /// <summary>
     /// Performs render pipeline transformations attached to a specific <see cref="RenderPass"/>.
     /// </summary>
-    public abstract class Renderer
+    public abstract class Renderer : ComponentBase
     {
         private readonly IGraphicsDeviceService graphicsDeviceService;
 
@@ -28,7 +28,6 @@ namespace SiliconStudio.Paradox.Effects
             Services = services;
             EffectSystem = services.GetSafeServiceAs<EffectSystem>();
             graphicsDeviceService = services.GetSafeServiceAs<IGraphicsDeviceService>();
-            DebugName = GetType().Name;
         }
 
         /// <summary>
@@ -60,34 +59,13 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         /// <value>The effect system.</value>
         public EffectSystem EffectSystem { get; private set; }
-
-        /// <summary>
-        /// Gets the pass this processor is attached to.
-        /// </summary>
-        /// <value>The pass.</value>
-        public RenderPass Pass { get; internal set; }
-
+        
         /// <summary>
         /// Gets or sets the name of the debug.
         /// </summary>
         /// <value>The name of the debug.</value>
         public string DebugName { get; set; }
 
-        /// <summary>
-        /// Loads this instance. This method is called when a RenderPass is attached (directly or indirectly) to the children of <see cref="SiliconStudio.Paradox.Effects.RenderSystem.Pipeline"/>
-        /// </summary>
-        public virtual void Load()
-        {
-            Pass.StartPass += PassRendering;
-        }
-
-        /// <summary>
-        /// Unloads this instance. This method is called when a RenderPass is de-attached (directly or indirectly) to the children of <see cref="SiliconStudio.Paradox.Effects.RenderSystem.Pipeline"/>
-        /// </summary>
-        public virtual void Unload()
-        {
-            Pass.StartPass -= PassRendering;
-        }
 
         protected virtual void BeginRendering(RenderContext context)
         {
@@ -109,7 +87,7 @@ namespace SiliconStudio.Paradox.Effects
         {
         }
 
-        private void PassRendering(RenderContext context)
+        public void Draw(RenderContext context)
         {
             if (Enabled)
             {

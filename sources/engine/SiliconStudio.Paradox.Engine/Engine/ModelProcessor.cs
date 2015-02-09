@@ -19,7 +19,6 @@ namespace SiliconStudio.Paradox.Engine
     public class ModelProcessor : EntityProcessor<ModelProcessor.AssociatedData>
     {
         private SceneRenderer sceneRenderer;
-        private PipelineManager renderSystem;
 
         /// <summary>
         /// The link transformation to update.
@@ -36,12 +35,11 @@ namespace SiliconStudio.Paradox.Engine
         {
             // TODO: Temporary code to get the current pipeline manager for the current scene
             sceneRenderer = EntitySystem.GetProcessor<SceneProcessor>().Scenes.Where(sceneState => sceneState.EntitySystem == EntitySystem).Select(sceneState => sceneState.Renderer).First();
-            renderSystem = sceneRenderer.PipelineManager;
 
-            foreach (var pipeline in renderSystem.Pipelines)
+            foreach (var pipeline in sceneRenderer.Renderers)
                 RegisterPipelineForEvents(pipeline);
 
-            renderSystem.Pipelines.CollectionChanged += Pipelines_CollectionChanged;
+            sceneRenderer.Renderers.CollectionChanged += Pipelines_CollectionChanged;
         }
 
         protected internal override void OnSystemRemove()
@@ -62,13 +60,13 @@ namespace SiliconStudio.Paradox.Engine
             associatedData.RenderModels = new List<KeyValuePair<ModelRendererState, RenderModel>>();
 
             // Initialize a RenderModel for every pipeline
-            foreach (var pipeline in renderSystem.Pipelines)
+            foreach (var pipeline in sceneRenderer.Renderers)
             {
                 CreateRenderModel(associatedData, pipeline);
             }
         }
 
-        private static void CreateRenderModel(AssociatedData associatedData, RenderPipeline pipeline)
+        private static void CreateRenderModel(AssociatedData associatedData, SceneRenderer pipeline)
         {
             var modelInstance = associatedData.ModelComponent;
             var modelRenderState = pipeline.GetOrCreateModelRendererState();
@@ -85,7 +83,7 @@ namespace SiliconStudio.Paradox.Engine
             associatedData.RenderModels.Add(new KeyValuePair<ModelRendererState, RenderModel>(modelRenderState, renderModel));
         }
 
-        private static void DestroyRenderModel(AssociatedData associatedData, RenderPipeline pipeline)
+        private static void DestroyRenderModel(AssociatedData associatedData, SceneRenderer pipeline)
         {
             // Not sure if it's worth making RenderModels a Dictionary<RenderPipeline, List<X>>
             // (rationale: reloading of pipeline is probably rare enough and we don't want to add so many objects and slow normal rendering)
@@ -93,7 +91,7 @@ namespace SiliconStudio.Paradox.Engine
             for (int index = 0; index < associatedData.RenderModels.Count; index++)
             {
                 var renderModel = associatedData.RenderModels[index];
-                if (renderModel.Value.Pipeline == pipeline)
+                if (renderModel.Value.SceneRenderer == pipeline)
                 {
                     DestroyRenderModel(renderModel.Value);
                     associatedData.RenderModels.SwapRemoveAt(index--);
@@ -109,7 +107,7 @@ namespace SiliconStudio.Paradox.Engine
 
         private void Pipelines_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
         {
-            var pipeline = (RenderPipeline)e.Item;
+            var pipeline = (SceneRenderer)e.Item;
 
             // Instantiate/destroy render model for every tracked entity
             switch (e.Action)
@@ -127,13 +125,13 @@ namespace SiliconStudio.Paradox.Engine
             }
         }
 
-        private void RegisterPipelineForEvents(RenderPipeline pipeline)
+        private void RegisterPipelineForEvents(SceneRenderer pipeline)
         {
             pipeline.GetOrCreateModelRendererState().ModelSlotAdded += MeshProcessor_ModelSlotAdded;
             pipeline.GetOrCreateModelRendererState().ModelSlotRemoved += MeshProcessor_ModelSlotRemoved;
         }
 
-        private void UnregisterPipelineForEvents(RenderPipeline pipeline)
+        private void UnregisterPipelineForEvents(SceneRenderer pipeline)
         {
             pipeline.GetOrCreateModelRendererState().ModelSlotAdded -= MeshProcessor_ModelSlotAdded;
             pipeline.GetOrCreateModelRendererState().ModelSlotRemoved -= MeshProcessor_ModelSlotRemoved;
@@ -236,7 +234,7 @@ namespace SiliconStudio.Paradox.Engine
         public override void Draw(GameTime time)
         {
             // Clear all pipelines from previously collected models
-            foreach (var pipeline in renderSystem.Pipelines)
+            foreach (var pipeline in sceneRenderer.Renderers)
             {
                 var renderMeshState = pipeline.GetOrCreateModelRendererState();
                 renderMeshState.RenderModels.Clear();

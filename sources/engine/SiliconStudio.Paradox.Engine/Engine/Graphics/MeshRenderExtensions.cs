@@ -2,27 +2,24 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 
+using SiliconStudio.Paradox.Engine.Graphics.Composers;
+
 namespace SiliconStudio.Paradox.Effects
 {
     internal static class MeshRenderExtensions
     {
-        internal static ModelRendererState GetModelRendererState(this RenderPass pass)
+        internal static ModelRendererState GetModelRendererState(this SceneRenderer sceneRenderer)
         {
-            return GetOrCreateModelRendererState(pass, false);
+            return GetOrCreateModelRendererState(sceneRenderer, false);
         }
 
-        internal static ModelRendererState GetOrCreateModelRendererState(this RenderPass pass, bool createMeshStateIfNotFound = true)
+        internal static ModelRendererState GetOrCreateModelRendererState(this SceneRenderer sceneRenderer, bool createMeshStateIfNotFound = true)
         {
-            var pipeline = pass.Pipeline;
-            if (pipeline == null)
-            {
-                throw new ArgumentException("RenderPass is not associated with a RenderPipeline", "pass");
-            }
-            var pipelineState = pipeline.Tags.Get(ModelRendererState.Key);
+            var pipelineState = sceneRenderer.Tags.Get(ModelRendererState.Key);
             if (createMeshStateIfNotFound && pipelineState == null)
             {
                 pipelineState = new ModelRendererState();
-                pipeline.Tags.Set(ModelRendererState.Key, pipelineState);
+                sceneRenderer.Tags.Set(ModelRendererState.Key, pipelineState);
             }
             return pipelineState;
         }
