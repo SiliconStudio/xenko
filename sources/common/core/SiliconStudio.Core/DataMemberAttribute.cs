@@ -7,7 +7,7 @@ namespace SiliconStudio.Core
     /// <summary>
     /// Specify the way to store a property or field of some class or structure.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
     public sealed class DataMemberAttribute : Attribute
     {
         private readonly DataMemberMode mode;
