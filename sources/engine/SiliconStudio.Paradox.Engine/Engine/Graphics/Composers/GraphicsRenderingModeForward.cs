@@ -1,6 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.ComponentModel;
+
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Paradox.Engine.Graphics.Composers
@@ -21,7 +23,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         /// provide an effect that will be 'mixin' after the forward effect, allowing to change the behavior of the default 
         /// forward effect.
         /// </userdoc>
-        [DataMember(10)]
         public IGraphicsEffectMixinProvider EffectMixin { get; set; }
 
         /// <summary>
@@ -29,7 +30,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         /// rendering mode.
         /// </summary>
         /// <value><c>true</c> if [effect mixin overrides]; otherwise, <c>false</c>.</value>
-        [DataMember(20)]
         public bool EffectMixinOverrides { get; set; }
     }
 }

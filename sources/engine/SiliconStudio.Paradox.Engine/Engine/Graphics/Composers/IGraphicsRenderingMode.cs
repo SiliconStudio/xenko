@@ -22,6 +22,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         /// forward effect.
         /// </userdoc>
         [Display("Effect Mixin")]
+        [DataMember(10)]
         [DefaultValue(null)]
         IGraphicsEffectMixinProvider EffectMixin { get; set; }
 
@@ -30,7 +31,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         /// rendering mode.
         /// </summary>
         /// <value><c>true</c> if [effect mixin overrides]; otherwise, <c>false</c>.</value>
-        [Display("Effect Mixin Overrides?")]
+        [Display("Mixin Overrides?")]
+        [DataMember(20)]
         [DefaultValue(false)]
         bool EffectMixinOverrides { get; set; }
     }

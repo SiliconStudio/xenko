@@ -76,6 +76,8 @@
     <Compile Include="DataModel\Interpolator.cs" />
     <Compile Include="Engine\Graphics\Composers\GraphicsComposerLayer.cs" />
     <Compile Include="Engine\Graphics\Composers\GraphicsComposerOutputDirect.cs" />
+    <Compile Include="Engine\Graphics\Composers\GraphicsComposerOutputRenderFrame.cs" />
+    <Compile Include="Engine\Graphics\Composers\GraphicsComposerOutputSharedRenderFrame.cs" />
     <Compile Include="Engine\Graphics\Composers\GraphicsLayerCollection.cs" />
     <Compile Include="Engine\Graphics\Composers\GraphicsLayerInputLayer.cs" />
     <Compile Include="Engine\Graphics\Composers\GraphicsLayerInputNone.cs" />
