@@ -3,10 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SiliconStudio.Paradox.Effects.Data;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics.Data;
 
@@ -18,29 +16,31 @@ namespace SiliconStudio.Paradox.Extensions
         /// Generates an index buffer for this mesh data.
         /// </summary>
         /// <param name="meshData">The mesh data.</param>
-        public unsafe static void GenerateIndexBuffer(this MeshDraw meshData)
+        /// <param name="declaration">The final vertex declaration</param>
+        public unsafe static void GenerateIndexBuffer(this MeshDraw meshData, VertexDeclaration declaration)
         {
             // For now, require a MeshData with only one vertex buffer and no index buffer
             if (meshData.VertexBuffers.Length != 1 || meshData.IndexBuffer != null)
                 throw new NotImplementedException();
 
             var oldVertexBuffer = meshData.VertexBuffers[0];
-            var vertexStride = oldVertexBuffer.Declaration.VertexStride;
+            var oldVertexStride = oldVertexBuffer.Declaration.VertexStride;
+            var newVertexStride = declaration.VertexStride;
             var indexMapping = GenerateIndexMapping(oldVertexBuffer);
             var vertices = indexMapping.Vertices;
 
             // Generate vertex buffer
-            var vertexBufferData = new byte[oldVertexBuffer.Declaration.VertexStride * indexMapping.Vertices.Length];
+            var vertexBufferData = new byte[declaration.VertexStride * indexMapping.Vertices.Length];
             fixed (byte* oldVertexBufferDataStart = &oldVertexBuffer.Buffer.GetSerializationData().Content[oldVertexBuffer.Offset])
             fixed (byte* vertexBufferDataStart = &vertexBufferData[0])
             {
                 var vertexBufferDataCurrent = vertexBufferDataStart;
                 for (int i = 0; i < vertices.Length; ++i)
                 {
-                    Utilities.CopyMemory((IntPtr)vertexBufferDataCurrent, new IntPtr(&oldVertexBufferDataStart[vertexStride * vertices[i]]), vertexStride);
-                    vertexBufferDataCurrent += vertexStride;
+                    Utilities.CopyMemory((IntPtr)vertexBufferDataCurrent, new IntPtr(&oldVertexBufferDataStart[oldVertexStride * vertices[i]]), newVertexStride);
+                    vertexBufferDataCurrent += newVertexStride;
                 }
-                meshData.VertexBuffers[0] = new VertexBufferBinding(new BufferData(BufferFlags.VertexBuffer, vertexBufferData).ToSerializableVersion(), oldVertexBuffer.Declaration, indexMapping.Vertices.Length);
+                meshData.VertexBuffers[0] = new VertexBufferBinding(new BufferData(BufferFlags.VertexBuffer, vertexBufferData).ToSerializableVersion(), declaration, indexMapping.Vertices.Length);
             }
 
             // Generate index buffer
