@@ -22,16 +22,11 @@ namespace SiliconStudio.Paradox.Effects
 
         private readonly IVirtualResolution gameVirtualResolution;
 
-        private readonly RenderSystem renderSystem;
-
-        internal readonly List<Entity> EntitiesToRender = new List<Entity>();
-
         private static readonly Dictionary<string, List<Entity>> effectNamesToEntityDatas = new Dictionary<string, List<Entity>>();
 
         public SpriteRenderer(IServiceRegistry services)
             : base(services)
         {
-            renderSystem = (RenderSystem)services.GetService(typeof(RenderSystem));
             gameVirtualResolution = (IVirtualResolution)services.GetService(typeof(IVirtualResolution));
         }
 
@@ -48,15 +43,11 @@ namespace SiliconStudio.Paradox.Effects
 
             gameVirtualResolution.VirtualResolutionChanged += GameVirtualResolutionChanged;
             GameVirtualResolutionChanged(null, EventArgs.Empty);
-
-            renderSystem.SpriteRenderProcessors.Add(this);
         }
 
         public override void Unload()
         {
             base.Unload();
-
-            renderSystem.SpriteRenderProcessors.Remove(this);
 
             gameVirtualResolution.VirtualResolutionChanged -= GameVirtualResolutionChanged;
 
@@ -65,12 +56,16 @@ namespace SiliconStudio.Paradox.Effects
 
         protected override void OnRendering(RenderContext context)
         {
+            var spriteProcessor = context.SceneRenderer.EntitySystem.GetProcessor<SpriteProcessor>();
+
+            // TODO: Check how to integrate sprites in a Camera renderer instead of this
+
             // draw opaque sprites 
-            SelectAndSortEntitiesByEffects(SpriteIsOpaque);
+            SelectAndSortEntitiesByEffects(spriteProcessor, SpriteIsOpaque);
             DrawSprites(context, SpriteSortMode.FrontToBack, GraphicsDevice.BlendStates.Opaque);
 
             // draw transparent objects
-            SelectAndSortEntitiesByEffects(SpriteIsTransparent);
+            SelectAndSortEntitiesByEffects(spriteProcessor, SpriteIsTransparent);
             DrawSprites(context, SpriteSortMode.BackToFront, GraphicsDevice.BlendStates.AlphaBlend);
         }
 
@@ -84,16 +79,17 @@ namespace SiliconStudio.Paradox.Effects
             return !SpriteIsTransparent(spriteComponent);
         }
 
-        private void SelectAndSortEntitiesByEffects(Func<SpriteComponent, bool> shouldSelect)
+        private void SelectAndSortEntitiesByEffects(SpriteProcessor spriteProcessor, Func<SpriteComponent, bool> shouldSelect)
         {
             // clear current cache
             foreach (var entities in effectNamesToEntityDatas.Values)
                 entities.Clear();
 
             // select and sort the entities
-            foreach (var entity in EntitiesToRender)
+            foreach (var entityKeyPair in spriteProcessor.Sprites)
             {
-                var spriteComp = entity.Get(SpriteComponent.Key);
+                var spriteComp = entityKeyPair.SpriteComponent;
+                var entity = spriteComp.Entity;
 
                 if (spriteComp.SpriteGroup == null || spriteComp.SpriteGroup.Images == null || !shouldSelect(spriteComp)) 
                     continue;

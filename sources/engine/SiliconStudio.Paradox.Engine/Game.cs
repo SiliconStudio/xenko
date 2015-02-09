@@ -40,12 +40,6 @@ namespace SiliconStudio.Paradox
         public GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
 
         /// <summary>
-        /// Gets the render system.
-        /// </summary>
-        /// <value>The render system.</value>
-        public RenderSystem RenderSystem { get; private set; }
-
-        /// <summary>
         /// Gets the script system.
         /// </summary>
         /// <value>The script.</value>
@@ -186,9 +180,6 @@ namespace SiliconStudio.Paradox
             // Add the UI System
             GameSystems.Add(UI);
 
-            // Add the scene system
-            GameSystems.Add(SceneSystem);
-
             // Add the Audio System
             GameSystems.Add(Audio);
 
@@ -224,9 +215,7 @@ namespace SiliconStudio.Paradox
             EffectSystem = new EffectSystem(Services);
             GameSystems.Add(EffectSystem);
 
-            // Add RenderSystem
-            RenderSystem = new RenderSystem(Services);
-            GameSystems.Add(RenderSystem);
+            GameSystems.Add(SceneSystem);
 
             // TODO: data-driven?
             //Asset.Serializer.RegisterSerializer(new GpuTextureSerializer2(GraphicsDevice));

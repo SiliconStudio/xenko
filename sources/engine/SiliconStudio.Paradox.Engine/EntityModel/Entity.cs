@@ -101,6 +101,14 @@ namespace SiliconStudio.Paradox.EntityModel
         }
 
         /// <summary>
+        /// Gets or sets the group of this entity.
+        /// </summary>
+        /// <value>The group.</value>
+        //[DataMember(10)]
+        //[DefaultValue(EntityGroup.Default)]
+        //public EntityGroup Group { get; set; }
+
+        /// <summary>
         /// Gets or create a component with the specified key.
         /// </summary>
         /// <typeparam name="T">Type of the entity component</typeparam>

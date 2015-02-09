@@ -11,7 +11,7 @@ namespace SiliconStudio.Paradox.Effects
     [DataContract]
     public partial class RenderingParameters : ShaderMixinParameters
     {
-        public static readonly ParameterKey<RenderGroups> RenderGroup = ParameterKeys.New(RenderGroups.All);
-        public static readonly ParameterKey<RenderGroups> ActiveRenderGroup = ParameterKeys.New(RenderGroups.All);
+        public static readonly ParameterKey<EntityGroup> EntityGroup = ParameterKeys.New(Effects.EntityGroup.All);
+        public static readonly ParameterKey<EntityGroup> ActiveEntityGroup = ParameterKeys.New(Effects.EntityGroup.All);
     };
 }

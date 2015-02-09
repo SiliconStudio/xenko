@@ -26,7 +26,6 @@ namespace SiliconStudio.Paradox.Effects
 
             Enabled = true;
             Services = services;
-            RenderSystem = services.GetSafeServiceAs<RenderSystem>();
             EffectSystem = services.GetSafeServiceAs<EffectSystem>();
             graphicsDeviceService = services.GetSafeServiceAs<IGraphicsDeviceService>();
             DebugName = GetType().Name;
@@ -55,12 +54,6 @@ namespace SiliconStudio.Paradox.Effects
                 return (graphicsDeviceService != null) ? graphicsDeviceService.GraphicsDevice : null;
             }
         }
-
-        /// <summary>
-        /// Gets the render system.
-        /// </summary>
-        /// <value>The render system.</value>
-        public RenderSystem RenderSystem { get; private set; }
 
         /// <summary>
         /// Gets the effect system.

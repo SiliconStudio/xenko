@@ -59,9 +59,9 @@ namespace SiliconStudio.Paradox.Effects
         /// <param name="modelRenderer">The model renderer.</param>
         /// <param name="activelayers">The activelayers.</param>
         /// <returns>ModelRenderer.</returns>
-        public static ModelRenderer AddLayerFilter(this ModelRenderer modelRenderer, RenderGroups activelayers)
+        public static ModelRenderer AddLayerFilter(this ModelRenderer modelRenderer, EntityGroup activelayers)
         {
-            modelRenderer.AcceptRenderMesh.Add((context, renderMesh) => (renderMesh.Parameters.Get(RenderingParameters.RenderGroup) & activelayers) != RenderGroups.None);
+            modelRenderer.AcceptRenderMesh.Add((context, renderMesh) => (renderMesh.Parameters.Get(RenderingParameters.EntityGroup) & activelayers) != EntityGroup.None);
             modelRenderer.AppendDebugName("Layer " + activelayers);
             return modelRenderer;
         }
@@ -73,7 +73,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <returns>ModelRenderer.</returns>
         public static ModelRenderer AddContextActiveLayerFilter(this ModelRenderer modelRenderer)
         {
-            modelRenderer.AcceptRenderMesh.Add((context, renderMesh) => (context.CurrentPass.Parameters.Get(RenderingParameters.ActiveRenderGroup) & renderMesh.Parameters.Get(RenderingParameters.RenderGroup)) != RenderGroups.None);
+            modelRenderer.AcceptRenderMesh.Add((context, renderMesh) => (context.CurrentPass.Parameters.Get(RenderingParameters.ActiveEntityGroup) & renderMesh.Parameters.Get(RenderingParameters.EntityGroup)) != EntityGroup.None);
             modelRenderer.AppendDebugName("Active Layer");
             return modelRenderer;
         }

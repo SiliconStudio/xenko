@@ -34,31 +34,42 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
 
         public EntitySystem EntitySystem { get; private set; }
 
-
         public PipelineManager PipelineManager { get; private set; }
 
         protected override void OnRendering(RenderContext context)
         {
-            // TODO: Just hardcode support here, but we should have a pluggable composer here
-            var graphicsComposer = SceneComponent.GraphicsComposer as GraphicsComposerLayer;
-            if (graphicsComposer == null)
+            var previousRenderer = context.SceneRenderer;
+
+            try
             {
-                return;
+                // TODO: Check to see how we should generalize using the scene.
+                context.SceneRenderer = this;
+
+                // TODO: Just hardcode support here, but we should have a pluggable composer here
+                var graphicsComposer = SceneComponent.GraphicsComposer as GraphicsComposerLayer;
+                if (graphicsComposer == null)
+                {
+                    return;
+                }
+
+                foreach (var layer in graphicsComposer.Layers)
+                {
+                    if (!layer.Enabled)
+                    {
+                        continue;
+                    }
+
+                    // TODO: harcoded for now
+                    if (!(layer.Mode is GraphicsRenderingModeForward))
+                    {
+                        continue;
+                    }
+
+                }
             }
-
-            foreach (var layer in graphicsComposer.Layers)
+            finally
             {
-                if (!layer.Enabled)
-                {
-                    continue;
-                }
-
-                // TODO: harcoded for now
-                if (!(layer.Mode is GraphicsRenderingModeForward))
-                {
-                    continue;
-                }
-
+                context.SceneRenderer = previousRenderer;
             }
         }
 

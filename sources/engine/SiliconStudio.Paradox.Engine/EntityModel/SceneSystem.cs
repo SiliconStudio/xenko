@@ -2,9 +2,12 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Linq;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Games;
 
@@ -15,7 +18,11 @@ namespace SiliconStudio.Paradox.EntityModel
     /// </summary>
     public class SceneSystem : GameSystemBase
     {
+        private static readonly Logger Log = GlobalLogger.GetLogger("SceneSystem");
+
         private const string DefaultSceneName = "__DefaultScene__"; // TODO: How to determine the default scene?
+
+        private RenderContext drawContext;
 
         private EntitySystem entitySystem;
 
@@ -30,12 +37,6 @@ namespace SiliconStudio.Paradox.EntityModel
             : base(registry)
         {
             registry.AddService(typeof(SceneSystem), this);
-        }
-
-        protected override void LoadContent()
-        {
-            var assetManager = Services.GetSafeServiceAs<AssetManager>();
-            Scene = assetManager.Load<Entity>(DefaultSceneName);
         }
 
         /// <summary>
@@ -87,6 +88,14 @@ namespace SiliconStudio.Paradox.EntityModel
             }
         }
 
+        protected override void LoadContent()
+        {
+            var assetManager = Services.GetSafeServiceAs<AssetManager>();
+            Scene = assetManager.Load<Entity>(DefaultSceneName);
+            // Create the drawing context
+            drawContext = new RenderContext(GraphicsDevice);
+        }
+
         public override void Update(GameTime gameTime)
         {
             if (entitySystem != null)
@@ -97,6 +106,38 @@ namespace SiliconStudio.Paradox.EntityModel
 
         public override void Draw(GameTime gameTime)
         {
+            try
+            {
+                var sceneState = EntitySystem.GetProcessor<SceneProcessor>().CurrentState;
+                var renderer = sceneState.Renderer;
+
+                GraphicsDevice.Begin();
+
+                GraphicsDevice.ClearState();
+
+                // Update global time
+                GraphicsDevice.Parameters.Set(GlobalKeys.Time, (float)gameTime.Total.TotalSeconds);
+                GraphicsDevice.Parameters.Set(GlobalKeys.TimeStep, (float)gameTime.Elapsed.TotalSeconds);
+
+                if (GraphicsDevice.IsProfilingSupported)
+                {
+                    GraphicsDevice.EnableProfile(true);
+                }
+
+                // Draw recursively the Pipeline
+                // TODO: Ugly indirection to call SceneRenderer through PipelineManager. Improve this.
+                renderer.PipelineManager.Draw(renderer.PipelineManager.Pipeline, drawContext);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("An exception occured while rendering", ex);
+            }
+            finally
+            {
+                GraphicsDevice.End();
+            }
+
+
             if (entitySystem != null)
             {
                 entitySystem.Draw(gameTime);

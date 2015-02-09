@@ -2,22 +2,25 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Generic;
 
+using SiliconStudio.Paradox.Engine.Graphics.Composers;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects
 {
     /// <summary>
-    /// Thread-local storage context used during rendering.
+    /// Rendering context.
     /// </summary>
     public class RenderContext
     {
         private readonly GraphicsDevice graphicsDevice;
-        private readonly ParameterCollection parameters;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RenderContext"/> class.
+        /// </summary>
+        /// <param name="graphicsDevice">The graphics device.</param>
         public RenderContext(GraphicsDevice graphicsDevice)
         {
             this.graphicsDevice = graphicsDevice;
-            parameters = new ParameterCollection("Thread Context parameters");
         }
 
         /// <summary>
@@ -33,16 +36,10 @@ namespace SiliconStudio.Paradox.Effects
         }
 
         /// <summary>
-        /// Gets the parameters shared by this instance.
+        /// Gets or sets the scene renderer.
         /// </summary>
-        /// <value>The parameters.</value>
-        public ParameterCollection Parameters
-        {
-            get
-            {
-                return parameters;
-            }
-        }
+        /// <value>The scene renderer.</value>
+        public SceneRenderer SceneRenderer { get; set; }
 
         /// <summary>
         /// Gets or sets the current pass being rendered.

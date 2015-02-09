@@ -401,10 +401,9 @@
     <Compile Include="Engine\Graphics\ProfilingKeys.cs" />
     <Compile Include="Engine\Graphics\RecursiveRenderer.cs" />
     <Compile Include="Engine\Graphics\RendererExtensions.cs" />
-    <Compile Include="Engine\Graphics\RenderGroups.cs" />
+    <Compile Include="EntityModel\EntityGroup.cs" />
     <Compile Include="Engine\Graphics\Renderer.cs" />
     <Compile Include="Engine\Graphics\RenderModel.cs" />
-    <Compile Include="Engine\Graphics\RenderPipelineFactory.cs" />
     <Compile Include="Engine\Graphics\RenderStateSetter.cs" />
     <Compile Include="Engine\Graphics\RenderTargetSetter.cs" />
     <Compile Include="Engine\Graphics\Mesh.cs" />
@@ -476,11 +475,10 @@
     <Compile Include="Engine\CameraComponent.cs" />
     <Compile Include="EntityModel\EntityComponentProperty.cs" />
     <Compile Include="EntityModel\EntityComponentPropertyType.cs" />
-    <Compile Include="EntityModel\EntityGroup.cs" />
     <Compile Include="EntityModel\ParameterContainerExtensions.cs" />
     <Compile Include="Diffs\ThreeWayMergeOrdered.cs" />
     <Compile Include="Diffs\ThreeWayConflictType.cs" />
-    <Compile Include="Engine\Graphics\RenderSystem.cs" />
+    <Compile Include="Engine\Graphics\PipelineManager.cs" />
     <Compile Include="Engine\Graphics\GraphicsResizeContext.cs" />
     <Compile Include="Engine\Graphics\GraphicsResizeExtensions.cs" />
     <Compile Include="Engine\Graphics\RenderPass.cs" />

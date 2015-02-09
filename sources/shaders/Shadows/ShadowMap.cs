@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             ShadowFarDistance = 50000.0f;
             ShadowMapSize = 512;
             CascadeCount = 4;
-            Groups = RenderGroups.All;
+            Groups = EntityGroup.All;
             Update = true;
         }
 
@@ -81,7 +81,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
         /// <summary>
         /// The active layers for this shadow map.
         /// </summary>
-        public RenderGroups Groups;
+        public EntityGroup Groups;
 
         internal ShadowMapCascadeInfo[] Cascades;
         internal ShadowMapReceiverInfo ReceiverInfo;

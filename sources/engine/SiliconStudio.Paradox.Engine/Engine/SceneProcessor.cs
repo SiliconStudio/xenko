@@ -43,11 +43,13 @@ namespace SiliconStudio.Paradox.Engine
             Scenes = new List<SceneState>();
         }
 
+        public SceneState CurrentState { get; private set; }
+
         public List<SceneState> Scenes { get; private set; }
 
         protected override SceneState GenerateAssociatedData(Entity entity)
         {
-            return entity == sceneEntityRoot ? new SceneState(EntitySystem, sceneEntityRoot) : new SceneState(this.EntitySystem.Services, entity);
+            return entity == sceneEntityRoot ? CurrentState = new SceneState(EntitySystem, sceneEntityRoot) : new SceneState(this.EntitySystem.Services, entity);
         }
 
         protected override void OnEntityAdding(Entity entity, SceneState data)

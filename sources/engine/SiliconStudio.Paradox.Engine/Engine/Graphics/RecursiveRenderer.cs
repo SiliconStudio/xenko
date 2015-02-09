@@ -1,8 +1,11 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
+using SiliconStudio.Paradox.Engine.Graphics;
 
 namespace SiliconStudio.Paradox.Effects
 {
@@ -11,8 +14,12 @@ namespace SiliconStudio.Paradox.Effects
     /// </summary>
     public class RecursiveRenderer : Renderer
     {
-        public RecursiveRenderer(IServiceRegistry services, RenderPipeline recursivePipeline) : base(services)
+        private readonly PipelineManager pipelineManager;
+
+        public RecursiveRenderer(IServiceRegistry services, PipelineManager pipelineManager, RenderPipeline recursivePipeline) : base(services)
         {
+            if (pipelineManager == null) throw new ArgumentNullException("pipelineManager");
+            this.pipelineManager = pipelineManager;
             RecursivePipeline = recursivePipeline;
         }
 
@@ -23,7 +30,7 @@ namespace SiliconStudio.Paradox.Effects
             base.Load();
 
             // Register pipeline
-            RenderSystem.Pipelines.Add(RecursivePipeline);
+            pipelineManager.Pipelines.Add(RecursivePipeline);
         }
 
         public override void Unload()
@@ -31,7 +38,7 @@ namespace SiliconStudio.Paradox.Effects
             base.Unload();
 
             // Unregister pipeline
-            RenderSystem.Pipelines.Remove(RecursivePipeline);
+            pipelineManager.Pipelines.Remove(RecursivePipeline);
         }
 
         protected override void OnRendering(RenderContext context)
@@ -39,7 +46,7 @@ namespace SiliconStudio.Paradox.Effects
             // Save RenderPass
             var currentPass = context.CurrentPass;
 
-            RenderSystem.Draw(RecursivePipeline, context);
+            pipelineManager.Draw(RecursivePipeline, context);
 
             // Restore RenderPass
             context.CurrentPass = currentPass;

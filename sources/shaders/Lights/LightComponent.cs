@@ -34,7 +34,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         {
             Type = new LightDirectional();
             Intensity = 1.0f;
-            Groups = RenderGroups.All;
+            Groups = EntityGroup.All;
         }
 
         /// <summary>
@@ -61,8 +61,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// The layer mask.
         /// </value>
         [DataMember(40)]
-        [DefaultValue(RenderGroups.All)]
-        public RenderGroups Groups { get; set; }
+        [DefaultValue(EntityGroup.All)]
+        public EntityGroup Groups { get; set; }
 
         protected override PropertyKey DefaultKey
         {

@@ -149,7 +149,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 
                     MoveToParameters(asset, parameters, keyValue.Key, "CastShadows", LightingKeys.CastShadows);
                     MoveToParameters(asset, parameters, keyValue.Key, "ReceiveShadows", LightingKeys.ReceiveShadows);
-                    MoveToParameters(asset, parameters, keyValue.Key, "Layer", RenderingParameters.RenderGroup);
+                    MoveToParameters(asset, parameters, keyValue.Key, "Layer", RenderingParameters.EntityGroup);
                 }
 
                 // Get the Model, and generate an Id if the previous one wasn't the empty one
