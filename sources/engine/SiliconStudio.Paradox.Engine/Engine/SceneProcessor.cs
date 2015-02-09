@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
+using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Engine.Graphics.Composers;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
 
@@ -45,7 +47,7 @@ namespace SiliconStudio.Paradox.Engine
 
         protected override SceneState GenerateAssociatedData(Entity entity)
         {
-            return (entity == sceneEntityRoot) ? null : new SceneState(this.EntitySystem.Services, entity);
+            return entity == sceneEntityRoot ? new SceneState(EntitySystem, sceneEntityRoot) : new SceneState(this.EntitySystem.Services, entity);
         }
 
         protected override void OnEntityAdding(Entity entity, SceneState data)
@@ -94,9 +96,32 @@ namespace SiliconStudio.Paradox.Engine
                 if (services == null) throw new ArgumentNullException("services");
                 Scene = sceneEntityRoot;
                 EntitySystem = services.GetSafeServiceAs<SceneSystem>().CreateSceneEntitySystem(sceneEntityRoot);
+                Initialize();
             }
 
+            public SceneState(EntitySystem entitySystem, Entity scene)
+            {
+                EntitySystem = entitySystem;
+                Scene = scene;
+                Initialize();
+            }
+
+            private void Initialize()
+            {
+                Renderer = new SceneRenderer(EntitySystem.Services, EntitySystem, Scene.Get<SceneComponent>());
+            }
+
+            /// <summary>
+            /// Gets the scene.
+            /// </summary>
+            /// <value>The scene.</value>
             public Entity Scene { get; private set; }
+
+            /// <summary>
+            /// Gets the scene renderer.
+            /// </summary>
+            /// <value>The scene renderer.</value>
+            public SceneRenderer Renderer { get; private set; }
 
             /// <summary>
             /// Entity System dedicated to this scene.

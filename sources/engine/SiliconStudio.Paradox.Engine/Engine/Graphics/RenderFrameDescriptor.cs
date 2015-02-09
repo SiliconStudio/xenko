@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.ComponentModel;
 
 using SiliconStudio.Core;
@@ -11,7 +12,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     /// A descriptor used to create a <see cref="RenderFrame"/>.
     /// </summary>
     [DataContract("RenderFrameDescriptor")]
-    public class RenderFrameDescriptor
+    public sealed class RenderFrameDescriptor : IEquatable<RenderFrameDescriptor>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderFrameDescriptor"/> class.
@@ -66,5 +67,33 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         [DataMember(50)]
         [DefaultValue(RenderFrameDepthFormat.None)]
         public RenderFrameDepthFormat DepthFormat { get; set; }
+
+        public bool Equals(RenderFrameDescriptor other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Mode == other.Mode && Width == other.Width && Height == other.Height && Format == other.Format && DepthFormat == other.DepthFormat;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((RenderFrameDescriptor)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hashCode = (int)Mode;
+                hashCode = (hashCode * 397) ^ Width;
+                hashCode = (hashCode * 397) ^ Height;
+                hashCode = (hashCode * 397) ^ (int)Format;
+                hashCode = (hashCode * 397) ^ (int)DepthFormat;
+                return hashCode;
+            }
+        }
     }
 }

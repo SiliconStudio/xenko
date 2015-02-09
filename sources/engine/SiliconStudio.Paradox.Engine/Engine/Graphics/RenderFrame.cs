@@ -6,6 +6,7 @@ using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Engine.Graphics
@@ -18,6 +19,11 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     [DataSerializer(typeof(RenderFrameSerializer))]
     public class RenderFrame
     {
+        /// <summary>
+        /// The current render frame for the context.
+        /// </summary>
+        public static readonly ParameterKey<RenderFrame> Current = ParameterKeys.New<RenderFrame>();
+
         private static readonly PropertyKey<RenderFrame> RenderFrameKey = new PropertyKey<RenderFrame>("RenderFrameKey", typeof(RenderFrame));
 
         // TODO: Should we move this to Graphics instead?

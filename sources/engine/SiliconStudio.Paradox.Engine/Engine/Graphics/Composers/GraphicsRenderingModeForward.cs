@@ -1,8 +1,6 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.ComponentModel;
-
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Paradox.Engine.Graphics.Composers
@@ -14,6 +12,11 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
     [Display("Forward")]
     public class GraphicsRenderingModeForward : IGraphicsRenderingMode
     {
+        public string GetMainModelEffect()
+        {
+            return "ParadoxBaseShader";
+        }
+
         /// <summary>
         /// Gets or sets the effect mixin that will applied on top of the default Forward effect mixin.
         /// </summary>

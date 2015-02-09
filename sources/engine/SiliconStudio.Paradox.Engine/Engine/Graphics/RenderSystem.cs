@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Threading.Tasks;
+
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Games;
@@ -12,42 +12,18 @@ using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Paradox.Effects
 {
-    /// <summary>
-    /// Renders its <see cref="RenderSystem.Pipeline"/>, which will usually result in drawing all meshes, UI, etc...
-    /// </summary>
-    public class RenderSystem : GameSystemBase
+    public class PipelineManager
     {
-        private static readonly Logger Log = GlobalLogger.GetLogger("RenderSystem");
+        private readonly TrackingHashSet<RenderPipeline> pipelines = new TrackingHashSet<RenderPipeline>();
 
-        private RenderContext drawContext;
-        private TrackingHashSet<RenderPipeline> pipelines = new TrackingHashSet<RenderPipeline>();
-
-        internal readonly List<SpriteRenderer> SpriteRenderProcessors = new List<SpriteRenderer>(); 
-
-        public RenderSystem(IServiceRegistry registry)
-            : base(registry)
+        public PipelineManager()
         {
-            pipelines.CollectionChanged += Pipelines_CollectionChanged;
-
-            // Register both implem and interface
-            Services.AddService(typeof(RenderSystem), this);
-
             // Create default pipeline
             Pipeline = new RenderPipeline("Main");
 
             // Register default pipeline
+            pipelines.CollectionChanged += Pipelines_CollectionChanged;
             pipelines.Add(Pipeline);
-
-            Visible = true;
-        }
-
-        /// <inheritdoc/>
-        protected override void LoadContent()
-        {
-            base.LoadContent();
-
-            // Create the drawing context
-            drawContext = new RenderContext(GraphicsDevice);
         }
 
         /// <summary>
@@ -67,6 +43,128 @@ namespace SiliconStudio.Paradox.Effects
         public TrackingHashSet<RenderPipeline> Pipelines
         {
             get { return pipelines; }
+        }
+
+        private void RenderPassAdded(RenderPass renderPass)
+        {
+            foreach (var child in renderPass.Children)
+            {
+                RenderPassAdded(child);
+            }
+            renderPass.Children.CollectionChanged += Pipelines_CollectionChanged;
+
+            foreach (var processor in renderPass.Renderers)
+            {
+                processor.Load();
+            }
+            renderPass.Renderers.CollectionChanged += Renderers_CollectionChanged;
+        }
+
+        private void RenderPassRemoved(RenderPass renderPass)
+        {
+            foreach (var child in renderPass.Children)
+            {
+                RenderPassRemoved(child);
+            }
+            renderPass.Children.CollectionChanged -= Pipelines_CollectionChanged;
+
+            foreach (var processor in renderPass.Renderers)
+            {
+                processor.Unload();
+            }
+            renderPass.Renderers.CollectionChanged -= Renderers_CollectionChanged;
+        }
+
+        private void Pipelines_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        {
+            var renderPass = (RenderPass)e.Item;
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    RenderPassAdded(renderPass);
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    RenderPassRemoved(renderPass);
+                    break;
+            }
+        }
+
+        private void Renderers_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        {
+            var renderer = (Renderer)e.Item;
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    renderer.Load();
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    renderer.Unload();
+                    break;
+            }
+        }
+    }
+
+
+
+    /// <summary>
+    /// Renders its <see cref="RenderSystem.Pipeline"/>, which will usually result in drawing all meshes, UI, etc...
+    /// </summary>
+    public class RenderSystem : GameSystemBase
+    {
+        private static readonly Logger Log = GlobalLogger.GetLogger("RenderSystem");
+
+        private RenderContext drawContext;
+
+        private readonly PipelineManager pipelineManager;
+
+        internal readonly List<SpriteRenderer> SpriteRenderProcessors = new List<SpriteRenderer>(); 
+
+        public RenderSystem(IServiceRegistry registry)
+            : base(registry)
+        {
+            pipelineManager = new PipelineManager();
+
+            // Register both implem and interface
+            Services.AddService(typeof(RenderSystem), this);
+
+            Visible = true;
+        }
+
+        /// <inheritdoc/>
+        protected override void LoadContent()
+        {
+            base.LoadContent();
+
+            // Create the drawing context
+            drawContext = new RenderContext(GraphicsDevice);
+        }
+
+        /// <summary>
+        /// Gets the root pipeline, used as entry point for rendering.
+        /// </summary>
+        /// <value>
+        /// The pipeline.
+        /// </value>
+        public RenderPipeline Pipeline
+        {
+            get
+            {
+                return pipelineManager.Pipeline;
+            }
+        }
+
+        /// <summary>
+        /// Gets all the existing registered pipelines.
+        /// </summary>
+        /// <value>
+        /// The registered pipelines.
+        /// </value>
+        public TrackingHashSet<RenderPipeline> Pipelines
+        {
+            get
+            {
+                return pipelineManager.Pipelines;
+            }
         }
 
         /// <inheritdoc/>
@@ -127,64 +225,6 @@ namespace SiliconStudio.Paradox.Effects
             if (pass.Name != null)
             {
                 context.GraphicsDevice.EndProfile();
-            }
-        }
-
-        private void RenderPassAdded(RenderPass renderPass)
-        {
-            foreach (var child in renderPass.Children)
-            {
-                RenderPassAdded(child);
-            }
-            renderPass.Children.CollectionChanged += Pipelines_CollectionChanged;
-
-            foreach (var processor in renderPass.Renderers)
-            {
-                processor.Load();
-            }
-            renderPass.Renderers.CollectionChanged += Renderers_CollectionChanged;
-        }
-
-        private void RenderPassRemoved(RenderPass renderPass)
-        {
-            foreach (var child in renderPass.Children)
-            {
-                RenderPassRemoved(child);
-            }
-            renderPass.Children.CollectionChanged -= Pipelines_CollectionChanged;
-
-            foreach (var processor in renderPass.Renderers)
-            {
-                processor.Unload();
-            }
-            renderPass.Renderers.CollectionChanged -= Renderers_CollectionChanged;
-        }
-
-        private void Pipelines_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
-        {
-            var renderPass = (RenderPass)e.Item;
-            switch (e.Action)
-            {
-                case NotifyCollectionChangedAction.Add:
-                    RenderPassAdded(renderPass);
-                    break;
-                case NotifyCollectionChangedAction.Remove:
-                    RenderPassRemoved(renderPass);
-                    break;
-            }
-        }
-
-        private void Renderers_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
-        {
-            var renderer = (Renderer)e.Item;
-            switch (e.Action)
-            {
-                case NotifyCollectionChangedAction.Add:
-                    renderer.Load();
-                    break;
-                case NotifyCollectionChangedAction.Remove:
-                    renderer.Unload();
-                    break;
             }
         }
     }

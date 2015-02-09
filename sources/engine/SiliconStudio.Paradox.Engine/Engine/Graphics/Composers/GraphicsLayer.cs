@@ -14,8 +14,9 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
     [DataContract("GraphicsLayer")]
     public class GraphicsLayer
     {
-        // TODO: This may be shared with a graph composer
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GraphicsLayer"/> class.
+        /// </summary>
         public GraphicsLayer()
         {
             Enabled = true;

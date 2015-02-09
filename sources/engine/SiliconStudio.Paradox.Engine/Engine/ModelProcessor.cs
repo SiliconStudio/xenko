@@ -3,8 +3,10 @@
 
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Engine.Graphics.Composers;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Core.Extensions;
@@ -15,7 +17,8 @@ namespace SiliconStudio.Paradox.Engine
 {
     public class ModelProcessor : EntityProcessor<ModelProcessor.AssociatedData>
     {
-        private RenderSystem renderSystem;
+        private SceneRenderer sceneRenderer;
+        private PipelineManager renderSystem;
 
         /// <summary>
         /// The link transformation to update.
@@ -30,7 +33,9 @@ namespace SiliconStudio.Paradox.Engine
 
         protected internal override void OnSystemAdd()
         {
-            renderSystem = Services.GetSafeServiceAs<RenderSystem>();
+            // TODO: Temporary code to get the current pipeline manager for the current scene
+            sceneRenderer = EntitySystem.GetProcessor<SceneProcessor>().Scenes.Where(sceneState => sceneState.EntitySystem == EntitySystem).Select(sceneState => sceneState.Renderer).First();
+            renderSystem = sceneRenderer.PipelineManager;
 
             foreach (var pipeline in renderSystem.Pipelines)
                 RegisterPipelineForEvents(pipeline);

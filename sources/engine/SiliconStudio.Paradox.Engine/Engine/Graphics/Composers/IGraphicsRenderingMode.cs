@@ -13,6 +13,12 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
     public interface IGraphicsRenderingMode
     {
         /// <summary>
+        /// Gets the main effect used for rendering model in this mode.
+        /// </summary>
+        /// <returns>System.String.</returns>
+        string GetMainModelEffect();
+
+        /// <summary>
         /// Gets or sets the effect mixin that will applied on top of the default Forward effect mixin.
         /// </summary>
         /// <value>The effect overrider.</value>

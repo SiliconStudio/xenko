@@ -14,9 +14,12 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
     [Display("Layer")]
     public sealed class GraphicsComposerLayer : GraphicsLayer, IGraphicsComposer
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GraphicsComposerLayer"/> class.
+        /// </summary>
         public GraphicsComposerLayer()
         {
-            Layers = new GraphicsRendererCollection();
+            Layers = new GraphicsLayerCollection();
             Input = GraphicsLayerInputLayer.PreviousLayer();
         }
 
@@ -26,6 +29,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         /// <value>The layers.</value>
         [DataMember(45)]
         [Category]
-        public GraphicsRendererCollection Layers { get; private set; }
+        public GraphicsLayerCollection Layers { get; private set; }
     }
 }

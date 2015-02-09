@@ -39,6 +39,18 @@ namespace SiliconStudio.Paradox.EntityModel
         }
 
         /// <summary>
+        /// Gets the entity system of the current scene.
+        /// </summary>
+        /// <value>The scene entity system.</value>
+        public EntitySystem EntitySystem
+        {
+            get
+            {
+                return entitySystem;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the root scene.
         /// </summary>
         /// <value>The scene.</value>

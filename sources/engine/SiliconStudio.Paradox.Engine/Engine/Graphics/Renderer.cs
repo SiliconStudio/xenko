@@ -3,7 +3,6 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders.Compiler;
 
@@ -62,12 +61,6 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         /// <value>The render system.</value>
         public RenderSystem RenderSystem { get; private set; }
-
-        /// <summary>
-        /// Gets the entity system.
-        /// </summary>
-        /// <value>The entity system.</value>
-        public EntitySystem EntitySystem { get; private set; }
 
         /// <summary>
         /// Gets the effect system.

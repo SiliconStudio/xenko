@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects.Images;
@@ -24,7 +26,8 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
         public SkyboxBackgroundRenderer(IServiceRegistry services)
             : base(services)
         {
-            skyboxProcessor = EntitySystem.GetProcessor<SkyboxProcessor>();
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer");
+            //skyboxProcessor = EntitySystem.GetProcessor<SkyboxProcessor>();
         }
 
         public Texture Target { get; set; }

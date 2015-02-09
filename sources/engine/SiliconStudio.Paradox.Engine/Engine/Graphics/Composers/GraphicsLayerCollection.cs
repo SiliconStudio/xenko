@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Paradox.Engine.Graphics.Composers
 {
@@ -11,7 +12,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
     /// A Collection of <see cref="GraphicsLayer"/>.
     /// </summary>
     [DataContract("GraphicsLayerCollection")]
-    public sealed class GraphicsLayerCollection : List<GraphicsLayer>
+    public sealed class GraphicsLayerCollection : SafeList<GraphicsLayer>
     {
     }
 }
