@@ -53,11 +53,13 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         public Texture DepthStencil { get; internal set; }
 
         /// <summary>
-        /// Recover a <see cref="RenderFrame"/> from a texture that has been created for a render frame.
+        /// Recover a <see cref="RenderFrame" /> from a texture that has been created for a render frame.
         /// </summary>
         /// <param name="texture">The texture.</param>
+        /// <param name="depthStencilTexture">The depth stencil texture.</param>
         /// <returns>The instance of RenderFrame or null if no render frame was used to create this texture.</returns>
-        public static RenderFrame FromTexture(Texture texture)
+        /// <exception cref="System.InvalidOperationException">The texture must be a render target</exception>
+        public static RenderFrame FromTexture(Texture texture, Texture depthStencilTexture = null)
         {
             if (texture == null)
             {
@@ -66,12 +68,18 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
             if (!texture.IsRenderTarget)
             {
-                throw new InvalidOperationException("The texture must be a render target");
+                throw new ArgumentException("The texture must be a render target", "texture");
             }
 
+            if (depthStencilTexture != null && !depthStencilTexture.IsDepthStencil)
+            {
+                throw new ArgumentException("The texture must be a depth stencil texture", "depthStencilTexture");
+            }
+
+            // Retrieve the render frame from the texture if any
             var renderFrame = texture.Tags.Get(RenderFrameKey);
 
-            // Allow to create a render frame from a custom texture
+            // OR create a render frame from the specified texture
             if (renderFrame == null)
             {
                 var descriptor = new RenderFrameDescriptor();
@@ -83,13 +91,24 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                     renderFrameFormat = RenderFrameFormat.HDR;
                 }
 
+                var depthFrameFormat = RenderFrameDepthFormat.None;
+                if (depthStencilTexture != null)
+                {
+                    depthFrameFormat = depthStencilTexture.HasStencil ? RenderFrameDepthFormat.DepthAndStencil : RenderFrameDepthFormat.Depth;
+                }
+
                 descriptor.Format = renderFrameFormat;
+                descriptor.DepthFormat = depthFrameFormat;
                 descriptor.Mode = RenderFrameSizeMode.Fixed;
                 descriptor.Width = texture.Width;
                 descriptor.Height = texture.Height;
 
-                renderFrame = new RenderFrame(descriptor, texture, null);
+                renderFrame = new RenderFrame(descriptor, texture, depthStencilTexture);
                 texture.Tags.Set(RenderFrameKey, renderFrame);
+                if (depthStencilTexture != null)
+                {
+                    depthStencilTexture.Tags.Set(RenderFrameKey, renderFrame);
+                }
             }
             return renderFrame;
         }
