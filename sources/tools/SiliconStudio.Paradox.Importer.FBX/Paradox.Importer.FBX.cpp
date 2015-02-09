@@ -491,19 +491,25 @@ public:
 						int group;
 						if (smoothingElement->GetMappingMode() == FbxLayerElement::eByControlPoint)
 						{
-							int normalIndex = (smoothingElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
+							int groupIndex = (smoothingElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
 								? smoothingElement->GetIndexArray().GetAt(controlPointIndex)
 								: controlPointIndex;
-							group = smoothingElement->GetDirectArray().GetAt(normalIndex);
+							group = smoothingElement->GetDirectArray().GetAt(groupIndex);
 						}
 						else if (smoothingElement->GetMappingMode() == FbxLayerElement::eByPolygonVertex)
 						{
-							int normalIndex = (smoothingElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
+							int groupIndex = (smoothingElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
 								? smoothingElement->GetIndexArray().GetAt(vertexIndex)
 								: vertexIndex;
-							group = smoothingElement->GetDirectArray().GetAt(normalIndex);
+							group = smoothingElement->GetDirectArray().GetAt(groupIndex);
 						}
-
+						else if (smoothingElement->GetMappingMode() == FbxLayerElement::eByPolygon)
+						{
+							int groupIndex = (smoothingElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
+								? smoothingElement->GetIndexArray().GetAt(i)
+								: i;
+							group = smoothingElement->GetDirectArray().GetAt(groupIndex);
+						}
 						((int*)(vbPointer + smoothingOffset))[0] = (int)group;
 					}
 
