@@ -81,7 +81,6 @@
     <Compile Include="Engine\Graphics\Composers\GraphicsLayerCollection.cs" />
     <Compile Include="Engine\Graphics\Composers\GraphicsLayerInputLayer.cs" />
     <Compile Include="Engine\Graphics\Composers\GraphicsLayerInputNone.cs" />
-    <Compile Include="Engine\Graphics\Composers\GraphicsRendererContext.cs" />
     <Compile Include="Engine\Graphics\Composers\GraphicsRendererCollection.cs" />
     <Compile Include="Engine\Graphics\Composers\GraphicsRenderingModeForward.cs" />
     <Compile Include="Engine\Graphics\Composers\IGraphicsComposer.cs" />

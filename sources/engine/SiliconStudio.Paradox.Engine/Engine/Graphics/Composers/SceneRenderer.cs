@@ -54,24 +54,38 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
 
                 foreach (var layer in graphicsComposer.Layers)
                 {
-                    if (!layer.Enabled)
-                    {
-                        continue;
-                    }
-
-                    // TODO: harcoded for now
-                    if (!(layer.Mode is GraphicsRenderingModeForward))
-                    {
-                        continue;
-                    }
-
+                    DrawLayer(context, layer);
                 }
+
+                // Draw last part
+                DrawLayer(context, graphicsComposer);
             }
             finally
             {
                 context.SceneRenderer = previousRenderer;
             }
         }
+
+        private void DrawLayer(RenderContext context, GraphicsLayer layer)
+        {
+            if (!layer.Enabled)
+            {
+                return;
+            }
+
+            // TODO: harcoded for now
+            if (!(layer.Mode is GraphicsRenderingModeForward))
+            {
+                return;
+            }
+
+            // TODO: Renderer may be different based on the rendering model
+            foreach (var renderer in layer.Renderers)
+            {
+                renderer.Render(context);
+            }
+        }
+
 
         private class GraphicsLayerState
         {
