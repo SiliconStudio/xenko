@@ -167,7 +167,6 @@ namespace SiliconStudio.Presentation.Quantum
         {
             if (Parent == null) throw new InvalidOperationException("The node to refresh can be a root node.");
 
-            OnPropertyChanging("TypedValue", "HasMultipleValues", "IsPrimitive", "HasList", "HasDictionary");
             if (CombinedNodes.Any(x => x != null))
             {
                 var parent = (CombinedObservableNode)Parent;
@@ -187,7 +186,6 @@ namespace SiliconStudio.Presentation.Quantum
                 }
                 parent.AddChild(this);
             }
-            OnPropertyChanged("TypedValue", "HasMultipleValues", "IsPrimitive", "HasList", "HasDictionary");
         }
 
         public static bool AreCombinable(IEnumerable<SingleObservableNode> nodes, bool ignoreNameConstraint = false)
@@ -391,6 +389,7 @@ namespace SiliconStudio.Presentation.Quantum
             set
             {
                 Owner.BeginCombinedAction();
+                OnPropertyChanging("TypedValue", "HasMultipleValues", "IsPrimitive", "HasList", "HasDictionary");
                 ChangeInProgress = true;
                 CombinedNodes.ForEach(x => x.Value = value);
                 var changedNodes = ChangedNodes.Where(x => x != this).ToList();
@@ -401,6 +400,7 @@ namespace SiliconStudio.Presentation.Quantum
                     Refresh();
                 }
                 changedNodes.ForEach(x => x.Refresh());
+                OnPropertyChanged("TypedValue", "HasMultipleValues", "IsPrimitive", "HasList", "HasDictionary");
                 string displayName = Owner.FormatCombinedUpdateMessage(this, value);
                 Owner.EndCombinedAction(displayName, Path, value);
             }
