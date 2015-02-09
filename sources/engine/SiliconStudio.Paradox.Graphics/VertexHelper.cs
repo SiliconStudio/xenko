@@ -318,9 +318,9 @@ namespace SiliconStudio.Paradox.Graphics
                     var position3 = (Vector3*)&oldBuffer[vertexOffset3 + positionOffset];
 
                     // Get texture coordinates
-                    var uv1 = (Vector3*)&oldBuffer[vertexOffset1 + uvOffset];
-                    var uv2 = (Vector3*)&oldBuffer[vertexOffset2 + uvOffset];
-                    var uv3 = (Vector3*)&oldBuffer[vertexOffset3 + uvOffset];
+                    var uv1 = (Vector2*)&oldBuffer[vertexOffset1 + uvOffset];
+                    var uv2 = (Vector2*)&oldBuffer[vertexOffset2 + uvOffset];
+                    var uv3 = (Vector2*)&oldBuffer[vertexOffset3 + uvOffset];
 
                     // Calculate position and UV vectors from vertex 1 to vertex 2 and 3
                     var edge1 = *position2 - *position1;
