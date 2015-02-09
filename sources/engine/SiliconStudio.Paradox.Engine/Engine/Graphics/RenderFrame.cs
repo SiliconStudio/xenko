@@ -4,6 +4,8 @@
 using System;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Engine.Graphics
@@ -11,11 +13,20 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     /// <summary>
     /// A render frame is a container for a render target and its depth stencil buffer.
     /// </summary>
+    [DataSerializerGlobal(typeof(ReferenceSerializer<RenderFrame>), Profile = "Asset")]
+    [ContentSerializer(typeof(DataContentSerializer<RenderFrame>))]
+    [DataSerializer(typeof(RenderFrameSerializer))]
     public class RenderFrame
     {
         private static readonly PropertyKey<RenderFrame> RenderFrameKey = new PropertyKey<RenderFrame>("RenderFrameKey", typeof(RenderFrame));
 
         // TODO: Should we move this to Graphics instead?
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RenderFrame"/> class.
+        /// </summary>
+        /// <param name="descriptor">The descriptor.</param>
+        /// <param name="renderTarget">The render target.</param>
+        /// <param name="depthStencil">The depth stencil.</param>
         private RenderFrame(RenderFrameDescriptor descriptor, Texture renderTarget, Texture depthStencil)
         {
             Descriptor = descriptor;
@@ -52,7 +63,35 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             {
                 return null;
             }
-            return texture.Tags.Get(RenderFrameKey);
+
+            if (!texture.IsRenderTarget)
+            {
+                throw new InvalidOperationException("The texture must be a render target");
+            }
+
+            var renderFrame = texture.Tags.Get(RenderFrameKey);
+
+            // Allow to create a render frame from a custom texture
+            if (renderFrame == null)
+            {
+                var descriptor = new RenderFrameDescriptor();
+
+                // TODO: Check for formats?
+                var renderFrameFormat = RenderFrameFormat.LDR;
+                if (texture.Format == PixelFormat.R16G16B16A16_Float)
+                {
+                    renderFrameFormat = RenderFrameFormat.HDR;
+                }
+
+                descriptor.Format = renderFrameFormat;
+                descriptor.Mode = RenderFrameSizeMode.Fixed;
+                descriptor.Width = texture.Width;
+                descriptor.Height = texture.Height;
+
+                renderFrame = new RenderFrame(descriptor, texture, null);
+                texture.Tags.Set(RenderFrameKey, renderFrame);
+            }
+            return renderFrame;
         }
 
         /// <summary>
@@ -102,12 +141,14 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                     break;
             }
 
+            // Create a render frame.
             var frame = new RenderFrame(
                 frameDescriptor,
                 Texture.New2D(graphicsDevice, width, height, 1, pixelFormat, TextureFlags.RenderTarget | TextureFlags.ShaderResource),
                 frameDescriptor.DepthFormat != RenderFrameDepthFormat.None ? Texture.New2D(graphicsDevice, width, height, 1, depthFormat, TextureFlags.DepthStencil) : null);
 
-            // Set the render frame 
+            // Attach the render frame to the RenderTarget and DepthStencil
+            // in order to be able to recover from it
             frame.RenderTarget.Tags.Set(RenderFrameKey, frame);
             if (frame.DepthStencil != null)
             {
@@ -115,6 +156,31 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             }
 
             return frame;
+        }
+
+        internal class RenderFrameSerializer : DataSerializer<RenderFrame>
+        {
+            public override void PreSerialize(ref RenderFrame renderFrame, ArchiveMode mode, SerializationStream stream)
+            {
+                // Do not create object during preserialize (OK because not recursive)
+            }
+
+            public override void Serialize(ref RenderFrame renderFrame, ArchiveMode mode, SerializationStream stream)
+            {
+                if (mode == ArchiveMode.Deserialize)
+                {
+                    var services = stream.Context.Tags.Get(ServiceRegistry.ServiceRegistryKey);
+                    var graphicsDeviceService = services.GetSafeServiceAs<IGraphicsDeviceService>();
+
+                    var descriptor = stream.Read<RenderFrameDescriptor>();
+                    renderFrame = New(graphicsDeviceService.GraphicsDevice, descriptor);
+                }
+                else
+                {
+                    var descriptor = renderFrame.Descriptor;
+                    stream.Write(descriptor);
+                }
+            }
         }
     }
 }
