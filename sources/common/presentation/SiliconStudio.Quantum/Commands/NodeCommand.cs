@@ -22,5 +22,18 @@ namespace SiliconStudio.Quantum.Commands
 
         /// <inheritdoc/>
         public abstract object Undo(object currentValue, ITypeDescriptor descriptor, UndoToken undoToken);
+
+
+        /// <inheritdoc/>
+        public virtual void StartCombinedInvoke()
+        {
+            // Intentionally do nothing
+        }
+
+        /// <inheritdoc/>
+        public virtual void EndCombinedInvoke()
+        {
+            // Intentionally do nothing
+        }
     }
 }

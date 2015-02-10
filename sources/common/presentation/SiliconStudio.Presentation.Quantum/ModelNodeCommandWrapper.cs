@@ -13,15 +13,14 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public class ModelNodeCommandWrapper : NodeCommandWrapperBase
     {
-        private readonly INodeCommand nodeCommand;
         private readonly ObservableViewModelService service;
         private readonly ObservableViewModelIdentifier identifier;
         private readonly ModelNodePath nodePath;
         private readonly ModelContainer modelContainer;
 
-        public override string Name { get { return nodeCommand.Name; } }
+        public override string Name { get { return NodeCommand.Name; } }
 
-        public override CombineMode CombineMode { get { return nodeCommand.CombineMode; } }
+        public override CombineMode CombineMode { get { return NodeCommand.CombineMode; } }
 
         public ModelNodeCommandWrapper(IViewModelServiceProvider serviceProvider, INodeCommand nodeCommand, string observableNodePath, ObservableViewModelIdentifier identifier, ModelNodePath nodePath, ModelContainer modelContainer, IEnumerable<IDirtiableViewModel> dirtiables)
             : base(serviceProvider, dirtiables)
@@ -31,11 +30,13 @@ namespace SiliconStudio.Presentation.Quantum
             this.identifier = identifier;
             this.nodePath = nodePath;
             this.modelContainer = modelContainer;
-            this.nodeCommand = nodeCommand;
+            NodeCommand = nodeCommand;
             service = serviceProvider.Get<ObservableViewModelService>();
             ObservableNodePath = observableNodePath;
         }
 
+        public INodeCommand NodeCommand { get; private set; }
+        
         internal IModelNode GetCommandRootNode()
         {
             return nodePath.RootNode;
@@ -48,7 +49,7 @@ namespace SiliconStudio.Presentation.Quantum
             if (viewModelNode == null)
                 throw new InvalidOperationException("Unable to retrieve the node on which to apply the redo operation.");
 
-            var newValue = nodeCommand.Invoke(viewModelNode.Content.Value, viewModelNode.Content.Descriptor, parameter, out token);
+            var newValue = NodeCommand.Invoke(viewModelNode.Content.Value, viewModelNode.Content.Descriptor, parameter, out token);
             Refresh(viewModelNode, newValue);
             return token;
         }
@@ -59,7 +60,7 @@ namespace SiliconStudio.Presentation.Quantum
             if (viewModelNode == null)
                 throw new InvalidOperationException("Unable to retrieve the node on which to apply the redo operation.");
 
-            var newValue = nodeCommand.Undo(viewModelNode.Content.Value, viewModelNode.Content.Descriptor, token);
+            var newValue = NodeCommand.Undo(viewModelNode.Content.Value, viewModelNode.Content.Descriptor, token);
             Refresh(viewModelNode, newValue);
         }
 
