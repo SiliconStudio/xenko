@@ -134,6 +134,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHPass2.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Utils\ComputeID.cs">
+      <DependentUpon>ComputeID.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Core\DynamicTextureCube.cs">
       <DependentUpon>DynamicTextureCube.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -151,6 +157,12 @@
     <Compile Include="Materials\MaterialStreamDescriptor.cs" />
     <Compile Include="Materials\MaterialSurfaceStreamShading.cs">
       <DependentUpon>MaterialSurfaceStreamShading.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Utils\Picking.cs">
+      <DependentUpon>Picking.pdxfx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -1842,6 +1854,10 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LambertianPrefilteringSHPass2.cs</LastGenOutput>
     </None>
+    <None Include="Utils\ComputeID.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeID.cs</LastGenOutput>
+    </None>
     <None Include="Core\DynamicTextureCube.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>DynamicTextureCube.cs</LastGenOutput>
@@ -1849,6 +1865,10 @@
     <None Include="Materials\MaterialSurfaceStreamShading.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceStreamShading.cs</LastGenOutput>
+    </None>
+    <None Include="Utils\Picking.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>Picking.cs</LastGenOutput>
     </None>
     <None Include="ProceduralModels\CameraCube.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
