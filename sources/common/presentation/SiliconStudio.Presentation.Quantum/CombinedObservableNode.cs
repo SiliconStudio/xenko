@@ -313,8 +313,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         private bool ComputeHasMultipleValues()
         {
-            // TODO: check IsPrimitive might be better?
-            if (Type.IsValueType || Type == typeof(string))
+            if (IsPrimitive)
                 return CombinedNodes.Any(x => !Equals(x.Value, CombinedNodes.First().Value));
 
             return !AreAllValuesOfTheSameType(CombinedNodes.Select(x => x.Value));
@@ -322,8 +321,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         private bool ComputeHasMultipleInitialValues()
         {
-            // TODO: check IsPrimitive might be better?
-            if (Type.IsValueType || Type == typeof(string))
+            if (IsPrimitive)
                 return distinctCombinedNodeInitialValues.Count > 1;
 
             return !AreAllValuesOfTheSameType(distinctCombinedNodeInitialValues);
