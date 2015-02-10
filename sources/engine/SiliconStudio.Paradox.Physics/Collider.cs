@@ -4,6 +4,7 @@ using System;
 
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.EntityModel;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -446,8 +447,8 @@ namespace SiliconStudio.Paradox.Physics
         /// Should always cast this as an Entity
         /// </summary>
         /// <value>
-        /// The entity object.
+        /// The entity connected with this collider.
         /// </value>
-        public object EntityObject { get; set; }
+        public Entity Entity { get; set; }
     }
 }

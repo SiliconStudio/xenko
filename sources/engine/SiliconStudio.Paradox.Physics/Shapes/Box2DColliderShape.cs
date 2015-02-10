@@ -18,21 +18,11 @@ namespace SiliconStudio.Paradox.Physics
             Type = ColliderShapeTypes.Box;
             Is2D = true;
 
-            HalfExtent = halfExtents;
-
             InternalShape = new BulletSharp.Box2DShape(halfExtents) { LocalScaling = new Vector3(1, 1, 0) };
 
             if (!PhysicsEngine.Singleton.CreateDebugPrimitives) return;
             DebugPrimitive = GeometricPrimitive.Cube.New(PhysicsEngine.Singleton.DebugGraphicsDevice);
             DebugPrimitiveScaling = Matrix.Scaling(new Vector3(halfExtents.X * 2, halfExtents.Y * 2, 0.05f) * 1.01f);
         }
-
-        /// <summary>
-        /// Gets the half extent.
-        /// </summary>
-        /// <value>
-        /// The half extent.
-        /// </value>
-        public Vector2 HalfExtent { get; private set; }
     }
 }

@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-using SiliconStudio.Core.Mathematics;
+﻿using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SiliconStudio.Paradox.Physics
 {

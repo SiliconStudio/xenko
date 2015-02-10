@@ -49,10 +49,7 @@
     <Compile Include="Data\CapsuleColliderShapeDesc.cs" />
     <Compile Include="Data\ConvexHullColliderShapeDesc.cs" />
     <Compile Include="Data\CylinderColliderShapeDesc.cs" />
-    <Compile Include="Data\PhysicsColliderShapeDataConverter.cs" />
-    <Compile Include="Data\PhysicsColliderShapeData.cs" />
-    <Compile Include="Data\PhysicsColliderShapeSerializer.cs" />
-    <Compile Include="Data\PhysicsElementData.cs" />
+    <Compile Include="Data\IColliderShapeDesc.cs" />
     <Compile Include="Data\SphereColliderShapeDesc.cs" />
     <Compile Include="Data\StaticPlaneColliderShapeDesc.cs" />
     <Compile Include="Engine\PhysicsColliderShape.cs" />

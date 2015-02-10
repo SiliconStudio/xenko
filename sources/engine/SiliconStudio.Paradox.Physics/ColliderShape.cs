@@ -105,6 +105,8 @@ namespace SiliconStudio.Paradox.Physics
         /// </value>
         public bool Is2D { get; internal set; }
 
+        public IColliderShapeDesc Description { get; internal set; }
+
         internal BulletSharp.CollisionShape InternalShape;
 
         internal CompoundColliderShape Parent;
