@@ -68,6 +68,12 @@ namespace SiliconStudio.Core.Serialization.Assets
             }
         }
 
+        public bool Exists(string url)
+        {
+            ObjectId objectId;
+            return FileProvider.AssetIndexMap.TryGetValue(url, out objectId);
+        }
+
         public Stream OpenAsStream(string url, StreamFlags streamFlags)
         {
             return FileProvider.OpenStream(url, VirtualFileMode.Open, VirtualFileAccess.Read, streamFlags:streamFlags);
