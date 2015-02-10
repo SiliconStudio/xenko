@@ -13,9 +13,9 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public class ModelNodeCommandWrapper : NodeCommandWrapperBase
     {
+        protected readonly ModelNodePath NodePath;
         private readonly ObservableViewModelService service;
         private readonly ObservableViewModelIdentifier identifier;
-        private readonly ModelNodePath nodePath;
         private readonly ModelContainer modelContainer;
 
         public override string Name { get { return NodeCommand.Name; } }
@@ -27,7 +27,7 @@ namespace SiliconStudio.Presentation.Quantum
         {
             if (nodeCommand == null) throw new ArgumentNullException("nodeCommand");
             if (owner == null) throw new ArgumentNullException("owner");
-            this.nodePath = nodePath;
+            this.NodePath = nodePath;
             // Note: the owner should not be stored in the command because we want it to be garbage collectable
             identifier = owner.Identifier;
             modelContainer = owner.ModelContainer;
@@ -38,7 +38,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         internal IModelNode GetCommandRootNode()
         {
-            return nodePath.RootNode;
+            return NodePath.RootNode;
         }
 
         public INodeCommand NodeCommand { get; private set; }
@@ -46,7 +46,7 @@ namespace SiliconStudio.Presentation.Quantum
         protected override UndoToken Redo(object parameter, bool creatingActionItem)
         {
             UndoToken token;
-            var modelNode = nodePath.GetNode();
+            var modelNode = NodePath.GetNode();
             if (modelNode == null)
                 throw new InvalidOperationException("Unable to retrieve the node on which to apply the redo operation.");
 
@@ -57,7 +57,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         protected override void Undo(object parameter, UndoToken token)
         {
-            var modelNode = nodePath.GetNode();
+            var modelNode = NodePath.GetNode();
             if (modelNode == null)
                 throw new InvalidOperationException("Unable to retrieve the node on which to apply the redo operation.");
 
@@ -70,7 +70,7 @@ namespace SiliconStudio.Presentation.Quantum
             var observableViewModel = service.ViewModelProvider(identifier);
 
             if (modelNode == null) throw new ArgumentNullException("modelNode");
-            var observableNode = observableViewModel != null ? observableViewModel.ResolveObservableModelNode(ObservableNodePath, nodePath.RootNode) : null;
+            var observableNode = observableViewModel != null ? observableViewModel.ResolveObservableModelNode(ObservableNodePath, NodePath.RootNode) : null;
             
             // If we have an observable node, we use it to set the new value so the UI can be notified at the same time.
             if (observableNode != null)
