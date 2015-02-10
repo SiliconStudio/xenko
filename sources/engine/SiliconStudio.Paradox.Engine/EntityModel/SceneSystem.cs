@@ -2,13 +2,13 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Linq;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.Games;
 
 namespace SiliconStudio.Paradox.EntityModel
@@ -26,7 +26,11 @@ namespace SiliconStudio.Paradox.EntityModel
 
         private EntitySystem entitySystem;
 
+        private SceneProcessor sceneProcessor;
+
         private Entity scene;
+
+        private RenderFrame mainRenderFrame;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GameSystemBase" /> class.
@@ -83,6 +87,7 @@ namespace SiliconStudio.Paradox.EntityModel
                     }
 
                     entitySystem = CreateSceneEntitySystem(value);
+                    sceneProcessor = entitySystem.GetProcessor<SceneProcessor>();
                     scene = value;
                 }
             }
@@ -91,33 +96,43 @@ namespace SiliconStudio.Paradox.EntityModel
         protected override void LoadContent()
         {
             var assetManager = Services.GetSafeServiceAs<AssetManager>();
-            Scene = assetManager.Load<Entity>(DefaultSceneName);
+
+            // Preload the scene if it exists
+            if (assetManager.Exists(DefaultSceneName))
+            {
+                Scene = assetManager.Load<Entity>(DefaultSceneName);
+            }
+
+            mainRenderFrame = RenderFrame.FromTexture(GraphicsDevice.BackBuffer, GraphicsDevice.DepthStencilBuffer);
+
             // Create the drawing context
             drawContext = new RenderContext(GraphicsDevice);
         }
 
         public override void Update(GameTime gameTime)
         {
-            if (entitySystem != null)
+            if (EntitySystem != null)
             {
-                entitySystem.Update(gameTime);
+                EntitySystem.Update(gameTime);
             }
         }
 
         public override void Draw(GameTime gameTime)
         {
+            if (EntitySystem == null)
+            {
+                return;
+            }
+
+            bool hasGraphicsBegin = false;
+
             try
             {
-                var sceneState = EntitySystem.GetProcessor<SceneProcessor>().CurrentState;
-                if (sceneState == null)
-                {
-                    return;
-                }
-
-
-                var renderer = sceneState.Renderer;
+                // Update the entity system.
+                EntitySystem.Draw(gameTime);
 
                 GraphicsDevice.Begin();
+                hasGraphicsBegin = true;
 
                 GraphicsDevice.ClearState();
 
@@ -130,7 +145,11 @@ namespace SiliconStudio.Paradox.EntityModel
                     GraphicsDevice.EnableProfile(true);
                 }
 
-                renderer.Draw(drawContext);
+                // Update the render context to use the main RenderFrame as current by default
+                drawContext.Parameters.Set(RenderFrame.Current, mainRenderFrame);
+
+                // Draw the main scene.
+                sceneProcessor.CurrentState.Renderer.Draw(drawContext);
             }
             catch (Exception ex)
             {
@@ -138,13 +157,10 @@ namespace SiliconStudio.Paradox.EntityModel
             }
             finally
             {
-                GraphicsDevice.End();
-            }
-
-
-            if (entitySystem != null)
-            {
-                entitySystem.Draw(gameTime);
+                if (hasGraphicsBegin)
+                {
+                    GraphicsDevice.End();
+                }
             }
         }
 
