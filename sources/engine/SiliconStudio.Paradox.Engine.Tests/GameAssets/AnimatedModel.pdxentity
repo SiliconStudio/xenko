@@ -1,28 +1,49 @@
 !Entity
-Id: 344605d8-4e22-407b-b834-5b16793d9301
+Id: cb1af31d-453f-485a-bde0-109b49912d98
 SerializedVersion: 1
 Tags: []
+Source: ../../../data/tests/knight/scenes/knight.fbx
+SourceHash: b0dc28bd79ba6cd2fed575b8855b52fc
 Hierarchy:
-    RootEntity: e5867f8f-f79a-4066-bc5b-2f2c6ff6707c
+    RootEntity: fc48762c-7e07-48b7-a4dc-00c3b65004a6
     Entities:
-        SyncRoot: null
-        ~Items:
-            -   Id: e5867f8f-f79a-4066-bc5b-2f2c6ff6707c
-                Name: Root
-                Components:
-                    TransformationComponent.Key:
-                        Children: []
-                        Rotation: {W: 1, X: 0, Y: 0, Z: 0}
-                        Scaling: {X: 1, Y: 1, Z: 1}
-                        Translation: {X: 0, Y: 0, Z: 0}
-                        UseTRS: true
-                    ModelComponent.Key:
-                        DrawOrder: 0
-                        Enabled: true
-                        Model: 10d4f06c-ee97-402d-bdb4-21ff1f69bacb:knight_model
-                        Parameters: {}
-                    AnimationComponent.Key:
-                        Animations:
-                            Idle: 27999019-8210-4e22-bf08-36c0bed86b22:KnightIdle
-                            Run: 05c427ea-1a26-4ffa-bff6-9d3c7dc7e85e:KnightRun
+        -   Name: knight
+            Components:
+                ModelComponent.Key:
+                    DrawOrder: 0
+                    Materials: []
+                    Model: 20b9b194-3e44-4b80-929b-06be9ad0895b:knight Model
+                    Parameters: {}
+                TransformationComponent.Key:
+                    Children: []
+                    Rotation: {W: 1, X: 0, Y: 0, Z: 0}
+                    Scaling: {X: 1, Y: 1, Z: 1}
+                    Translation: {X: 0, Y: 0, Z: 0}
+                    UseTRS: true
+            Id: fc48762c-7e07-48b7-a4dc-00c3b65004a6
 AssetBases: {}
+~Base:
+    Location: --import--
+    Asset: !Entity
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: 1
+        Tags: []
+        ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
+        Hierarchy:
+            RootEntity: fc48762c-7e07-48b7-a4dc-00c3b65004a6
+            Entities:
+                -   Name: knight
+                    Components:
+                        ModelComponent.Key:
+                            DrawOrder: 0
+                            Materials: []
+                            Model: 20b9b194-3e44-4b80-929b-06be9ad0895b:knight Model
+                            Parameters: {}
+                        TransformationComponent.Key:
+                            Children: []
+                            Rotation: {W: 1, X: 0, Y: 0, Z: 0}
+                            Scaling: {X: 1, Y: 1, Z: 1}
+                            Translation: {X: 0, Y: 0, Z: 0}
+                            UseTRS: true
+                    Id: fc48762c-7e07-48b7-a4dc-00c3b65004a6
+        AssetBases: {}

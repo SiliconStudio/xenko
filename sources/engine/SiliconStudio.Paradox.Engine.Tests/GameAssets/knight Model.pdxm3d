@@ -1,10 +1,17 @@
 !Model
-Id: 10d4f06c-ee97-402d-bdb4-21ff1f69bacb
+Id: 20b9b194-3e44-4b80-929b-06be9ad0895b
 SerializedVersion: 1
 BuildOrder: 500
 Tags: []
 Source: ../../../data/tests/knight/scenes/knight.fbx
 SourceHash: b0dc28bd79ba6cd2fed575b8855b52fc
+Materials:
+    -   Name: c100_chr_ch00_Knight_KINGHT_iron
+        Material: 5e6ed1e6-9d57-4310-a0b8-46c7cca9cb19:c100_chr_ch00_Knight_KINGHT_iron
+    -   Name: c100_chr_ch00_Knight_KINGHT
+        Material: b46027ce-b0a3-4e46-98b7-1fa8429ac71d:c100_chr_ch00_Knight_KINGHT
+    -   Name: c100_chr_ch00_Knight_SWORD1
+        Material: 584be6db-dd3a-4463-9251-d4e56a278a75:c100_chr_ch00_Knight_SWORD1
 Nodes:
     - {Name: RootNode, Depth: 0, Preserve: false}
     - {Name: root, Depth: 1, Preserve: false}
@@ -78,15 +85,6 @@ Nodes:
     - {Name: ch00_Knight_directionalLight1, Depth: 2, Preserve: false}
     - {Name: ch00_Knight_directionalLight2, Depth: 2, Preserve: false}
     - {Name: ch00_Knight_ambientLight1, Depth: 2, Preserve: false}
-UpAxis: {X: 0, Y: 0, Z: 1}
-FrontAxis: {X: 0, Y: -1, Z: 0}
-Materials:
-    -   Name: c100_chr_ch00_Knight_KINGHT_iron
-        Material: ea0981e0-0ac9-4193-9111-ec8ed165825a:knight_material_c100_chr_ch00_Knight_KINGHT_iron
-    -   Name: c100_chr_ch00_Knight_KINGHT
-        Material: 0da85abd-6733-495c-a69c-329175a1a3f3:knight_material_c100_chr_ch00_Knight_KINGHT
-    -   Name: c100_chr_ch00_Knight_SWORD1
-        Material: b2d549df-9f78-4c4c-abb2-dcb46baa3bdf:knight_material_c100_chr_ch00_Knight_SWORD1
 ~Base:
     Location: --import--
     Asset: !Model
@@ -95,6 +93,13 @@ Materials:
         BuildOrder: 500
         Tags: []
         ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
+        Materials:
+            -   Name: c100_chr_ch00_Knight_KINGHT_iron
+                Material: 5e6ed1e6-9d57-4310-a0b8-46c7cca9cb19:c100_chr_ch00_Knight_KINGHT_iron
+            -   Name: c100_chr_ch00_Knight_KINGHT
+                Material: b46027ce-b0a3-4e46-98b7-1fa8429ac71d:c100_chr_ch00_Knight_KINGHT
+            -   Name: c100_chr_ch00_Knight_SWORD1
+                Material: 584be6db-dd3a-4463-9251-d4e56a278a75:c100_chr_ch00_Knight_SWORD1
         Nodes:
             - {Name: RootNode, Depth: 0, Preserve: false}
             - {Name: root, Depth: 1, Preserve: false}
@@ -168,12 +173,3 @@ Materials:
             - {Name: ch00_Knight_directionalLight1, Depth: 2, Preserve: false}
             - {Name: ch00_Knight_directionalLight2, Depth: 2, Preserve: false}
             - {Name: ch00_Knight_ambientLight1, Depth: 2, Preserve: false}
-        UpAxis: {X: 0, Y: 1, Z: 0}
-        FrontAxis: {X: 0, Y: 0, Z: 1}
-        Materials:
-            -   Name: c100_chr_ch00_Knight_KINGHT_iron
-                Material: ea0981e0-0ac9-4193-9111-ec8ed165825a:knight_material_c100_chr_ch00_Knight_KINGHT_iron
-            -   Name: c100_chr_ch00_Knight_KINGHT
-                Material: 0da85abd-6733-495c-a69c-329175a1a3f3:knight_material_c100_chr_ch00_Knight_KINGHT
-            -   Name: c100_chr_ch00_Knight_SWORD1
-                Material: b2d549df-9f78-4c4c-abb2-dcb46baa3bdf:knight_material_c100_chr_ch00_Knight_SWORD1
