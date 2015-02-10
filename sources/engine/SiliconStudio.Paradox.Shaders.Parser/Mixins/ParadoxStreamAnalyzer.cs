@@ -176,7 +176,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         {
             Visit((Node)variableReferenceExpression);
             // HACK: force types on base, this and stream keyword to eliminate errors in the log an use the standard type inference
-            if (variableReferenceExpression.Name == StreamsType.ThisStreams)
+            if (variableReferenceExpression.Name == StreamsType.ThisStreams.Name)
             {
                 if (!(ParentNode is MemberReferenceExpression)) // streams is alone
                     currentStreamUsageList.Add(new StreamUsageInfo { CallType = StreamCallType.Direct, Variable = StreamsType.ThisStreams, Expression = variableReferenceExpression, Usage = currentStreamUsage });
