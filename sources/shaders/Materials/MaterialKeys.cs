@@ -81,7 +81,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
         /// <summary>
         /// Texture UV scaling
         /// </summary>
-        public static readonly ParameterKey<Vector2> TextureScale = ParameterKeys.New<Vector2>();
+        public static readonly ParameterKey<Vector2> TextureScale = ParameterKeys.New<Vector2>(Vector2.One);
 
         /// <summary>
         /// Texture UV offset
