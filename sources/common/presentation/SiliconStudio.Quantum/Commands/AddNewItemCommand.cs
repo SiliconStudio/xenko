@@ -16,16 +16,16 @@ namespace SiliconStudio.Quantum.Commands
     /// or an exception will be thrown if T could not be determinated or has no parameterless constructor.
     /// </summary>
     /// <remarks>No parameter is required when invoking this command.</remarks>
-    public class AddNewItemCommand : INodeCommand
+    public class AddNewItemCommand : NodeCommand
     {
         /// <inheritdoc/>
-        public string Name { get { return "AddNewItem"; } }
+        public override string Name { get { return "AddNewItem"; } }
 
         /// <inheritdoc/>
-        public CombineMode CombineMode { get { return CombineMode.DoNotCombine; } }
+        public override CombineMode CombineMode { get { return CombineMode.DoNotCombine; } }
 
         /// <inheritdoc/>
-        public bool CanAttach(ITypeDescriptor typeDescriptor, MemberDescriptorBase memberDescriptor)
+        public override bool CanAttach(ITypeDescriptor typeDescriptor, MemberDescriptorBase memberDescriptor)
         {
             if (memberDescriptor != null)
             {
@@ -43,7 +43,7 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        public object Invoke(object currentValue, ITypeDescriptor descriptor, object parameter, out UndoToken undoToken)
+        public override object Invoke(object currentValue, ITypeDescriptor descriptor, object parameter, out UndoToken undoToken)
         {
             var collectionDescriptor = (CollectionDescriptor)descriptor;
             // TODO: Find a better solution for ContentSerializerAttribute that doesn't require to reference Core.Serialization (and unreference this assembly)
@@ -67,7 +67,7 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        public object Undo(object currentValue, ITypeDescriptor descriptor, UndoToken undoToken)
+        public override object Undo(object currentValue, ITypeDescriptor descriptor, UndoToken undoToken)
         {
             var index = (int)undoToken.TokenValue;
             var collectionDescriptor = (CollectionDescriptor)descriptor;

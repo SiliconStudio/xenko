@@ -12,16 +12,18 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public class CombinedNodeCommandWrapper : NodeCommandWrapperBase
     {
-        private readonly IEnumerable<ModelNodeCommandWrapper> commands;
+        private readonly IReadOnlyCollection<ModelNodeCommandWrapper> commands;
         private readonly IViewModelServiceProvider serviceProvider;
         private readonly string name;
         private readonly ObservableViewModelService service;
         private readonly ObservableViewModelIdentifier identifier;
 
-        public CombinedNodeCommandWrapper(IViewModelServiceProvider serviceProvider, string name, string observableNodePath, ObservableViewModelIdentifier identifier, IEnumerable<ModelNodeCommandWrapper> commands)
+        public CombinedNodeCommandWrapper(IViewModelServiceProvider serviceProvider, string name, string observableNodePath, ObservableViewModelIdentifier identifier, IReadOnlyCollection<ModelNodeCommandWrapper> commands)
             : base(serviceProvider, null)
         {
             if (commands == null) throw new ArgumentNullException("commands");
+            if (commands.Count == 0) throw new ArgumentException(@"The collection of commands to combine is empty", "commands");
+            if (commands.Any(x => !ReferenceEquals(x.NodeCommand, commands.First().NodeCommand))) throw new ArgumentException(@"The collection of commands to combine cannot contain different node commands", "commands");
             service = serviceProvider.Get<ObservableViewModelService>();
             this.commands = commands;
             this.name = name;
@@ -55,12 +57,18 @@ namespace SiliconStudio.Presentation.Quantum
         {
             var undoTokens = new Dictionary<ModelNodeCommandWrapper, UndoToken>();
             bool canUndo = false;
+
+            commands.First().NodeCommand.StartCombinedInvoke();
+
             foreach (var command in commands)
             {
                 var undoToken = command.ExecuteCommand(parameter, creatingActionItem);
                 undoTokens.Add(command, undoToken);
                 canUndo = canUndo || undoToken.CanUndo;
             }
+
+            commands.First().NodeCommand.EndCombinedInvoke();
+
             Refresh();
             return new UndoToken(canUndo, undoTokens);
         }

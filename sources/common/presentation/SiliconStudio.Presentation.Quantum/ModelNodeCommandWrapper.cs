@@ -27,7 +27,7 @@ namespace SiliconStudio.Presentation.Quantum
         {
             if (nodeCommand == null) throw new ArgumentNullException("nodeCommand");
             if (owner == null) throw new ArgumentNullException("owner");
-            this.NodePath = nodePath;
+            NodePath = nodePath;
             // Note: the owner should not be stored in the command because we want it to be garbage collectable
             identifier = owner.Identifier;
             modelContainer = owner.ModelContainer;
@@ -36,12 +36,12 @@ namespace SiliconStudio.Presentation.Quantum
             ObservableNodePath = observableNodePath;
         }
 
+        public INodeCommand NodeCommand { get; private set; }
+        
         internal IModelNode GetCommandRootNode()
         {
             return NodePath.RootNode;
         }
-
-        public INodeCommand NodeCommand { get; private set; }
 
         protected override UndoToken Redo(object parameter, bool creatingActionItem)
         {

@@ -10,16 +10,16 @@ using SiliconStudio.Quantum.Attributes;
 
 namespace SiliconStudio.Quantum.Commands
 {
-    public class AddPrimitiveKeyCommand : INodeCommand
+    public class AddPrimitiveKeyCommand : NodeCommand
     {
         /// <inheritdoc/>
-        public string Name { get { return "AddPrimitiveKey"; } }
+        public override string Name { get { return "AddPrimitiveKey"; } }
 
         /// <inheritdoc/>
-        public CombineMode CombineMode { get { return CombineMode.CombineOnlyForAll; } }
+        public override CombineMode CombineMode { get { return CombineMode.CombineOnlyForAll; } }
         
         /// <inheritdoc/>
-        public bool CanAttach(ITypeDescriptor typeDescriptor, MemberDescriptorBase memberDescriptor)
+        public override bool CanAttach(ITypeDescriptor typeDescriptor, MemberDescriptorBase memberDescriptor)
         {
             if (memberDescriptor != null)
             {
@@ -35,7 +35,7 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        public object Invoke(object currentValue, ITypeDescriptor descriptor, object parameter, out UndoToken undoToken)
+        public override object Invoke(object currentValue, ITypeDescriptor descriptor, object parameter, out UndoToken undoToken)
         {
             var dictionaryDescriptor = (DictionaryDescriptor)descriptor;
             var newKey = dictionaryDescriptor.KeyType != typeof(string) ? Activator.CreateInstance(dictionaryDescriptor.KeyType) : GenerateStringKey(currentValue, descriptor, parameter);
@@ -49,7 +49,7 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        public object Undo(object currentValue, ITypeDescriptor descriptor, UndoToken undoToken)
+        public override object Undo(object currentValue, ITypeDescriptor descriptor, UndoToken undoToken)
         {
             var dictionaryDescriptor = (DictionaryDescriptor)descriptor;
             var key = undoToken.TokenValue;

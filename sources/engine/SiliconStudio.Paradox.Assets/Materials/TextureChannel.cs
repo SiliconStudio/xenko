@@ -17,14 +17,14 @@ namespace SiliconStudio.Paradox.Assets.Materials
         R,
 
         /// <summary>
-        /// The sampled color is returned as a float4(B, B, B, B)
-        /// </summary>
-        B,
-
-        /// <summary>
         /// The sampled color is returned as a float4(G, G, G, G)
         /// </summary>
         G,
+
+        /// <summary>
+        /// The sampled color is returned as a float4(B, B, B, B)
+        /// </summary>
+        B,
 
         /// <summary>
         /// The sampled color is returned as a float4(A, A, A, A)
