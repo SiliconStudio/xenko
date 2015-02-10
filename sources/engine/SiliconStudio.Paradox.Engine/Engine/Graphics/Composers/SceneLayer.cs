@@ -11,23 +11,23 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
     /// <summary>
     /// A graphics layer.
     /// </summary>
-    [DataContract("GraphicsLayer")]
-    public class GraphicsLayer
+    [DataContract("SceneLayer")]
+    public class SceneLayer
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphicsLayer"/> class.
+        /// Initializes a new instance of the <see cref="SceneLayer"/> class.
         /// </summary>
-        public GraphicsLayer()
+        public SceneLayer()
         {
             Enabled = true;
             Mode = new GraphicsRenderingModeForward();
             Input = new GraphicsLayerInputNone();
-            Output = new GraphicsComposerOutputDirect();
+            Output = new GraphicsComposerOutputMaster();
             Renderers = new GraphicsRendererCollection();
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="GraphicsLayer"/> is enabled.
+        /// Gets or sets a value indicating whether this <see cref="SceneLayer"/> is enabled.
         /// </summary>
         /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
         [DataMember(0)]

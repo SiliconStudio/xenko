@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.Effects
     {
         private int modelRenderSlot;
 
-        private readonly ModelProcessor modelProcessor;
+        private ModelProcessor modelProcessor;
 
         private readonly FastList<RenderMesh> meshesToRender;
 
@@ -52,27 +52,17 @@ namespace SiliconStudio.Paradox.Effects
         public delegate void PostEffectUpdateDelegate(RenderContext context, RenderMesh renderMesh);
 
         /// <summary>
-        /// Gets or sets the scene renderer.
-        /// </summary>
-        /// <value>The scene renderer.</value>
-        public SceneRenderer SceneRenderer { get; private set; }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="ModelRenderer"/> class.
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="effectName">Name of the effect.</param>
-        public ModelRenderer(IServiceRegistry services, string effectName, SceneRenderer sceneRenderer) : base(services)
+        public ModelRenderer(IServiceRegistry services, string effectName) : base(services)
         {
             if (effectName == null) throw new ArgumentNullException("effectName");
-            if (sceneRenderer == null) throw new ArgumentNullException("sceneRenderer");
 
             this.effectName = effectName;
             DebugName = string.Format("ModelRenderer [{0}]", effectName);
 
-            SceneRenderer = sceneRenderer;
-
-            modelProcessor = sceneRenderer.EntitySystem.GetProcessor<ModelProcessor>();
 
             dynamicEffectCompiler = new DynamicEffectCompiler(services, effectName);
 
@@ -108,18 +98,18 @@ namespace SiliconStudio.Paradox.Effects
 
         public UpdateMeshesDelegate SortMeshes { get; set; }
 
-        public override void Load()
+        public override void Load(RenderContext context)
         {
-            base.Load();
+            modelProcessor = context.EntitySystem.GetProcessor<ModelProcessor>();
         }
 
-        public override void Unload()
+        public override void Unload(RenderContext context)
         {
-            base.Unload();
+            base.Unload(context);
 
             if (modelRenderSlot < 0)
             {
-                var pipelineModelState = GetOrCreateModelRendererState();
+                var pipelineModelState = GetOrCreateModelRendererState(context);
 
                 // Release the slot (note: if shared, it will wait for all its usage to be released)
                 pipelineModelState.ReleaseModelSlot(modelRenderSlot);
@@ -135,7 +125,7 @@ namespace SiliconStudio.Paradox.Effects
             // If we don't have yet a render slot, create a new one
             if (modelRenderSlot < 0)
             {
-                var pipelineModelState = GetOrCreateModelRendererState();
+                var pipelineModelState = GetOrCreateModelRendererState(context);
 
                 // Allocate (or reuse) a slot for the pass of this processor
                 // Note: The slot is passed as out, so that when ModelRendererState.ModelSlotAdded callback is fired,
@@ -255,17 +245,16 @@ namespace SiliconStudio.Paradox.Effects
             }
         }
 
-        internal ModelRendererState GetOrCreateModelRendererState(bool createMeshStateIfNotFound = true)
+        internal ModelRendererState GetOrCreateModelRendererState(RenderContext context, bool createMeshStateIfNotFound = true)
         {
-            var pipelineState = SceneRenderer.Tags.Get(ModelRendererState.Key);
+            var pipelineState = context.EntitySystem.Tags.Get(ModelRendererState.Key);
             if (createMeshStateIfNotFound && pipelineState == null)
             {
                 pipelineState = new ModelRendererState();
-                SceneRenderer.Tags.Set(ModelRendererState.Key, pipelineState);
+                context.EntitySystem.Tags.Set(ModelRendererState.Key, pipelineState);
             }
             return pipelineState;
         }
-
 
         /// <summary>
         /// A list to ensure that all delegates are not null.

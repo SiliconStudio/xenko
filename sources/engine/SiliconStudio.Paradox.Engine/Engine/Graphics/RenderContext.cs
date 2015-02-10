@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System.Collections.Generic;
 
-using SiliconStudio.Paradox.Engine.Graphics.Composers;
+using SiliconStudio.Core;
+using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects
@@ -36,6 +36,22 @@ namespace SiliconStudio.Paradox.Effects
             }
         }
 
+        /// <summary>
+        /// Gets or sets the current entity system.
+        /// </summary>
+        /// <value>The entity system.</value>
+        public EntitySystem EntitySystem { get; set; }
+
+        /// <summary>
+        /// Gets or sets the services.
+        /// </summary>
+        /// <value>The services.</value>
+        public IServiceRegistry Services { get; set; }
+
+        /// <summary>
+        /// Gets or sets the parameters.
+        /// </summary>
+        /// <value>The parameters.</value>
         public ParameterCollection Parameters { get; set; }
     }
 }

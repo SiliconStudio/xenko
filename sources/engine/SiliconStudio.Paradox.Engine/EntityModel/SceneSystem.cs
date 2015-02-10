@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.EntityModel
 
         private const string DefaultSceneName = "__DefaultScene__"; // TODO: How to determine the default scene?
 
-        private RenderContext drawContext;
+        private RenderContext renderContext;
 
         private EntitySystem entitySystem;
 
@@ -106,7 +106,7 @@ namespace SiliconStudio.Paradox.EntityModel
             mainRenderFrame = RenderFrame.FromTexture(GraphicsDevice.BackBuffer, GraphicsDevice.DepthStencilBuffer);
 
             // Create the drawing context
-            drawContext = new RenderContext(GraphicsDevice);
+            renderContext = new RenderContext(GraphicsDevice);
         }
 
         public override void Update(GameTime gameTime)
@@ -146,10 +146,17 @@ namespace SiliconStudio.Paradox.EntityModel
                 }
 
                 // Update the render context to use the main RenderFrame as current by default
-                drawContext.Parameters.Set(RenderFrame.Current, mainRenderFrame);
+                var currentSceneState = sceneProcessor.CurrentState;
+                renderContext.Parameters.Set(RenderFrame.Master, mainRenderFrame);
+                renderContext.EntitySystem = currentSceneState.EntitySystem;
+                renderContext.Services = Services;
 
                 // Draw the main scene.
-                sceneProcessor.CurrentState.Renderer.Draw(drawContext);
+                var sceneRenderer = currentSceneState.SceneComponent.SceneRenderer;
+                if (sceneRenderer != null)
+                {
+                    sceneRenderer.Draw(renderContext);
+                }
             }
             catch (Exception ex)
             {

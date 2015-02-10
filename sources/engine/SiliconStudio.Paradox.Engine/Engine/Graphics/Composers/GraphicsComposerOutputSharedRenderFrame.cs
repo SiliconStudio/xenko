@@ -4,6 +4,7 @@
 using System.ComponentModel;
 
 using SiliconStudio.Core;
+using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.Engine.Graphics.Composers
 {
@@ -21,5 +22,14 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         [DataMember(10)]
         [DefaultValue(null)]
         public RenderFrame RenderFrame { get; set; }
+
+        public void Dispose()
+        {
+        }
+
+        public RenderFrame GetRenderFrame(RenderContext context)
+        {
+            return RenderFrame;
+        }
     }
 }

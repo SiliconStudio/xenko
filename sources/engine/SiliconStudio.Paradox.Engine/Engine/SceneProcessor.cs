@@ -5,8 +5,6 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Engine.Graphics.Composers;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
 
@@ -93,24 +91,44 @@ namespace SiliconStudio.Paradox.Engine
 
         public class SceneState
         {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="SceneState"/> class.
+            /// </summary>
+            /// <param name="services">The services.</param>
+            /// <param name="sceneEntityRoot">The scene entity root.</param>
+            /// <exception cref="System.ArgumentNullException">
+            /// services
+            /// or
+            /// sceneEntityRoot
+            /// </exception>
             public SceneState(IServiceRegistry services, Entity sceneEntityRoot)
             {
                 if (services == null) throw new ArgumentNullException("services");
+                if (sceneEntityRoot == null) throw new ArgumentNullException("sceneEntityRoot");
+
                 Scene = sceneEntityRoot;
                 EntitySystem = services.GetSafeServiceAs<SceneSystem>().CreateSceneEntitySystem(sceneEntityRoot);
-                Initialize();
+                SceneComponent = Scene.Get<SceneComponent>();
             }
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="SceneState"/> class.
+            /// </summary>
+            /// <param name="entitySystem">The entity system.</param>
+            /// <param name="scene">The scene.</param>
+            /// <exception cref="System.ArgumentNullException">
+            /// entitySystem
+            /// or
+            /// scene
+            /// </exception>
             public SceneState(EntitySystem entitySystem, Entity scene)
             {
+                if (entitySystem == null) throw new ArgumentNullException("entitySystem");
+                if (scene == null) throw new ArgumentNullException("scene");
+
                 EntitySystem = entitySystem;
                 Scene = scene;
-                Initialize();
-            }
-
-            private void Initialize()
-            {
-                Renderer = new SceneRenderer(EntitySystem.Services, EntitySystem, Scene.Get<SceneComponent>());
+                SceneComponent = Scene.Get<SceneComponent>();
             }
 
             /// <summary>
@@ -123,7 +141,7 @@ namespace SiliconStudio.Paradox.Engine
             /// Gets the scene renderer.
             /// </summary>
             /// <value>The scene renderer.</value>
-            public SceneRenderer Renderer { get; private set; }
+            public SceneComponent SceneComponent { get; private set; }
 
             /// <summary>
             /// Entity System dedicated to this scene.

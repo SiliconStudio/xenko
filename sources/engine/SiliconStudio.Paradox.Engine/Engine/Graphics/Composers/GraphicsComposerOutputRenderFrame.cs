@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
+using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.Engine.Graphics.Composers
 {
@@ -12,6 +13,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
     [Display("RenderFrame")]
     public sealed class GraphicsComposerOutputRenderFrame : IGraphicsComposerOutput
     {
+        private RenderFrame allocatedFrame;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphicsComposerOutputRenderFrame"/> class.
         /// </summary>
@@ -26,5 +29,27 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         /// <value>The descriptor.</value>
         [DataMember(10)]
         public RenderFrameDescriptor Descriptor { get; private set; }
+
+        public void Dispose()
+        {
+            if (allocatedFrame != null)
+            {
+                allocatedFrame.RenderTarget.Dispose();
+                allocatedFrame.DepthStencil.Dispose();
+                allocatedFrame = null;
+            }
+        }
+
+        public RenderFrame GetRenderFrame(RenderContext context)
+        {
+            // TODO: Should we use the DrawEffectContext to allocated shared textures?
+            if (allocatedFrame != null && allocatedFrame.Descriptor != Descriptor)
+            {
+                Dispose();
+            }
+
+            // Allocate the render frame if necessary
+            return allocatedFrame ?? (allocatedFrame = RenderFrame.New(context.GraphicsDevice, Descriptor, context.Parameters.Get(RenderFrame.Current)));
+        }
     }
 }

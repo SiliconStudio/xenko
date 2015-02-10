@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     /// </summary>
     [DataContract("ClearRenderFrameRenderer")]
     [Display("Clear RenderFrame")]
-    public class ClearRenderFrameRenderer : RendererBase
+    public sealed class ClearRenderFrameRenderer : RendererBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ClearRenderFrameRenderer"/> class.

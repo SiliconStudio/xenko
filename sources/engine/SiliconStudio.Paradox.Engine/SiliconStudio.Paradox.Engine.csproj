@@ -78,8 +78,9 @@
     <Compile Include="Engine\CameraProjectionPerspective.cs" />
     <Compile Include="Engine\Graphics\ClearRenderFrameFlags.cs" />
     <Compile Include="Engine\Graphics\ClearRenderFrameRenderer.cs" />
-    <Compile Include="Engine\Graphics\Composers\GraphicsComposerLayer.cs" />
-    <Compile Include="Engine\Graphics\Composers\GraphicsComposerOutputDirect.cs" />
+    <Compile Include="Engine\Graphics\Composers\SceneRendererLayers.cs" />
+    <Compile Include="Engine\Graphics\Composers\GraphicsComposerOutputCurrent.cs" />
+    <Compile Include="Engine\Graphics\Composers\GraphicsComposerOutputMaster.cs" />
     <Compile Include="Engine\Graphics\Composers\GraphicsComposerOutputRenderFrame.cs" />
     <Compile Include="Engine\Graphics\Composers\GraphicsComposerOutputSharedRenderFrame.cs" />
     <Compile Include="Engine\Graphics\Composers\GraphicsLayerCollection.cs" />
@@ -87,13 +88,12 @@
     <Compile Include="Engine\Graphics\Composers\GraphicsLayerInputNone.cs" />
     <Compile Include="Engine\Graphics\Composers\GraphicsRendererCollection.cs" />
     <Compile Include="Engine\Graphics\Composers\GraphicsRenderingModeForward.cs" />
-    <Compile Include="Engine\Graphics\Composers\IGraphicsComposer.cs" />
+    <Compile Include="Engine\Graphics\Composers\ISceneRenderer.cs" />
     <Compile Include="Engine\Graphics\Composers\IGraphicsComposerOutput.cs" />
     <Compile Include="Engine\Graphics\Composers\IGraphicsEffectMixinProvider.cs" />
     <Compile Include="Engine\Graphics\Composers\IGraphicsLayerInput.cs" />
     <Compile Include="Engine\Graphics\IGraphicsRenderer.cs" />
     <Compile Include="Engine\Graphics\Composers\IGraphicsRenderingMode.cs" />
-    <Compile Include="Engine\Graphics\Composers\SceneRenderer.cs" />
     <Compile Include="Engine\Graphics\RendererBase.cs" />
     <Compile Include="Engine\Graphics\RenderFrame.cs" />
     <Compile Include="Engine\Graphics\Materials\IMaterialSpecularMicrofacetFresnelFunction.cs">
@@ -362,7 +362,7 @@
     <Compile Include="Engine\Graphics\RenderFrameFormat.cs" />
     <Compile Include="Engine\Graphics\RenderFrameSizeMode.cs" />
     <Compile Include="Engine\Graphics\RenderingParameters.cs" />
-    <Compile Include="Engine\Graphics\Composers\GraphicsLayer.cs" />
+    <Compile Include="Engine\Graphics\Composers\SceneLayer.cs" />
     <Compile Include="Engine\ICameraProjection.cs" />
     <Compile Include="Engine\ModelProcessor.cs" />
     <Compile Include="Engine\Graphics\RenderModel.cs" />

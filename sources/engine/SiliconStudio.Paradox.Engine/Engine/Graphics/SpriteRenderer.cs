@@ -22,9 +22,9 @@ namespace SiliconStudio.Paradox.Effects
     {
         private SpriteBatch spriteBatch;
 
-        private SceneRenderer sceneRenderer;
-
         private readonly IVirtualResolution gameVirtualResolution;
+
+        private SpriteProcessor spriteProcessor;
 
         private static readonly Dictionary<string, List<Entity>> effectNamesToEntityDatas = new Dictionary<string, List<Entity>>();
 
@@ -39,19 +39,21 @@ namespace SiliconStudio.Paradox.Effects
             spriteBatch.VirtualResolution = gameVirtualResolution.VirtualResolution;
         }
 
-        public override void Load()
+        public override void Load(RenderContext context)
         {
-            base.Load();
+            base.Load(context);
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            spriteProcessor = context.EntitySystem.GetProcessor<SpriteProcessor>();
 
             gameVirtualResolution.VirtualResolutionChanged += GameVirtualResolutionChanged;
             GameVirtualResolutionChanged(null, EventArgs.Empty);
         }
 
-        public override void Unload()
+        public override void Unload(RenderContext context)
         {
-            base.Unload();
+            base.Unload(context);
 
             gameVirtualResolution.VirtualResolutionChanged -= GameVirtualResolutionChanged;
 
@@ -60,12 +62,7 @@ namespace SiliconStudio.Paradox.Effects
 
         protected override void OnRendering(RenderContext context)
         {
-            // TODO: SceneRenderer is not initalized
-            throw new NotImplementedException("TODO: SceneRenderer is not initalized");
-            var spriteProcessor = sceneRenderer.EntitySystem.GetProcessor<SpriteProcessor>();
-
             // TODO: Check how to integrate sprites in a Camera renderer instead of this
-
             // draw opaque sprites 
             SelectAndSortEntitiesByEffects(spriteProcessor, SpriteIsOpaque);
             DrawSprites(context, SpriteSortMode.FrontToBack, GraphicsDevice.BlendStates.Opaque);

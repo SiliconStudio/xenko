@@ -79,8 +79,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((RenderFrameDescriptor)obj);
+            return obj is RenderFrameDescriptor && Equals((RenderFrameDescriptor)obj);
         }
 
         public override int GetHashCode()
@@ -94,6 +93,21 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 hashCode = (hashCode * 397) ^ (int)DepthFormat;
                 return hashCode;
             }
+        }
+
+        public static bool operator ==(RenderFrameDescriptor left, RenderFrameDescriptor right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(RenderFrameDescriptor left, RenderFrameDescriptor right)
+        {
+            return !Equals(left, right);
+        }
+
+        public RenderFrameDescriptor Clone()
+        {
+            return (RenderFrameDescriptor)MemberwiseClone();
         }
     }
 }

@@ -33,17 +33,17 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
 
         public Texture Target { get; set; }
 
-        public override void Load()
+        public override void Load(RenderContext context)
         {
-            base.Load();
+            base.Load(context);
 
             skyboxEffect = new ImageEffectShader("SkyboxEffect");
             skyboxEffect.Initialize(DrawEffectContext.GetShared(Services));
         }
 
-        public override void Unload()
+        public override void Unload(RenderContext context)
         {
-            base.Unload();
+            base.Unload(context);
 
             skyboxEffect.Dispose();
         }

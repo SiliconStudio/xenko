@@ -83,38 +83,6 @@ namespace SiliconStudio.Paradox.Effects
                 availableModelSlots.Enqueue(selectedSlot);
             }
         }
-
-        internal struct SlotKey : IEquatable<SlotKey>
-        {
-            public SlotKey(SceneRenderer pass, string effectName)
-            {
-                Pass = pass;
-                EffectName = effectName;
-            }
-
-            public readonly SceneRenderer Pass;
-
-            public readonly string EffectName;
-
-            public bool Equals(SlotKey other)
-            {
-                return string.Equals(EffectName, other.EffectName) && Equals(Pass, other.Pass);
-            }
-
-            public override bool Equals(object obj)
-            {
-                if (ReferenceEquals(null, obj)) return false;
-                return obj is SlotKey && Equals((SlotKey)obj);
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-                    return ((EffectName != null ? EffectName.GetHashCode() : 0) * 397) ^ (Pass != null ? Pass.GetHashCode() : 0);
-                }
-            }
-        }
     }
 
     internal class ModelRendererSlot

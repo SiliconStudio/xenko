@@ -46,11 +46,11 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         [DataMemberIgnore]
         public string DebugName { get; set; }
 
-        public virtual void Load()
+        public virtual void Load(RenderContext context)
         {
         }
 
-        public virtual void Unload()
+        public virtual void Unload(RenderContext context)
         {
         }
 

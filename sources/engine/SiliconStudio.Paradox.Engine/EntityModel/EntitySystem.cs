@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.EntityModel
     /// <summary>
     /// Manage a collection of entities.
     /// </summary>
-    public class EntitySystem : IReadOnlySet<Entity>
+    public class EntitySystem : ComponentBase, IReadOnlySet<Entity>
     {
         // TODO: Make this class threadsafe (current locks aren't sufficients)
 

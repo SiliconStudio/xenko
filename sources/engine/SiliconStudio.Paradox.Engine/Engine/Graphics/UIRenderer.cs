@@ -41,9 +41,9 @@ namespace SiliconStudio.Paradox.Effects
             DebugName = "UIRenderer";
         }
 
-        public override void Load()
+        public override void Load(RenderContext context)
         {
-            base.Load();
+            base.Load(context);
 
             uiSystem.ResolutionChanged += UISystemOnResolutionChanged;
 
@@ -59,9 +59,9 @@ namespace SiliconStudio.Paradox.Effects
             uiResolutionChanged = true;
         }
 
-        public override void Unload()
+        public override void Unload(RenderContext context)
         {
-            base.Unload();
+            base.Unload(context);
 
             if (uiSystem != null)
                 uiSystem.ResolutionChanged -= UISystemOnResolutionChanged;

@@ -20,6 +20,11 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     public class RenderFrame
     {
         /// <summary>
+        /// The master render frame for the context.
+        /// </summary>
+        public static readonly ParameterKey<RenderFrame> Master = ParameterKeys.New<RenderFrame>();
+
+        /// <summary>
         /// The current render frame for the context.
         /// </summary>
         public static readonly ParameterKey<RenderFrame> Current = ParameterKeys.New<RenderFrame>();
@@ -135,6 +140,9 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         {
             if (graphicsDevice == null) throw new ArgumentNullException("graphicsDevice");
             if (frameDescriptor == null) throw new ArgumentNullException("frameDescriptor");
+
+            // Make sure that the frame descriptor is cloned so that it is not modified and a different instance.
+            frameDescriptor = frameDescriptor.Clone();
 
             var referenceTexture = graphicsDevice.BackBuffer;
             if (referenceFrame != null && referenceFrame.RenderTarget != null)
