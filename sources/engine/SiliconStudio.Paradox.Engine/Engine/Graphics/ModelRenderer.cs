@@ -28,22 +28,6 @@ namespace SiliconStudio.Paradox.Effects
         private readonly DynamicEffectCompiler dynamicEffectCompiler;
         private readonly string effectName;
 
-        private readonly SafeDelegateList<AcceptModelDelegate> acceptModels;
-
-        private readonly SafeDelegateList<AcceptRenderModelDelegate> acceptRenderModels;
-
-        private readonly SafeDelegateList<AcceptRenderMeshDelegate> acceptRenderMeshes;
-
-        private readonly SafeDelegateList<UpdateMeshesDelegate> updateMeshes;
-
-        private readonly SafeDelegateList<PreRenderDelegate> preRenders;
-
-        private readonly SafeDelegateList<PostRenderDelegate> postRenders;
-
-        private readonly SafeDelegateList<PreEffectUpdateDelegate> preEffectUpdates;
-
-        private readonly SafeDelegateList<PostEffectUpdateDelegate> postEffectUpdates;
-
         /// <summary>
         /// An accept model callback to test whether a model will be handled by this instance.
         /// </summary>
@@ -92,17 +76,9 @@ namespace SiliconStudio.Paradox.Effects
 
             meshesToRender = new FastList<RenderMesh>();
 
-            acceptModels = new SafeDelegateList<AcceptModelDelegate>(this);
-            acceptRenderModels = new SafeDelegateList<AcceptRenderModelDelegate>(this);
-            acceptRenderMeshes = new SafeDelegateList<AcceptRenderMeshDelegate>(this);
-            updateMeshes = new SafeDelegateList<UpdateMeshesDelegate>(this) { UpdateMeshesDefault };
             SortMeshes = DefaultSort;
-            preRenders = new SafeDelegateList<PreRenderDelegate>(this);
-            postRenders = new SafeDelegateList<PostRenderDelegate>(this);
-            preEffectUpdates = new SafeDelegateList<PreEffectUpdateDelegate>(this);
-            postEffectUpdates = new SafeDelegateList<PostEffectUpdateDelegate>(this);
 
-            GroupMask = EntityGroup.All;
+            CullingMask = EntityGroup.All;
             modelRenderSlot = -1;
         }
 
@@ -114,71 +90,21 @@ namespace SiliconStudio.Paradox.Effects
             }
         }
 
-        public SafeDelegateList<AcceptModelDelegate> AcceptModel
-        {
-            get
-            {
-                return acceptModels;
-            }
-        }
+        public AcceptRenderModelDelegate AcceptRenderModel { get; set; }
 
-        public SafeDelegateList<AcceptRenderModelDelegate> AcceptRenderModel
-        {
-            get
-            {
-                return acceptRenderModels;
-            }
-        }
+        public AcceptRenderMeshDelegate AcceptRenderMesh { get; set; }
 
-        public SafeDelegateList<AcceptRenderMeshDelegate> AcceptRenderMesh
-        {
-            get
-            {
-                return acceptRenderMeshes;
-            }
-        }
+        public UpdateMeshesDelegate UpdateMeshes { get; set; }
 
-        public SafeDelegateList<UpdateMeshesDelegate> UpdateMeshes
-        {
-            get
-            {
-                return updateMeshes;
-            }
-        }
+        public PreRenderDelegate PreRender { get; set; }
+
+        public PostRenderDelegate PostRender { get; set; }
+
+        public PreEffectUpdateDelegate PreEffectUpdate { get; set; }
+
+        public PostEffectUpdateDelegate PostEffectUpdate { get; set; }
 
         public UpdateMeshesDelegate SortMeshes { get; set; }
-
-        public SafeDelegateList<PreRenderDelegate> PreRender
-        {
-            get
-            {
-                return preRenders;
-            }
-        }
-
-        public SafeDelegateList<PostRenderDelegate> PostRender
-        {
-            get
-            {
-                return postRenders;
-            }
-        }
-
-        public SafeDelegateList<PreEffectUpdateDelegate> PreEffectUpdate
-        {
-            get
-            {
-                return preEffectUpdates;
-            }
-        }
-
-        public SafeDelegateList<PostEffectUpdateDelegate> PostEffectUpdate
-        {
-            get
-            {
-                return postEffectUpdates;
-            }
-        }
 
         public override void Load()
         {
@@ -200,10 +126,11 @@ namespace SiliconStudio.Paradox.Effects
             }
         }
 
-        public EntityGroup GroupMask { get; set; }
+        public EntityGroup CullingMask { get; set; }
 
         protected override void OnRendering(RenderContext context)
         {
+            // If we don't have yet a render slot, create a new one
             if (modelRenderSlot < 0)
             {
                 var pipelineModelState = GetOrCreateModelRendererState();
@@ -221,7 +148,8 @@ namespace SiliconStudio.Paradox.Effects
                 // Always prepare the slot for the render meshes even if they are not used.
                 EnsureRenderMeshes(renderModel);
 
-                if ((renderModel.Group & GroupMask) == 0 || !OnAcceptRenderModel(renderModel))
+                // Perform culling on group and accept
+                if ((renderModel.Group & CullingMask) == 0 || (AcceptRenderModel != null && !AcceptRenderModel(renderModel)))
                 {
                     continue;
                 }
@@ -231,9 +159,10 @@ namespace SiliconStudio.Paradox.Effects
             }
 
             // Update meshes
-            foreach (var updateMeshesToRender in updateMeshes)
+            UpdateMeshesDefault(context, meshesToRender);
+            if (UpdateMeshes != null)
             {
-                updateMeshesToRender(context, meshesToRender);
+                UpdateMeshes(context, meshesToRender);
             }
 
             // Sort meshes
@@ -242,37 +171,13 @@ namespace SiliconStudio.Paradox.Effects
                 SortMeshes(context, meshesToRender);
             }
 
-            // PreRender callbacks
-            foreach (var preRender in preRenders)
-            {
-                preRender(context);
-            }
-
             // TODO: separate update effect and render to tightly batch render calls vs 1 cache-friendly loop on meshToRender
             foreach (var mesh in meshesToRender)
             {
-                // PreEffectUpdate callbacks
-                foreach (var preEffectUpdate in preEffectUpdates)
-                {
-                    preEffectUpdate(context, mesh);
-                }
-
                 // Update Effect and mesh
                 UpdateEffect(mesh, context.Parameters);
 
-                // PostEffectUpdate callbacks
-                foreach (var postEffectUpdate in postEffectUpdates)
-                {
-                    postEffectUpdate(context, mesh);
-                }
-
                 mesh.Draw(context);
-            }
-
-            // PostRender callbacks
-            foreach (var postRender in postRenders)
-            {
-                postRender(context);
             }
         }
 
@@ -320,7 +225,7 @@ namespace SiliconStudio.Paradox.Effects
             {
                 var mesh = meshes[i];
 
-                if (!mesh.Enabled || (acceptRenderMeshes.Count > 0 && !OnAcceptRenderMesh(context, mesh)))
+                if (!mesh.Enabled)
                 {
                     meshes.SwapRemoveAt(i--);
                     continue;
@@ -336,44 +241,6 @@ namespace SiliconStudio.Paradox.Effects
             meshes.Sort(ModelComponentSorter.Default);
         }
 
-        private bool OnAcceptRenderModel(RenderModel renderModel)
-        {
-            // NOTICE: We don't use Linq, as It would allocated objects and triggers GC
-            foreach (var acceptRenderModel in AcceptRenderModel)
-            {
-                if (!acceptRenderModel(renderModel))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        private bool OnAcceptModel(IModelInstance modelInstance)
-        {
-            // NOTICE: We don't use Linq, as It would allocated objects and triggers GC
-            foreach (var test in acceptModels)
-            {
-                if (!test(modelInstance))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        private bool OnAcceptRenderMesh(RenderContext context, RenderMesh renderMesh)
-        {
-            // NOTICE: Don't use Linq, as It would allocated objects and triggers GC
-            foreach (var test in acceptRenderMeshes)
-            {
-                if (!test(context, renderMesh))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
 
         /// <summary>
         /// Create or update the Effect of the effect mesh.

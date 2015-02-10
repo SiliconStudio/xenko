@@ -1028,8 +1028,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Images\ColorTransforms\ToneMap\ToneMap.cs" />
-    <Compile Include="Pipelines\PipelineBuilder.cs" />
-    <Compile Include="Pipelines\SceneRenderingPipeline.cs" />
     <Compile Include="Lights\LightComponentCollection.cs" />
     <Compile Include="Lights\LightProcessor.cs" />
     <Compile Include="Lights\LightModelRendererForward.cs" />
@@ -2409,6 +2407,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Lights\obsolete\" />
+    <Folder Include="Pipelines\" />
     <Folder Include="Shadows\obsolete\" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />

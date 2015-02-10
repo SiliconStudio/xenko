@@ -59,7 +59,7 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
             if (skybox != null)
             {
                 // Copy camera/pass parameters
-                context.CurrentPass.Parameters.CopySharedTo(skyboxEffect.Parameters);
+                context.Parameters.CopySharedTo(skyboxEffect.Parameters);
 
                 // Show irradiance in the background
                 if (skybox.Background == SkyboxBackground.Irradiance)

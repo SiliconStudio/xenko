@@ -15,7 +15,7 @@ using SiliconStudio.Paradox.Shaders;
 namespace SiliconStudio.Paradox.Effects.Pipelines
 {
     // TODO: All this code is temporary
-    public class SceneRenderingPipeline : PipelineBuilder	
+    public class SceneRenderingPipeline 	
     {
         private readonly CameraSetter cameraSetter;
 

@@ -109,6 +109,12 @@ namespace SiliconStudio.Paradox.EntityModel
             try
             {
                 var sceneState = EntitySystem.GetProcessor<SceneProcessor>().CurrentState;
+                if (sceneState == null)
+                {
+                    return;
+                }
+
+
                 var renderer = sceneState.Renderer;
 
                 GraphicsDevice.Begin();

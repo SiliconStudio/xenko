@@ -30,10 +30,6 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
             directLightGroup = new LightGroupProcessor("directLightGroups", LightingKeys.DirectLightGroups);
             environmentLightGroup = new LightGroupProcessor("environmentLights", LightingKeys.EnvironmentLights);
-
-            // Register this render processor
-            // TODO: Allow to remove it
-            modelRenderer.PreRender.Add(this.PreRender);
         }
 
         public IServiceRegistry Services { get; private set; }
@@ -53,7 +49,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// Filter out the inactive lights.
         /// </summary>
         /// <param name="context">The render context.</param>
-        private void PreRender(RenderContext context)
+        public void PrepareLights(RenderContext context)
         {
             directLightGroup.ProcessLights(context, lightProcessor.ActiveDirectLights, Enabled);
             environmentLightGroup.ProcessLights(context, lightProcessor.ActiveEnvironmentLights, Enabled);
@@ -98,7 +94,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
             public void ProcessLights(RenderContext context, Dictionary<Type, LightComponentCollection> activeLights, bool enabled)
             {
-                var passParameters = context.CurrentPass.Parameters;
+                var passParameters = context.Parameters;
 
                 CurrentShaderSources.Clear();
 

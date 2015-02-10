@@ -3,6 +3,7 @@
 
 using System;
 
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects.Materials;
@@ -22,54 +23,55 @@ namespace SiliconStudio.Paradox.Effects
         /// <returns>ModelRenderer.</returns>
         public static ModelRenderer AddDefaultFrustumCulling(this ModelRenderer modelRenderer)
         {
-            return modelRenderer.UpdateMeshes.Add(
-                (context, meshes) =>
+            modelRenderer.UpdateMeshes = FrustumCulling;
+            return modelRenderer;
+        }
+
+        private static void FrustumCulling(RenderContext context, FastList<RenderMesh> meshes)
+        {
+            Matrix viewProjection, mat1, mat2;
+
+            // Compute view * projection
+            context.Parameters.Get(TransformationKeys.View, out mat1);
+            context.Parameters.Get(TransformationKeys.Projection, out mat2);
+            Matrix.Multiply(ref mat1, ref mat2, out viewProjection);
+
+            var frustum = new BoundingFrustum(ref viewProjection);
+
+            for (var i = 0; i < meshes.Count; ++i)
+            {
+                var renderMesh = meshes[i];
+
+                // Fast AABB transform: http://zeuxcg.org/2010/10/17/aabb-from-obb-with-component-wise-abs/
+                // Get world matrix
+                renderMesh.Mesh.Parameters.Get(TransformationKeys.World, out mat1);
+
+                // Compute transformed AABB (by world)
+                var boundingBox = renderMesh.Mesh.BoundingBox;
+                var center = boundingBox.Center;
+                var extent = boundingBox.Extent;
+
+                Vector3.TransformCoordinate(ref center, ref mat1, out center);
+
+                // Update world matrix into absolute form
+                unsafe
                 {
-                    Matrix viewProjection, mat1, mat2;
-
-                    // Compute view * projection
-                    context.Parameters.Get(TransformationKeys.View, out mat1);
-                    context.Parameters.Get(TransformationKeys.Projection, out mat2);
-                    Matrix.Multiply(ref mat1, ref mat2, out viewProjection);
-
-                    var frustum = new BoundingFrustum(ref viewProjection);
-
-                    for (var i = 0; i < meshes.Count; ++i)
+                    float* matrixData = &mat1.M11;
+                    for (int j = 0; j < 16; ++j)
                     {
-                        var renderMesh = meshes[i];
-
-                        // Fast AABB transform: http://zeuxcg.org/2010/10/17/aabb-from-obb-with-component-wise-abs/
-                        // Get world matrix
-                        renderMesh.Mesh.Parameters.Get(TransformationKeys.World, out mat1);
-
-                        // Compute transformed AABB (by world)
-                        var boundingBox = renderMesh.Mesh.BoundingBox;
-                        var center = boundingBox.Center;
-                        var extent = boundingBox.Extent;
-
-                        Vector3.TransformCoordinate(ref center, ref mat1, out center);
-
-                        // Update world matrix into absolute form
-                        unsafe
-                        {
-                            float* matrixData = &mat1.M11;
-                            for (int j = 0; j < 16; ++j)
-                            {
-                                *matrixData = Math.Abs(*matrixData);
-                                ++matrixData;
-                            }
-                        }
-
-                        Vector3.TransformNormal(ref extent, ref mat1, out extent);
-
-                        // Perform frustum culling
-                        if (!Collision.FrustumContainsBox(ref frustum, ref center, ref extent))
-                        {
-                            meshes.SwapRemoveAt(i--);
-                        }
+                        *matrixData = Math.Abs(*matrixData);
+                        ++matrixData;
                     }
                 }
-                );
+
+                Vector3.TransformNormal(ref extent, ref mat1, out extent);
+
+                // Perform frustum culling
+                if (!Collision.FrustumContainsBox(ref frustum, ref center, ref extent))
+                {
+                    meshes.SwapRemoveAt(i--);
+                }
+            }
         }
     }
 }
