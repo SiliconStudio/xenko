@@ -1,40 +1,34 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
+
 using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders.Compiler;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Engine.Graphics
 {
     /// <summary>
-    /// Performs render pipeline transformations attached to a specific <see cref="RenderPass"/>.
+    /// Extension of the default <see cref="RendererBase"/> that initialize an EffectSystem and GraphicsDevice
     /// </summary>
-    public abstract class Renderer : ComponentBase
+    public abstract class RendererExtendedBase : RendererBase
     {
         private readonly IGraphicsDeviceService graphicsDeviceService;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Renderer"/> class.
+        /// Initializes a new instance of the <see cref="RendererExtendedBase"/> class.
         /// </summary>
         /// <param name="services">The services.</param>
         /// <exception cref="System.ArgumentNullException">services</exception>
-        protected Renderer(IServiceRegistry services)
+        protected RendererExtendedBase(IServiceRegistry services)
         {
             if (services == null) throw new ArgumentNullException("services");
-
-            Enabled = true;
             Services = services;
             EffectSystem = services.GetSafeServiceAs<EffectSystem>();
             graphicsDeviceService = services.GetSafeServiceAs<IGraphicsDeviceService>();
         }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="Renderer"/> is enabled.
-        /// </summary>
-        /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
-        public bool Enabled { get; set; }
 
         /// <summary>
         /// Gets the services.
@@ -59,50 +53,6 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         /// <value>The effect system.</value>
         public EffectSystem EffectSystem { get; private set; }
-        
-        /// <summary>
-        /// Gets or sets the name of the debug.
-        /// </summary>
-        /// <value>The name of the debug.</value>
-        public string DebugName { get; set; }
-
-        public virtual void Load()
-        {
-        }
-
-        public virtual void Unload()
-        {
-        }
-
-        protected virtual void BeginRendering(RenderContext context)
-        {
-            if (DebugName != null)
-            {
-                context.GraphicsDevice.BeginProfile(Color.Green, DebugName);
-            }
-        }
-
-        protected virtual void EndRendering(RenderContext context)
-        {
-            if (DebugName != null)
-            {
-                context.GraphicsDevice.EndProfile();
-            }
-        }
-
-        protected virtual void OnRendering(RenderContext context)
-        {
-        }
-
-        public void Draw(RenderContext context)
-        {
-            if (Enabled)
-            {
-                BeginRendering(context);
-                OnRendering(context);
-                EndRendering(context);
-            }
-        }
 
         protected CompilerParameters GetDefaultCompilerParameters()
         {

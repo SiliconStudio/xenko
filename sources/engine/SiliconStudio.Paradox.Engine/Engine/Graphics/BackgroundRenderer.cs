@@ -6,6 +6,7 @@ using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects
@@ -15,7 +16,7 @@ namespace SiliconStudio.Paradox.Effects
     /// The ratio or the texture used is preserved. The texture is centered and cropped along X or Y axis depending on the screen ratio.
     /// </summary>
     /// <remarks>This renderer does not write into the depth buffer</remarks>
-    public class BackgroundRenderer : Renderer
+    public class BackgroundRenderer : RendererExtendedBase
     {
         private readonly SpriteBatch spriteBatch;
 

@@ -15,9 +15,9 @@ using IServiceRegistry = SiliconStudio.Core.IServiceRegistry;
 namespace SiliconStudio.Paradox.Effects
 {
     /// <summary>
-    /// This <see cref="Renderer"/> is responsible to prepare and render meshes for a specific pass.
+    /// This <see cref="RendererExtendedBase"/> is responsible to prepare and render meshes for a specific pass.
     /// </summary>
-    public class ModelRenderer : Renderer
+    public class ModelRenderer : RendererExtendedBase
     {
         private int modelRenderSlot;
 
@@ -65,6 +65,8 @@ namespace SiliconStudio.Paradox.Effects
         public ModelRenderer(IServiceRegistry services, string effectName, SceneRenderer sceneRenderer) : base(services)
         {
             if (effectName == null) throw new ArgumentNullException("effectName");
+            if (sceneRenderer == null) throw new ArgumentNullException("sceneRenderer");
+
             this.effectName = effectName;
             DebugName = string.Format("ModelRenderer [{0}]", effectName);
 

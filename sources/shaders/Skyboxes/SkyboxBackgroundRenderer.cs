@@ -6,6 +6,7 @@ using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects.Images;
+using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 
@@ -14,7 +15,7 @@ namespace SiliconStudio.Paradox.Effects.Skyboxes
     /// <summary>
     /// A renderer for a skybox.
     /// </summary>
-    public class SkyboxBackgroundRenderer : Renderer
+    public class SkyboxBackgroundRenderer : RendererExtendedBase
     {
         private ImageEffectShader skyboxEffect;
         private readonly SkyboxProcessor skyboxProcessor;

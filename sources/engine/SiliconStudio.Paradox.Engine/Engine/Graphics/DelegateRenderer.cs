@@ -3,13 +3,14 @@
 using System;
 
 using SiliconStudio.Core;
+using SiliconStudio.Paradox.Engine.Graphics;
 
 namespace SiliconStudio.Paradox.Effects
 {
     /// <summary>
     /// A processor that updates camera view and projection along the setup of <see cref="RenderTargetSetter"/>
     /// </summary>
-    public class DelegateRenderer : Renderer
+    public class DelegateRenderer : RendererExtendedBase
     {
         /// <summary>
         /// Gets or sets the action to perform when the renderer is loaded.
@@ -27,7 +28,7 @@ namespace SiliconStudio.Paradox.Effects
         public Action<RenderContext> Render { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Renderer" /> class.
+        /// Initializes a new instance of the <see cref="RendererExtendedBase" /> class.
         /// </summary>
         /// <param name="services">The services.</param>
         public DelegateRenderer(IServiceRegistry services)

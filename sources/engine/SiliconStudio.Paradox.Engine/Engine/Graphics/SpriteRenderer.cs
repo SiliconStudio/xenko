@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.Engine.Graphics.Composers;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
@@ -15,9 +16,9 @@ using SiliconStudio.Paradox.Graphics;
 namespace SiliconStudio.Paradox.Effects
 {
     /// <summary>
-    /// This <see cref="Renderer"/> is responsible to prepare and render sprites for a specific pass.
+    /// This <see cref="RendererExtendedBase"/> is responsible to prepare and render sprites for a specific pass.
     /// </summary>
-    public class SpriteRenderer : Renderer
+    public class SpriteRenderer : RendererExtendedBase
     {
         private SpriteBatch spriteBatch;
 

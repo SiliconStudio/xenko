@@ -3,6 +3,7 @@
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects
@@ -10,10 +11,10 @@ namespace SiliconStudio.Paradox.Effects
     /// <summary>
     /// A processor that setup a <see cref="RenderTarget"/> and a <see cref="DepthStencil"/> on a <see cref="RenderPass"/>.
     /// </summary>
-    public class RenderTargetSetter : Renderer
+    public class RenderTargetSetter : RendererExtendedBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Renderer" /> class.
+        /// Initializes a new instance of the <see cref="RendererExtendedBase" /> class.
         /// </summary>
         /// <param name="services">The services.</param>
         public RenderTargetSetter(IServiceRegistry services)

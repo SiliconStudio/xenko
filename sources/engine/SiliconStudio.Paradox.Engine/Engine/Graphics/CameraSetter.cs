@@ -7,16 +7,17 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.Engine.Graphics;
 
 namespace SiliconStudio.Paradox.Effects
 {
     /// <summary>
     /// A processor that updates camera view and projection along the setup of <see cref="RenderTargetSetter"/>
     /// </summary>
-    public class CameraSetter : Renderer
+    public class CameraSetter : RendererExtendedBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Renderer" /> class.
+        /// Initializes a new instance of the <see cref="RendererExtendedBase" /> class.
         /// </summary>
         /// <param name="services">The services.</param>
         public CameraSetter(IServiceRegistry services) : base(services)

@@ -11,7 +11,7 @@ using SiliconStudio.Paradox.EntityModel;
 
 namespace SiliconStudio.Paradox.Engine.Graphics.Composers
 {
-    public class SceneRenderer : Renderer
+    public class SceneRenderer : RendererExtendedBase
     {
         private readonly Dictionary<GraphicsLayer, GraphicsLayerState> layerStates;
 
@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
             Scene = sceneComponent.Entity;
             SceneComponent = sceneComponent;
             EntitySystem = entitySystem;
-            Renderers = new TrackingCollection<Renderer>();
+            Renderers = new TrackingCollection<RendererExtendedBase>();
         }
 
         public Entity Scene { get; private set; }
@@ -35,7 +35,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
 
         public EntitySystem EntitySystem { get; private set; }
 
-        public TrackingCollection<Renderer> Renderers { get; private set; }
+        public TrackingCollection<RendererExtendedBase> Renderers { get; private set; }
 
         protected override void OnRendering(RenderContext context)
         {
@@ -71,7 +71,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
             // TODO: Renderer may be different based on the rendering model
             foreach (var renderer in layer.Renderers)
             {
-                renderer.Render(context);
+                renderer.Draw(context);
             }
         }
 

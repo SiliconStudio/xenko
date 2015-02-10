@@ -4,6 +4,7 @@ using System;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.UI;
@@ -14,7 +15,7 @@ namespace SiliconStudio.Paradox.Effects
     /// <summary>
     /// The renderer in charge of drawing the UI.
     /// </summary>
-    public class UIRenderer : Renderer, IRendererManager
+    public class UIRenderer : RendererExtendedBase, IRendererManager
     {
         private readonly IGame game;
         private readonly UISystem uiSystem;
