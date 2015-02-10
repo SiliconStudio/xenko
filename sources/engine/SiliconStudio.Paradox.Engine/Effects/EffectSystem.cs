@@ -123,14 +123,14 @@ namespace SiliconStudio.Paradox.Effects
             // Only take the sub-effect
             var bytecode = compilerResult.Bytecodes[subEffect];
 
-            if (bytecode.Task != null)
+            if (bytecode.Task != null && !bytecode.Task.IsCompleted)
             {
                 // Result was async, keep it async
                 return bytecode.Task.ContinueWith(x => CreateEffect(effectName, x.Result, compilerResult.UsedParameters[subEffect]));
             }
             else
             {
-                return CreateEffect(effectName, bytecode.Result, compilerResult.UsedParameters[subEffect]);
+                return CreateEffect(effectName, bytecode.WaitForResult(), compilerResult.UsedParameters[subEffect]);
             }
         }
 

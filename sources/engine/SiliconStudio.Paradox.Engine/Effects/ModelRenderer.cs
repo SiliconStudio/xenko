@@ -294,7 +294,9 @@ namespace SiliconStudio.Paradox.Effects
                 }
 
                 var renderMesh = new RenderMesh(renderModel, mesh);
-                UpdateEffect(renderMesh, null);
+
+                // Seems that we can delay UpdateEffect until actual rendering to avoid generating unecessary shader permutations
+                //UpdateEffect(renderMesh, null);
 
                 // Register mesh for rendering
                 renderMeshes.Add(renderMesh);
