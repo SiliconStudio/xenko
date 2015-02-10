@@ -8,7 +8,7 @@ using SiliconStudio.Quantum.Attributes;
 
 namespace SiliconStudio.Quantum.Commands
 {
-    public class RenameStringKeyCommand : INodeCommand
+    public class RenameStringKeyCommand : NodeCommand
     {
         private struct UndoTokenData
         {
@@ -28,14 +28,14 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        public string Name { get { return "RenameStringKey"; } }
+        public override string Name { get { return "RenameStringKey"; } }
 
         /// <inheritdoc/>
-        public CombineMode CombineMode { get { return CombineMode.AlwaysCombine; } }
+        public override CombineMode CombineMode { get { return CombineMode.AlwaysCombine; } }
 
 
         /// <inheritdoc/>
-        public bool CanAttach(ITypeDescriptor descriptor, MemberDescriptorBase memberDescriptor)
+        public override bool CanAttach(ITypeDescriptor descriptor, MemberDescriptorBase memberDescriptor)
         {
             if (memberDescriptor != null)
             {
@@ -49,7 +49,7 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        public object Invoke(object currentValue, ITypeDescriptor descriptor, object parameter, out UndoToken undoToken)
+        public override object Invoke(object currentValue, ITypeDescriptor descriptor, object parameter, out UndoToken undoToken)
         {
             var dictionaryDescriptor = descriptor as DictionaryDescriptor;
             var tuple = parameter as Tuple<object, object>;
@@ -65,7 +65,7 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        public object Undo(object currentValue, ITypeDescriptor descriptor, UndoToken undoToken)
+        public override object Undo(object currentValue, ITypeDescriptor descriptor, UndoToken undoToken)
         {
             var dictionaryDescriptor = descriptor as DictionaryDescriptor;
             var undoData = (UndoTokenData)undoToken.TokenValue;
