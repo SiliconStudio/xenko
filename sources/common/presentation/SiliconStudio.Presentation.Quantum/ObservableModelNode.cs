@@ -85,20 +85,20 @@ namespace SiliconStudio.Presentation.Quantum
             Initialize(false);
         }
 
-        private void Initialize(bool isUpdating)
+        protected virtual void Initialize(bool isUpdating)
         {
-            var targetNodePath = ModelNodePath.GetChildPath(SourceNodePath, SourceNode, targetNode);
-            if (targetNodePath == null || !targetNodePath.IsValid)
+            TargetNodePath = ModelNodePath.GetChildPath(SourceNodePath, SourceNode, targetNode);
+            if (TargetNodePath == null || !TargetNodePath.IsValid)
                 throw new InvalidOperationException("Unable to retrieve the path of the given model node.");
             
             foreach (var command in targetNode.Commands)
             {
-                var commandWrapper = new ModelNodeCommandWrapper(ServiceProvider, command, Path, Owner.Identifier, targetNodePath, Owner.ModelContainer, Owner.Dirtiables);
+                var commandWrapper = new ModelNodeCommandWrapper(ServiceProvider, command, Path, Owner, TargetNodePath, Owner.Dirtiables);
                 AddCommand(commandWrapper);
             }
 
             if (!isPrimitive)
-                GenerateChildren(targetNode, targetNodePath, isUpdating);
+                GenerateChildren(targetNode, TargetNodePath, isUpdating);
 
             isInitialized = true;
 
@@ -151,7 +151,9 @@ namespace SiliconStudio.Presentation.Quantum
         internal Guid ModelGuid { get { return targetNode.Guid; } }
 
         private ObservableModelNode ModelNodeParent { get { for (var p = Parent; p != null; p = p.Parent) { var mp = p as ObservableModelNode; if (mp != null) return mp; } return null; } }
-                
+
+        protected ModelNodePath TargetNodePath { get; private set; }
+   
         /// <summary>
         /// Indicates whether this <see cref="ObservableModelNode"/> instance corresponds to the given <see cref="IModelNode"/>.
         /// </summary>
@@ -376,7 +378,7 @@ namespace SiliconStudio.Presentation.Quantum
             OnPropertyChanged("IsPrimitive", "HasList", "HasDictionary");
         }
 
-        private static IModelNode GetTargetNode(IModelNode sourceNode, object index)
+        protected static IModelNode GetTargetNode(IModelNode sourceNode, object index)
         {
             var objectReference = sourceNode.Content.Reference as ObjectReference;
             var referenceEnumerable = sourceNode.Content.Reference as ReferenceEnumerable;

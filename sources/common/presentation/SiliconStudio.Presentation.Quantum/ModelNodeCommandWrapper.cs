@@ -13,25 +13,25 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public class ModelNodeCommandWrapper : NodeCommandWrapperBase
     {
-        private readonly INodeCommand nodeCommand;
         private readonly ObservableViewModelService service;
         private readonly ObservableViewModelIdentifier identifier;
         private readonly ModelNodePath nodePath;
         private readonly ModelContainer modelContainer;
 
-        public override string Name { get { return nodeCommand.Name; } }
+        public override string Name { get { return NodeCommand.Name; } }
 
-        public override CombineMode CombineMode { get { return nodeCommand.CombineMode; } }
+        public override CombineMode CombineMode { get { return NodeCommand.CombineMode; } }
 
-        public ModelNodeCommandWrapper(IViewModelServiceProvider serviceProvider, INodeCommand nodeCommand, string observableNodePath, ObservableViewModelIdentifier identifier, ModelNodePath nodePath, ModelContainer modelContainer, IEnumerable<IDirtiableViewModel> dirtiables)
+        public ModelNodeCommandWrapper(IViewModelServiceProvider serviceProvider, INodeCommand nodeCommand, string observableNodePath, ObservableViewModel owner, ModelNodePath nodePath, IEnumerable<IDirtiableViewModel> dirtiables)
             : base(serviceProvider, dirtiables)
         {
             if (nodeCommand == null) throw new ArgumentNullException("nodeCommand");
-            if (modelContainer == null) throw new ArgumentNullException("modelContainer");
-            this.identifier = identifier;
+            if (owner == null) throw new ArgumentNullException("owner");
             this.nodePath = nodePath;
-            this.modelContainer = modelContainer;
-            this.nodeCommand = nodeCommand;
+            // Note: the owner should not be stored in the command because we want it to be garbage collectable
+            identifier = owner.Identifier;
+            modelContainer = owner.ModelContainer;
+            NodeCommand = nodeCommand;
             service = serviceProvider.Get<ObservableViewModelService>();
             ObservableNodePath = observableNodePath;
         }
@@ -41,26 +41,28 @@ namespace SiliconStudio.Presentation.Quantum
             return nodePath.RootNode;
         }
 
+        public INodeCommand NodeCommand { get; private set; }
+
         protected override UndoToken Redo(object parameter, bool creatingActionItem)
         {
             UndoToken token;
-            var viewModelNode = nodePath.GetNode();
-            if (viewModelNode == null)
+            var modelNode = nodePath.GetNode();
+            if (modelNode == null)
                 throw new InvalidOperationException("Unable to retrieve the node on which to apply the redo operation.");
 
-            var newValue = nodeCommand.Invoke(viewModelNode.Content.Value, viewModelNode.Content.Descriptor, parameter, out token);
-            Refresh(viewModelNode, newValue);
+            var newValue = NodeCommand.Invoke(modelNode.Content.Value, modelNode.Content.Descriptor, parameter, out token);
+            Refresh(modelNode, newValue);
             return token;
         }
 
         protected override void Undo(object parameter, UndoToken token)
         {
-            var viewModelNode = nodePath.GetNode();
-            if (viewModelNode == null)
+            var modelNode = nodePath.GetNode();
+            if (modelNode == null)
                 throw new InvalidOperationException("Unable to retrieve the node on which to apply the redo operation.");
 
-            var newValue = nodeCommand.Undo(viewModelNode.Content.Value, viewModelNode.Content.Descriptor, token);
-            Refresh(viewModelNode, newValue);
+            var newValue = NodeCommand.Undo(modelNode.Content.Value, modelNode.Content.Descriptor, token);
+            Refresh(modelNode, newValue);
         }
 
         private void Refresh(IModelNode modelNode, object newValue)
