@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
     /// </summary>
     [DataContract("GraphicsComposerOutputSharedRenderFrame")]
     [Display("Shared RenderFrame")]
-    public class GraphicsComposerOutputSharedRenderFrame : IGraphicsComposerOutput
+    public sealed class GraphicsComposerOutputSharedRenderFrame : IGraphicsComposerOutput
     {
         /// <summary>
         /// Gets or sets the shared RenderFrame.

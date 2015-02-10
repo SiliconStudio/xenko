@@ -10,7 +10,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
     /// </summary>
     [DataContract("GraphicsComposerOutputRenderFrame")]
     [Display("RenderFrame")]
-    public class GraphicsComposerOutputRenderFrame : IGraphicsComposerOutput
+    public sealed class GraphicsComposerOutputRenderFrame : IGraphicsComposerOutput
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphicsComposerOutputRenderFrame"/> class.
