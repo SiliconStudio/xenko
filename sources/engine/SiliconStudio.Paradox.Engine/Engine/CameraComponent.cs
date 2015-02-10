@@ -2,8 +2,10 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -28,7 +30,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Create a new <see cref="CameraComponent"/> instance.
         /// </summary>
         public CameraComponent()
-            : this(null, 0 ,0)
+            : this(null, 0.1f , 1000.0f)
         {
         }
 
@@ -40,38 +42,22 @@ namespace SiliconStudio.Paradox.Engine
         /// <param name="farPlane">The far plane value</param>
         public CameraComponent(Entity target, float nearPlane, float farPlane)
         {
+            Projection = new CameraProjectionPerspective();
+            // TODO: Handle Aspect ratio differently
             AspectRatio = 16f / 9f;
             Target = target;
             TargetUp = Vector3.UnitY;
             NearPlane = nearPlane;
             FarPlane = farPlane;
-            VerticalFieldOfView = (float)Math.PI * 0.4f;
         }
 
         /// <summary>
-        /// Associates an entity with this camera component.
+        /// Gets or sets the projection.
         /// </summary>
-        /// <param name="name">The name of entity.</param>
-        /// <returns>This CameraComponent.</returns>
-        [Obsolete("This method will be removed in a future release")]
-        public CameraComponent WithEntity(string name)
-        {
-            // By default create an entity on the CameraComponent
-            // This can be overrident later
-            var entity = new Entity(name);
-            entity.Add(this);
-
-            Entity = entity;
-            return this;
-        }
-
-        /// <summary>
-        /// Gets or sets the vertical field of view.
-        /// </summary>
-        /// <value>
-        /// The vertical field of view.
-        /// </value>
-        public float VerticalFieldOfView { get; set; }
+        /// <value>The projection.</value>
+        [DataMember(0)]
+        [NotNull]
+        public ICameraProjection Projection { get; set; }
 
         /// <summary>
         /// Gets or sets the near plane distance.
@@ -79,6 +65,8 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The near plane distance.
         /// </value>
+        [DataMember(20)]
+        [DefaultValue(0.1f)]
         public float NearPlane { get; set; }
 
         /// <summary>
@@ -87,6 +75,8 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The far plane distance.
         /// </value>
+        [DataMember(30)]
+        [DefaultValue(1000.0f)]
         public float FarPlane { get; set; }
 
         /// <summary>
@@ -95,12 +85,14 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The aspect ratio.
         /// </value>
+        [DataMemberIgnore]
         public float AspectRatio { get; set; }
 
         /// <summary>
         /// Gets or sets the target this camera is pointing to. May be null.
         /// </summary>
         /// <value>The target.</value>
+        [DataMemberIgnore]
         public Entity Target { get; set; }
 
         /// <summary>
@@ -109,18 +101,21 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The up direction when using a target (for LookAt).
         /// </value>
+        [DataMemberIgnore]
         public Vector3 TargetUp { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether [auto focus].
         /// </summary>
         /// <value><c>true</c> if [auto focus]; otherwise, <c>false</c>.</value>
+        [DataMemberIgnore]
         public bool AutoFocus { get; set; }
 
         /// <summary>
         /// Gets or sets the focus distance.
         /// </summary>
         /// <value>The focus distance.</value>
+        [DataMemberIgnore]
         public float FocusDistance
         {
             get
@@ -156,43 +151,29 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets or sets a value indicating whether to use custom <see cref="ViewMatrix"/>. Default is <c>false</c>
         /// </summary>
         /// <value><c>true</c> if use custom <see cref="ViewMatrix"/>; otherwise, <c>false</c>.</value>
+        [DataMemberIgnore]
         public bool UseViewMatrix { get; set; }
 
         /// <summary>
         /// Gets or sets the local view matrix, only used when <see cref="UseViewMatrix"/> is <c>true</c>.
         /// </summary>
         /// <value>The local view matrix.</value>
+        [DataMemberIgnore]
         public Matrix ViewMatrix { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to use custom <see cref="ProjectionMatrix"/>. Default is <c>false</c>
         /// </summary>
         /// <value><c>true</c> if use custom <see cref="ProjectionMatrix"/>; otherwise, <c>false</c>.</value>
+        [DataMemberIgnore]
         public bool UseProjectionMatrix { get; set; }
 
         /// <summary>
         /// Gets or sets the local projection matrix, only used when <see cref="UseProjectionMatrix"/> is <c>true</c>.
         /// </summary>
         /// <value>The local projection matrix.</value>
-        public Matrix ProjectionMatrix { get; set; }
-
-        /// <summary>
-        /// Gets or sets the position.
-        /// </summary>
-        /// <value>The position.</value>
         [DataMemberIgnore]
-        public Vector3 Position
-        {
-            get
-            {
-                return EnsureEntity.Transform.Translation;
-            }
-
-            set
-            {
-                EnsureEntity.Transform.Translation = value;
-            }
-        }
+        public Matrix ProjectionMatrix { get; set; }
 
         /// <summary>
         /// Calculates the projection matrix and view matrix.
@@ -227,14 +208,8 @@ namespace SiliconStudio.Paradox.Engine
             }
             
             // Calculates the projection
-            if (UseProjectionMatrix)
-            {
-                projection = ProjectionMatrix;
-            }
-            else
-            {
-                Matrix.PerspectiveFovRH(VerticalFieldOfView, AspectRatio, NearPlane, FarPlane, out projection);
-            }
+            // TODO: Should we throw an error if Projection is not set?
+            projection = UseProjectionMatrix ? ProjectionMatrix : Projection != null ? Projection.CalculateProjection(AspectRatio, NearPlane, FarPlane) : Matrix.Zero;
         }
 
         protected internal override PropertyKey DefaultKey

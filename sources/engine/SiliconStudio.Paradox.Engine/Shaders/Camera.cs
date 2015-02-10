@@ -24,5 +24,6 @@ namespace SiliconStudio.Paradox.Effects
         public static readonly ParameterKey<float> Aspect = ParameterKeys.New<float>();
         public static readonly ParameterKey<Vector2> ViewSize = ParameterKeys.New<Vector2>();
         public static readonly ParameterKey<float> FieldOfView = ParameterKeys.New<float>();
+        public static readonly ParameterKey<float> OrthoSize = ParameterKeys.New<float>();
     }
 }

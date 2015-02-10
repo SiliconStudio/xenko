@@ -102,6 +102,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             graphicsDevice.SetDepthAndRenderTarget(frame.DepthStencil, frame.RenderTarget);
 
             // TODO: Add Viewport?
+            // TODO: Add support for pluggable clear for Deferred render targets (clear the packed buffer... etc)
         }
     }
 }

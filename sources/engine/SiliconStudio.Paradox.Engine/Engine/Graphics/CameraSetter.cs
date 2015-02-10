@@ -32,12 +32,8 @@ namespace SiliconStudio.Paradox.Effects
 
         protected override void OnRendering(RenderContext context)
         {
-            if (Camera == null)
+            if (Camera == null || Camera.Entity == null)
                 return;
-
-            // TODO Should we really want to throw an exception
-            if(Camera.Entity == null)
-                throw new Exception("The camera component provided to 'CameraSetter' should be associated to an entity");
 
             var viewParameters = context.Parameters;
 
@@ -49,7 +45,13 @@ namespace SiliconStudio.Paradox.Effects
             viewParameters.Set(TransformationKeys.Projection, projection);
             viewParameters.Set(CameraKeys.NearClipPlane, Camera.NearPlane);
             viewParameters.Set(CameraKeys.FarClipPlane, Camera.FarPlane);
-            viewParameters.Set(CameraKeys.FieldOfView, Camera.VerticalFieldOfView);
+            if (Camera.Projection is CameraProjectionPerspective)
+            {
+                viewParameters.Set(CameraKeys.FieldOfView, ((CameraProjectionPerspective)Camera.Projection).VerticalFieldOfView);
+            } else if (Camera.Projection is CameraProjectionOrthographic)
+            {
+                viewParameters.Set(CameraKeys.OrthoSize, ((CameraProjectionOrthographic)Camera.Projection).Size);
+            }
             viewParameters.Set(CameraKeys.Aspect, Camera.AspectRatio);
             viewParameters.Set(CameraKeys.FocusDistance, Camera.FocusDistance);   
         }
