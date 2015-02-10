@@ -153,6 +153,7 @@
     <Compile Include="Lights\LightAmbient.cs" />
     <Compile Include="Lights\LightShaderGroup.cs" />
     <Compile Include="Lights\LightSkybox.cs" />
+    <Compile Include="ReferenceToEffectsAttribute.cs" />
     <Compile Include="Materials\IMaterialStreamProvider.cs" />
     <Compile Include="Materials\MaterialStreamDescriptor.cs" />
     <Compile Include="Materials\MaterialSurfaceStreamShading.cs">
