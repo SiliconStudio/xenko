@@ -90,6 +90,11 @@ namespace SiliconStudio.Paradox.Effects
             postEffectUpdates = new SafeDelegateList<PostEffectUpdateDelegate>(this);
         }
 
+        public DynamicEffectCompiler DynamicEffectCompiler
+        {
+            get { return dynamicEffectCompiler; }
+        }
+
         public string EffectName
         {
             get
@@ -209,11 +214,6 @@ namespace SiliconStudio.Paradox.Effects
             meshesToRender.Clear();
             foreach (var renderModel in state.RenderModels)
             {
-                if (!OnAcceptRenderModel(renderModel))
-                {
-                    continue;
-                }
-
                 var meshes = renderModel.RenderMeshes[modelRenderSlot.Slot];
                 if (meshes != null)
                     meshesToRender.AddRange(meshes);
@@ -270,6 +270,11 @@ namespace SiliconStudio.Paradox.Effects
             // TODO: this is obviously wrong since a pipeline can have several ModelRenderer with the same effect.
             // In that case, a Mesh may be added several times to the list and as a result rendered several time in a single ModelRenderer.
             // We keep it that way for now since we only have two ModelRenderer with the same effect in the deferrent pipeline (splitting between opaque and transparent objects) and their acceptance tests are exclusive.
+
+            if (!OnAcceptRenderModel(renderModel))
+            {
+                return;
+            }
 
             // Create the list of RenderMesh objects
             var renderMeshes = renderModel.RenderMeshes[modelRenderSlot.Slot];
