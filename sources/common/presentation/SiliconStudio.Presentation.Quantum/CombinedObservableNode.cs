@@ -162,7 +162,6 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public override IDictionary<string, object> AssociatedData { get { return associatedData; } }
 
-        // TODO: do not remove from parent if we can avoid it
         public void Refresh()
         {
             if (Parent == null) throw new InvalidOperationException("The node to refresh can be a root node.");
@@ -170,7 +169,8 @@ namespace SiliconStudio.Presentation.Quantum
             if (CombinedNodes.Any(x => x != null))
             {
                 var parent = (CombinedObservableNode)Parent;
-                parent.RemoveChild(this);
+                parent.NotifyPropertyChanging(Name);
+                NotifyNodeUpdating();
 
                 if (AreCombinable(CombinedNodes))
                 {
@@ -184,7 +184,9 @@ namespace SiliconStudio.Presentation.Quantum
 
                     Initialize(true);
                 }
-                parent.AddChild(this);
+
+                NotifyNodeUpdated();
+                parent.NotifyPropertyChanged(Name);
             }
         }
 
@@ -216,6 +218,10 @@ namespace SiliconStudio.Presentation.Quantum
             }
             return true;
         }
+
+        protected abstract void NotifyNodeUpdating();
+
+        protected abstract void NotifyNodeUpdated();
 
         private void GenerateChildren(IEnumerable<KeyValuePair<string, List<SingleObservableNode>>> commonChildren, bool isUpdating)
         {
@@ -387,7 +393,7 @@ namespace SiliconStudio.Presentation.Quantum
             set
             {
                 Owner.BeginCombinedAction();
-                OnPropertyChanging("TypedValue", "HasMultipleValues", "IsPrimitive", "HasList", "HasDictionary");
+                NotifyNodeUpdating();
                 ChangeInProgress = true;
                 CombinedNodes.ForEach(x => x.Value = value);
                 var changedNodes = ChangedNodes.Where(x => x != this).ToList();
@@ -398,7 +404,7 @@ namespace SiliconStudio.Presentation.Quantum
                     Refresh();
                 }
                 changedNodes.ForEach(x => x.Refresh());
-                OnPropertyChanged("TypedValue", "HasMultipleValues", "IsPrimitive", "HasList", "HasDictionary");
+                NotifyNodeUpdated();
                 string displayName = Owner.FormatCombinedUpdateMessage(this, value);
                 Owner.EndCombinedAction(displayName, Path, value);
             }
@@ -409,5 +415,15 @@ namespace SiliconStudio.Presentation.Quantum
 
         /// <inheritdoc/>
         public override sealed object Value { get { return TypedValue; } set { TypedValue = (T)value; } }
+
+        protected override void NotifyNodeUpdating()
+        {
+            OnPropertyChanging("TypedValue", "HasMultipleValues", "IsPrimitive", "HasList", "HasDictionary");
+        }
+
+        protected override void NotifyNodeUpdated()
+        {
+            OnPropertyChanged("TypedValue", "HasMultipleValues", "IsPrimitive", "HasList", "HasDictionary");
+        }
     }
 }
