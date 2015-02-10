@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.Engine.Graphics.Composers;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
@@ -19,6 +20,8 @@ namespace SiliconStudio.Paradox.Effects
     public class SpriteRenderer : Renderer
     {
         private SpriteBatch spriteBatch;
+
+        private SceneRenderer sceneRenderer;
 
         private readonly IVirtualResolution gameVirtualResolution;
 
@@ -56,7 +59,9 @@ namespace SiliconStudio.Paradox.Effects
 
         protected override void OnRendering(RenderContext context)
         {
-            var spriteProcessor = context.SceneRenderer.EntitySystem.GetProcessor<SpriteProcessor>();
+            // TODO: SceneRenderer is not initalized
+            throw new NotImplementedException("TODO: SceneRenderer is not initalized");
+            var spriteProcessor = sceneRenderer.EntitySystem.GetProcessor<SpriteProcessor>();
 
             // TODO: Check how to integrate sprites in a Camera renderer instead of this
 
@@ -105,7 +110,7 @@ namespace SiliconStudio.Paradox.Effects
 
         private void DrawSprites(RenderContext context, SpriteSortMode sortMode, BlendState blendState)
         {
-            var viewParameters = context.CurrentPass.Parameters;
+            var viewParameters = context.Parameters;
 
             var viewMatrix = viewParameters.Get(TransformationKeys.View);
             var projectionMatrix = viewParameters.Get(TransformationKeys.Projection);

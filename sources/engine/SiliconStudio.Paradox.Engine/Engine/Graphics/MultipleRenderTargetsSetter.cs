@@ -63,8 +63,7 @@ namespace SiliconStudio.Paradox.Effects
             }
 
             // set the view size parameter
-            var pass = context.CurrentPass;
-            var viewParameters = pass.Parameters;
+            var viewParameters = context.Parameters;
             viewParameters.Set(CameraKeys.ViewSize, new Vector2(Viewport.Width, Viewport.Height));
 
             // set the targets

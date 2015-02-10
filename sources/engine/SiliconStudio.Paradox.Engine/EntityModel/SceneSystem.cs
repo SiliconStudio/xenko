@@ -124,9 +124,7 @@ namespace SiliconStudio.Paradox.EntityModel
                     GraphicsDevice.EnableProfile(true);
                 }
 
-                // Draw recursively the Pipeline
-                // TODO: Ugly indirection to call SceneRenderer through PipelineManager. Improve this.
-                renderer.PipelineManager.Draw(renderer.PipelineManager.Pipeline, drawContext);
+                renderer.Draw(drawContext);
             }
             catch (Exception ex)
             {

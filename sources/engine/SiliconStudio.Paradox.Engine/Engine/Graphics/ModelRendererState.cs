@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Paradox.Engine.Graphics.Composers;
 
 namespace SiliconStudio.Paradox.Effects
 {
@@ -15,93 +16,83 @@ namespace SiliconStudio.Paradox.Effects
 
         public static PropertyKey<ModelRendererState> Key = new PropertyKey<ModelRendererState>("ModelRendererState", typeof(ModelRendererState));
 
-        private readonly Dictionary<SlotKey, ModelRendererSlot> modelSlotMapping = new Dictionary<SlotKey, ModelRendererSlot>();
+        private readonly Dictionary<string, ModelRendererSlot> modelSlotMapping = new Dictionary<string, ModelRendererSlot>();
         private readonly Queue<ModelRendererSlot> availableModelSlots = new Queue<ModelRendererSlot>();
 
         #endregion
-
-        public event Action<ModelRendererState, ModelRendererSlot> ModelSlotAdded;
-        public event Action<ModelRendererState, ModelRendererSlot> ModelSlotRemoved;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ModelRendererState"/> class.
         /// </summary>
         public ModelRendererState()
         {
-            RenderModels = new List<RenderModel>();
         }
 
-        public Dictionary<SlotKey, ModelRendererSlot> ModelSlotMapping
+        public Dictionary<string, ModelRendererSlot> ModelSlotMapping
         {
             get { return modelSlotMapping; }
         }
 
         /// <summary>
-        /// The action that will be applied on every model to test whether to add it to the render pipeline.
-        /// </summary>
-        public Func<IModelInstance, bool> AcceptModel { get; set; }
-
-        /// <summary>
-        /// Gets the current list of models to render.
-        /// </summary>
-        /// <value>The render models.</value>
-        public List<RenderModel> RenderModels { get; private set; }
-
-        /// <summary>
         /// Gets or creates a mesh pass slot for this pass inside its <see cref="RenderPipeline" />.
         /// </summary>
-        /// <param name="renderPass">The render pass.</param>
         /// <param name="effectName">Name of the effect.</param>
-        /// <param name="prepareRenderModel">The prepare render model.</param>
-        /// <param name="modelRendererSlot">The model renderer slot.</param>
-        public void AllocateModelSlot(RenderPass renderPass, string effectName, Action<RenderModel> prepareRenderModel, out ModelRendererSlot modelRendererSlot)
+        /// <returns>ModelRendererSlot.</returns>
+        public int AllocateModelSlot(string effectName)
         {
-            var key = new SlotKey(renderPass, effectName);
-            if (!modelSlotMapping.TryGetValue(key, out modelRendererSlot))
+            ModelRendererSlot modelRendererSlot;
+            if (!modelSlotMapping.TryGetValue(effectName, out modelRendererSlot))
             {
                 // First, check free list, otherwise create a new slot
                 if (availableModelSlots.Count > 0)
                 {
                     modelRendererSlot = availableModelSlots.Dequeue();
-                    modelRendererSlot.Key = key;
-                    modelSlotMapping[key] = modelRendererSlot;
+                    modelRendererSlot.EffectName = effectName;
+                    modelSlotMapping[effectName] = modelRendererSlot;
                 }
                 else
-                    modelSlotMapping[key] = modelRendererSlot = new ModelRendererSlot(key, modelSlotMapping.Count);
-
-                modelRendererSlot.PrepareRenderModel = prepareRenderModel;
-
-                if (ModelSlotAdded != null)
-                    ModelSlotAdded(this, modelRendererSlot);
+                    modelSlotMapping[effectName] = modelRendererSlot = new ModelRendererSlot(effectName, modelSlotMapping.Count);
             }
 
             modelRendererSlot.ReferenceCount++;
+            return modelRendererSlot.Slot;
         }
 
-        public void ReleaseModelSlot(ModelRendererSlot modelRendererSlot)
+        public void ReleaseModelSlot(int slotIndex)
         {
-            if (--modelRendererSlot.ReferenceCount == 0)
+            ModelRendererSlot selectedSlot = null;
+            foreach (var slot in modelSlotMapping)
             {
-                if (ModelSlotRemoved != null)
-                    ModelSlotRemoved(this, modelRendererSlot);
+                if (slot.Value.Slot == slotIndex)
+                {
+                    selectedSlot = slot.Value;
+                    break;
+                }
+            }
 
+            if (selectedSlot == null)
+            {
+                throw new ArgumentOutOfRangeException("slotIndex", "Invalid slot");
+            }
+
+            if (--selectedSlot.ReferenceCount == 0)
+            {
                 // Release the slot if no other reference points to it (add it in free list)
-                if (!modelSlotMapping.Remove(modelRendererSlot.Key))
+                if (!modelSlotMapping.Remove(selectedSlot.EffectName))
                     throw new InvalidOperationException("Model slot not found while trying to remove it.");
-                modelRendererSlot.PrepareRenderModel = null;
-                availableModelSlots.Enqueue(modelRendererSlot);
+                availableModelSlots.Enqueue(selectedSlot);
             }
         }
 
         internal struct SlotKey : IEquatable<SlotKey>
         {
-            public SlotKey(RenderPass pass, string effectName)
+            public SlotKey(SceneRenderer pass, string effectName)
             {
                 Pass = pass;
                 EffectName = effectName;
             }
 
-            public readonly RenderPass Pass;
+            public readonly SceneRenderer Pass;
 
             public readonly string EffectName;
 
@@ -128,14 +119,13 @@ namespace SiliconStudio.Paradox.Effects
 
     internal class ModelRendererSlot
     {
-        internal ModelRendererState.SlotKey Key;
-        public Action<RenderModel> PrepareRenderModel;
+        internal string EffectName;
         public int Slot;
         public int ReferenceCount;
 
-        internal ModelRendererSlot(ModelRendererState.SlotKey key, int slot)
+        internal ModelRendererSlot(string effectName, int slot)
         {
-            Key = key;
+            EffectName = effectName;
             Slot = slot;
         }
     }

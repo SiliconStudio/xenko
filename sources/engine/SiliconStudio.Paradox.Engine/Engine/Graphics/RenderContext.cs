@@ -21,6 +21,7 @@ namespace SiliconStudio.Paradox.Effects
         public RenderContext(GraphicsDevice graphicsDevice)
         {
             this.graphicsDevice = graphicsDevice;
+            Parameters = new ParameterCollection();
         }
 
         /// <summary>
@@ -35,16 +36,6 @@ namespace SiliconStudio.Paradox.Effects
             }
         }
 
-        /// <summary>
-        /// Gets or sets the scene renderer.
-        /// </summary>
-        /// <value>The scene renderer.</value>
-        public SceneRenderer SceneRenderer { get; set; }
-
-        /// <summary>
-        /// Gets or sets the current pass being rendered.
-        /// </summary>
-        /// <value>The current pass.</value>
-        public RenderPass CurrentPass { get; set; }
+        public ParameterCollection Parameters { get; set; }
     }
 }

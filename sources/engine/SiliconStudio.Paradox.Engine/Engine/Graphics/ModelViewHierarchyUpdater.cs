@@ -6,6 +6,7 @@ using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.Engine.Graphics;
 
 namespace SiliconStudio.Paradox.Effects
 {

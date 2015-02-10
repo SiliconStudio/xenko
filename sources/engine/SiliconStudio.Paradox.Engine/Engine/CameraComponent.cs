@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -247,19 +246,6 @@ namespace SiliconStudio.Paradox.Engine
         {
             // TODO: Do we need a processor?
             return Enumerable.Empty<Type>();
-        }
-    }
-
-    public static class CameraComponentExtensions
-    {
-        public static CameraComponent GetCamera(this RenderPass pass)
-        {
-            return pass.GetProcessor<CameraSetter>().Camera;
-        }
-
-        public static void SetCamera(this RenderPass pass, CameraComponent camera)
-        {
-            pass.GetProcessor<CameraSetter>().Camera = camera;
         }
     }
 }

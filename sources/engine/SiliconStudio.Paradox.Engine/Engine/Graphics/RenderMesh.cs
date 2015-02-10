@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 
-using SiliconStudio.Core;
+using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects
@@ -78,7 +78,6 @@ namespace SiliconStudio.Paradox.Effects
         public void Draw(RenderContext context)
         {
             // Retrieve effect parameters
-            var currentPass = context.CurrentPass;
             var mesh = Mesh;
             var currentRenderData = mesh.Draw;
 
@@ -91,7 +90,7 @@ namespace SiliconStudio.Paradox.Effects
                 // The order is based on the granularity level of each element and how shared it can be. Material is heavily shared, a model contains many meshes. An renderMesh is unique.
                 // TODO: really copy mesh parameters into renderMesh instead of just referencing the meshDraw parameters.
 
-                var modelComponent = this.RenderModel.ModelInstance;
+                var modelComponent = this.RenderModel.ModelComponent;
                 var hasModelComponentParams = modelComponent != null && modelComponent.Parameters != null;
                 
                 var material = Material;
@@ -100,14 +99,14 @@ namespace SiliconStudio.Paradox.Effects
                 if (materialParameters != null)
                 {
                     if (hasModelComponentParams)
-                        this.Effect.Apply(currentPass.Parameters, materialParameters, modelComponent.Parameters, parameters, true);
+                        this.Effect.Apply(context.Parameters, materialParameters, modelComponent.Parameters, parameters, true);
                     else
-                        this.Effect.Apply(currentPass.Parameters, materialParameters, parameters, true);
+                        this.Effect.Apply(context.Parameters, materialParameters, parameters, true);
                 }
                 else if (hasModelComponentParams)
-                    this.Effect.Apply(currentPass.Parameters, modelComponent.Parameters, parameters, true);
+                    this.Effect.Apply(context.Parameters, modelComponent.Parameters, parameters, true);
                 else
-                    this.Effect.Apply(currentPass.Parameters, parameters, true);
+                    this.Effect.Apply(context.Parameters, parameters, true);
             }
 
             //using (Profiler.Begin(ProfilingKeys.RenderMesh))
@@ -148,7 +147,7 @@ namespace SiliconStudio.Paradox.Effects
                 parameterCollections.Add(material.Parameters);
             }
 
-            var modelInstance = RenderModel.ModelInstance;
+            var modelInstance = RenderModel.ModelComponent;
             if (modelInstance != null && modelInstance.Parameters != null)
             {
                 parameterCollections.Add(modelInstance.Parameters);

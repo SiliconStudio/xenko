@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.EntityModel
 {
@@ -37,6 +38,7 @@ namespace SiliconStudio.Paradox.EntityModel
                     {
                         Name = entity.Name,
                         Guid = entity.Id,
+                        Group = entity.Group,
                         Components = entity.Components
                             .Where(x => x.Value is EntityComponent)
                             .ToDictionary(x => x.Key, x => (EntityComponent)x.Value),
@@ -49,6 +51,7 @@ namespace SiliconStudio.Paradox.EntityModel
                 entityDataSerializer.Serialize(ref entityData, mode, stream);
                 entity.Name = entityData.Name;
                 entity.Id = entityData.Guid;
+                entity.Group = entityData.Group;
 
                 foreach (var component in entityData.Components)
                 {
@@ -62,6 +65,7 @@ namespace SiliconStudio.Paradox.EntityModel
         {
             public Guid Guid;
             public string Name;
+            public EntityGroup Group;
             public Dictionary<PropertyKey, EntityComponent> Components;
         }
     }

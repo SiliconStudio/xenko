@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
@@ -82,6 +83,8 @@ namespace SiliconStudio.Paradox.EntityModel
 
             Transform = new TransformationComponent();
             transform.Translation = position;
+
+            Group = EntityGroup.Default;
         }
 
         /// <summary>
@@ -104,9 +107,9 @@ namespace SiliconStudio.Paradox.EntityModel
         /// Gets or sets the group of this entity.
         /// </summary>
         /// <value>The group.</value>
-        //[DataMember(10)]
-        //[DefaultValue(EntityGroup.Default)]
-        //public EntityGroup Group { get; set; }
+        [DataMember(10)]
+        [DefaultValue(EntityGroup.Default)]
+        public EntityGroup Group { get; set; }
 
         /// <summary>
         /// Gets or create a component with the specified key.

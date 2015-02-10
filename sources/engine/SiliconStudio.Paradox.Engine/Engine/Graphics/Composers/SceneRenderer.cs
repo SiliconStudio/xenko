@@ -39,32 +39,20 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
 
         protected override void OnRendering(RenderContext context)
         {
-            var previousRenderer = context.SceneRenderer;
-
-            try
+            // TODO: Just hardcode support here, but we should have a pluggable composer here
+            var graphicsComposer = SceneComponent.GraphicsComposer as GraphicsComposerLayer;
+            if (graphicsComposer == null)
             {
-                // TODO: Check to see how we should generalize using the scene.
-                context.SceneRenderer = this;
-
-                // TODO: Just hardcode support here, but we should have a pluggable composer here
-                var graphicsComposer = SceneComponent.GraphicsComposer as GraphicsComposerLayer;
-                if (graphicsComposer == null)
-                {
-                    return;
-                }
-
-                foreach (var layer in graphicsComposer.Layers)
-                {
-                    DrawLayer(context, layer);
-                }
-
-                // Draw last part
-                DrawLayer(context, graphicsComposer);
+                return;
             }
-            finally
+
+            foreach (var layer in graphicsComposer.Layers)
             {
-                context.SceneRenderer = previousRenderer;
+                DrawLayer(context, layer);
             }
+
+            // Draw last part
+            DrawLayer(context, graphicsComposer);
         }
 
         private void DrawLayer(RenderContext context, GraphicsLayer layer)

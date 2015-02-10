@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Paradox.Effects.Materials;
+using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.Engine.Graphics;
+using SiliconStudio.Paradox.Engine.Graphics.Composers;
 
 using IServiceRegistry = SiliconStudio.Core.IServiceRegistry;
 
@@ -16,7 +19,9 @@ namespace SiliconStudio.Paradox.Effects
     /// </summary>
     public class ModelRenderer : Renderer
     {
-        private ModelRendererSlot modelRenderSlot;
+        private int modelRenderSlot;
+
+        private readonly ModelProcessor modelProcessor;
 
         private readonly FastList<RenderMesh> meshesToRender;
 
@@ -26,8 +31,6 @@ namespace SiliconStudio.Paradox.Effects
         private readonly SafeDelegateList<AcceptModelDelegate> acceptModels;
 
         private readonly SafeDelegateList<AcceptRenderModelDelegate> acceptRenderModels;
-
-        private readonly SafeDelegateList<AcceptMeshForRenderingDelegate> acceptPrepareMeshForRenderings;
 
         private readonly SafeDelegateList<AcceptRenderMeshDelegate> acceptRenderMeshes;
 
@@ -65,15 +68,25 @@ namespace SiliconStudio.Paradox.Effects
         public delegate void PostEffectUpdateDelegate(RenderContext context, RenderMesh renderMesh);
 
         /// <summary>
+        /// Gets or sets the scene renderer.
+        /// </summary>
+        /// <value>The scene renderer.</value>
+        public SceneRenderer SceneRenderer { get; private set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ModelRenderer"/> class.
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="effectName">Name of the effect.</param>
-        public ModelRenderer(IServiceRegistry services, string effectName) : base(services)
+        public ModelRenderer(IServiceRegistry services, string effectName, SceneRenderer sceneRenderer) : base(services)
         {
             if (effectName == null) throw new ArgumentNullException("effectName");
             this.effectName = effectName;
             DebugName = string.Format("ModelRenderer [{0}]", effectName);
+
+            SceneRenderer = sceneRenderer;
+
+            modelProcessor = sceneRenderer.EntitySystem.GetProcessor<ModelProcessor>();
 
             dynamicEffectCompiler = new DynamicEffectCompiler(services, effectName);
 
@@ -81,7 +94,6 @@ namespace SiliconStudio.Paradox.Effects
 
             acceptModels = new SafeDelegateList<AcceptModelDelegate>(this);
             acceptRenderModels = new SafeDelegateList<AcceptRenderModelDelegate>(this);
-            acceptPrepareMeshForRenderings = new SafeDelegateList<AcceptMeshForRenderingDelegate>(this);
             acceptRenderMeshes = new SafeDelegateList<AcceptRenderMeshDelegate>(this);
             updateMeshes = new SafeDelegateList<UpdateMeshesDelegate>(this) { UpdateMeshesDefault };
             SortMeshes = DefaultSort;
@@ -89,6 +101,9 @@ namespace SiliconStudio.Paradox.Effects
             postRenders = new SafeDelegateList<PostRenderDelegate>(this);
             preEffectUpdates = new SafeDelegateList<PreEffectUpdateDelegate>(this);
             postEffectUpdates = new SafeDelegateList<PostEffectUpdateDelegate>(this);
+
+            GroupMask = EntityGroup.All;
+            modelRenderSlot = -1;
         }
 
         public string EffectName
@@ -112,14 +127,6 @@ namespace SiliconStudio.Paradox.Effects
             get
             {
                 return acceptRenderModels;
-            }
-        }
-
-        public SafeDelegateList<AcceptMeshForRenderingDelegate> AcceptPrepareMeshForRendering
-        {
-            get
-            {
-                return acceptPrepareMeshForRenderings;
             }
         }
 
@@ -176,48 +183,51 @@ namespace SiliconStudio.Paradox.Effects
         public override void Load()
         {
             base.Load();
-
-            var pipelineModelState = Pass.GetOrCreateModelRendererState();
-
-            // Allocate (or reuse) a slot for the pass of this processor
-            // Note: The slot is passed as out, so that when ModelRendererState.ModelSlotAdded callback is fired,
-            // ModelRenderer.modelRenderSlot is valid (it might call PrepareModelForRendering recursively).
-            pipelineModelState.AllocateModelSlot(Pass, EffectName, PrepareModelForRendering, out modelRenderSlot);
-
-            // Register callback used by the MeshProcessor
-            pipelineModelState.AcceptModel += OnAcceptModel;
         }
 
         public override void Unload()
         {
             base.Unload();
 
-            var pipelineModelState = Pass.GetOrCreateModelRendererState();
+            if (modelRenderSlot < 0)
+            {
+                var pipelineModelState = GetOrCreateModelRendererState();
 
-            // Release the slot (note: if shared, it will wait for all its usage to be released)
-            pipelineModelState.ReleaseModelSlot(modelRenderSlot);
-            modelRenderSlot = null;
+                // Release the slot (note: if shared, it will wait for all its usage to be released)
+                pipelineModelState.ReleaseModelSlot(modelRenderSlot);
 
-            // Unregister callback
-            pipelineModelState.AcceptModel -= OnAcceptModel;
+                // TODO: Remove RenderMeshes
+            }
         }
+
+        public EntityGroup GroupMask { get; set; }
 
         protected override void OnRendering(RenderContext context)
         {
-            var state = Pass.GetModelRendererState();
+            if (modelRenderSlot < 0)
+            {
+                var pipelineModelState = GetOrCreateModelRendererState();
+
+                // Allocate (or reuse) a slot for the pass of this processor
+                // Note: The slot is passed as out, so that when ModelRendererState.ModelSlotAdded callback is fired,
+                // ModelRenderer.modelRenderSlot is valid (it might call PrepareModelForRendering recursively).
+                modelRenderSlot = pipelineModelState.AllocateModelSlot(EffectName);
+            }
 
             // Get all meshes from render models
             meshesToRender.Clear();
-            foreach (var renderModel in state.RenderModels)
+            foreach (var renderModel in modelProcessor.Models)
             {
-                if (!OnAcceptRenderModel(renderModel))
+                // Always prepare the slot for the render meshes even if they are not used.
+                EnsureRenderMeshes(renderModel);
+
+                if ((renderModel.Group & GroupMask) == 0 || !OnAcceptRenderModel(renderModel))
                 {
                     continue;
                 }
 
-                var meshes = renderModel.RenderMeshes[modelRenderSlot.Slot];
-                if (meshes != null)
-                    meshesToRender.AddRange(meshes);
+                var meshes = PrepareModelForRendering(renderModel);
+                meshesToRender.AddRange(meshes);
             }
 
             // Update meshes
@@ -248,7 +258,7 @@ namespace SiliconStudio.Paradox.Effects
                 }
 
                 // Update Effect and mesh
-                UpdateEffect(mesh, Pass.Parameters);
+                UpdateEffect(mesh, context.Parameters);
 
                 // PostEffectUpdate callbacks
                 foreach (var postEffectUpdate in postEffectUpdates)
@@ -266,33 +276,42 @@ namespace SiliconStudio.Paradox.Effects
             }
         }
 
-        private void PrepareModelForRendering(RenderModel renderModel)
+        private void EnsureRenderMeshes(RenderModel renderModel)
+        {
+            var renderMeshes = renderModel.RenderMeshes;
+            if (modelRenderSlot < renderMeshes.Count)
+            {
+                return;
+            }
+            for (int i = renderMeshes.Count; i < modelRenderSlot; i++)
+            {
+                renderMeshes.Add(null);
+            }
+        }
+
+        private List<RenderMesh> PrepareModelForRendering(RenderModel renderModel)
         {
             // TODO: this is obviously wrong since a pipeline can have several ModelRenderer with the same effect.
             // In that case, a Mesh may be added several times to the list and as a result rendered several time in a single ModelRenderer.
             // We keep it that way for now since we only have two ModelRenderer with the same effect in the deferrent pipeline (splitting between opaque and transparent objects) and their acceptance tests are exclusive.
 
             // Create the list of RenderMesh objects
-            var renderMeshes = renderModel.RenderMeshes[modelRenderSlot.Slot];
+            var renderMeshes = renderModel.RenderMeshes[modelRenderSlot];
             if (renderMeshes == null)
             {
                 renderMeshes = new List<RenderMesh>();
-                renderModel.RenderMeshes[modelRenderSlot.Slot] = renderMeshes;
-            }
+                renderModel.RenderMeshes[modelRenderSlot] = renderMeshes;
 
-            foreach (var mesh in renderModel.Model.Meshes)
-            {
-                if (acceptPrepareMeshForRenderings.Count > 0 && !OnAcceptPrepareMeshForRendering(renderModel, mesh))
+                foreach (var mesh in renderModel.ModelComponent.Model.Meshes)
                 {
-                    continue;
+                    var renderMesh = new RenderMesh(renderModel, mesh);
+                    UpdateEffect(renderMesh, null);
+
+                    // Register mesh for rendering
+                    renderMeshes.Add(renderMesh);
                 }
-
-                var renderMesh = new RenderMesh(renderModel, mesh);
-                UpdateEffect(renderMesh, null);
-
-                // Register mesh for rendering
-                renderMeshes.Add(renderMesh);
             }
+            return renderMeshes;
         }
 
         private void UpdateMeshesDefault(RenderContext context, FastList<RenderMesh> meshes)
@@ -343,19 +362,6 @@ namespace SiliconStudio.Paradox.Effects
             return true;
         }
 
-        private bool OnAcceptPrepareMeshForRendering(RenderModel renderModel, Mesh mesh)
-        {
-            // NOTICE: Don't use Linq, as It would allocated objects and triggers GC
-            foreach (var test in acceptPrepareMeshForRenderings)
-            {
-                if (!test(renderModel, mesh))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
         private bool OnAcceptRenderMesh(RenderContext context, RenderMesh renderMesh)
         {
             // NOTICE: Don't use Linq, as It would allocated objects and triggers GC
@@ -379,6 +385,18 @@ namespace SiliconStudio.Paradox.Effects
                 renderMesh.Initialize(GraphicsDevice);
             }
         }
+
+        internal ModelRendererState GetOrCreateModelRendererState(bool createMeshStateIfNotFound = true)
+        {
+            var pipelineState = SceneRenderer.Tags.Get(ModelRendererState.Key);
+            if (createMeshStateIfNotFound && pipelineState == null)
+            {
+                pipelineState = new ModelRendererState();
+                SceneRenderer.Tags.Set(ModelRendererState.Key, pipelineState);
+            }
+            return pipelineState;
+        }
+
 
         /// <summary>
         /// A list to ensure that all delegates are not null.
@@ -425,8 +443,8 @@ namespace SiliconStudio.Paradox.Effects
 
             public int Compare(RenderMesh left, RenderMesh right)
             {
-                var xModelComponent = left.RenderModel.ModelInstance;
-                var yModelComponent = right.RenderModel.ModelInstance;
+                var xModelComponent = left.RenderModel.ModelComponent;
+                var yModelComponent = right.RenderModel.ModelComponent;
 
                 // Ignore if no associated mesh component
                 if (xModelComponent == null || yModelComponent == null)

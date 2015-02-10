@@ -358,6 +358,8 @@
     <Compile Include="Engine\Graphics\RenderFrameSizeMode.cs" />
     <Compile Include="Engine\Graphics\RenderingParameters.cs" />
     <Compile Include="Engine\Graphics\Composers\GraphicsLayer.cs" />
+    <Compile Include="Engine\ModelProcessor.cs" />
+    <Compile Include="Engine\Graphics\RenderModel.cs" />
     <Compile Include="Engine\SceneComponent.cs" />
     <Compile Include="Engine\SceneProcessor.cs" />
     <Compile Include="EntityModel\EntityComponentReference.cs" />
@@ -393,17 +395,13 @@
     <Compile Include="Engine\Graphics\ModelNodeTransformation.cs" />
     <Compile Include="Engine\Graphics\EffectSystemExtensions.cs" />
     <Compile Include="Engine\Graphics\MeshAnimationUpdater.cs" />
-    <Compile Include="Engine\Graphics\MeshRenderExtensions.cs" />
     <Compile Include="Engine\Graphics\ModelRendererState.cs" />
     <Compile Include="Engine\Graphics\MultipleRenderTargetsSetter.cs" />
     <Compile Include="Engine\Graphics\ModelRendererExtensions.cs" />
     <Compile Include="Engine\Graphics\ProfilingKeys.cs" />
-    <Compile Include="Engine\Graphics\RecursiveRenderer.cs" />
     <Compile Include="Engine\Graphics\RendererExtensions.cs" />
     <Compile Include="EntityModel\EntityGroup.cs" />
     <Compile Include="Engine\Graphics\Renderer.cs" />
-    <Compile Include="Engine\Graphics\RenderModel.cs" />
-    <Compile Include="Engine\Graphics\RenderStateSetter.cs" />
     <Compile Include="Engine\Graphics\RenderTargetSetter.cs" />
     <Compile Include="Engine\Graphics\Mesh.cs" />
     <Compile Include="Engine\Graphics\Model.cs" />
@@ -484,7 +482,6 @@
     <Compile Include="Engine\AnimationProcessor.cs" />
     <Compile Include="Engine\HierarchicalProcessor.cs" />
     <Compile Include="Engine\ModelComponent.cs" />
-    <Compile Include="Engine\ModelProcessor.cs" />
     <Compile Include="Engine\TransformationComponent.cs" />
     <Compile Include="Engine\TransformationProcessor.cs" />
     <Compile Include="EntityModel\EntityComponent.cs" />

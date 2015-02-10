@@ -66,6 +66,13 @@ namespace SiliconStudio.Paradox.Effects
         /// <value>The name of the debug.</value>
         public string DebugName { get; set; }
 
+        public virtual void Load()
+        {
+        }
+
+        public virtual void Unload()
+        {
+        }
 
         protected virtual void BeginRendering(RenderContext context)
         {

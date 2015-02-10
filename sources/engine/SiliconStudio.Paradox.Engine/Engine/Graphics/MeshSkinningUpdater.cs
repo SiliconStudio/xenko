@@ -3,6 +3,7 @@
 using System;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Engine.Graphics;
 
 namespace SiliconStudio.Paradox.Effects
 {

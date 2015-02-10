@@ -1,96 +1,45 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
+﻿using System;
 using System.Collections.Generic;
-using SiliconStudio.Core.Collections;
-using SiliconStudio.Paradox.Engine.Graphics.Composers;
 
-namespace SiliconStudio.Paradox.Effects
+using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.EntityModel;
+
+namespace SiliconStudio.Paradox.Engine.Graphics
 {
-    /// <summary>
-    /// Instantiation of a <see cref="Model"/> through a <see cref="RenderPipeline"/>.
-    /// </summary>
-    public sealed class RenderModel
+    public class RenderModel
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RenderModel" /> class.
-        /// </summary>
-        /// <param name="sceneRenderer">The scene renderer.</param>
-        /// <param name="modelInstance">The model instance.</param>
-        /// <exception cref="System.ArgumentNullException">pipeline</exception>
-        public RenderModel(SceneRenderer sceneRenderer, IModelInstance modelInstance)
+        public RenderModel(Entity entity)
         {
-            if (sceneRenderer == null) throw new ArgumentNullException("sceneRenderer");
-
-            SceneRenderer = sceneRenderer;
-            ModelInstance = modelInstance;
-            Model = modelInstance.Model;
-            Parameters = modelInstance.Parameters;
-
-            var modelRendererState = sceneRenderer.GetOrCreateModelRendererState();
-            RenderMeshes = new List<RenderMesh>[modelRendererState.ModelSlotMapping.Count];
-
-            if (Model != null)
-            {
-                foreach (var modelSlot in modelRendererState.ModelSlotMapping)
-                {
-                    modelSlot.Value.PrepareRenderModel(this);
-                }
-            }
+            if (entity == null) throw new ArgumentNullException("entity");
+            Entity = entity;
+            ModelComponent = entity.Get<ModelComponent>();
+            TransformationComponent = entity.Transform;
+            RenderMeshes = new List<List<RenderMesh>>(4);
+            Update();
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RenderModel" /> class.
-        /// </summary>
-        /// <param name="sceneRenderer">The scene renderer.</param>
-        /// <param name="model">The model.</param>
-        /// <exception cref="System.ArgumentNullException">pipeline</exception>
-        [Obsolete]
-        public RenderModel(SceneRenderer sceneRenderer, Model model)
+        public readonly Entity Entity;
+
+        public readonly ModelComponent ModelComponent;
+
+        public Model Model { get; private set; }
+
+        public EntityGroup Group { get; private set; }
+
+        public bool IsGroupUpdated { get; private set; }
+
+        internal void Update()
         {
-            if (sceneRenderer == null) throw new ArgumentNullException("pipeline");
-            SceneRenderer = sceneRenderer;
-            Model = model;
-            var slotCount = sceneRenderer.GetOrCreateModelRendererState().ModelSlotMapping.Count;
-            RenderMeshes = new List<RenderMesh>[slotCount];
+            IsGroupUpdated = Entity.Group != Group;
+            Group = Entity.Group;
+            Model = ModelComponent.Model;
         }
 
-        /// <summary>
-        /// Gets the meshes instantiated for this view.
-        /// </summary>
-        /// <value>
-        /// The meshes instantiated for this view.
-        /// </value>
-        public FastListStruct<List<RenderMesh>> RenderMeshes;
+        public readonly TransformationComponent TransformationComponent;
 
-        /// <summary>
-        /// The model instance
-        /// </summary>
-        public readonly IModelInstance ModelInstance;
+        internal readonly List<List<RenderMesh>> RenderMeshes;
 
-        /// <summary>
-        /// Gets the underlying model.
-        /// </summary>
-        /// <value>
-        /// The underlying model.
-        /// </value>
-        public readonly Model Model;
-
-        /// <summary>
-        /// Gets the instance parameters to this model.
-        /// </summary>
-        /// <value>
-        /// The instance parameters to this model.
-        /// </value>
-        public readonly ParameterCollection Parameters;
-
-        /// <summary>
-        /// Gets the render pipeline.
-        /// </summary>
-        /// <value>
-        /// The render pipeline.
-        /// </value>
-        public readonly SceneRenderer SceneRenderer;
+        public List<ModelProcessor.EntityLink> Links;
 
         public Material GetMaterial(int materialIndex)
         {
@@ -99,7 +48,7 @@ namespace SiliconStudio.Paradox.Effects
                 return null;
 
             // Try to get material first from model instance, then model
-            return GetMaterialHelper(ModelInstance.Materials, materialIndex)
+            return GetMaterialHelper(ModelComponent.Materials, materialIndex)
                    ?? GetMaterialHelper(Model.Materials, materialIndex);
         }
 

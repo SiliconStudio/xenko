@@ -31,8 +31,6 @@ namespace SiliconStudio.Paradox.Effects
 
         protected override void OnRendering(RenderContext context)
         {
-            var pass = context.CurrentPass;
-
             if (Camera == null)
                 return;
 
@@ -40,7 +38,7 @@ namespace SiliconStudio.Paradox.Effects
             if(Camera.Entity == null)
                 throw new Exception("The camera component provided to 'CameraSetter' should be associated to an entity");
 
-            var viewParameters = pass.Parameters;
+            var viewParameters = context.Parameters;
 
             Matrix projection;
             Matrix worldToCamera;
