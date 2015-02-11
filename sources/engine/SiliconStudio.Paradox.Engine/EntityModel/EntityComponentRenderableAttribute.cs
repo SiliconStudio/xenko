@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.EntityModel
     /// <summary>
     /// An attribute used to associate a default <see cref="IEntityComponentRenderer"/> to an entity component.
     /// </summary>
-    [DataContract]
+    [DataContract] // TODO: Remove the need for using a DataContract. This is caused by CameraRendererMode.RendererTypesKey
     public class EntityComponentRenderableAttribute : Attribute
     {
         public static readonly IComparer<EntityComponentRenderableAttribute> DefaultComparer = new EntityComponentRenderableAttributeComparer();
