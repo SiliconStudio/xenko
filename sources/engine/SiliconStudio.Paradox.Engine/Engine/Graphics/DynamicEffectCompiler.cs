@@ -1,10 +1,11 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-
+using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Paradox.Shaders.Compiler;
 
 namespace SiliconStudio.Paradox.Effects
@@ -18,28 +19,45 @@ namespace SiliconStudio.Paradox.Effects
         private readonly FastList<ParameterCollection> parameterCollections;
 
         private readonly string effectName;
+        private bool asyncEffectCompiler;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DynamicEffectCompiler"/> class.
+        /// Initializes a new instance of the <see cref="DynamicEffectCompiler" /> class.
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="effectName">Name of the effect.</param>
-        /// <exception cref="System.ArgumentNullException">
-        /// services
+        /// <param name="asyncDynamicEffectCompiler">if set to <c>true</c> it can compile effect asynchronously.</param>
+        /// <exception cref="System.ArgumentNullException">services
         /// or
-        /// effectName
-        /// </exception>
+        /// effectName</exception>
         public DynamicEffectCompiler(IServiceRegistry services, string effectName)
         {
             if (services == null) throw new ArgumentNullException("services");
             if (effectName == null) throw new ArgumentNullException("effectName");
+
             Services = services;
             this.effectName = effectName;
             EffectSystem = Services.GetSafeServiceAs<EffectSystem>();
             GraphicsDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
             updater = new EffectParameterUpdater();
             parameterCollections = new FastList<ParameterCollection>();
+
+            // Default behavior for fallback effect: load effect with same name but empty compiler parameters
+            ComputeFallbackEffect = (dynamicEffectCompiler, name, parameters) =>
+            {
+                return dynamicEffectCompiler.EffectSystem.LoadEffect(effectName, new CompilerParameters()).WaitForResult();
+            };
         }
+
+        public bool AsyncEffectCompiler
+        {
+            get { return asyncEffectCompiler; }
+            set { asyncEffectCompiler = value; }
+        }
+
+        public delegate Effect ComputeFallbackEffectDelegate(DynamicEffectCompiler dynamicEffectCompiler, string effectName, CompilerParameters compilerParameters);
+
+        public ComputeFallbackEffectDelegate ComputeFallbackEffect { get; set; }
 
         /// <summary>
         /// Gets the services.
@@ -63,7 +81,7 @@ namespace SiliconStudio.Paradox.Effects
         /// Gets or sets the effect system.
         /// </summary>
         /// <value>The effect system.</value>
-        private EffectSystem EffectSystem { get; set; }
+        public EffectSystem EffectSystem { get; private set; }
 
         /// <summary>
         /// Gets or sets the graphics device.
@@ -81,7 +99,19 @@ namespace SiliconStudio.Paradox.Effects
         {
             bool effectChanged = false;
 
-            if (effectInstance.Effect == null || !EffectSystem.IsValid(effectInstance.Effect) || HasCollectionChanged(effectInstance, passParameters))
+            var currentlyCompilingEffect = effectInstance.CurrentlyCompilingEffect;
+            if (currentlyCompilingEffect != null)
+            {
+                if (currentlyCompilingEffect.IsCompleted)
+                {
+                    UpdateEffect(effectInstance, currentlyCompilingEffect.Result);
+                    effectChanged = true;
+
+                    // Effect has been updated
+                    effectInstance.CurrentlyCompilingEffect = null;
+                }
+            }
+            else if (effectInstance.Effect == null || !EffectSystem.IsValid(effectInstance.Effect) || HasCollectionChanged(effectInstance, passParameters))
             {
                 CreateEffect(effectInstance, passParameters);
                 effectChanged = true;
@@ -126,16 +156,35 @@ namespace SiliconStudio.Paradox.Effects
             // possible exception in LoadEffect
             var effect = EffectSystem.LoadEffect(EffectName, compilerParameters);
 
-            if (!ReferenceEquals(effect, effectInstance.Effect))
+            // Do we have an async compilation?
+            if (asyncEffectCompiler && effect.Task != null)
             {
-                effectInstance.Effect = effect;
-                effectInstance.UpdaterDefinition = new EffectParameterUpdaterDefinition(effect);
+                effectInstance.CurrentlyCompilingEffect = effect.Task;
+                // Fallback to default effect
+                UpdateEffect(effectInstance, ComputeFallbackEffect(this, EffectName, compilerParameters));
+                return;
+            }
+
+            var compiledEffect = effect.WaitForResult();
+
+            UpdateEffect(effectInstance, compiledEffect);
+
+            // Effect has been updated
+            effectInstance.CurrentlyCompilingEffect = null;
+        }
+
+        private void UpdateEffect(DynamicEffectInstance effectInstance, Effect compiledEffect)
+        {
+            if (!ReferenceEquals(compiledEffect, effectInstance.Effect))
+            {
+                effectInstance.Effect = compiledEffect;
+                effectInstance.UpdaterDefinition = new EffectParameterUpdaterDefinition(compiledEffect);
             }
             else
             {
                 // Same effect than previous one
 
-                effectInstance.UpdaterDefinition.UpdateCounter(effect.CompilationParameters);
+                effectInstance.UpdaterDefinition.UpdateCounter(compiledEffect.CompilationParameters);
             }
 
             UpdateLevels(effectInstance, null);

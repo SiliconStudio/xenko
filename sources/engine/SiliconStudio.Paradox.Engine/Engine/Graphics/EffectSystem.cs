@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
+using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
@@ -28,12 +28,11 @@ namespace SiliconStudio.Paradox.Effects
         private readonly Dictionary<string, List<CompilerResults>> earlyCompilerCache = new Dictionary<string, List<CompilerResults>>();
         private Dictionary<EffectBytecode, Effect> cachedEffects = new Dictionary<EffectBytecode, Effect>();
         private DirectoryWatcher directoryWatcher;
-        private DatabaseFileProvider fileProvider;
 
         private readonly HashSet<string> recentlyModifiedShaders = new HashSet<string>();
         private bool clearNextFrame = false;
 
-        public IEffectCompiler Compiler { get { return compiler; } }
+        public IEffectCompiler Compiler { get { return compiler; } set { compiler = (EffectCompilerBase)value; } }
 
         /// <summary>
         /// Gets or sets the database file provider, to use for loading effects and shader sources.
@@ -43,13 +42,7 @@ namespace SiliconStudio.Paradox.Effects
         /// </value>
         public DatabaseFileProvider FileProvider
         {
-            get { return fileProvider ?? AssetManager.FileProvider; }
-            set
-            {
-                fileProvider = value;
-                if(compiler != null)
-                    compiler.FileProvider = value;
-            }
+            get { return compiler.FileProvider ?? AssetManager.FileProvider; }
         }
 
         /// <summary>
@@ -68,21 +61,26 @@ namespace SiliconStudio.Paradox.Effects
         public override void Initialize()
         {
             base.Initialize();
-            
+
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+            Enabled = true;
+            directoryWatcher = new DirectoryWatcher("*.pdxsl");
+            directoryWatcher.Modified += FileModifiedEvent;
+            // TODO: pdxfx too
+#endif
+            compiler = (EffectCompilerBase)CreateEffectCompiler();
+        }
+
+        public static IEffectCompiler CreateEffectCompiler(TaskScheduler taskScheduler = null)
+        {
             // Create compiler
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             var effectCompiler = new Shaders.Compiler.EffectCompiler();
             effectCompiler.SourceDirectories.Add(EffectCompilerBase.DefaultSourceShaderFolder);
-
-            Enabled = true;
-            directoryWatcher = new DirectoryWatcher("*.pdxsl");
-            directoryWatcher.Modified += FileModifiedEvent;
-
-            // TODO: pdxfx too
 #else
             var effectCompiler = new NullEffectCompiler();
 #endif
-            compiler = new EffectCompilerCache(effectCompiler);
+            return new EffectCompilerCache(effectCompiler, taskScheduler);
         }
 
         public override void Update(GameTime gameTime)
@@ -107,7 +105,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <param name="compilerParameters">The compiler parameters.</param>
         /// <returns>A new instance of an effect.</returns>
         /// <exception cref="System.InvalidOperationException">Could not compile shader. Need fallback.</exception>
-        public Effect LoadEffect(string effectName, CompilerParameters compilerParameters)
+        public TaskOrResult<Effect> LoadEffect(string effectName, CompilerParameters compilerParameters)
         {
             if (effectName == null) throw new ArgumentNullException("effectName");
             if (compilerParameters == null) throw new ArgumentNullException("compilerParameters");
@@ -125,8 +123,15 @@ namespace SiliconStudio.Paradox.Effects
             // Only take the sub-effect
             var bytecode = compilerResult.Bytecodes[subEffect];
 
-            // return it as a fullname instead 
-            return CreateEffect(effectName, bytecode, compilerResult.UsedParameters[subEffect]);
+            if (bytecode.Task != null && !bytecode.Task.IsCompleted)
+            {
+                // Result was async, keep it async
+                return bytecode.Task.ContinueWith(x => CreateEffect(effectName, x.Result, compilerResult.UsedParameters[subEffect]));
+            }
+            else
+            {
+                return CreateEffect(effectName, bytecode.WaitForResult(), compilerResult.UsedParameters[subEffect]);
+            }
         }
 
         /// <summary>
@@ -150,7 +155,7 @@ namespace SiliconStudio.Paradox.Effects
             foreach (var byteCodePair in compilerResult.Bytecodes)
             {
                 var bytecode = byteCodePair.Value;
-                result.Add(byteCodePair.Key, CreateEffect(effectName, bytecode, compilerResult.UsedParameters[byteCodePair.Key]));
+                result.Add(byteCodePair.Key, CreateEffect(effectName, bytecode.WaitForResult(), compilerResult.UsedParameters[byteCodePair.Key]));
             }
             return result;
         }

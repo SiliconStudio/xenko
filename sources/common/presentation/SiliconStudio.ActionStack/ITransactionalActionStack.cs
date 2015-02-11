@@ -16,6 +16,11 @@ namespace SiliconStudio.ActionStack
     public interface ITransactionalActionStack : IActionStack
     {
         /// <summary>
+        /// Gets whether a transaction is in progress.
+        /// </summary>
+        bool TransactionInProgress { get; }
+
+        /// <summary>
         /// Creates a BeginTransaction-EndTransaction subscription.
         /// Use it with a using statement to ensure balanced state integrity.
         /// </summary>

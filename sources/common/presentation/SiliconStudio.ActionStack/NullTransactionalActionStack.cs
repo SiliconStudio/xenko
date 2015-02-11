@@ -28,6 +28,9 @@ namespace SiliconStudio.ActionStack
         }
 
         /// <inheritdocs/>
+        public bool TransactionInProgress { get { return false; } }
+        
+        /// <inheritdocs/>
         public IEnumerable<IActionItem> ActionItems { get { return Enumerable.Empty<IActionItem>(); } }
 
         /// <inheritdocs/>
@@ -55,7 +58,7 @@ namespace SiliconStudio.ActionStack
         public event EventHandler<ActionItemsEventArgs<IActionItem>> Redone;
 
 #pragma warning restore 67
-        
+
         /// <inheritdocs/>
         public IDisposable BeginEndTransaction(string name)
         {

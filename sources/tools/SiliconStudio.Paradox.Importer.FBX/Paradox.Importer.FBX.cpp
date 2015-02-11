@@ -119,6 +119,7 @@ public:
 	{
 		FbxVector4* controlPoints = pMesh->GetControlPoints();
 		FbxGeometryElementNormal* normalElement = pMesh->GetElementNormal();
+		FbxGeometryElementSmoothing* smoothingElement = pMesh->GetElementSmoothing();
 
 		// UV set name mapping
 		std::map<std::string, int> uvElementMapping;
@@ -309,6 +310,15 @@ public:
 			vertexStride += sizeof(float) * 4;
 		}
 
+		// Add the smoothing group information at the end of the vertex declaration
+		// Note: it is important that to be the last element of the declaration because it is dropped later in the process by partial memcopys
+		int smoothingOffset = vertexStride;
+		if (smoothingElement != NULL)
+		{
+			vertexElements->Add(VertexElement("SMOOTHINGGROUP", 0, PixelFormat::R32_UInt, vertexStride));
+			vertexStride += sizeof(int);
+		}
+
 		int polygonCount = pMesh->GetPolygonCount();
 
 		FbxGeometryElement::EMappingMode materialMappingMode = FbxGeometryElement::eNone;
@@ -477,6 +487,32 @@ public:
 							((float*)(vbPointer + blendWeightOffset))[i] = blendWeights[i].second;
 						}
 					}
+					if (smoothingElement != NULL)
+					{
+						int group;
+						if (smoothingElement->GetMappingMode() == FbxLayerElement::eByControlPoint)
+						{
+							int groupIndex = (smoothingElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
+								? smoothingElement->GetIndexArray().GetAt(controlPointIndex)
+								: controlPointIndex;
+							group = smoothingElement->GetDirectArray().GetAt(groupIndex);
+						}
+						else if (smoothingElement->GetMappingMode() == FbxLayerElement::eByPolygonVertex)
+						{
+							int groupIndex = (smoothingElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
+								? smoothingElement->GetIndexArray().GetAt(vertexIndex)
+								: vertexIndex;
+							group = smoothingElement->GetDirectArray().GetAt(groupIndex);
+						}
+						else if (smoothingElement->GetMappingMode() == FbxLayerElement::eByPolygon)
+						{
+							int groupIndex = (smoothingElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
+								? smoothingElement->GetIndexArray().GetAt(i)
+								: i;
+							group = smoothingElement->GetDirectArray().GetAt(groupIndex);
+						}
+						((int*)(vbPointer + smoothingOffset))[0] = (int)group;
+					}
 
 					vbPointer += vertexStride;
 				}
@@ -503,10 +539,19 @@ public:
 			drawData->PrimitiveType = PrimitiveType::TriangleList;
 			drawData->DrawCount = buildMesh->polygonCount * 3;
 
+			// build the final VertexDeclaration removing the declaration element needed only for the buffer's correct construction
+			auto finalVertexElements = gcnew List<VertexElement>();
+			for each (VertexElement element in vertexElements)
+			{
+				if (element.SemanticName != "SMOOTHINGGROUP")
+					finalVertexElements->Add(element);
+			}
+			auto finalDeclaration = gcnew VertexDeclaration(finalVertexElements->ToArray());
+
 			// Generate index buffer
 			// For now, if user requests 16 bits indices but it doesn't fit, it
 			// won't generate an index buffer, but ideally it should just split it in multiple render calls
-			IndexExtensions::GenerateIndexBuffer(drawData);
+			IndexExtensions::GenerateIndexBuffer(drawData, finalDeclaration);
 			/*if (drawData->DrawCount < 65536)
 			{
 				IndexExtensions::GenerateIndexBuffer(drawData);

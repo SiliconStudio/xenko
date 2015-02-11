@@ -49,7 +49,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         {
             await base.LoadContent();
 
-            cubemapSpriteEffect = EffectSystem.LoadEffect("CubemapSprite");
+            cubemapSpriteEffect = EffectSystem.LoadEffect("CubemapSprite").WaitForResult();
 
             drawEffectContext = new DrawEffectContext(this);
             lamberFilter = new LambertianPrefilteringSH(drawEffectContext);

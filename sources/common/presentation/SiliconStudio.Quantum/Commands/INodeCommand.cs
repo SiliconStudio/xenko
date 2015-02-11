@@ -46,5 +46,17 @@ namespace SiliconStudio.Quantum.Commands
         /// <param name="undoToken">The <see cref="UndoToken"/> that was generated when invoking this command.</param>
         /// <returns>The new value to assign to the associated object or member.</returns>
         object Undo(object currentValue, ITypeDescriptor descriptor, UndoToken undoToken);
+
+        /// <summary>
+        /// Notifies the command that the following invokes will be part of a combined execution (the same command being executed multiple times on multiple objects with the same parameters).
+        /// </summary>
+        /// <seealso cref="EndCombinedInvoke"/>
+        void StartCombinedInvoke();
+
+        /// <summary>
+        /// Notifies the command that the combined execution is done.
+        /// </summary>
+        /// <seealso cref="StartCombinedInvoke"/>
+        void EndCombinedInvoke();
     }
 }

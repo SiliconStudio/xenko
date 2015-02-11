@@ -78,6 +78,13 @@ namespace SiliconStudio.Paradox.Effects
                         }
                     }
                 }
+
+                {
+                    var __subMixin = new ShaderMixinSourceTree() { Name = "Picking" };
+                    context.BeginChild(__subMixin);
+                    context.Mixin(__subMixin, "Picking");
+                    context.EndChild();
+                }
                 if (context.GetParam(MaterialKeys.PixelStageSurfaceShaders) != null)
                 {
                     context.Mixin(mixin, "MaterialSurfacePixelStageCompositor");
@@ -138,6 +145,24 @@ namespace SiliconStudio.Paradox.Effects
 
             {
                 ShaderMixinManager.Register("ParadoxBaseShader", new ParadoxBaseShader());
+            }
+        }
+    }
+    internal static partial class ShaderMixins
+    {
+        internal partial class Picking  : IShaderMixinBuilder
+        {
+            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            {
+                context.CloneParentMixinToCurrent();
+                context.Mixin(mixin, "ComputeID");
+            }
+
+            [ModuleInitializer]
+            internal static void __Initialize__()
+
+            {
+                ShaderMixinManager.Register("Picking", new Picking());
             }
         }
     }

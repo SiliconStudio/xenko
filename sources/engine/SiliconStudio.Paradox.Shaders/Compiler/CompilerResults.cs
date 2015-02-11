@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
         /// </summary>
         public CompilerResults() : base(null)
         {
-            Bytecodes = new Dictionary<string, EffectBytecode>();
+            Bytecodes = new Dictionary<string, TaskOrResult<EffectBytecode>>();
             UsedParameters = new Dictionary<string, ShaderMixinParameters>();
         }
 
@@ -27,13 +27,13 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
         /// <value>
         /// The main bytecode.
         /// </value>
-        public EffectBytecode MainBytecode { get; set; }
+        public TaskOrResult<EffectBytecode> MainBytecode { get; set; }
 
         /// <summary>
         /// Gets the bytecode. May be null if <see cref="LoggerResult.HasErrors"/> is <c>true</c>.
         /// </summary>
         /// <value>The bytecode.</value>
-        public Dictionary<string, EffectBytecode> Bytecodes { get; set; }
+        public Dictionary<string, TaskOrResult<EffectBytecode>> Bytecodes { get; set; }
 
         /// <summary>
         /// Parameters used to create this shader.

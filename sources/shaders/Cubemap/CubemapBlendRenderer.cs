@@ -102,7 +102,7 @@ namespace SiliconStudio.Paradox.Effects.Cubemap
                 compilerParameter.Set(CubemapBlendRenderer.Cubemaps, compilerParameterChild);
                 compilerParameter.Set(CubemapBlendRenderer.CubemapCount, maxBlendCount);
                 compilerParameter.Set(CubemapBlendRenderer.UseMultipleRenderTargets, useMultipleRenderTargets);
-                cubemapBlendEffects.Add(maxBlendCount, EffectSystem.LoadEffect("CubemapBlendEffect", compilerParameter));
+                cubemapBlendEffects.Add(maxBlendCount, EffectSystem.LoadEffect("CubemapBlendEffect", compilerParameter).WaitForResult());
             }
         }
 

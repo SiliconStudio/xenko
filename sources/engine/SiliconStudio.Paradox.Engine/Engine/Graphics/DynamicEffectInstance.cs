@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
-
+using System.Threading.Tasks;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects
@@ -13,6 +13,7 @@ namespace SiliconStudio.Paradox.Effects
     public abstract class DynamicEffectInstance
     {
         internal EffectParameterUpdaterDefinition UpdaterDefinition;
+        internal Task<Effect> CurrentlyCompilingEffect;
 
         protected DynamicEffectInstance()
         {

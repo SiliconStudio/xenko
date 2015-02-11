@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <param name="effectSystem">The effect system.</param>
         /// <param name="effectName">Name of the effect.</param>
         /// <returns>A new instance of an effect.</returns>
-        public static Effect LoadEffect(this EffectSystem effectSystem, string effectName)
+        public static TaskOrResult<Effect> LoadEffect(this EffectSystem effectSystem, string effectName)
         {
             var compilerParameters = new CompilerParameters();
             return effectSystem.LoadEffect(effectName, compilerParameters);

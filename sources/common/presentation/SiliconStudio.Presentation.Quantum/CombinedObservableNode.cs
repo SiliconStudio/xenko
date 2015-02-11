@@ -162,16 +162,15 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public override IDictionary<string, object> AssociatedData { get { return associatedData; } }
 
-        // TODO: do not remove from parent if we can avoid it
         public void Refresh()
         {
             if (Parent == null) throw new InvalidOperationException("The node to refresh can be a root node.");
 
-            OnPropertyChanging("TypedValue", "HasMultipleValues", "IsPrimitive", "HasList", "HasDictionary");
             if (CombinedNodes.Any(x => x != null))
             {
                 var parent = (CombinedObservableNode)Parent;
-                parent.RemoveChild(this);
+                parent.NotifyPropertyChanging(Name);
+                NotifyNodeUpdating();
 
                 if (AreCombinable(CombinedNodes))
                 {
@@ -185,9 +184,10 @@ namespace SiliconStudio.Presentation.Quantum
 
                     Initialize(true);
                 }
-                parent.AddChild(this);
+
+                NotifyNodeUpdated();
+                parent.NotifyPropertyChanged(Name);
             }
-            OnPropertyChanged("TypedValue", "HasMultipleValues", "IsPrimitive", "HasList", "HasDictionary");
         }
 
         public static bool AreCombinable(IEnumerable<SingleObservableNode> nodes, bool ignoreNameConstraint = false)
@@ -218,6 +218,10 @@ namespace SiliconStudio.Presentation.Quantum
             }
             return true;
         }
+
+        protected abstract void NotifyNodeUpdating();
+
+        protected abstract void NotifyNodeUpdated();
 
         private void GenerateChildren(IEnumerable<KeyValuePair<string, List<SingleObservableNode>>> commonChildren, bool isUpdating)
         {
@@ -315,8 +319,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         private bool ComputeHasMultipleValues()
         {
-            // TODO: check IsPrimitive might be better?
-            if (Type.IsValueType || Type == typeof(string))
+            if (IsPrimitive)
                 return CombinedNodes.Any(x => !Equals(x.Value, CombinedNodes.First().Value));
 
             return !AreAllValuesOfTheSameType(CombinedNodes.Select(x => x.Value));
@@ -324,8 +327,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         private bool ComputeHasMultipleInitialValues()
         {
-            // TODO: check IsPrimitive might be better?
-            if (Type.IsValueType || Type == typeof(string))
+            if (IsPrimitive)
                 return distinctCombinedNodeInitialValues.Count > 1;
 
             return !AreAllValuesOfTheSameType(distinctCombinedNodeInitialValues);
@@ -391,6 +393,7 @@ namespace SiliconStudio.Presentation.Quantum
             set
             {
                 Owner.BeginCombinedAction();
+                NotifyNodeUpdating();
                 ChangeInProgress = true;
                 CombinedNodes.ForEach(x => x.Value = value);
                 var changedNodes = ChangedNodes.Where(x => x != this).ToList();
@@ -401,6 +404,7 @@ namespace SiliconStudio.Presentation.Quantum
                     Refresh();
                 }
                 changedNodes.ForEach(x => x.Refresh());
+                NotifyNodeUpdated();
                 string displayName = Owner.FormatCombinedUpdateMessage(this, value);
                 Owner.EndCombinedAction(displayName, Path, value);
             }
@@ -411,5 +415,15 @@ namespace SiliconStudio.Presentation.Quantum
 
         /// <inheritdoc/>
         public override sealed object Value { get { return TypedValue; } set { TypedValue = (T)value; } }
+
+        protected override void NotifyNodeUpdating()
+        {
+            OnPropertyChanging("TypedValue", "HasMultipleValues", "IsPrimitive", "HasList", "HasDictionary");
+        }
+
+        protected override void NotifyNodeUpdated()
+        {
+            OnPropertyChanged("TypedValue", "HasMultipleValues", "IsPrimitive", "HasList", "HasDictionary");
+        }
     }
 }
