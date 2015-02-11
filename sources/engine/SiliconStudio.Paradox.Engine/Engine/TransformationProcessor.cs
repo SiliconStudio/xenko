@@ -158,7 +158,7 @@ namespace SiliconStudio.Paradox.Engine
             result.M23 = cosY * sinX;
             result.M33 = cosY * cosX;
             
-            // Translation
+            // Position
             result.M41 = 0;
             result.M42 = 0;
             result.M43 = 0;

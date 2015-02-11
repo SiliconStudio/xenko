@@ -7,7 +7,7 @@ using SiliconStudio.Core.Serialization;
 namespace SiliconStudio.Paradox.Effects
 {
     /// <summary>
-    /// Stores transformation in a TRS format (Translation, Rotation and Scaling).
+    /// Stores transformation in a TRS format (Position, Rotation and Scale).
     /// </summary>
     /// <remarks>
     /// It first applies scaling, then rotation, then translation.

@@ -131,11 +131,11 @@ namespace SiliconStudio.Paradox.Effects
 
                     sprite.Draw(
                         spriteBatch,
-                        new Vector2(transfoComp.Translation.X, transfoComp.Translation.Y),
+                        new Vector2(transfoComp.Position.X, transfoComp.Position.Y),
                         spriteComp.Color,
-                        new Vector2(transfoComp.Scaling.X, transfoComp.Scaling.Y),
+                        new Vector2(transfoComp.Scale.X, transfoComp.Scale.Y),
                         transfoComp.RotationEulerXYZ.Z,
-                        transfoComp.Translation.Z,
+                        transfoComp.Position.Z,
                         spriteComp.SpriteEffect);
                 }
 

@@ -474,7 +474,7 @@ namespace SiliconStudio.Paradox.Physics
         //        e.BoneWorldMatrix = Matrix.AffineTransformation(1.0f, rotation, translation);
 
         //        //update TRS
-        //        nodeTransform.LocalMatrix.Decompose(out nodeTransform.Transform.Scaling, out nodeTransform.Transform.Rotation, out nodeTransform.Transform.Translation);
+        //        nodeTransform.LocalMatrix.Decompose(out nodeTransform.Transform.Scale, out nodeTransform.Transform.Rotation, out nodeTransform.Transform.Position);
 
         //        mesh.ModelViewHierarchy.NodeTransformations[e.BoneIndex] = nodeTransform; //its a struct so we need to copy back
         //    }

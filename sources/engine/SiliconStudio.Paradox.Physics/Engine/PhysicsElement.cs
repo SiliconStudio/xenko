@@ -186,7 +186,7 @@ namespace SiliconStudio.Paradox.Physics
             else
             {
                 rotation = entity.Transform.Rotation;
-                translation = entity.Transform.Translation;
+                translation = entity.Transform.Position;
             }
 
             //Invert up axis in the case of a Sprite
@@ -230,7 +230,7 @@ namespace SiliconStudio.Paradox.Physics
 
             if (entity.Transform.UseTRS)
             {
-                entity.Transform.Translation = translation;
+                entity.Transform.Position = translation;
                 entity.Transform.Rotation = rotation;
             }
             else

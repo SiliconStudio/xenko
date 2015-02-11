@@ -38,7 +38,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
             var cameraComp = new CameraComponent { AspectRatio = 1, FarPlane = 100, NearPlane = 0.1f, TargetUp = -Vector3.UnitY, Target = dice, UseViewMatrix = false, VerticalFieldOfView = 1 };
             RenderSystem.Pipeline.SetCamera(cameraComp);
 
-            var cameraEntity = new Entity { Transform = { Translation = new Vector3(0, 0, -2) } };
+            var cameraEntity = new Entity { Transform = { Position = new Vector3(0, 0, -2) } };
             cameraEntity.Add(cameraComp);
 
             throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 

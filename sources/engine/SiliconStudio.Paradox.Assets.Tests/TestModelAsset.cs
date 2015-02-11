@@ -91,7 +91,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 entityAsset.Hierarchy.Entities[0].Components.Add(TransformationComponent.Key, new TransformationComponent());
 
                 var entityAsset2 = (EntityAsset)AssetCloner.Clone(entityAsset);
-                entityAsset2.Hierarchy.Entities[0].Components.Get(TransformationComponent.Key).Translation = new Vector3(10.0f, 0.0f, 0.0f);
+                entityAsset2.Hierarchy.Entities[0].Components.Get(TransformationComponent.Key).Position = new Vector3(10.0f, 0.0f, 0.0f);
 
                 AssetMerge.Merge(entityAsset, entityAsset2, null, AssetMergePolicies.MergePolicyAsset2AsNewBaseOfAsset1);
             }

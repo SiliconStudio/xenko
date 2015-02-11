@@ -82,7 +82,7 @@ namespace SiliconStudio.Paradox.EntityModel
             Components.PropertyUpdated += EntityPropertyUpdated;
 
             Transform = new TransformationComponent();
-            transform.Translation = position;
+            transform.Position = position;
 
             Group = EntityGroup.Default;
         }

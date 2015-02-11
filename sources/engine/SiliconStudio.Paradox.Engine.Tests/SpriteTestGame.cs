@@ -85,15 +85,15 @@ namespace SiliconStudio.Paradox.Engine.Tests
             spriteComponent = ball.Get(SpriteComponent.Key);
             transfoComponent = ball.Get(TransformationComponent.Key);
 
-            transfoComponent.Translation.X = areaSize.X / 2;
-            transfoComponent.Translation.Y = areaSize.Y / 2;
+            transfoComponent.Position.X = areaSize.X / 2;
+            transfoComponent.Position.Y = areaSize.Y / 2;
 
             var backgroundSpriteRegion = background.Get(SpriteComponent.Key).SpriteGroup.Images[0].Region;
             var decorationScalings = new Vector3(areaSize.X / backgroundSpriteRegion.Width, areaSize.Y / backgroundSpriteRegion.Height, 1);
-            background.Get(TransformationComponent.Key).Scaling = decorationScalings;
-            foreground.Get(TransformationComponent.Key).Scaling = decorationScalings;
-            background.Get(TransformationComponent.Key).Translation = new Vector3(0, 0, -1);
-            foreground.Get(TransformationComponent.Key).Translation = new Vector3(0, areaSize.Y, 1);
+            background.Get(TransformationComponent.Key).Scale = decorationScalings;
+            foreground.Get(TransformationComponent.Key).Scale = decorationScalings;
+            background.Get(TransformationComponent.Key).Position = new Vector3(0, 0, -1);
+            foreground.Get(TransformationComponent.Key).Position = new Vector3(0, areaSize.Y, 1);
 
             SpriteAnimation.Play(spriteComponent, 0, spriteComponent.SpriteGroup.Images.Count-1, AnimationRepeatMode.LoopInfinite, 30);
         }
@@ -145,7 +145,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
             for (int i = 0; i < 2; i++)
             {
-                var nextPosition = transfoComponent.Translation[i] + totalSeconds * ballSpeed[i];
+                var nextPosition = transfoComponent.Position[i] + totalSeconds * ballSpeed[i];
 
                 var infBound = sprite.Center[i];
                 var supBound = areaSize[i] - (spriteSize[i] - sprite.Center[i]);
@@ -160,7 +160,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
                         nextPosition = infBound + (infBound - nextPosition);
                 }
 
-                transfoComponent.Translation[i] = nextPosition;
+                transfoComponent.Position[i] = nextPosition;
 
             }
         }

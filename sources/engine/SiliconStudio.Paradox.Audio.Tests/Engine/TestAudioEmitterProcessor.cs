@@ -323,11 +323,11 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
         /// <param name="loopCountSum"></param>
         private void EntityPositionAndEmitterbfrUpdate(Game game, int loopCount, int loopCountSum)
         {
-            rootSubEntity1.Transform.Translation += new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
-            rootSubEntity2.Transform.Translation += 2*new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
+            rootSubEntity1.Transform.Position += new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
+            rootSubEntity2.Transform.Position += 2*new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
 
-            compEntities[0].Transform.Translation += new Vector3(loopCount+1, 2 * loopCount+1, 3 * loopCount+1);
-            compEntities[1].Transform.Translation -= new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
+            compEntities[0].Transform.Position += new Vector3(loopCount+1, 2 * loopCount+1, 3 * loopCount+1);
+            compEntities[1].Transform.Position -= new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
 
             emitComps[0].DistanceScale = loopCount;
             emitComps[0].DopplerScale = 2 * loopCount;

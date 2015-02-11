@@ -4,6 +4,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
+
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
@@ -48,7 +50,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <summary>
         /// The translation relative to the parent transformation.
         /// </summary>
-        public Vector3 Translation;
+        public Vector3 Position;
 
         /// <summary>
         /// The rotation relative to the parent transformation.
@@ -58,7 +60,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <summary>
         /// The scaling relative to the parent transformation.
         /// </summary>
-        public Vector3 Scaling;
+        public Vector3 Scale;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TransformationComponent" /> class.
@@ -71,10 +73,16 @@ namespace SiliconStudio.Paradox.Engine
             Children = children;
 
             UseTRS = true;
-            Scaling = Vector3.One;
+            Scale = Vector3.One;
             Rotation = Quaternion.Identity;
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to use the Translation/Rotation/Scale.
+        /// </summary>
+        /// <value><c>true</c> if [use TRS]; otherwise, <c>false</c>.</value>
+        [Browsable(false)]
+        [DefaultValue(true)]
         public bool UseTRS
         {
             get { return useTRS; }
@@ -188,13 +196,13 @@ namespace SiliconStudio.Paradox.Engine
 
         /// <summary>
         /// Updates the local matrix.
-        /// If <see cref="UseTRS"/> is true, <see cref="LocalMatrix"/> will be updated from <see cref="Translation"/>, <see cref="Rotation"/> and <see cref="Scaling"/>.
+        /// If <see cref="UseTRS"/> is true, <see cref="LocalMatrix"/> will be updated from <see cref="Position"/>, <see cref="Rotation"/> and <see cref="Scale"/>.
         /// </summary>
         public void UpdateLocalMatrix()
         {
             if (UseTRS)
             {
-                CreateMatrixTRS(ref Translation, ref Rotation, ref Scaling, out LocalMatrix);
+                CreateMatrixTRS(ref Position, ref Rotation, ref Scale, out LocalMatrix);
             }
         }
 
@@ -276,7 +284,7 @@ namespace SiliconStudio.Paradox.Engine
             //    *Matrix.RotationX(rotation.X)
             //    *Matrix.RotationY(rotation.Y)
             //    *Matrix.RotationZ(rotation.Z)
-            //    *Matrix.Translation(translation);
+            //    *Matrix.Position(translation);
 
             // Rotation
             float xx = rotation.X * rotation.X;
@@ -299,12 +307,12 @@ namespace SiliconStudio.Paradox.Engine
             result.M32 = 2.0f * (yz - xw);
             result.M33 = 1.0f - (2.0f * (yy + xx));
 
-            // Translation
+            // Position
             result.M41 = translation.X;
             result.M42 = translation.Y;
             result.M43 = translation.Z;
 
-            // Scaling
+            // Scale
             if (scaling.X != 1.0f)
             {
                 result.M11 *= scaling.X;

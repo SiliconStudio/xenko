@@ -117,7 +117,7 @@ namespace SiliconStudio.Paradox.Effects
 
         internal static ChannelType GetType(string propertyName)
         {
-            if (propertyName.StartsWith("Transform.Translation["))
+            if (propertyName.StartsWith("Transform.Position["))
             {
                 return ChannelType.Translation;
             }
@@ -125,7 +125,7 @@ namespace SiliconStudio.Paradox.Effects
             {
                 return ChannelType.Rotation;
             }
-            if (propertyName.StartsWith("Transform.Scaling["))
+            if (propertyName.StartsWith("Transform.Scale["))
             {
                 return ChannelType.Scaling;
             }

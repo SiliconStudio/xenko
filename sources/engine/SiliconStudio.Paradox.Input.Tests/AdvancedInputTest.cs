@@ -264,7 +264,7 @@ namespace SiliconStudio.Paradox.Input.Tests
                     {
                         case GestureType.Drag:
                             var dragGestureEvent = (GestureEventDrag)gestureEvent;
-                            dragEvent = "Translation = " + dragGestureEvent.TotalTranslation;
+                            dragEvent = "Position = " + dragGestureEvent.TotalTranslation;
                             break;
                         case GestureType.Flick:
                             lastFlickEvent = Tuple.Create(gestureEvent, currentTime);
@@ -274,7 +274,7 @@ namespace SiliconStudio.Paradox.Input.Tests
                             break;
                         case GestureType.Composite:
                             var compositeGestureEvent = (GestureEventComposite)gestureEvent;
-                            compositeEvent = "Rotation = " + compositeGestureEvent.TotalRotation + " - Scale = " + compositeGestureEvent.TotalScale + " - Translation = " + compositeGestureEvent.TotalTranslation;
+                            compositeEvent = "Rotation = " + compositeGestureEvent.TotalRotation + " - Scale = " + compositeGestureEvent.TotalScale + " - Position = " + compositeGestureEvent.TotalTranslation;
                             break;
                         case GestureType.Tap:
                             lastTapEvent = Tuple.Create(gestureEvent, currentTime);

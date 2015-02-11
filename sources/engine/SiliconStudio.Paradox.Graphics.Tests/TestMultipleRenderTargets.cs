@@ -68,7 +68,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             //    },
             //    new TransformationComponent
             //    {
-            //        Translation = new Vector3(2,1,2)
+            //        Position = new Vector3(2,1,2)
             //    }
             //};
             //Entities.Add(mainCamera);
