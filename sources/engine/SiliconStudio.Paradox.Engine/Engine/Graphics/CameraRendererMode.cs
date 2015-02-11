@@ -18,9 +18,9 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     public abstract class CameraRendererMode : RendererBase
     {
         // TODO: Where should we put this key?
-        public static readonly PropertyKey<List<EntityComponentRenderableAttribute>> RendererTypesKey = new PropertyKey<List<EntityComponentRenderableAttribute>>("CameraRendererMode.RendererTypesKey", typeof(CameraRendererMode));
+        public static readonly PropertyKey<List<EntityComponentRendererType>> RendererTypesKey = new PropertyKey<List<EntityComponentRendererType>>("CameraRendererMode.RendererTypesKey", typeof(CameraRendererMode));
 
-        private GraphicsRendererCollection<IEntityComponentRenderer> renderers;
+        private readonly GraphicsRendererCollection<IEntityComponentRenderer> renderers;
 
         protected CameraRendererMode()
         {

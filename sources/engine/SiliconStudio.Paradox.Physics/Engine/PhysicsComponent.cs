@@ -32,7 +32,7 @@ namespace SiliconStudio.Paradox.Physics
             get { return Elements[i]; }
         }
 
-        protected override PropertyKey DefaultKey
+        public override PropertyKey DefaultKey
         {
             get { return Key; }
         }

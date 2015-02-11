@@ -17,8 +17,8 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Paradox.Assets.Model;
 using SiliconStudio.Paradox.Assets.SpriteFont;
-using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Materials;
+using SiliconStudio.Paradox.Effects.ProceduralModels;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Assets.CompilerApp
@@ -45,6 +45,7 @@ namespace SiliconStudio.Assets.CompilerApp
             clock = Stopwatch.StartNew();
 
             // TODO this is hardcoded. Check how to make this dynamic instead.
+            RuntimeHelpers.RunModuleConstructor(typeof(IProceduralModel).Module.ModuleHandle);
             RuntimeHelpers.RunModuleConstructor(typeof(MaterialKeys).Module.ModuleHandle);
             RuntimeHelpers.RunModuleConstructor(typeof(SpriteFontAsset).Module.ModuleHandle);
             RuntimeHelpers.RunModuleConstructor(typeof(ModelAsset).Module.ModuleHandle);

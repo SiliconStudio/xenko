@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Skyboxes
     /// </summary>
     [DataContract("SkyboxComponent")]
     [Display(130, "Skybox")]  // More important than lights, as usually the Skybox is associated with a light
-    [EntityComponentRenderable(typeof(SkyboxComponentRenderer))]
+    [EntityComponentRenderer(typeof(SkyboxComponentRenderer), -100)]
     public sealed class SkyboxComponent : EntityComponent
     {
         public static PropertyKey<SkyboxComponent> Key = new PropertyKey<SkyboxComponent>("Key", typeof(SkyboxComponent));
@@ -66,7 +66,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Skyboxes
         [DataMemberRange(0.0, 100.0, 0.01f, 1.0f)]
         public float Intensity { get; set; }
 
-        protected internal override PropertyKey DefaultKey
+        public override PropertyKey DefaultKey
         {
             get { return Key; }
         }

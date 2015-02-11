@@ -28,7 +28,7 @@ namespace SiliconStudio.Paradox.EntityModel
 
         private SceneProcessor sceneProcessor;
 
-        private Entity scene;
+        private Scene scene;
 
         private RenderFrame mainRenderFrame;
 
@@ -60,7 +60,7 @@ namespace SiliconStudio.Paradox.EntityModel
         /// </summary>
         /// <value>The scene.</value>
         /// <exception cref="System.ArgumentNullException">Scene cannot be null</exception>
-        public Entity Scene
+        public Scene Scene
         {
             get
             {
@@ -97,11 +97,12 @@ namespace SiliconStudio.Paradox.EntityModel
         {
             var assetManager = Services.GetSafeServiceAs<AssetManager>();
 
-            // Preload the scene if it exists
-            if (assetManager.Exists(DefaultSceneName))
-            {
-                Scene = assetManager.Load<Entity>(DefaultSceneName);
-            }
+            // TODO: Temp work around for PreviewGame init
+            //    // Preload the scene if it exists
+            //    if (assetManager.Exists(DefaultSceneName))
+            //    {
+            //        Scene = assetManager.Load<Scene>(DefaultSceneName);
+            //    }
 
             mainRenderFrame = RenderFrame.FromTexture(GraphicsDevice.BackBuffer, GraphicsDevice.DepthStencilBuffer);
 
@@ -152,10 +153,10 @@ namespace SiliconStudio.Paradox.EntityModel
                 renderContext.Tags.Set(CameraRendererMode.RendererTypesKey, currentSceneState.RendererTypes);
 
                 // Draw the main scene.
-                var sceneRenderer = currentSceneState.SceneComponent.GraphicsCompositor;
-                if (sceneRenderer != null)
+                var graphicsCompositor = currentSceneState.Scene.Settings.GraphicsCompositor;
+                if (graphicsCompositor != null)
                 {
-                    sceneRenderer.Draw(renderContext);
+                    graphicsCompositor.Draw(renderContext);
                 }
             }
             catch (Exception ex)
@@ -171,7 +172,7 @@ namespace SiliconStudio.Paradox.EntityModel
             }
         }
 
-        internal EntityManager CreateSceneEntitySystem(Entity sceneEntity)
+        internal EntityManager CreateSceneEntitySystem(Scene sceneEntity)
         {
             // When a scene root is used for an entity system, 
             var newEntitySystem = new EntityManager(Services) { AutoRegisterDefaultProcessors = true };

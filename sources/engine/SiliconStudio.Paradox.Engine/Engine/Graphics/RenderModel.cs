@@ -13,6 +13,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             if (entity == null) throw new ArgumentNullException("entity");
             Entity = entity;
             ModelComponent = entity.Get<ModelComponent>();
+            Parameters = ModelComponent.Parameters;
             TransformationComponent = entity.Transform;
             RenderMeshes = new List<List<RenderMesh>>(4);
             Update();
@@ -21,6 +22,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         public readonly Entity Entity;
 
         public readonly ModelComponent ModelComponent;
+
+        public ParameterCollection Parameters { get; private set; }
 
         public Model Model { get; private set; }
 

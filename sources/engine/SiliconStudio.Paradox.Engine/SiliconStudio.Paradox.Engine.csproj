@@ -893,7 +893,8 @@
     <Compile Include="Engine\SceneProcessor.cs" />
     <Compile Include="EntityModel\EntityComponentReference.cs" />
     <Compile Include="Data\GeometricPrimitiveExtension.cs" />
-    <Compile Include="EntityModel\EntityComponentRenderableAttribute.cs" />
+    <Compile Include="EntityModel\EntityComponentRendererAttribute.cs" />
+    <Compile Include="EntityModel\EntityComponentRendererType.cs" />
     <Compile Include="EntityModel\EntityReference.cs" />
     <Compile Include="EntityModel\IEntityComponentReference.cs" />
     <Compile Include="Data\SimpleExtensions.cs" />

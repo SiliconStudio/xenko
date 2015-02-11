@@ -30,7 +30,6 @@ namespace SiliconStudio.Paradox.Physics
         readonly FastList<PhysicsElement> characters = new FastList<PhysicsElement>();
 
         Bullet2PhysicsSystem physicsSystem;
-        RenderSystem renderSystem;
 
         public PhysicsProcessor()
             : base(new PropertyKey[] { PhysicsComponent.Key, TransformationComponent.Key })
@@ -321,14 +320,12 @@ namespace SiliconStudio.Paradox.Physics
         protected override void OnSystemAdd()
         {
             physicsSystem = (Bullet2PhysicsSystem)Services.GetSafeServiceAs<IPhysicsSystem>();
-            renderSystem = Services.GetSafeServiceAs<RenderSystem>();
 
             //setup debug device and debug shader
             var gfxDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>();
             physicsSystem.PhysicsEngine.DebugGraphicsDevice = gfxDevice.GraphicsDevice;
 
             //Debug primitives render, should happen about the last steps of the pipeline
-            renderSystem.Pipeline.EndPass += DebugShapesDraw;
         }
 
         protected override void OnSystemRemove()
@@ -384,9 +381,9 @@ namespace SiliconStudio.Paradox.Physics
                 return;
 
             Matrix viewProj;
-            if (renderSystem.Pipeline.Parameters.ContainsKey(TransformationKeys.View) && renderSystem.Pipeline.Parameters.ContainsKey(TransformationKeys.Projection))
+            if (context.Parameters.ContainsKey(TransformationKeys.View) && context.Parameters.ContainsKey(TransformationKeys.Projection))
             {
-                viewProj = renderSystem.Pipeline.Parameters.Get(TransformationKeys.View) * renderSystem.Pipeline.Parameters.Get(TransformationKeys.Projection);
+                viewProj = context.Parameters.Get(TransformationKeys.View) * context.Parameters.Get(TransformationKeys.Projection);
             }
             else
             {

@@ -36,7 +36,7 @@ namespace SiliconStudio.Paradox.Engine
         [NotNull]
         public ISceneGraphicsCompositor GraphicsCompositor { get; set; }   // TODO: Should we move this to a special component?
 
-        protected internal override PropertyKey DefaultKey
+        public override PropertyKey DefaultKey
         {
             get
             {

@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.Engine
     /// </remarks>
     public sealed class SceneProcessor : EntityProcessor<SceneProcessor.SceneState>
     {
-        private readonly Entity sceneEntityRoot;
+        private readonly Scene sceneEntityRoot;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneProcessor"/> class.
@@ -35,7 +35,7 @@ namespace SiliconStudio.Paradox.Engine
         /// </summary>
         /// <param name="sceneEntityRoot">The scene entity root.</param>
         /// <exception cref="System.ArgumentNullException">sceneEntityRoot</exception>
-        public SceneProcessor(Entity sceneEntityRoot)
+        public SceneProcessor(Scene sceneEntityRoot)
             : this()
         {
             if (sceneEntityRoot == null) throw new ArgumentNullException("sceneEntityRoot");
@@ -49,7 +49,8 @@ namespace SiliconStudio.Paradox.Engine
 
         protected override SceneState GenerateAssociatedData(Entity entity)
         {
-            return entity == sceneEntityRoot ? CurrentState = new SceneState(EntityManager, sceneEntityRoot) : new SceneState(this.EntityManager.Services, entity);
+            var sceneEntity = (Scene)entity;
+            return sceneEntity == sceneEntityRoot ? CurrentState = new SceneState(EntityManager, sceneEntity) : new SceneState(EntityManager.Services, sceneEntity);
         }
 
         protected override void OnEntityAdding(Entity entity, SceneState data)
@@ -105,13 +106,14 @@ namespace SiliconStudio.Paradox.Engine
             /// or
             /// sceneEntityRoot
             /// </exception>
-            public SceneState(IServiceRegistry services, Entity sceneEntityRoot)
+            public SceneState(IServiceRegistry services, Scene sceneEntityRoot)
             {
                 if (services == null) throw new ArgumentNullException("services");
                 if (sceneEntityRoot == null) throw new ArgumentNullException("sceneEntityRoot");
 
                 Scene = sceneEntityRoot;
                 EntityManager = services.GetSafeServiceAs<SceneSystem>().CreateSceneEntitySystem(sceneEntityRoot);
+                RendererTypes = new List<EntityComponentRendererType>();
             }
 
             /// <summary>
@@ -124,19 +126,18 @@ namespace SiliconStudio.Paradox.Engine
             /// or
             /// scene
             /// </exception>
-            public SceneState(EntityManager entityManager, Entity scene)
+            public SceneState(EntityManager entityManager, Scene scene)
             {
                 if (entityManager == null) throw new ArgumentNullException("entityManager");
                 if (scene == null) throw new ArgumentNullException("scene");
 
                 EntityManager = entityManager;
                 Scene = scene;
+                RendererTypes = new List<EntityComponentRendererType>();
             }
 
             public void Load()
             {
-                SceneComponent = Scene.Get<SceneComponent>();
-
                 RendererTypes.Clear();
 
                 foreach (var componentType in EntityManager.RegisteredComponentTypes)
@@ -155,14 +156,17 @@ namespace SiliconStudio.Paradox.Engine
 
             private void EntitySystemOnComponentTypeRegistered(Type type)
             {
-                var renderableAttribute = type.GetTypeInfo().GetCustomAttribute<EntityComponentRenderableAttribute>();
-
-                var renderType = renderableAttribute.Type;
+                var rendererTypeAttribute = type.GetTypeInfo().GetCustomAttribute<EntityComponentRendererAttribute>();
+                if (rendererTypeAttribute == null)
+                {
+                    return;
+                }
+                var renderType = rendererTypeAttribute.Value.Type;
 
                 if (renderType != null && typeof(IEntityComponentRenderer).IsAssignableFrom(renderType) && renderType.GetConstructor(Type.EmptyTypes) != null)
                 {
-                    RendererTypes.Add(renderableAttribute);
-                    RendererTypes.Sort(EntityComponentRenderableAttribute.DefaultComparer);
+                    RendererTypes.Add(rendererTypeAttribute.Value);
+                    RendererTypes.Sort(EntityComponentRendererType.DefaultComparer);
                 }
             }
 
@@ -170,19 +174,13 @@ namespace SiliconStudio.Paradox.Engine
             /// Gets the scene.
             /// </summary>
             /// <value>The scene.</value>
-            public Entity Scene { get; private set; }
-
-            /// <summary>
-            /// Gets the scene renderer.
-            /// </summary>
-            /// <value>The scene renderer.</value>
-            public SceneComponent SceneComponent { get; private set; }
+            public Scene Scene { get; private set; }
 
             /// <summary>
             /// Gets the component renderers.
             /// </summary>
             /// <value>The renderers.</value>
-            public List<EntityComponentRenderableAttribute> RendererTypes { get; private set; }
+            public List<EntityComponentRendererType> RendererTypes { get; private set; }
 
             /// <summary>
             /// Entity System dedicated to this scene.

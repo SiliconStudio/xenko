@@ -75,7 +75,7 @@ namespace SiliconStudio.Paradox.EntityModel
         /// The default key this component is associated to.
         /// </summary>
         [DataMemberIgnore]
-        protected internal abstract PropertyKey DefaultKey { get; }
+        public abstract PropertyKey DefaultKey { get; }
 
         /// <summary>
         /// Gets the default key for the specified entity component type.

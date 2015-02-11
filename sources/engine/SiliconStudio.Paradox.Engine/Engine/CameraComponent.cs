@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     [DataContract("CameraComponent")]
     [Display(130, "Camera")]
-    [EntityComponentRenderable(typeof(CameraComponentRenderer))]
+    [EntityComponentRenderer(typeof(CameraComponentRenderer), -1000)]
     public sealed class CameraComponent : EntityComponent
     {
         private float focusDistance;
@@ -59,7 +59,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>The projection.</value>
         [DataMember(0)]
         [NotNull]
-        public ICameraProjection Projection { get; set; }
+        public ICameraProjection Projection { get; set; } // TODO: Should we use an interface or just introduce the field here and display them differently in the view model?
 
         /// <summary>
         /// Gets or sets the near plane distance.
@@ -177,6 +177,24 @@ namespace SiliconStudio.Paradox.Engine
         [DataMemberIgnore]
         public Matrix ProjectionMatrix { get; set; }
 
+        [DataMemberIgnore]
+        public CameraProjectionPerspective ProjectionAsPerspective
+        {
+            get
+            {
+                return Projection as CameraProjectionPerspective;
+            }
+        }
+
+        [DataMemberIgnore]
+        public CameraProjectionOrthographic ProjectionAsOrthographic
+        {
+            get
+            {
+                return Projection as CameraProjectionOrthographic;
+            }
+        }
+
         /// <summary>
         /// Calculates the projection matrix and view matrix.
         /// </summary>
@@ -214,7 +232,7 @@ namespace SiliconStudio.Paradox.Engine
             projection = UseProjectionMatrix ? ProjectionMatrix : Projection != null ? Projection.CalculateProjection(AspectRatio, NearPlane, FarPlane) : Matrix.Zero;
         }
 
-        protected internal override PropertyKey DefaultKey
+        public override PropertyKey DefaultKey
         {
             get { return Key; }
         }

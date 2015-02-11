@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     [DataContract("ModelComponent")]
     [Display(110, "Model")]
-    [EntityComponentRenderable(typeof(ModelAndLightComponentRenderer))]
+    [EntityComponentRenderer(typeof(ModelAndLightComponentRenderer))]
     public sealed class ModelComponent : EntityComponent, IModelInstance
     {
         public static PropertyKey<ModelComponent> Key = new PropertyKey<ModelComponent>("Key", typeof(ModelComponent));
@@ -121,7 +121,7 @@ namespace SiliconStudio.Paradox.Engine
             }
         }
 
-        protected internal override PropertyKey DefaultKey
+        public override PropertyKey DefaultKey
         {
             get { return Key; }
         }

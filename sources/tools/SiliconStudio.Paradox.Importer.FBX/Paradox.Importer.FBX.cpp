@@ -20,6 +20,7 @@ using namespace SiliconStudio::Core::Serialization::Assets;
 using namespace SiliconStudio::Core::Serialization::Contents;
 using namespace SiliconStudio::Paradox::Assets::Materials;
 using namespace SiliconStudio::Paradox::Assets::Materials::ComputeColors;
+using namespace SiliconStudio::Paradox::Effects::Materials;
 using namespace SiliconStudio::Paradox::DataModel;
 using namespace SiliconStudio::Paradox::EntityModel;
 using namespace SiliconStudio::Paradox::Effects;
@@ -543,11 +544,11 @@ public:
 				meshData->Parameters = gcnew ParameterCollection();
 
 				if (hasSkinningPosition)
-					meshData->Parameters->Set(MaterialParameters::HasSkinningPosition, true);
+					meshData->Parameters->Set(MaterialKeys::HasSkinningPosition, true);
 				if (hasSkinningNormal)
-					meshData->Parameters->Set(MaterialParameters::HasSkinningNormal, true);
+					meshData->Parameters->Set(MaterialKeys::HasSkinningNormal, true);
 				if (totalClusterCount > 0)
-					meshData->Parameters->Set(MaterialParameters::SkinningBones, totalClusterCount);
+					meshData->Parameters->Set(MaterialKeys::SkinningBones, totalClusterCount);
 			}
 			modelData->Meshes->Add(meshData);
 		}

@@ -18,15 +18,13 @@ namespace SiliconStudio.Paradox.Effects.Lights
         private readonly LightGroupProcessor directLightGroup;
         private readonly LightGroupProcessor environmentLightGroup;
 
-        private readonly LightProcessor lightProcessor;
+        private LightProcessor lightProcessor;
 
         protected LightModelRendererBase(ModelComponentRenderer modelRenderer)
         {
             if (modelRenderer == null) throw new ArgumentNullException("modelRenderer");
             Enabled = true;
             Services = modelRenderer.Services;
-            EntityManager = Services.GetServiceAs<EntityManager>();
-            lightProcessor = EntityManager.GetProcessor<LightProcessor>();
 
             directLightGroup = new LightGroupProcessor("directLightGroups", LightingKeys.DirectLightGroups);
             environmentLightGroup = new LightGroupProcessor("environmentLights", LightingKeys.EnvironmentLights);
@@ -35,8 +33,6 @@ namespace SiliconStudio.Paradox.Effects.Lights
         public IServiceRegistry Services { get; private set; }
 
         public bool Enabled { get; set; }
-
-        private EntityManager EntityManager { get;  set; }
 
         public void RegisterLightGroupProcessor<T>(LightGroupRendererBase processor)
         {
@@ -51,6 +47,12 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// <param name="context">The render context.</param>
         public void PrepareLights(RenderContext context)
         {
+            if (lightProcessor == null)
+            {
+                // TODO: This is ugly to access a processor
+                lightProcessor = context.Tags.Get(EntityManager.Current).GetProcessor<LightProcessor>();
+            }
+
             directLightGroup.ProcessLights(context, lightProcessor.ActiveDirectLights, Enabled);
             environmentLightGroup.ProcessLights(context, lightProcessor.ActiveEnvironmentLights, Enabled);
         }
