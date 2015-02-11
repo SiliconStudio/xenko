@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
         
         private Vector2 lastTouchPosition;
 
-        protected UIRenderer UIRenderer;
+        protected UIComponentRenderer UiComponentRenderer;
 
         /// <summary>
         /// Create an instance of the game test
@@ -77,10 +77,10 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
         protected virtual void CreatePipeline()
         {
             // create the render pipeline
-            UIRenderer = new UIRenderer(Services);
+            UiComponentRenderer = new UIComponentRenderer(Services);
             RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services) { ClearColor = Color.Green, EnableClearStencil = true });
             RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = SpecificDrawBeforeUI });
-            RenderSystem.Pipeline.Renderers.Add(UIRenderer);
+            RenderSystem.Pipeline.Renderers.Add(UiComponentRenderer);
         }
 
         protected override void Update(GameTime gameTime)

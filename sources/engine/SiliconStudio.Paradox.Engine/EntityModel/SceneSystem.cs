@@ -106,7 +106,7 @@ namespace SiliconStudio.Paradox.EntityModel
             mainRenderFrame = RenderFrame.FromTexture(GraphicsDevice.BackBuffer, GraphicsDevice.DepthStencilBuffer);
 
             // Create the drawing context
-            renderContext = new RenderContext(GraphicsDevice);
+            renderContext = new RenderContext(Services);
         }
 
         public override void Update(GameTime gameTime)
@@ -147,12 +147,12 @@ namespace SiliconStudio.Paradox.EntityModel
 
                 // Update the render context to use the main RenderFrame as current by default
                 var currentSceneState = sceneProcessor.CurrentState;
-                renderContext.Parameters.Set(RenderFrame.Master, mainRenderFrame);
-                renderContext.EntitySystem = currentSceneState.EntitySystem;
-                renderContext.Services = Services;
+                renderContext.Tags.Set(RenderFrame.Master, mainRenderFrame);
+                renderContext.Tags.Set(EntitySystem.Current, currentSceneState.EntitySystem);
+                renderContext.Tags.Set(CameraRendererMode.RendererTypesKey, currentSceneState.RendererTypes);
 
                 // Draw the main scene.
-                var sceneRenderer = currentSceneState.SceneComponent.SceneRenderer;
+                var sceneRenderer = currentSceneState.SceneComponent.GraphicsCompositor;
                 if (sceneRenderer != null)
                 {
                     sceneRenderer.Draw(renderContext);

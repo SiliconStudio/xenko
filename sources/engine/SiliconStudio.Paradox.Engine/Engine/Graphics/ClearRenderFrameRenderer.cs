@@ -15,13 +15,14 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     /// </summary>
     [DataContract("ClearRenderFrameRenderer")]
     [Display("Clear RenderFrame")]
-    public sealed class ClearRenderFrameRenderer : RendererBase
+    public sealed class ClearRenderFrameRenderer : SceneRendererBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ClearRenderFrameRenderer"/> class.
         /// </summary>
-        public ClearRenderFrameRenderer() : base("Clear RenderFrame")
+        public ClearRenderFrameRenderer()
         {
+            DebugName = "Clear RenderFrame";
             ClearFlags = ClearRenderFrameFlags.Color;
             Color = Core.Mathematics.Color.CornflowerBlue;
             Depth = 1.0f;
@@ -78,7 +79,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         protected override void OnRendering(RenderContext context)
         {
             // Use the instance Frame or gets from the context
-            var frame = Frame ?? context.Parameters.Get(RenderFrame.Current);
+            var frame = Frame ?? context.Tags.Get(RenderFrame.Current);
 
             // If not frame set, then nop
             if (frame == null)
@@ -98,8 +99,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             if (ClearFlags == ClearRenderFrameFlags.Color)
                 graphicsDevice.Clear(frame.RenderTarget, Color);
 
-            // Sets the depth and render target
-            graphicsDevice.SetDepthAndRenderTarget(frame.DepthStencil, frame.RenderTarget);
+            // Activate the frame for rendering
+            frame.Activate(context);
 
             // TODO: Add Viewport?
             // TODO: Add support for pluggable clear for Deferred render targets (clear the packed buffer... etc)

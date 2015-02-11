@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
             // Create Main pass
             var mainPipeline = RenderSystem.Pipeline;
             mainPipeline.Renderers.Add(new RenderTargetSetter(Services) { ClearColor = Color.Blue, RenderTarget = GraphicsDevice.BackBuffer, DepthStencil = GraphicsDevice.DepthStencilBuffer });
-            mainPipeline.Renderers.Add(new ModelRenderer(Services, "Default"));
+            mainPipeline.Renderers.Add(new ModelComponentRenderer(Services, "Default"));
 
             // Setup view
             var renderPipeline = RenderSystem.Pipeline;

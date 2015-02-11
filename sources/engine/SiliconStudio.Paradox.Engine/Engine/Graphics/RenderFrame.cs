@@ -20,15 +20,18 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     public class RenderFrame
     {
         /// <summary>
-        /// The master render frame for the context.
+        /// Property key to access the Master <see cref="RenderFrame"/> from <see cref="RenderContext.Tags"/>.
         /// </summary>
-        public static readonly ParameterKey<RenderFrame> Master = ParameterKeys.New<RenderFrame>();
+        public static readonly PropertyKey<RenderFrame> Master = new PropertyKey<RenderFrame>("RenderFrame.Master", typeof(RenderFrame));
 
         /// <summary>
-        /// The current render frame for the context.
+        /// Property key to access the Current <see cref="RenderFrame"/> from <see cref="RenderContext.Tags"/>.
         /// </summary>
-        public static readonly ParameterKey<RenderFrame> Current = ParameterKeys.New<RenderFrame>();
+        public static readonly PropertyKey<RenderFrame> Current = new PropertyKey<RenderFrame>("RenderFrame.Current", typeof(RenderFrame));
 
+        /// <summary>
+        /// Property key to access a render frame attached to a texture created from a <see cref="RenderFrameDescriptor"/>
+        /// </summary>
         private static readonly PropertyKey<RenderFrame> RenderFrameKey = new PropertyKey<RenderFrame>("RenderFrameKey", typeof(RenderFrame));
 
         // TODO: Should we move this to Graphics instead?
@@ -62,6 +65,21 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// </summary>
         /// <value>The depth stencil.</value>
         public Texture DepthStencil { get; internal set; }
+
+        /// <summary>
+        /// Activates the specified render context.
+        /// </summary>
+        /// <param name="renderContext">The render context.</param>
+        /// <exception cref="System.ArgumentNullException">renderContext</exception>
+        public void Activate(RenderContext renderContext)
+        {
+            if (renderContext == null) throw new ArgumentNullException("renderContext");
+
+            // TODO: Handle support for shared depth stencil buffer
+
+            // Sets the depth and render target
+            renderContext.GraphicsDevice.SetDepthAndRenderTarget(DepthStencil, RenderTarget);
+        }
 
         /// <summary>
         /// Recover a <see cref="RenderFrame" /> from a texture that has been created for a render frame.

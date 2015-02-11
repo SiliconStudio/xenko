@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -17,6 +18,7 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     [DataContract("CameraComponent")]
     [Display(130, "Camera")]
+    [EntityComponentRenderable(typeof(CameraComponentRenderer))]
     public sealed class CameraComponent : EntityComponent
     {
         private float focusDistance;

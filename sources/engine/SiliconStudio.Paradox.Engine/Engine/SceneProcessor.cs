@@ -3,8 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 using SiliconStudio.Core;
+using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
 
@@ -54,6 +56,7 @@ namespace SiliconStudio.Paradox.Engine
         {
             if (data != null)
             {
+                data.Load();
                 Scenes.Add(data);
             }
         }
@@ -62,6 +65,7 @@ namespace SiliconStudio.Paradox.Engine
         {
             if (data != null)
             {
+                data.Unload();
                 Scenes.Remove(data);
             }
         }
@@ -108,7 +112,6 @@ namespace SiliconStudio.Paradox.Engine
 
                 Scene = sceneEntityRoot;
                 EntitySystem = services.GetSafeServiceAs<SceneSystem>().CreateSceneEntitySystem(sceneEntityRoot);
-                SceneComponent = Scene.Get<SceneComponent>();
             }
 
             /// <summary>
@@ -128,7 +131,39 @@ namespace SiliconStudio.Paradox.Engine
 
                 EntitySystem = entitySystem;
                 Scene = scene;
+            }
+
+            public void Load()
+            {
                 SceneComponent = Scene.Get<SceneComponent>();
+
+                RendererTypes.Clear();
+
+                foreach (var componentType in EntitySystem.RegisteredComponentTypes)
+                {
+                    EntitySystemOnComponentTypeRegistered(componentType);
+                }
+
+                EntitySystem.ComponentTypeRegistered += EntitySystemOnComponentTypeRegistered;   
+            }
+
+            public void Unload()
+            {
+                EntitySystem.ComponentTypeRegistered -= EntitySystemOnComponentTypeRegistered;
+                RendererTypes.Clear();
+            }
+
+            private void EntitySystemOnComponentTypeRegistered(Type type)
+            {
+                var renderableAttribute = type.GetTypeInfo().GetCustomAttribute<EntityComponentRenderableAttribute>();
+
+                var renderType = renderableAttribute.Type;
+
+                if (renderType != null && typeof(IEntityComponentRenderer).IsAssignableFrom(renderType) && renderType.GetConstructor(Type.EmptyTypes) != null)
+                {
+                    RendererTypes.Add(renderableAttribute);
+                    RendererTypes.Sort(EntityComponentRenderableAttribute.DefaultComparer);
+                }
             }
 
             /// <summary>
@@ -142,6 +177,12 @@ namespace SiliconStudio.Paradox.Engine
             /// </summary>
             /// <value>The scene renderer.</value>
             public SceneComponent SceneComponent { get; private set; }
+
+            /// <summary>
+            /// Gets the component renderers.
+            /// </summary>
+            /// <value>The renderers.</value>
+            public List<EntityComponentRenderableAttribute> RendererTypes { get; private set; }
 
             /// <summary>
             /// Entity System dedicated to this scene.

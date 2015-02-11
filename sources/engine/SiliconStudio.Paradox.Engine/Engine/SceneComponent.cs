@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox.Engine
         /// </summary>
         public SceneComponent()
         {
-            SceneRenderer = new SceneRendererLayers();
+            GraphicsCompositor = new SceneGraphicsCompositorLayers();
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace SiliconStudio.Paradox.Engine
         [DataMember(10)]
         [Display("Graphics Composition")]
         [NotNull]
-        public ISceneRenderer SceneRenderer { get; set; }   // TODO: Should we move this to a special component?
+        public ISceneGraphicsCompositor GraphicsCompositor { get; set; }   // TODO: Should we move this to a special component?
 
         protected internal override PropertyKey DefaultKey
         {

@@ -34,9 +34,9 @@ namespace SiliconStudio.Paradox.Engine.Tests
             await base.LoadContent();
 
             // Setup render pipeline
-            RenderSystem.Pipeline.Renderers.Add(new CameraSetter(Services));
+            RenderSystem.Pipeline.Renderers.Add(new CameraComponentRenderer(Services));
             RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services) { ClearColor = Color.Blue, RenderTarget = GraphicsDevice.BackBuffer, DepthStencil = GraphicsDevice.DepthStencilBuffer });
-            RenderSystem.Pipeline.Renderers.Add(new ModelRenderer(Services, "Default"));
+            RenderSystem.Pipeline.Renderers.Add(new ModelComponentRenderer(Services, "Default"));
 
             // Load asset
             var dudeEntity = Asset.Load<Entity>("AnimatedModel");

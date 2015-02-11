@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Core;
 
@@ -14,6 +15,7 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     [DataContract("ModelComponent")]
     [Display(110, "Model")]
+    [EntityComponentRenderable(typeof(ModelAndLightComponentRenderer))]
     public sealed class ModelComponent : EntityComponent, IModelInstance
     {
         public static PropertyKey<ModelComponent> Key = new PropertyKey<ModelComponent>("Key", typeof(ModelComponent));

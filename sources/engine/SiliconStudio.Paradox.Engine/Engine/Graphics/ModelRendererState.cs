@@ -8,7 +8,7 @@ using SiliconStudio.Paradox.Engine.Graphics.Composers;
 namespace SiliconStudio.Paradox.Effects
 {
     /// <summary>
-    /// State stored in a <see cref="RenderPipeline"/> by a <see cref="ModelRenderer"/>
+    /// State stored in a <see cref="RenderPipeline"/> by a <see cref="ModelComponentRenderer"/>
     /// </summary>
     internal class ModelRendererState
     {

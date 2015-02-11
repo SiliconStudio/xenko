@@ -21,6 +21,8 @@ namespace SiliconStudio.Paradox.EntityModel
     /// </summary>
     public class EntitySystem : ComponentBase, IReadOnlySet<Entity>
     {
+        public static readonly PropertyKey<EntitySystem> Current = new PropertyKey<EntitySystem>("EntitySystem.Current", typeof(EntitySystem));
+
         // TODO: Make this class threadsafe (current locks aren't sufficients)
 
         // List of all entities, with their respective processors
@@ -35,6 +37,8 @@ namespace SiliconStudio.Paradox.EntityModel
         private readonly HashSet<Type> autoRegisteredProcessorTypes;
 
         private bool isAutoRegisteringProcessors;
+
+        public event Action<Type> ComponentTypeRegistered;
 
         public EntitySystem(IServiceRegistry registry)
         {
@@ -52,6 +56,7 @@ namespace SiliconStudio.Paradox.EntityModel
             newAutoRegisteredProcessors = new List<EntityProcessor>();
         }
 
+
         public IServiceRegistry Services { get; private set; }
 
         /// <summary>
@@ -60,6 +65,14 @@ namespace SiliconStudio.Paradox.EntityModel
         public FastCollection<EntityProcessor> Processors
         {
             get { return processors; }
+        }
+
+        public IEnumerable<Type> RegisteredComponentTypes
+        {
+            get
+            {
+                return autoRegisteredProcessorTypes;
+            }
         }
 
         internal bool AutoRegisterDefaultProcessors { get; set; }
@@ -328,6 +341,8 @@ namespace SiliconStudio.Paradox.EntityModel
 
             autoRegisteredComponentTypes.Add(componentType);
 
+            OnComponentTypeRegistered(componentType);
+
             if (entityComponent == null)
             {
                 entityComponent = (EntityComponent)Activator.CreateInstance(componentType);
@@ -467,6 +482,12 @@ namespace SiliconStudio.Paradox.EntityModel
             {
                 return entities.Count;
             }
+        }
+
+        protected virtual void OnComponentTypeRegistered(Type obj)
+        {
+            Action<Type> handler = ComponentTypeRegistered;
+            if (handler != null) handler(obj);
         }
     }
 }

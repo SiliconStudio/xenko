@@ -12,7 +12,7 @@ using SiliconStudio.Paradox.Engine.Graphics;
 namespace SiliconStudio.Paradox.Effects
 {
     /// <summary>
-    /// Extensions filter for <see cref="ModelRenderer"/>
+    /// Extensions filter for <see cref="ModelComponentRenderer"/>
     /// </summary>
     public static class ModelRendererExtensions
     {
@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         /// <param name="modelRenderer">The model renderer.</param>
         /// <returns>ModelRenderer.</returns>
-        public static ModelRenderer AddDefaultFrustumCulling(this ModelRenderer modelRenderer)
+        public static ModelComponentRenderer AddDefaultFrustumCulling(this ModelComponentRenderer modelRenderer)
         {
             modelRenderer.UpdateMeshes = FrustumCulling;
             return modelRenderer;

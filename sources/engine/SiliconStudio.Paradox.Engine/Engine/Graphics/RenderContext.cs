@@ -10,17 +10,20 @@ namespace SiliconStudio.Paradox.Effects
     /// <summary>
     /// Rendering context.
     /// </summary>
-    public class RenderContext
+    public sealed class RenderContext
     {
         private readonly GraphicsDevice graphicsDevice;
 
+        private readonly IServiceRegistry services;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="RenderContext"/> class.
+        /// Initializes a new instance of the <see cref="RenderContext" /> class.
         /// </summary>
-        /// <param name="graphicsDevice">The graphics device.</param>
-        public RenderContext(GraphicsDevice graphicsDevice)
+        /// <param name="services">The services.</param>
+        public RenderContext(IServiceRegistry services)
         {
-            this.graphicsDevice = graphicsDevice;
+            this.services = services;
+            graphicsDevice = services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
             Parameters = new ParameterCollection();
         }
 
@@ -37,21 +40,26 @@ namespace SiliconStudio.Paradox.Effects
         }
 
         /// <summary>
-        /// Gets or sets the current entity system.
-        /// </summary>
-        /// <value>The entity system.</value>
-        public EntitySystem EntitySystem { get; set; }
-
-        /// <summary>
         /// Gets or sets the services.
         /// </summary>
         /// <value>The services.</value>
-        public IServiceRegistry Services { get; set; }
+        public IServiceRegistry Services
+        {
+            get
+            {
+                return services;
+            }
+        }
 
         /// <summary>
-        /// Gets or sets the parameters.
+        /// Gets or sets the parameters shared by this rendering context with shaders.
         /// </summary>
         /// <value>The parameters.</value>
         public ParameterCollection Parameters { get; set; }
+
+        /// <summary>
+        /// Allow to access tags setup on this render context
+        /// </summary>
+        public PropertyContainer Tags;
     }
 }

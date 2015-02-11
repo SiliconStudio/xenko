@@ -12,6 +12,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     /// <summary>
     /// Base implementation of <see cref="IGraphicsRenderer"/>
     /// </summary>
+    [DataContract]
     public abstract class RendererBase : ComponentBase, IGraphicsRenderer
     {
         /// <summary>
@@ -32,7 +33,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="RendererExtendedBase"/> is enabled.
+        /// Gets or sets a value indicating whether this <see cref="EntityComponentRendererBase"/> is enabled.
         /// </summary>
         /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
         [DataMember(0)]
