@@ -11,7 +11,7 @@ using SiliconStudio.Paradox.Games;
 namespace SiliconStudio.Paradox.Effects.Lights
 {
     /// <summary>
-    /// Process <see cref="LightComponent"/> stored in an <see cref="EntitySystem"/> by providing grouped lights per types/shadows.
+    /// Process <see cref="LightComponent"/> stored in an <see cref="EntityManager"/> by providing grouped lights per types/shadows.
     /// </summary>
     public class LightProcessor : EntityProcessor<LightComponent>
     {

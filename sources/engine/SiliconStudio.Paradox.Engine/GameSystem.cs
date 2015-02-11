@@ -12,11 +12,11 @@ namespace SiliconStudio.Paradox
         protected GameSystem(IServiceRegistry registry) : base(registry)
         {
             Input = Services.GetSafeServiceAs<InputManager>();
-            Entities = Services.GetSafeServiceAs<EntitySystem>();
+            Entities = Services.GetSafeServiceAs<EntityManager>();
         }
 
         public InputManager Input { get; private set; }
 
-        public EntitySystem Entities { get; internal set; }
+        public EntityManager Entities { get; internal set; }
     }
 }

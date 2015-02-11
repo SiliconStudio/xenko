@@ -19,9 +19,9 @@ namespace SiliconStudio.Paradox.EntityModel
     /// <summary>
     /// Manage a collection of entities.
     /// </summary>
-    public class EntitySystem : ComponentBase, IReadOnlySet<Entity>
+    public class EntityManager : ComponentBase, IReadOnlySet<Entity>
     {
-        public static readonly PropertyKey<EntitySystem> Current = new PropertyKey<EntitySystem>("EntitySystem.Current", typeof(EntitySystem));
+        public static readonly PropertyKey<EntityManager> Current = new PropertyKey<EntityManager>("EntityManager.Current", typeof(EntityManager));
 
         // TODO: Make this class threadsafe (current locks aren't sufficients)
 
@@ -40,7 +40,7 @@ namespace SiliconStudio.Paradox.EntityModel
 
         public event Action<Type> ComponentTypeRegistered;
 
-        public EntitySystem(IServiceRegistry registry)
+        public EntityManager(IServiceRegistry registry)
         {
             if (registry == null) throw new ArgumentNullException("registry");
             Services = registry;
@@ -208,7 +208,7 @@ namespace SiliconStudio.Paradox.EntityModel
         }
 
         /// <summary>
-        /// Removes the entity from the <see cref="EntitySystem" />.
+        /// Removes the entity from the <see cref="EntityManager" />.
         /// It works weither entity has a parent or not.
         /// In conjonction with <see cref="HierarchicalSystem" />, it will remove children entities as well.
         /// </summary>
@@ -219,7 +219,7 @@ namespace SiliconStudio.Paradox.EntityModel
         }
 
         /// <summary>
-        /// Removes all entities from the <see cref="EntitySystem"/>.
+        /// Removes all entities from the <see cref="EntityManager"/>.
         /// </summary>
         public void Clear()
         {
@@ -376,7 +376,7 @@ namespace SiliconStudio.Paradox.EntityModel
 
         private void InitializeProcessor(EntityProcessor processor)
         {
-            processor.EntitySystem = this;
+            processor.EntityManager = this;
             processor.Services = Services;
             processor.OnSystemAdd();
         }
@@ -399,7 +399,7 @@ namespace SiliconStudio.Paradox.EntityModel
         {
             processor.OnSystemRemove();
             processor.Services = null;
-            processor.EntitySystem = null;
+            processor.EntityManager = null;
         }
 
         private void EntityPropertyUpdated(ref PropertyContainer propertyContainer, PropertyKey propertyKey, object newValue, object oldValue)

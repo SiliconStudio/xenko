@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.Engine
     public class TransformationProcessor : EntityProcessor<TransformationProcessor.AssociatedData>
     {
         /// <summary>
-        /// List of <see cref="TransformationComponent"/> of every <see cref="Entity"/> in <see cref="EntitySystem.RootEntities"/>.
+        /// List of <see cref="TransformationComponent"/> of every <see cref="Entity"/> in <see cref="EntityManager.RootEntities"/>.
         /// </summary>
         private readonly TrackingHashSet<TransformationComponent> transformationRoots = new TrackingHashSet<TransformationComponent>();
 
@@ -45,7 +45,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <inheritdoc/>
         protected internal override void OnSystemAdd()
         {
-            var rootEntities = EntitySystem.GetProcessor<HierarchicalProcessor>().RootEntities;
+            var rootEntities = EntityManager.GetProcessor<HierarchicalProcessor>().RootEntities;
             ((ITrackingCollectionChanged)rootEntities).CollectionChanged += rootEntities_CollectionChanged;
 
             // Add transformation of existing root entities

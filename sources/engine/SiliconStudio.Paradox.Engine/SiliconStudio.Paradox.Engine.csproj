@@ -959,8 +959,8 @@
     <Compile Include="EntityModel\ContentReferenceCloneDataSerializer.cs" />
     <Compile Include="EntityModel\CloneEntityComponentSerializer.cs" />
     <Compile Include="EntityModel\EntityExtensions.cs" />
-    <Compile Include="EntityModel\EntitySerializer.cs" />
     <Compile Include="EntityModel\EntityHierarchyData.cs" />
+    <Compile Include="EntityModel\Scene.cs" />
     <Compile Include="EntityModel\SceneSystem.cs" />
     <Compile Include="Framework.Extensions\DictionaryExtensions.cs" />
     <Compile Include="GameSystem.cs" />
@@ -1012,7 +1012,7 @@
     <Compile Include="Engine\TransformationComponent.cs" />
     <Compile Include="Engine\TransformationProcessor.cs" />
     <Compile Include="EntityModel\EntityComponent.cs" />
-    <Compile Include="EntityModel\EntitySystem.cs" />
+    <Compile Include="EntityModel\EntityManager.cs" />
     <Compile Include="EntityModel\Entity.cs" />
     <Compile Include="EntityModel\EntityProcessor.cs" />
     <Compile Include="Extensions\EntityExtensions.cs" />

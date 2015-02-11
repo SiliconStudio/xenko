@@ -97,7 +97,7 @@ namespace SiliconStudio.Paradox.Effects
             base.Load(context);
 
             dynamicEffectCompiler = new DynamicEffectCompiler(Services, effectName);
-            modelProcessor = EntitySystem.GetProcessor<ModelProcessor>();
+            modelProcessor = EntityManager.GetProcessor<ModelProcessor>();
         }
 
         public override void Unload(RenderContext context)
@@ -244,11 +244,11 @@ namespace SiliconStudio.Paradox.Effects
 
         internal ModelRendererState GetOrCreateModelRendererState(RenderContext context, bool createMeshStateIfNotFound = true)
         {
-            var pipelineState = EntitySystem.Tags.Get(ModelRendererState.Key);
+            var pipelineState = EntityManager.Tags.Get(ModelRendererState.Key);
             if (createMeshStateIfNotFound && pipelineState == null)
             {
                 pipelineState = new ModelRendererState();
-                EntitySystem.Tags.Set(ModelRendererState.Key, pipelineState);
+                EntityManager.Tags.Set(ModelRendererState.Key, pipelineState);
             }
             return pipelineState;
         }

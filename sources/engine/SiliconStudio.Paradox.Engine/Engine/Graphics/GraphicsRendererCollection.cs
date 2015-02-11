@@ -5,6 +5,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Serializers;
 using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.Engine.Graphics
@@ -14,6 +16,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     /// <see cref="IGraphicsRenderer.Load"/> and <see cref="IGraphicsRenderer.Unload"/>.
     /// </summary>
     /// <typeparam name="T">Type of the <see cref="IGraphicsRenderer"/></typeparam>.
+    [DataSerializer(typeof(ListAllSerializer<,>), Mode = DataSerializerGenericMode.TypeAndGenericArguments)]
     public class GraphicsRendererCollection<T> : RendererBase, IList<T> where T : class, IGraphicsRenderer
     {
         private readonly HashSet<T> tempRenderers;

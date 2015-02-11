@@ -9,7 +9,7 @@ using SiliconStudio.Paradox.EntityModel;
 namespace SiliconStudio.Paradox.Engine
 {
     /// <summary>
-    /// This processor will take care of adding/removing children of every Entity added/removed in the EntitySystem.
+    /// This processor will take care of adding/removing children of every Entity added/removed in the EntityManager.
     /// It will also exposes a list of root entities.
     /// </summary>
     public class HierarchicalProcessor : EntityProcessor<TransformationComponent>
@@ -47,7 +47,7 @@ namespace SiliconStudio.Paradox.Engine
         {
             foreach (var child in entity.Transform.Children)
             {
-                EntitySystem.SetEnabled(child.Entity, enabled);
+                EntityManager.SetEnabled(child.Entity, enabled);
             }
         }
 
@@ -81,7 +81,7 @@ namespace SiliconStudio.Paradox.Engine
 
             // If sub entity is removed but its parent is still there, it needs to be detached.
             // Note that this behavior is still not totally fixed yet, it might change.
-            if (transformationComponent.Parent != null && EntitySystem.Contains(transformationComponent.Parent.Entity))
+            if (transformationComponent.Parent != null && EntityManager.Contains(transformationComponent.Parent.Entity))
                 transformationComponent.Parent = null;
 
             rootEntities.Remove(entity);
@@ -94,10 +94,10 @@ namespace SiliconStudio.Paradox.Engine
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    EntitySystem.Add((Entity)e.Item);
+                    EntityManager.Add((Entity)e.Item);
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    EntitySystem.Remove((Entity)e.Item);
+                    EntityManager.Remove((Entity)e.Item);
                     break;
                 default:
                     throw new NotSupportedException();

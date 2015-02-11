@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     /// A camera renderer.
     /// </summary>
     [DataContract("SceneCameraRenderer")]
-    [Display("Camera Renderer")]
+    [Display("Render Camera")]
     public sealed class SceneCameraRenderer : SceneRendererBase
     {
         /// <summary>

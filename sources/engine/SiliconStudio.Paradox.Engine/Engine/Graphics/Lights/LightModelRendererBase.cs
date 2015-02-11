@@ -25,8 +25,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
             if (modelRenderer == null) throw new ArgumentNullException("modelRenderer");
             Enabled = true;
             Services = modelRenderer.Services;
-            EntitySystem = Services.GetServiceAs<EntitySystem>();
-            lightProcessor = EntitySystem.GetProcessor<LightProcessor>();
+            EntityManager = Services.GetServiceAs<EntityManager>();
+            lightProcessor = EntityManager.GetProcessor<LightProcessor>();
 
             directLightGroup = new LightGroupProcessor("directLightGroups", LightingKeys.DirectLightGroups);
             environmentLightGroup = new LightGroupProcessor("environmentLights", LightingKeys.EnvironmentLights);
@@ -36,7 +36,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
         public bool Enabled { get; set; }
 
-        private EntitySystem EntitySystem { get;  set; }
+        private EntityManager EntityManager { get;  set; }
 
         public void RegisterLightGroupProcessor<T>(LightGroupRendererBase processor)
         {

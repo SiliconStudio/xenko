@@ -19,7 +19,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
     {
         private readonly Dictionary<SceneGraphicsLayer, GraphicsLayerState> layerStates;
         private readonly Dictionary<SceneGraphicsLayer, GraphicsLayerState> layersToDispose;
-        private readonly HashSet<IGraphicsRenderer> previousRenderers;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneGraphicsCompositorLayers"/> class.
@@ -36,7 +35,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
             // Initialize states of this layer
             layersToDispose = new Dictionary<SceneGraphicsLayer, GraphicsLayerState>();
             layerStates = new Dictionary<SceneGraphicsLayer, GraphicsLayerState>();
-            previousRenderers = new HashSet<IGraphicsRenderer>();
             // TODO: Add Disposable for composer
         }
 
@@ -77,6 +75,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
             // Process layers that are removed
             foreach (var layerKeyState in layersToDispose)
             {
+                var layer = layerKeyState.Key;
                 var layerState = layerKeyState.Value;
 
                 // Dispose their output
@@ -86,11 +85,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
                 }
 
                 // Dispose their renderers
-                foreach (var renderer in layerState.Renderers)
-                {
-                    renderer.Unload(context);
-                    renderer.Dispose();
-                }
+                layer.Renderers.Unload(context);
             }
             layersToDispose.Clear();
 
@@ -126,9 +121,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
                 HandleOutput(context, layerState, layer);
             }
 
-            // Handle Renderers
-            // TODO: Renderer may be different based on the rendering model
-            HandleRenderers(context, layerState, layer);
+            layer.Renderers.Draw(context);
         }
 
         private void HandleOutput(RenderContext context, GraphicsLayerState layerState, SceneGraphicsLayer layer)
@@ -143,53 +136,13 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
             context.Tags.Set(RenderFrame.Current, renderFrame);
         }
 
-        private void HandleRenderers(RenderContext context, GraphicsLayerState layerState, SceneGraphicsLayer layer)
-        {
-            // Collect previous renderers
-            previousRenderers.Clear();
-            foreach (var renderer in layerState.Renderers)
-            {
-                previousRenderers.Add(renderer);
-            }
-            layerState.Renderers.Clear();
-
-            // Iterate on new renderers
-            foreach (var renderer in layer.Renderers)
-            {
-                // If renderer is new, then load it
-                if (!previousRenderers.Contains(renderer))
-                {
-                    renderer.Load(context);
-                }
-
-                // Draw the renderer
-                renderer.Draw(context);
-
-                // Add it to the list of previous renderers
-                layerState.Renderers.Add(renderer);
-
-                // Remove this renderer from the previous list
-                previousRenderers.Remove(renderer);
-            }
-
-            // The renderers in previousRenderers are renderers that were removed, so we need to unload and dispose them 
-            foreach (var previousRenderer in previousRenderers)
-            {
-                previousRenderer.Unload(context);
-                previousRenderer.Dispose();
-            }
-        }
-
         private class GraphicsLayerState
         {
             public GraphicsLayerState()
             {
-                Renderers = new HashSet<IGraphicsRenderer>();
             }
 
             public ISceneGraphicsComposerOutput Output { get; set; }
-
-            public HashSet<IGraphicsRenderer> Renderers { get; private set; }
         }
     }
 }

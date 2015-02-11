@@ -16,10 +16,8 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     public sealed class SceneComponent : EntityComponent
     {
-        /// <summary>
-        /// The key of this component.
-        /// </summary>
-        public static PropertyKey<SceneComponent> Key = new PropertyKey<SceneComponent>("Key", typeof(SceneComponent));
+        public static PropertyKey<SceneComponent> Key = new PropertyKey<SceneComponent>("Key", typeof(SceneComponent),
+            new AccessorMetadata(OnSceneComponentGet, OnSceneComponentSet));
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneComponent"/> class.
@@ -50,6 +48,28 @@ namespace SiliconStudio.Paradox.Engine
         protected internal override IEnumerable<Type> GetDefaultProcessors()
         {
             return DefaultProcessors;
+        }
+
+        private static object OnSceneComponentGet(ref PropertyContainer props)
+        {
+            return ((Scene)props.Owner).Settings;
+        }
+
+        private static void OnSceneComponentSet(ref PropertyContainer props, object value)
+        {
+            var scene = props.Owner as Scene;
+            if (scene == null)
+            {
+                throw new InvalidOperationException("A SceneComponent is only valid for the Scene object");
+            }
+
+            // TODO: Check if this is possible with serialization?
+            if (scene.Settings != null)
+            {
+                throw new InvalidOperationException("A SceneComponent cannot be changed");
+            }
+
+            scene.Settings = (SceneComponent)value;
         }
     }
 }

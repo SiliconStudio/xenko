@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     /// <remarks>
     /// This processor is handling specially an entity with a scene component. If an scene component is found, it will
-    /// create a sub-<see cref="EntitySystem"/> dedicated to handle the entities inside the scene.
+    /// create a sub-<see cref="EntityManager"/> dedicated to handle the entities inside the scene.
     /// </remarks>
     public sealed class SceneProcessor : EntityProcessor<SceneProcessor.SceneState>
     {
@@ -49,7 +49,7 @@ namespace SiliconStudio.Paradox.Engine
 
         protected override SceneState GenerateAssociatedData(Entity entity)
         {
-            return entity == sceneEntityRoot ? CurrentState = new SceneState(EntitySystem, sceneEntityRoot) : new SceneState(this.EntitySystem.Services, entity);
+            return entity == sceneEntityRoot ? CurrentState = new SceneState(EntityManager, sceneEntityRoot) : new SceneState(this.EntityManager.Services, entity);
         }
 
         protected override void OnEntityAdding(Entity entity, SceneState data)
@@ -73,7 +73,7 @@ namespace SiliconStudio.Paradox.Engine
         internal override bool ShouldStopProcessorChain(Entity entity)
         {
             // If the entity being added is not the scene entity root, don't run other processors, as this is handled 
-            // by a nested EntitySystem
+            // by a nested EntityManager
             return !ReferenceEquals(entity, sceneEntityRoot);
         }
 
@@ -81,7 +81,7 @@ namespace SiliconStudio.Paradox.Engine
         {
             foreach (var sceneEntityAndState in Scenes)
             {
-                sceneEntityAndState.EntitySystem.Update(time);
+                sceneEntityAndState.EntityManager.Update(time);
             }
         }
 
@@ -89,7 +89,7 @@ namespace SiliconStudio.Paradox.Engine
         {
             foreach (var sceneEntityAndState in Scenes)
             {
-                sceneEntityAndState.EntitySystem.Draw(time);
+                sceneEntityAndState.EntityManager.Draw(time);
             }
         }
 
@@ -111,25 +111,25 @@ namespace SiliconStudio.Paradox.Engine
                 if (sceneEntityRoot == null) throw new ArgumentNullException("sceneEntityRoot");
 
                 Scene = sceneEntityRoot;
-                EntitySystem = services.GetSafeServiceAs<SceneSystem>().CreateSceneEntitySystem(sceneEntityRoot);
+                EntityManager = services.GetSafeServiceAs<SceneSystem>().CreateSceneEntitySystem(sceneEntityRoot);
             }
 
             /// <summary>
             /// Initializes a new instance of the <see cref="SceneState"/> class.
             /// </summary>
-            /// <param name="entitySystem">The entity system.</param>
+            /// <param name="entityManager">The entity system.</param>
             /// <param name="scene">The scene.</param>
             /// <exception cref="System.ArgumentNullException">
-            /// entitySystem
+            /// EntityManager
             /// or
             /// scene
             /// </exception>
-            public SceneState(EntitySystem entitySystem, Entity scene)
+            public SceneState(EntityManager entityManager, Entity scene)
             {
-                if (entitySystem == null) throw new ArgumentNullException("entitySystem");
+                if (entityManager == null) throw new ArgumentNullException("entityManager");
                 if (scene == null) throw new ArgumentNullException("scene");
 
-                EntitySystem = entitySystem;
+                EntityManager = entityManager;
                 Scene = scene;
             }
 
@@ -139,17 +139,17 @@ namespace SiliconStudio.Paradox.Engine
 
                 RendererTypes.Clear();
 
-                foreach (var componentType in EntitySystem.RegisteredComponentTypes)
+                foreach (var componentType in EntityManager.RegisteredComponentTypes)
                 {
                     EntitySystemOnComponentTypeRegistered(componentType);
                 }
 
-                EntitySystem.ComponentTypeRegistered += EntitySystemOnComponentTypeRegistered;   
+                EntityManager.ComponentTypeRegistered += EntitySystemOnComponentTypeRegistered;   
             }
 
             public void Unload()
             {
-                EntitySystem.ComponentTypeRegistered -= EntitySystemOnComponentTypeRegistered;
+                EntityManager.ComponentTypeRegistered -= EntitySystemOnComponentTypeRegistered;
                 RendererTypes.Clear();
             }
 
@@ -187,7 +187,7 @@ namespace SiliconStudio.Paradox.Engine
             /// <summary>
             /// Entity System dedicated to this scene.
             /// </summary>
-            public EntitySystem EntitySystem { get; private set; }
+            public EntityManager EntityManager { get; private set; }
         }
     }
 }

@@ -33,7 +33,7 @@ namespace SiliconStudio.Paradox.Engine
             modelNodeLinkComponent.Processor = this;
 
             if (meshProcessor == null)
-                meshProcessor = EntitySystem.GetProcessor<ModelProcessor>();
+                meshProcessor = EntityManager.GetProcessor<ModelProcessor>();
 
             lock (DirtyLinks)
             {
@@ -47,7 +47,7 @@ namespace SiliconStudio.Paradox.Engine
         protected override void OnEntityRemoved(Entity entity, ModelNodeLinkComponent modelNodeLinkComponent)
         {
             if (meshProcessor == null)
-                meshProcessor = EntitySystem.GetProcessor<ModelProcessor>();
+                meshProcessor = EntityManager.GetProcessor<ModelProcessor>();
 
             meshProcessor.UnlinkEntity(modelNodeLinkComponent.EntityLink);
 
@@ -62,7 +62,7 @@ namespace SiliconStudio.Paradox.Engine
                     return;
 
                 if (meshProcessor == null)
-                    meshProcessor = EntitySystem.GetProcessor<ModelProcessor>();
+                    meshProcessor = EntityManager.GetProcessor<ModelProcessor>();
 
                 foreach (var transformationLinkComponent in DirtyLinks)
                 {

@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.EntityModel
 
         private RenderContext renderContext;
 
-        private EntitySystem entitySystem;
+        private EntityManager entityManager;
 
         private SceneProcessor sceneProcessor;
 
@@ -47,11 +47,11 @@ namespace SiliconStudio.Paradox.EntityModel
         /// Gets the entity system of the current scene.
         /// </summary>
         /// <value>The scene entity system.</value>
-        public EntitySystem EntitySystem
+        public EntityManager EntityManager
         {
             get
             {
-                return entitySystem;
+                return entityManager;
             }
         }
 
@@ -83,11 +83,11 @@ namespace SiliconStudio.Paradox.EntityModel
                 {
                     if (scene != null)
                     {
-                        entitySystem.Remove(scene);
+                        entityManager.Remove(scene);
                     }
 
-                    entitySystem = CreateSceneEntitySystem(value);
-                    sceneProcessor = entitySystem.GetProcessor<SceneProcessor>();
+                    entityManager = CreateSceneEntitySystem(value);
+                    sceneProcessor = entityManager.GetProcessor<SceneProcessor>();
                     scene = value;
                 }
             }
@@ -111,15 +111,15 @@ namespace SiliconStudio.Paradox.EntityModel
 
         public override void Update(GameTime gameTime)
         {
-            if (EntitySystem != null)
+            if (EntityManager != null)
             {
-                EntitySystem.Update(gameTime);
+                EntityManager.Update(gameTime);
             }
         }
 
         public override void Draw(GameTime gameTime)
         {
-            if (EntitySystem == null)
+            if (EntityManager == null)
             {
                 return;
             }
@@ -129,7 +129,7 @@ namespace SiliconStudio.Paradox.EntityModel
             try
             {
                 // Update the entity system.
-                EntitySystem.Draw(gameTime);
+                EntityManager.Draw(gameTime);
 
                 GraphicsDevice.Begin();
                 hasGraphicsBegin = true;
@@ -148,7 +148,7 @@ namespace SiliconStudio.Paradox.EntityModel
                 // Update the render context to use the main RenderFrame as current by default
                 var currentSceneState = sceneProcessor.CurrentState;
                 renderContext.Tags.Set(RenderFrame.Master, mainRenderFrame);
-                renderContext.Tags.Set(EntitySystem.Current, currentSceneState.EntitySystem);
+                renderContext.Tags.Set(EntityManager.Current, currentSceneState.EntityManager);
                 renderContext.Tags.Set(CameraRendererMode.RendererTypesKey, currentSceneState.RendererTypes);
 
                 // Draw the main scene.
@@ -171,10 +171,10 @@ namespace SiliconStudio.Paradox.EntityModel
             }
         }
 
-        internal EntitySystem CreateSceneEntitySystem(Entity sceneEntity)
+        internal EntityManager CreateSceneEntitySystem(Entity sceneEntity)
         {
             // When a scene root is used for an entity system, 
-            var newEntitySystem = new EntitySystem(Services) { AutoRegisterDefaultProcessors = true };
+            var newEntitySystem = new EntityManager(Services) { AutoRegisterDefaultProcessors = true };
             newEntitySystem.Processors.Add(new SceneProcessor(sceneEntity));
             newEntitySystem.Add(sceneEntity);
             return newEntitySystem;
