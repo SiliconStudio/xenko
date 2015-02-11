@@ -32,11 +32,11 @@ namespace SiliconStudio.Paradox.Engine
             return new AssociatedData { ModelComponent = entity.Get(ModelComponent.Key), AnimationComponent = entity.Get(AnimationComponent.Key) };
         }
 
-        protected override void OnEntityAdding(Entity entity, AssociatedData associatedData)
+        protected override void OnEntityAdding(Entity entity, AssociatedData data)
         {
-            base.OnEntityAdding(entity, associatedData);
+            base.OnEntityAdding(entity, data);
 
-            associatedData.MeshAnimationUpdater = new MeshAnimationUpdater();
+            data.MeshAnimationUpdater = new MeshAnimationUpdater();
         }
 
         protected override void OnEntityRemoved(Entity entity, AnimationProcessor.AssociatedData data)

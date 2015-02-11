@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             Entity = entity;
             ModelComponent = entity.Get<ModelComponent>();
             Parameters = ModelComponent.Parameters;
-            TransformationComponent = entity.Transform;
+            TransformComponent = entity.Transform;
             RenderMeshes = new List<List<RenderMesh>>(4);
             Update();
         }
@@ -38,7 +38,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             Model = ModelComponent.Model;
         }
 
-        public readonly TransformationComponent TransformationComponent;
+        public readonly TransformComponent TransformComponent;
 
         internal readonly List<List<RenderMesh>> RenderMeshes;
 

@@ -107,7 +107,7 @@ namespace SiliconStudio.Paradox.EntityModel
 
         /// <summary>
         /// Adds the entity.
-        /// If the <see cref="Entity" /> has a parent, its parent should be added (or <see cref="TransformationComponent.Children" />) should be used.
+        /// If the <see cref="Entity" /> has a parent, its parent should be added (or <see cref="TransformComponent.Children" />) should be used.
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <exception cref="System.ArgumentException">Entity shouldn't have a parent.;entity</exception>

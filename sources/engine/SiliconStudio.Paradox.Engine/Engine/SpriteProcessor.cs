@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Initializes a new instance of the <see cref="SpriteProcessor"/> class.
         /// </summary>
         public SpriteProcessor()
-            : base(new PropertyKey[] { SpriteComponent.Key, TransformationComponent.Key })
+            : base(new PropertyKey[] { SpriteComponent.Key, TransformComponent.Key })
         {
             Sprites = new List<SpriteComponentState>();
         }
@@ -47,7 +47,7 @@ namespace SiliconStudio.Paradox.Engine
             return new SpriteComponentState
             {
                 SpriteComponent = entity.Get(SpriteComponent.Key),
-                TransformationComponent = entity.Get(TransformationComponent.Key),
+                TransformComponent = entity.Get(TransformComponent.Key),
             };
         }
 
@@ -55,7 +55,7 @@ namespace SiliconStudio.Paradox.Engine
         {
             public SpriteComponent SpriteComponent;
 
-            public TransformationComponent TransformationComponent;
+            public TransformComponent TransformComponent;
         }
     }
 }

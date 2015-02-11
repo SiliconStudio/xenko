@@ -1010,8 +1010,8 @@
     <Compile Include="Engine\AnimationProcessor.cs" />
     <Compile Include="Engine\HierarchicalProcessor.cs" />
     <Compile Include="Engine\ModelComponent.cs" />
-    <Compile Include="Engine\TransformationComponent.cs" />
-    <Compile Include="Engine\TransformationProcessor.cs" />
+    <Compile Include="Engine\TransformComponent.cs" />
+    <Compile Include="Engine\TransformProcessor.cs" />
     <Compile Include="EntityModel\EntityComponent.cs" />
     <Compile Include="EntityModel\EntityManager.cs" />
     <Compile Include="EntityModel\Entity.cs" />

@@ -167,7 +167,7 @@ namespace SiliconStudio.Paradox.Physics
         #region Utility
 
         /// <summary>
-        /// Computes the physics transformation from the TransformationComponent values
+        /// Computes the physics transformation from the TransformComponent values
         /// </summary>
         /// <returns></returns>
         internal Matrix DerivePhysicsTransformation()
@@ -242,7 +242,7 @@ namespace SiliconStudio.Paradox.Physics
                 scale.Y = (float)Math.Sqrt((worldMatrix.M21 * worldMatrix.M21) + (worldMatrix.M22 * worldMatrix.M22) + (worldMatrix.M23 * worldMatrix.M23));
                 scale.Z = (float)Math.Sqrt((worldMatrix.M31 * worldMatrix.M31) + (worldMatrix.M32 * worldMatrix.M32) + (worldMatrix.M33 * worldMatrix.M33));
 
-                TransformationComponent.CreateMatrixTRS(ref translation, ref rotation, ref scale, out entity.Transform.WorldMatrix);
+                TransformComponent.CreateMatrixTRS(ref translation, ref rotation, ref scale, out entity.Transform.WorldMatrix);
                 if (entity.Transform.Parent == null)
                 {
                     entity.Transform.LocalMatrix = entity.Transform.WorldMatrix;
@@ -258,7 +258,7 @@ namespace SiliconStudio.Paradox.Physics
         }
 
         /// <summary>
-        /// Forces an update from the TransformationComponent to the Collider.PhysicsWorldTransform.
+        /// Forces an update from the TransformComponent to the Collider.PhysicsWorldTransform.
         /// Useful to manually force movements.
         /// In the case of dynamic rigidbodies a velocity reset should be applied first.
         /// </summary>

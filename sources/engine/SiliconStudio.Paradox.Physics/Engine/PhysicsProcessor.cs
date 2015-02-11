@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Physics
         public class AssociatedData
         {
             public PhysicsComponent PhysicsComponent;
-            public TransformationComponent TransformationComponent;
+            public TransformComponent TransformComponent;
             public ModelComponent ModelComponent; //not mandatory, could be null e.g. invisible triggers
         }
 
@@ -32,7 +32,7 @@ namespace SiliconStudio.Paradox.Physics
         Bullet2PhysicsSystem physicsSystem;
 
         public PhysicsProcessor()
-            : base(new PropertyKey[] { PhysicsComponent.Key, TransformationComponent.Key })
+            : base(new PropertyKey[] { PhysicsComponent.Key, TransformComponent.Key })
         {
         }
 
@@ -41,7 +41,7 @@ namespace SiliconStudio.Paradox.Physics
             return new AssociatedData
             {
                 PhysicsComponent = entity.Get(PhysicsComponent.Key),
-                TransformationComponent = entity.Get(TransformationComponent.Key),
+                TransformComponent = entity.Get(TransformComponent.Key),
                 ModelComponent = entity.Get(ModelComponent.Key),
             };
         }
@@ -457,7 +457,7 @@ namespace SiliconStudio.Paradox.Physics
         //        if (collider.UpdateTransformation(ref rotation, ref translation))
         //        {
         //            //true, Phys is the authority so we need to update the transformation
-        //            TransformationComponent.CreateMatrixTRS(ref translation, ref rotation, ref scale, out nodeTransform.WorldMatrix);
+        //            TransformComponent.CreateMatrixTRS(ref translation, ref rotation, ref scale, out nodeTransform.WorldMatrix);
         //            if (nodeTransform.ParentIndex != -1) //assuming -1 is root node
         //            {
         //                var parentWorld = mesh.ModelViewHierarchy.NodeTransformations[nodeTransform.ParentIndex];

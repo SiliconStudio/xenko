@@ -28,7 +28,7 @@ namespace SiliconStudio.Paradox.EntityModel
     [DataContract("Entity")]
     public class Entity : ComponentBase, IEnumerable
     {
-        protected TransformationComponent transform;
+        protected TransformComponent transform;
         internal List<Task> prepareTasks;
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace SiliconStudio.Paradox.EntityModel
 
         static Entity()
         {
-            PropertyContainer.AddAccessorProperty(typeof(Entity), TransformationComponent.Key);
+            PropertyContainer.AddAccessorProperty(typeof(Entity), TransformComponent.Key);
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace SiliconStudio.Paradox.EntityModel
             Components = new PropertyContainer(this);
             Components.PropertyUpdated += EntityPropertyUpdated;
 
-            Transform = new TransformationComponent();
+            Transform = new TransformComponent();
             transform.Position = position;
 
             Group = EntityGroup.Default;
@@ -92,14 +92,14 @@ namespace SiliconStudio.Paradox.EntityModel
         /// Added for convenience over usual Get/Set method.
         /// </summary>
         [DataMemberIgnore]
-        public TransformationComponent Transform
+        public TransformComponent Transform
         {
             get { return transform; }
             set
             {
                 var transformationOld = transform;
                 transform = value;
-                Components.RaisePropertyContainerUpdated(TransformationComponent.Key, transform, transformationOld);
+                Components.RaisePropertyContainerUpdated(TransformComponent.Key, transform, transformationOld);
             }
         }
 

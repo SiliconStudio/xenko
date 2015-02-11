@@ -51,7 +51,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 
         static IEnumerable<Entity> EnumerateChildren(this Entity entity, bool isRecursive)
         {
-            var transformationComponent = entity.Get(TransformationComponent.Key);
+            var transformationComponent = entity.Get(TransformComponent.Key);
             if (transformationComponent == null)
                 yield break;
             
@@ -75,7 +75,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             // Let's optimize if really needed
             foreach (var currentEntity in hierarchy.Entities)
             {
-                var transformationComponent = currentEntity.Get(TransformationComponent.Key);
+                var transformationComponent = currentEntity.Get(TransformComponent.Key);
                 if (transformationComponent == null)
                     continue;
 

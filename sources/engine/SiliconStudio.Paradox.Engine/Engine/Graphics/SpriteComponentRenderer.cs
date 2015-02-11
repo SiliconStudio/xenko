@@ -123,7 +123,7 @@ namespace SiliconStudio.Paradox.Effects
                 foreach (var entity in entities)
                 {
                     var spriteComp = entity.Get(SpriteComponent.Key);
-                    var transfoComp = entity.Get(TransformationComponent.Key);
+                    var transfoComp = entity.Get(TransformComponent.Key);
 
                     var sprite = spriteComp.CurrentSprite;
                     if (sprite == null)

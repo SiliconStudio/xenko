@@ -21,13 +21,13 @@ namespace SiliconStudio.Paradox.Engine
         /// The link transformation to update.
         /// </summary>
         /// <remarks>The collection is declared globally only to avoid allocation at each frames</remarks>
-        private readonly FastCollection<TransformationComponent> linkTransformationToUpdate = new FastCollection<TransformationComponent>();
+        private readonly FastCollection<TransformComponent> linkTransformationToUpdate = new FastCollection<TransformComponent>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ModelProcessor"/> class.
         /// </summary>
         public ModelProcessor()
-            : base(new PropertyKey[] { ModelComponent.Key, TransformationComponent.Key })
+            : base(new PropertyKey[] { ModelComponent.Key, TransformComponent.Key })
         {
             Models = new List<RenderModel>();
         }
@@ -96,7 +96,7 @@ namespace SiliconStudio.Paradox.Engine
                 Models.Add(renderModel);
 
                 var modelViewHierarchy = renderModel.ModelComponent.ModelViewHierarchy;
-                var transformationComponent = renderModel.TransformationComponent;
+                var transformationComponent = renderModel.TransformComponent;
 
                 var links = renderModel.Links;
 
@@ -116,7 +116,7 @@ namespace SiliconStudio.Paradox.Engine
 
                         linkTransformationToUpdate.Clear();
                         linkTransformationToUpdate.Add(linkTransformation);
-                        TransformationProcessor.UpdateTransformations(linkTransformationToUpdate, false);
+                        TransformProcessor.UpdateTransformations(linkTransformationToUpdate, false);
                     }
                 }
 

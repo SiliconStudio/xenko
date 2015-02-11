@@ -17,21 +17,21 @@ namespace SiliconStudio.Paradox.Engine
     /// <summary>
     /// Defines Position, Rotation and Scale of its <see cref="Entity"/>.
     /// </summary>
-    [DataContract("TransformationComponent")]
-    [DataSerializerGlobal(null, typeof(TrackingCollection<TransformationComponent>))]
+    [DataContract("TransformComponent")]
+    [DataSerializerGlobal(null, typeof(TrackingCollection<TransformComponent>))]
     [Display(10, "Transform")]
-    public sealed class TransformationComponent : EntityComponent //, IEnumerable<TransformationComponent> Check why this is not working
+    public sealed class TransformComponent : EntityComponent //, IEnumerable<TransformComponent> Check why this is not working
     {
-        public static PropertyKey<TransformationComponent> Key = new PropertyKey<TransformationComponent>("Key", typeof(TransformationComponent),
-            new AccessorMetadata((ref PropertyContainer props) => ((Entity)props.Owner).Transform, (ref PropertyContainer props, object value) => ((Entity)props.Owner).Transform = (TransformationComponent)value));
+        public static PropertyKey<TransformComponent> Key = new PropertyKey<TransformComponent>("Key", typeof(TransformComponent),
+            new AccessorMetadata((ref PropertyContainer props) => ((Entity)props.Owner).Transform, (ref PropertyContainer props, object value) => ((Entity)props.Owner).Transform = (TransformComponent)value));
 
-        // When false, transformation should be computed in TransformationProcessor (no dependencies).
+        // When false, transformation should be computed in TransformProcessor (no dependencies).
         // When true, transformation is computed later by another system.
-        // This is useful for scenario such as binding a node to a bone, where it first need to run TransformationProcessor for the hierarchy,
+        // This is useful for scenario such as binding a node to a bone, where it first need to run TransformProcessor for the hierarchy,
         // run MeshProcessor to update ModelViewHierarchy, copy Node/Bone transformation to another Entity with special root and then update its children transformations.
         internal bool isSpecialRoot = false;
         private bool useTRS = true;
-        private TransformationComponent parent;
+        private TransformComponent parent;
 
         /// <summary>
         /// The world matrix.
@@ -63,11 +63,11 @@ namespace SiliconStudio.Paradox.Engine
         public Vector3 Scale;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TransformationComponent" /> class.
+        /// Initializes a new instance of the <see cref="TransformComponent" /> class.
         /// </summary>
-        public TransformationComponent()
+        public TransformComponent()
         {
-            var children = new TrackingCollection<TransformationComponent>();
+            var children = new TrackingCollection<TransformComponent>();
             children.CollectionChanged += ChildrenCollectionChanged;
 
             Children = children;
@@ -90,12 +90,12 @@ namespace SiliconStudio.Paradox.Engine
         }
         
         /// <summary>
-        /// Gets the children of this <see cref="TransformationComponent"/>.
+        /// Gets the children of this <see cref="TransformComponent"/>.
         /// </summary>
         /// <value>
         /// The children.
         /// </value>
-        public FastCollection<TransformationComponent> Children { get; private set; }
+        public FastCollection<TransformComponent> Children { get; private set; }
 
         /// <summary>
         /// Gets or sets the euler rotation, with XYZ order.
@@ -172,13 +172,13 @@ namespace SiliconStudio.Paradox.Engine
         }
 
         /// <summary>
-        /// Gets or sets the parent of this <see cref="TransformationComponent"/>.
+        /// Gets or sets the parent of this <see cref="TransformComponent"/>.
         /// </summary>
         /// <value>
         /// The parent.
         /// </value>
         [DataMemberIgnore]
-        public TransformationComponent Parent
+        public TransformComponent Parent
         {
             get { return parent; }
             set
@@ -238,18 +238,18 @@ namespace SiliconStudio.Paradox.Engine
             }
         }
 
-        private void AddItem(TransformationComponent item)
+        private void AddItem(TransformComponent item)
         {
             if (item.Parent != null)
-                throw new InvalidOperationException("This TransformationComponent already has a Parent, detach it first.");
+                throw new InvalidOperationException("This TransformComponent already has a Parent, detach it first.");
 
             item.parent = this;
         }
 
-        private void RemoveItem(TransformationComponent item)
+        private void RemoveItem(TransformComponent item)
         {
             if (item.Parent != this)
-                throw new InvalidOperationException("This TransformationComponent's parent is not the expected value.");
+                throw new InvalidOperationException("This TransformComponent's parent is not the expected value.");
 
             item.parent = null;
         }
@@ -259,10 +259,10 @@ namespace SiliconStudio.Paradox.Engine
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    AddItem((TransformationComponent)e.Item);
+                    AddItem((TransformComponent)e.Item);
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    RemoveItem((TransformationComponent)e.Item);
+                    RemoveItem((TransformComponent)e.Item);
                     break;
                 default:
                     throw new NotSupportedException();
@@ -343,13 +343,13 @@ namespace SiliconStudio.Paradox.Engine
             get { return Key; }
         }
 
-        private static readonly Type[] DefaultProcessors = new Type[] { typeof(HierarchicalProcessor), typeof(TransformationProcessor),  };
+        private static readonly Type[] DefaultProcessors = new Type[] { typeof(HierarchicalProcessor), typeof(TransformProcessor),  };
         protected internal override IEnumerable<Type> GetDefaultProcessors()
         {
             return DefaultProcessors;
         }
 
-        //public IEnumerator<TransformationComponent> GetEnumerator()
+        //public IEnumerator<TransformComponent> GetEnumerator()
         //{
         //    return Children.GetEnumerator();
         //}

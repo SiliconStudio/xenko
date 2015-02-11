@@ -48,7 +48,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                         }
                     }
                 },
-                new TransformationComponent()
+                new TransformComponent()
             };
             throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
             //Entities.Add(teapot);
@@ -66,7 +66,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             //        Target = mainCameraTargetEntity,
             //        TargetUp = Vector3.UnitY,
             //    },
-            //    new TransformationComponent
+            //    new TransformComponent
             //    {
             //        Position = new Vector3(2,1,2)
             //    }

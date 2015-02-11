@@ -139,7 +139,7 @@ namespace SiliconStudio.Paradox.Effects
             // Compute LocalMatrix
             if ((node.Flags & ModelNodeFlags.EnableTransform) == ModelNodeFlags.EnableTransform)
             {
-                TransformationComponent.CreateMatrixTRS(ref node.Transform.Translation, ref node.Transform.Rotation, ref node.Transform.Scaling, out node.LocalMatrix);
+                TransformComponent.CreateMatrixTRS(ref node.Transform.Translation, ref node.Transform.Rotation, ref node.Transform.Scaling, out node.LocalMatrix);
             }
 
             var nodeTransformationsLocal = this.nodeTransformations;

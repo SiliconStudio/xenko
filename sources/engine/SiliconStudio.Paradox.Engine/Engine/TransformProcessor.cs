@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
@@ -13,33 +12,33 @@ using SiliconStudio.Paradox.Threading;
 namespace SiliconStudio.Paradox.Engine
 {
     /// <summary>
-    /// Updates <see cref="TransformationComponent.WorldMatrix"/> of entities.
+    /// Updates <see cref="TransformComponent.WorldMatrix"/> of entities.
     /// </summary>
-    public class TransformationProcessor : EntityProcessor<TransformationProcessor.AssociatedData>
+    public class TransformProcessor : EntityProcessor<TransformProcessor.AssociatedData>
     {
         /// <summary>
-        /// List of <see cref="TransformationComponent"/> of every <see cref="Entity"/> in <see cref="EntityManager.RootEntities"/>.
+        /// List of <see cref="TransformComponent"/> of every <see cref="Entity"/> in <see cref="EntityManager.RootEntities"/>.
         /// </summary>
-        private readonly TrackingHashSet<TransformationComponent> transformationRoots = new TrackingHashSet<TransformationComponent>();
+        private readonly TrackingHashSet<TransformComponent> transformationRoots = new TrackingHashSet<TransformComponent>();
 
         /// <summary>
         /// The list of the components that are not special roots.
         /// </summary>
         /// <remarks>This field is instantiated here to avoid reallocation at each frames</remarks>
-        private readonly FastCollection<TransformationComponent> notSpecialRootComponents = new FastCollection<TransformationComponent>(); 
+        private readonly FastCollection<TransformComponent> notSpecialRootComponents = new FastCollection<TransformComponent>(); 
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TransformationProcessor" /> class.
+        /// Initializes a new instance of the <see cref="TransformProcessor" /> class.
         /// </summary>
-        public TransformationProcessor()
-            : base(new PropertyKey[] { TransformationComponent.Key })
+        public TransformProcessor()
+            : base(new PropertyKey[] { TransformComponent.Key })
         {
         }
 
         /// <inheritdoc/>
         protected override AssociatedData GenerateAssociatedData(Entity entity)
         {
-            return new AssociatedData { TransformationComponent = entity.Transform };
+            return new AssociatedData { TransformComponent = entity.Transform };
         }
 
         /// <inheritdoc/>
@@ -48,7 +47,7 @@ namespace SiliconStudio.Paradox.Engine
             var rootEntities = EntityManager.GetProcessor<HierarchicalProcessor>().RootEntities;
             ((ITrackingCollectionChanged)rootEntities).CollectionChanged += rootEntities_CollectionChanged;
 
-            // Add transformation of existing root entities
+            // Add transform of existing root entities
             foreach (var entity in rootEntities)
             {
                 transformationRoots.Add(entity.Transform);
@@ -61,7 +60,7 @@ namespace SiliconStudio.Paradox.Engine
             transformationRoots.Clear();
         }
 
-        internal static void UpdateTransformations(FastCollection<TransformationComponent> transformationComponents, bool skipSpecialRoots)
+        internal static void UpdateTransformations(FastCollection<TransformComponent> transformationComponents, bool skipSpecialRoots)
         {
             // To avoid GC pressure (due to lambda), parallelize only if required
             if (transformationComponents.Count >= 1024)
@@ -99,15 +98,15 @@ namespace SiliconStudio.Paradox.Engine
             }
         }
 
-        private static void UpdateTransformation(TransformationComponent transformation)
+        private static void UpdateTransformation(TransformComponent transform)
         {
-            // Update transformation
-            transformation.UpdateLocalMatrix();
-            transformation.UpdateWorldMatrixNonRecursive();
+            // Update transform
+            transform.UpdateLocalMatrix();
+            transform.UpdateWorldMatrixNonRecursive();
         }
 
         /// <summary>
-        /// Updates all the <see cref="TransformationComponent.WorldMatrix"/>.
+        /// Updates all the <see cref="TransformComponent.WorldMatrix"/>.
         /// </summary>
         /// <param name="time"></param>
         public override void Draw(GameTime time)
@@ -171,7 +170,7 @@ namespace SiliconStudio.Paradox.Engine
 
         public struct AssociatedData
         {
-            public TransformationComponent TransformationComponent;
+            public TransformComponent TransformComponent;
         }
 
         private void rootEntities_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)

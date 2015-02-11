@@ -85,7 +85,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
                                 for (var i = 0; i < nodesLength; i++)
                                 {
                                     Matrix localMatrix;
-                                    TransformationComponent.CreateMatrixTRS(
+                                    TransformComponent.CreateMatrixTRS(
                                         ref modelAsset.Hierarchy.Nodes[i].Transform.Translation, 
                                         ref modelAsset.Hierarchy.Nodes[i].Transform.Rotation, 
                                         ref modelAsset.Hierarchy.Nodes[i].Transform.Scaling, out localMatrix);

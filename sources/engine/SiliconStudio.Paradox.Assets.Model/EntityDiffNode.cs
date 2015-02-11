@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             Guid = entityGuid;
             Name = entityData.Name;
 
-            var transformationComponent = entityData.Get(TransformationComponent.Key);
+            var transformationComponent = entityData.Get(TransformComponent.Key);
             if (transformationComponent != null)
             {
                 Children = new List<EntityDiffNode>(transformationComponent.Children.Count);

@@ -29,7 +29,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
         private Vector2 areaSize;
 
-        private TransformationComponent transfoComponent;
+        private TransformComponent transfoComponent;
 
         private Vector2 ballSpeed = new Vector2(-300, 200);
 
@@ -83,17 +83,17 @@ namespace SiliconStudio.Paradox.Engine.Tests
             //Entities.Add(background);
 
             spriteComponent = ball.Get(SpriteComponent.Key);
-            transfoComponent = ball.Get(TransformationComponent.Key);
+            transfoComponent = ball.Get(TransformComponent.Key);
 
             transfoComponent.Position.X = areaSize.X / 2;
             transfoComponent.Position.Y = areaSize.Y / 2;
 
             var backgroundSpriteRegion = background.Get(SpriteComponent.Key).SpriteGroup.Images[0].Region;
             var decorationScalings = new Vector3(areaSize.X / backgroundSpriteRegion.Width, areaSize.Y / backgroundSpriteRegion.Height, 1);
-            background.Get(TransformationComponent.Key).Scale = decorationScalings;
-            foreground.Get(TransformationComponent.Key).Scale = decorationScalings;
-            background.Get(TransformationComponent.Key).Position = new Vector3(0, 0, -1);
-            foreground.Get(TransformationComponent.Key).Position = new Vector3(0, areaSize.Y, 1);
+            background.Get(TransformComponent.Key).Scale = decorationScalings;
+            foreground.Get(TransformComponent.Key).Scale = decorationScalings;
+            background.Get(TransformComponent.Key).Position = new Vector3(0, 0, -1);
+            foreground.Get(TransformComponent.Key).Position = new Vector3(0, areaSize.Y, 1);
 
             SpriteAnimation.Play(spriteComponent, 0, spriteComponent.SpriteGroup.Images.Count-1, AnimationRepeatMode.LoopInfinite, 30);
         }

@@ -66,7 +66,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                 // Create a new root entity, and make sure transformation component is created
                 var rootEntity = new Entity();
                 rootEntity.Name = "Root";
-                rootEntity.GetOrCreate(TransformationComponent.Key);
+                rootEntity.GetOrCreate(TransformComponent.Key);
 
                 return new EntityAsset
                 {
