@@ -50,18 +50,6 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             
             drawEffectContext = new DrawEffectContext(Services);
             computeShaderEffect = new ComputeEffectShader(drawEffectContext) { ShaderSourceName = "ComputeShaderTestEffect", ThreadGroupCounts = groupCounts };
-
-            RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = RenderComputeShader });
-            RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services));
-            RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = RenderResult });
-        }
-
-        private void RenderComputeShader(RenderContext obj)
-        {
-            computeShaderEffect.Parameters.Set(ComputeShaderTestParams.NbOfIterations, ReductionRatio);
-            computeShaderEffect.Parameters.Set(ComputeShaderTestKeys.input, inputTexture);
-            computeShaderEffect.Parameters.Set(ComputeShaderTestKeys.output, outputTexture);
-            computeShaderEffect.Draw();
         }
 
         protected override void RegisterTests()
@@ -69,14 +57,6 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             base.RegisterTests();
 
             FrameGameSystem.TakeScreenshot();
-        }
-
-        private void RenderResult(RenderContext obj)
-        {
-            if (displayedTexture == null || spriteBatch == null)
-                return;
-
-            GraphicsDevice.DrawTexture(displayedTexture);
         }
 
         protected override void Update(GameTime gameTime)
@@ -88,6 +68,22 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             if (Input.IsKeyPressed(Keys.O))
                 displayedTexture = outputTexture;
+        }
+
+        protected override void Draw(GameTime gameTime)
+        {
+            base.Draw(gameTime);
+
+            computeShaderEffect.Parameters.Set(ComputeShaderTestParams.NbOfIterations, ReductionRatio);
+            computeShaderEffect.Parameters.Set(ComputeShaderTestKeys.input, inputTexture);
+            computeShaderEffect.Parameters.Set(ComputeShaderTestKeys.output, outputTexture);
+            computeShaderEffect.Draw();
+
+            if (displayedTexture == null || spriteBatch == null)
+                return;
+
+            GraphicsDevice.DrawTexture(displayedTexture);
+
         }
 
         [Test]

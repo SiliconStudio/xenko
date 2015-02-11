@@ -9,6 +9,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.ComputeEffect;
 using SiliconStudio.Paradox.Effects.Images;
+using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics.Regression;
 
 namespace SiliconStudio.Paradox.Graphics.Tests
@@ -62,12 +63,12 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             var context = new DrawEffectContext(this);
             pass2 = new ComputeEffectShader(context) { ShaderSourceName = "LambertianPrefilteringSHEffectPass2", };
-
-            RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = RenderTest });
         }
 
-        private void RenderTest(RenderContext obj)
+        protected override void Draw(GameTime gameTime)
         {
+            base.Draw(gameTime);
+
             pass2.ThreadNumbers = new Int3(NbOfSums, 1, 1);
             pass2.ThreadGroupCounts = new Int3(nbOfGroups.X, nbOfGroups.Y, NbOfCoeffs);
             pass2.Parameters.Set(LambertianPrefilteringSHParameters.BlockSize, NbOfSums);

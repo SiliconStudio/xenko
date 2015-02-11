@@ -92,17 +92,20 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             var depthBuffer = Texture.New2D(GraphicsDevice, 800, 480, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil);
 
             // Setup the default rendering pipeline
-            RenderSystem.Pipeline.Renderers.Add(new CameraComponentRenderer(Services));
-            RenderSystem.Pipeline.Renderers.Add(new MultipleRenderTargetsSetter(Services)
-            {
-                ClearColor = Color.CornflowerBlue,
-                RenderTargets = textures,
-                DepthStencil = depthBuffer,
-                ClearColors = new Color[] { Color.Black, Color.White, Color.Black }
-            });
-            RenderSystem.Pipeline.Renderers.Add(new ModelComponentRenderer(Services, "MultipleRenderTargetsEffect"));
-            RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services));
-            RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = DisplayGBuffer });
+
+            throw new NotImplementedException("TODO: Update the sample");
+
+            //RenderSystem.Pipeline.Renderers.Add(new CameraComponentRenderer(Services));
+            //RenderSystem.Pipeline.Renderers.Add(new MultipleRenderTargetsSetter(Services)
+            //{
+            //    ClearColor = Color.CornflowerBlue,
+            //    RenderTargets = textures,
+            //    DepthStencil = depthBuffer,
+            //    ClearColors = new Color[] { Color.Black, Color.White, Color.Black }
+            //});
+            //RenderSystem.Pipeline.Renderers.Add(new ModelComponentRenderer(Services, "MultipleRenderTargetsEffect"));
+            //RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services));
+            //RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = DisplayGBuffer });
         }
 
         private void DisplayGBuffer(RenderContext context)
