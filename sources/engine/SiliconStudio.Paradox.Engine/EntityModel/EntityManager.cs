@@ -343,13 +343,16 @@ namespace SiliconStudio.Paradox.EntityModel
 
             OnComponentTypeRegistered(componentType);
 
-            if (entityComponent == null)
+            // Automatically create processors for the given component type
+            var processorAttributes = componentType.GetCustomAttributes<DefaultEntityComponentProcessorAttribute>();
+            foreach (var processorAttributeType in processorAttributes)
             {
-                entityComponent = (EntityComponent)Activator.CreateInstance(componentType);
-            }
+                var processorType = Type.GetType(processorAttributeType.TypeName);
+                if (processorType == null)
+                {
+                    continue;
+                }
 
-            foreach (var processorType in entityComponent.GetDefaultProcessors())
-            {
                 // TODO: Log an error?
                 if (!typeof(EntityProcessor).IsAssignableFrom(processorType))
                 {

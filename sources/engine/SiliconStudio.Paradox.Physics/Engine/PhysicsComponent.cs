@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
@@ -11,6 +10,7 @@ namespace SiliconStudio.Paradox.Physics
 {
     [DataContract("PhysicsComponent")]
     [Display(30, "Physics")]
+    [DefaultEntityComponentProcessor(typeof(PhysicsProcessor))]
     public sealed class PhysicsComponent : EntityComponent
     {
         public static PropertyKey<PhysicsComponent> Key = new PropertyKey<PhysicsComponent>("Key", typeof(PhysicsComponent));
@@ -35,12 +35,6 @@ namespace SiliconStudio.Paradox.Physics
         public override PropertyKey DefaultKey
         {
             get { return Key; }
-        }
-
-        private static readonly Type[] DefaultProcessors = new Type[] { typeof(PhysicsProcessor) };
-        protected override IEnumerable<Type> GetDefaultProcessors()
-        {
-            return DefaultProcessors;
         }
     }
 }

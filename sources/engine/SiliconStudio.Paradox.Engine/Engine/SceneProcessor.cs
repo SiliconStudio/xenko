@@ -156,7 +156,7 @@ namespace SiliconStudio.Paradox.Engine
 
             private void EntitySystemOnComponentTypeRegistered(Type type)
             {
-                var rendererTypeAttribute = type.GetTypeInfo().GetCustomAttribute<EntityComponentRendererAttribute>();
+                var rendererTypeAttribute = type.GetTypeInfo().GetCustomAttribute<DefaultEntityComponentRendererAttribute>();
                 if (rendererTypeAttribute == null)
                 {
                     return;

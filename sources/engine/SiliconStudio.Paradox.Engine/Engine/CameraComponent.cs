@@ -1,9 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
-using System.Collections.Generic;
+
 using System.ComponentModel;
-using System.Linq;
 
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Paradox.Effects;
@@ -18,7 +16,7 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     [DataContract("CameraComponent")]
     [Display(130, "Camera")]
-    [EntityComponentRenderer(typeof(CameraComponentRenderer), -1000)]
+    [DefaultEntityComponentRenderer(typeof(CameraComponentRenderer), -1000)]
     public sealed class CameraComponent : EntityComponent
     {
         private float focusDistance;
@@ -235,12 +233,6 @@ namespace SiliconStudio.Paradox.Engine
         public override PropertyKey DefaultKey
         {
             get { return Key; }
-        }
-
-        protected internal override IEnumerable<Type> GetDefaultProcessors()
-        {
-            // TODO: Do we need a processor?
-            return Enumerable.Empty<Type>();
         }
     }
 }

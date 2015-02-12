@@ -15,6 +15,7 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     [DataContract("SpriteComponent")]
     [Display(100, "Sprite")]
+    [DefaultEntityComponentProcessor(typeof(SpriteProcessor))]
     public sealed class SpriteComponent : EntityComponent
     {
         public static PropertyKey<SpriteComponent> Key = new PropertyKey<SpriteComponent>("Key", typeof(SpriteComponent));
@@ -156,12 +157,6 @@ namespace SiliconStudio.Paradox.Engine
         public override PropertyKey DefaultKey
         {
             get { return Key; }
-        }
-
-        private static readonly Type[] DefaultProcessors = new Type[] { typeof(SpriteProcessor) };
-        protected internal override IEnumerable<Type> GetDefaultProcessors()
-        {
-            return DefaultProcessors;
         }
     }
 }

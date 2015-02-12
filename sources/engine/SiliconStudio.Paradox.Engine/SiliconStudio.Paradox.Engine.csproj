@@ -955,9 +955,10 @@
     <Compile Include="Engine\Graphics\RenderModel.cs" />
     <Compile Include="Engine\SceneComponent.cs" />
     <Compile Include="Engine\SceneProcessor.cs" />
+    <Compile Include="EntityModel\DefaultEntityComponentProcessorAttribute.cs" />
     <Compile Include="EntityModel\EntityComponentReference.cs" />
     <Compile Include="Data\GeometricPrimitiveExtension.cs" />
-    <Compile Include="EntityModel\EntityComponentRendererAttribute.cs" />
+    <Compile Include="EntityModel\DefaultEntityComponentRendererAttribute.cs" />
     <Compile Include="EntityModel\EntityComponentRendererType.cs" />
     <Compile Include="EntityModel\EntityReference.cs" />
     <Compile Include="EntityModel\IEntityComponentReference.cs" />

@@ -3,6 +3,7 @@
 
 using System;
 
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Paradox.Engine.Graphics;
 
 namespace SiliconStudio.Paradox.EntityModel
@@ -10,34 +11,27 @@ namespace SiliconStudio.Paradox.EntityModel
     /// <summary>
     /// An attribute used to associate a default <see cref="IEntityComponentRenderer"/> to an entity component.
     /// </summary>
-    public class EntityComponentRendererAttribute : Attribute
+    public class DefaultEntityComponentRendererAttribute : DynamicTypeAttributeBase
     {
-        private readonly EntityComponentRendererType value;
+        private readonly int order;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EntityComponentRendererAttribute"/> class.
-        /// </summary>
-        public EntityComponentRendererAttribute()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EntityComponentRendererAttribute"/> class.
+        /// Initializes a new instance of the <see cref="DefaultEntityComponentRendererAttribute"/> class.
         /// </summary>
         /// <param name="type">The type must derived from <see cref="IEntityComponentRenderer"/>.</param>
-        public EntityComponentRendererAttribute(Type type)
+        public DefaultEntityComponentRendererAttribute(Type type) : base(type)
         {
-            value = new EntityComponentRendererType(type, 0);
+            order = 0;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EntityComponentRendererAttribute" /> class.
+        /// Initializes a new instance of the <see cref="DefaultEntityComponentRendererAttribute" /> class.
         /// </summary>
         /// <param name="type">The type must derived from <see cref="IEntityComponentRenderer" />.</param>
         /// <param name="order">The order.</param>
-        public EntityComponentRendererAttribute(Type type, int order)
+        public DefaultEntityComponentRendererAttribute(Type type, int order) : base(type)
         {
-            value = new EntityComponentRendererType(type, order);
+            this.order = order;
         }
 
         /// <summary>
@@ -48,7 +42,8 @@ namespace SiliconStudio.Paradox.EntityModel
         {
             get
             {
-                return value;
+                // TODO: Type.GetType should use an assembly resolver/custom list of assemblies in the future plugin system
+                return new EntityComponentRendererType(Type.GetType(TypeName), order);
             }
         }
     }

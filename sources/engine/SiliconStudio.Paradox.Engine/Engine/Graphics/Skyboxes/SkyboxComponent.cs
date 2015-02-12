@@ -1,8 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 
 using SiliconStudio.Core;
@@ -16,7 +14,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Skyboxes
     /// </summary>
     [DataContract("SkyboxComponent")]
     [Display(130, "Skybox")]  // More important than lights, as usually the Skybox is associated with a light
-    [EntityComponentRenderer(typeof(SkyboxComponentRenderer), -100)]
+    [DefaultEntityComponentRenderer(typeof(SkyboxComponentRenderer), -100)]
+    [DefaultEntityComponentProcessor(typeof(SkyboxProcessor))]
     public sealed class SkyboxComponent : EntityComponent
     {
         public static PropertyKey<SkyboxComponent> Key = new PropertyKey<SkyboxComponent>("Key", typeof(SkyboxComponent));
@@ -69,12 +68,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Skyboxes
         public override PropertyKey DefaultKey
         {
             get { return Key; }
-        }
-
-        private static readonly Type[] DefaultProcessors = new Type[] { typeof(SkyboxProcessor) };
-        protected internal override IEnumerable<Type> GetDefaultProcessors()
-        {
-            return DefaultProcessors;
         }
     }
 }

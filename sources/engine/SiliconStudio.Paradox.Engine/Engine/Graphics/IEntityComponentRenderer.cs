@@ -7,7 +7,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 {
     /// <summary>
     /// A component can be integrated into the rendering pipeline automatically if it defines 
-    /// a <see cref="EntityComponentRendererAttribute"/> on its class definition.
+    /// a <see cref="DefaultEntityComponentRendererAttribute"/> on its class definition.
     /// </summary>
     public interface IEntityComponentRenderer : IGraphicsRenderer
     {

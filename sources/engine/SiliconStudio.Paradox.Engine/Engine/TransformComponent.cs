@@ -20,6 +20,8 @@ namespace SiliconStudio.Paradox.Engine
     [DataContract("TransformComponent")]
     [DataSerializerGlobal(null, typeof(TrackingCollection<TransformComponent>))]
     [Display(10, "Transform")]
+    [DefaultEntityComponentProcessor(typeof(HierarchicalProcessor))]
+    [DefaultEntityComponentProcessor(typeof(TransformProcessor))]
     public sealed class TransformComponent : EntityComponent //, IEnumerable<TransformComponent> Check why this is not working
     {
         public static PropertyKey<TransformComponent> Key = new PropertyKey<TransformComponent>("Key", typeof(TransformComponent),
@@ -345,12 +347,6 @@ namespace SiliconStudio.Paradox.Engine
         public override PropertyKey DefaultKey
         {
             get { return Key; }
-        }
-
-        private static readonly Type[] DefaultProcessors = new Type[] { typeof(HierarchicalProcessor), typeof(TransformProcessor),  };
-        protected internal override IEnumerable<Type> GetDefaultProcessors()
-        {
-            return DefaultProcessors;
         }
 
         //public IEnumerator<TransformComponent> GetEnumerator()

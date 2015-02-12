@@ -10,6 +10,7 @@ namespace SiliconStudio.Paradox.Engine
 {
     [DataContract("ModelNodeLinkComponent")]
     [Display("Model Node Link")]
+    [DefaultEntityComponentProcessor(typeof(ModelNodeLinkProcessor))]
     public sealed class ModelNodeLinkComponent : EntityComponent
     {
         public static PropertyKey<ModelNodeLinkComponent> Key = new PropertyKey<ModelNodeLinkComponent>("Key", typeof(ModelNodeLinkComponent));
@@ -72,12 +73,6 @@ namespace SiliconStudio.Paradox.Engine
         public override PropertyKey DefaultKey
         {
             get { return Key; }
-        }
-
-        private static readonly Type[] DefaultProcessors = new Type[] { typeof(ModelNodeLinkProcessor) };
-        protected internal override IEnumerable<Type> GetDefaultProcessors()
-        {
-            return DefaultProcessors;
         }
     }
 }

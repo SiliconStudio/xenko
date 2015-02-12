@@ -15,12 +15,11 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     [DataContract("ModelComponent")]
     [Display(110, "Model")]
-    [EntityComponentRenderer(typeof(ModelAndLightComponentRenderer))]
+    [DefaultEntityComponentRenderer(typeof(ModelAndLightComponentRenderer))]
+    [DefaultEntityComponentProcessor(typeof(ModelProcessor))]
     public sealed class ModelComponent : EntityComponent, IModelInstance
     {
         public static PropertyKey<ModelComponent> Key = new PropertyKey<ModelComponent>("Key", typeof(ModelComponent));
-
-        private static readonly Type[] DefaultProcessors = new Type[] { typeof(ModelProcessor) };
 
         private Model model;
         private ModelViewHierarchyUpdater modelViewHierarchy;
@@ -124,11 +123,6 @@ namespace SiliconStudio.Paradox.Engine
         public override PropertyKey DefaultKey
         {
             get { return Key; }
-        }
-
-        protected internal override IEnumerable<Type> GetDefaultProcessors()
-        {
-            return DefaultProcessors;
         }
     }
 }

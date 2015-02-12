@@ -21,10 +21,9 @@ namespace SiliconStudio.Paradox.Engine
     /// </remarks>
     [DataContract("AnimationComponent")]
     [Display(20, "Animation")]
+    [DefaultEntityComponentProcessor(typeof(AnimationProcessor))]
     public sealed class AnimationComponent : EntityComponent
     {
-        private static readonly Type[] DefaultProcessors = new Type[] { typeof(AnimationProcessor) };
-
         private readonly Dictionary<string, AnimationClip> animations;
         private readonly TrackingCollection<PlayingAnimation> playingAnimations;
 
@@ -133,11 +132,6 @@ namespace SiliconStudio.Paradox.Engine
         public override PropertyKey DefaultKey
         {
             get { return Key; }
-        }
-
-        protected internal override IEnumerable<Type> GetDefaultProcessors()
-        {
-            return DefaultProcessors;
         }
     }
 }

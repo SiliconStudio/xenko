@@ -14,6 +14,8 @@ namespace SiliconStudio.Paradox.Engine
     /// <summary>
     /// A component used internally to tag a Scene.
     /// </summary>
+    [DataContract("SceneComponent")]
+    [DefaultEntityComponentProcessor(typeof(SceneProcessor))]
     public sealed class SceneComponent : EntityComponent
     {
         public static PropertyKey<SceneComponent> Key = new PropertyKey<SceneComponent>("Key", typeof(SceneComponent),
@@ -42,12 +44,6 @@ namespace SiliconStudio.Paradox.Engine
             {
                 return Key;
             }
-        }
-
-        private static readonly Type[] DefaultProcessors = new Type[] { typeof(SceneProcessor) };
-        protected internal override IEnumerable<Type> GetDefaultProcessors()
-        {
-            return DefaultProcessors;
         }
 
         private static object OnSceneComponentGet(ref PropertyContainer props)

@@ -19,6 +19,7 @@ namespace SiliconStudio.Paradox.Engine
     /// to activate/deactivate the listeners that are actually listening at a given time.</para>
     /// <para>The entity needs to be added to the Entity System so that the associated AudioListenerComponent can be processed.</para></remarks>
     [Display(60, "Audio Listener")]
+    [DefaultEntityComponentProcessor(typeof(AudioListenerProcessor))]
     public sealed class AudioListenerComponent : EntityComponent
     {
         public static PropertyKey<AudioListenerComponent> Key = new PropertyKey<AudioListenerComponent>("Key", typeof(AudioListenerComponent));
@@ -26,12 +27,6 @@ namespace SiliconStudio.Paradox.Engine
         public override PropertyKey DefaultKey
         {
             get { return Key; }
-        }
-
-        private static readonly Type[] DefaultProcessors = new Type[] { typeof(AudioListenerProcessor) };
-        protected internal override IEnumerable<Type> GetDefaultProcessors()
-        {
-            return DefaultProcessors;
         }
     }
 }

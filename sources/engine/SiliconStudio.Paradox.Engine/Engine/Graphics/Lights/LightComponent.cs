@@ -1,14 +1,11 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 
 namespace SiliconStudio.Paradox.Effects.Lights
@@ -18,6 +15,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
     /// </summary>
     [DataContract("LightComponent")]
     [Display(120, "Light")]
+    [DefaultEntityComponentProcessorAttribute(typeof(LightProcessor))]
     public sealed class LightComponent : EntityComponent
     {
         public static PropertyKey<LightComponent> Key = new PropertyKey<LightComponent>("Key", typeof(LightComponent));
@@ -67,12 +65,6 @@ namespace SiliconStudio.Paradox.Effects.Lights
         public override PropertyKey DefaultKey
         {
             get { return Key; }
-        }
-
-        private static readonly Type[] DefaultProcessors = new Type[] { typeof(LightProcessor) };
-        protected internal override IEnumerable<Type> GetDefaultProcessors()
-        {
-            return DefaultProcessors;
         }
     }
 }

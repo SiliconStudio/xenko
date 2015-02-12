@@ -91,11 +91,6 @@ namespace SiliconStudio.Paradox.EntityModel
             public static readonly PropertyKey DefaultKey = new T().DefaultKey;
         }
 
-        protected internal abstract IEnumerable<Type> GetDefaultProcessors();
-        //{
-        //    //return Enumerable.Empty<Type>();
-        //}
-
         internal class Serializer : DataSerializer<EntityComponent>
         {
             public override void Serialize(ref EntityComponent obj, ArchiveMode mode, SerializationStream stream)

@@ -28,6 +28,7 @@ namespace SiliconStudio.Paradox.Engine
     /// </para>
     /// </remarks>
     [Display(70, "Audio Emitter")]
+    [DefaultEntityComponentProcessor(typeof(AudioEmitterProcessor))]
     public sealed class AudioEmitterComponent : EntityComponent
     {
         public static PropertyKey<AudioEmitterComponent> Key = new PropertyKey<AudioEmitterComponent>("Key", typeof(AudioEmitterComponent));
@@ -272,12 +273,6 @@ namespace SiliconStudio.Paradox.Engine
         public override PropertyKey DefaultKey
         {
             get { return Key; }
-        }
-
-        private static readonly Type[] DefaultProcessors = new Type[] { typeof(AudioEmitterProcessor) };
-        protected internal override IEnumerable<Type> GetDefaultProcessors()
-        {
-            return DefaultProcessors;
         }
     }
 }
