@@ -108,7 +108,7 @@ namespace SiliconStudio.Paradox.EntityModel
             mainRenderFrame = RenderFrame.FromTexture(GraphicsDevice.BackBuffer, GraphicsDevice.DepthStencilBuffer);
 
             // Create the drawing context
-            renderContext = new RenderContext(Services);
+            renderContext = RenderContext.GetShared(Services);
         }
 
         public override void Update(GameTime gameTime)
@@ -126,38 +126,49 @@ namespace SiliconStudio.Paradox.EntityModel
                 return;
             }
 
+            // Update global time
+            renderContext.Tags.Set(GameTime.Current, gameTime);
+            GraphicsDevice.Parameters.Set(GlobalKeys.Time, (float)gameTime.Total.TotalSeconds);
+            GraphicsDevice.Parameters.Set(GlobalKeys.TimeStep, (float)gameTime.Elapsed.TotalSeconds);
+
+            // Draw the scene
+            Draw(renderContext, sceneProcessor.CurrentState, mainRenderFrame);
+        }
+
+        public static void Draw(RenderContext context, SceneInstance sceneInstance, RenderFrame toFrame, ISceneGraphicsCompositor compositorOverload = null)
+        {
+            if (context == null) throw new ArgumentNullException("context");
+            if (sceneInstance == null) throw new ArgumentNullException("sceneInstance");
+            if (toFrame == null) throw new ArgumentNullException("toFrame");
+
+            var entityManager = sceneInstance.EntityManager;
+            var graphicsDevice = context.GraphicsDevice;
+
             bool hasGraphicsBegin = false;
 
             try
             {
-                // Update the entity system.
-                EntityManager.Draw(gameTime);
+                var gameTime = context.Tags.Get(GameTime.Current);
 
-                GraphicsDevice.Begin();
+                // Update the entity system.
+                entityManager.Draw(gameTime);
+
+                graphicsDevice.Begin();
                 hasGraphicsBegin = true;
 
-                GraphicsDevice.ClearState();
-
-                // Update global time
-                GraphicsDevice.Parameters.Set(GlobalKeys.Time, (float)gameTime.Total.TotalSeconds);
-                GraphicsDevice.Parameters.Set(GlobalKeys.TimeStep, (float)gameTime.Elapsed.TotalSeconds);
-
-                if (GraphicsDevice.IsProfilingSupported)
-                {
-                    GraphicsDevice.EnableProfile(true);
-                }
+                graphicsDevice.ClearState();
 
                 // Update the render context to use the main RenderFrame as current by default
-                var currentSceneState = sceneProcessor.CurrentState;
-                renderContext.Tags.Set(SceneGraphicsLayer.Master, mainRenderFrame);
-                renderContext.Tags.Set(EntityManager.Current, currentSceneState.EntityManager);
-                renderContext.Tags.Set(CameraRendererMode.RendererTypesKey, currentSceneState.RendererTypes);
+                context.Tags.Set(RenderFrame.Current, toFrame);
+                context.Tags.Set(SceneGraphicsLayer.Master, context.Tags.GetSafe(RenderFrame.Current));
+                context.Tags.Set(EntityManager.Current, sceneInstance.EntityManager);
+                context.Tags.Set(CameraRendererMode.RendererTypesKey, sceneInstance.RendererTypes);
 
                 // Draw the main scene.
-                var graphicsCompositor = currentSceneState.Scene.Settings.GraphicsCompositor;
+                var graphicsCompositor = compositorOverload ?? sceneInstance.Scene.Settings.GraphicsCompositor;
                 if (graphicsCompositor != null)
                 {
-                    graphicsCompositor.Draw(renderContext);
+                    graphicsCompositor.Draw(context);
                 }
             }
             catch (Exception ex)
@@ -168,7 +179,7 @@ namespace SiliconStudio.Paradox.EntityModel
             {
                 if (hasGraphicsBegin)
                 {
-                    GraphicsDevice.End();
+                    graphicsDevice.End();
                 }
             }
         }

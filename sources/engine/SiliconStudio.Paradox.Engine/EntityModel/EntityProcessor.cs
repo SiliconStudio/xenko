@@ -6,7 +6,6 @@ using System.Linq;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Paradox.Games;
-using System.Threading.Tasks;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Paradox.EntityModel
@@ -124,7 +123,7 @@ namespace SiliconStudio.Paradox.EntityModel
         protected Dictionary<Entity, T> matchingEntities = new Dictionary<Entity, T>();
         protected HashSet<Entity> reentrancyCheck = new HashSet<Entity>();
 
-        protected EntityProcessor(PropertyKey[] requiredKeys) : base(requiredKeys)
+        protected EntityProcessor(params PropertyKey[] requiredKeys) : base(requiredKeys)
         {
         }
 

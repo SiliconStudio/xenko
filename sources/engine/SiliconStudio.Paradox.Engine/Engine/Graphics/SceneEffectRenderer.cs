@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// <value>The output.</value>
         [DataMember(10)]
         [NotNull]
-        public IImageEffectRendererOutput Output { get; set; }
+        public IRenderFrameOutput Output { get; set; }
 
         [DataMember(40)]
         [Display("Effect", AlwaysExpand = true)]

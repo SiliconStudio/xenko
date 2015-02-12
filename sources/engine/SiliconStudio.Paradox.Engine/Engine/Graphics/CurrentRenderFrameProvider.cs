@@ -11,7 +11,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
     /// </summary>
     [DataContract("CurrentRenderFrameProvider")]
     [Display("Current")]
-    public sealed class CurrentRenderFrameProvider : RenderFrameProviderBase, IGraphicsLayerOutput, IImageEffectRendererInput, IImageEffectRendererOutput
+    public sealed class CurrentRenderFrameProvider : RenderFrameProviderBase, IGraphicsLayerOutput, IImageEffectRendererInput, IRenderFrameOutput
     {
         public override RenderFrame GetRenderFrame(RenderContext context)
         {

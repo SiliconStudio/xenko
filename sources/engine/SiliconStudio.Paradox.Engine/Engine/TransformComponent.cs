@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Engine
     [DefaultEntityComponentProcessor(typeof(TransformProcessor))]
     public sealed class TransformComponent : EntityComponent //, IEnumerable<TransformComponent> Check why this is not working
     {
-        public static PropertyKey<TransformComponent> Key = new PropertyKey<TransformComponent>("Key", typeof(TransformComponent),
+        public readonly static PropertyKey<TransformComponent> Key = new PropertyKey<TransformComponent>("Key", typeof(TransformComponent),
             new AccessorMetadata((ref PropertyContainer props) => ((Entity)props.Owner).Transform, (ref PropertyContainer props, object value) => ((Entity)props.Owner).Transform = (TransformComponent)value));
 
         // When false, transformation should be computed in TransformProcessor (no dependencies).

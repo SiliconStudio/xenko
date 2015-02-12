@@ -138,7 +138,7 @@
     <Compile Include="Engine\Graphics\GraphicsRendererCollection.cs" />
     <Compile Include="Engine\Graphics\IImageEffectRenderer.cs" />
     <Compile Include="Engine\Graphics\IImageEffectRendererInput.cs" />
-    <Compile Include="Engine\Graphics\IImageEffectRendererOutput.cs" />
+    <Compile Include="Engine\Graphics\IRenderFrameOutput.cs" />
     <Compile Include="Engine\Graphics\LayerInputFrameProvider.cs" />
     <Compile Include="Engine\Graphics\Images\AntiAliasing\IScreenSpaceAntiAliasingEffect.cs" />
     <Compile Include="Engine\Graphics\Images\IImageEffect.cs" />
@@ -953,7 +953,11 @@
     <Compile Include="Engine\ICameraProjection.cs" />
     <Compile Include="Engine\ModelProcessor.cs" />
     <Compile Include="Engine\Graphics\RenderModel.cs" />
+    <Compile Include="Engine\SceneChildComponent.cs" />
+    <Compile Include="Engine\SceneChildProcessor.cs" />
+    <Compile Include="Engine\SceneProcessorBase.cs" />
     <Compile Include="Engine\SceneComponent.cs" />
+    <Compile Include="Engine\SceneInstance.cs" />
     <Compile Include="Engine\SceneProcessor.cs" />
     <Compile Include="EntityModel\DefaultEntityComponentProcessorAttribute.cs" />
     <Compile Include="EntityModel\EntityComponentReference.cs" />
@@ -1027,6 +1031,7 @@
     <Compile Include="EntityModel\EntityExtensions.cs" />
     <Compile Include="EntityModel\EntityHierarchyData.cs" />
     <Compile Include="EntityModel\Scene.cs" />
+    <Compile Include="Engine\SceneChildRenderer.cs" />
     <Compile Include="EntityModel\SceneSystem.cs" />
     <Compile Include="Framework.Extensions\DictionaryExtensions.cs" />
     <Compile Include="GameSystem.cs" />

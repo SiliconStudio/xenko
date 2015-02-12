@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -18,7 +17,7 @@ namespace SiliconStudio.Paradox.Engine
     [DefaultEntityComponentProcessor(typeof(SceneProcessor))]
     public sealed class SceneComponent : EntityComponent
     {
-        public static PropertyKey<SceneComponent> Key = new PropertyKey<SceneComponent>("Key", typeof(SceneComponent),
+        public readonly static PropertyKey<SceneComponent> Key = new PropertyKey<SceneComponent>("Key", typeof(SceneComponent),
             new AccessorMetadata(OnSceneComponentGet, OnSceneComponentSet));
 
         /// <summary>
