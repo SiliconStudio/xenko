@@ -62,6 +62,8 @@ namespace SiliconStudio.Paradox.Assets.Textures
                 return false;
             }
 
+            int maxTextureSize;
+
             // determine if the desired size if valid depending on the graphics profile
             switch (graphicsProfile)
             {
@@ -70,18 +72,29 @@ namespace SiliconStudio.Paradox.Assets.Textures
                 case GraphicsProfile.Level_9_3:
                     if (generateMipmaps && (!IsPowerOfTwo(textureSize.Y) || !IsPowerOfTwo(textureSize.X)))
                     {
-                        logger.Error("Graphic profiles 9.1/9.2/9.3 do not support mipmaps with textures that are not power of 2. " +
+                        logger.Error("Graphic profiles 9.x do not support mipmaps with textures that are not power of 2. " +
                                      "Please disable mipmap generation, modify your texture resolution or upgrade your graphic profile to a value >= 10.0.");
                         return false;
                     }
+                    maxTextureSize = graphicsProfile >= GraphicsProfile.Level_9_3 ? 4096 : 2048;
                     break;
                 case GraphicsProfile.Level_10_0:
                 case GraphicsProfile.Level_10_1:
+                    maxTextureSize = 8192;
+                    break;
                 case GraphicsProfile.Level_11_0:
                 case GraphicsProfile.Level_11_1:
+                    maxTextureSize = 16384;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("graphicsProfile");
+            }
+
+            if (textureSize.X > maxTextureSize || textureSize.Y > maxTextureSize)
+            {
+                logger.Error("Graphic profile {0} do not support texture with resolution {2} x {3} because it is larger than {1}. " +
+                             "Please reduce texture size or upgrade your graphic profile.", graphicsProfile, maxTextureSize, textureSize.X, textureSize.Y);
+                return false;
             }
 
             return true;
