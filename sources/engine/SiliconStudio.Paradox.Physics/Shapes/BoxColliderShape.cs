@@ -16,21 +16,11 @@ namespace SiliconStudio.Paradox.Physics
             Type = ColliderShapeTypes.Box;
             Is2D = false;
 
-            HalfExtents = halfExtents;
-
             InternalShape = new BulletSharp.BoxShape(halfExtents);
 
             if (!PhysicsEngine.Singleton.CreateDebugPrimitives) return;
             DebugPrimitive = GeometricPrimitive.Cube.New(PhysicsEngine.Singleton.DebugGraphicsDevice);
             DebugPrimitiveScaling = Matrix.Scaling((halfExtents * 2.0f) * 1.01f);
         }
-
-        /// <summary>
-        /// Gets the half extents.
-        /// </summary>
-        /// <value>
-        /// The half extents.
-        /// </value>
-        public Vector3 HalfExtents { get; private set; }
     }
 }

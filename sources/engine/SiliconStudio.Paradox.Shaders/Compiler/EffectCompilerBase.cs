@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-
+using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Storage;
@@ -83,9 +83,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
             // Compile the whole mixin tree
             var compilerResults = new CompilerResults { Module = string.Format("EffectCompile [{0}]", mainEffectName) };
-            Compile(string.Empty, mixinTree, compilerParameters, compilerResults);
-
-            return compilerResults;
+            return Compile(string.Empty, mixinTree, compilerParameters, compilerResults);
         }
 
         /// <summary>
@@ -97,12 +95,12 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
         /// <param name="compilerResults">The compiler results.</param>
         /// <returns>true if the compilation succeded, false otherwise.</returns>
         /// <exception cref="System.ArgumentNullException">name</exception>
-        private void Compile(string name, ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters, CompilerResults compilerResults)
+        private CompilerResults Compile(string name, ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters, CompilerResults compilerResults)
         {
             if (name == null) throw new ArgumentNullException("name");
             var bytecode = Compile(mixinTree, compilerParameters, compilerResults);
 
-            if (bytecode != null)
+            if (bytecode.Result != null || bytecode.Task != null)
             {
                 if (mixinTree.Parent == null)
                 {
@@ -118,6 +116,8 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 var childName = (string.IsNullOrEmpty(name) ? string.Empty : name + ".") + childTree.Value.Name;
                 Compile(childName, childTree.Value, compilerParameters, compilerResults);
             }
+
+            return compilerResults;
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
         /// <param name="compilerParameters">The compiler parameters.</param>
         /// <param name="log">The log.</param>
         /// <returns>The platform-dependent bytecode.</returns>
-        public abstract EffectBytecode Compile(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters, LoggerResult log);
+        public abstract TaskOrResult<EffectBytecode> Compile(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters, LoggerResult log);
 
         public static string GetEffectName(string fullEffectName, out string subEffect)
         {

@@ -16,6 +16,7 @@ using SiliconStudio.Paradox.Effects.Skyboxes;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Graphics.Data;
 using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Paradox.Shaders.Compiler;
 
 namespace SiliconStudio.Paradox.Assets.Skyboxes
 {
@@ -34,6 +35,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
             GraphicsDeviceService = new GraphicsDeviceServiceLocal(Services, GraphicsDevice);
             EffectSystem = new EffectSystem(Services);
             EffectSystem.Initialize();
+            ((EffectCompilerCache)EffectSystem.Compiler).CompileEffectAsynchronously = false;
             DrawEffectContext = DrawEffectContext.GetShared(Services);
         }
 

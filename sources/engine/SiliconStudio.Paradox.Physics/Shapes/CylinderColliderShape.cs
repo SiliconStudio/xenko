@@ -1,13 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
+using System;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -22,9 +18,6 @@ namespace SiliconStudio.Paradox.Physics
         {
             Type = ColliderShapeTypes.Cylinder;
             Is2D = false; //always false for cylinders
-
-            HalfExtents = halfExtents;
-            UpAxis = upAxis;
 
             Matrix rotation;
             Vector3 scaling;
@@ -45,7 +38,6 @@ namespace SiliconStudio.Paradox.Physics
             }
             else //default to Y
             {
-                UpAxis = Vector3.UnitY;
                 InternalShape = new BulletSharp.CylinderShape(halfExtents);
 
                 rotation = Matrix.Identity;
@@ -56,29 +48,5 @@ namespace SiliconStudio.Paradox.Physics
             DebugPrimitive = GeometricPrimitive.Cylinder.New(PhysicsEngine.Singleton.DebugGraphicsDevice);
             DebugPrimitiveScaling = Matrix.Scaling(scaling * 1.01f) * rotation;
         }
-
-        /// <summary>
-        /// Gets the half extents.
-        /// </summary>
-        /// <value>
-        /// The half extents.
-        /// </value>
-        public Vector3 HalfExtents { get; private set; }
-
-        public float Radius
-        {
-            get
-            {
-                return ((BulletSharp.CylinderShape)InternalShape).Radius;
-            }
-        }
-
-        /// <summary>
-        /// Gets up axis.
-        /// </summary>
-        /// <value>
-        /// Up axis.
-        /// </value>
-        public Vector3 UpAxis { get; private set; }
     }
 }

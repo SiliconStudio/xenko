@@ -9,7 +9,7 @@ using System;
 
 namespace SiliconStudio.Paradox.Physics
 {
-    [DataContract]
+    [DataContract("PhysicsElement")]
     public class PhysicsElement
     {
         public enum Types
@@ -172,7 +172,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <returns></returns>
         internal Matrix DerivePhysicsTransformation()
         {
-            var entity = (Entity)Collider.EntityObject;
+            var entity = Collider.Entity;
 
             Quaternion rotation;
             Vector3 translation;
@@ -212,7 +212,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <param name="physicsTransform"></param>
         internal void UpdateTransformationComponent(Matrix physicsTransform)
         {
-            var entity = (Entity)Collider.EntityObject;
+            var entity = Collider.Entity;
 
             if (Shape.Shape.LocalOffset != Vector3.Zero || Shape.Shape.LocalRotation != Quaternion.Identity)
             {

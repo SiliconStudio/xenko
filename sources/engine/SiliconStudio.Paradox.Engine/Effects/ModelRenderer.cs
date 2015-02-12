@@ -64,10 +64,12 @@ namespace SiliconStudio.Paradox.Effects
         public delegate void PostEffectUpdateDelegate(RenderContext context, RenderMesh renderMesh);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ModelRenderer"/> class.
+        /// Initializes a new instance of the <see cref="ModelRenderer" /> class.
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="effectName">Name of the effect.</param>
+        /// <param name="asyncDynamicEffectCompiler">if set to <c>true</c> it can compile effect asynchronously.</param>
+        /// <exception cref="System.ArgumentNullException">effectName</exception>
         public ModelRenderer(IServiceRegistry services, string effectName) : base(services)
         {
             if (effectName == null) throw new ArgumentNullException("effectName");
@@ -88,6 +90,11 @@ namespace SiliconStudio.Paradox.Effects
             postRenders = new SafeDelegateList<PostRenderDelegate>(this);
             preEffectUpdates = new SafeDelegateList<PreEffectUpdateDelegate>(this);
             postEffectUpdates = new SafeDelegateList<PostEffectUpdateDelegate>(this);
+        }
+
+        public DynamicEffectCompiler DynamicEffectCompiler
+        {
+            get { return dynamicEffectCompiler; }
         }
 
         public string EffectName
@@ -209,11 +216,6 @@ namespace SiliconStudio.Paradox.Effects
             meshesToRender.Clear();
             foreach (var renderModel in state.RenderModels)
             {
-                if (!OnAcceptRenderModel(renderModel))
-                {
-                    continue;
-                }
-
                 var meshes = renderModel.RenderMeshes[modelRenderSlot.Slot];
                 if (meshes != null)
                     meshesToRender.AddRange(meshes);
@@ -271,6 +273,11 @@ namespace SiliconStudio.Paradox.Effects
             // In that case, a Mesh may be added several times to the list and as a result rendered several time in a single ModelRenderer.
             // We keep it that way for now since we only have two ModelRenderer with the same effect in the deferrent pipeline (splitting between opaque and transparent objects) and their acceptance tests are exclusive.
 
+            if (!OnAcceptRenderModel(renderModel))
+            {
+                return;
+            }
+
             // Create the list of RenderMesh objects
             var renderMeshes = renderModel.RenderMeshes[modelRenderSlot.Slot];
             if (renderMeshes == null)
@@ -287,7 +294,9 @@ namespace SiliconStudio.Paradox.Effects
                 }
 
                 var renderMesh = new RenderMesh(renderModel, mesh);
-                UpdateEffect(renderMesh, null);
+
+                // Seems that we can delay UpdateEffect until actual rendering to avoid generating unecessary shader permutations
+                //UpdateEffect(renderMesh, null);
 
                 // Register mesh for rendering
                 renderMeshes.Add(renderMesh);

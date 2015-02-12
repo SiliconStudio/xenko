@@ -5,19 +5,17 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Effects.Data;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Graphics.Data;
+using SiliconStudio.Paradox.Physics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Physics;
-
-﻿using VHACDSharp;
+using VHACDSharp;
 
 namespace SiliconStudio.Paradox.Assets.Physics
 {
@@ -30,7 +28,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
                 new ColliderShapeCombineCommand(urlInStorage, asset),
             };
 
-            result.ShouldWaitForPreviousBuilds = asset.Data.ColliderShapes.Any(shape => shape.GetType() == typeof(ConvexHullColliderShapeDesc));
+            result.ShouldWaitForPreviousBuilds = asset.ColliderShapes.Any(shape => shape.GetType() == typeof(ConvexHullColliderShapeDesc));
         }
 
         private class ColliderShapeCombineCommand : AssetCommand<ColliderShapeAsset>
@@ -53,9 +51,9 @@ namespace SiliconStudio.Paradox.Assets.Physics
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 var assetManager = new AssetManager();
-                
+
                 //pre process special types
-                foreach (var shape in asset.Data.ColliderShapes)
+                foreach (var shape in asset.ColliderShapes)
                 {
                     var type = shape.GetType();
                     if (type == typeof(ConvexHullColliderShapeDesc))
@@ -86,8 +84,8 @@ namespace SiliconStudio.Paradox.Assets.Physics
                                 {
                                     Matrix localMatrix;
                                     TransformationComponent.CreateMatrixTRS(
-                                        ref modelAsset.Hierarchy.Nodes[i].Transform.Translation, 
-                                        ref modelAsset.Hierarchy.Nodes[i].Transform.Rotation, 
+                                        ref modelAsset.Hierarchy.Nodes[i].Transform.Translation,
+                                        ref modelAsset.Hierarchy.Nodes[i].Transform.Rotation,
                                         ref modelAsset.Hierarchy.Nodes[i].Transform.Scaling, out localMatrix);
 
                                     Matrix worldMatrix;
@@ -128,7 +126,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
                                         var vertexData = vertexDataAsset.Content;
                                         var vertexIndex = meshData.Draw.VertexBuffers[0].Offset;
                                         for (var v = 0; v < meshData.Draw.VertexBuffers[0].Count; v++)
-                                        {    
+                                        {
                                             var posMatrix = Matrix.Translation(new Vector3(BitConverter.ToSingle(vertexData, vertexIndex + 0), BitConverter.ToSingle(vertexData, vertexIndex + 4), BitConverter.ToSingle(vertexData, vertexIndex + 8)));
 
                                             Matrix rotatedMatrix;
@@ -145,7 +143,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
                                         var indexDataAsset = assetManager.Load<BufferData>(AttachedReferenceManager.GetUrl(meshData.Draw.IndexBuffer.Buffer));
 
                                         var indexData = indexDataAsset.Content;
-                                        var indexIndex = meshData.Draw.IndexBuffer.Offset;                                 
+                                        var indexIndex = meshData.Draw.IndexBuffer.Offset;
                                         for (var v = 0; v < meshData.Draw.IndexBuffer.Count; v++)
                                         {
                                             if (meshData.Draw.IndexBuffer.Is32Bit)
@@ -226,7 +224,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
                                         convexHullMesh = null;
                                     }
 
-                                    commandContext.Logger.Info("For a total of " + vertexCountHull + " vertexes");  
+                                    commandContext.Logger.Info("For a total of " + vertexCountHull + " vertexes");
                                 }
                             }
                         }
@@ -236,8 +234,9 @@ namespace SiliconStudio.Paradox.Assets.Physics
                     }
                 }
 
-                assetManager.Save(Url, asset.Data);
-                
+                var runtimeShape = new PhysicsColliderShape { Descriptions = asset.ColliderShapes };
+                assetManager.Save(Url, runtimeShape);
+
                 return Task.FromResult(ResultStatus.Successful);
             }
         }

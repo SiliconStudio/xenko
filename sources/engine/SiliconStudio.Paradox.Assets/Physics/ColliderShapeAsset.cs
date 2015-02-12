@@ -1,13 +1,13 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
-
+using System.Collections.Generic;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Physics;
+using System;
 
 namespace SiliconStudio.Paradox.Assets.Physics
 {
@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
 
         public ColliderShapeAsset()
         {
-            Data = new PhysicsColliderShapeData();
+            ColliderShapes = new List<IColliderShapeDesc>();
 
             BuildOrder = 600; //make sure we build after Models
         }
@@ -31,7 +31,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
         /// The collection of shapes in this asset, a collection shapes will automatically generate a compound shape.
         /// </userdoc>
         [DataMember(10)]
-        public PhysicsColliderShapeData Data { get; set; }
+        public List<IColliderShapeDesc> ColliderShapes { get; set; }
 
         private class ColliderShapeFactory : IObjectFactory
         {

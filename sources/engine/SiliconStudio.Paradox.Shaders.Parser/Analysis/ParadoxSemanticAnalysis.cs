@@ -884,14 +884,6 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
             }
         }
 
-
-        [Visit]
-        protected StreamsType Visit(StreamsType streamType)
-        {
-            return StreamsType.Parse(streamType.Name);
-        }
-
-
         /// <summary>
         /// Visit an interface to send an error
         /// </summary>

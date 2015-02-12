@@ -116,6 +116,10 @@ namespace SiliconStudio.Paradox.Assets.Materials
             // We may be able to describe a dependency system here, but for now, assume 
             // that it won't change much so it is hardcoded
 
+            // Diffuse
+            context.Visit(Diffuse);
+            context.Visit(DiffuseModel);
+
             // Surface Geometry
             context.Visit(Tessellation);
             context.Visit(Displacement);
@@ -131,10 +135,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
             {
                 lambert.IsEnergyConservative = isEnergyConservative;
             }
-
-            // Diffuse
-            context.Visit(Diffuse);
-            context.Visit(DiffuseModel);
 
             // Specular 
             context.Visit(Specular);
