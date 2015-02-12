@@ -142,7 +142,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// Gets the parameters applied on the SpriteBatch effect.
         /// </summary>
         /// <value>The parameters.</value>
-        protected ParameterCollection Parameters
+        public ParameterCollection Parameters
         {
             get
             {

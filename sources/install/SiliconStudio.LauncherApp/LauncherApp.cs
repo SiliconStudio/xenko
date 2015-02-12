@@ -234,13 +234,14 @@ namespace SiliconStudio.LauncherApp
                 // Important!: Force back current directory to this application as previous ExecuteAssembly is changing it
                 Environment.CurrentDirectory = Path.GetDirectoryName(typeof(LauncherApp).Assembly.Location);
 
-                try
-                {
-                    AppDomain.Unload(newAppDomain);
-                }
-                catch (Exception)
-                {
-                }
+                // Note: The AppDomain.Unload method can block indefinitely when a crash occurs in the UI
+                //try
+                //{
+                //    AppDomain.Unload(newAppDomain);
+                //}
+                //catch (Exception)
+                //{
+                //}
             }
         }
 
