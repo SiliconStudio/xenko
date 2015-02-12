@@ -50,16 +50,19 @@ namespace SiliconStudio.Paradox.Engine
         /// <summary>
         /// The translation relative to the parent transformation.
         /// </summary>
+        [DataMember(10)]
         public Vector3 Position;
 
         /// <summary>
         /// The rotation relative to the parent transformation.
         /// </summary>
+        [DataMember(20)]
         public Quaternion Rotation;
 
         /// <summary>
         /// The scaling relative to the parent transformation.
         /// </summary>
+        [DataMember(30)]
         public Vector3 Scale;
 
         /// <summary>
@@ -81,6 +84,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets or sets a value indicating whether to use the Translation/Rotation/Scale.
         /// </summary>
         /// <value><c>true</c> if [use TRS]; otherwise, <c>false</c>.</value>
+        [DataMemberIgnore]
         [Browsable(false)]
         [DefaultValue(true)]
         public bool UseTRS
