@@ -13,10 +13,10 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public class ModelNodeCommandWrapper : NodeCommandWrapperBase
     {
-        protected readonly ModelNodePath NodePath;
+        public readonly ModelNodePath NodePath;
         protected readonly ModelContainer ModelContainer;
-        private readonly ObservableViewModelService service;
-        private readonly ObservableViewModelIdentifier identifier;
+        protected readonly ObservableViewModelService Service;
+        protected readonly ObservableViewModelIdentifier Identifier;
 
         public override string Name { get { return NodeCommand.Name; } }
 
@@ -29,15 +29,15 @@ namespace SiliconStudio.Presentation.Quantum
             if (owner == null) throw new ArgumentNullException("owner");
             NodePath = nodePath;
             // Note: the owner should not be stored in the command because we want it to be garbage collectable
-            identifier = owner.Identifier;
+            Identifier = owner.Identifier;
             ModelContainer = owner.ModelContainer;
             NodeCommand = nodeCommand;
-            service = serviceProvider.Get<ObservableViewModelService>();
+            Service = serviceProvider.Get<ObservableViewModelService>();
             ObservableNodePath = observableNodePath;
         }
 
         public INodeCommand NodeCommand { get; private set; }
-        
+
         internal IModelNode GetCommandRootNode()
         {
             return NodePath.RootNode;
@@ -51,7 +51,8 @@ namespace SiliconStudio.Presentation.Quantum
                 throw new InvalidOperationException("Unable to retrieve the node on which to apply the redo operation.");
 
             var newValue = NodeCommand.Invoke(modelNode.Content.Value, modelNode.Content.Descriptor, parameter, out token);
-            Refresh(modelNode, newValue);
+            modelNode.Content.Value = newValue;
+            Refresh(modelNode);
             return token;
         }
 
@@ -59,41 +60,47 @@ namespace SiliconStudio.Presentation.Quantum
         {
             var modelNode = NodePath.GetNode();
             if (modelNode == null)
-                throw new InvalidOperationException("Unable to retrieve the node on which to apply the redo operation.");
+                throw new InvalidOperationException("Unable to retrieve the node on which to apply the undo operation.");
 
             var newValue = NodeCommand.Undo(modelNode.Content.Value, modelNode.Content.Descriptor, token);
-            Refresh(modelNode, newValue);
+            modelNode.Content.Value = newValue;
+            Refresh(modelNode);
         }
 
-        protected virtual void Refresh(IModelNode modelNode, object newValue)
+        /// <summary>
+        /// Refreshes the <see cref="ObservableNode"/> corresponding to the given <see cref="IModelNode"/>, if an <see cref="ObservableViewModel"/>
+        /// is available in the current.<see cref="IViewModelServiceProvider"/>.
+        /// </summary>
+        /// <param name="modelNode">The model node to use to fetch a corresponding <see cref="ObservableNode"/>.</param>
+        protected virtual void Refresh(IModelNode modelNode)
         {
-            var observableViewModel = service.ViewModelProvider(identifier);
-
             if (modelNode == null) throw new ArgumentNullException("modelNode");
-            var observableNode = observableViewModel != null ? observableViewModel.ResolveObservableModelNode(ObservableNodePath, NodePath.RootNode) : null;
-            
-            // If we have an observable node, we use it to set the new value so the UI can be notified at the same time.
-            if (observableNode != null)
-            {
-                if (observableNode.IsPrimitive)
-                {
-                    var collectionDescriptor = modelNode.Content.Descriptor as CollectionDescriptor;
-                    if (collectionDescriptor != null)
-                        newValue = collectionDescriptor.GetValue(newValue, observableNode.Index);
+            var observableViewModel = Service.ViewModelProvider(Identifier);
 
-                    var dictionaryDescriptor = modelNode.Content.Descriptor as DictionaryDescriptor;
-                    if (dictionaryDescriptor != null)
-                        newValue = dictionaryDescriptor.GetValue(newValue, observableNode.Index);
-                }
+            // No view model to refresh
+            if (observableViewModel == null)
+                return;
 
-                observableNode.Value = newValue;
-                observableNode.Owner.NotifyNodeChanged(observableNode.Path);
-            }
-            else
+            var observableNode = observableViewModel.ResolveObservableModelNode(ObservableNodePath, NodePath.RootNode);
+            // No node matches this model node
+            if (observableNode == null)
+                return;
+
+            var newValue = modelNode.Content.Value;
+
+            if (observableNode.IsPrimitive)
             {
-                modelNode.Content.Value = newValue;
-                ModelContainer.UpdateReferences(modelNode);
+                var collectionDescriptor = modelNode.Content.Descriptor as CollectionDescriptor;
+                if (collectionDescriptor != null)
+                    newValue = collectionDescriptor.GetValue(modelNode.Content.Value, observableNode.Index);
+
+                var dictionaryDescriptor = modelNode.Content.Descriptor as DictionaryDescriptor;
+                if (dictionaryDescriptor != null)
+                    newValue = dictionaryDescriptor.GetValue(newValue, observableNode.Index);
             }
+
+            observableNode.ForceSetValue(newValue);
+            observableNode.Owner.NotifyNodeChanged(observableNode.Path);
         }
     }
 }

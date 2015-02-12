@@ -32,7 +32,7 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        protected override object ModifyValue(object currentValue, ITypeDescriptor descriptor, object parameter)
+        protected override object ModifyValue(object currentValue, ITypeDescriptor descriptor, object parameter, bool isRedo)
         {
             if (parameter == SetToNull)
                 return null;

@@ -23,6 +23,18 @@ namespace SiliconStudio.Quantum.Commands
         /// <inheritdoc/>
         public abstract object Undo(object currentValue, ITypeDescriptor descriptor, UndoToken undoToken);
 
+        /// <summary>
+        /// Redoes the node command. The default implementation simply calls the <see cref="Invoke"/> method.
+        /// </summary>
+        /// <param name="currentValue">The current value of the associated object or member.</param>
+        /// <param name="descriptor">The type descriptor of the associated object or member.</param>
+        /// <param name="parameter">The parameter of the command.</param>
+        /// <param name="undoToken">The <see cref="UndoToken"/> that will be passed to the <see cref="Undo"/> method when undoing the execution of this command.</param>
+        /// <returns>The new value to assign to the associated object or member.</returns>
+        public virtual object Redo(object currentValue, ITypeDescriptor descriptor, object parameter, out UndoToken undoToken)
+        {
+            return Invoke(currentValue, descriptor, parameter, out undoToken);
+        }
 
         /// <inheritdoc/>
         public virtual void StartCombinedInvoke()

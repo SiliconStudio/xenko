@@ -355,7 +355,19 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        protected internal virtual void Refresh()
+        public virtual void ForceSetValue(object newValue)
+        {
+            bool hasChanged = !Equals(Value, newValue);
+            if (!hasChanged)
+               OnPropertyChanging("TypedValue");
+
+            Value = newValue;
+            
+            if (!hasChanged)
+                OnPropertyChanged("TypedValue");
+        }
+
+        protected virtual void Refresh()
         {
             if (Parent == null) throw new InvalidOperationException("The node to refresh can't be a root node.");
             
@@ -435,7 +447,6 @@ namespace SiliconStudio.Presentation.Quantum
 
                 if (!IsPrimitive)
                 {
-                    Owner.ModelContainer.UpdateReferences(SourceNode);
                     Refresh();
                 }
 
