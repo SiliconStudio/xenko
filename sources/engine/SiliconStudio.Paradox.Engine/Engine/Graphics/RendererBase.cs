@@ -41,6 +41,24 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         public bool Enabled { get; set; }
 
         /// <summary>
+        /// Gets or sets the name of this component.
+        /// </summary>
+        /// <value>The name.</value>
+        [DataMemberIgnore]
+        public override string Name
+        {
+            get
+            {
+                // NOTE: We are overriding Name to add a [DataMemberIgnore] as we don't want a Renderer to serialize its Name
+                return base.Name;
+            }
+            set
+            {
+                base.Name = value;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the name of the debug.
         /// </summary>
         /// <value>The name of the debug.</value>

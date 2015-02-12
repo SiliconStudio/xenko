@@ -52,7 +52,7 @@ namespace SiliconStudio.Core
         /// The name.
         /// </value>
         [DataMember(-10)]
-        public string Name
+        public virtual string Name
         {
             get
             {
