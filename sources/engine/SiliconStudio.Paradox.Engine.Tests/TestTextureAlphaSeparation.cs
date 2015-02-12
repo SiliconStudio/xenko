@@ -31,17 +31,17 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
         protected void LoadDices()
         {
-            RenderPipelineFactory.CreateSimple(this, "Default", Color.Red);
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer");
+            //RenderPipelineFactory.CreateSimple(this, "Default", Color.Red);
 
-            var dice = Asset.Load<Entity>("Cube/cube");
+            //var dice = Asset.Load<Entity>("Cube/cube");
 
-            var cameraComp = new CameraComponent { AspectRatio = 1, FarPlane = 100, NearPlane = 0.1f, TargetUp = -Vector3.UnitY, Target = dice, UseViewMatrix = false, VerticalFieldOfView = 1 };
-            RenderSystem.Pipeline.SetCamera(cameraComp);
+            //var cameraComp = new CameraComponent { AspectRatio = 1, FarPlane = 100, NearPlane = 0.1f, TargetUp = -Vector3.UnitY, Target = dice, UseViewMatrix = false, VerticalFieldOfView = 1 };
+            //RenderSystem.Pipeline.SetCamera(cameraComp);
 
-            var cameraEntity = new Entity { Transform = { Position = new Vector3(0, 0, -2) } };
-            cameraEntity.Add(cameraComp);
+            //var cameraEntity = new Entity { Transform = { Position = new Vector3(0, 0, -2) } };
+            //cameraEntity.Add(cameraComp);
 
-            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
             //Entities.Add(dice);
             //Entities.Add(cameraEntity);
         }

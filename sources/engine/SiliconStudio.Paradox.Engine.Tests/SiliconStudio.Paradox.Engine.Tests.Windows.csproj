@@ -147,9 +147,6 @@
     <Compile Include="TestTextureAlphaSeparation.cs" />
     <None Include="Build\TestSerializer.cs" />
     <Compile Include="Build\TestStorage.cs" />
-    <Compile Include="FBXEntityAnimTestGame.cs" />
-    <Compile Include="FBXTestGame.cs" />
-    <Compile Include="FBXEntityTestGame.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="TestAnimationChannel.cs" />
     <Compile Include="TestEntitySerializer.cs" />

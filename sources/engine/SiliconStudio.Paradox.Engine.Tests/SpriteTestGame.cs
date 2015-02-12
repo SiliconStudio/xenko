@@ -58,11 +58,11 @@ namespace SiliconStudio.Paradox.Engine.Tests
             var cameraComponent = new CameraComponent { UseProjectionMatrix = true, ProjectionMatrix = SpriteBatch.CalculateDefaultProjection(new Vector3(areaSize, 200))};
             var camera = new Entity("Camera") { cameraComponent };
 
-            // Create Main pass
-            var mainPipeline = RenderSystem.Pipeline;
-            mainPipeline.Renderers.Add(new CameraComponentRenderer(Services) { Camera = cameraComponent });
-            mainPipeline.Renderers.Add(new RenderTargetSetter(Services) { ClearColor = Color.LightBlue });
-            mainPipeline.Renderers.Add(new SpriteComponentRenderer(Services));
+            //// Create Main pass
+            //var mainPipeline = RenderSystem.Pipeline;
+            //mainPipeline.Renderers.Add(new CameraComponentRenderer(Services) { Camera = cameraComponent });
+            //mainPipeline.Renderers.Add(new RenderTargetSetter(Services) { ClearColor = Color.LightBlue });
+            //mainPipeline.Renderers.Add(new SpriteComponentRenderer(Services));
             
             // Load assets
             groundSprites = Asset.Load<SpriteGroup>("GroundSprite");
