@@ -8,6 +8,7 @@ Release date: 2015/02/12
 #### Issues fixed
 - Assets: During asset compilation, if a texture is too big for current graphics profile, an error will be displayed ([#174](https://github.com/SiliconStudio/paradox/issues/174)).
 - Graphics: VertexArrayObject were not properly cached in D3D renderer ([#170](https://github.com/SiliconStudio/paradox/issues/170)).
+- iOS: Properly link native library in latest Xamarin 8.6.1+ ([#140](https://github.com/SiliconStudio/paradox/issues/140)).
 - Studio: Changing Settings->External Tools->Default Text/Shared Editor resulted in a crash ([#137](https://github.com/SiliconStudio/paradox/issues/137)).
 - Studio: Pressing the Fit on screen button in the sprite editor while no image was displayed resulted in a crash ([#179](https://github.com/SiliconStudio/paradox/issues/179)).
 
