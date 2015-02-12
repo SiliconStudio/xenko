@@ -288,11 +288,6 @@ namespace SiliconStudio.Presentation.Quantum
                 }
             }
 
-            if (!IsPrimitive)
-            {
-                Owner.ModelContainer.UpdateReferences(node);
-                Refresh();
-            }
             return result;
         }
 
@@ -437,6 +432,12 @@ namespace SiliconStudio.Presentation.Quantum
                 
                 // We set the value even if it has not changed in case it's a reference value and a refresh might be required (new node in a list, etc.)
                 SetModelContentValue(SourceNode, value);
+
+                if (!IsPrimitive)
+                {
+                    Owner.ModelContainer.UpdateReferences(SourceNode);
+                    Refresh();
+                }
 
                 if (hasChanged)
                 {
