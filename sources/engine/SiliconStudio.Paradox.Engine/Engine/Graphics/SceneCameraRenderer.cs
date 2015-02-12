@@ -73,7 +73,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         [Display("Render To Frame")]
         public RenderFrame RenderFrame { get; set; }
 
-        protected override void OnRendering(RenderContext context)
+        protected override void DrawCore(RenderContext context)
         {
             if (Mode == null)
             {

@@ -1,8 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
+using System.Collections.Generic;
+
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.EntityModel;
+using SiliconStudio.Paradox.Effects.Images;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects
@@ -10,56 +13,97 @@ namespace SiliconStudio.Paradox.Effects
     /// <summary>
     /// Rendering context.
     /// </summary>
-    public sealed class RenderContext
+    public sealed class RenderContext : ComponentBase
     {
-        private readonly GraphicsDevice graphicsDevice;
-
-        private readonly IServiceRegistry services;
+        private const string SharedImageEffectContextKey = "__SharedRenderContext__";
+        private readonly Dictionary<Type, DrawEffect> sharedEffects = new Dictionary<Type, DrawEffect>();
+        private readonly GraphicsResourceAllocator allocator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContext" /> class.
         /// </summary>
         /// <param name="services">The services.</param>
-        public RenderContext(IServiceRegistry services)
+        /// <param name="allocator">The allocator.</param>
+        /// <exception cref="System.ArgumentNullException">services</exception>
+        public RenderContext(IServiceRegistry services, GraphicsResourceAllocator allocator = null)
         {
-            this.services = services;
-            graphicsDevice = services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
+            if (services == null) throw new ArgumentNullException("services");
+            Services = services;
+            Effects = services.GetSafeServiceAs<EffectSystem>();
+            this.allocator = allocator ?? new GraphicsResourceAllocator(Services).DisposeBy(this);
+            GraphicsDevice = services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
             Parameters = new ParameterCollection();
         }
 
         /// <summary>
-        /// Gets the graphics device.
+        /// Gets the content manager.
+        /// </summary>
+        /// <value>The content manager.</value>
+        public EffectSystem Effects { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the graphics device.
         /// </summary>
         /// <value>The graphics device.</value>
-        public GraphicsDevice GraphicsDevice
-        {
-            get
-            {
-                return graphicsDevice;
-            }
-        }
+        public GraphicsDevice GraphicsDevice { get; private set; }
 
         /// <summary>
-        /// Gets or sets the services.
+        /// Gets the services registry.
         /// </summary>
-        /// <value>The services.</value>
-        public IServiceRegistry Services
-        {
-            get
-            {
-                return services;
-            }
-        }
+        /// <value>The services registry.</value>
+        public IServiceRegistry Services { get; private set; }
 
         /// <summary>
-        /// Gets or sets the parameters shared by this rendering context with shaders.
+        /// Gets the parameters shared with all <see cref="ImageEffect"/> instance.
         /// </summary>
         /// <value>The parameters.</value>
-        public ParameterCollection Parameters { get; set; }
+        public ParameterCollection Parameters { get; private set; }
 
         /// <summary>
-        /// Allow to access tags setup on this render context
+        /// Gets the <see cref="GraphicsResource"/> allocator.
         /// </summary>
-        public PropertyContainer Tags;
+        /// <value>The allocator.</value>
+        public GraphicsResourceAllocator Allocator
+        {
+            get
+            {
+                return allocator;
+            }
+        }
+
+        /// <summary>
+        /// Gets or creates a shared effect.
+        /// </summary>
+        /// <typeparam name="T">Type of the shared effect (mush have a constructor taking a <see cref="RenderContext"/></typeparam>
+        /// <returns>A singleton instance of <typeparamref name="T"/></returns>
+        public T GetSharedEffect<T>() where T : DrawEffect
+        {
+            // TODO: Add a way to support custom constructor
+            lock (sharedEffects)
+            {
+                DrawEffect effect;
+                if (!sharedEffects.TryGetValue(typeof(T), out effect))
+                {
+                    effect = (ImageEffect)Activator.CreateInstance(typeof(T), this);
+                    sharedEffects.Add(typeof(T), effect);
+                }
+
+                return (T)effect;
+            }
+        }
+
+        /// <summary>
+        /// Gets a global shared context.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        /// <returns>RenderContext.</returns>
+        public static RenderContext GetShared(IServiceRegistry services)
+        {
+            if (services == null) throw new ArgumentNullException("services");
+
+            // Store RenderContext shared into the GraphicsDevice
+            var graphicsDevice = services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
+            return graphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, SharedImageEffectContextKey, () => new RenderContext(services));
+        }
     }
 }

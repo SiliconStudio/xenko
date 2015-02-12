@@ -46,7 +46,7 @@ namespace SiliconStudio.Paradox.Effects
         //    spriteBatch = new SpriteBatch(GraphicsDevice);
         //}
 
-        protected override void OnRendering(RenderContext context)
+        protected override void DrawCore(RenderContext context)
         {
             throw new NotImplementedException("TODO: REFACTOR THIS CODE TO USE A BackgroundComponent");
             Texture BackgroundTexture = null;

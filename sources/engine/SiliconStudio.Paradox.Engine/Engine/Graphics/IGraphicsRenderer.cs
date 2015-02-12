@@ -27,8 +27,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// <summary>
         /// Unloads this renderer.
         /// </summary>
-        /// <param name="context">The context.</param>
-        void Unload(RenderContext context);
+        void Unload();
 
         /// <summary>
         /// Draws this renderer with the specified context.

@@ -46,10 +46,10 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <param name="context">The context.</param>
         /// <param name="name">The name.</param>
         /// <exception cref="System.ArgumentNullException">context</exception>
-        protected ImageEffect(DrawEffectContext context, string name = null) 
+        protected ImageEffect(RenderContext context, string name = null) 
             : this(name)
         {
-            Initialize(context);
+            Load(context);
         }
 
         /// <summary>
@@ -111,9 +111,9 @@ namespace SiliconStudio.Paradox.Effects.Images
             SetOutputInternal(views);
         }
 
-        protected override void PreDrawCore(string name)
+        protected override void PreDrawCore(RenderContext context)
         {
-            base.PreDrawCore(name);
+            base.PreDrawCore(context);
 
             if (EnableSetRenderTargets)
             {
@@ -149,14 +149,14 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
-        protected override void PostDrawCore()
+        protected override void PostDrawCore(RenderContext context)
         {
             if (EnableSetRenderTargets)
             {
                 DisposeCreatedRenderTargetViews();
             }
 
-            base.PostDrawCore();
+            base.PostDrawCore(context);
         }
 
         /// <summary>

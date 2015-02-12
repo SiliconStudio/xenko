@@ -100,24 +100,24 @@ namespace SiliconStudio.Paradox.Effects
             modelProcessor = EntityManager.GetProcessor<ModelProcessor>();
         }
 
-        public override void Unload(RenderContext context)
+        public override void Unload()
         {
-            base.Unload(context);
-
             if (modelRenderSlot < 0)
             {
-                var pipelineModelState = GetOrCreateModelRendererState(context);
+                var pipelineModelState = GetOrCreateModelRendererState(Context);
 
                 // Release the slot (note: if shared, it will wait for all its usage to be released)
                 pipelineModelState.ReleaseModelSlot(modelRenderSlot);
 
                 // TODO: Remove RenderMeshes
             }
+
+            base.Unload();
         }
 
         public EntityGroup CullingMask { get; set; }
 
-        protected override void OnRendering(RenderContext context)
+        protected override void DrawCore(RenderContext context)
         {
             // If we don't have yet a render slot, create a new one
             if (modelRenderSlot < 0)

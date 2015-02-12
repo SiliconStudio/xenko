@@ -34,9 +34,9 @@ namespace SiliconStudio.Paradox.Effects.Images
         }
 
         /// <inheritdoc/>
-        public override void Initialize(DrawEffectContext context)
+        public override void Load(RenderContext context)
         {
-            base.Initialize(context);
+            base.Load(context);
 
             if (EffectName == null) throw new ArgumentNullException("No EffectName specified");
 
@@ -88,9 +88,9 @@ namespace SiliconStudio.Paradox.Effects.Images
             Parameters.Set(TexturingKeys.Sampler, GraphicsDevice.SamplerStates.LinearClamp);
         }
 
-        protected override void PreDrawCore(string name)
+        protected override void PreDrawCore(RenderContext context)
         {
-            base.PreDrawCore(name);
+            base.PreDrawCore(context);
 
             // Default handler for parameters
             UpdateParameters();
@@ -126,15 +126,15 @@ namespace SiliconStudio.Paradox.Effects.Images
             effectCompiler.Update(EffectInstance, null);
         }
 
-        protected override void DrawCore(ParameterCollection contextParameters)
+        protected override void DrawCore(RenderContext context)
         {
             UpdateEffect();
 
             // Update parameters
             appliedParameterCollections.Clear();
-            if (contextParameters != null)
+            if (context != null)
             {
-                appliedParameterCollections.Add(contextParameters);
+                appliedParameterCollections.Add(context.Parameters);
             }
             appliedParameterCollections.AddRange(parameterCollections);
 

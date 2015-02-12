@@ -36,19 +36,19 @@ namespace SiliconStudio.Paradox.Effects.Images
             EnableAverageLuminanceReadback = true;
         }
 
-        public override void Initialize(DrawEffectContext context)
+        public override void Load(RenderContext context)
         {
-            base.Initialize(context);
+            base.Load(context);
 
             LuminanceLogEffect = LuminanceLogEffect ?? new LuminanceLogEffect().DisposeBy(this);
-            LuminanceLogEffect.Initialize(context);
+            LuminanceLogEffect.Load(context);
 
             // Create 1x1 texture
             luminance1x1 = Texture.New2D(GraphicsDevice, 1, 1, 1, luminanceFormat, TextureFlags.ShaderResource | TextureFlags.RenderTarget).DisposeBy(this);
 
             // Use a multiscaler
             multiScaler = new ImageMultiScaler().DisposeBy(this);
-            multiScaler.Initialize(context);
+            multiScaler.Load(context);
 
             // Readback is always going to be done on the 1x1 texture
             readback = new ImageReadback<Half>(context).DisposeBy(this);
@@ -56,7 +56,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             // Blur used before upscaling 
             blur = new GaussianBlur().DisposeBy(this);
-            blur.Initialize(context);
+            blur.Load(context);
             blur.Radius = 4;
         }
 
@@ -137,7 +137,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
-        protected override void DrawCore(ParameterCollection contextParameters)
+        protected override void DrawCore(RenderContext context)
         {
             var input = GetSafeInput(0);
             var output = GetSafeOutput(0);
@@ -155,7 +155,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             // Calculate the first luminance map
             luminanceLogEffect.SetInput(input);
             luminanceLogEffect.SetOutput(luminanceMap);
-            luminanceLogEffect.Draw(contextParameters);
+            luminanceLogEffect.Draw(context);
 
             // Downscales luminance up to BlurTexture (optional) and 1x1
             multiScaler.SetInput(luminanceMap);
@@ -175,20 +175,20 @@ namespace SiliconStudio.Paradox.Effects.Images
                 // Blur x2 the intermediate output texture 
                 blur.SetInput(outputTextureDown);
                 blur.SetOutput(outputTextureDown);
-                blur.Draw(contextParameters);
-                blur.Draw(contextParameters);
+                blur.Draw(context);
+                blur.Draw(context);
 
                 // Upscale from intermediate to output
                 multiScaler.SetInput(outputTextureDown);
                 multiScaler.SetOutput(output);
-                multiScaler.Draw(contextParameters);
+                multiScaler.Draw(context);
             }
             else
             {
                 // TODO: Workaround to that the output filled with 1x1
                 Scaler.SetInput(luminance1x1);
                 Scaler.SetOutput(output);
-                Scaler.Draw(contextParameters);
+                Scaler.Draw(context);
             }
 
             // Calculate average luminance only if needed

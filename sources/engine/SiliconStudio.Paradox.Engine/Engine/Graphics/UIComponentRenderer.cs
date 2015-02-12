@@ -57,15 +57,15 @@ namespace SiliconStudio.Paradox.Effects
             uiResolutionChanged = true;
         }
 
-        public override void Unload(RenderContext context)
+        public override void Unload()
         {
-            base.Unload(context);
-
             if (uiSystem != null)
                 uiSystem.ResolutionChanged -= UISystemOnResolutionChanged;
+
+            base.Unload();
         }
 
-        protected override void OnRendering(RenderContext context)
+        protected override void DrawCore(RenderContext context)
         {
             if (uiSystem.RootElement == null)
                 return;

@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         /// <param name="services">The services.</param>
         public ImageEffectBundle(IServiceRegistry services)
-            : this(DrawEffectContext.GetShared(services))
+            : this(RenderContext.GetShared(services))
         {
         }
 
@@ -35,12 +35,12 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         public ImageEffectBundle()
         {
-            depthOfField        = ToDispose(new DepthOfField()); 
-            luminanceEffect     = ToDispose(new LuminanceEffect());
-            brightFilter        = ToDispose(new BrightFilter());
-            bloom               = ToDispose(new Bloom());
-            fxaa                = ToDispose(new FXAAEffect());
-            colorTransformsGroup = ToDispose(new ColorTransformGroup());
+            depthOfField        = ToLoadAndUnload(new DepthOfField()); 
+            luminanceEffect     = ToLoadAndUnload(new LuminanceEffect());
+            brightFilter        = ToLoadAndUnload(new BrightFilter());
+            bloom               = ToLoadAndUnload(new Bloom());
+            fxaa                = ToLoadAndUnload(new FXAAEffect());
+            colorTransformsGroup = ToLoadAndUnload(new ColorTransformGroup());
             toneMap = new ToneMap();
             colorTransformsGroup.Transforms.Add(toneMap);
         }
@@ -49,10 +49,10 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Initializes a new instance of the <see cref="ImageEffectBundle"/> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        public ImageEffectBundle(DrawEffectContext context)
+        public ImageEffectBundle(RenderContext context)
             : this()
         {
-            Initialize(context);
+            Load(context);
         }
 
         [DataMember(10)]
@@ -115,7 +115,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
-        protected override void DrawCore(ParameterCollection contextParameters)
+        protected override void DrawCore(RenderContext context)
         {
             var input = GetInput(0);
             var output = GetOutput(0);
@@ -133,7 +133,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                 var inputDepthTexture = GetInput(1); // Depth
                 depthOfField.SetColorDepthInput(input, inputDepthTexture);
                 depthOfField.SetOutput(dofOutput);
-                depthOfField.Draw(contextParameters);
+                depthOfField.Draw(context);
                 currentInput = dofOutput;
             }
 
@@ -146,7 +146,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
                 luminanceEffect.SetInput(currentInput);
                 luminanceEffect.SetOutput(luminanceTexture);
-                luminanceEffect.Draw(contextParameters);
+                luminanceEffect.Draw(context);
 
                 // Set this parameter that will be used by the tone mapping
                 colorTransformsGroup.Parameters.Set(LuminanceEffect.LuminanceResult, new LuminanceResult(luminanceEffect.AverageLuminance, luminanceTexture));
@@ -160,11 +160,11 @@ namespace SiliconStudio.Paradox.Effects.Images
 
                 brightFilter.SetInput(currentInput);
                 brightFilter.SetOutput(brightTexture);
-                brightFilter.Draw(contextParameters);
+                brightFilter.Draw(context);
 
                 bloom.SetInput(brightTexture);
                 bloom.SetOutput(currentInput);
-                bloom.Draw(contextParameters);
+                bloom.Draw(context);
             }
 
             var outputForLastEffectBeforeAntiAliasing = output;
@@ -178,13 +178,13 @@ namespace SiliconStudio.Paradox.Effects.Images
             var lastEffect = colorTransformsGroup.Enabled ? (ImageEffect)colorTransformsGroup: Scaler;
             lastEffect.SetInput(currentInput);
             lastEffect.SetOutput(outputForLastEffectBeforeAntiAliasing);
-            lastEffect.Draw(contextParameters);
+            lastEffect.Draw(context);
 
             if (fxaa.Enabled)
             {
                 fxaa.SetInput(outputForLastEffectBeforeAntiAliasing);
                 fxaa.SetOutput(output);
-                fxaa.Draw(contextParameters);
+                fxaa.Draw(context);
             }
         }
 

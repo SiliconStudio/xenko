@@ -52,13 +52,13 @@ namespace SiliconStudio.Paradox.Effects.Images
         }
 
         /// <inheritdoc/>
-        public override void Initialize(DrawEffectContext context)
+        public override void Load(RenderContext context)
         {
-            base.Initialize(context);
+            base.Load(context);
 
             transformGroupEffect = new ImageEffectShader(colorTransformGroupEffectName);
             transformGroupEffect.SharedParameterCollections.Add(Parameters);
-            transformGroupEffect.Initialize(context);
+            transformGroupEffect.Load(context);
 
             // we are adding parameter collections after as transform parameters should override previous parameters
             transformGroupEffect.ParameterCollections.Add(transformsParameters);
@@ -93,7 +93,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
-        protected override void DrawCore(ParameterCollection contextParameters)
+        protected override void DrawCore(RenderContext context1)
         {
             var output = GetOutput(0);
             if (output == null)
@@ -109,7 +109,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                 transformGroupEffect.SetInput(i, context.Inputs[i]);
             }
             transformGroupEffect.SetOutput(output);
-            transformGroupEffect.Draw(contextParameters, Name);
+            transformGroupEffect.Draw(context1, name: Name);
         }
 
         protected virtual void CollectPreTransforms()

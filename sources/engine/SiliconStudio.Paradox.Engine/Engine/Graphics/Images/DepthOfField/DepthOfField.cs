@@ -199,10 +199,10 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         public DepthOfField()
         {
-            coclinearDepthMapEffect = ToDispose(new ImageEffectShader("CoCLinearDepthShader"));
-            combineLevelsEffect     = ToDispose(new ImageEffectShader("CombineLevelsFromCoCEffect"));
-            textureScaler           = ToDispose(new ImageScaler());
-            cocMapBlur              = ToDispose(new CoCMapBlur());
+            coclinearDepthMapEffect = ToLoadAndUnload(new ImageEffectShader("CoCLinearDepthShader"));
+            combineLevelsEffect     = ToLoadAndUnload(new ImageEffectShader("CombineLevelsFromCoCEffect"));
+            textureScaler           = ToLoadAndUnload(new ImageScaler());
+            cocMapBlur              = ToLoadAndUnload(new CoCMapBlur());
 
             // Some preset values
             DOFAreas = new Vector4(0.5f, 6f, 50f, 200f);
@@ -273,7 +273,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             for (int i = 1; i < levelCount; i++)
             {
                 var blurEffect = Technique.ToBlurInstance();
-                blurEffect.Initialize(Context);
+                blurEffect.Load(Context);
 
                 CoCLevelConfig lvlConfig = new CoCLevelConfig
                 {
@@ -294,7 +294,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         // Match: downscale level -> Texture
         private Dictionary<int, Texture> downscaledSources = new Dictionary<int, Texture>();
 
-        protected override void DrawCore(ParameterCollection contextParameters)
+        protected override void DrawCore(RenderContext context)
         {
             var originalColorBuffer = GetSafeInput(0);
             var originalDepthBuffer = GetSafeInput(1);
@@ -320,7 +320,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                 var input = downscaledSources[i - 1];
                 textureScaler.SetInput(0, downscaledSources[i - 1]);
                 textureScaler.SetOutput(downSizedTexture);
-                textureScaler.Draw(contextParameters, "DownScale_Factor{0}", i);
+                textureScaler.Draw(context, "DownScale_Factor{0}", i);
                 downscaledSources[i] = downSizedTexture;
             }
 
@@ -331,7 +331,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             coclinearDepthMapEffect.SetInput(0, originalDepthBuffer);
             coclinearDepthMapEffect.SetOutput(cocLinearDepthTexture);
             coclinearDepthMapEffect.Parameters.Set(CircleOfConfusionKeys.depthAreas, DOFAreas);
-            coclinearDepthMapEffect.Draw(contextParameters, "CoC_LinearDepth");
+            coclinearDepthMapEffect.Draw(context, name: "CoC_LinearDepth");
 
             // We create a blurred version of the CoC map. 
             // This is useful to avoid silhouettes appearing when the CoC changes abruptly.
@@ -339,7 +339,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             cocMapBlur.Radius = 6f / 720f * cocLinearDepthTexture.Description.Height; // 6 pixels at 720p
             cocMapBlur.SetInput(0, cocLinearDepthTexture);
             cocMapBlur.SetOutput(blurredCoCTexture);
-            cocMapBlur.Draw(contextParameters, "CoC_BlurredMap");
+            cocMapBlur.Draw(context, name: "CoC_BlurredMap");
 
             // Creates all the levels with different CoC strengths.
             // (Skips level with CoC 0 which is always the original buffer.)
@@ -359,11 +359,11 @@ namespace SiliconStudio.Paradox.Effects.Images
                 float blurRadius = MaxBokehSize * levelConfig.CoCValue * downscaleFactor * originalColorBuffer.Width;
                 if (blurRadius < 1f) blurRadius = 1f;
                 BokehBlur levelBlur = levelConfig.blurEffect;
-                levelBlur.SetRadius(blurRadius); // This doesn't generate garbage if the radius value doesn't change.
+                levelBlur.Radius = blurRadius; // This doesn't generate garbage if the radius value doesn't change.
                 levelBlur.SetInput(0, textureToBlur);
                 levelBlur.SetInput(1, cocLinearDepthTexture);
                 levelBlur.SetOutput(blurOutput);
-                levelBlur.Draw(contextParameters, "CoC_LoD_Layer_{0}", i);
+                levelBlur.Draw(context, "CoC_LoD_Layer_{0}", i);
                 combineLevelsEffect.SetInput(i + 2, blurOutput);
             }
 
@@ -371,7 +371,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             // the original color buffer and blurred buffer(s). 
             combineLevelsEffect.Parameters.Set(CombineLevelsFromCoCShaderKeys.CoCLevelValues, combineShaderCocLevelValues);
             combineLevelsEffect.SetOutput(outputTexture);
-            combineLevelsEffect.Draw(contextParameters, "CoCLevelCombineInterpolation");
+            combineLevelsEffect.Draw(context, name: "CoCLevelCombineInterpolation");
 
             // Release any reference
             downscaledSources.Clear();

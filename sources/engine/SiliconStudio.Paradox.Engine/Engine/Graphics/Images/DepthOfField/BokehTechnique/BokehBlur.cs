@@ -1,4 +1,5 @@
-﻿using SiliconStudio.Paradox.Graphics;
+﻿using SiliconStudio.Core;
+using SiliconStudio.Paradox.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,19 +14,16 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <see cref="McIntoshBokeh"/> or <see cref="TripleRhombiBokeh"/>... which do actually implement a blur technique leading to 
     /// a particular bokeh shape (circular, hexagonal).
     /// </summary>
-    public class BokehBlur : ImageEffect
+    public abstract class BokehBlur : ImageEffect
     {
-        /// <summary>
-        /// Radius of the blur.
-        /// </summary>
-        protected float radius;
+        private float radius;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BokehBlur"/> class.
         /// </summary>
-        public BokehBlur()
+        protected BokehBlur()
         {
-            SetRadius(5f); // Default value
+            Radius = 5f; // Default value
         }
 
         /// <summary>
@@ -44,18 +42,27 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// A child class can override it to do special processing when a new value is provided.
         /// </summary>
         /// <param name="value">The new value of the blur.</param>
-        public virtual void SetRadius(float value) 
+        [DataMemberIgnore]
+        public virtual float Radius
         {
-            if (value < 0f)
+            get
             {
-                throw new ArgumentOutOfRangeException("Radius cannot be < 0");
+                return radius;
             }
-            if (value < 1f)
+
+            set
             {
-                // We need at least a radius of 1 texel to perform a blur. 
-                value = 1f; 
+                if (value < 0f)
+                {
+                    throw new ArgumentOutOfRangeException("Radius cannot be < 0");
+                }
+                if (value < 1f)
+                {
+                    // We need at least a radius of 1 texel to perform a blur. 
+                    value = 1f;
+                }
+                this.radius = value;
             }
-            this.radius = value;
         }
 
     }

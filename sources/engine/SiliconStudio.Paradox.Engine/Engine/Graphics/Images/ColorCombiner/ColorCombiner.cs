@@ -39,11 +39,10 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
-        protected override void PreDrawCore(string name)
+        protected override void PreDrawCore(RenderContext context)
         {
+            base.PreDrawCore(context);
             Parameters.Set(FactorCount, InputCount);
-
-            base.PreDrawCore(name);
         }
     }
 }

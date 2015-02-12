@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <value>The camera override.</value>
         public CameraComponent CameraOverride { get; set; }
 
-        protected override void OnRendering(RenderContext context)
+        protected override void DrawCore(RenderContext context)
         {
             var camera = CameraOverride ?? SceneCameraRenderer.Camera;
 

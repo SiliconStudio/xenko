@@ -1,4 +1,5 @@
-﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
   </PropertyGroup>
@@ -39,42 +40,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="ComputeEffect\ComputeEffectShaderKeys.cs" />
-    <Compile Include="ComputeEffect\ComputeEffectShader.cs" />
-    <Compile Include="ComputeEffect\ComputeShaderBaseKeys.cs" />
-    <Compile Include="ComputeEffect\ComputeEffect.cs" />
-    <Compile Include="ComputeEffect\ComputeEffectShader1.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeEffectShader.pdxfx</DependentUpon>
-    </Compile>
-    <Compile Include="ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGX.cs" />
-    <Compile Include="ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXEffect.cs">
-      <DependentUpon>RadiancePrefilteringGGXEffect.pdxfx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXShader.cs">
-      <DependentUpon>RadiancePrefilteringGGXShader.pdxsl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="ComputeEffect\GGXPrefiltering\ImportanceSamplingGGX.cs">
-      <DependentUpon>ImportanceSamplingGGX.pdxsl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="ComputeEffect\GGXPrefiltering\Hammersley.cs">
-      <DependentUpon>Hammersley.pdxsl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSH.cs" />
     <None Include="ComputeColor\ComputeColorTextureLodScaledOffsetDynamicSampler.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTextureLodScaledOffsetDynamicSampler.cs</LastGenOutput>
@@ -83,38 +48,6 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTextureScaledOffsetDynamicSampler.cs</LastGenOutput>
     </None>
-    <None Include="ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXEffect.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>RadiancePrefilteringGGXEffect.cs</LastGenOutput>
-    </None>
-    <None Include="ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXShader.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>RadiancePrefilteringGGXShader.cs</LastGenOutput>
-    </None>
-    <None Include="ComputeEffect\GGXPrefiltering\ImportanceSamplingGGX.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ImportanceSamplingGGX.cs</LastGenOutput>
-    </None>
-    <None Include="ComputeEffect\GGXPrefiltering\Hammersley.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>Hammersley.cs</LastGenOutput>
-    </None>
-    <None Include="ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSH.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>LambertianPrefilteringSH1.cs</LastGenOutput>
-    </None>
-    <Compile Include="ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSH1.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>LambertianPrefilteringSH.pdxfx</DependentUpon>
-    </Compile>
-    <Compile Include="ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSHPass1.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>LambertianPrefilteringSHPass1.pdxsl</DependentUpon>
-    </Compile>
     <Compile Include="ComputeColor\ComputeColorTextureLodScaledOffsetSampler.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -126,12 +59,6 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeColorTextureLodScaledSampler.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSHPass2.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>LambertianPrefilteringSHPass2.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Utils\ComputeID.cs">
       <DependentUpon>ComputeID.pdxsl</DependentUpon>
@@ -692,12 +619,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ParticleBase.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="PostEffects.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>PostEffects.pdxfx</DependentUpon>
-    </Compile>
     <Compile Include="PostEffect\DiscardTransparentThreshold.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -709,12 +630,6 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>PostEffectVsmBlur.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="ComputeEffect\ComputeShaderBase.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeShaderBase.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Core\ColorBase.cs">
       <AutoGen>True</AutoGen>
@@ -806,8 +721,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>DynamicTextureStream.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="LightKeys.cs" />
-    <Compile Include="ParticleBaseKeys.cs" />
     <Compile Include="PostEffect\DiscardTransparent.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -850,7 +763,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>TransformationSkinning.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="PostEffectKeys.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TessellationKeys.cs" />
     <Compile Include="Tessellation\ShaderBaseTessellation.cs">
@@ -1036,14 +948,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ComputeEffect\ComputeEffectShader.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeEffectShader1.cs</LastGenOutput>
-    </None>
-    <None Include="ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSHPass1.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>LambertianPrefilteringSHPass1.cs</LastGenOutput>
-    </None>
     <None Include="ComputeColor\ComputeColorTextureLodSampler.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTextureLodSampler.cs</LastGenOutput>
@@ -1056,10 +960,6 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTextureLodScaledSampler.cs</LastGenOutput>
     </None>
-    <None Include="ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSHPass2.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>LambertianPrefilteringSHPass2.cs</LastGenOutput>
-    </None>
     <None Include="Utils\ComputeID.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeID.cs</LastGenOutput>
@@ -1071,7 +971,7 @@
     <None Include="Utils\Picking.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>Picking.cs</LastGenOutput>
-	</None>
+    </None>
     <None Include="ProceduralModels\CameraCube.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CameraCube.cs</LastGenOutput>
@@ -1368,10 +1268,6 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTextureCubeReflect.cs</LastGenOutput>
     </None>
-    <None Include="ComputeEffect\ComputeShaderBase.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeShaderBase.cs</LastGenOutput>
-    </None>
     <None Include="Core\ColorBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ColorBase.cs</LastGenOutput>
@@ -1484,17 +1380,9 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>BRDFMicrofacet.cs</LastGenOutput>
     </None>
-    <None Include="DefaultDeferredEffect.oldpdxfx">
-      <LastGenOutput>DefaultDeferredEffect1.cs</LastGenOutput>
-    </None>
-    <None Include="DefaultForwardEffect.oldpdxfx" />
     <None Include="Particle\ParticleBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ParticleBase.cs</LastGenOutput>
-    </None>
-    <None Include="PostEffects.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>PostEffects.cs</LastGenOutput>
     </None>
     <None Include="PostEffect\DiscardTransparentThreshold.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

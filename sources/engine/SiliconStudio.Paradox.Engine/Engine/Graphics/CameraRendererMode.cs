@@ -61,7 +61,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// Draws entities from a specified <see cref="SceneCameraRenderer" />.
         /// </summary>
         /// <param name="context">The context.</param>
-        protected override void OnRendering(RenderContext context)
+        protected override void DrawCore(RenderContext context)
         {
             // Pre-create all renderers
             // TODO: We should handle cases where we are removing components types to improve performance

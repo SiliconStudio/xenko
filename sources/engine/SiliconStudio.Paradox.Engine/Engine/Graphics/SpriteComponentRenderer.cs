@@ -51,16 +51,16 @@ namespace SiliconStudio.Paradox.Effects
             GameVirtualResolutionChanged(null, EventArgs.Empty);
         }
 
-        public override void Unload(RenderContext context)
+        public override void Unload()
         {
-            base.Unload(context);
-
             gameVirtualResolution.VirtualResolutionChanged -= GameVirtualResolutionChanged;
 
             spriteBatch.Dispose();
+
+            base.Unload();
         }
 
-        protected override void OnRendering(RenderContext context)
+        protected override void DrawCore(RenderContext context)
         {
             // TODO: Check how to integrate sprites in a Camera renderer instead of this
             // draw opaque sprites 

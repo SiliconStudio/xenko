@@ -54,7 +54,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             drawEffectContext = new DrawEffectContext(this);
             lamberFilter = new LambertianPrefilteringSH(drawEffectContext);
             renderSHEffect = new SphericalHarmonicsRendererEffect();
-            renderSHEffect.Initialize(drawEffectContext);
+            renderSHEffect.Load(drawEffectContext);
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
             inputCubemap = Asset.Load<Texture>("CubeMap");

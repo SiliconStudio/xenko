@@ -10,7 +10,7 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect
     /// <summary>
     /// A compute effect based directly on a single compute shader.
     /// </summary>
-    public class ComputeEffectShader : ComputeEffect
+    public class ComputeEffectShader : DrawEffect
     {
         /// <summary>
         /// The current effect instance.
@@ -23,12 +23,12 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect
 
         private readonly List<ParameterCollection> appliedParameterCollections;
 
-        public ComputeEffectShader(DrawEffectContext context)
+        public ComputeEffectShader(RenderContext context)
             : this(context, null)
         {
         }
 
-        public ComputeEffectShader(DrawEffectContext context, params ParameterCollection[] sharedParameterCollections)
+        public ComputeEffectShader(RenderContext context, params ParameterCollection[] sharedParameterCollections)
             : base(context, null)
         {
             parameterCollections = new List<ParameterCollection> { context.Parameters };
@@ -84,9 +84,9 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect
         {
         }
 
-        protected override void PreDrawCore(string name)
+        protected override void PreDrawCore(RenderContext context)
         {
-            base.PreDrawCore(name);
+            base.PreDrawCore(context);
 
             // Default handler for parameters
             UpdateParameters();
@@ -105,7 +105,7 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect
             effectCompiler.Update(EffectInstance, null);
         }
 
-        protected override void DrawCore(ParameterCollection contextParameters)
+        protected override void DrawCore(RenderContext context)
         {
             if (string.IsNullOrEmpty(ShaderSourceName))
                 return;
@@ -117,9 +117,9 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect
             UpdateEffect();
 
             appliedParameterCollections.Clear();
-            if (contextParameters != null)
+            if (context != null)
             {
-                appliedParameterCollections.Add(contextParameters);
+                appliedParameterCollections.Add(context.Parameters);
             }
             appliedParameterCollections.AddRange(parameterCollections);
 

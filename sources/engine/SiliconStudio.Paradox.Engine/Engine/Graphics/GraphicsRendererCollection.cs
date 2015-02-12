@@ -123,18 +123,18 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             }
         }
 
-        public override void Unload(RenderContext context)
+        public override void Unload()
         {
-            base.Unload(context);
-
             // Unload renderers
             foreach (var renderer in currentRenderers)
             {
-                renderer.Unload(context);
+                renderer.Unload();
             }
+
+            base.Unload();
         }
 
-        protected override void OnRendering(RenderContext context)
+        protected override void DrawCore(RenderContext context)
         {
             // Collect previous renderers
             tempRenderers.Clear();
@@ -166,7 +166,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             // The renderers in tempRenderers are renderers that were removed, so we need to unload and dispose them 
             foreach (var previousRenderer in tempRenderers)
             {
-                previousRenderer.Unload(context);
+                previousRenderer.Unload();
             }
             tempRenderers.Clear();
         }

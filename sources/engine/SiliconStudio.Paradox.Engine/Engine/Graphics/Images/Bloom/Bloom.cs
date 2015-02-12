@@ -29,9 +29,9 @@ namespace SiliconStudio.Paradox.Effects.Images
             Amount = 1.0f;
             DownScale = 3;
 
-            blurCombine = ToDispose(new ColorCombiner());
-            multiScaler = ToDispose(new ImageMultiScaler());
-            blur = ToDispose(new GaussianBlur());
+            blurCombine = ToLoadAndUnload(new ColorCombiner());
+            multiScaler = ToLoadAndUnload(new ImageMultiScaler());
+            blur = ToLoadAndUnload(new GaussianBlur());
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         private int MaxMip { get; set; }
 
-        protected override void DrawCore(ParameterCollection contextParameters)
+        protected override void DrawCore(RenderContext context)
         {
             var input = GetInput(0);
             var output = GetOutput(0) ?? input;
@@ -82,7 +82,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             var startRenderTarget = NewScopedRenderTarget2D(nextSize.Width, nextSize.Height, input.Format);
             Scaler.SetInput(input);
             Scaler.SetOutput(startRenderTarget);
-            Scaler.Draw(contextParameters, "Down/2");
+            Scaler.Draw(context, name: "Down/2");
 
             // ----------------------------------------
             // Downscale / 4 up to Downscale / xx
@@ -104,13 +104,13 @@ namespace SiliconStudio.Paradox.Effects.Images
                 // Downscale
                 Scaler.SetInput(previousRenderTarget);
                 Scaler.SetOutput(nextRenderTarget);
-                Scaler.Draw(contextParameters, "Down/2");
+                Scaler.Draw(context, name: "Down/2");
 
                 // Blur it
                 blur.Radius = Math.Max(1, (int)(Radius * input.Width));
                 blur.SetInput(nextRenderTarget);
                 blur.SetOutput(nextRenderTarget);
-                blur.Draw(contextParameters);
+                blur.Draw(context);
 
                 // TODO: Use the MultiScaler for this part instead of recoding it here
                 // Only blur after 2nd downscale
@@ -120,7 +120,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                     renderTargetToCombine = NewScopedRenderTarget2D(upscaleSize.Width, upscaleSize.Height, input.Format);
                     multiScaler.SetInput(nextRenderTarget);
                     multiScaler.SetOutput(renderTargetToCombine);
-                    multiScaler.Draw(contextParameters);
+                    multiScaler.Draw(context);
                 }
                 resultList.Add(renderTargetToCombine);
                 previousRenderTarget = nextRenderTarget;
@@ -140,7 +140,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             {
                 Scaler.SetInput(resultList[0]);
                 Scaler.SetOutput(output);
-                Scaler.Draw(contextParameters);
+                Scaler.Draw(context);
             }
             else if (resultList.Count > 1)
             {
@@ -157,7 +157,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                 }
 
                 blurCombine.SetOutput(output);
-                blurCombine.Draw(contextParameters);
+                blurCombine.Draw(context);
             }
             GraphicsDevice.SetBlendState(GraphicsDevice.BlendStates.Default);
         }

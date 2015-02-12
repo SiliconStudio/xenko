@@ -2,8 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Linq;
-using SiliconStudio.Core;
+
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Effects.Images
@@ -42,20 +41,27 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         public TripleRhombiBokeh()
         {
-            directionalBlurEffect = ToDispose(new ImageEffectShader("DepthAwareDirectionalBlurEffect"));
-            finalCombineEffect = ToDispose(new ImageEffectShader("TripleRhombiCombineShader"));
+            directionalBlurEffect = ToLoadAndUnload(new ImageEffectShader("DepthAwareDirectionalBlurEffect"));
+            finalCombineEffect = ToLoadAndUnload(new ImageEffectShader("TripleRhombiCombineShader"));
             Phase = 0f;
         }
 
-        /// <inheritdoc/>
-        public override void SetRadius(float value)
+        public override float Radius
         {
-            float oldRadius = radius;
-            base.SetRadius(value);
+            get
+            {
+                return base.Radius;
+            }
 
-            // Our actual total number of tap
-            tapCount = (int)radius + 1;
-            rhombiTapOffsetsDirty = (oldRadius != radius);
+            set
+            {
+                float oldRadius = Radius;
+                base.Radius = value;
+
+                // Our actual total number of tap
+                tapCount = (int)Radius + 1;
+                rhombiTapOffsetsDirty = (oldRadius != Radius);
+            }
         }
 
         // Updates the texture tap offsets for the final combination pass
@@ -66,9 +72,9 @@ namespace SiliconStudio.Paradox.Effects.Images
             var texture = GetSafeInput(0);
             var textureSize = new Vector2( 1f/ (texture.Width), 1f / (texture.Height));
             // Half-radius of the hexagon
-            float halfRadius = radius * 0.5f; 
+            float halfRadius = Radius * 0.5f; 
             // Half-width of an hexagon pointing up (altitude of an equilateral triangle)
-            float hexagonalHalfWidth = radius * (float)Math.Sqrt(3f) / 2f;
+            float hexagonalHalfWidth = Radius * (float)Math.Sqrt(3f) / 2f;
 
             // TODO Check potential different behavior with OGL where vertical addressing (V)
             // is swapped compared to D3D textures. 
@@ -80,7 +86,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             { 
                 new Vector2( -hexagonalHalfWidth,   halfRadius), // top left rhombi
                 new Vector2(  hexagonalHalfWidth,   halfRadius), // top right rhombi
-                new Vector2(                  0f,  -radius    )  // bottom rhombi
+                new Vector2(                  0f,  -Radius    )  // bottom rhombi
             };
 
             // Apply some bias to avoid the "upside-down" Y artifacts caused by rhombi overlapping.
@@ -99,7 +105,7 @@ namespace SiliconStudio.Paradox.Effects.Images
              
         }
 
-        protected override void DrawCore(ParameterCollection contextParameters)
+        protected override void DrawCore(RenderContext context)
         {
             // Make sure we keep our uniform weights in synchronization with the number of taps
             if (tapWeights == null || tapWeights.Length != tapCount)
@@ -110,7 +116,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             if (!useOptimizedPath)
             {
-                DrawCoreNaive(contextParameters);
+                DrawCoreNaive(context);
             }
             else
             {
@@ -119,7 +125,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         }
 
         // Naive approach: 6 passes
-        protected void DrawCoreNaive(ParameterCollection contextParameters)
+        protected void DrawCoreNaive(RenderContext context)
         {
             var originalTexture = GetSafeInput(0);
             var originalDepthBuffer = GetSafeInput(1);
@@ -131,7 +137,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.Count, tapCount);
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.TotalTap, tapNumber);
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.ReferenceIndex, 0);
-            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Radius, radius);
+            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Radius, Radius);
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.TapWeights, tapWeights);
 
             // Vertical blur
@@ -142,7 +148,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             directionalBlurEffect.SetInput(0, originalTexture);
             directionalBlurEffect.SetInput(1, originalDepthBuffer);
             directionalBlurEffect.SetOutput(verticalBlurTexture);
-            directionalBlurEffect.Draw(contextParameters, "TripleRhombiBokeh_RhombiABVertical_tap{0}_radius{1}", tapNumber, (int)radius);
+            directionalBlurEffect.Draw(context, "TripleRhombiBokeh_RhombiABVertical_tap{0}_radius{1}", tapNumber, (int)Radius);
 
             // Rhombi A (top left)
             blurAngle = 7f * MathUtil.Pi / 6f + Phase;
@@ -151,7 +157,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             var rhombiA = NewScopedRenderTarget2D(originalTexture.Description);
             directionalBlurEffect.SetInput(0, verticalBlurTexture);
             directionalBlurEffect.SetOutput(rhombiA);
-            directionalBlurEffect.Draw(contextParameters, "TripleRhombiBokeh_RhombiA_tap{0}_radius{1}", tapNumber, (int)radius);
+            directionalBlurEffect.Draw(context, "TripleRhombiBokeh_RhombiA_tap{0}_radius{1}", tapNumber, (int)Radius);
 
             // Rhombi B (top right)
             blurAngle = -MathUtil.Pi / 6f + Phase;
@@ -160,7 +166,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             var rhombiB = NewScopedRenderTarget2D(originalTexture.Description);
             directionalBlurEffect.SetInput(0, verticalBlurTexture);
             directionalBlurEffect.SetOutput(rhombiB);
-            directionalBlurEffect.Draw(contextParameters, "TripleRhombiBokeh_RhombiB_tap{0}_radius{1}", tapNumber, (int)radius);
+            directionalBlurEffect.Draw(context, "TripleRhombiBokeh_RhombiB_tap{0}_radius{1}", tapNumber, (int)Radius);
 
             //Rhombi C (bottom)
             blurAngle = 7f * MathUtil.Pi / 6f + Phase;
@@ -169,7 +175,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             var rhombiCTmp = NewScopedRenderTarget2D(originalTexture.Description);
             directionalBlurEffect.SetInput(0, originalTexture);
             directionalBlurEffect.SetOutput(rhombiCTmp);
-            directionalBlurEffect.Draw(contextParameters, "TripleRhombiBokeh_RhombiCTmp_tap{0}_radius{1}", tapNumber, (int)radius);
+            directionalBlurEffect.Draw(context, "TripleRhombiBokeh_RhombiCTmp_tap{0}_radius{1}", tapNumber, (int)Radius);
 
             blurAngle = -MathUtil.Pi / 6f + Phase;
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Direction, new Vector2((float)Math.Cos(blurAngle), (float)Math.Sin(blurAngle)));
@@ -177,7 +183,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             var rhombiC = NewScopedRenderTarget2D(originalTexture.Description);
             directionalBlurEffect.SetInput(0, rhombiCTmp);
             directionalBlurEffect.SetOutput(rhombiC);
-            directionalBlurEffect.Draw(contextParameters, "TripleRhombiBokeh_RhombiC_tap{0}_radius{1}", tapNumber, (int)radius);
+            directionalBlurEffect.Draw(context, "TripleRhombiBokeh_RhombiC_tap{0}_radius{1}", tapNumber, (int)Radius);
 
             // Final pass outputting the average of the 3 blurs
             finalCombineEffect.SetInput(0, rhombiA);
@@ -185,7 +191,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             finalCombineEffect.SetInput(2, rhombiC);
             finalCombineEffect.SetOutput(outputTexture);
             finalCombineEffect.Parameters.Set(TripleRhombiCombineShaderKeys.RhombiTapOffsets, rhombiTapOffsets);
-            finalCombineEffect.Draw(contextParameters, "TripleRhombiBokehCombine");
+            finalCombineEffect.Draw(context, name: "TripleRhombiBokehCombine");
         }
     }
 }

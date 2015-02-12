@@ -85,7 +85,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
                 }
 
                 // Dispose their renderers
-                layer.Renderers.Unload(context);
+                layer.Renderers.Unload();
             }
             layersToDispose.Clear();
 

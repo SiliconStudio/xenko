@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect.GGXPrefiltering
     /// <summary>
     /// A class for radiance pre-filtering using the GGX distribution function.
     /// </summary>
-    public class RadiancePrefilteringGGX : ComputeEffect
+    public class RadiancePrefilteringGGX : DrawEffect
     {
         private int samplingsCount;
 
@@ -42,7 +42,7 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect.GGXPrefiltering
         /// Create a new instance of the class.
         /// </summary>
         /// <param name="context">the context</param>
-        public RadiancePrefilteringGGX(DrawEffectContext context)
+        public RadiancePrefilteringGGX(RenderContext context)
             : base(context, "RadiancePrefilteringGGX")
         {
             computeShader = new ComputeEffectShader(context) { ShaderSourceName = "RadiancePrefilteringGGXEffect" };
@@ -69,10 +69,8 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect.GGXPrefiltering
             }
         }
 
-        protected override void DrawCore(ParameterCollection contextParameters)
+        protected override void DrawCore(RenderContext context)
         {
-            base.DrawCore(contextParameters);
-
             var output = PrefilteredRadiance;
             if(output == null || (output.Dimension != TextureDimension.Texture2D && output.Dimension != TextureDimension.TextureCube) || output.ArraySize != 6)
                 throw new NotSupportedException("Only array of 2D textures are currently supported as output");
@@ -110,7 +108,7 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect.GGXPrefiltering
                     computeShader.Parameters.Set(RadiancePrefilteringGGXShaderKeys.RadianceMapSize, input.Width);
                     computeShader.Parameters.Set(RadiancePrefilteringGGXShaderKeys.FilteredRadiance, outputView);
                     computeShader.Parameters.Set(RadiancePrefilteringGGXParams.NbOfSamplings, SamplingsCount);
-                    computeShader.Draw(contextParameters);
+                    computeShader.Draw(context);
 
                     outputView.Dispose();
                 }

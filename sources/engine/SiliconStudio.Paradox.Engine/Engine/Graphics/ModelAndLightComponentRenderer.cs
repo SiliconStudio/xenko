@@ -19,19 +19,11 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             base.Load(context);
 
             // TODO: Add support for mixin overrides
-            modelRenderer = new ModelComponentRenderer(SceneCameraRenderer.Mode.GetMainModelEffect());
-            modelRenderer.Load(context);
+            modelRenderer = ToLoadAndUnload(new ModelComponentRenderer(SceneCameraRenderer.Mode.GetMainModelEffect()));
             lightModelRenderer = new LightModelRendererForward(modelRenderer);
         }
 
-        public override void Unload(RenderContext context)
-        {
-            base.Unload(context);
-
-            modelRenderer.Unload(context);
-        }
-
-        protected override void OnRendering(RenderContext context)
+        protected override void DrawCore(RenderContext context)
         {
             // TODO: Add support for shadows
 

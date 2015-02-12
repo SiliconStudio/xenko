@@ -38,21 +38,21 @@ namespace SiliconStudio.Paradox.Effects.Images
         }
 
         /// <inheritdoc/>
-        public override void Initialize(DrawEffectContext context)
+        public override void Load(RenderContext context)
         {
-            base.Initialize(context);
+            base.Load(context);
 
             // Use shared SharedParameters for blurH and blurV
             blurH = new ImageEffectShader("GaussianBlurEffect").DisposeBy(this);
             blurH.SharedParameterCollections.Add(Parameters);
-            blurH.Initialize(context);
+            blurH.Load(context);
 
             // Setup specific Horizontal parameter for blurH
             blurH.Parameters.Set(GaussianBlurKeys.VerticalBlur, false);
 
             blurV = new ImageEffectShader("GaussianBlurEffect").DisposeBy(this);
             blurV.SharedParameterCollections.Add(Parameters);
-            blurV.Initialize(context);
+            blurV.Load(context);
             // Setup specific Vertical parameter for blurV
             blurV.Parameters.Set(GaussianBlurKeys.VerticalBlur, true);
         }
@@ -108,7 +108,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
-        protected override void DrawCore(ParameterCollection contextParameters)
+        protected override void DrawCore(RenderContext context)
         {
             // Input texture
             var inputTexture = GetSafeInput(0);
@@ -133,12 +133,12 @@ namespace SiliconStudio.Paradox.Effects.Images
             blurH.SetInput(inputTexture);
             blurH.SetOutput(outputTextureH);
             var size = Radius * 2 + 1;
-            blurH.Draw(contextParameters, "GaussianBlurH{0}x{0}", size);
+            blurH.Draw(context, "GaussianBlurH{0}x{0}", size);
 
             // Vertical pass
             blurV.SetInput(outputTextureH);
             blurV.SetOutput(GetSafeOutput(0));
-            blurV.Draw(contextParameters, "GaussianBlurV{0}x{0}", size);
+            blurV.Draw(context, "GaussianBlurV{0}x{0}", size);
         }
     }
 }

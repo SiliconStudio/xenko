@@ -37,7 +37,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
             EffectSystem = new EffectSystem(Services);
             EffectSystem.Initialize();
             ((EffectCompilerCache)EffectSystem.Compiler).CompileEffectAsynchronously = false;
-            DrawEffectContext = DrawEffectContext.GetShared(Services);
+            DrawEffectContext = RenderContext.GetShared(Services);
         }
 
         public IServiceRegistry Services { get; private set; }
@@ -48,7 +48,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
 
         public IGraphicsDeviceService GraphicsDeviceService { get; private set; }
 
-        public DrawEffectContext DrawEffectContext { get; private set; }
+        public RenderContext DrawEffectContext { get; private set; }
 
         public void Dispose()
         {

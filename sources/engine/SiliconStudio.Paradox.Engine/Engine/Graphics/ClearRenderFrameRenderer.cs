@@ -76,7 +76,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         [DefaultValue(null)]
         public RenderFrame Frame { get; set; }
 
-        protected override void OnRendering(RenderContext context)
+        protected override void DrawCore(RenderContext context)
         {
             // Use the instance Frame or gets from the context
             var frame = Frame ?? context.Tags.Get(RenderFrame.Current);

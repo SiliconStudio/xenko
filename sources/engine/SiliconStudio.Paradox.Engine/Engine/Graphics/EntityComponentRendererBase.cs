@@ -45,7 +45,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         public SceneCameraRenderer SceneCameraRenderer { get; private set; }
 
         /// <summary>
-        /// Gets the current render frame. Only valid from <see cref="RendererBase.OnRendering"/> method.
+        /// Gets the current render frame. Only valid from <see cref="RendererBase.DrawCore"/> method.
         /// </summary>
         /// <value>The current render frame.</value>
         public RenderFrame CurrentRenderFrame { get; private set; }
@@ -58,15 +58,15 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             SceneCameraRenderer = context.Tags.GetSafe(SceneCameraRenderer.Current);
         }
 
-        protected override void BeginRendering(RenderContext context)
+        protected override void PreDrawCore(RenderContext context)
         {
-            base.BeginRendering(context);
+            base.PreDrawCore(context);
             CurrentRenderFrame = context.Tags.GetSafe(RenderFrame.Current);
         }
 
-        protected override void EndRendering(RenderContext context)
+        protected override void PostDrawCore(RenderContext context)
         {
-            base.EndRendering(context);
+            base.PostDrawCore(context);
             CurrentRenderFrame = null;
         }
     }

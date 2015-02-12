@@ -29,24 +29,30 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         public GaussianBokeh()
         {
-            directionalBlurEffect = ToDispose(new ImageEffectShader("DepthAwareDirectionalBlurEffect"));
+            directionalBlurEffect = ToLoadAndUnload(new ImageEffectShader("DepthAwareDirectionalBlurEffect"));
         }
 
-        /// <inheritdoc/>
-        public override void SetRadius(float value)
+        public override float Radius
         {
-            float oldRadius = radius;
-            base.SetRadius(value);
-            weightsDirty = (oldRadius != radius);
+            get
+            {
+                return base.Radius;
+            }
+            set
+            {
+                float oldRadius = Radius;
+                base.Radius = value;
+                weightsDirty = (oldRadius != Radius);
+            }
         }
 
-        protected override void DrawCore(ParameterCollection contextParameters)
+        protected override void DrawCore(RenderContext context)
         {
             // Update the weight array if necessary
             if (weightsDirty || tapCount == 0)
             {
                 weightsDirty = false;
-                Vector2[] gaussianWeights = GaussianUtil.Calculate1D((int)radius, 2f, true);
+                Vector2[] gaussianWeights = GaussianUtil.Calculate1D((int)Radius, 2f, true);
                 tapCount = gaussianWeights.Length;
                 tapWeights = new float[tapCount];
                 for (int i = 0; i < tapCount; i++)
@@ -63,7 +69,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.Count, tapCount);
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.TotalTap, tapNumber);
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.ReferenceIndex, tapCount - 1);
-            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Radius, radius);
+            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Radius, Radius);
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.TapWeights, tapWeights);
 
             // Blur in one direction
@@ -74,7 +80,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             directionalBlurEffect.SetInput(0, originalTexture);
             directionalBlurEffect.SetInput(1, originalDepthBuffer);
             directionalBlurEffect.SetOutput(firstBlurTexture);
-            directionalBlurEffect.Draw(contextParameters, "GaussianBokehPass1_tap{0}_radius{1}", tapNumber, (int)radius);
+            directionalBlurEffect.Draw(context, "GaussianBokehPass1_tap{0}_radius{1}", tapNumber, (int)Radius);
 
             // Second blur pass to ouput the final result
             blurAngle = MathUtil.PiOverTwo;
@@ -83,7 +89,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             directionalBlurEffect.SetInput(0, firstBlurTexture);
             directionalBlurEffect.SetInput(1, originalDepthBuffer);
             directionalBlurEffect.SetOutput(outputTexture);
-            directionalBlurEffect.Draw(contextParameters, "GaussianBokehPass2_tap{0}_radius{1}", tapNumber, (int)radius);
+            directionalBlurEffect.Draw(context, "GaussianBokehPass2_tap{0}_radius{1}", tapNumber, (int)Radius);
         }
 
     }

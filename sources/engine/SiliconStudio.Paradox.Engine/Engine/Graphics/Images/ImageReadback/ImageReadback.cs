@@ -33,7 +33,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Initializes a new instance of the <see cref="ImageReadback{T}"/> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        public ImageReadback(DrawEffectContext context) : base(context)
+        public ImageReadback(RenderContext context) : base(context)
         {
             stagingUsed = new List<bool>();
             stagingTargets = new List<Texture>();
@@ -99,7 +99,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
-        protected override void DrawCore(ParameterCollection contextParameters)
+        protected override void DrawCore(RenderContext context)
         {
             var input = GetSafeInput(0);
 
