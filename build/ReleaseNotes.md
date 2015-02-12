@@ -1,3 +1,11 @@
+### Version 1.0.0-beta11
+
+Release date: 2015/02/xx
+
+#### New Features
+
+#### Issues fixed
+
 ### Version 1.0.0-beta10
 
 Release date: 2015/02/12
