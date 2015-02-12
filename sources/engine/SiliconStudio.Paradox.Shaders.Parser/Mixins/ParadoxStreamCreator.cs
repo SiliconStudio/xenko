@@ -372,9 +372,13 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                             var isOutStream = outStreamList.Contains(streamUsage.Variable);
                             var isInStream = inStreamList.Contains(streamUsage.Variable);
 
-                            if (streamUsage.Usage == StreamUsage.Write && !isOutStream)
+                            if (streamUsage.Usage.IsWrite() && !isOutStream)
+                            {
                                 outStreamList.Add(streamUsage.Variable);
-                            else if (streamUsage.Usage == StreamUsage.Read && !isOutStream && !isInStream) // first read
+                                if (streamUsage.Usage.IsPartial() && !isInStream) // force variable to be passed from previous stages when affectation is only partial.
+                                    inStreamList.Add(streamUsage.Variable);
+                            }
+                            else if (streamUsage.Usage.IsRead() && !isOutStream && !isInStream) // first read
                                 inStreamList.Add(streamUsage.Variable);
                         }
                         else if (streamUsage.CallType == StreamCallType.Method)
