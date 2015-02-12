@@ -141,18 +141,12 @@ namespace SiliconStudio.Paradox.EntityModel
             if (sceneInstance == null) throw new ArgumentNullException("sceneInstance");
             if (toFrame == null) throw new ArgumentNullException("toFrame");
 
-            var entityManager = sceneInstance.EntityManager;
             var graphicsDevice = context.GraphicsDevice;
 
             bool hasGraphicsBegin = false;
 
             try
             {
-                var gameTime = context.Tags.Get(GameTime.Current);
-
-                // Update the entity system.
-                entityManager.Draw(gameTime);
-
                 graphicsDevice.Begin();
                 hasGraphicsBegin = true;
 
