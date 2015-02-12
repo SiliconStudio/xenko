@@ -23,6 +23,8 @@
 
 using System;
 
+using SiliconStudio.Core;
+
 namespace SiliconStudio.Paradox.Games
 {
     /// <summary>
@@ -30,6 +32,8 @@ namespace SiliconStudio.Paradox.Games
     /// </summary>
     public class GameTime
     {
+        public static readonly PropertyKey<GameTime> Current = new PropertyKey<GameTime>("GameTime.Current", typeof(GameTime));
+
         private TimeSpan accumulatedElapsedTime;
         private int accumulatedFrameCountPerSecond;
 
