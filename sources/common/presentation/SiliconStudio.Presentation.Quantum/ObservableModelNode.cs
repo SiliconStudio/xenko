@@ -360,7 +360,7 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        internal void Refresh()
+        protected internal virtual void Refresh()
         {
             if (Parent == null) throw new InvalidOperationException("The node to refresh can't be a root node.");
             

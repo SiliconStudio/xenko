@@ -151,7 +151,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets the <see cref="ModelContainer"/> used to store Quantum objects.
         /// </summary>
-        internal ModelContainer ModelContainer { get { return modelContainer; } }
+        public ModelContainer ModelContainer { get { return modelContainer; } }
 
         public event EventHandler<NodeChangedArgs> NodeChanged;
 

@@ -14,9 +14,9 @@ namespace SiliconStudio.Presentation.Quantum
     public class ModelNodeCommandWrapper : NodeCommandWrapperBase
     {
         protected readonly ModelNodePath NodePath;
+        protected readonly ModelContainer ModelContainer;
         private readonly ObservableViewModelService service;
         private readonly ObservableViewModelIdentifier identifier;
-        private readonly ModelContainer modelContainer;
 
         public override string Name { get { return NodeCommand.Name; } }
 
@@ -30,7 +30,7 @@ namespace SiliconStudio.Presentation.Quantum
             NodePath = nodePath;
             // Note: the owner should not be stored in the command because we want it to be garbage collectable
             identifier = owner.Identifier;
-            modelContainer = owner.ModelContainer;
+            ModelContainer = owner.ModelContainer;
             NodeCommand = nodeCommand;
             service = serviceProvider.Get<ObservableViewModelService>();
             ObservableNodePath = observableNodePath;
@@ -65,7 +65,7 @@ namespace SiliconStudio.Presentation.Quantum
             Refresh(modelNode, newValue);
         }
 
-        private void Refresh(IModelNode modelNode, object newValue)
+        protected virtual void Refresh(IModelNode modelNode, object newValue)
         {
             var observableViewModel = service.ViewModelProvider(identifier);
 
@@ -92,7 +92,7 @@ namespace SiliconStudio.Presentation.Quantum
             else
             {
                 modelNode.Content.Value = newValue;
-                modelContainer.UpdateReferences(modelNode);
+                ModelContainer.UpdateReferences(modelNode);
             }
         }
     }
