@@ -59,7 +59,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Effect name.
         /// </summary>
         [DataMemberIgnore]
-        public string EffectName { get; set; }
+        public string EffectName { get; protected set; }
 
         /// <summary>
         /// Optional shared parameters.

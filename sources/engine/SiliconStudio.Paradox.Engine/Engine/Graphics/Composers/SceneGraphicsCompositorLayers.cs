@@ -28,8 +28,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
             Layers = new SceneGraphicsLayerCollection();
             Master = new SceneGraphicsLayer()
             {
-                Input = SceneGraphicsLayerInputLayer.PreviousLayer(),
-                Output = new SceneGraphicsComposerOutputMaster(),
+                Output = new GraphicsLayerOutputMaster(),
             };
 
             // Initialize states of this layer
@@ -107,42 +106,35 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
                 layerStates.Add(layer, layerState);
             }
 
-            // Handle Input
-            // TODO
+            // Sets the input of the layer (== last Current)
+            var currentRenderFrame = context.Tags.Get(RenderFrame.Current);
+            context.Tags.Set(SceneGraphicsLayer.CurrentInput, currentRenderFrame);
 
-            // Handle Output
+            // Sets the output of the layer 
+            // Master is always going to use the Master frame for the current frame.
             if (isMaster)
             {
                 // Master is always going to use the Master frame for the current frame.
-                context.Tags.Set(RenderFrame.Current, context.Tags.Get(RenderFrame.Master));
+                context.Tags.Set(RenderFrame.Current, context.Tags.Get(SceneGraphicsLayer.Master));
             }
             else
             {
-                HandleOutput(context, layerState, layer);
+                if (layerState.Output != null && layerState.Output != layer.Output)
+                {
+                    // If we have a new output 
+                    layerState.Output.Dispose();
+                }
+                layerState.Output = layer.Output;
+                var renderFrame = layer.Output.GetRenderFrame(context);
+                context.Tags.Set(RenderFrame.Current, renderFrame);
             }
 
             layer.Renderers.Draw(context);
         }
 
-        private void HandleOutput(RenderContext context, GraphicsLayerState layerState, SceneGraphicsLayer layer)
-        {
-            if (layerState.Output != null && layerState.Output != layer.Output)
-            {
-                // If we have a new output 
-                layerState.Output.Dispose();
-            }
-            layerState.Output = layer.Output;
-            var renderFrame = layer.Output.GetRenderFrame(context);
-            context.Tags.Set(RenderFrame.Current, renderFrame);
-        }
-
         private class GraphicsLayerState
         {
-            public GraphicsLayerState()
-            {
-            }
-
-            public ISceneGraphicsComposerOutput Output { get; set; }
+            public IGraphicsLayerOutput Output { get; set; }
         }
     }
 }

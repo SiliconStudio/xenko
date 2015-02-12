@@ -9,18 +9,13 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
     /// <summary>
     /// Output to the Direct (same as the output of the master layer).
     /// </summary>
-    [DataContract("SceneGraphicsComposerOutputCurrent")]
+    [DataContract("CurrentRenderFrameProvider")]
     [Display("Current")]
-    public sealed class SceneGraphicsComposerOutputCurrent: ISceneGraphicsComposerOutput
+    public sealed class CurrentRenderFrameProvider : RenderFrameProviderBase, IGraphicsLayerOutput, IImageEffectRendererInput, IImageEffectRendererOutput
     {
-        public void Dispose()
+        public override RenderFrame GetRenderFrame(RenderContext context)
         {
-        }
-
-        public RenderFrame GetRenderFrame(RenderContext context)
-        {
-            // Get the current (or master) render frame
-            return context.Tags.Get(RenderFrame.Current) ?? context.Tags.Get(RenderFrame.Master);
+            return context.Tags.Get(RenderFrame.Current);
         }
     }
 }

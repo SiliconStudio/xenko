@@ -5,6 +5,7 @@ using System;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects.Images
@@ -17,7 +18,9 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// - a separable 1D horizontal and vertical blur
     /// - linear filtering to reduce the number of taps
     /// </remarks>
-    public sealed class GaussianBlur : ImageEffect
+    [DataContract("GaussianBlur")]
+    [Display("Gaussian Blur")]
+    public sealed class GaussianBlur : ImageEffect, IImageEffectRenderer // SceneEffectRenderer as GaussianBlur is a simple input/output effect.
     {
         private ImageEffectShader blurH;
         private ImageEffectShader blurV;
@@ -61,6 +64,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Gets or sets the radius.
         /// </summary>
         /// <value>The radius.</value>
+        [DataMember(10)]
         public int Radius
         {
             get
@@ -87,6 +91,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// formula is <c>sigma = radius / SigmaRatio</c>. The default value is 2.0f.
         /// </summary>
         /// <value>The sigma ratio.</value>
+        [DataMember(20)]
         public float SigmaRatio
         {
             get

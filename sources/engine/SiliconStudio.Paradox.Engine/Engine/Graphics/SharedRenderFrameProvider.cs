@@ -5,15 +5,16 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Engine.Graphics.Composers;
 
-namespace SiliconStudio.Paradox.Engine.Graphics.Composers
+namespace SiliconStudio.Paradox.Engine.Graphics
 {
     /// <summary>
     /// A link to a shared <see cref="RenderFrame"/>.
     /// </summary>
-    [DataContract("SceneGraphicsComposerOutputSharedRenderFrame")]
+    [DataContract("SharedRenderFrameProvider")]
     [Display("Shared RenderFrame")]
-    public sealed class SceneGraphicsComposerOutputSharedRenderFrame : ISceneGraphicsComposerOutput
+    public sealed class SharedRenderFrameProvider : RenderFrameProviderBase, IGraphicsLayerOutput, IImageEffectRendererInput, IImageEffectRendererOutput
     {
         /// <summary>
         /// Gets or sets the shared RenderFrame.
@@ -23,11 +24,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         [DefaultValue(null)]
         public RenderFrame RenderFrame { get; set; }
 
-        public void Dispose()
-        {
-        }
-
-        public RenderFrame GetRenderFrame(RenderContext context)
+        public override RenderFrame GetRenderFrame(RenderContext context)
         {
             return RenderFrame;
         }

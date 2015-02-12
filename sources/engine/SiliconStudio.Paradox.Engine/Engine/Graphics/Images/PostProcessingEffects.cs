@@ -3,6 +3,7 @@
 
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects.Images
@@ -10,51 +11,48 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// A default bundle of <see cref="ImageEffect"/>.
     /// </summary>
-    [DataContract("ImageEffectBundle")]
-    public sealed class ImageEffectBundle : ImageEffect
+    [DataContract("PostProcessingEffects")]
+    [Display("Post-Processing Effects")]
+    public sealed class PostProcessingEffects : ImageEffect, IImageEffectRenderer
     {
-        private readonly LuminanceEffect luminanceEffect;
-        private readonly BrightFilter brightFilter;
-        private readonly Bloom bloom;
-        private readonly ColorTransformGroup colorTransformsGroup;
-        private readonly ToneMap toneMap;
-        private readonly FXAAEffect fxaa;
-        private readonly DepthOfField depthOfField;
+        private DepthOfField depthOfField;
+        private LuminanceEffect luminanceEffect;
+        private BrightFilter brightFilter;
+        private Bloom bloom;
+        private ColorTransformGroup colorTransformsGroup;
+        private ToneMap toneMap;
+        private IScreenSpaceAntiAliasingEffect ssaa;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImageEffectBundle"/> class.
+        /// Initializes a new instance of the <see cref="PostProcessingEffects" /> class.
         /// </summary>
         /// <param name="services">The services.</param>
-        public ImageEffectBundle(IServiceRegistry services)
+        public PostProcessingEffects(IServiceRegistry services)
             : this(RenderContext.GetShared(services))
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImageEffectBundle"/> class.
+        /// Initializes a new instance of the <see cref="PostProcessingEffects"/> class.
         /// </summary>
-        public ImageEffectBundle()
+        public PostProcessingEffects()
         {
-            depthOfField        = ToLoadAndUnload(new DepthOfField()); 
-            luminanceEffect     = ToLoadAndUnload(new LuminanceEffect());
-            brightFilter        = ToLoadAndUnload(new BrightFilter());
-            bloom               = ToLoadAndUnload(new Bloom());
-            fxaa                = ToLoadAndUnload(new FXAAEffect());
-            colorTransformsGroup = ToLoadAndUnload(new ColorTransformGroup());
-            toneMap = new ToneMap();
-            colorTransformsGroup.Transforms.Add(toneMap);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImageEffectBundle"/> class.
+        /// Initializes a new instance of the <see cref="PostProcessingEffects"/> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        public ImageEffectBundle(RenderContext context)
+        public PostProcessingEffects(RenderContext context)
             : this()
         {
             Load(context);
         }
 
+        /// <summary>
+        /// Gets the depth of field effect.
+        /// </summary>
+        /// <value>The depth of field.</value>
         [DataMember(10)]
         [Category]
         public DepthOfField DepthOfField
@@ -65,6 +63,10 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
+        /// <summary>
+        /// Gets the bright pass-filter.
+        /// </summary>
+        /// <value>The bright filter.</value>
         [DataMember(20)]
         [Category]
         public BrightFilter BrightFilter
@@ -75,6 +77,10 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
+        /// <summary>
+        /// Gets the bloom effect.
+        /// </summary>
+        /// <value>The bloom.</value>
         [DataMember(30)]
         [Category]
         public Bloom Bloom
@@ -85,6 +91,10 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
+        /// <summary>
+        /// Gets the tone map.
+        /// </summary>
+        /// <value>The tone map.</value>
         [DataMemberIgnore]
         public ToneMap ToneMap
         {
@@ -94,6 +104,10 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
+        /// <summary>
+        /// Gets the final color transforms.
+        /// </summary>
+        /// <value>The color transforms.</value>
         [DataMember(40)]
         [Category]
         public ColorTransformGroup ColorTransforms
@@ -104,15 +118,38 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
-
+        /// <summary>
+        /// Gets the antialiasing effect.
+        /// </summary>
+        /// <value>The antialiasing.</value>
         [DataMember(50)]
         [Category]
-        public FXAAEffect Antialiasing
+        public IScreenSpaceAntiAliasingEffect Antialiasing
         {
             get
             {
-                return fxaa; // TOOD: Allow to change the anti-aliasing technique
+                return ssaa;
             }
+
+            set
+            {
+                // TODO: Unload previous anti-aliasing before replacing it
+                ssaa = value;
+            }
+        }
+
+        public override void Load(RenderContext context)
+        {
+            base.Load(context);
+
+            depthOfField = ToLoadAndUnload(new DepthOfField());
+            luminanceEffect = ToLoadAndUnload(new LuminanceEffect());
+            brightFilter = ToLoadAndUnload(new BrightFilter());
+            bloom = ToLoadAndUnload(new Bloom());
+            ssaa = ToLoadAndUnload(new FXAAEffect());
+            colorTransformsGroup = ToLoadAndUnload(new ColorTransformGroup());
+            toneMap = new ToneMap();
+            colorTransformsGroup.Transforms.Add(toneMap);
         }
 
         protected override void DrawCore(RenderContext context)
@@ -169,7 +206,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             var outputForLastEffectBeforeAntiAliasing = output;
 
-            if (fxaa.Enabled)
+            if (ssaa != null && ssaa.Enabled)
             {
                 outputForLastEffectBeforeAntiAliasing = NewScopedRenderTarget2D(output.Width, output.Height, output.Format);
             }
@@ -180,13 +217,12 @@ namespace SiliconStudio.Paradox.Effects.Images
             lastEffect.SetOutput(outputForLastEffectBeforeAntiAliasing);
             lastEffect.Draw(context);
 
-            if (fxaa.Enabled)
+            if (ssaa != null && ssaa.Enabled)
             {
-                fxaa.SetInput(outputForLastEffectBeforeAntiAliasing);
-                fxaa.SetOutput(output);
-                fxaa.Draw(context);
+                ssaa.SetInput(outputForLastEffectBeforeAntiAliasing);
+                ssaa.SetOutput(output);
+                ssaa.Draw(context);
             }
         }
-
     }
 }

@@ -20,11 +20,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     public class RenderFrame
     {
         /// <summary>
-        /// Property key to access the Master <see cref="RenderFrame"/> from <see cref="RenderContext.Tags"/>.
-        /// </summary>
-        public static readonly PropertyKey<RenderFrame> Master = new PropertyKey<RenderFrame>("RenderFrame.Master", typeof(RenderFrame));
-
-        /// <summary>
         /// Property key to access the Current <see cref="RenderFrame"/> from <see cref="RenderContext.Tags"/>.
         /// </summary>
         public static readonly PropertyKey<RenderFrame> Current = new PropertyKey<RenderFrame>("RenderFrame.Current", typeof(RenderFrame));
@@ -79,6 +74,16 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
             // Sets the depth and render target
             renderContext.GraphicsDevice.SetDepthAndRenderTarget(DepthStencil, RenderTarget);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="RenderFrame"/> to <see cref="Texture"/>.
+        /// </summary>
+        /// <param name="from">The render frame.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator Texture(RenderFrame from)
+        {
+            return from != null ? from.RenderTarget : null;
         }
 
         /// <summary>

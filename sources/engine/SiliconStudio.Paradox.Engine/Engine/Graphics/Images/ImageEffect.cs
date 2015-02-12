@@ -3,6 +3,7 @@
 
 using System;
 
+using SiliconStudio.Core;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects.Images
@@ -10,7 +11,8 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// Post effect base class.
     /// </summary>
-    public abstract class ImageEffect : DrawEffect
+    [DataContract]
+    public abstract class ImageEffect : DrawEffect, IImageEffect
     {
         private readonly Texture[] inputTextures;
         private int maxInputTextureIndex;

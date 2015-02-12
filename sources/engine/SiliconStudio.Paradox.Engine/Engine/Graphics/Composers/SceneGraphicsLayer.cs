@@ -5,6 +5,7 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.Engine.Graphics.Composers
 {
@@ -15,13 +16,17 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
     public class SceneGraphicsLayer
     {
         /// <summary>
+        /// Property key to access the Input <see cref="RenderFrame"/> from the current SceneGraphicsLayer
+        /// </summary>
+        public static readonly PropertyKey<RenderFrame> CurrentInput = new PropertyKey<RenderFrame>("SceneGraphicsLayer.CurrentInput", typeof(SceneGraphicsLayer));
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="SceneGraphicsLayer"/> class.
         /// </summary>
         public SceneGraphicsLayer()
         {
             Enabled = true;
-            Input = new SceneGraphicsLayerInputNone();
-            Output = new SceneGraphicsComposerOutputMaster();
+            Output = new GraphicsLayerOutputMaster();
             Renderers = new SceneRendererCollection();
         }
 
@@ -42,17 +47,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the input this layer.
-        /// </summary>
-        /// <value>The input.</value>
-        /// <userdoc>
-        /// Defines the input of a layer. This can be the previous layer or a specific layer or a render target...etc.
-        /// </userdoc>
-        [DataMember(30)]
-        [NotNull]
-        public ISceneGraphicsLayerInput Input { get; set; }
-
-        /// <summary>
         /// Gets or sets the output of this layer.
         /// </summary>
         /// <value>The output.</value>
@@ -62,7 +56,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         /// </userdoc>
         [DataMember(40)]
         [NotNull]
-        public ISceneGraphicsComposerOutput Output { get; set; }
+        public IGraphicsLayerOutput Output { get; set; }
 
         /// <summary>
         /// Gets the renderers that will be used to render this layer.
@@ -74,5 +68,10 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         [DataMember(50)]
         [Category]
         public SceneRendererCollection Renderers { get; private set; }
+
+        /// <summary>
+        /// Property key to access the Master <see cref="RenderFrame"/> from <see cref="RenderContext.Tags"/>.
+        /// </summary>
+        public static readonly PropertyKey<RenderFrame> Master = new PropertyKey<RenderFrame>("RenderFrame.Master", typeof(RenderFrame));
     }
 }

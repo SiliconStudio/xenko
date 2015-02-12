@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         /// <param name="imageEffect">The post effect.</param>
         /// <param name="texture">The texture.</param>
-        public static void SetInput(this ImageEffect imageEffect, Texture texture)
+        public static void SetInput(this IImageEffect imageEffect, Texture texture)
         {
             imageEffect.SetInput(0, texture);
         }
@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <param name="imageEffect">The post effect.</param>
         /// <param name="texture">The texture.</param>
         /// <param name="texture2">The texture2.</param>
-        public static void SetInput(this ImageEffect imageEffect, Texture texture, Texture texture2)
+        public static void SetInput(this IImageEffect imageEffect, Texture texture, Texture texture2)
         {
             imageEffect.SetInput(0, texture);
             imageEffect.SetInput(1, texture2);
@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <param name="texture">The texture.</param>
         /// <param name="texture2">The texture2.</param>
         /// <param name="texture3">The texture3.</param>
-        public static void SetInput(this ImageEffect imageEffect, Texture texture, Texture texture2, Texture texture3)
+        public static void SetInput(this IImageEffect imageEffect, Texture texture, Texture texture2, Texture texture3)
         {
             imageEffect.SetInput(0, texture);
             imageEffect.SetInput(1, texture2);

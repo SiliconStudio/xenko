@@ -9,6 +9,7 @@ using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Graphics;
+using SiliconStudio.Paradox.Engine.Graphics.Composers;
 using SiliconStudio.Paradox.Games;
 
 namespace SiliconStudio.Paradox.EntityModel
@@ -148,7 +149,7 @@ namespace SiliconStudio.Paradox.EntityModel
 
                 // Update the render context to use the main RenderFrame as current by default
                 var currentSceneState = sceneProcessor.CurrentState;
-                renderContext.Tags.Set(RenderFrame.Master, mainRenderFrame);
+                renderContext.Tags.Set(SceneGraphicsLayer.Master, mainRenderFrame);
                 renderContext.Tags.Set(EntityManager.Current, currentSceneState.EntityManager);
                 renderContext.Tags.Set(CameraRendererMode.RendererTypesKey, currentSceneState.RendererTypes);
 

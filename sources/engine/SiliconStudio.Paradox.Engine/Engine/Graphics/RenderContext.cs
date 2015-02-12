@@ -86,6 +86,7 @@ namespace SiliconStudio.Paradox.Effects
                 {
                     effect = (ImageEffect)Activator.CreateInstance(typeof(T), this);
                     sharedEffects.Add(typeof(T), effect);
+                    effect.Load(this);
                 }
 
                 return (T)effect;
