@@ -236,9 +236,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
             if (assignmentExpression.Operator == AssignmentOperator.Default && parentBlock != null)
             {
-                if (assignmentExpression.Target is VariableReferenceExpression && (assignmentExpression.Target as VariableReferenceExpression).TypeInference.TargetType is StreamsType) // "streams = ...;"
+                if (assignmentExpression.Target is VariableReferenceExpression && (assignmentExpression.Target as VariableReferenceExpression).Name == StreamsType.ThisStreams.Name) // "streams = ...;"
                     StreamAssignations.Add(assignmentExpression, parentBlock);
-                else if (assignmentExpression.Value is VariableReferenceExpression && (assignmentExpression.Value as VariableReferenceExpression).TypeInference.TargetType is StreamsType) // "... = streams;"
+                else if (assignmentExpression.Value is VariableReferenceExpression && (assignmentExpression.Value as VariableReferenceExpression).Name == StreamsType.ThisStreams.Name) // "... = streams;"
                     AssignationsToStream.Add(assignmentExpression, parentBlock);
             }
         }
