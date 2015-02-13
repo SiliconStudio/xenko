@@ -1433,7 +1433,12 @@ namespace SiliconStudio.Paradox.Effects
             }
 
             /// <inheritdoc/>
-            public IEnumerator<ParameterKey> GetEnumerator()
+            IEnumerator<ParameterKey> IEnumerable<ParameterKey>.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            public Enumerator GetEnumerator()
             {
                 return new Enumerator(parameterCollection.valueList);
             }
