@@ -47,7 +47,12 @@ namespace SiliconStudio.Paradox.Engine
 
         private static object OnSceneComponentGet(ref PropertyContainer props)
         {
-            return ((Scene)props.Owner).Settings;
+            var scene = props.Owner as Scene;
+            if (scene != null)
+            {
+                return scene.Settings;
+            }
+            return null;
         }
 
         private static void OnSceneComponentSet(ref PropertyContainer props, object value)

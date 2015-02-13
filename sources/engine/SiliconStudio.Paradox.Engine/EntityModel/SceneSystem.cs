@@ -30,6 +30,8 @@ namespace SiliconStudio.Paradox.EntityModel
             : base(registry)
         {
             registry.AddService(typeof(SceneSystem), this);
+            Enabled = true;
+            Visible = true;
         }
 
         /// <summary>

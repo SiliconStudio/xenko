@@ -33,10 +33,10 @@ namespace SiliconStudio.Paradox.EntityModel
 
         private readonly TrackingCollection<EntityProcessor> processors;
 
+        private readonly List<EntityProcessor> newProcessors;
+
         private readonly HashSet<Type> autoRegisteredComponentTypes;
         private readonly HashSet<Type> autoRegisteredProcessorTypes;
-
-        private bool isAutoRegisteringProcessors;
 
         public event Action<Type> ComponentTypeRegistered;
 
@@ -50,10 +50,10 @@ namespace SiliconStudio.Paradox.EntityModel
 
             processors = new TrackingCollection<EntityProcessor>();
             processors.CollectionChanged += new EventHandler<TrackingCollectionChangedEventArgs>(systems_CollectionChanged);
+            newProcessors = new List<EntityProcessor>();
 
             autoRegisteredComponentTypes = new HashSet<Type>();
             autoRegisteredProcessorTypes = new HashSet<Type>();
-            newAutoRegisteredProcessors = new List<EntityProcessor>();
         }
 
 
@@ -74,8 +74,6 @@ namespace SiliconStudio.Paradox.EntityModel
                 return autoRegisteredProcessorTypes;
             }
         }
-
-        internal bool AutoRegisterDefaultProcessors { get; set; }
 
         public void Update(GameTime gameTime)
         {
@@ -244,7 +242,9 @@ namespace SiliconStudio.Paradox.EntityModel
 
             return null;
         }
-        
+
+        private int addEntityLevel = 0;
+
         /// <summary>
         /// Adds the specified entity.
         /// </summary>
@@ -254,6 +254,8 @@ namespace SiliconStudio.Paradox.EntityModel
             // Already added?
             if (entities.ContainsKey(entity))
                 return;
+
+            addEntityLevel++;
 
             var entityProcessors = new List<EntityProcessor>();
             entities.Add(entity, entityProcessors);
@@ -267,10 +269,18 @@ namespace SiliconStudio.Paradox.EntityModel
             // Check which processor want this entity
             CheckEntityWithProcessors(entity, entityProcessors, false);
 
-            // Auto-register default processors
-            if (AutoRegisterDefaultProcessors)
+            AutoRegisterProcessors(entity, entityProcessors);
+
+            addEntityLevel--;
+
+            // Auto-register all new processors
+            if (addEntityLevel == 0)
             {
-                AutoRegisterProcessors(entity, entityProcessors);
+                foreach (var newProcessor in newProcessors)
+                {
+                    processors.Add(newProcessor);
+                }
+                newProcessors.Clear();
             }
         }
 
@@ -303,34 +313,20 @@ namespace SiliconStudio.Paradox.EntityModel
             entity.ReleaseInternal();
         }
 
-        private readonly List<EntityProcessor> newAutoRegisteredProcessors;
-
         private void AutoRegisterProcessors(Entity entity, List<EntityProcessor> entityProcessors)
         {
-            newAutoRegisteredProcessors.Clear();
-
             // TODO: Access to Components use a yield behind. Change this
             foreach (var componentKeyPair in entity.Components)
             {
                 var component = componentKeyPair.Value as EntityComponent;
                 if (component != null)
                 {
-                    RegisterComponentType(component, component.GetType());
+                    RegisterComponentType(component.GetType());
                 }
             }
-
-            isAutoRegisteringProcessors = true;
-            foreach (var processor in newAutoRegisteredProcessors)
-            {
-                processors.Add(processor);
-                processor.EntityCheck(entity, entityProcessors);
-            }
-            isAutoRegisteringProcessors = false;
-
-            newAutoRegisteredProcessors.Clear();
         }
 
-        private void RegisterComponentType(EntityComponent entityComponent, Type componentType)
+        private void RegisterComponentType(Type componentType)
         {
             if (componentType == null) throw new ArgumentNullException("componentType");
 
@@ -344,7 +340,12 @@ namespace SiliconStudio.Paradox.EntityModel
             OnComponentTypeRegistered(componentType);
 
             // Automatically create processors for the given component type
-            var processorAttributes = componentType.GetCustomAttributes<DefaultEntityComponentProcessorAttribute>();
+            RegisterProcessors(componentType);
+        }
+
+        private void RegisterProcessors(Type type)
+        {
+            var processorAttributes = type.GetCustomAttributes<DefaultEntityComponentProcessorAttribute>();
             foreach (var processorAttributeType in processorAttributes)
             {
                 var processorType = Type.GetType(processorAttributeType.TypeName);
@@ -352,49 +353,45 @@ namespace SiliconStudio.Paradox.EntityModel
                 {
                     continue;
                 }
-
-                // TODO: Log an error?
-                if (!typeof(EntityProcessor).IsAssignableFrom(processorType))
-                {
-                    continue;
-                }
-
-                if (!autoRegisteredProcessorTypes.Contains(processorType))
-                {
-                    var processor = (EntityProcessor)Activator.CreateInstance(processorType);
-
-                    foreach (var key in processor.RequiredKeys)
-                    {
-                        RegisterComponentType(null, key.OwnerType);
-                    }
-
-                    if (!autoRegisteredProcessorTypes.Contains(processorType))
-                    {
-                        InitializeProcessor(processor);
-                        newAutoRegisteredProcessors.Add(processor);
-                    }
-                }
+                RegisterProcessorType(processorType);
             }
         }
 
-        private void InitializeProcessor(EntityProcessor processor)
+        private void RegisterProcessorType(Type processorType)
         {
-            processor.EntityManager = this;
-            processor.Services = Services;
-            processor.OnSystemAdd();
+            // TODO: Log an error?
+            if (!typeof(EntityProcessor).IsAssignableFrom(processorType))
+            {
+                return;
+            }
+
+            if (!autoRegisteredProcessorTypes.Contains(processorType))
+            {
+                autoRegisteredProcessorTypes.Add(processorType);
+                var processor = (EntityProcessor)Activator.CreateInstance(processorType);
+
+                foreach (var key in processor.RequiredKeys)
+                {
+                    RegisterComponentType(key.OwnerType);
+                }
+
+                RegisterProcessors(processorType);
+
+                newProcessors.Add(processor);
+            }            
         }
 
         private void AddSystem(EntityProcessor processor)
         {
-            InitializeProcessor(processor);
+            autoRegisteredProcessorTypes.Add(processor.GetType());
 
-            // In case of auto-register, we don't have to iterate on existing entities as it is only valid for the entity being added
-            if (!isAutoRegisteringProcessors)
+            processor.EntityManager = this;
+            processor.Services = Services;
+            processor.OnSystemAdd();
+
+            foreach (var entity in entities)
             {
-                foreach (var entity in entities)
-                {
-                    processor.EntityCheck(entity.Key, entity.Value);
-                }
+                processor.EntityCheck(entity.Key, entity.Value);
             }
         }
 

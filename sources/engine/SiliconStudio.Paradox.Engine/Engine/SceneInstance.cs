@@ -177,8 +177,10 @@ namespace SiliconStudio.Paradox.Engine
             RendererTypes.Clear();
 
             // Create a new EntityManager
-            EntityManager = new EntityManager(services) { AutoRegisterDefaultProcessors = true };
+            EntityManager = new EntityManager(services);
             EntityManager.Processors.Add(new SceneProcessor(this));
+            EntityManager.Processors.Add(new HierarchicalProcessor()); // Important to pre-register this processor
+            EntityManager.Processors.Add(new TransformProcessor());
             EntityManager.Add(Scene);
 
             foreach (var componentType in EntityManager.RegisteredComponentTypes)

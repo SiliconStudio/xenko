@@ -10,7 +10,7 @@ namespace SiliconStudio.Paradox.EntityModel
     /// <summary>
     /// An attribute used to associate a default <see cref="EntityProcessor"/> to an entity component.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
     public class DefaultEntityComponentProcessorAttribute : DynamicTypeAttributeBase
     {
         /// <summary>

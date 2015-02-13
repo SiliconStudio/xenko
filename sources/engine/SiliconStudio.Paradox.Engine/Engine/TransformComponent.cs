@@ -20,8 +20,6 @@ namespace SiliconStudio.Paradox.Engine
     [DataContract("TransformComponent")]
     [DataSerializerGlobal(null, typeof(TrackingCollection<TransformComponent>))]
     [Display(10, "Transform")]
-    [DefaultEntityComponentProcessor(typeof(HierarchicalProcessor))]
-    [DefaultEntityComponentProcessor(typeof(TransformProcessor))]
     public sealed class TransformComponent : EntityComponent //, IEnumerable<TransformComponent> Check why this is not working
     {
         public readonly static PropertyKey<TransformComponent> Key = new PropertyKey<TransformComponent>("Key", typeof(TransformComponent),
