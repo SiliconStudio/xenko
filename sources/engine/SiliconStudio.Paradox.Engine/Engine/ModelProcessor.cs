@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
@@ -120,21 +121,11 @@ namespace SiliconStudio.Paradox.Engine
                     }
                 }
 
-                // TODO manage upload matrices World and Skinning in the renderers.
-                //foreach (var renderModelEntry in state.RenderModels)
-                //{
-                //    var renderModelState = renderModelEntry.Key;
-                //    var renderModel = renderModelEntry.Value;
+                // Upload matrices to TransformationKeys.World
+                modelViewHierarchy.UpdateToRenderModel(renderModel);
 
-                //    // Add model to rendering
-                //    renderModelState.RenderModels.Add(renderModel);
-
-                //    // Upload matrices to TransformationKeys.World
-                //    modelViewHierarchy.UpdateToRenderModel(renderModel);
-
-                //    // Upload skinning blend matrices
-                //    MeshSkinningUpdater.Update(modelViewHierarchy, renderModel);
-                //}
+                // Upload skinning blend matrices
+                MeshSkinningUpdater.Update(modelViewHierarchy, renderModel);
             }
         }
 
