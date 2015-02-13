@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects
@@ -13,10 +14,13 @@ namespace SiliconStudio.Paradox.Effects
     public abstract class DynamicEffectInstance
     {
         internal EffectParameterUpdaterDefinition UpdaterDefinition;
+        internal EffectParameterUpdater Updater;
         internal Task<Effect> CurrentlyCompilingEffect;
+        internal ParameterCollection CurrentlyCompilingUsedParameters;
 
         protected DynamicEffectInstance()
         {
+            Updater = new EffectParameterUpdater();
         }
 
         /// <summary>
