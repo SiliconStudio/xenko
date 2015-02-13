@@ -114,11 +114,12 @@ namespace SiliconStudio.Paradox.Effects
 
                 foreach (var renderMesh in meshes)
                 {
-                    var enabled = nodeTransformationsLocal[0].RenderingEnabledRecursive;
+                    var nodeIndex = renderMesh.Mesh.NodeIndex;
+                    var enabled = nodeTransformationsLocal[nodeIndex].RenderingEnabledRecursive;
                     renderMesh.Enabled = enabled;
                     if (enabled)
                     {
-                        renderMesh.Parameters.Set(TransformationKeys.World, nodeTransformationsLocal[0].WorldMatrix);
+                        renderMesh.Parameters.Set(TransformationKeys.World, nodeTransformationsLocal[nodeIndex].WorldMatrix);
                     }
                 }
             }
