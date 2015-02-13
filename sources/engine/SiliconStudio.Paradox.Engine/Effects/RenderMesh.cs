@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects
@@ -140,7 +141,7 @@ namespace SiliconStudio.Paradox.Effects
             vertexArrayObject = VertexArrayObject.New(device, Effect.InputSignature, Mesh.Draw.IndexBuffer, Mesh.Draw.VertexBuffers);
         }
 
-        public override void FillParameterCollections(IList<ParameterCollection> parameterCollections)
+        public override void FillParameterCollections(FastList<ParameterCollection> parameterCollections)
         {
             var material = Material;
             if (material != null && material.Parameters != null)

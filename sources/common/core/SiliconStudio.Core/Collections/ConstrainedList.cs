@@ -42,10 +42,15 @@ namespace SiliconStudio.Core.Collections
         /// </summary>
         public Func<ConstrainedList<T>, T, bool> Constraint { get; set; }
 
-        /// <inheritdoc/>
-        public IEnumerator<T> GetEnumerator()
+        public List<T>.Enumerator GetEnumerator()
         {
             return innerList.GetEnumerator();
+        }
+
+        /// <inheritdoc/>
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         /// <inheritdoc/>

@@ -136,7 +136,11 @@ namespace SiliconStudio.Paradox.Effects.Images
             {
                 appliedParameterCollections.Add(contextParameters);
             }
-            appliedParameterCollections.AddRange(parameterCollections);
+
+            foreach (var parameterCollection in parameterCollections)
+            {
+                appliedParameterCollections.Add(parameterCollection);
+            }
 
             // Draw a full screen quad
             GraphicsDevice.DrawQuad(EffectInstance.Effect, appliedParameterCollections);

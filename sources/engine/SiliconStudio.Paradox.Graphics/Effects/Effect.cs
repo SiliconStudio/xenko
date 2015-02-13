@@ -249,7 +249,31 @@ namespace SiliconStudio.Paradox.Graphics
             stageStatus.Apply(graphicsDevice, resourceBindings, ref effectStateBindings, applyEffectStates);
         }
 
-        public void Apply<TList>(GraphicsDevice graphicsDevice, TList parameterCollections, bool applyEffectStates) where TList : class, IEnumerable<ParameterCollection>
+        public void Apply(GraphicsDevice graphicsDevice, ParameterCollection[] parameterCollections, bool applyEffectStates)
+        {
+            // There is a version of Apply with ParameterCollection[] and one with List<ParameterCollection> for performance reasons
+            if (parameterCollections == null) throw new ArgumentNullException("parameterCollections");
+
+            PrepareApply(graphicsDevice);
+            var stageStatus = graphicsDevice.StageStatus;
+
+            stageStatus.ParameterCollections[0] = defaultParameters; // Default Parameters contains all registered Parameters used effectively by the effect
+            int i = DefaultParameterCollectionCount - 1;
+            foreach (var parameterCollection in parameterCollections)
+            {
+                if (i >= stageStatus.ParameterCollections.Length)
+                {
+                    throw new ArgumentException(string.Format("Exceeding limit of number of parameter collections [{0}]", stageStatus.ParameterCollections.Length - DefaultParameterCollectionCount));
+                }
+                stageStatus.ParameterCollections[i] = parameterCollection;
+                i++;
+            }
+            stageStatus.ParameterCollections[i] = graphicsDevice.Parameters; // GraphicsDevice.Parameters is overriding all parameters
+            stageStatus.UpdateParameters(graphicsDevice, updaterDefinition, i + 1);
+            stageStatus.Apply(graphicsDevice, resourceBindings, ref effectStateBindings, applyEffectStates);
+        }
+
+        public void Apply(GraphicsDevice graphicsDevice, List<ParameterCollection> parameterCollections, bool applyEffectStates)
         {
             if (parameterCollections == null) throw new ArgumentNullException("parameterCollections");
 
@@ -306,22 +330,6 @@ namespace SiliconStudio.Paradox.Graphics
             defaultParameters = new ParameterCollection();
             inputSignature = program.InputSignature;
             LoadDefaultParameters();
-
-            CompilationParameters = new ParameterCollection();
-            DefaultCompilationParameters = new ParameterCollection();
-            if (usedParameters != null)
-            {
-                foreach (var parameter in usedParameters)
-                {
-                    if (parameter.Key != CompilerParameters.DebugKey && parameter.Key != CompilerParameters.GraphicsPlatformKey && parameter.Key != CompilerParameters.GraphicsProfileKey)
-                        CompilationParameters.SetObject(parameter.Key, parameter.Value);
-                }
-            }
-
-            foreach (var key in CompilationParameters.Keys)
-            {
-                DefaultCompilationParameters.RegisterParameter(key, false);
-            }
         }
 
         private void LoadDefaultParameters()

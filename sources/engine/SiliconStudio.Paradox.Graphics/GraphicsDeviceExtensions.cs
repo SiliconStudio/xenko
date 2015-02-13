@@ -49,7 +49,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="effect">The effect.</param>
         /// <param name="parameterCollections">The parameter collections.</param>
         /// <exception cref="System.ArgumentNullException">effect</exception>
-        public static void DrawQuad<TList>(this GraphicsDevice device, Effect effect, TList parameterCollections) where TList : class, IEnumerable<ParameterCollection>
+        public static void DrawQuad(this GraphicsDevice device, Effect effect, List<ParameterCollection> parameterCollections)
         {
             if (effect == null) throw new ArgumentNullException("effect");
 

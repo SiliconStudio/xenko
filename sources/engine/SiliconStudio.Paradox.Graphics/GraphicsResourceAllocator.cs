@@ -24,6 +24,8 @@ namespace SiliconStudio.Paradox.Graphics
         private readonly Dictionary<BufferDescription, List<GraphicsResourceLink>> bufferCache = new Dictionary<BufferDescription, List<GraphicsResourceLink>>();
         private readonly Func<Texture, TextureDescription> getTextureDefinitionDelegate;
         private readonly Func<Buffer, BufferDescription> getBufferDescriptionDelegate;
+        private readonly Func<TextureDescription, PixelFormat, Texture> createTextureDelegate;
+        private readonly Func<BufferDescription, PixelFormat, Buffer> createBufferDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphicsResourceAllocator" /> class.
@@ -34,8 +36,11 @@ namespace SiliconStudio.Paradox.Graphics
             if (serviceRegistry == null) throw new ArgumentNullException("serviceRegistry");
             Services = serviceRegistry;
             GraphicsDevice = serviceRegistry.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
+
             getTextureDefinitionDelegate = GetTextureDefinition;
             getBufferDescriptionDelegate = GetBufferDescription;
+            createTextureDelegate = CreateTexture;
+            createBufferDelegate = CreateBuffer;
         }
 
         /// <summary>
@@ -94,7 +99,7 @@ namespace SiliconStudio.Paradox.Graphics
             // Global lock to be threadsafe. 
             lock (thisLock)
             {
-                return GetTemporaryResource(textureCache, description, CreateTexture, getTextureDefinitionDelegate, PixelFormat.None);
+                return GetTemporaryResource(textureCache, description, createTextureDelegate, getTextureDefinitionDelegate, PixelFormat.None);
             }
         }
 
@@ -109,7 +114,7 @@ namespace SiliconStudio.Paradox.Graphics
             // Global lock to be threadsafe. 
             lock (thisLock)
             {
-                return GetTemporaryResource(bufferCache, description, CreateBuffer, getBufferDescriptionDelegate, viewFormat);
+                return GetTemporaryResource(bufferCache, description, createBufferDelegate, getBufferDescriptionDelegate, viewFormat);
             }
         }
 
