@@ -6,6 +6,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Assets.Materials;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Effects.Lights;
 using SiliconStudio.Paradox.Effects.ProceduralModels;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Graphics;
@@ -19,6 +20,8 @@ namespace SiliconStudio.Paradox.Graphics.Tests
     [TestFixture]
     public class TestScene : TestGameBase
     {
+        private Entity cubeEntity;
+
         public TestScene()
         {
         }
@@ -36,7 +39,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             var scene = new Scene();
 
             // TODO: Add material
-            var entity = new Entity();
+            cubeEntity = new Entity();
             var modelDescriptor = new ProceduralModelDescriptor(new CubeProceduralModel());
             var model = modelDescriptor.GenerateModel(Services);
             var modelComponent = new ModelComponent(model);
@@ -53,13 +56,22 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             model.Materials.Add(material);
 
-            entity.Add(modelComponent);
+            cubeEntity.Add(modelComponent);
 
-            scene.Transform.Children.Add(entity.Transform);
+            scene.Transform.Children.Add(cubeEntity.Transform);
 
             var cameraEntity = new Entity { new CameraComponent() };
             cameraEntity.Transform.Position = new Vector3(0, 0, 5);
             scene.Transform.Children.Add(cameraEntity.Transform);
+
+            var lightEntity = new Entity()
+            {
+                new LightComponent()
+            };
+
+            lightEntity.Transform.Position = new Vector3(0, 0, 1);
+            lightEntity.Transform.Rotation = Quaternion.RotationY(MathUtil.DegreesToRadians(45));
+            scene.Transform.Children.Add(lightEntity.Transform);
 
             var graphicsCompositor = new SceneGraphicsCompositorLayers();
             graphicsCompositor.Master.Renderers.Add(new ClearRenderFrameRenderer());
@@ -76,6 +88,9 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         protected override void Draw(GameTime gameTime)
         {
             base.Draw(gameTime);
+
+            var time = (float)gameTime.Total.TotalSeconds;
+            cubeEntity.Transform.Rotation = Quaternion.RotationY(time) * Quaternion.RotationX(time * 0.5f);
 
             //if(!ScreenShotAutomationEnabled)
             //    DrawCustomEffect();
