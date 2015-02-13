@@ -30,7 +30,13 @@ namespace SiliconStudio.Presentation.Quantum
         {
             if (viewModelProvider == null) throw new ArgumentNullException("viewModelProvider");
             ViewModelProvider = viewModelProvider;
+            ObservableNodeFactory = ObservableViewModel.DefaultObservableNodeFactory;
         }
+
+        /// <summary>
+        /// Gets or sets the observable node factory.
+        /// </summary>
+        public CreateNodeDelegate ObservableNodeFactory { get; set; }
 
         /// <summary>
         /// Gets or sets a method that retrieves the currently active <see cref="ObservableViewModel"/>. This method is used to get the current observable

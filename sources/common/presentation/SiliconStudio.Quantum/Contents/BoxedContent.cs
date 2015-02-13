@@ -10,8 +10,8 @@ namespace SiliconStudio.Quantum.Contents
 {
     public class BoxedContent : ObjectContent
     {
-        public BoxedContent(INodeBuilder nodeBuilder, object value, ITypeDescriptor descriptor, bool isPrimitive)
-            : base(nodeBuilder, value, descriptor, isPrimitive, null)
+        public BoxedContent(object value, ITypeDescriptor descriptor, bool isPrimitive)
+            : base(value, descriptor, isPrimitive, null)
         {
         }
 

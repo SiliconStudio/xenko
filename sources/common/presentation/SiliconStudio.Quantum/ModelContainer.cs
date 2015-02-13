@@ -144,11 +144,25 @@ namespace SiliconStudio.Quantum
         /// Refresh all references contained in the given node, creating new models for newly referenced objects.
         /// </summary>
         /// <param name="node">The node to update</param>
-        public void UpdateReferences(IModelNode node)
+        internal void UpdateReferences(IModelNode node)
         {
             lock (lockObject)
             {
-                UpdateReferences(node, true);
+                // If the node was holding a reference, refresh the reference
+                if (node.Content.IsReference)
+                {
+                    node.Content.Reference.Refresh(node.Content.Value);
+                    UpdateOrCreateReferenceTarget(node.Content.Reference, node);
+                }
+                else
+                {
+                    // Otherwise refresh potential references in its children.
+                    foreach (var child in node.Children.SelectDeep(x => x.Children).Where(x => x.Content.IsReference))
+                    {
+                        child.Content.Reference.Refresh(child.Content.Value);
+                        UpdateOrCreateReferenceTarget(child.Content.Reference, child);
+                    }
+                }
             }
         }
 
@@ -178,36 +192,13 @@ namespace SiliconStudio.Quantum
                 modelsByGuid.Add(result.Guid, result);
 
                 // Create or update model for referenced objects
-                UpdateReferences(result, false);
+                UpdateReferences(result);
             }
 
             return result;
         }
 
-        private void UpdateReferences(IModelNode node, bool refreshReferences)
-        {
-            // If the node was holding a reference, refresh the reference
-            if (node.Content.IsReference)
-            {
-                if (refreshReferences)
-                    node.Content.Reference.Refresh(node.Content.Value);
-
-                UpdateOrCreateReferenceTarget(node.Content.Reference, node, refreshReferences);
-            }
-            else
-            {
-                // Otherwise refresh potential references in its children.
-                foreach (var child in node.Children.SelectDeep(x => x.Children).Where(x => x.Content.IsReference))
-                {
-                    if (refreshReferences)
-                        child.Content.Reference.Refresh(child.Content.Value);
-
-                    UpdateOrCreateReferenceTarget(child.Content.Reference, child, refreshReferences);
-                }
-            }
-        }
-
-        private void UpdateOrCreateReferenceTarget(IReference reference, IModelNode modelNode, bool refreshReferences, Stack<object> indices = null)
+        private void UpdateOrCreateReferenceTarget(IReference reference, IModelNode modelNode, Stack<object> indices = null)
         {
             if (reference == null) throw new ArgumentNullException("reference");
             if (modelNode == null) throw new ArgumentNullException("modelNode");
@@ -223,7 +214,7 @@ namespace SiliconStudio.Quantum
                 foreach (var itemReference in referenceEnumerable)
                 {
                     indices.Push(itemReference.Index);
-                    UpdateOrCreateReferenceTarget(itemReference, modelNode, refreshReferences, indices);
+                    UpdateOrCreateReferenceTarget(itemReference, modelNode, indices);
                     indices.Pop();
                 }
             }
@@ -255,19 +246,15 @@ namespace SiliconStudio.Quantum
                                 var targetNode = singleReference.TargetNode;
                                 var targetContent = singleReference.TargetNode.Content;
                                 // Then we refresh this reference
-                                if (refreshReferences)
-                                    targetContent.Reference.Refresh(targetContent.Value);
-
-                                UpdateOrCreateReferenceTarget(targetContent.Reference, targetNode, refreshReferences);
+                                targetContent.Reference.Refresh(targetContent.Value);
+                                UpdateOrCreateReferenceTarget(targetContent.Reference, targetNode);
                             }
 
                             // Otherwise refresh potential references in its children.
                             foreach (var child in node.Children.SelectDeep(x => x.Children).Where(x => x.Content.IsReference))
                             {
-                                if (refreshReferences)
-                                    child.Content.Reference.Refresh(child.Content.Value);
-
-                                UpdateOrCreateReferenceTarget(child.Content.Reference, child, refreshReferences);
+                                child.Content.Reference.Refresh(child.Content.Value);
+                                UpdateOrCreateReferenceTarget(child.Content.Reference, child);
                             }
                         }
                         else
@@ -279,9 +266,9 @@ namespace SiliconStudio.Quantum
             }
         }
 
-        private static INodeBuilder CreateDefaultNodeBuilder()
+        private INodeBuilder CreateDefaultNodeBuilder()
         {
-            var nodeBuilder = new DefaultModelBuilder();
+            var nodeBuilder = new DefaultModelBuilder(this);
             return nodeBuilder;
         }
     }

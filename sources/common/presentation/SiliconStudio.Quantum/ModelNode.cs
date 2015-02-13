@@ -32,6 +32,12 @@ namespace SiliconStudio.Quantum
             this.content = content;
             Name = name;
             Guid = guid;
+
+            var updatableContent = content as IUpdatableContent;
+            if (updatableContent != null)
+            {
+                updatableContent.RegisterOwner(this);
+            }
         }
 
         /// <inheritdoc/>

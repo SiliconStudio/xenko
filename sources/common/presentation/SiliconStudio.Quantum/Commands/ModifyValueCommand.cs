@@ -8,7 +8,7 @@ namespace SiliconStudio.Quantum.Commands
     {
         public sealed override object Invoke(object currentValue, ITypeDescriptor descriptor, object parameter, out UndoToken undoToken)
         {
-            var newValue = ModifyValue(currentValue, descriptor, parameter);
+            var newValue = ModifyValue(currentValue, descriptor, parameter, false);
             undoToken = !Equals(newValue, currentValue) ? new UndoToken(true, currentValue) : new UndoToken(false);
             return newValue;
         }
@@ -18,6 +18,13 @@ namespace SiliconStudio.Quantum.Commands
             return undoToken.TokenValue;
         }
 
-        protected abstract object ModifyValue(object currentValue, ITypeDescriptor descriptor, object parameter);
+        public sealed override object Redo(object currentValue, ITypeDescriptor descriptor, object parameter, out UndoToken undoToken)
+        {
+            var newValue = ModifyValue(currentValue, descriptor, parameter, true);
+            undoToken = !Equals(newValue, currentValue) ? new UndoToken(true, currentValue) : new UndoToken(false);
+            return newValue;
+        }
+
+        protected abstract object ModifyValue(object currentValue, ITypeDescriptor descriptor, object parameter, bool isRedo);
     }
 }

@@ -180,7 +180,7 @@ namespace SiliconStudio.Presentation.Quantum
                         RemoveChild(child);
 
                     foreach (var modelNode in CombinedNodes.OfType<ObservableModelNode>())
-                        modelNode.Refresh();
+                        modelNode.ForceSetValue(modelNode.Value);
 
                     Initialize(true);
                 }
