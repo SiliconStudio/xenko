@@ -1,34 +1,35 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics;
-
 namespace SiliconStudio.Paradox.Physics
 {
-    public class PhysicsEngine : IDisposable
+    public class Simulation : IDisposable
     {
-        BulletSharp.DiscreteDynamicsWorld discreteDynamicsWorld;
-        //BulletSharp.SoftBody.SoftRigidDynamicsWorld mSoftRigidDynamicsWorld;
-        BulletSharp.CollisionWorld collisionWorld;
+        private readonly BulletSharp.DiscreteDynamicsWorld discreteDynamicsWorld;
+        private readonly BulletSharp.CollisionWorld collisionWorld;
 
-        BulletSharp.CollisionDispatcher dispatcher;
-        BulletSharp.CollisionConfiguration collisionConfiguration;
-        BulletSharp.DbvtBroadphase broadphase;
+        private readonly BulletSharp.CollisionDispatcher dispatcher;
+        private readonly BulletSharp.CollisionConfiguration collisionConfiguration;
+        private readonly BulletSharp.DbvtBroadphase broadphase;
 
-        BulletSharp.ContactSolverInfo solverInfo;
-        BulletSharp.DispatcherInfo dispatchInfo;
+        // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
+        private readonly BulletSharp.ContactSolverInfo solverInfo;
 
-        bool mCanCcd;
+        private readonly BulletSharp.DispatcherInfo dispatchInfo;
+
+        private readonly bool canCcd;
 
         public bool ContinuousCollisionDetection
         {
             get
             {
-                if (!mCanCcd)
+                if (!canCcd)
                 {
                     throw new Exception("ContinuousCollisionDetection must be enabled at physics engine initialization using the proper flag.");
                 }
@@ -37,7 +38,7 @@ namespace SiliconStudio.Paradox.Physics
             }
             set
             {
-                if (!mCanCcd)
+                if (!canCcd)
                 {
                     throw new Exception("ContinuousCollisionDetection must be enabled at physics engine initialization using the proper flag.");
                 }
@@ -49,32 +50,33 @@ namespace SiliconStudio.Paradox.Physics
         /// <summary>
         /// The debug effect, populate this field in the case of debug rendering
         /// </summary>
-        public PhysicsDebugEffect DebugEffect = null;
+        public static PhysicsDebugEffect DebugEffect = null;
 
         /// <summary>
         /// Set to true if you want the engine to create the debug primitives
         /// </summary>
-        public bool CreateDebugPrimitives = false;
+        public static bool CreateDebugPrimitives = false;
 
         /// <summary>
         ///  Set to true if you want the engine to render the debug primitives
         /// </summary>
-        public bool RenderDebugPrimitives = false;
+        public static bool RenderDebugPrimitives = false;
 
         /// <summary>
         /// Totally disable the simulation if set to true
         /// </summary>
-        public bool DisableSimulation = false;
+        public static bool DisableSimulation = false;
 
-        internal GraphicsDevice DebugGraphicsDevice;
+        internal static GraphicsDevice DebugGraphicsDevice;
 
-        internal static PhysicsEngine Singleton = null;
+        private static Game game;
 
-        readonly Game game;
-
-        public PhysicsEngine(Game g)
+        internal static void Initialize(Game currentGame)
         {
-            game = g;
+            game = currentGame;
+
+            // Preload proper libbulletc native library (depending on CPU type)
+            Core.NativeLibrary.PreloadLibrary("libbulletc.dll");
         }
 
         /// <summary>
@@ -82,13 +84,10 @@ namespace SiliconStudio.Paradox.Physics
         /// </summary>
         /// <param name="flags">The flags.</param>
         /// <exception cref="System.NotImplementedException">SoftBody processing is not yet available</exception>
-        public void Initialize(PhysicsEngineFlags flags = PhysicsEngineFlags.None)
+        internal Simulation(PhysicsEngineFlags flags = PhysicsEngineFlags.None)
         {
-            // Preload proper libbulletc native library (depending on CPU type)
-            Core.NativeLibrary.PreloadLibrary("libbulletc.dll");
-
-            //add into processors pipeline
-            game.Entities.Processors.Add(new PhysicsProcessor());
+            MaxSubSteps = 1;
+            FixedTimeStep = 1.0f/60.0f;
 
             collisionConfiguration = new BulletSharp.DefaultCollisionConfiguration();
             dispatcher = new BulletSharp.CollisionDispatcher(collisionConfiguration);
@@ -137,7 +136,7 @@ namespace SiliconStudio.Paradox.Physics
 
                 if (flags.HasFlag(PhysicsEngineFlags.ContinuosCollisionDetection))
                 {
-                    mCanCcd = true;
+                    canCcd = true;
                     solverInfo.SolverMode |= BulletSharp.SolverModes.Use2FrictionDirections | BulletSharp.SolverModes.RandomizeOrder;
                     dispatchInfo.UseContinuous = true;
                 }
@@ -145,13 +144,62 @@ namespace SiliconStudio.Paradox.Physics
 
             BulletSharp.PersistentManifold.ContactProcessed += PersistentManifoldContactProcessed;
             BulletSharp.PersistentManifold.ContactDestroyed += PersistentManifoldContactDestroyed;
-
-            Initialized = true;
-
-            Singleton = this;
         }
 
-        static void PersistentManifoldContactDestroyed(object userPersistantData)
+        private enum ContactEventType
+        {
+            LastContactEnd,
+            ContactEnd,
+            FirstContactStart,
+            ContactStart,
+            ContactChange
+        }
+
+        private struct ContactEventData
+        {
+            public ContactEventType Type;
+            public Collider Caller;
+            public CollisionArgs Args;
+        }
+
+        internal void ProcessContacts()
+        {
+            foreach (var contact in contactsCache)
+            {
+                switch (contact.Type)
+                {
+                    case ContactEventType.LastContactEnd:
+                        contact.Caller.OnLastContactEnd(contact.Args);
+                        break;
+
+                    case ContactEventType.ContactEnd:
+                        contact.Caller.OnContactEnd(contact.Args);
+                        break;
+
+                    case ContactEventType.FirstContactStart:
+                        contact.Caller.OnFirstContactStart(contact.Args);
+                        break;
+
+                    case ContactEventType.ContactStart:
+                        contact.Caller.OnContactStart(contact.Args);
+                        break;
+
+                    case ContactEventType.ContactChange:
+                        contact.Caller.OnContactChange(contact.Args);
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+            contactsCache.Clear();
+        }
+
+        private readonly List<ContactEventData> contactsCache = new List<ContactEventData>();
+
+        internal static bool CacheContacts = false;
+
+        private void PersistentManifoldContactDestroyed(object userPersistantData)
         {
             var contact = (Contact)userPersistantData;
             var args = new CollisionArgs { Contact = contact };
@@ -170,14 +218,33 @@ namespace SiliconStudio.Paradox.Physics
             var previousColBState = colB.Contacts.Where(x => (x.ColliderB == colB && x.ColliderA == colA) || (x.ColliderB == colA && x.ColliderA == colB));
             if (!previousColBState.Any()) colBEnded = true;
 
-            if(colAEnded) colA.PropagateOnLastContactEnd(args);
-            colA.PropagateOnContactEnd(args);
+            if (CacheContacts)
+            {
+                contactsCache.Add(new ContactEventData
+                {
+                    Type = colAEnded ? ContactEventType.LastContactEnd : ContactEventType.ContactEnd,
+                    Caller = colA,
+                    Args = args
+                });
 
-            if(colBEnded) colB.PropagateOnLastContactEnd(args);
-            colB.PropagateOnContactEnd(args);
+                contactsCache.Add(new ContactEventData
+                {
+                    Type = colBEnded ? ContactEventType.LastContactEnd : ContactEventType.ContactEnd,
+                    Caller = colB,
+                    Args = args
+                });
+            }
+            else
+            {
+                if (colAEnded) colA.OnLastContactEnd(args);
+                colA.OnContactEnd(args);
+
+                if (colBEnded) colB.OnLastContactEnd(args);
+                colB.OnContactEnd(args);
+            }
         }
 
-        static void PersistentManifoldContactProcessed(BulletSharp.ManifoldPoint cp, BulletSharp.CollisionObject body0, BulletSharp.CollisionObject body1)
+        private void PersistentManifoldContactProcessed(BulletSharp.ManifoldPoint cp, BulletSharp.CollisionObject body0, BulletSharp.CollisionObject body1)
         {
             var colA = (Collider)body0.UserObject;
             var colB = (Collider)body1.UserObject;
@@ -212,11 +279,30 @@ namespace SiliconStudio.Paradox.Physics
 
                 cp.UserPersistentData = contact;
 
-                if(colABegan) colA.PropagateOnFirstContactBegin(args);
-                colA.PropagateOnContactBegin(args);
+                if (CacheContacts)
+                {
+                    contactsCache.Add(new ContactEventData
+                    {
+                        Type = colABegan ? ContactEventType.FirstContactStart : ContactEventType.ContactStart,
+                        Caller = colA,
+                        Args = args
+                    });
 
-                if(colBBegan) colB.PropagateOnFirstContactBegin(args);
-                colB.PropagateOnContactBegin(args);
+                    contactsCache.Add(new ContactEventData
+                    {
+                        Type = colBBegan ? ContactEventType.FirstContactStart : ContactEventType.ContactStart,
+                        Caller = colB,
+                        Args = args
+                    });
+                }
+                else
+                {
+                    if (colABegan) colA.OnFirstContactStart(args);
+                    colA.OnContactStart(args);
+
+                    if (colBBegan) colB.OnFirstContactStart(args);
+                    colB.OnContactStart(args);
+                }
             }
             else
             {
@@ -229,8 +315,27 @@ namespace SiliconStudio.Paradox.Physics
 
                 var args = new CollisionArgs { Contact = contact };
 
-                colA.PropagateOnContactChange(args);
-                colB.PropagateOnContactChange(args);
+                if (CacheContacts)
+                {
+                    contactsCache.Add(new ContactEventData
+                    {
+                        Type = ContactEventType.ContactChange,
+                        Caller = colA,
+                        Args = args
+                    });
+
+                    contactsCache.Add(new ContactEventData
+                    {
+                        Type = ContactEventType.ContactChange,
+                        Caller = colB,
+                        Args = args
+                    });
+                }
+                else
+                {
+                    colA.OnContactChange(args);
+                    colB.OnContactChange(args);
+                }
             }
         }
 
@@ -253,7 +358,7 @@ namespace SiliconStudio.Paradox.Physics
         /// </summary>
         /// <param name="shape">The shape.</param>
         /// <returns></returns>
-        public Collider CreateCollider(ColliderShape shape)
+        public static Collider CreateCollider(ColliderShape shape)
         {
             var collider = new Collider(shape)
             {
@@ -272,7 +377,6 @@ namespace SiliconStudio.Paradox.Physics
             }
 
             collider.InternalCollider.UserObject = collider;
-            collider.Engine = this;
 
             return collider;
         }
@@ -282,12 +386,12 @@ namespace SiliconStudio.Paradox.Physics
         /// </summary>
         /// <param name="collider">The collider.</param>
         /// <returns></returns>
-        public RigidBody CreateRigidBody(ColliderShape collider)
+        public static RigidBody CreateRigidBody(ColliderShape collider)
         {
             var rb = new RigidBody(collider);
 
             rb.InternalRigidBody = new BulletSharp.RigidBody(0.0f, rb.MotionState, collider.InternalShape, Vector3.Zero);
-            rb.InternalRigidBody.CollisionFlags |= BulletSharp.CollisionFlags.StaticObject; //already set if mass is 0 actually!   
+            rb.InternalRigidBody.CollisionFlags |= BulletSharp.CollisionFlags.StaticObject; //already set if mass is 0 actually!
 
             rb.InternalCollider = rb.InternalRigidBody;
 
@@ -305,7 +409,6 @@ namespace SiliconStudio.Paradox.Physics
             }
 
             rb.InternalRigidBody.UserObject = rb;
-            rb.Engine = this;
 
             return rb;
         }
@@ -316,7 +419,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <param name="collider">The collider.</param>
         /// <param name="stepHeight">Height of the step.</param>
         /// <returns></returns>
-        public Character CreateCharacter(ColliderShape collider, float stepHeight)
+        public static Character CreateCharacter(ColliderShape collider, float stepHeight)
         {
             var ch = new Character(collider)
             {
@@ -338,7 +441,6 @@ namespace SiliconStudio.Paradox.Physics
             ch.KinematicCharacter = new BulletSharp.KinematicCharacterController((BulletSharp.PairCachingGhostObject)ch.InternalCollider, (BulletSharp.ConvexShape)collider.InternalShape, stepHeight);
 
             ch.InternalCollider.UserObject = ch;
-            ch.Engine = this;
 
             return ch;
         }
@@ -350,6 +452,7 @@ namespace SiliconStudio.Paradox.Physics
         public void AddCollider(Collider collider)
         {
             collisionWorld.AddCollisionObject(collider.InternalCollider);
+            collider.Simulation = this;
         }
 
         /// <summary>
@@ -358,9 +461,10 @@ namespace SiliconStudio.Paradox.Physics
         /// <param name="collider">The collider.</param>
         /// <param name="group">The group.</param>
         /// <param name="mask">The mask.</param>
-        public void AddCollider(Collider collider, CollisionFilterGroups group, CollisionFilterGroups mask)
+        public void AddCollider(Collider collider, CollisionFilterGroupFlags group, CollisionFilterGroupFlags mask)
         {
             collisionWorld.AddCollisionObject(collider.InternalCollider, (BulletSharp.CollisionFilterGroups)group, (BulletSharp.CollisionFilterGroups)mask);
+            collider.Simulation = this;
         }
 
         /// <summary>
@@ -370,6 +474,7 @@ namespace SiliconStudio.Paradox.Physics
         public void RemoveCollider(Collider collider)
         {
             collisionWorld.RemoveCollisionObject(collider.InternalCollider);
+            collider.Simulation = null;
         }
 
         /// <summary>
@@ -382,6 +487,7 @@ namespace SiliconStudio.Paradox.Physics
             if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
 
             discreteDynamicsWorld.AddRigidBody(rigidBody.InternalRigidBody);
+            rigidBody.Simulation = this;
         }
 
         /// <summary>
@@ -391,11 +497,12 @@ namespace SiliconStudio.Paradox.Physics
         /// <param name="group">The group.</param>
         /// <param name="mask">The mask.</param>
         /// <exception cref="System.Exception">Cannot perform this action when the physics engine is set to CollisionsOnly</exception>
-        public void AddRigidBody(RigidBody rigidBody, CollisionFilterGroups group, CollisionFilterGroups mask)
+        public void AddRigidBody(RigidBody rigidBody, CollisionFilterGroupFlags group, CollisionFilterGroupFlags mask)
         {
             if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
 
             discreteDynamicsWorld.AddRigidBody(rigidBody.InternalRigidBody, (short)group, (short)mask);
+            rigidBody.Simulation = this;
         }
 
         /// <summary>
@@ -408,6 +515,7 @@ namespace SiliconStudio.Paradox.Physics
             if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
 
             discreteDynamicsWorld.RemoveRigidBody(rigidBody.InternalRigidBody);
+            rigidBody.Simulation = null;
         }
 
         /// <summary>
@@ -423,6 +531,8 @@ namespace SiliconStudio.Paradox.Physics
             var action = character.KinematicCharacter;
             discreteDynamicsWorld.AddCollisionObject(collider, BulletSharp.CollisionFilterGroups.CharacterFilter);
             discreteDynamicsWorld.AddCharacter(action);
+
+            character.Simulation = this;
         }
 
         /// <summary>
@@ -432,7 +542,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <param name="group">The group.</param>
         /// <param name="mask">The mask.</param>
         /// <exception cref="System.Exception">Cannot perform this action when the physics engine is set to CollisionsOnly</exception>
-        public void AddCharacter(Character character, CollisionFilterGroups group, CollisionFilterGroups mask)
+        public void AddCharacter(Character character, CollisionFilterGroupFlags group, CollisionFilterGroupFlags mask)
         {
             if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
 
@@ -440,6 +550,8 @@ namespace SiliconStudio.Paradox.Physics
             var action = character.KinematicCharacter;
             discreteDynamicsWorld.AddCollisionObject(collider, (BulletSharp.CollisionFilterGroups)group, (BulletSharp.CollisionFilterGroups)mask);
             discreteDynamicsWorld.AddCharacter(action);
+
+            character.Simulation = this;
         }
 
         /// <summary>
@@ -455,6 +567,8 @@ namespace SiliconStudio.Paradox.Physics
             var action = character.KinematicCharacter;
             discreteDynamicsWorld.RemoveCollisionObject(collider);
             discreteDynamicsWorld.RemoveCharacter(action);
+
+            character.Simulation = null;
         }
 
         /// <summary>
@@ -472,9 +586,8 @@ namespace SiliconStudio.Paradox.Physics
         /// or
         /// A Gear constraint always needs two rigidbodies to be created.
         /// </exception>
-        public Constraint CreateConstraint(ConstraintTypes type, RigidBody rigidBodyA, Matrix frameA, bool useReferenceFrameA = false)
+        public static Constraint CreateConstraint(ConstraintTypes type, RigidBody rigidBodyA, Matrix frameA, bool useReferenceFrameA = false)
         {
-            if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
             if (rigidBodyA == null) throw new Exception("Both RigidBodies must be valid");
 
             var rbA = rigidBodyA.InternalRigidBody;
@@ -482,111 +595,99 @@ namespace SiliconStudio.Paradox.Physics
             switch (type)
             {
                 case ConstraintTypes.Point2Point:
-                {
-                    var constraint = new Point2PointConstraint
                     {
-                        InternalPoint2PointConstraint = new BulletSharp.Point2PointConstraint(rbA, frameA.TranslationVector),
+                        var constraint = new Point2PointConstraint
+                        {
+                            InternalPoint2PointConstraint = new BulletSharp.Point2PointConstraint(rbA, frameA.TranslationVector),
 
-                        RigidBodyA = rigidBodyA,
-                    };
+                            RigidBodyA = rigidBodyA,
+                        };
 
-                    constraint.InternalConstraint = constraint.InternalPoint2PointConstraint;
+                        constraint.InternalConstraint = constraint.InternalPoint2PointConstraint;
 
-                    rigidBodyA.LinkedConstraints.Add(constraint);
+                        rigidBodyA.LinkedConstraints.Add(constraint);
 
-                    constraint.Engine = this;
-
-                    return constraint;
-                }
+                        return constraint;
+                    }
                 case ConstraintTypes.Hinge:
-                {
-                    var constraint = new HingeConstraint
                     {
-                        InternalHingeConstraint = new BulletSharp.HingeConstraint(rbA, frameA, useReferenceFrameA),
+                        var constraint = new HingeConstraint
+                        {
+                            InternalHingeConstraint = new BulletSharp.HingeConstraint(rbA, frameA, useReferenceFrameA),
 
-                        RigidBodyA = rigidBodyA,
-                    };
+                            RigidBodyA = rigidBodyA,
+                        };
 
-                    constraint.InternalConstraint = constraint.InternalHingeConstraint;
+                        constraint.InternalConstraint = constraint.InternalHingeConstraint;
 
-                    rigidBodyA.LinkedConstraints.Add(constraint);
+                        rigidBodyA.LinkedConstraints.Add(constraint);
 
-                    constraint.Engine = this;
-
-                    return constraint;
-                }
+                        return constraint;
+                    }
                 case ConstraintTypes.Slider:
-                {
-                    var constraint = new SliderConstraint
                     {
-                        InternalSliderConstraint = new BulletSharp.SliderConstraint(rbA, frameA, useReferenceFrameA),
+                        var constraint = new SliderConstraint
+                        {
+                            InternalSliderConstraint = new BulletSharp.SliderConstraint(rbA, frameA, useReferenceFrameA),
 
-                        RigidBodyA = rigidBodyA,
-                    };
+                            RigidBodyA = rigidBodyA,
+                        };
 
-                    constraint.InternalConstraint = constraint.InternalSliderConstraint;
+                        constraint.InternalConstraint = constraint.InternalSliderConstraint;
 
-                    rigidBodyA.LinkedConstraints.Add(constraint);
+                        rigidBodyA.LinkedConstraints.Add(constraint);
 
-                    constraint.Engine = this;
-
-                    return constraint;
-                }
+                        return constraint;
+                    }
                 case ConstraintTypes.ConeTwist:
-                {
-                    var constraint = new ConeTwistConstraint
                     {
-                        InternalConeTwistConstraint = new BulletSharp.ConeTwistConstraint(rbA, frameA),
+                        var constraint = new ConeTwistConstraint
+                        {
+                            InternalConeTwistConstraint = new BulletSharp.ConeTwistConstraint(rbA, frameA),
 
-                        RigidBodyA = rigidBodyA
-                    };
+                            RigidBodyA = rigidBodyA
+                        };
 
-                    constraint.InternalConstraint = constraint.InternalConeTwistConstraint;
+                        constraint.InternalConstraint = constraint.InternalConeTwistConstraint;
 
-                    rigidBodyA.LinkedConstraints.Add(constraint);
+                        rigidBodyA.LinkedConstraints.Add(constraint);
 
-                    constraint.Engine = this;
-
-                    return constraint;
-                }
+                        return constraint;
+                    }
                 case ConstraintTypes.Generic6DoF:
-                {
-                    var constraint = new Generic6DoFConstraint
                     {
-                        InternalGeneric6DofConstraint = new BulletSharp.Generic6DofConstraint(rbA, frameA, useReferenceFrameA),
+                        var constraint = new Generic6DoFConstraint
+                        {
+                            InternalGeneric6DofConstraint = new BulletSharp.Generic6DofConstraint(rbA, frameA, useReferenceFrameA),
 
-                        RigidBodyA = rigidBodyA
-                    };
+                            RigidBodyA = rigidBodyA
+                        };
 
-                    constraint.InternalConstraint = constraint.InternalGeneric6DofConstraint;
+                        constraint.InternalConstraint = constraint.InternalGeneric6DofConstraint;
 
-                    rigidBodyA.LinkedConstraints.Add(constraint);
+                        rigidBodyA.LinkedConstraints.Add(constraint);
 
-                    constraint.Engine = this;
-
-                    return constraint;
-                }
+                        return constraint;
+                    }
                 case ConstraintTypes.Generic6DoFSpring:
-                {
-                    var constraint = new Generic6DoFSpringConstraint
                     {
-                        InternalGeneric6DofSpringConstraint = new BulletSharp.Generic6DofSpringConstraint(rbA, frameA, useReferenceFrameA),
+                        var constraint = new Generic6DoFSpringConstraint
+                        {
+                            InternalGeneric6DofSpringConstraint = new BulletSharp.Generic6DofSpringConstraint(rbA, frameA, useReferenceFrameA),
 
-                        RigidBodyA = rigidBodyA
-                    };
+                            RigidBodyA = rigidBodyA
+                        };
 
-                    constraint.InternalConstraint = constraint.InternalGeneric6DofConstraint = constraint.InternalGeneric6DofSpringConstraint;
+                        constraint.InternalConstraint = constraint.InternalGeneric6DofConstraint = constraint.InternalGeneric6DofSpringConstraint;
 
-                    rigidBodyA.LinkedConstraints.Add(constraint);
+                        rigidBodyA.LinkedConstraints.Add(constraint);
 
-                    constraint.Engine = this;
-
-                    return constraint;
-                }
+                        return constraint;
+                    }
                 case ConstraintTypes.Gear:
-                {
-                    throw new Exception("A Gear constraint always needs two rigidbodies to be created.");
-                }
+                    {
+                        throw new Exception("A Gear constraint always needs two rigidbodies to be created.");
+                    }
             }
 
             return null;
@@ -607,10 +708,10 @@ namespace SiliconStudio.Paradox.Physics
         /// or
         /// Both RigidBodies must be valid
         /// </exception>
-        public Constraint CreateConstraint(ConstraintTypes type, RigidBody rigidBodyA, RigidBody rigidBodyB, Matrix frameA, Matrix frameB, bool useReferenceFrameA = false)
+        public static Constraint CreateConstraint(ConstraintTypes type, RigidBody rigidBodyA, RigidBody rigidBodyB, Matrix frameA, Matrix frameB, bool useReferenceFrameA = false)
         {
-            if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
             if (rigidBodyA == null || rigidBodyB == null) throw new Exception("Both RigidBodies must be valid");
+            //todo check if the 2 rbs are on the same engine instance!
 
             var rbA = rigidBodyA.InternalRigidBody;
             var rbB = rigidBodyB.InternalRigidBody;
@@ -618,138 +719,124 @@ namespace SiliconStudio.Paradox.Physics
             switch (type)
             {
                 case ConstraintTypes.Point2Point:
-                {
-                    var constraint = new Point2PointConstraint
                     {
-                        InternalPoint2PointConstraint = new BulletSharp.Point2PointConstraint(rbA, rbB, frameA.TranslationVector, frameB.TranslationVector),
+                        var constraint = new Point2PointConstraint
+                        {
+                            InternalPoint2PointConstraint = new BulletSharp.Point2PointConstraint(rbA, rbB, frameA.TranslationVector, frameB.TranslationVector),
 
-                        RigidBodyA = rigidBodyA,
-                        RigidBodyB = rigidBodyB
-                    };
+                            RigidBodyA = rigidBodyA,
+                            RigidBodyB = rigidBodyB
+                        };
 
-                    constraint.InternalConstraint = constraint.InternalPoint2PointConstraint;
+                        constraint.InternalConstraint = constraint.InternalPoint2PointConstraint;
 
-                    rigidBodyA.LinkedConstraints.Add(constraint);
-                    rigidBodyB.LinkedConstraints.Add(constraint);
+                        rigidBodyA.LinkedConstraints.Add(constraint);
+                        rigidBodyB.LinkedConstraints.Add(constraint);
 
-                    constraint.Engine = this;
-
-                    return constraint;
-                }
+                        return constraint;
+                    }
                 case ConstraintTypes.Hinge:
-                {
-                    var constraint = new HingeConstraint
                     {
-                        InternalHingeConstraint = new BulletSharp.HingeConstraint(rbA, rbB, frameA, frameB, useReferenceFrameA),
+                        var constraint = new HingeConstraint
+                        {
+                            InternalHingeConstraint = new BulletSharp.HingeConstraint(rbA, rbB, frameA, frameB, useReferenceFrameA),
 
-                        RigidBodyA = rigidBodyA,
-                        RigidBodyB = rigidBodyB
-                    };
+                            RigidBodyA = rigidBodyA,
+                            RigidBodyB = rigidBodyB
+                        };
 
-                    constraint.InternalConstraint = constraint.InternalHingeConstraint;
+                        constraint.InternalConstraint = constraint.InternalHingeConstraint;
 
-                    rigidBodyA.LinkedConstraints.Add(constraint);
-                    rigidBodyB.LinkedConstraints.Add(constraint);
+                        rigidBodyA.LinkedConstraints.Add(constraint);
+                        rigidBodyB.LinkedConstraints.Add(constraint);
 
-                    constraint.Engine = this;
-
-                    return constraint;
-                }
+                        return constraint;
+                    }
                 case ConstraintTypes.Slider:
-                {
-                    var constraint = new SliderConstraint
                     {
-                        InternalSliderConstraint = new BulletSharp.SliderConstraint(rbA, rbB, frameA, frameB, useReferenceFrameA),
+                        var constraint = new SliderConstraint
+                        {
+                            InternalSliderConstraint = new BulletSharp.SliderConstraint(rbA, rbB, frameA, frameB, useReferenceFrameA),
 
-                        RigidBodyA = rigidBodyA,
-                        RigidBodyB = rigidBodyB
-                    };
+                            RigidBodyA = rigidBodyA,
+                            RigidBodyB = rigidBodyB
+                        };
 
-                    constraint.InternalConstraint = constraint.InternalSliderConstraint;
+                        constraint.InternalConstraint = constraint.InternalSliderConstraint;
 
-                    rigidBodyA.LinkedConstraints.Add(constraint);
-                    rigidBodyB.LinkedConstraints.Add(constraint);
+                        rigidBodyA.LinkedConstraints.Add(constraint);
+                        rigidBodyB.LinkedConstraints.Add(constraint);
 
-                    constraint.Engine = this;
-
-                    return constraint;
-                }
+                        return constraint;
+                    }
                 case ConstraintTypes.ConeTwist:
-                {
-                    var constraint = new ConeTwistConstraint
                     {
-                        InternalConeTwistConstraint = new BulletSharp.ConeTwistConstraint(rbA, rbB, frameA, frameB),
+                        var constraint = new ConeTwistConstraint
+                        {
+                            InternalConeTwistConstraint = new BulletSharp.ConeTwistConstraint(rbA, rbB, frameA, frameB),
 
-                        RigidBodyA = rigidBodyA,
-                        RigidBodyB = rigidBodyB
-                    };
+                            RigidBodyA = rigidBodyA,
+                            RigidBodyB = rigidBodyB
+                        };
 
-                    constraint.InternalConstraint = constraint.InternalConeTwistConstraint;
+                        constraint.InternalConstraint = constraint.InternalConeTwistConstraint;
 
-                    rigidBodyA.LinkedConstraints.Add(constraint);
-                    rigidBodyB.LinkedConstraints.Add(constraint);
+                        rigidBodyA.LinkedConstraints.Add(constraint);
+                        rigidBodyB.LinkedConstraints.Add(constraint);
 
-                    constraint.Engine = this;
-
-                    return constraint;
-                }
+                        return constraint;
+                    }
                 case ConstraintTypes.Generic6DoF:
-                {
-                    var constraint = new Generic6DoFConstraint
                     {
-                        InternalGeneric6DofConstraint = new BulletSharp.Generic6DofConstraint(rbA, rbB, frameA, frameB, useReferenceFrameA),
+                        var constraint = new Generic6DoFConstraint
+                        {
+                            InternalGeneric6DofConstraint = new BulletSharp.Generic6DofConstraint(rbA, rbB, frameA, frameB, useReferenceFrameA),
 
-                        RigidBodyA = rigidBodyA,
-                        RigidBodyB = rigidBodyB
-                    };
+                            RigidBodyA = rigidBodyA,
+                            RigidBodyB = rigidBodyB
+                        };
 
-                    constraint.InternalConstraint = constraint.InternalGeneric6DofConstraint;
+                        constraint.InternalConstraint = constraint.InternalGeneric6DofConstraint;
 
-                    rigidBodyA.LinkedConstraints.Add(constraint);
-                    rigidBodyB.LinkedConstraints.Add(constraint);
+                        rigidBodyA.LinkedConstraints.Add(constraint);
+                        rigidBodyB.LinkedConstraints.Add(constraint);
 
-                    constraint.Engine = this;
-
-                    return constraint;
-                }
+                        return constraint;
+                    }
                 case ConstraintTypes.Generic6DoFSpring:
-                {
-                    var constraint = new Generic6DoFSpringConstraint
                     {
-                        InternalGeneric6DofSpringConstraint = new BulletSharp.Generic6DofSpringConstraint(rbA, rbB, frameA, frameB, useReferenceFrameA),
+                        var constraint = new Generic6DoFSpringConstraint
+                        {
+                            InternalGeneric6DofSpringConstraint = new BulletSharp.Generic6DofSpringConstraint(rbA, rbB, frameA, frameB, useReferenceFrameA),
 
-                        RigidBodyA = rigidBodyA,
-                        RigidBodyB = rigidBodyB
-                    };
+                            RigidBodyA = rigidBodyA,
+                            RigidBodyB = rigidBodyB
+                        };
 
-                    constraint.InternalConstraint = constraint.InternalGeneric6DofConstraint = constraint.InternalGeneric6DofSpringConstraint;
+                        constraint.InternalConstraint = constraint.InternalGeneric6DofConstraint = constraint.InternalGeneric6DofSpringConstraint;
 
-                    rigidBodyA.LinkedConstraints.Add(constraint);
-                    rigidBodyB.LinkedConstraints.Add(constraint);
+                        rigidBodyA.LinkedConstraints.Add(constraint);
+                        rigidBodyB.LinkedConstraints.Add(constraint);
 
-                    constraint.Engine = this;
-
-                    return constraint;
-                }
+                        return constraint;
+                    }
                 case ConstraintTypes.Gear:
-                {
-                    var constraint = new GearConstraint
                     {
-                        InternalGearConstraint = new BulletSharp.GearConstraint(rbA, rbB, frameA.TranslationVector, frameB.TranslationVector),
+                        var constraint = new GearConstraint
+                        {
+                            InternalGearConstraint = new BulletSharp.GearConstraint(rbA, rbB, frameA.TranslationVector, frameB.TranslationVector),
 
-                        RigidBodyA = rigidBodyA,
-                        RigidBodyB = rigidBodyB
-                    };
+                            RigidBodyA = rigidBodyA,
+                            RigidBodyB = rigidBodyB
+                        };
 
-                    constraint.InternalConstraint = constraint.InternalGearConstraint;
+                        constraint.InternalConstraint = constraint.InternalGearConstraint;
 
-                    rigidBodyA.LinkedConstraints.Add(constraint);
-                    rigidBodyB.LinkedConstraints.Add(constraint);
+                        rigidBodyA.LinkedConstraints.Add(constraint);
+                        rigidBodyB.LinkedConstraints.Add(constraint);
 
-                    constraint.Engine = this;
-
-                    return constraint;
-                }
+                        return constraint;
+                    }
             }
 
             return null;
@@ -764,9 +851,8 @@ namespace SiliconStudio.Paradox.Physics
         {
             if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
 
-            var c = constraint.InternalConstraint;
-
-            discreteDynamicsWorld.AddConstraint(c);
+            discreteDynamicsWorld.AddConstraint(constraint.InternalConstraint);
+            constraint.Simulation = this;
         }
 
         /// <summary>
@@ -779,9 +865,8 @@ namespace SiliconStudio.Paradox.Physics
         {
             if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
 
-            var c = constraint.InternalConstraint;
-
-            discreteDynamicsWorld.AddConstraint(c, disableCollisionsBetweenLinkedBodies);
+            discreteDynamicsWorld.AddConstraint(constraint.InternalConstraint, disableCollisionsBetweenLinkedBodies);
+            constraint.Simulation = this;
         }
 
         /// <summary>
@@ -793,9 +878,8 @@ namespace SiliconStudio.Paradox.Physics
         {
             if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
 
-            var c = constraint.InternalConstraint;
-
-            discreteDynamicsWorld.RemoveConstraint(c);
+            discreteDynamicsWorld.RemoveConstraint(constraint.InternalConstraint);
+            constraint.Simulation = null;
         }
 
         /// <summary>
@@ -807,7 +891,7 @@ namespace SiliconStudio.Paradox.Physics
         public HitResult Raycast(Vector3 from, Vector3 to)
         {
             var result = new HitResult(); //result.Succeded is false by default
-            
+
             using (var rcb = new BulletSharp.ClosestRayResultCallback(from, to))
             {
                 collisionWorld.RayTest(ref from, ref to, rcb);
@@ -831,7 +915,7 @@ namespace SiliconStudio.Paradox.Physics
         public List<HitResult> RaycastPenetrating(Vector3 from, Vector3 to)
         {
             var result = new List<HitResult>();
-            
+
             using (var rcb = new BulletSharp.AllHitsRayResultCallback(from, to))
             {
                 collisionWorld.RayTest(ref from, ref to, rcb);
@@ -866,7 +950,7 @@ namespace SiliconStudio.Paradox.Physics
         public HitResult ShapeSweep(ColliderShape shape, Matrix from, Matrix to)
         {
             var sh = shape.InternalShape as BulletSharp.ConvexShape;
-            if(sh == null) throw new Exception("This kind of shape cannot be used for a ShapeSweep.");
+            if (sh == null) throw new Exception("This kind of shape cannot be used for a ShapeSweep.");
 
             var result = new HitResult(); //result.Succeded is false by default
 
@@ -922,14 +1006,6 @@ namespace SiliconStudio.Paradox.Physics
         }
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="PhysicsEngine"/> is initialized.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if initialized; otherwise, <c>false</c>.
-        /// </value>
-        public bool Initialized { get; private set; }
-
-        /// <summary>
         /// Gets or sets the gravity.
         /// </summary>
         /// <value>
@@ -954,14 +1030,87 @@ namespace SiliconStudio.Paradox.Physics
             }
         }
 
-        internal void Update(float delta)
+        /// <summary>
+        /// The maximum number of steps that the Simulation is allowed to take each tick. 
+        /// If the engine is running slow (large deltaTime), then you must increase the number of maxSubSteps to compensate for this, otherwise your simulation is “losing” time.
+        /// It's important that frame DeltaTime is always less than MaxSubSteps*FixedTimeStep, otherwise you are losing time.
+        /// </summary>
+        public int MaxSubSteps { get; set; }
+
+        /// <summary>
+        /// By decreasing the size of fixedTimeStep, you are increasing the “resolution” of the simulation.
+        /// Default is 1.0f / 60.0f or 60fps
+        /// </summary>
+        public float FixedTimeStep { get; set; }
+
+        //todo needs integration with tick callback from bullet (native library fixes needed for monotouch)
+        //public void ClearForces()
+        //{
+        //    if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
+
+        //    discreteDynamicsWorld.ClearForces();
+        //}
+
+        public bool SpeculativeContactRestitution
+        {
+            get
+            {
+                if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
+                return discreteDynamicsWorld.ApplySpeculativeContactRestitution;
+            }
+            set
+            {
+                if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
+                discreteDynamicsWorld.ApplySpeculativeContactRestitution = value;
+            }
+        }
+
+        public class SimulationArgs : EventArgs
+        {
+            public float DeltaTime;
+        }
+
+        /// <summary>
+        /// Called right before the physics simulation.
+        /// This event might not be fired by the main thread.
+        /// </summary>
+        public event EventHandler<SimulationArgs> SimulationBegin;
+
+        protected virtual void OnSimulationBegin(SimulationArgs e)
+        {
+            var handler = SimulationBegin;
+            if (handler != null) handler(this, e);
+        }
+
+        internal void Simulate(float deltaTime)
         {
             if (DisableSimulation) return;
 
             if (collisionWorld == null) return;
 
-            if (discreteDynamicsWorld != null) discreteDynamicsWorld.StepSimulation(delta);
+            var args = new SimulationArgs
+            {
+                DeltaTime = deltaTime
+            };
+
+            OnSimulationBegin(args);
+
+            if (discreteDynamicsWorld != null) discreteDynamicsWorld.StepSimulation(deltaTime, MaxSubSteps, FixedTimeStep);
             else collisionWorld.PerformDiscreteCollisionDetection();
+
+            OnSimulationEnd(args);
+        }
+
+        /// <summary>
+        /// Called right after the physics simulation.
+        /// This event might not be fired by the main thread.
+        /// </summary>
+        public event EventHandler<SimulationArgs> SimulationEnd;
+
+        protected virtual void OnSimulationEnd(SimulationArgs e)
+        {
+            var handler = SimulationEnd;
+            if (handler != null) handler(this, e);
         }
     }
 }

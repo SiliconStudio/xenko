@@ -6,6 +6,7 @@ namespace SiliconStudio.Paradox.Physics
 {
     [ContentSerializer(typeof(DataContentSerializer<CapsuleColliderShapeDesc>))]
     [DataContract("CapsuleColliderShapeDesc")]
+    [Display(50, "CapsuleColliderShape")]
     public class CapsuleColliderShapeDesc : IColliderShapeDesc
     {
         /// <userdoc>

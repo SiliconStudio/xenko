@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 class PhysicsDebugEffect : ShaderBase
 {
@@ -38,10 +38,10 @@ class PhysicsDebugEffect : ShaderBase
 		float3 g = smoothstep(df * 1.0, df * 2.0, f);
 		float c = g.x * g.y * g.z;
 
-	if(UseUv > 0.5)
+	    if(UseUv > 0.5)
 		{
 			float uvEdge = 0.0;
-		if(streams.TexCoord.x < 0.02 || streams.TexCoord.y < 0.02 || streams.TexCoord.x > 0.98 || streams.TexCoord.y > 0.98)
+		    if(streams.TexCoord.x < 0.02 || streams.TexCoord.y < 0.02 || streams.TexCoord.x > 0.98 || streams.TexCoord.y > 0.98)
 			{
 				uvEdge = 1.0;
 			}

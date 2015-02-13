@@ -1,7 +1,7 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System.Collections.Generic;
 
+using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.EntityModel;
 
@@ -23,6 +23,8 @@ namespace SiliconStudio.Paradox.Physics
         /// Any runtime dynamic change should happen while the entity is not added to the Game object
         /// </summary>
         public List<PhysicsElement> Elements { get; private set; }
+
+        public string Simulation = "default";
 
         [DataMemberIgnore]
         public PhysicsElement this[int i]
