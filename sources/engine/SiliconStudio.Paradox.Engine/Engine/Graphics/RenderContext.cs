@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Effects.Images;
+using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects
@@ -58,6 +59,12 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         /// <value>The parameters.</value>
         public ParameterCollection Parameters { get; private set; }
+
+        /// <summary>
+        /// Gets the time.
+        /// </summary>
+        /// <value>The time.</value>
+        public GameTime Time { get; internal set; }
 
         /// <summary>
         /// Gets the <see cref="GraphicsResource"/> allocator.

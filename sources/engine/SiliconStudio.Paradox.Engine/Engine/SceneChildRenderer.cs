@@ -51,27 +51,28 @@ namespace SiliconStudio.Paradox.Engine
 
         protected override void DrawCore(RenderContext context)
         {
-            if (sceneChildProcessor == null)
+            if (Output == null)
             {
-                sceneChildProcessor = currentEntityManager.GetProcessor<SceneChildProcessor>();
+                return;
             }
-            if (sceneChildProcessor == null || Output == null)
+
+            sceneChildProcessor = sceneChildProcessor  ?? currentEntityManager.GetProcessor<SceneChildProcessor>();
+
+            if (sceneChildProcessor == null)
             {
                 return;
             }
 
             var renderFrame = Output.GetRenderFrame(context);
 
-            // TODO: Keep a state and handle scene changes
+            if (renderFrame == null)
+            {
+                return;
+            }
 
             foreach (var sceneInstance in sceneChildProcessor.Scenes)
             {
-                if (sceneInstance.Entity.Get<SceneChildComponent>() != SceneChild)
-                {
-                    continue;
-                }
-                SceneSystem.Draw(context, sceneInstance, renderFrame);
-                break;
+                sceneInstance.Draw(context, renderFrame);
             }
         }
     }

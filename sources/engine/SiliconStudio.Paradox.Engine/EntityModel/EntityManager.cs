@@ -424,10 +424,6 @@ namespace SiliconStudio.Paradox.EntityModel
         {
             foreach (EntityProcessor system in processors)
             {
-                if (system.ShouldStopProcessorChain(entity))
-                {
-                    return;
-                }
                 system.EntityCheck(entity, entityProcessors, forceRemove);
             }
         }

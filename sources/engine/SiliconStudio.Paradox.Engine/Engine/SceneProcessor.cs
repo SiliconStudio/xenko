@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
+
 using SiliconStudio.Paradox.EntityModel;
 
 namespace SiliconStudio.Paradox.Engine
@@ -12,8 +14,9 @@ namespace SiliconStudio.Paradox.Engine
     /// This processor is handling specially an entity with a scene component. If an scene component is found, it will
     /// create a sub-<see cref="EntityManager"/> dedicated to handle the entities inside the scene.
     /// </remarks>
-    public sealed class SceneProcessor : SceneProcessorBase
+    internal sealed class SceneProcessor : EntityProcessor<SceneInstance>
     {
+        private readonly SceneInstance sceneInstance;
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneProcessor"/> class.
         /// </summary>
@@ -22,12 +25,32 @@ namespace SiliconStudio.Paradox.Engine
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SceneProcessor"/> class.
+        /// Initializes a new instance of the <see cref="SceneProcessor" /> class.
         /// </summary>
-        /// <param name="sceneEntityRoot">The scene entity root.</param>
+        /// <param name="sceneInstance">The scene instance.</param>
         /// <exception cref="System.ArgumentNullException">sceneEntityRoot</exception>
-        public SceneProcessor(Scene sceneEntityRoot) : base(sceneEntityRoot, SceneComponent.Key)
+        public SceneProcessor(SceneInstance sceneInstance) : base(SceneComponent.Key)
         {
+            if (sceneInstance == null) throw new ArgumentNullException("sceneInstance");
+            this.sceneInstance = sceneInstance;
+        }
+
+        public SceneInstance Current
+        {
+            get
+            {
+                return sceneInstance;
+            }
+        }
+
+        protected override SceneInstance GenerateAssociatedData(Entity entity)
+        {
+            if (entity != sceneInstance.Scene)
+            {
+                throw new InvalidOperationException("Cannot nest a Scene inside another scene");
+            }
+
+            return sceneInstance;
         }
     }
 }

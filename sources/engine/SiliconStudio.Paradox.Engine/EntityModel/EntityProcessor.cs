@@ -80,11 +80,6 @@ namespace SiliconStudio.Paradox.EntityModel
             
         }
 
-        internal virtual bool ShouldStopProcessorChain(Entity entity)
-        {
-            return false;
-        }
-
         /// <summary>
         /// Checks if <see cref="Entity"/> needs to be either added or removed.
         /// </summary>

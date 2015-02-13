@@ -26,6 +26,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets or sets the child scene.
         /// </summary>
         /// <value>The scene.</value>
+        [DataMember(10)]
         public Scene Scene { get; set; }
 
         public override PropertyKey DefaultKey
