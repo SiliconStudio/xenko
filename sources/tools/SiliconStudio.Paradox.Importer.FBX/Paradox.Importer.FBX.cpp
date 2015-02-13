@@ -1143,7 +1143,9 @@ public:
 		{
 			textureValue = TextureLayerGenerator::GenerateMaterialTextureNode(vfsOutputFilename, texturePath, uvElementMapping[std::string(lFileTexture->UVSet.Get())], Vector2((float)texScale[0], (float)texScale[1]), wrapTextureU, wrapTextureV, nullptr);
 
-			auto textureNamePtr = Marshal::StringToHGlobalAnsi(textureValue->TextureReference->Location);
+			auto attachedReference = AttachedReferenceManager::GetAttachedReference(textureValue);
+
+			auto textureNamePtr = Marshal::StringToHGlobalAnsi(attachedReference->Url);
 			std::string textureName = std::string((char*)textureNamePtr.ToPointer());
 			Marshal:: FreeHGlobal(textureNamePtr);
 

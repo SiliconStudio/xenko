@@ -71,7 +71,7 @@ namespace SiliconStudio.Paradox.EntityModel
         {
             get
             {
-                return autoRegisteredProcessorTypes;
+                return autoRegisteredComponentTypes;
             }
         }
 

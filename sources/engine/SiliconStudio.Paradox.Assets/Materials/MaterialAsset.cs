@@ -10,8 +10,8 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Data;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
@@ -36,10 +36,9 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// </summary>
         public MaterialAsset()
         {
-            Parameters = new ParameterCollection();
             Attributes = new MaterialAttributes();
             Layers = new MaterialBlendLayers();
-            //Overrides = new Dictionary<string, ComputeNode>();
+            Parameters = new ParameterCollection();
         }
 
         /// <summary>
@@ -62,21 +61,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
         public MaterialBlendLayers Layers { get; set; }
 
         /// <summary>
-        /// XXXX
-        /// </summary>
-        /// <userdoc>
-        /// All the color mapping nodes of the materials. They are map descriptions (texture or values) and operations on them.
-        /// </userdoc>
-        //[DataMember(30)]
-        //public Dictionary<string, ComputeNode> Overrides { get; private set; }
-
-        /// <summary>
-        /// Gets the parameters.
+        /// Gets or sets the parameters.
         /// </summary>
         /// <value>The parameters.</value>
-        [DataMember(40)]
-        public ParameterCollection Parameters { get; private set; }
-
+        [DataMember(30)]
+        public ParameterCollection Parameters { get; set; }
 
         public IEnumerable<AssetReference<MaterialAsset>> FindMaterialReferences()
         {
@@ -84,11 +73,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
             {
                 if (layer.Material != null)
                 {
-                    yield return layer.Material;
+                    var reference = AttachedReferenceManager.GetAttachedReference(layer.Material);
+                    yield return new AssetReference<MaterialAsset>(reference.Id, reference.Url);
                 }
             }
         }
-
 
         private class MaterialFactory : IObjectFactory
         {

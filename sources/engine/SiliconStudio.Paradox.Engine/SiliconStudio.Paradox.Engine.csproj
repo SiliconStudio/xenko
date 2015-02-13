@@ -144,6 +144,84 @@
     <Compile Include="Engine\Graphics\Images\IImageEffect.cs" />
     <Compile Include="Engine\Graphics\IRenderFrameProvider.cs" />
     <Compile Include="Engine\Graphics\ISceneRenderer.cs" />
+    <Compile Include="Engine\Graphics\Materials\ComputeColors\BinaryOperand.cs" />
+    <Compile Include="Engine\Graphics\Materials\ComputeColors\ComputeBinaryBase.cs" />
+    <Compile Include="Engine\Graphics\Materials\ComputeColors\ComputeBinaryColor.cs" />
+    <Compile Include="Engine\Graphics\Materials\ComputeColors\ComputeBinaryScalar.cs" />
+    <Compile Include="Engine\Graphics\Materials\ComputeColors\ComputeColor.cs" />
+    <Compile Include="Engine\Graphics\Materials\ComputeColors\ComputeColorParameter.cs" />
+    <Compile Include="Engine\Graphics\Materials\ComputeColors\ComputeColorParameters.cs" />
+    <Compile Include="Engine\Graphics\Materials\ComputeColors\ComputeFloat.cs" />
+    <Compile Include="Engine\Graphics\Materials\ComputeColors\ComputeFloat4.cs" />
+    <Compile Include="Engine\Graphics\Materials\ComputeColors\ComputeKeyedBase.cs" />
+    <Compile Include="Engine\Graphics\Materials\ComputeColors\ComputeNode.cs" />
+    <Compile Include="Engine\Graphics\Materials\ComputeColors\ComputeShaderClassBase.cs" />
+    <Compile Include="Engine\Graphics\Materials\ComputeColors\ComputeShaderClassColor.cs" />
+    <Compile Include="Engine\Graphics\Materials\ComputeColors\ComputeShaderClassScalar.cs" />
+    <Compile Include="Engine\Graphics\Materials\ComputeColors\ComputeTextureBase.cs" />
+    <Compile Include="Engine\Graphics\Materials\ComputeColors\ComputeTextureColor.cs" />
+    <Compile Include="Engine\Graphics\Materials\ComputeColors\ComputeTextureScalar.cs" />
+    <Compile Include="Engine\Graphics\Materials\ComputeColors\ComputeValueBase.cs" />
+    <Compile Include="Engine\Graphics\Materials\ComputeColors\IComputeColorParameter.cs" />
+    <Compile Include="Engine\Graphics\Materials\IComputeColor.cs" />
+    <Compile Include="Engine\Graphics\Materials\IComputeNode.cs" />
+    <Compile Include="Engine\Graphics\Materials\IComputeScalar.cs" />
+    <Compile Include="Engine\Graphics\Materials\IMaterialAttributes.cs" />
+    <Compile Include="Engine\Graphics\Materials\IMaterialDiffuseFeature.cs" />
+    <Compile Include="Engine\Graphics\Materials\IMaterialDiffuseModelFeature.cs" />
+    <Compile Include="Engine\Graphics\Materials\IMaterialDisplacementFeature.cs" />
+    <Compile Include="Engine\Graphics\Materials\IMaterialEmissiveFeature.cs" />
+    <Compile Include="Engine\Graphics\Materials\IMaterialFeature.cs" />
+    <Compile Include="Engine\Graphics\Materials\IMaterialLayers.cs" />
+    <Compile Include="Engine\Graphics\Materials\IMaterialMicroSurfaceFeature.cs" />
+    <Compile Include="Engine\Graphics\Materials\IMaterialOcclusionFeature.cs" />
+    <Compile Include="Engine\Graphics\Materials\IMaterialShaderGenerator.cs" />
+    <Compile Include="Engine\Graphics\Materials\IMaterialShadingModelFeature.cs" />
+    <Compile Include="Engine\Graphics\Materials\IMaterialSpecularFeature.cs" />
+    <Compile Include="Engine\Graphics\Materials\IMaterialSpecularMicrofacetFresnelFunction.cs" />
+    <Compile Include="Engine\Graphics\Materials\IMaterialSpecularMicrofacetFunction.cs" />
+    <Compile Include="Engine\Graphics\Materials\IMaterialSpecularMicrofacetNormalDistributionFunction.cs" />
+    <Compile Include="Engine\Graphics\Materials\IMaterialSpecularMicrofacetVisibilityFunction.cs" />
+    <Compile Include="Engine\Graphics\Materials\IMaterialSpecularModelFeature.cs" />
+    <Compile Include="Engine\Graphics\Materials\IMaterialSurfaceFeature.cs" />
+    <Compile Include="Engine\Graphics\Materials\IMaterialTessellationFeature.cs" />
+    <Compile Include="Engine\Graphics\Materials\IMaterialTransparencyFeature.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialAttributes.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialBlendLayer.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialBlendLayers.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialBlendOverrides.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialComputeColorKeys.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialDescriptor.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialDiffuseLambertModelFeature.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialDiffuseMapFeature.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialEmissiveMapFeature.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialGenerator.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialGeneratorContext.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialGlossinessMapFeature.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialMetalnessMapFeature.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialNormalMapFeature.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialOcclusionMapFeature.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialSpecularMapFeature.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetFresnelNone.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetFresnelSchlick.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialSpecularMicroFacetModelFeature.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetNormalDistributionBeckmann.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetNormalDistributionBlinnPhong.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetNormalDistributionGGX.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetVisibilityCookTorrance.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetVisibilityImplicit.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetVisibilityKelemen.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetVisibilityNeumann.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetVisibilitySmithBeckmann.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetVisibilitySmithGGXCorrelated.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetVisibilitySmithSchlickBeckmann.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetVisibilitySmithSchlickGGX.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialStreamType.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialUtility.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialVertexDisplacementMapFeature.cs" />
+    <Compile Include="Engine\Graphics\Materials\ShaderGeneratorContextBase.cs" />
+    <Compile Include="Engine\Graphics\Materials\TextureChannel.cs" />
+    <Compile Include="Engine\Graphics\Materials\TextureCoordinate.cs" />
     <Compile Include="Engine\Graphics\RenderFrameProviderBase.cs" />
     <Compile Include="Engine\Graphics\SceneCameraRenderer.cs" />
     <Compile Include="Engine\Graphics\ClearRenderFrameFlags.cs" />
@@ -548,262 +626,262 @@
     <Compile Include="Engine\Graphics\ModelAndLightComponentRenderer.cs" />
     <Compile Include="Engine\Graphics\RendererBase.cs" />
     <Compile Include="Engine\Graphics\RenderFrame.cs" />
-    <Compile Include="Engine\Graphics\Materials\IMaterialSpecularMicrofacetFresnelFunction.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\IMaterialSpecularMicrofacetFresnelFunction.cs">
       <DependentUpon>IMaterialSpecularMicrofacetFresnelFunction.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\IMaterialSpecularMicrofacetNormalDistributionFunction.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\IMaterialSpecularMicrofacetNormalDistributionFunction.cs">
       <DependentUpon>IMaterialSpecularMicrofacetNormalDistributionFunction.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\IMaterialSpecularMicrofacetVisibilityFunction.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\IMaterialSpecularMicrofacetVisibilityFunction.cs">
       <DependentUpon>IMaterialSpecularMicrofacetVisibilityFunction.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\IMaterialStreamBlend.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\IMaterialStreamBlend.cs">
       <DependentUpon>IMaterialStreamBlend.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\IMaterialStreamProvider.cs" />
-    <Compile Include="Engine\Graphics\Materials\IMaterialSurface.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\IMaterialStreamProvider.cs" />
+    <Compile Include="Engine\Graphics\Materials\Shaders\IMaterialSurface.cs">
       <DependentUpon>IMaterialSurface.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\IMaterialSurfacePixel.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\IMaterialSurfacePixel.cs">
       <DependentUpon>IMaterialSurfacePixel.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\IMaterialSurfaceShading.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\IMaterialSurfaceShading.cs">
       <DependentUpon>IMaterialSurfaceShading.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\IMaterialSurfaceVertex.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\IMaterialSurfaceVertex.cs">
       <DependentUpon>IMaterialSurfaceVertex.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialKeys.cs" />
-    <Compile Include="Engine\Graphics\Materials\MaterialPixelShadingStream.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialKeys.cs" />
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialPixelShadingStream.cs">
       <DependentUpon>MaterialPixelShadingStream.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialPixelStream.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialPixelStream.cs">
       <DependentUpon>MaterialPixelStream.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetFresnelNone.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSpecularMicrofacetFresnelNone.cs">
       <DependentUpon>MaterialSpecularMicrofacetFresnelNone.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetFresnelSchlick.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSpecularMicrofacetFresnelSchlick.cs">
       <DependentUpon>MaterialSpecularMicrofacetFresnelSchlick.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetNormalDistributionBeckmann.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSpecularMicrofacetNormalDistributionBeckmann.cs">
       <DependentUpon>MaterialSpecularMicrofacetNormalDistributionBeckmann.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetNormalDistributionBlinnPhong.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSpecularMicrofacetNormalDistributionBlinnPhong.cs">
       <DependentUpon>MaterialSpecularMicrofacetNormalDistributionBlinnPhong.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetNormalDistributionGGX.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSpecularMicrofacetNormalDistributionGGX.cs">
       <DependentUpon>MaterialSpecularMicrofacetNormalDistributionGGX.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetVisibilityCookTorrance.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSpecularMicrofacetVisibilityCookTorrance.cs">
       <DependentUpon>MaterialSpecularMicrofacetVisibilityCookTorrance.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetVisibilityImplicit.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSpecularMicrofacetVisibilityImplicit.cs">
       <DependentUpon>MaterialSpecularMicrofacetVisibilityImplicit.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetVisibilityKelemen.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSpecularMicrofacetVisibilityKelemen.cs">
       <DependentUpon>MaterialSpecularMicrofacetVisibilityKelemen.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetVisibilityNeumann.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSpecularMicrofacetVisibilityNeumann.cs">
       <DependentUpon>MaterialSpecularMicrofacetVisibilityNeumann.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetVisibilitySmithBeckmann.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSpecularMicrofacetVisibilitySmithBeckmann.cs">
       <DependentUpon>MaterialSpecularMicrofacetVisibilitySmithBeckmann.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetVisibilitySmithGGXCorrelated.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSpecularMicrofacetVisibilitySmithGGXCorrelated.cs">
       <DependentUpon>MaterialSpecularMicrofacetVisibilitySmithGGXCorrelated.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetVisibilitySmithSchlickBeckmann.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSpecularMicrofacetVisibilitySmithSchlickBeckmann.cs">
       <DependentUpon>MaterialSpecularMicrofacetVisibilitySmithSchlickBeckmann.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetVisibilitySmithSchlickGGX.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSpecularMicrofacetVisibilitySmithSchlickGGX.cs">
       <DependentUpon>MaterialSpecularMicrofacetVisibilitySmithSchlickGGX.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialStream.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialStream.cs">
       <DependentUpon>MaterialStream.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialStreamDescriptor.cs" />
-    <Compile Include="Engine\Graphics\Materials\MaterialStreamLinearBlend.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialStreamDescriptor.cs" />
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialStreamLinearBlend.cs">
       <DependentUpon>MaterialStreamLinearBlend.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialStreamNormalBlend.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialStreamNormalBlend.cs">
       <DependentUpon>MaterialStreamNormalBlend.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialSurfaceArray.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceArray.cs">
       <DependentUpon>MaterialSurfaceArray.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialSurfaceBlendShading.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceBlendShading.cs">
       <DependentUpon>MaterialSurfaceBlendShading.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialSurfaceEmissiveShading.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceEmissiveShading.cs">
       <DependentUpon>MaterialSurfaceEmissiveShading.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialSurfaceGlossinessMap.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceGlossinessMap.cs">
       <DependentUpon>MaterialSurfaceGlossinessMap.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialSurfaceLightingAndShading.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceLightingAndShading.cs">
       <DependentUpon>MaterialSurfaceLightingAndShading.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialSurfaceMetalness.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceMetalness.cs">
       <DependentUpon>MaterialSurfaceMetalness.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialSurfaceNormalMap.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceNormalMap.cs">
       <DependentUpon>MaterialSurfaceNormalMap.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialSurfacePixelStageCompositor.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSurfacePixelStageCompositor.cs">
       <DependentUpon>MaterialSurfacePixelStageCompositor.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialSurfaceSetStreamFromComputeColor.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceSetStreamFromComputeColor.cs">
       <DependentUpon>MaterialSurfaceSetStreamFromComputeColor.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialSurfaceShadingDiffuseLambert.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceShadingDiffuseLambert.cs">
       <DependentUpon>MaterialSurfaceShadingDiffuseLambert.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialSurfaceShadingSpecularBlinnPhong.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceShadingSpecularBlinnPhong.cs">
       <DependentUpon>MaterialSurfaceShadingSpecularBlinnPhong.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialSurfaceShadingSpecularMicrofacet.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceShadingSpecularMicrofacet.cs">
       <DependentUpon>MaterialSurfaceShadingSpecularMicrofacet.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialSurfaceStreamsBlend.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceStreamsBlend.cs">
       <DependentUpon>MaterialSurfaceStreamsBlend.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialSurfaceStreamShading.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceStreamShading.cs">
       <DependentUpon>MaterialSurfaceStreamShading.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialSurfaceVertexDisplacement.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceVertexDisplacement.cs">
       <DependentUpon>MaterialSurfaceVertexDisplacement.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialSurfaceVertexStageCompositor.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceVertexStageCompositor.cs">
       <DependentUpon>MaterialSurfaceVertexStageCompositor.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Materials\MaterialVertexStream.cs">
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialVertexStream.cs">
       <DependentUpon>MaterialVertexStream.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -1354,175 +1432,175 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LightStream.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\IMaterialSpecularMicrofacetFresnelFunction.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\IMaterialSpecularMicrofacetFresnelFunction.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>IMaterialSpecularMicrofacetFresnelFunction.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\IMaterialSpecularMicrofacetNormalDistributionFunction.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\IMaterialSpecularMicrofacetNormalDistributionFunction.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>IMaterialSpecularMicrofacetNormalDistributionFunction.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\IMaterialSpecularMicrofacetVisibilityFunction.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\IMaterialSpecularMicrofacetVisibilityFunction.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>IMaterialSpecularMicrofacetVisibilityFunction.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\IMaterialStreamBlend.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\IMaterialStreamBlend.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>IMaterialStreamBlend.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\IMaterialSurface.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\IMaterialSurface.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>IMaterialSurface.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\IMaterialSurfacePixel.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\IMaterialSurfacePixel.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>IMaterialSurfacePixel.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\IMaterialSurfaceShading.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\IMaterialSurfaceShading.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>IMaterialSurfaceShading.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\IMaterialSurfaceVertex.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\IMaterialSurfaceVertex.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>IMaterialSurfaceVertex.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialPixelShadingStream.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialPixelShadingStream.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialPixelShadingStream.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialPixelStream.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialPixelStream.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialPixelStream.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetFresnelNone.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSpecularMicrofacetFresnelNone.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSpecularMicrofacetFresnelNone.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetFresnelSchlick.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSpecularMicrofacetFresnelSchlick.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSpecularMicrofacetFresnelSchlick.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetNormalDistributionBeckmann.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSpecularMicrofacetNormalDistributionBeckmann.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSpecularMicrofacetNormalDistributionBeckmann.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetNormalDistributionBlinnPhong.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSpecularMicrofacetNormalDistributionBlinnPhong.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSpecularMicrofacetNormalDistributionBlinnPhong.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetNormalDistributionGGX.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSpecularMicrofacetNormalDistributionGGX.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSpecularMicrofacetNormalDistributionGGX.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetVisibilityCookTorrance.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSpecularMicrofacetVisibilityCookTorrance.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSpecularMicrofacetVisibilityCookTorrance.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetVisibilityImplicit.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSpecularMicrofacetVisibilityImplicit.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSpecularMicrofacetVisibilityImplicit.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetVisibilityKelemen.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSpecularMicrofacetVisibilityKelemen.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSpecularMicrofacetVisibilityKelemen.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetVisibilityNeumann.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSpecularMicrofacetVisibilityNeumann.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSpecularMicrofacetVisibilityNeumann.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetVisibilitySmithBeckmann.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSpecularMicrofacetVisibilitySmithBeckmann.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSpecularMicrofacetVisibilitySmithBeckmann.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetVisibilitySmithGGXCorrelated.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSpecularMicrofacetVisibilitySmithGGXCorrelated.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSpecularMicrofacetVisibilitySmithGGXCorrelated.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetVisibilitySmithSchlickBeckmann.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSpecularMicrofacetVisibilitySmithSchlickBeckmann.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSpecularMicrofacetVisibilitySmithSchlickBeckmann.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetVisibilitySmithSchlickGGX.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSpecularMicrofacetVisibilitySmithSchlickGGX.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSpecularMicrofacetVisibilitySmithSchlickGGX.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialStream.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialStream.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialStream.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialStreamLinearBlend.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialStreamLinearBlend.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialStreamLinearBlend.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialStreamNormalBlend.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialStreamNormalBlend.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialStreamNormalBlend.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialSurfaceArray.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceArray.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceArray.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialSurfaceBlendShading.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceBlendShading.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceBlendShading.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialSurfaceEmissiveShading.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceEmissiveShading.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceEmissiveShading.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialSurfaceGlossinessMap.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceGlossinessMap.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceGlossinessMap.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialSurfaceLightingAndShading.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceLightingAndShading.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceLightingAndShading.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialSurfaceMetalness.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceMetalness.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceMetalness.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialSurfaceNormalMap.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceNormalMap.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceNormalMap.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialSurfacePixelStageCompositor.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSurfacePixelStageCompositor.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfacePixelStageCompositor.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialSurfaceSetStreamFromComputeColor.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceSetStreamFromComputeColor.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceSetStreamFromComputeColor.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialSurfaceShadingDiffuseLambert.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceShadingDiffuseLambert.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceShadingDiffuseLambert.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialSurfaceShadingSpecularBlinnPhong.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceShadingSpecularBlinnPhong.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceShadingSpecularBlinnPhong.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialSurfaceShadingSpecularMicrofacet.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceShadingSpecularMicrofacet.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceShadingSpecularMicrofacet.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialSurfaceStreamsBlend.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceStreamsBlend.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceStreamsBlend.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialSurfaceStreamShading.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceStreamShading.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceStreamShading.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialSurfaceVertexDisplacement.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceVertexDisplacement.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceVertexDisplacement.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialSurfaceVertexStageCompositor.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceVertexStageCompositor.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceVertexStageCompositor.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Materials\MaterialVertexStream.pdxsl">
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialVertexStream.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialVertexStream.cs</LastGenOutput>
     </None>

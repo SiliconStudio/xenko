@@ -661,7 +661,9 @@ private:
 	{
 		// TODO: compare with FBX importer - see if there could be some conflict between texture names
 		auto textureValue = TextureLayerGenerator::GenerateMaterialTextureNode(vfsOutputPath, sourceTextureFile, textureUVSetIndex, textureUVscaling, wrapTextureU, wrapTextureV, Logger);
-		auto referenceName = textureValue->TextureReference->Location;
+
+		auto attachedReference = AttachedReferenceManager::GetAttachedReference(textureValue);
+		auto referenceName = attachedReference->Url;
 
 		// find a new and correctName
 		if (!textureNameCount->ContainsKey(referenceName))

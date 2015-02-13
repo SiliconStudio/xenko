@@ -3,16 +3,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO.Packaging;
 using System.Linq;
-using System.Security.Policy;
 
-using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Data;
 using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
@@ -36,12 +33,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
         private readonly List<KeyValuePair<Type, ShaderSource>> vertexInputStreamModifiers = new List<KeyValuePair<Type, ShaderSource>>();
 
         public MaterialGeneratorContext()
-            : this(null)
-        {
-        }
-
-        public MaterialGeneratorContext(Package package)
-            : base(package)
         {
             currentOverrides = new MaterialBlendOverrides();
         }
@@ -212,7 +203,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         public ParameterKey<Texture> GetTextureKey(ComputeTextureBase computeTexture, MaterialComputeColorKeys baseKeys)
         {
             var keyResolved = (ParameterKey<Texture>)(computeTexture.Key ?? baseKeys.TextureBaseKey ?? MaterialKeys.GenericTexture);
-            return GetTextureKey(computeTexture.TextureReference, keyResolved, baseKeys.DefaultTextureValue);
+            return GetTextureKey(computeTexture.Texture, keyResolved, baseKeys.DefaultTextureValue);
         }
 
         public ParameterKey<SamplerState> GetSamplerKey(ComputeColorParameterSampler sampler)

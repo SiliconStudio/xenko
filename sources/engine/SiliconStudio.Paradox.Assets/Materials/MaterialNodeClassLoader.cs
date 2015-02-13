@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Paradox.Shaders.Compiler;
@@ -40,7 +42,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <summary>
         /// The logger.
         /// </summary>
-        private readonly LoggerResult logger;
+        private readonly SiliconStudio.Shaders.Utility.LoggerResult logger;
 
         private MaterialNodeClassLoader()
         {

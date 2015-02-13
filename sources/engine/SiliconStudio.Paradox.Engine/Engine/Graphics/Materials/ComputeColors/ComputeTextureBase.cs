@@ -1,17 +1,12 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.ComponentModel;
-using System.IO;
-using SiliconStudio.Assets;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
-using SiliconStudio.Paradox.Assets.Textures;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Graphics;
@@ -27,18 +22,15 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
     public abstract class ComputeTextureBase : ComputeKeyedBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ComputeTextureColor"/> class.
+        /// Initializes a new instance of the <see cref="ComputeTextureColor" /> class.
         /// </summary>
-        /// <param name="texturePath">Name of the texture.</param>
+        /// <param name="texture">The texture.</param>
         /// <param name="texcoordIndex">Index of the texcoord.</param>
         /// <param name="scale">The scale.</param>
         /// <param name="offset">The offset.</param>
-        protected ComputeTextureBase(string texturePath, TextureCoordinate texcoordIndex, Vector2 scale, Vector2 offset)
+        protected ComputeTextureBase(Texture texture, TextureCoordinate texcoordIndex, Vector2 scale, Vector2 offset)
         {
-            if (!string.IsNullOrEmpty(texturePath))
-            {
-                TextureReference = new AssetReference<TextureAsset>(Guid.Empty, new UFile(texturePath));
-            }
+            Texture = texture;
             TexcoordIndex = texcoordIndex;
             Sampler = new ComputeColorParameterSampler();
             Scale = scale;
@@ -56,7 +48,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         [DefaultValue(null)]
         [Display("Texture")]
         [InlineProperty]
-        public AssetReference<TextureAsset> TextureReference { get; set; }
+        public Texture Texture { get; set; }
 
         /// <summary>
         /// The texture coordinate used to sample the texture.

@@ -15,6 +15,7 @@ using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
 using SiliconStudio.Paradox.Effects.Data;
 using System.Linq;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Engine.Graphics.Materials;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
@@ -52,7 +53,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 // TODO: Add textures when we will bake them
 
                 //var materialTextureVisitor = new MaterialTextureVisitor(asset.Material);
-                //foreach (var textureLocation in materialTextureVisitor.GetAllTextureValues().Where(IsTextureReferenceValid).Select(x => x.TextureReference.Location).Distinct())
+                //foreach (var textureLocation in materialTextureVisitor.GetAllTextureValues().Where(IsTextureReferenceValid).Select(x => x.Texture.Location).Distinct())
                 //    yield return new ObjectUrl(UrlType.Internal, textureLocation);
                 foreach (var inputFile in base.GetInputFiles())
                     yield return inputFile;
@@ -94,9 +95,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 //}
 
                 var assetManager = new AssetManager();
-                var materialContext = new MaterialGeneratorContext(package) { Assets = assetManager };
+                var materialContext = new MaterialGeneratorContext() { Assets = assetManager };
+                materialContext.AddLoadingFromSession(package);
+
                 var materialClone = (MaterialAsset)AssetCloner.Clone(Asset);
-                var result = MaterialGenerator.Generate(materialClone, materialContext);
+                var result = MaterialGenerator.Generate(new MaterialDescriptor() { Attributes = materialClone.Attributes, Layers = materialClone.Layers}, materialContext);
 
                 if (result.HasErrors)
                 {

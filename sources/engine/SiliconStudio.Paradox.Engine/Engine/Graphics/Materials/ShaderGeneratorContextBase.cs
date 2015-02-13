@@ -5,13 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.IO.Packaging;
 
-using SiliconStudio.Assets;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Assets.Textures;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Graphics;
@@ -32,7 +31,7 @@ namespace SiliconStudio.Paradox.Assets
 
         private readonly Dictionary<Color4, Texture> singleColorTextures = new Dictionary<Color4, Texture>();
 
-        public delegate Asset FindAssetDelegate(IContentReference reference);
+        public delegate object FindAssetDelegate(object material);
 
         public FindAssetDelegate FindAsset { get; set; }
 
@@ -51,24 +50,8 @@ namespace SiliconStudio.Paradox.Assets
             Parameters = new ParameterCollection();
             parameterKeyIndices = new Dictionary<ParameterKey, int>();
             declaredSamplerStates = new Dictionary<SamplerStateDescription, ParameterKey<SamplerState>>();
-        }
-
-        protected ShaderGeneratorContextBase(Package package) : this()
-        {
-            if (package != null)
-            {
-                FindAsset = reference =>
-                {
-                    var assetItem = package.Session.FindAsset(reference.Id)
-                                    ?? package.Session.FindAsset(reference.Location);
-
-                    if (assetItem == null)
-                    {
-                        return null;
-                    }
-                    return assetItem.Asset;
-                };
-            }
+            // By default return the asset
+            FindAsset = material => material;
         }
 
         public ParameterCollection Parameters { get; set; }
@@ -115,17 +98,16 @@ namespace SiliconStudio.Paradox.Assets
             return texture;
         }
 
-        public ParameterKey<Texture> GetTextureKey(IContentReference textureReference, ParameterKey<Texture> key, Color? defaultTextureValue = null)
+        public ParameterKey<Texture> GetTextureKey(Texture texture, ParameterKey<Texture> key, Color? defaultTextureValue = null)
         {
             var textureKey = (ParameterKey<Texture>)GetParameterKey(key);
-            if (textureReference != null)
+            if (texture != null)
             {
-                var texture = AttachedReferenceManager.CreateSerializableVersion<Texture>(textureReference.Id, textureReference.Location);
                 Parameters.Set(textureKey, texture);
             }
             else if (defaultTextureValue != null && Assets != null)
             {
-                var texture = GenerateTextureFromColor(defaultTextureValue.Value);
+                texture = GenerateTextureFromColor(defaultTextureValue.Value);
                 Parameters.Set(textureKey, texture);
             }
             return textureKey;

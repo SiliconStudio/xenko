@@ -7,6 +7,7 @@ using System.IO;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.ComputeEffect.GGXPrefiltering;
@@ -24,11 +25,6 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
     public class SkyboxGeneratorContext : ShaderGeneratorContextBase, IDisposable
     {
         public SkyboxGeneratorContext()
-        {
-        }
-
-        public SkyboxGeneratorContext(Package package)
-            : base(package)
         {
             Services = new ServiceRegistry();
             Assets = new AssetManager(Services);
@@ -84,8 +80,8 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
                 // -------------------------------------------------------------------
                 var lamberFiltering = new LambertianPrefilteringSH(context.DrawEffectContext);
 
-                var location = ((SkyboxCubeMapModel)asset.Model).CubeMap.Location;
-                var skyboxTexture = context.Assets.Load<Texture>(location);
+                var reference = AttachedReferenceManager.GetAttachedReference(((SkyboxCubeMapModel)asset.Model).CubeMap);
+                var skyboxTexture = context.Assets.Load<Texture>(reference.Url);
 
                 lamberFiltering.HarmonicOrder = (int)asset.DiffuseSHOrder;
                 lamberFiltering.RadianceMap = skyboxTexture;

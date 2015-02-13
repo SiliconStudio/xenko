@@ -3,11 +3,14 @@
 using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Assets.Materials;
+using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.ProceduralModels;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.Engine.Graphics.Composers;
+using SiliconStudio.Paradox.Engine.Graphics.Materials;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
 
@@ -37,12 +40,34 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             var modelDescriptor = new ProceduralModelDescriptor(new CubeProceduralModel());
             var model = modelDescriptor.GenerateModel(Services);
             var modelComponent = new ModelComponent(model);
+
+            var material = Material.New(
+                new MaterialDescriptor
+                {
+                    Attributes =
+                    {
+                        Diffuse = new MaterialDiffuseMapFeature(new ComputeColor(Color.White)),
+                        DiffuseModel = new MaterialDiffuseLambertModelFeature()
+                    }
+                });
+
+            model.Materials.Add(material);
+
             entity.Add(modelComponent);
 
             scene.Transform.Children.Add(entity.Transform);
 
+            var cameraEntity = new Entity { new CameraComponent() };
+            cameraEntity.Transform.Position = new Vector3(0, 0, 5);
+            scene.Transform.Children.Add(cameraEntity.Transform);
+
             var graphicsCompositor = new SceneGraphicsCompositorLayers();
             graphicsCompositor.Master.Renderers.Add(new ClearRenderFrameRenderer());
+            graphicsCompositor.Master.Renderers.Add(new SceneCameraRenderer()
+            {
+                Camera = cameraEntity.Get<CameraComponent>()
+            });
+
             scene.Settings.GraphicsCompositor = graphicsCompositor;
 
             SceneSystem.SceneInstance = new SceneInstance(Services, scene);

@@ -5,8 +5,8 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
 {
@@ -28,12 +28,12 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// <summary>
         /// Initializes a new instance of the <see cref="ComputeTextureColor" /> class.
         /// </summary>
-        /// <param name="texturePath">Name of the texture.</param>
+        /// <param name="texture">The texture.</param>
         /// <param name="texcoordIndex">Index of the texcoord.</param>
         /// <param name="scale">The scale.</param>
         /// <param name="offset">The offset.</param>
-        public ComputeTextureScalar(string texturePath, TextureCoordinate texcoordIndex, Vector2 scale, Vector2 offset)
-            : base(texturePath, texcoordIndex, scale, offset)
+        public ComputeTextureScalar(Texture texture, TextureCoordinate texcoordIndex, Vector2 scale, Vector2 offset)
+            : base(texture, texcoordIndex, scale, offset)
         {
             Channel = TextureChannel.R;
         }

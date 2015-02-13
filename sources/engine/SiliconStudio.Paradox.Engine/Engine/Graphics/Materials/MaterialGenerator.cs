@@ -7,6 +7,7 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Data;
 using SiliconStudio.Paradox.Effects.Materials;
+using SiliconStudio.Paradox.Engine.Graphics.Materials;
 using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Materials
@@ -22,7 +23,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
     public class MaterialGenerator
     {
-        public static MaterialShaderResult Generate(MaterialAsset material, MaterialGeneratorContext context = null)
+        public static MaterialShaderResult Generate(MaterialDescriptor material, MaterialGeneratorContext context = null)
         {
             if (material == null) throw new ArgumentNullException("material");
             var result = new MaterialShaderResult();

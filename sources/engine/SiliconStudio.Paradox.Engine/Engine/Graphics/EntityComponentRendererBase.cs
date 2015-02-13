@@ -52,6 +52,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
         public override void Load(RenderContext context)
         {
+            base.Load(context);
             Services = context.Services;
             EffectSystem = Services.GetSafeServiceAs<EffectSystem>();
             EntityManager = context.Tags.GetSafe(EntityManager.Current);

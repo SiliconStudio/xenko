@@ -53,6 +53,12 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 lightProcessor = context.Tags.Get(EntityManager.Current).GetProcessor<LightProcessor>();
             }
 
+            // No light processor means no lights in the scene
+            if (lightProcessor == null)
+            {
+                return;
+            }
+
             directLightGroup.ProcessLights(context, lightProcessor.ActiveDirectLights, Enabled);
             environmentLightGroup.ProcessLights(context, lightProcessor.ActiveEnvironmentLights, Enabled);
         }

@@ -6,19 +6,14 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 
-using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Assets.Effect;
 using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
-using SiliconStudio.Paradox.Shaders.Parser.Ast;
-using SiliconStudio.Shaders.Ast;
 
 namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
 {
@@ -41,7 +36,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// </userdoc>
         [DataMember(10)]
         [InlineProperty]
-        public AssetReference<EffectShaderAsset> MixinReference
+        public string MixinReference
         {
             get
             {
@@ -88,7 +83,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// The reference to the shader.
         /// </summary>
         [DataMemberIgnore]
-        private AssetReference<EffectShaderAsset> mixinReference;
+        private string mixinReference;
 
         #endregion
 
@@ -129,9 +124,9 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
 
         public override ShaderSource GenerateShaderSource(MaterialGeneratorContext context, MaterialComputeColorKeys baseKeys)
         {
-            if (!MixinReference.HasLocation())
+            if (string.IsNullOrEmpty(MixinReference))
                 return new ShaderClassSource("ComputeColor");
-            var mixinName = Path.GetFileNameWithoutExtension(MixinReference.Location);
+            var mixinName = MixinReference;
 
             object[] generics = null;
             if (Generics.Count > 0)
@@ -191,150 +186,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
             return mixin;
         }
 
-        /// <summary>
-        /// Load the shader and extract the information.
-        /// </summary>
-        public void PrepareNode(ConcurrentDictionary<string, string> projectShaders)
-        {
-            if (!MixinReference.HasLocation())
-            {
-                return;
-            }
 
-            var newGenerics = new ComputeColorParameters();
-            var newCompositionNodes = new Dictionary<string, T>();
-            var newMembers = new Dictionary<ParameterKey, object>();
-
-            var localMixinName = Path.GetFileNameWithoutExtension(MixinReference.Location);
-            ShaderClassType shader;
-
-            string source;
-            if (projectShaders.TryGetValue(localMixinName, out source))
-            {
-                shader = MaterialNodeClassLoader.GetLoader().ParseShader(source);
-            }
-            else
-            {
-                shader = MaterialNodeClassLoader.GetLoader().GetShader(localMixinName);
-            }
-
-            if (shader == null)
-                return;
-
-            var acceptLinkedVariable = true;
-
-            foreach (var generic in shader.ShaderGenerics)
-            {
-                if (generic.Type.Name.Text == "float4")
-                    AddKey<Vector4>(generic.Name.Text, newGenerics);
-                else if (generic.Type.Name.Text == "float3")
-                    AddKey<Vector3>(generic.Name.Text, newGenerics);
-                else if (generic.Type.Name.Text == "float2")
-                    AddKey<Vector2>(generic.Name.Text, newGenerics);
-                else if (generic.Type.Name.Text == "float")
-                    AddKey<float>(generic.Name.Text, newGenerics);
-                else if (generic.Type.Name.Text == "int")
-                    AddKey<int>(generic.Name.Text, newGenerics);
-                else if (generic.Type.Name.Text == "Texture2D")
-                    AddKey<Graphics.Texture>(generic.Name.Text, newGenerics);
-                else if (generic.Type.Name.Text == "SamplerState")
-                    AddKey<SamplerState>(generic.Name.Text, newGenerics);
-                else
-                    AddKey<string>(generic.Name.Text, newGenerics);
-
-                if (generic.Type is LinkType)
-                    acceptLinkedVariable = false; // since the behavior is unpredictable, safely prevent addition of linked variable (= with Link annotation)
-            }
-
-            foreach (var member in shader.Members.OfType<Variable>())
-            {
-                // TODO: enough detect compositions?
-                if (member.Type is TypeName && (member.Type.TypeInference == null || member.Type.TypeInference.TargetType == null))
-                {
-                    // ComputeColor only
-                    if (member.Type.Name.Text == "ComputeColor")
-                    {
-                        if (CompositionNodes.ContainsKey(member.Name.Text))
-                            newCompositionNodes.Add(member.Name.Text, CompositionNodes[member.Name.Text]);
-                        else
-                            newCompositionNodes.Add(member.Name.Text, null);
-                    }
-                }
-                else
-                {
-                    var isColor = false;
-                    string linkName = null;
-                    var isStage = member.Qualifiers.Contains(ParadoxStorageQualifier.Stage);
-                    var isStream = member.Qualifiers.Contains(ParadoxStorageQualifier.Stream);
-                    foreach (var annotation in member.Attributes.OfType<SiliconStudio.Shaders.Ast.Hlsl.AttributeDeclaration>())
-                    {
-                        if (annotation.Name == "Color")
-                            isColor = true;
-                        if (acceptLinkedVariable && annotation.Name == "Link" && annotation.Parameters.Count > 0)
-                            linkName = (string)annotation.Parameters[0].Value;
-                    }
-
-                    if (!isStream && (isStage || !string.IsNullOrEmpty(linkName)))
-                    {
-                        if (linkName == null)
-                            linkName = localMixinName + "." + member.Name.Text;
-
-                        var memberType = member.Type.ResolveType();
-                        if (isColor)
-                        {
-                            AddMember<Color4>(linkName, newMembers);
-                        }
-                        else if (memberType == ScalarType.Float || memberType == ScalarType.Half)
-                        {
-                            AddMember<float>(linkName, newMembers);
-                        }
-                        else if (memberType == ScalarType.Double)
-                        {
-                            AddMember<double>(linkName, newMembers);
-                        }
-                        else if (memberType == ScalarType.Int)
-                        {
-                            AddMember<int>(linkName, newMembers);
-                        }
-                        else if (memberType == ScalarType.UInt)
-                        {
-                            AddMember<uint>(linkName, newMembers);
-                        }
-                        else if (memberType == ScalarType.Bool)
-                        {
-                            AddMember<bool>(linkName, newMembers);
-                        }
-                        else if (memberType is VectorType)
-                        {
-                            switch (((VectorType)memberType).Dimension)
-                            {
-                                case 2:
-                                    AddMember<Vector2>(linkName, newMembers);
-                                    break;
-                                case 3:
-                                    AddMember<Vector3>(linkName, newMembers);
-                                    break;
-                                case 4:
-                                    AddMember<Vector4>(linkName, newMembers);
-                                    break;
-                            }
-                        }
-                        else if (member.Type.Name.Text == "Texture2D")
-                        {
-                            AddMember<Graphics.Texture>(linkName, newMembers);
-                        }
-                        else if (member.Type.Name.Text == "SamplerState")
-                        {
-                            AddMember<Graphics.SamplerState>(linkName, newMembers);
-                        }
-                    }
-                }
-            }
-
-            Generics = newGenerics;
-            CompositionNodes = newCompositionNodes;
-            Members = newMembers;
-        }
 
         public ParameterCollection GetParameters(object context)
         {
@@ -418,7 +270,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// <typeparam name="T">The type of the member.</typeparam>
         /// <param name="linkName">The name of the parameter key.</param>
         /// <param name="members">The target parameter collection.</param>
-        private void AddMember<T>(string linkName, Dictionary<ParameterKey, object> members)
+        public void AddMember<T>(string linkName, Dictionary<ParameterKey, object> members)
         {
             var pk = GetTypedParameterKey<T>(linkName);
             if (pk != null)
@@ -458,7 +310,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// <typeparam name="T">The type of the generic.</typeparam>
         /// <param name="keyName">The name of the generic.</param>
         /// <param name="generics">The target ComputeColorParameters.</param>
-        private void AddKey<T>(string keyName, ComputeColorParameters generics)
+        public void AddKey<T>(string keyName, ComputeColorParameters generics)
         {
             IComputeColorParameter computeColorParameter;
             var typeT = typeof(T);
