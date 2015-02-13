@@ -19,19 +19,16 @@ namespace SiliconStudio.Paradox.Effects
 
         internal int[] SortedLevels;
 
-        internal ParameterCollection Parameters;
-
-        public EffectParameterUpdaterDefinition(Effect effect, ParameterCollection usedParameters)
+        public EffectParameterUpdaterDefinition(Effect effect)
         {
-            Initialize(effect, usedParameters);
+            Initialize(effect);
         }
 
-        public void Initialize(Effect effect, ParameterCollection usedParameters)
+        public void Initialize(Effect effect)
         {
             if (effect == null) throw new ArgumentNullException("effect");
 
-            Parameters = usedParameters;
-            var parameters = usedParameters;
+            var parameters = effect.CompilationParameters;
 
             var internalValues = parameters.InternalValues;
             SortedKeys = new ParameterKey[internalValues.Count];
@@ -52,7 +49,8 @@ namespace SiliconStudio.Paradox.Effects
             var keyMapping = new Dictionary<ParameterKey, int>();
             for (int i = 0; i < SortedKeys.Length; i++)
                 keyMapping.Add(SortedKeys[i], i);
-            Parameters.SetKeyMapping(keyMapping);
+            effect.CompilationParameters.SetKeyMapping(keyMapping);
+            effect.DefaultCompilationParameters.SetKeyMapping(keyMapping);
         }
 
         public void UpdateCounter(ParameterCollection parameters)
@@ -79,12 +77,12 @@ namespace SiliconStudio.Paradox.Effects
                 var kvp = GetAtIndex(i);
                 if (definition.SortedLevels[i] == kvp.Key)
                 {
-                    if (definition.SortedCounters[i] != kvp.Value.Counter && !kvp.Value.ValueEquals(definition.SortedCompilationValues[i]))
+                    if (definition.SortedCounters[i] != kvp.Value.Counter && !Equals(definition.SortedCompilationValues[i], kvp.Value.Object))
                         return true;
                 }
                 else
                 {
-                    if (!kvp.Value.ValueEquals(definition.SortedCompilationValues[i]))
+                    if (!Equals(definition.SortedCompilationValues[i], kvp.Value.Object))
                         return true;
                 }
             }
