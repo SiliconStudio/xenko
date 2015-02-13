@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -11,6 +12,37 @@ namespace SiliconStudio.Paradox.Effects
 {
     public static class ParameterKeys
     {
+        private static int keyCount;
+        private static readonly List<ParameterKey> keys = new List<ParameterKey>();
+
+        /// <summary>
+        /// Returns property keys matching a given type
+        /// </summary>
+        /// <param name="keyType">Type of the key.</param>
+        /// <returns></returns>
+        public static IEnumerable<ParameterKey> GetKeys()
+        {
+            lock (keys)
+            lock (keyByNames)
+            {
+                if (keyByNames.Count != keyCount)
+                {
+                    // If anything changed, repopulate the list (we can't do incrementally since dictionary aren't ordered)
+                    keys.Clear();
+                    foreach (var key in keyByNames)
+                    {
+                        // Ignore key whose name contains more than one . or a [ (they are composed keys)
+                        if (key.Key.Count(c => c == '.') > 1 || key.Key.Contains('['))
+                            continue;
+
+                        keys.Add(key.Value);
+                    }
+                }
+
+                return keys.ToList();
+            }
+        }
+
         /// <summary>
         /// Creates a value key.
         /// </summary>
