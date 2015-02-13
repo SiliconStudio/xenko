@@ -30,6 +30,9 @@ namespace SiliconStudio.Paradox.Effects
         {
             if (effect == null) throw new ArgumentNullException("effect");
 
+            // TODO: Should we ignore various compiler keys such as CompilerParameters.GraphicsPlatformKey, CompilerParameters.GraphicsProfileKey and CompilerParameters.DebugKey?
+            //       That was done previously in Effect.CompilerParameters
+            // TODO: Should we clone usedParameters? Or somehow make sure it is immutable? (for now it uses the one straight from EffectCompiler, which might not be a good idea...)
             Parameters = usedParameters;
             var parameters = usedParameters;
 
