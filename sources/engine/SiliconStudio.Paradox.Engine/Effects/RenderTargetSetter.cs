@@ -129,11 +129,6 @@ namespace SiliconStudio.Paradox.Effects
             if (EnableClearTarget && RenderTarget != null)
                 graphicsDevice.Clear(RenderTarget, ClearColor);
 
-            // set the view size parameter
-            var pass = context.CurrentPass;
-            var viewParameters = pass.Parameters;
-            viewParameters.Set(CameraKeys.ViewSize, new Vector2(Viewport.Width, Viewport.Height));
-
             // set the targets
             if (EnableSetTargets)
             {
@@ -142,6 +137,11 @@ namespace SiliconStudio.Paradox.Effects
                 if (viewPort != Viewport.Empty)
                     graphicsDevice.SetViewport(viewPort);
             }
+
+            // set the view size parameter
+            var pass = context.CurrentPass;
+            var viewParameters = pass.Parameters;
+            viewParameters.Set(CameraKeys.ViewSize, new Vector2(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height));
         }
     }
 }
