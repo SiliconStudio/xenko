@@ -13,48 +13,10 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Core.Serialization.Serializers;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.Shaders.Compiler
 {
-    public struct TaskOrResult<T> where T : class
-    {
-        public readonly T Result;
-        public readonly Task<T> Task;
-
-        public static implicit operator TaskOrResult<T>(T result)
-        {
-            return new TaskOrResult<T>(result);
-        }
-
-        public static implicit operator TaskOrResult<T>(Task<T> task)
-        {
-            return new TaskOrResult<T>(task);
-        }
-
-        public TaskOrResult(Task<T> task)
-        {
-            Result = default(T);
-            Task = task;
-        }
-
-        public TaskOrResult(T result)
-        {
-            Result = result;
-            Task = null;
-        }
-
-        public T WaitForResult()
-        {
-            if (Task != null)
-                return Task.Result;
-
-            return Result;
-        }
-    }
-
     /// <summary>
     /// Checks if an effect has already been compiled in its cache before deferring to a real <see cref="IEffectCompiler"/>.
     /// </summary>
@@ -68,7 +30,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
         private readonly HashSet<ObjectId> bytecodesByPassingStorage = new HashSet<ObjectId>();
         private const string CompiledShadersKey = "__shaders_bytecode__";
 
-        private readonly Dictionary<ObjectId, Task<EffectBytecode>> compilingShaders = new Dictionary<ObjectId, Task<EffectBytecode>>();
+        private readonly Dictionary<ObjectId, Task<EffectBytecodeCompilerResult>> compilingShaders = new Dictionary<ObjectId, Task<EffectBytecodeCompilerResult>>();
 
         private int effectCompileCount;
 
@@ -92,7 +54,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             }
         }
 
-        public override TaskOrResult<EffectBytecode> Compile(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters, LoggerResult log)
+        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters)
         {
             var database = FileProvider ?? AssetManager.FileProvider;
             if (database == null)
@@ -183,7 +145,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
             if (bytecode != null)
             {
-                return bytecode;
+                return new EffectBytecodeCompilerResult(bytecode);
             }
 
             // ------------------------------------------------------------------------------------------------------------
@@ -191,24 +153,17 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             // ------------------------------------------------------------------------------------------------------------
             lock (compilingShaders)
             {
-                Task<EffectBytecode> compilingShaderTask;
+                Task<EffectBytecodeCompilerResult> compilingShaderTask;
                 if (compilingShaders.TryGetValue(mixinObjectId, out compilingShaderTask))
                 {
-                    Debugger.Log(0, "EffectCompiler", string.Format("Using pending compile of {0}...\n", mixinObjectId));
-
                     // Note: Task might still be compiling
                     return compilingShaderTask;
                 }
 
-                // Open the database for writing
-                var localLogger = new LoggerResult();
-
-                Debugger.Log(0, "EffectCompiler", string.Format("Starting compile of {0}...\n", mixinObjectId));
-
                 // Compile the mixin in a Task
                 if (CompileEffectAsynchronously)
                 {
-                    var resultTask = Task.Factory.StartNew(() => CompileBytecode(mixinTree, compilerParameters, log, localLogger, mixinObjectId, database, compiledUrl, usedParameters), CancellationToken.None, TaskCreationOptions.None, taskScheduler);
+                    var resultTask = Task.Factory.StartNew(() => CompileBytecode(mixinTree, compilerParameters, mixinObjectId, database, compiledUrl, usedParameters), CancellationToken.None, TaskCreationOptions.None, taskScheduler);
 
                     compilingShaders.Add(mixinObjectId, resultTask);
 
@@ -216,30 +171,33 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 }
                 else
                 {
-                    return CompileBytecode(mixinTree, compilerParameters, log, localLogger, mixinObjectId, database, compiledUrl, usedParameters);
+                    return CompileBytecode(mixinTree, compilerParameters, mixinObjectId, database, compiledUrl, usedParameters);
                 }
             }
         }
 
-        private EffectBytecode CompileBytecode(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters, LoggerResult log, LoggerResult localLogger, ObjectId mixinObjectId, DatabaseFileProvider database, string compiledUrl, ShaderMixinParameters usedParameters)
+        private EffectBytecodeCompilerResult CompileBytecode(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters, ObjectId mixinObjectId, DatabaseFileProvider database, string compiledUrl, ShaderMixinParameters usedParameters)
         {
-            var compiledShader = base.Compile(mixinTree, compilerParameters, localLogger);
-            var bytecode2 = compiledShader.Result;
-            localLogger.CopyTo(log);
+            // Open the database for writing
+            var log = new LoggerResult();
 
+            // Note: this compiler is expected to not be async and directly write stuff in localLogger
+            var compiledShader = base.Compile(mixinTree, compilerParameters).WaitForResult();
+            compiledShader.CompilationLog.CopyTo(log);
+            
             // If there are any errors, return immediately
-            if (localLogger.HasErrors)
+            if (log.HasErrors)
             {
                 lock (compilingShaders)
                 {
                     compilingShaders.Remove(mixinObjectId);
                 }
 
-                return null;
+                return new EffectBytecodeCompilerResult(null, log);
             }
 
             // Compute the bytecodeId
-            var newBytecodeId = bytecode2.ComputeId();
+            var newBytecodeId = compiledShader.Bytecode.ComputeId();
 
             // Check if we really need to store the bytecode
             lock (bytecodes)
@@ -247,7 +205,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 // Using custom serialization to the database to store an object with a custom id
                 // TODO: Check if we really need to write the bytecode everytime even if id is not changed
                 var memoryStream = new MemoryStream();
-                bytecode2.WriteTo(memoryStream);
+                compiledShader.Bytecode.WriteTo(memoryStream);
                 memoryStream.Position = 0;
                 database.ObjectDatabase.Write(memoryStream, newBytecodeId, true);
                 database.AssetIndexMap[compiledUrl] = newBytecodeId;
@@ -264,7 +222,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     Interlocked.Increment(ref effectCompileCount);
 
                     // Replace or add new bytecode
-                    bytecodes[newBytecodeId] = bytecode2;
+                    bytecodes[newBytecodeId] = compiledShader.Bytecode;
                 }
             }
 
@@ -273,9 +231,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 compilingShaders.Remove(mixinObjectId);
             }
 
-            Debugger.Log(0, "EffectCompiler", string.Format("Finishing compile of {0}...\n", mixinObjectId));
-
-            return bytecode2;
+            return compiledShader;
         }
 
         private EffectBytecode LoadEffectBytecode(DatabaseFileProvider database, ObjectId bytecodeId)

@@ -177,7 +177,7 @@ namespace SiliconStudio.Paradox.Effects
 
         // TODO: THIS IS JUST A WORKAROUND, REMOVE THIS
 
-        private static void CheckResult(CompilerResults compilerResult)
+        private static void CheckResult(LoggerResult compilerResult)
         {
             // Check errors
             if (compilerResult.HasErrors)
@@ -186,11 +186,17 @@ namespace SiliconStudio.Paradox.Effects
             }
         }
 
-        private Effect CreateEffect(string effectName, EffectBytecode bytecode, ShaderMixinParameters usedParameters)
+        private Effect CreateEffect(string effectName, EffectBytecodeCompilerResult effectBytecodeCompilerResult, ShaderMixinParameters usedParameters)
         {
             Effect effect;
             lock (cachedEffects)
             {
+                CheckResult(effectBytecodeCompilerResult.CompilationLog);
+
+                var bytecode = effectBytecodeCompilerResult.Bytecode;
+                if (bytecode == null)
+                    throw new InvalidOperationException("EffectCompiler returned no shader and no compilation error.");
+
                 if (!cachedEffects.TryGetValue(bytecode, out effect))
                 {
                     effect = new Effect(graphicsDeviceService.GraphicsDevice, bytecode, usedParameters) { Name = effectName };
@@ -313,7 +319,7 @@ namespace SiliconStudio.Paradox.Effects
                     {
                         foreach (var bytecode in bytecodeRemoved)
                         {
-                            effectCompilerResults.RemoveAll(results => results.Bytecodes.Values.Contains(bytecode));
+                            effectCompilerResults.RemoveAll(results => results.Bytecodes.Values.Any(x => x.GetCurrentResult().Bytecode == bytecode));
                         }
                     }
                 }

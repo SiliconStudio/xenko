@@ -79,8 +79,10 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             }
         }
 
-        public override TaskOrResult<EffectBytecode> Compile(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters, LoggerResult log)
+        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters)
         {
+            var log = new LoggerResult();
+
             // Load D3D compiler dll
             // Note: No lock, it's probably fine if it gets called from multiple threads at the same time.
             if (Platform.IsWindowsDesktop && !d3dCompilerLoaded)
@@ -126,7 +128,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             // Return directly if there are any errors
             if (parsingResult.HasErrors)
             {
-                return (EffectBytecode)null;
+                return new EffectBytecodeCompilerResult(null, log);
             }
 
             // Convert the AST to HLSL
@@ -140,7 +142,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             if (string.IsNullOrEmpty(shaderSourceText))
             {
                 log.Error("No code generated for effect [{0}]", fullEffectName);
-                return (EffectBytecode)null;
+                return new EffectBytecodeCompilerResult(null, log);
             }
 
             // -------------------------------------------------------
@@ -320,7 +322,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             }
 #endif
 
-            return bytecode;
+            return new EffectBytecodeCompilerResult(bytecode, log);
         }
 
         private static void CopyLogs(SiliconStudio.Shaders.Utility.LoggerResult inputLog, LoggerResult outputLog)
