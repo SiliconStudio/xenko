@@ -36,9 +36,6 @@ namespace SiliconStudio.Paradox.Graphics
         public static readonly ParameterKey<DepthStencilState> DepthStencilStateKey = ParameterKeys.New<DepthStencilState>();
         public static readonly ParameterKey<BlendState> BlendStateKey = ParameterKeys.New<BlendState>();
 
-        internal ParameterCollection CompilationParameters;
-        internal ParameterCollection DefaultCompilationParameters;
-
         internal Effect()
         {
         }
