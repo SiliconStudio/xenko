@@ -4,8 +4,10 @@
 using System.ComponentModel;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Engine.Graphics.Composers;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Engine.Graphics
@@ -27,6 +29,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             Color = Core.Mathematics.Color.CornflowerBlue;
             Depth = 1.0f;
             Stencil = 0;
+            Output = new CurrentRenderFrameProvider();
         }
 
         /// <summary>
@@ -73,13 +76,18 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// </summary>
         /// <value>The frame.</value>
         [DataMember(50)]
-        [DefaultValue(null)]
-        public RenderFrame Frame { get; set; }
+        [NotNull]
+        public IRenderFrameOutput Output { get; set; }
 
         protected override void DrawCore(RenderContext context)
         {
+            if (Output == null)
+            {
+                return;
+            }
+
             // Use the instance Frame or gets from the context
-            var frame = Frame ?? context.Tags.Get(RenderFrame.Current);
+            var frame = Output.GetRenderFrame(context);
 
             // If not frame set, then nop
             if (frame == null)
@@ -97,13 +105,9 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             }
 
             if (ClearFlags == ClearRenderFrameFlags.Color)
+            {
                 graphicsDevice.Clear(frame.RenderTarget, Color);
-
-            // Activate the frame for rendering
-            frame.Activate(context);
-
-            // TODO: Add Viewport?
-            // TODO: Add support for pluggable clear for Deferred render targets (clear the packed buffer... etc)
+            }
         }
     }
 }
