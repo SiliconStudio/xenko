@@ -47,6 +47,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
         protected override void DrawCore(RenderContext context)
         {
+            // If Input or Output are null, early exit
             if (Input == null || Output == null)
             {
                 return;
@@ -54,6 +55,12 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
             var input = Input.GetRenderFrame(context);
             var output = Output.GetRenderFrame(context);
+
+            // If RenderFrame input or output are null, we can't do anything
+            if (input == null || output == null)
+            {
+                return;
+            }
 
             // If no effect found, just copy passthrough from input to output.
             var effect = (IImageEffect)Effect ?? context.GetSharedEffect<ImageScaler>();
