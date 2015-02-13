@@ -23,9 +23,9 @@ class TessellationAEN<Semantic TSource, Semantic TDestination> : TessellationFla
         const uint DominantEdge = uCPID * 2 + 3;
         const uint DominantVertex = uCPID + 9;
 
-        streams.f2DomEdgeStream[0] = input[DominantEdge].TSource;
-        streams.f2DomEdgeStream[1] = input[DominantEdge+1].TSource;
-        streams.f2DomVertStream    = input[DominantVertex].TSource;
+        streams.f2DomEdgeStream[0] = input[DominantEdge].TexCoordSource;
+        streams.f2DomEdgeStream[1] = input[DominantEdge+1].TexCoordSource;
+        streams.f2DomVertStream    = input[DominantVertex].TexCoordSource;
     }
 
     override void InterpolateBarycentric(const OutputPatch<Input, 3> input, in Constants constants, float3 f3BarycentricCoords)

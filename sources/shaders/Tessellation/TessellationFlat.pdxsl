@@ -11,20 +11,17 @@
 #define InputControlPointCount 3
 //#endif
 
-// TODO: REWRITE in WS
-
-class TessellationFlat : ShaderBaseTessellation, PositionVertexTransform, PositionStream4, TransformationBase, NormalVSStream, Camera
+class TessellationFlat : ShaderBaseTessellation, PositionStream4, TransformationBase, NormalStream, Camera, Transformation
 {
     [Link("Tessellation.DesiredTriangleSize")]
     stage float DesiredTriangleSize = 12.0f;
 
-    //stream bool clipped : CLIPPED;
     stream float oppositeEdgeLOD;
     stream float clipped;
     patchstream float tessFactor[3] : SV_TessFactor;
     patchstream float insideTessFactor : SV_InsideTessFactor;
 
-    override void BaseTransformVS()
+    stage override void BaseTransformVS()
     {
         this.PreTransformPosition();
     }
@@ -34,13 +31,8 @@ class TessellationFlat : ShaderBaseTessellation, PositionVertexTransform, Positi
         this.TransformPosition();
         this.PostTransformPosition();
     }
-
-    override void PostTransformPosition()
-    {
-        streams.ShadingPosition = mul(streams.vPositionVS, Projection);
-    }
     
-    override void TransformPosition()
+    stage override void TransformPosition()
     {
         base.TransformPosition();
 
@@ -49,13 +41,13 @@ class TessellationFlat : ShaderBaseTessellation, PositionVertexTransform, Positi
     }
     
     float2 GetScreenSpacePosition( 
-                                    float4 f3Position,            // View space position of patch control point
-                                    float4x4 f4x4Projection,        // Projection matrix
+                                    float4 f3Position,              // View space position of patch control point
+                                    float4x4 f4x4ViewProjection,    // ViewProjection matrix
                                     float fScreenWidth,             // Screen width
                                     float fScreenHeight             // Screen height
                                     )
     {
-        float4 f4ProjectedPosition = mul( float4( f3Position.xyz, 1.0f ), f4x4Projection );
+        float4 f4ProjectedPosition = mul( float4( f3Position.xyz, 1.0f ), f4x4ViewProjection );
         float2 f2ScreenPosition = f4ProjectedPosition.xy / f4ProjectedPosition.ww;
         f2ScreenPosition = ( f2ScreenPosition + 1.0f ) * 0.5f * float2( fScreenWidth, -fScreenHeight );
         return f2ScreenPosition;
@@ -92,7 +84,7 @@ class TessellationFlat : ShaderBaseTessellation, PositionVertexTransform, Positi
     
     float ComputeClipping(InputPatch<Input, InputControlPointCount> input, const OutputPatch<Input2, 3> output, inout Constants constants)
     {
-        return ComputeClippingGroup3(input[0].vPositionVS, input[1].vPositionVS, input[2].vPositionVS, Projection);
+        return ComputeClippingGroup3(input[0].PositionWS, input[1].PositionWS, input[2].PositionWS, ViewProjection);
     }
 
     void TessellateHull(InputPatch<Input, InputControlPointCount> input, uint uCPID, uint NextCPID)
@@ -103,11 +95,11 @@ class TessellationFlat : ShaderBaseTessellation, PositionVertexTransform, Positi
     {
     }
 
-    float ComputeClippingGroup3(float4 f3Position1, float4 f3Position2, float4 f3Position3, float4x4 f4x4Projection)
+    float ComputeClippingGroup3(float4 f3Position1, float4 f3Position2, float4 f3Position3, float4x4 f4x4ViewProjection)
     {
-        float4 clipPos1 = mul( float4( f3Position1.xyz, 1.0f ), f4x4Projection );
-        float4 clipPos2 = mul( float4( f3Position2.xyz, 1.0f ), f4x4Projection );
-        float4 clipPos3 = mul( float4( f3Position3.xyz, 1.0f ), f4x4Projection );
+        float4 clipPos1 = mul( float4( f3Position1.xyz, 1.0f ), f4x4ViewProjection );
+        float4 clipPos2 = mul( float4( f3Position2.xyz, 1.0f ), f4x4ViewProjection );
+        float4 clipPos3 = mul( float4( f3Position3.xyz, 1.0f ), f4x4ViewProjection );
 
         float3 planeTest;
 
@@ -143,9 +135,9 @@ class TessellationFlat : ShaderBaseTessellation, PositionVertexTransform, Positi
         // Compute screen space position of current control point and next one
         // TODO: Reuse ShadingPosition?
         // However, not sure if we can do tessellation directly through ShadingPosition interpolation (in which case we wouldn't need to do it in domain shader either)
-        float2 screenPosition0 = GetScreenSpacePosition(input[uCPID].vPositionVS, Projection, ViewSize.x, ViewSize.y);
-        float2 screenPosition1 = GetScreenSpacePosition(input[NextCPID].vPositionVS, Projection, ViewSize.x, ViewSize.y);
-
+        float2 screenPosition0 = GetScreenSpacePosition(input[uCPID].PositionWS, ViewProjection, ViewSize.x, ViewSize.y);
+        float2 screenPosition1 = GetScreenSpacePosition(input[NextCPID].PositionWS, ViewProjection, ViewSize.x, ViewSize.y);
+        
         // Screen space tessellation based on desired triangle size
         streams.oppositeEdgeLOD = 1.0f / DesiredTriangleSize * distance(screenPosition0, screenPosition1);
 

@@ -13,7 +13,7 @@
 # define InputControlPointCount 3
 #endif
 // TODO: REWRITE in WS
-class TessellationDisplacement<float TFactor, float TBase> : ShaderBaseTessellation, TessellationFlat, Texturing, NormalBase
+class TessellationDisplacement<float TFactor, float TBase> : ShaderBaseTessellation, TessellationFlat, Texturing, NormalStream
 {
     compose ComputeColor tessellationDisplacement;
 
@@ -21,9 +21,9 @@ class TessellationDisplacement<float TFactor, float TBase> : ShaderBaseTessellat
     {
         float minHeight = (0.0f - TBase) * TFactor;
         float maxHeight = (1.0f - TBase) * TFactor;
-        return ComputeClippingGroup3(input[0].vPositionVS, input[1].vPositionVS, input[2].vPositionVS, Projection)
-            && ComputeClippingGroup3(input[0].vPositionVS + minHeight * float4(input[0].vNormalVS, 0.0f), input[1].vPositionVS + minHeight * float4(input[1].vNormalVS, 0.0f), input[2].vPositionVS + minHeight * float4(input[2].vNormalVS, 0.0f), Projection)
-            && ComputeClippingGroup3(input[0].vPositionVS + maxHeight * float4(input[0].vNormalVS, 0.0f), input[1].vPositionVS + maxHeight * float4(input[1].vNormalVS, 0.0f), input[2].vPositionVS + maxHeight * float4(input[2].vNormalVS, 0.0f), Projection);
+        return ComputeClippingGroup3(input[0].PositionWS, input[1].PositionWS, input[2].PositionWS, ViewProjection)
+            && ComputeClippingGroup3(input[0].PositionWS + minHeight * float4(input[0].normalWS, 0.0f), input[1].PositionWS + minHeight * float4(input[1].normalWS, 0.0f), input[2].PositionWS + minHeight * float4(input[2].normalWS, 0.0f), ViewProjection)
+            && ComputeClippingGroup3(input[0].PositionWS + maxHeight * float4(input[0].normalWS, 0.0f), input[1].PositionWS + maxHeight * float4(input[1].normalWS, 0.0f), input[2].PositionWS + maxHeight * float4(input[2].normalWS, 0.0f), ViewProjection);
     }
 
     override void TessellateDomain()
