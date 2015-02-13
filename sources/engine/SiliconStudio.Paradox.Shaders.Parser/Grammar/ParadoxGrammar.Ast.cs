@@ -14,6 +14,18 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Grammar
 {
     public partial class ParadoxGrammar
     {
+        private static void CreateStreamsType(ParsingContext context, ParseTreeNode parseNode)
+        {
+            var nextNode = parseNode;
+            while (nextNode.Token == null)
+            {
+                nextNode = nextNode.ChildNodes[0];
+            }
+
+            var value = StreamsType.Parse(nextNode.Token.Text);
+            parseNode.AstNode = value;
+        }
+
         private static void CreateShaderClassSpecifierAst(ParsingContext context, ParseTreeNode node)
         {
             //   [0]        [1]               [2]             [3]             [4]              [5]

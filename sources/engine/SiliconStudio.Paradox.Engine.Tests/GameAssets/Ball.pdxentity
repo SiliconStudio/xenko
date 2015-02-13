@@ -1,0 +1,22 @@
+!Entity
+Id: 9c431da4-42fa-4174-a4fe-ea600570a299
+SerializedVersion: 1
+Tags: []
+Hierarchy:
+    RootEntity: c0a1a6ed-3cc7-4943-b85a-f129d5cf57a2
+    Entities:
+        -   Name: Root
+            Components:
+                SpriteComponent.Key:
+                    Color: {R: 255, G: 255, B: 255, A: 255}
+                    Effect: null
+                    SpriteEffect: None
+                    SpriteGroup: 5d8ecea5-50f2-49c1-8fe8-16e67dd65ab0:BallSprite1
+                TransformationComponent.Key:
+                    Children: []
+                    Rotation: {W: 1, X: 0, Y: 0, Z: 0}
+                    Scaling: {X: 1, Y: 1, Z: 1}
+                    Translation: {X: 0, Y: 0, Z: 0}
+                    UseTRS: true
+            Id: c0a1a6ed-3cc7-4943-b85a-f129d5cf57a2
+AssetBases: {}

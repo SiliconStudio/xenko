@@ -6,7 +6,7 @@
 /// </summary>
 class TransformationBase : ShaderBase
 {
-    // Need to split that more properly (with guaranted shader stages)
+    // Need to split that more properly (with guaranteed shader stages)
     // VS for sure (usually skinning)
     stage void PreTransformPosition() {}
     // VS or DS (usually displacement mapping in view space, etc...)

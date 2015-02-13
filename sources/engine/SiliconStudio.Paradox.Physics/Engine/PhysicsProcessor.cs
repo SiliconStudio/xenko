@@ -1,19 +1,18 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using SiliconStudio.Core;
+﻿using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Threading;
+
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -26,10 +25,10 @@ namespace SiliconStudio.Paradox.Physics
             public ModelComponent ModelComponent; //not mandatory, could be null e.g. invisible triggers
         }
 
-        readonly FastList<PhysicsElement> elements = new FastList<PhysicsElement>();
-        readonly FastList<PhysicsElement> characters = new FastList<PhysicsElement>();
+        private readonly FastList<PhysicsElement> elements = new FastList<PhysicsElement>();
+        private readonly FastList<PhysicsElement> characters = new FastList<PhysicsElement>();
 
-        Bullet2PhysicsSystem physicsSystem;
+        private Bullet2PhysicsSystem physicsSystem;
 
         public PhysicsProcessor()
             : base(new PropertyKey[] { PhysicsComponent.Key, TransformComponent.Key })
@@ -47,19 +46,19 @@ namespace SiliconStudio.Paradox.Physics
         }
 
         //This is called by the physics engine to update the transformation of Dynamic rigidbodies
-        static void RigidBodySetWorldTransform(PhysicsElement element, Matrix physicsTransform)
+        private static void RigidBodySetWorldTransform(PhysicsElement element, Matrix physicsTransform)
         {
             element.UpdateTransformationComponent(physicsTransform);
         }
 
-        //This is valid for Dynamic rigidbodies (called once at initialization) 
+        //This is valid for Dynamic rigidbodies (called once at initialization)
         //and Kinematic rigidbodies (called every simulation tick (if body not sleeping) to let the physics engine know where the kinematic body is)
-        static void RigidBodyGetWorldTransform(PhysicsElement element, out Matrix physicsTransform)
+        private static void RigidBodyGetWorldTransform(PhysicsElement element, out Matrix physicsTransform)
         {
             physicsTransform = element.DerivePhysicsTransformation();
         }
 
-        void NewElement(PhysicsElement element, AssociatedData data, Entity entity)
+        private void NewElement(PhysicsElement element, AssociatedData data, Entity entity)
         {
             if (element.Shape == null) return; //no shape no purpose
 
@@ -100,7 +99,7 @@ namespace SiliconStudio.Paradox.Physics
                         var c = physicsSystem.PhysicsEngine.CreateCollider(shape);
 
                         element.Collider = c; //required by the next call
-                        element.Collider.EntityObject = entity; //required by the next call
+                        element.Collider.Entity = entity; //required by the next call
                         element.UpdatePhysicsTransformation(); //this will set position and rotation of the collider
 
                         c.IsTrigger = true;
@@ -115,12 +114,13 @@ namespace SiliconStudio.Paradox.Physics
                         }
                     }
                     break;
+
                 case PhysicsElement.Types.StaticCollider:
                     {
                         var c = physicsSystem.PhysicsEngine.CreateCollider(shape);
 
                         element.Collider = c; //required by the next call
-                        element.Collider.EntityObject = entity; //required by the next call
+                        element.Collider.Entity = entity; //required by the next call
                         element.UpdatePhysicsTransformation(); //this will set position and rotation of the collider
 
                         c.IsTrigger = false;
@@ -135,11 +135,12 @@ namespace SiliconStudio.Paradox.Physics
                         }
                     }
                     break;
+
                 case PhysicsElement.Types.StaticRigidBody:
                     {
                         var rb = physicsSystem.PhysicsEngine.CreateRigidBody(shape);
 
-                        rb.EntityObject = entity;
+                        rb.Entity = entity;
                         rb.GetWorldTransformCallback = (out Matrix transform) => RigidBodyGetWorldTransform(element, out transform);
                         rb.SetWorldTransformCallback = transform => RigidBodySetWorldTransform(element, transform);
                         element.Collider = rb;
@@ -157,11 +158,12 @@ namespace SiliconStudio.Paradox.Physics
                         }
                     }
                     break;
+
                 case PhysicsElement.Types.DynamicRigidBody:
                     {
                         var rb = physicsSystem.PhysicsEngine.CreateRigidBody(shape);
 
-                        rb.EntityObject = entity;
+                        rb.Entity = entity;
                         rb.GetWorldTransformCallback = (out Matrix transform) => RigidBodyGetWorldTransform(element, out transform);
                         rb.SetWorldTransformCallback = transform => RigidBodySetWorldTransform(element, transform);
                         element.Collider = rb;
@@ -180,11 +182,12 @@ namespace SiliconStudio.Paradox.Physics
                         }
                     }
                     break;
+
                 case PhysicsElement.Types.KinematicRigidBody:
                     {
                         var rb = physicsSystem.PhysicsEngine.CreateRigidBody(shape);
 
-                        rb.EntityObject = entity;
+                        rb.Entity = entity;
                         rb.GetWorldTransformCallback = (out Matrix transform) => RigidBodyGetWorldTransform(element, out transform);
                         rb.SetWorldTransformCallback = transform => RigidBodySetWorldTransform(element, transform);
                         element.Collider = rb;
@@ -203,12 +206,13 @@ namespace SiliconStudio.Paradox.Physics
                         }
                     }
                     break;
+
                 case PhysicsElement.Types.CharacterController:
                     {
                         var ch = physicsSystem.PhysicsEngine.CreateCharacter(shape, element.StepHeight);
 
                         element.Collider = ch;
-                        element.Collider.EntityObject = entity;
+                        element.Collider.Entity = entity;
                         element.UpdatePhysicsTransformation(); //this will set position and rotation of the collider
 
                         if (defaultGroups)
@@ -228,43 +232,45 @@ namespace SiliconStudio.Paradox.Physics
             elements.Add(element);
         }
 
-        void DeleteElement(PhysicsElement element, bool now = false)
+        private void DeleteElement(PhysicsElement element, bool now = false)
         {
             //might be possible that this element was not valid during creation so it would be already null
             if (element.Collider == null) return;
 
             var toDispose = new List<IDisposable>();
 
-            elements.Remove(element);   
+            elements.Remove(element);
 
             switch (element.Type)
             {
                 case PhysicsElement.Types.PhantomCollider:
                 case PhysicsElement.Types.StaticCollider:
-                {
-                    physicsSystem.PhysicsEngine.RemoveCollider(element.Collider);
-                }
+                    {
+                        physicsSystem.PhysicsEngine.RemoveCollider(element.Collider);
+                    }
                     break;
+
                 case PhysicsElement.Types.StaticRigidBody:
                 case PhysicsElement.Types.DynamicRigidBody:
                 case PhysicsElement.Types.KinematicRigidBody:
-                {
-                    var rb = (RigidBody)element.Collider;
-                    var constraints = rb.LinkedConstraints.ToArray();
-                    foreach (var c in constraints)
                     {
-                        physicsSystem.PhysicsEngine.RemoveConstraint(c);
-                        toDispose.Add(c);
-                    }
+                        var rb = (RigidBody)element.Collider;
+                        var constraints = rb.LinkedConstraints.ToArray();
+                        foreach (var c in constraints)
+                        {
+                            physicsSystem.PhysicsEngine.RemoveConstraint(c);
+                            toDispose.Add(c);
+                        }
 
-                    physicsSystem.PhysicsEngine.RemoveRigidBody(rb);
-                }
+                        physicsSystem.PhysicsEngine.RemoveRigidBody(rb);
+                    }
                     break;
+
                 case PhysicsElement.Types.CharacterController:
-                {
-                    characters.Remove(element);
-                    physicsSystem.PhysicsEngine.RemoveCharacter((Character) element.Collider);
-                }
+                    {
+                        characters.Remove(element);
+                        physicsSystem.PhysicsEngine.RemoveCharacter((Character)element.Collider);
+                    }
                     break;
             }
 
@@ -349,23 +355,24 @@ namespace SiliconStudio.Paradox.Physics
                     case ColliderShapeTypes.Compound:
                         DrawDebugCompound(ref viewProj, (CompoundColliderShape)compound[i], element);
                         break;
+
                     default:
-                    {
-                        var physTrans = element.BoneIndex == -1 ? element.Collider.PhysicsWorldTransform : element.BoneWorldMatrix;
-                        physTrans = Matrix.Multiply(subShape.PositiveCenterMatrix, physTrans);
+                        {
+                            var physTrans = element.BoneIndex == -1 ? element.Collider.PhysicsWorldTransform : element.BoneWorldMatrix;
+                            physTrans = Matrix.Multiply(subShape.PositiveCenterMatrix, physTrans);
 
-                        //must account collider shape scaling
-                        Matrix worldTrans;
-                        Matrix.Multiply(ref subShape.DebugPrimitiveScaling, ref physTrans, out worldTrans);
+                            //must account collider shape scaling
+                            Matrix worldTrans;
+                            Matrix.Multiply(ref subShape.DebugPrimitiveScaling, ref physTrans, out worldTrans);
 
-                        physicsSystem.PhysicsEngine.DebugEffect.WorldViewProj = worldTrans * viewProj;
-                        physicsSystem.PhysicsEngine.DebugEffect.Color = element.Collider.IsActive ? Color.Green : Color.Red;
-                        physicsSystem.PhysicsEngine.DebugEffect.UseUv = subShape.Type != ColliderShapeTypes.ConvexHull;
+                            physicsSystem.PhysicsEngine.DebugEffect.WorldViewProj = worldTrans * viewProj;
+                            physicsSystem.PhysicsEngine.DebugEffect.Color = element.Collider.IsActive ? Color.Green : Color.Red;
+                            physicsSystem.PhysicsEngine.DebugEffect.UseUv = subShape.Type != ColliderShapeTypes.ConvexHull;
 
-                        physicsSystem.PhysicsEngine.DebugEffect.Apply();
+                            physicsSystem.PhysicsEngine.DebugEffect.Apply();
 
-                        subShape.DebugPrimitive.Draw();
-                    }
+                            subShape.DebugPrimitive.Draw();
+                        }
                         break;
                 }
             }
@@ -374,10 +381,10 @@ namespace SiliconStudio.Paradox.Physics
         private void DebugShapesDraw(RenderContext context)
         {
             if (!physicsSystem.PhysicsEngine.CreateDebugPrimitives ||
-                    !physicsSystem.PhysicsEngine.RenderDebugPrimitives || 
+                    !physicsSystem.PhysicsEngine.RenderDebugPrimitives ||
                     !physicsSystem.PhysicsEngine.Initialized ||
                     physicsSystem.PhysicsEngine.DebugGraphicsDevice == null ||
-                    physicsSystem.PhysicsEngine.DebugEffect == null) 
+                    physicsSystem.PhysicsEngine.DebugEffect == null)
                 return;
 
             Matrix viewProj;

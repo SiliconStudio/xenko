@@ -161,10 +161,10 @@ namespace SiliconStudio.Paradox.Effects.Images
 
                 // Copy transform parameters back to the composition with the current index
                 var sourceParameters = transform.Parameters;
-                foreach (var parameterValue in sourceParameters )
+                foreach (var parameterValue in sourceParameters.Keys)
                 {
-                    var key = GetComposedKey(parameterValue.Key, i);
-                    sourceParameters.CopySharedTo(parameterValue.Key, key, transformsParameters);
+                    var key = GetComposedKey(parameterValue, i);
+                    sourceParameters.CopySharedTo(parameterValue, key, transformsParameters);
                 }
             }
 

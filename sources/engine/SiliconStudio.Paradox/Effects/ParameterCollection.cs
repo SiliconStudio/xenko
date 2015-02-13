@@ -154,7 +154,7 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         public IEnumerable<ParameterKey> Keys
         {
-            get { return valueList.Select(x => x.Key); }
+            get { return new KeyCollection(this); }
         }
 
         public ICollection<object> Values { get; private set; }
@@ -1396,6 +1396,83 @@ namespace SiliconStudio.Paradox.Effects
                 if (maxSize <= 0)
                     return;
                 Utilities.CopyMemory(dest, (IntPtr)Interop.Fixed(ref GetValue()[0]) + offset, Math.Min(size, maxSize));
+            }
+        }
+
+        public struct KeyCollection : IReadOnlyList<ParameterKey>
+        {
+            private ParameterCollection parameterCollection;
+
+            public KeyCollection(ParameterCollection parameterCollection)
+            {
+                this.parameterCollection = parameterCollection;
+            }
+
+            /// <inheritdoc/>
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            /// <inheritdoc/>
+            public IEnumerator<ParameterKey> GetEnumerator()
+            {
+                return new Enumerator(parameterCollection.valueList);
+            }
+
+            /// <inheritdoc/>
+            public int Count { get { return parameterCollection.valueList.Count; } }
+
+            /// <inheritdoc/>
+            public ParameterKey this[int index]
+            {
+                get { return parameterCollection.valueList[index].Key; }
+            }
+
+            public struct Enumerator : IEnumerator<ParameterKey>
+            {
+                private FastListStruct<KeyValuePair<ParameterKey, InternalValue>> valueList;
+                private int index;
+                private int length;
+
+                public Enumerator(FastListStruct<KeyValuePair<ParameterKey, InternalValue>> valueList) : this()
+                {
+                    this.valueList = valueList;
+                    index = -1;
+                    length = valueList.Count;
+                }
+
+                /// <inheritdoc/>
+                public void Dispose()
+                {
+                }
+
+                /// <inheritdoc/>
+                public bool MoveNext()
+                {
+                    if (index < length)
+                        return ++index < length;
+
+                    return false;
+                }
+
+                /// <inheritdoc/>
+                public void Reset()
+                {
+                    index = -1;
+                }
+
+                /// <inheritdoc/>
+                public ParameterKey Current
+                {
+                    get { return valueList[index].Key; }
+                }
+
+                /// <inheritdoc/>
+                object IEnumerator.Current
+                {
+                    get { return Current; }
+                }
             }
         }
 

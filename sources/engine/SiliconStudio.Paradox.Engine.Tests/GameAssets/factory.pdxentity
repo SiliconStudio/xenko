@@ -1,0 +1,49 @@
+!Entity
+Id: 6355cc36-be8a-4c46-944f-9d5dc9d9d02a
+SerializedVersion: 1
+Tags: []
+Source: ../../../data/tests/Factory/factory.fbx
+SourceHash: d2f423dd854ddffde648997a5284b01c
+Hierarchy:
+    RootEntity: 132ea268-b6d5-42ce-ad6b-518e01bdbe56
+    Entities:
+        -   Name: factory
+            Components:
+                ModelComponent.Key:
+                    DrawOrder: 0
+                    Materials: []
+                    Model: 27757e9a-d725-41b9-99f6-adead4280caf:factory Model
+                    Parameters: {}
+                TransformationComponent.Key:
+                    Children: []
+                    Rotation: {W: 1, X: 0, Y: 0, Z: 0}
+                    Scaling: {X: 1, Y: 1, Z: 1}
+                    Translation: {X: 0, Y: 0, Z: 0}
+                    UseTRS: true
+            Id: 132ea268-b6d5-42ce-ad6b-518e01bdbe56
+AssetBases: {}
+~Base:
+    Location: --import--
+    Asset: !Entity
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: 1
+        Tags: []
+        ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
+        Hierarchy:
+            RootEntity: 132ea268-b6d5-42ce-ad6b-518e01bdbe56
+            Entities:
+                -   Name: factory
+                    Components:
+                        ModelComponent.Key:
+                            DrawOrder: 0
+                            Materials: []
+                            Model: 27757e9a-d725-41b9-99f6-adead4280caf:factory Model
+                            Parameters: {}
+                        TransformationComponent.Key:
+                            Children: []
+                            Rotation: {W: 1, X: 0, Y: 0, Z: 0}
+                            Scaling: {X: 1, Y: 1, Z: 1}
+                            Translation: {X: 0, Y: 0, Z: 0}
+                            UseTRS: true
+                    Id: 132ea268-b6d5-42ce-ad6b-518e01bdbe56
+        AssetBases: {}

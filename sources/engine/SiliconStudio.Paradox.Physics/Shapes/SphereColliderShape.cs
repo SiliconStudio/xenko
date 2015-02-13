@@ -17,8 +17,6 @@ namespace SiliconStudio.Paradox.Physics
             Type = ColliderShapeTypes.Sphere;
             Is2D = is2D;
 
-            Radius = radius;
-
             var shape = new BulletSharp.SphereShape(radius);
 
             if (Is2D)
@@ -34,13 +32,5 @@ namespace SiliconStudio.Paradox.Physics
             DebugPrimitive = GeometricPrimitive.Sphere.New(PhysicsEngine.Singleton.DebugGraphicsDevice);
             DebugPrimitiveScaling = Matrix.Scaling(radius * 2 * 1.01f);
         }
-
-        /// <summary>
-        /// Gets the radius.
-        /// </summary>
-        /// <value>
-        /// The radius.
-        /// </value>
-        public float Radius { get; private set; }
     }
 }

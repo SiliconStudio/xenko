@@ -191,10 +191,10 @@ namespace SiliconStudio.Paradox.Effects.Images
             currentOperator.UpdateParameters(context);
 
             // Copy sub parameters from composition to this transform
-            foreach (var parameterValue in currentOperator.Parameters)
+            foreach (var parameterValue in currentOperator.Parameters.Keys)
             {
-                var key = parameterValue.Key.ComposeWith("ToneMapOperator");
-                currentOperator.Parameters.CopySharedTo(parameterValue.Key, key, Parameters);
+                var key = parameterValue.ComposeWith("ToneMapOperator");
+                currentOperator.Parameters.CopySharedTo(parameterValue, key, Parameters);
             }
         }
     }

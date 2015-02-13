@@ -22,6 +22,8 @@ namespace SiliconStudio.Paradox.Graphics
         private readonly object thisLock = new object();
         private readonly Dictionary<TextureDescription, List<GraphicsResourceLink>> textureCache = new Dictionary<TextureDescription, List<GraphicsResourceLink>>();
         private readonly Dictionary<BufferDescription, List<GraphicsResourceLink>> bufferCache = new Dictionary<BufferDescription, List<GraphicsResourceLink>>();
+        private readonly Func<Texture, TextureDescription> getTextureDefinitionDelegate;
+        private readonly Func<Buffer, BufferDescription> getBufferDescriptionDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphicsResourceAllocator" /> class.
@@ -32,6 +34,8 @@ namespace SiliconStudio.Paradox.Graphics
             if (serviceRegistry == null) throw new ArgumentNullException("serviceRegistry");
             Services = serviceRegistry;
             GraphicsDevice = serviceRegistry.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
+            getTextureDefinitionDelegate = GetTextureDefinition;
+            getBufferDescriptionDelegate = GetBufferDescription;
         }
 
         /// <summary>
@@ -90,7 +94,7 @@ namespace SiliconStudio.Paradox.Graphics
             // Global lock to be threadsafe. 
             lock (thisLock)
             {
-                return GetTemporaryResource(textureCache, description, CreateTexture, GetTextureDefinition, PixelFormat.None);
+                return GetTemporaryResource(textureCache, description, CreateTexture, getTextureDefinitionDelegate, PixelFormat.None);
             }
         }
 
@@ -105,7 +109,7 @@ namespace SiliconStudio.Paradox.Graphics
             // Global lock to be threadsafe. 
             lock (thisLock)
             {
-                return GetTemporaryResource(bufferCache, description, CreateBuffer, GetBufferDescription, viewFormat);
+                return GetTemporaryResource(bufferCache, description, CreateBuffer, getBufferDescriptionDelegate, viewFormat);
             }
         }
 
@@ -280,7 +284,7 @@ namespace SiliconStudio.Paradox.Graphics
             bool resourceFound;
             if (texture != null)
             {
-                resourceFound = UpdateReferenceCount(textureCache, texture, GetTextureDefinition, referenceDelta);
+                resourceFound = UpdateReferenceCount(textureCache, texture, getTextureDefinitionDelegate, referenceDelta);
             }
             else
             {
@@ -289,7 +293,7 @@ namespace SiliconStudio.Paradox.Graphics
                 {
                     throw new ArgumentException("Unsupported GraphicsResource - Only Texture and Buffer", "resource");
                 }
-                resourceFound = UpdateReferenceCount(bufferCache, buffer, GetBufferDescription, referenceDelta);
+                resourceFound = UpdateReferenceCount(bufferCache, buffer, getBufferDescriptionDelegate, referenceDelta);
             }
 
             if (!resourceFound)

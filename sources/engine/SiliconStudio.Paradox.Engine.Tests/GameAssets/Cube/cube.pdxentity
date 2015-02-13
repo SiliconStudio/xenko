@@ -1,0 +1,49 @@
+!Entity
+Id: d3d8a05f-d67f-470e-9727-4fd86acfdfe4
+SerializedVersion: 1
+Tags: []
+Source: ../../../../data/tests/cube/cube.fbx
+SourceHash: 2471e6b1be7106f3e68cf790e9306164
+Hierarchy:
+    RootEntity: 75f27d6d-4f43-4ff6-9e07-68aa52804685
+    Entities:
+        -   Name: cube
+            Components:
+                ModelComponent.Key:
+                    DrawOrder: 0
+                    Materials: []
+                    Model: fdd84cdb-1e11-4cb8-a5eb-8bba7f2fe729:Cube/cube Model
+                    Parameters: {}
+                TransformationComponent.Key:
+                    Children: []
+                    Rotation: {W: 1, X: 0, Y: 0, Z: 0}
+                    Scaling: {X: 1, Y: 1, Z: 1}
+                    Translation: {X: 0, Y: 0, Z: 0}
+                    UseTRS: true
+            Id: 75f27d6d-4f43-4ff6-9e07-68aa52804685
+AssetBases: {}
+~Base:
+    Location: --import--
+    Asset: !Entity
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: 1
+        Tags: []
+        ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
+        Hierarchy:
+            RootEntity: 75f27d6d-4f43-4ff6-9e07-68aa52804685
+            Entities:
+                -   Name: cube
+                    Components:
+                        ModelComponent.Key:
+                            DrawOrder: 0
+                            Materials: []
+                            Model: fdd84cdb-1e11-4cb8-a5eb-8bba7f2fe729:Cube/cube Model
+                            Parameters: {}
+                        TransformationComponent.Key:
+                            Children: []
+                            Rotation: {W: 1, X: 0, Y: 0, Z: 0}
+                            Scaling: {X: 1, Y: 1, Z: 1}
+                            Translation: {X: 0, Y: 0, Z: 0}
+                            UseTRS: true
+                    Id: 75f27d6d-4f43-4ff6-9e07-68aa52804685
+        AssetBases: {}
