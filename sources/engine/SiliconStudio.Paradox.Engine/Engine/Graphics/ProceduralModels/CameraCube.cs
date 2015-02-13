@@ -14,12 +14,11 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-
-#line 3 "C:\Code\Paradox\sources\shaders\Cubemap\CubemapBlenderBase.pdxsl"
-namespace SiliconStudio.Paradox.Effects.Cubemap
+namespace SiliconStudio.Paradox.Effects
 {
-    public static partial class CubemapBlenderBaseKeys
+    public static partial class CameraCubeKeys
     {
-        public static readonly ParameterKey<float[]> BlendIndices = ParameterKeys.New<float[]>();
+        public static readonly ParameterKey<Vector3> CameraWorldPosition = ParameterKeys.New<Vector3>();
+        public static readonly ParameterKey<Matrix[]> CameraViewProjectionMatrices = ParameterKeys.New<Matrix[]>();
     }
 }
