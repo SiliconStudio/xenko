@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         private Int2 screenSize = new Int2(1200, 900);
 
         private DrawEffect computeShaderEffect;
-        private DrawEffectContext drawEffectContext;
+        private RenderContext drawEffectContext;
 
         public TestComputeShader()
         {
@@ -47,8 +47,8 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             var groupCounts = new Int3(inputTexture.Width / ReductionRatio, inputTexture.Height / ReductionRatio, 1);
             outputTexture = Texture.New2D(GraphicsDevice, groupCounts.X, groupCounts.Y, 1, PixelFormat.R8G8B8A8_UNorm, TextureFlags.UnorderedAccess | TextureFlags.ShaderResource);
             displayedTexture = outputTexture;
-            
-            drawEffectContext = new DrawEffectContext(Services);
+
+            drawEffectContext = RenderContext.GetShared(Services);
             computeShaderEffect = new ComputeEffectShader(drawEffectContext) { ShaderSourceName = "ComputeShaderTestEffect", ThreadGroupCounts = groupCounts };
         }
 

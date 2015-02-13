@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         {
             await base.LoadContent();
 
-            var context = new DrawEffectContext(Services);
+            var context = RenderContext.GetShared(Services);
             renderHammersley = new ComputeEffectShader(context) { ShaderSourceName = "HammersleyTest" };
 
             output = Texture.New2D(GraphicsDevice, OutputSize, OutputSize, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.UnorderedAccess | TextureFlags.RenderTarget).DisposeBy(this);

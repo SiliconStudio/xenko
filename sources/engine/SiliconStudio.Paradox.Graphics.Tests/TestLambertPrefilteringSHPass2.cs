@@ -61,7 +61,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             inputBuffer = Buffer.Typed.New(GraphicsDevice, inputBufferData, PixelFormat.R32G32B32A32_Float, true);
             outputBuffer = Buffer.Typed.New(GraphicsDevice, NbOfCoeffs * nbOfGroups.X * nbOfGroups.Y, PixelFormat.R32G32B32A32_Float, true);
 
-            var context = new DrawEffectContext(this);
+            var context = RenderContext.GetShared(Services);
             pass2 = new ComputeEffectShader(context) { ShaderSourceName = "LambertianPrefilteringSHEffectPass2", };
         }
 

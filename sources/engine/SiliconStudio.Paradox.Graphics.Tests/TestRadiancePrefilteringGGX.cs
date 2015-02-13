@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
     {
         private SpriteBatch spriteBatch;
 
-        private DrawEffectContext drawEffectContext;
+        private RenderContext drawEffectContext;
 
         private Texture inputCubemap;
         private Texture outputCubemap;
@@ -70,7 +70,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         {
             await base.LoadContent();
 
-            drawEffectContext = new DrawEffectContext(this);
+            drawEffectContext = RenderContext.GetShared(Services);
             radianceFilter = new RadiancePrefilteringGGX(drawEffectContext);
             skipHighestLevel = radianceFilter.DoNotFilterHighestLevel;
 

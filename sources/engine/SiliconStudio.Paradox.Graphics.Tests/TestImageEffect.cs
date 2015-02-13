@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
     [TestFixture]
     public class TestImageEffect : TestGameBase
     {
-        private DrawEffectContext drawEffectContext;
+        private RenderContext drawEffectContext;
 
         private Texture hdrTexture;
 
@@ -41,7 +41,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             hdrTexture = Texture.Load(GraphicsDevice, File.OpenRead(@"C:\Code\Paradox\sources\engine\SiliconStudio.Paradox.Graphics.Tests\Assets\AtriumNight.dds")); //await Asset.LoadAsync<Texture>("Atrium");
             hdrRenderTexture = Texture.New2D(GraphicsDevice, hdrTexture.Width, hdrTexture.Height, 1, hdrTexture.Format, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
-            drawEffectContext = new DrawEffectContext(this);
+            drawEffectContext = RenderContext.GetShared(Services);
             postProcessingEffects = new PostProcessingEffects(drawEffectContext);
             postProcessingEffects.BrightFilter.Threshold = 100.0f;
             postProcessingEffects.Bloom.DownScale = 2;
