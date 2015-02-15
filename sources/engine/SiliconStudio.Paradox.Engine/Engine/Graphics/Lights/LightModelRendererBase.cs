@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
+using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Shaders;
 
@@ -50,7 +51,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             if (lightProcessor == null)
             {
                 // TODO: This is ugly to access a processor
-                lightProcessor = context.Tags.Get(EntityManager.Current).GetProcessor<LightProcessor>();
+                lightProcessor = context.Tags.Get(SceneInstance.Current).GetProcessor<LightProcessor>();
             }
 
             // No light processor means no lights in the scene

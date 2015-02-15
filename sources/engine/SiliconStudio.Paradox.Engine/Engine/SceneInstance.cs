@@ -18,11 +18,11 @@ namespace SiliconStudio.Paradox.Engine
     /// <summary>
     /// A <see cref="Scene"/> instance that can be rendered.
     /// </summary>
-    public sealed class SceneInstance : IDisposable
+    public sealed class SceneInstance : EntityManager
     {
-        private static readonly Logger Log = GlobalLogger.GetLogger("SceneInstance");
+        public static readonly PropertyKey<SceneInstance> Current = new PropertyKey<SceneInstance>("SceneInstance.Current", typeof(SceneInstance));
 
-        private readonly IServiceRegistry services;
+        private static readonly Logger Log = GlobalLogger.GetLogger("SceneInstance");
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneInstance"/> class.
@@ -42,12 +42,11 @@ namespace SiliconStudio.Paradox.Engine
         /// <exception cref="System.ArgumentNullException">services
         /// or
         /// sceneEntityRoot</exception>
-        internal SceneInstance(IServiceRegistry services, SceneChildComponent sceneChildComponent, Scene sceneEntityRoot)
+        internal SceneInstance(IServiceRegistry services, SceneChildComponent sceneChildComponent, Scene sceneEntityRoot) : base(services)
         {
             if (services == null) throw new ArgumentNullException("services");
             if (sceneEntityRoot == null) throw new ArgumentNullException("sceneEntityRoot");
 
-            this.services = services;
             ChildComponent = sceneChildComponent;
             Scene = sceneEntityRoot;
             RendererTypes = new List<EntityComponentRendererType>();
@@ -67,22 +66,15 @@ namespace SiliconStudio.Paradox.Engine
         public Scene Scene { get; private set; }
 
         /// <summary>
-        /// Entity System dedicated to this scene.
-        /// </summary>
-        public EntityManager EntityManager { get; private set; }
-
-        /// <summary>
         /// Gets the component renderers.
         /// </summary>
         /// <value>The renderers.</value>
         private List<EntityComponentRendererType> RendererTypes { get; set; }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
+        protected override void Destroy()
         {
-            Unload();
+            Reset();
+            base.Destroy();
         }
 
         /// <summary>
@@ -114,7 +106,7 @@ namespace SiliconStudio.Paradox.Engine
             {
                 // Update entities at draw time
                 UpdateFromChild();
-                EntityManager.Draw(gameTime);
+                Draw(gameTime);
 
                 graphicsDevice.Begin();
                 hasGraphicsBegin = true;
@@ -130,7 +122,7 @@ namespace SiliconStudio.Paradox.Engine
                 {
                     using (var t1 = context.PushTagAndRestore(RenderFrame.Current, toFrame))
                     using (var t2 = context.PushTagAndRestore(SceneGraphicsLayer.Master, toFrame))
-                    using (var t3 = context.PushTagAndRestore(EntityManager.Current, this.EntityManager))
+                    using (var t3 = context.PushTagAndRestore(Current, this))
                     using (var t4 = context.PushTagAndRestore(CameraRendererMode.RendererTypesKey, this.RendererTypes))
                     {
                         graphicsCompositor.Draw(context);
@@ -139,7 +131,7 @@ namespace SiliconStudio.Paradox.Engine
             }
             catch (Exception ex)
             {
-                Log.Error("An exception occured while rendering", ex);
+                Log.Error("An exception occurred while rendering", ex);
             }
             finally
             {
@@ -154,20 +146,20 @@ namespace SiliconStudio.Paradox.Engine
         /// Updates this scene at the specified time.
         /// </summary>
         /// <param name="time">The time.</param>
-        public void Update(GameTime time)
+        public override void Update(GameTime time)
         {
             UpdateFromChild();
-            EntityManager.Update(time);
+            base.Update(time);
         }
 
         private void UpdateFromChild()
         {
             // If this scene instance is coming from a SceneChildComponent, check that the Scene hasn't changed
-            // If the scene has changed, we need to recreate a new EntityManager with the new scene
+            // If the scene has changed, we need to recreate a new SceneInstance with the new scene
             if (ChildComponent != null && ChildComponent.Scene != Scene)
             {
                 Scene = ChildComponent.Scene;
-                Unload();
+                Reset();
                 Load();
             }
         }
@@ -176,19 +168,18 @@ namespace SiliconStudio.Paradox.Engine
         {
             RendererTypes.Clear();
 
-            // Create a new EntityManager
-            EntityManager = new EntityManager(services);
-            EntityManager.Processors.Add(new SceneProcessor(this));
-            EntityManager.Processors.Add(new HierarchicalProcessor()); // Important to pre-register this processor
-            EntityManager.Processors.Add(new TransformProcessor());
-            EntityManager.Add(Scene);
+            // Create a new SceneInstance
+            Processors.Add(new SceneProcessor(this));
+            Processors.Add(new HierarchicalProcessor()); // Important to pre-register this processor
+            Processors.Add(new TransformProcessor());
+            Add(Scene);
 
-            foreach (var componentType in EntityManager.RegisteredComponentTypes)
+            foreach (var componentType in RegisteredComponentTypes)
             {
                 EntitySystemOnComponentTypeRegistered(componentType);
             }
 
-            EntityManager.ComponentTypeRegistered += EntitySystemOnComponentTypeRegistered;
+            ComponentTypeRegistered += EntitySystemOnComponentTypeRegistered;
         }
 
         private void EntitySystemOnComponentTypeRegistered(Type type)
@@ -204,18 +195,6 @@ namespace SiliconStudio.Paradox.Engine
             {
                 RendererTypes.Add(rendererTypeAttribute.Value);
                 RendererTypes.Sort(EntityComponentRendererType.DefaultComparer);
-            }
-        }
-
-        private void Unload()
-        {
-            if (EntityManager != null)
-            {
-                // TODO: Unload resources
-                EntityManager.ComponentTypeRegistered -= EntitySystemOnComponentTypeRegistered;
-                RendererTypes.Clear();
-                EntityManager.Dispose();
-                EntityManager = null;
             }
         }
     }

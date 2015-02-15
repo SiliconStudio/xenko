@@ -46,7 +46,7 @@ namespace SiliconStudio.Paradox.Engine
         public override void Load(RenderContext context)
         {
             base.Load(context);
-            currentEntityManager = context.Tags.Get(EntityManager.Current);
+            currentEntityManager = context.Tags.Get(SceneInstance.Current);
         }
 
         protected override void DrawCore(RenderContext context)

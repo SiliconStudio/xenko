@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Skyboxes
         {
             base.Load(context);
 
-            skyboxProcessor = EntityManager.GetProcessor<SkyboxProcessor>();
+            skyboxProcessor = SceneInstance.GetProcessor<SkyboxProcessor>();
             skyboxEffect = new ImageEffectShader("SkyboxEffect");
             skyboxEffect.Load(context);
         }

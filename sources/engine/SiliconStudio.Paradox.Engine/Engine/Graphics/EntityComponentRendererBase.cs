@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// Gets the entity system.
         /// </summary>
         /// <value>The entity system.</value>
-        public EntityManager EntityManager { get; private set; }
+        public SceneInstance SceneInstance { get; private set; }
 
         /// <summary>
         /// Gets the effect system.
@@ -55,7 +55,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             base.Load(context);
             Services = context.Services;
             EffectSystem = Services.GetSafeServiceAs<EffectSystem>();
-            EntityManager = context.Tags.GetSafe(EntityManager.Current);
+            SceneInstance = context.Tags.GetSafe(SceneInstance.Current);
             SceneCameraRenderer = context.Tags.GetSafe(SceneCameraRenderer.Current);
         }
 

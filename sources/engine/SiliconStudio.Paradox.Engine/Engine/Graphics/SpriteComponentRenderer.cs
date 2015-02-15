@@ -45,7 +45,7 @@ namespace SiliconStudio.Paradox.Effects
 
             spriteBatch = new SpriteBatch(context.GraphicsDevice);
 
-            spriteProcessor = EntityManager.GetProcessor<SpriteProcessor>();
+            spriteProcessor = SceneInstance.GetProcessor<SpriteProcessor>();
 
             gameVirtualResolution.VirtualResolutionChanged += GameVirtualResolutionChanged;
             GameVirtualResolutionChanged(null, EventArgs.Empty);

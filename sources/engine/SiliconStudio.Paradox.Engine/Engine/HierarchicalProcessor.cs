@@ -9,7 +9,7 @@ using SiliconStudio.Paradox.EntityModel;
 namespace SiliconStudio.Paradox.Engine
 {
     /// <summary>
-    /// This processor will take care of adding/removing children of every Entity added/removed in the EntityManager.
+    /// This processor will take care of adding/removing children of every Entity added/removed in the SceneInstance.
     /// It will also exposes a list of root entities.
     /// </summary>
     public class HierarchicalProcessor : EntityProcessor<TransformComponent>

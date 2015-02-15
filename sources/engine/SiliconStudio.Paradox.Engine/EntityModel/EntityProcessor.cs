@@ -89,7 +89,7 @@ namespace SiliconStudio.Paradox.EntityModel
 
         /// <summary>
         /// Adds the entity to the internal list of the <see cref="EntityManager"/>.
-        /// Exposed for inheriting class that has no access to EntityManager as internal.
+        /// Exposed for inheriting class that has no access to SceneInstance as internal.
         /// </summary>
         /// <param name="entity">The entity.</param>
         protected internal void InternalAddEntity(Entity entity)
@@ -99,7 +99,7 @@ namespace SiliconStudio.Paradox.EntityModel
 
         /// <summary>
         /// Removes the entity to the internal list of the <see cref="EntityManager"/>.
-        /// Exposed for inheriting class that has no access to EntityManager as internal.
+        /// Exposed for inheriting class that has no access to SceneInstance as internal.
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <param name="removeParent">Indicate if entity should be removed from its parent</param>

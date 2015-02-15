@@ -19,10 +19,8 @@ namespace SiliconStudio.Paradox.EntityModel
     /// <summary>
     /// Manage a collection of entities.
     /// </summary>
-    public class EntityManager : ComponentBase, IReadOnlySet<Entity>
+    public abstract class EntityManager : ComponentBase, IReadOnlySet<Entity>
     {
-        public static readonly PropertyKey<EntityManager> Current = new PropertyKey<EntityManager>("EntityManager.Current", typeof(EntityManager));
-
         // TODO: Make this class threadsafe (current locks aren't sufficients)
 
         // List of all entities, with their respective processors
@@ -40,7 +38,7 @@ namespace SiliconStudio.Paradox.EntityModel
 
         public event Action<Type> ComponentTypeRegistered;
 
-        public EntityManager(IServiceRegistry registry)
+        protected EntityManager(IServiceRegistry registry)
         {
             if (registry == null) throw new ArgumentNullException("registry");
             Services = registry;
@@ -75,7 +73,7 @@ namespace SiliconStudio.Paradox.EntityModel
             }
         }
 
-        public void Update(GameTime gameTime)
+        public virtual void Update(GameTime gameTime)
         {
             foreach (var processor in processors)
             {
@@ -89,7 +87,7 @@ namespace SiliconStudio.Paradox.EntityModel
             }
         }
 
-        public void Draw(GameTime gameTime)
+        protected void Draw(GameTime gameTime)
         {
             foreach (var processor in processors)
             {
@@ -109,7 +107,7 @@ namespace SiliconStudio.Paradox.EntityModel
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <exception cref="System.ArgumentException">Entity shouldn't have a parent.;entity</exception>
-        public void Add(Entity entity)
+        internal void Add(Entity entity)
         {
             // Entity can't be a root because it already has a parent?
             if (entity.Transform != null && entity.Transform.Parent != null)
@@ -119,40 +117,16 @@ namespace SiliconStudio.Paradox.EntityModel
         }
 
         /// <summary>
-        /// Adds a collection of entities to this system.
-        /// </summary>
-        /// <param name="entitiesToAdd">The entities to add.</param>
-        public void Add(params Entity[] entitiesToAdd)
-        {
-            foreach (var entity in entitiesToAdd)
-            {
-                Add(entity);
-            }
-        }
-
-        /// <summary>
-        /// Adds a collection of entities to this system.
-        /// </summary>
-        /// <param name="entitiesToAdd">The entities to add.</param>
-        public void AddRange(IEnumerable<Entity> entitiesToAdd)
-        {
-            foreach (var entity in entitiesToAdd)
-            {
-                Add(entity);
-            }
-        }
-
-        /// <summary>
         /// Sets the enable state of this entity.
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <param name="enabled">if set to <c>true</c>, entity is [enabled].</param>
-        /// <exception cref="System.InvalidOperationException">Entity is not part of this EntityManager.</exception>
+        /// <exception cref="System.InvalidOperationException">Entity is not part of this SceneInstance.</exception>
         public void SetEnabled(Entity entity, bool enabled = true)
         {
             List<EntityProcessor> entityProcessors;
             if (!entities.TryGetValue(entity, out entityProcessors))
-                throw new InvalidOperationException("Entity is not part of this EntityManager.");
+                throw new InvalidOperationException("Entity is not part of this SceneInstance.");
 
             bool wasEnabled = enabledEntities.Contains(entity);
 
@@ -219,12 +193,26 @@ namespace SiliconStudio.Paradox.EntityModel
         /// <summary>
         /// Removes all entities from the <see cref="EntityManager"/>.
         /// </summary>
-        public void Clear()
+        internal void Reset()
         {
+            // TODO: Not sure this method is correctly implemented
+            // TODO: Check that we are correctly removing all indirect collection watchers (in processors...etc.)
+
             foreach (var entity in entities.Keys.ToList())
             {
                 InternalRemoveEntity(entity, true);
             }
+            var previousProcessors = Processors.ToArray();
+            foreach (var processor in previousProcessors)
+            {
+                Processors.Remove(processor);
+            }
+
+            autoRegisteredProcessorTypes.Clear();
+            autoRegisteredComponentTypes.Clear();
+
+            enabledEntities.Clear();
+            entities.Clear();
         }
 
         /// <summary>
@@ -305,7 +293,7 @@ namespace SiliconStudio.Paradox.EntityModel
                 entity.Transform.Parent = null;
             }
 
-            // Notify Processors thie entity has been removed
+            // Notify Processors this entity has been removed
             CheckEntityWithProcessors(entity, entityProcessors, true);
 
             entity.Components.PropertyUpdated -= EntityPropertyUpdated;
