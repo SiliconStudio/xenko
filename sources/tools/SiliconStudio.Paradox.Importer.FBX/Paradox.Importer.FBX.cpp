@@ -33,17 +33,16 @@ using namespace SiliconStudio::Paradox::Importer::Common;
 
 namespace SiliconStudio { namespace Paradox { namespace Importer { namespace FBX {
 	
-public ref class MaterialInstances
+public ref class MaterialInstantiation
 {
 public:
-	MaterialInstances()
+	MaterialInstantiation()
 	{
-		Instances = gcnew List<MaterialInstantiation^>();
 	}
 
 	FbxSurfaceMaterial* SourceMaterial;
-	List<MaterialInstantiation^>^ Instances;
-	String^ MaterialsName;
+	MaterialAsset^ Material;
+	String^ MaterialName;
 };
 
 public ref class MeshConverter
@@ -2213,7 +2212,7 @@ private:
 		}
 	}
 
-	MaterialInstances^ GetOrCreateInstances(FbxSurfaceMaterial* lMaterial, List<MaterialInstances^>^ instances, std::map<FbxSurfaceMaterial*, std::string>& materialNames)
+	MaterialInstantiation^ GetOrCreateMaterial(FbxSurfaceMaterial* lMaterial, List<String^>^ uvNames, List<MaterialInstantiation^>^ instances, std::map<std::string, int>& uvElements, std::map<FbxSurfaceMaterial*, std::string>& materialNames)
 	{
 		for (int i = 0; i < instances->Count; ++i)
 		{
@@ -2221,47 +2220,19 @@ private:
 				return instances[i];
 		}
 
-		auto newInstance = gcnew MaterialInstances();
-		newInstance->SourceMaterial = lMaterial;
-		newInstance->MaterialsName = gcnew String(materialNames[lMaterial].c_str());
-		instances->Add(newInstance);
-		return newInstance;
+		auto newMaterialInstantiation = gcnew MaterialInstantiation();
+		newMaterialInstantiation->SourceMaterial = lMaterial;
+		newMaterialInstantiation->MaterialName = gcnew String(materialNames[lMaterial].c_str());
+
+		// TODO: We currently use UV mapping of first requesting mesh.
+		//       However, we probably need to reverse everything: mesh describes what they have, materials what they need, and an appropriate input layout is created at runtime?
+		//       Such a mechanism would also be able to handle missing streams gracefully.
+		newMaterialInstantiation->Material = ProcessMeshMaterialAsset(lMaterial, uvElements);
+		instances->Add(newMaterialInstantiation);
+		return newMaterialInstantiation;
 	}
 
-	MaterialInstantiation^ GetOrCreateMaterial(FbxSurfaceMaterial* lMaterial, List<String^>^ uvNames, List<MaterialInstances^>^ instances, std::map<std::string, int>& uvElements, std::map<FbxSurfaceMaterial*, std::string>& materialNames)
-	{
-		auto materialInstances = GetOrCreateInstances(lMaterial, instances, materialNames);
-
-		for (int i = 0; i < materialInstances->Instances->Count; ++i)
-		{
-			auto parameters = materialInstances->Instances[i]->Parameters;
-			if (uvNames->Count == parameters->Count)
-			{
-				bool equals = true;
-				for (int j = 0; j < parameters->Count; ++j)
-				{
-					equals = equals && (parameters[j] == uvNames[j]);
-				}
-
-				if (equals)
-					return materialInstances->Instances[i];
-			}
-		}
-
-		auto newInstanciation = gcnew MaterialInstantiation();
-		newInstanciation->Parameters = uvNames;
-		
-		if (materialInstances->Instances->Count > 0)
-			newInstanciation->MaterialName = materialInstances->MaterialsName + "_" + materialInstances->Instances->Count;
-		else
-			newInstanciation->MaterialName = materialInstances->MaterialsName;
-
-		newInstanciation->Material = ProcessMeshMaterialAsset(lMaterial, uvElements);
-		materialInstances->Instances->Add(newInstanciation);
-		return newInstanciation;
-	}
-
-	void SearchMeshInAttribute(FbxNode* pNode, FbxNodeAttribute* pAttribute, std::map<FbxSurfaceMaterial*, std::string> materialNames, std::map<FbxMesh*, std::string> meshNames, std::map<FbxNode*, std::string>& nodeNames, List<MeshParameters^>^ models, List<MaterialInstances^>^ materialInstances)
+	void SearchMeshInAttribute(FbxNode* pNode, FbxNodeAttribute* pAttribute, std::map<FbxSurfaceMaterial*, std::string> materialNames, std::map<FbxMesh*, std::string> meshNames, std::map<FbxNode*, std::string>& nodeNames, List<MeshParameters^>^ models, List<MaterialInstantiation^>^ materialInstantiations)
 	{
 		if(!pAttribute) return;
  
@@ -2324,7 +2295,7 @@ private:
 						uvNames->Add(gcnew String(pMesh->GetElementUV(j)->GetName()));
 					}
 
-					auto material = GetOrCreateMaterial(lMaterial, uvNames, materialInstances, uvElements, materialNames);
+					auto material = GetOrCreateMaterial(lMaterial, uvNames, materialInstantiations, uvElements, materialNames);
 					meshParams->MaterialName = material->MaterialName;
 				}
 				else
@@ -2337,16 +2308,16 @@ private:
 		}
 	}
 
-	void SearchMesh(FbxNode* pNode, std::map<FbxSurfaceMaterial*, std::string> materialNames, std::map<FbxMesh*, std::string> meshNames, std::map<FbxNode*, std::string>& nodeNames, List<MeshParameters^>^ models, List<MaterialInstances^>^ materialInstances)
+	void SearchMesh(FbxNode* pNode, std::map<FbxSurfaceMaterial*, std::string> materialNames, std::map<FbxMesh*, std::string> meshNames, std::map<FbxNode*, std::string>& nodeNames, List<MeshParameters^>^ models, List<MaterialInstantiation^>^ materialInstantiations)
 	{
 		// Process the node's attributes.
 		for(int i = 0; i < pNode->GetNodeAttributeCount(); i++)
-			SearchMeshInAttribute(pNode, pNode->GetNodeAttributeByIndex(i), materialNames, meshNames, nodeNames, models, materialInstances);
+			SearchMeshInAttribute(pNode, pNode->GetNodeAttributeByIndex(i), materialNames, meshNames, nodeNames, models, materialInstantiations);
 
 		// Recursively process the children nodes.
 		for(int j = 0; j < pNode->GetChildCount(); j++)
 		{
-			SearchMesh(pNode->GetChild(j), materialNames, meshNames, nodeNames, models, materialInstances);
+			SearchMesh(pNode->GetChild(j), materialNames, meshNames, nodeNames, models, materialInstantiations);
 		}
 	}
 
@@ -2376,18 +2347,15 @@ private:
 			
 		std::map<std::string, FbxSurfaceMaterial*> materialPerMesh;
 		auto models = gcnew List<MeshParameters^>();
-		auto materialInstances = gcnew List<MaterialInstances^>();
-		SearchMesh(scene->GetRootNode(), materialNames, meshNames, nodeNames, models, materialInstances);
+		auto materialInstantiations = gcnew List<MaterialInstantiation^>();
+		SearchMesh(scene->GetRootNode(), materialNames, meshNames, nodeNames, models, materialInstantiations);
 
 		auto ret = gcnew MeshMaterials();
 		ret->Models = models;
 		ret->Materials = gcnew Dictionary<String^, MaterialAsset^>();
-		for (int i = 0; i < materialInstances->Count; ++i)
+		for (int i = 0; i < materialInstantiations->Count; ++i)
 		{
-			for (int j = 0; j < materialInstances[i]->Instances->Count; ++j)
-			{
-				ret->Materials->Add(materialInstances[i]->Instances[j]->MaterialName, materialInstances[i]->Instances[j]->Material);
-			}
+			ret->Materials->Add(materialInstantiations[i]->MaterialName, materialInstantiations[i]->Material);
 		}
         
 		return ret;
