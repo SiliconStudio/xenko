@@ -36,8 +36,26 @@ namespace SiliconStudio.Paradox.EntityModel
         private readonly HashSet<Type> autoRegisteredComponentTypes;
         private readonly HashSet<Type> autoRegisteredProcessorTypes;
 
-        public event Action<Type> ComponentTypeRegistered;
+        /// <summary>
+        /// Occurs when an entity is added.
+        /// </summary>
+        public event EventHandler<Entity> EntityAdded;
 
+        /// <summary>
+        /// Occurs when an entity is removed.
+        /// </summary>
+        public event EventHandler<Entity> EntityRemoved;
+
+        /// <summary>
+        /// Occurs when a new component type is registered.
+        /// </summary>
+        public event EventHandler<Type> ComponentTypeRegistered;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EntityManager"/> class.
+        /// </summary>
+        /// <param name="registry">The registry.</param>
+        /// <exception cref="System.ArgumentNullException">registry</exception>
         protected EntityManager(IServiceRegistry registry)
         {
             if (registry == null) throw new ArgumentNullException("registry");
@@ -54,7 +72,10 @@ namespace SiliconStudio.Paradox.EntityModel
             autoRegisteredProcessorTypes = new HashSet<Type>();
         }
 
-
+        /// <summary>
+        /// Gets the services.
+        /// </summary>
+        /// <value>The services.</value>
         public IServiceRegistry Services { get; private set; }
 
         /// <summary>
@@ -65,6 +86,10 @@ namespace SiliconStudio.Paradox.EntityModel
             get { return processors; }
         }
 
+        /// <summary>
+        /// Gets the registered component types.
+        /// </summary>
+        /// <value>The registered component types.</value>
         public IEnumerable<Type> RegisteredComponentTypes
         {
             get
@@ -270,6 +295,8 @@ namespace SiliconStudio.Paradox.EntityModel
                 }
                 newProcessors.Clear();
             }
+
+            OnEntityAdded(entity);
         }
 
         /// <summary>
@@ -299,6 +326,8 @@ namespace SiliconStudio.Paradox.EntityModel
             entity.Components.PropertyUpdated -= EntityPropertyUpdated;
 
             entity.ReleaseInternal();
+
+            OnEntityRemoved(entity);
         }
 
         private void AutoRegisterProcessors(Entity entity, List<EntityProcessor> entityProcessors)
@@ -470,8 +499,21 @@ namespace SiliconStudio.Paradox.EntityModel
 
         protected virtual void OnComponentTypeRegistered(Type obj)
         {
-            Action<Type> handler = ComponentTypeRegistered;
-            if (handler != null) handler(obj);
+            var handler = ComponentTypeRegistered;
+            if (handler != null) handler(this, obj);
+        }
+
+
+        private void OnEntityAdded(Entity e)
+        {
+            var handler = EntityAdded;
+            if (handler != null) handler(this, e);
+        }
+
+        private void OnEntityRemoved(Entity e)
+        {
+            var handler = EntityRemoved;
+            if (handler != null) handler(this, e);
         }
     }
 }

@@ -177,13 +177,13 @@ namespace SiliconStudio.Paradox.Engine
 
             foreach (var componentType in RegisteredComponentTypes)
             {
-                EntitySystemOnComponentTypeRegistered(componentType);
+                EntitySystemOnComponentTypeRegistered(null, componentType);
             }
 
             ComponentTypeRegistered += EntitySystemOnComponentTypeRegistered;
         }
 
-        private void EntitySystemOnComponentTypeRegistered(Type type)
+        private void EntitySystemOnComponentTypeRegistered(object sender, Type type)
         {
             var rendererTypeAttribute = type.GetTypeInfo().GetCustomAttribute<DefaultEntityComponentRendererAttribute>();
             if (rendererTypeAttribute == null)
