@@ -40,6 +40,14 @@ using namespace SiliconStudio::Paradox::Importer::Common;
 
 namespace SiliconStudio { namespace Paradox { namespace Importer { namespace AssimpNET {
 
+public ref class MaterialInstantiation
+{
+public:
+	List<String^>^ Parameters;
+	MaterialAsset^ Material;
+	String^ MaterialName;
+};
+
 public ref class MaterialInstances
 {
 public:

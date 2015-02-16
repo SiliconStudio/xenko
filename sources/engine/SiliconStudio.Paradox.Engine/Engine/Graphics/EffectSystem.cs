@@ -107,6 +107,20 @@ namespace SiliconStudio.Paradox.Effects
         /// <exception cref="System.InvalidOperationException">Could not compile shader. Need fallback.</exception>
         public TaskOrResult<Effect> LoadEffect(string effectName, CompilerParameters compilerParameters)
         {
+            ParameterCollection usedParameters;
+            return LoadEffect(effectName, compilerParameters, out usedParameters);
+        }
+
+        /// <summary>
+        /// Loads the effect.
+        /// </summary>
+        /// <param name="effectName">Name of the effect.</param>
+        /// <param name="compilerParameters">The compiler parameters.</param>
+        /// <param name="usedParameters">The used parameters.</param>
+        /// <returns>A new instance of an effect.</returns>
+        /// <exception cref="System.InvalidOperationException">Could not compile shader. Need fallback.</exception>
+        public TaskOrResult<Effect> LoadEffect(string effectName, CompilerParameters compilerParameters, out ParameterCollection usedParameters)
+        {
             if (effectName == null) throw new ArgumentNullException("effectName");
             if (compilerParameters == null) throw new ArgumentNullException("compilerParameters");
 
@@ -122,6 +136,7 @@ namespace SiliconStudio.Paradox.Effects
 
             // Only take the sub-effect
             var bytecode = compilerResult.Bytecodes[subEffect];
+            usedParameters = compilerResult.UsedParameters[subEffect];
 
             if (bytecode.Task != null && !bytecode.Task.IsCompleted)
             {
@@ -162,7 +177,7 @@ namespace SiliconStudio.Paradox.Effects
 
         // TODO: THIS IS JUST A WORKAROUND, REMOVE THIS
 
-        private static void CheckResult(CompilerResults compilerResult)
+        private static void CheckResult(LoggerResult compilerResult)
         {
             // Check errors
             if (compilerResult.HasErrors)
@@ -171,11 +186,17 @@ namespace SiliconStudio.Paradox.Effects
             }
         }
 
-        private Effect CreateEffect(string effectName, EffectBytecode bytecode, ShaderMixinParameters usedParameters)
+        private Effect CreateEffect(string effectName, EffectBytecodeCompilerResult effectBytecodeCompilerResult, ShaderMixinParameters usedParameters)
         {
             Effect effect;
             lock (cachedEffects)
             {
+                CheckResult(effectBytecodeCompilerResult.CompilationLog);
+
+                var bytecode = effectBytecodeCompilerResult.Bytecode;
+                if (bytecode == null)
+                    throw new InvalidOperationException("EffectCompiler returned no shader and no compilation error.");
+
                 if (!cachedEffects.TryGetValue(bytecode, out effect))
                 {
                     effect = new Effect(graphicsDeviceService.GraphicsDevice, bytecode, usedParameters) { Name = effectName };
@@ -298,7 +319,7 @@ namespace SiliconStudio.Paradox.Effects
                     {
                         foreach (var bytecode in bytecodeRemoved)
                         {
-                            effectCompilerResults.RemoveAll(results => results.Bytecodes.Values.Contains(bytecode));
+                            effectCompilerResults.RemoveAll(results => results.Bytecodes.Values.Any(x => x.GetCurrentResult().Bytecode == bytecode));
                         }
                     }
                 }

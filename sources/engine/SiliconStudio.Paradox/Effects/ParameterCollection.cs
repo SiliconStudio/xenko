@@ -701,7 +701,7 @@ namespace SiliconStudio.Paradox.Effects
 
                 // Otherwise, values must match
                 // Defer actual test to InternalValue override (avoid boxing)
-                if (!internalValue2.Value.Equals(internalValue1))
+                if (!internalValue2.Value.ValueEquals(internalValue1))
                     return false;
             }
 
@@ -1281,7 +1281,14 @@ namespace SiliconStudio.Paradox.Effects
             /// </summary>
             /// <param name="internalValue">The internal value.</param>
             /// <returns></returns>
-            public abstract bool Equals(InternalValue internalValue);
+            public abstract bool ValueEquals(InternalValue internalValue);
+
+            /// <summary>
+            /// Determines if this instance and the given internal value have same <see cref="Value" />.
+            /// </summary>
+            /// <param name="value">The value.</param>
+            /// <returns></returns>
+            public abstract bool ValueEquals(object value);
 
             /// <summary>
             /// Determines whether [is default value] [the specified parameter key].
@@ -1324,13 +1331,24 @@ namespace SiliconStudio.Paradox.Effects
                 return comparer.Equals(Value, parameterKeyT.DefaultValueMetadataT.DefaultValue);
             }
 
-            public override bool Equals(InternalValue internalValue)
+            public override bool ValueEquals(InternalValue internalValue)
             {
                 var internalValueT = internalValue as InternalValueBase<T>;
                 if (internalValueT == null)
                     return false;
 
                 return comparer.Equals(Value, internalValueT.Value);
+            }
+
+            public override bool ValueEquals(object value)
+            {
+                if (value == null && Value == null)
+                    return true;
+
+                if (!(value is T))
+                    return false;
+
+                return comparer.Equals(Value, (T)value);
             }
 
             public override void SerializeHash(SerializationStream stream)
@@ -1415,7 +1433,12 @@ namespace SiliconStudio.Paradox.Effects
             }
 
             /// <inheritdoc/>
-            public IEnumerator<ParameterKey> GetEnumerator()
+            IEnumerator<ParameterKey> IEnumerable<ParameterKey>.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            public Enumerator GetEnumerator()
             {
                 return new Enumerator(parameterCollection.valueList);
             }

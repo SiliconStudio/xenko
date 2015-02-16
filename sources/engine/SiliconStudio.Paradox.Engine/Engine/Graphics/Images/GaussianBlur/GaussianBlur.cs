@@ -24,6 +24,8 @@ namespace SiliconStudio.Paradox.Effects.Images
     {
         private ImageEffectShader blurH;
         private ImageEffectShader blurV;
+        private string nameGaussianBlurH;
+        private string nameGaussianBlurV;
 
         private Vector2[] offsetsWeights;
 
@@ -105,6 +107,10 @@ namespace SiliconStudio.Paradox.Effects.Images
                     throw new ArgumentOutOfRangeException("SigmaRatio cannot be < 0.0f");
                 }
 
+                var size = Radius * 2 + 1;
+                nameGaussianBlurH = string.Format("GaussianBlurH{0}x{0}", size);
+                nameGaussianBlurV = string.Format("GaussianBlurV{0}x{0}", size);
+
                 if (sigmaRatio != value)
                 {
                     sigmaRatio = value;
@@ -138,12 +144,12 @@ namespace SiliconStudio.Paradox.Effects.Images
             blurH.SetInput(inputTexture);
             blurH.SetOutput(outputTextureH);
             var size = Radius * 2 + 1;
-            blurH.Draw(context, "GaussianBlurH{0}x{0}", size);
+            blurH.Draw(context, nameGaussianBlurH);
 
             // Vertical pass
             blurV.SetInput(outputTextureH);
             blurV.SetOutput(GetSafeOutput(0));
-            blurV.Draw(context, "GaussianBlurV{0}x{0}", size);
+            blurV.Draw(context, nameGaussianBlurV);
         }
     }
 }

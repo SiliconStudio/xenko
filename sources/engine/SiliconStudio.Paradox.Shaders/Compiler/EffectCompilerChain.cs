@@ -43,9 +43,9 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             compiler.ResetCache(modifiedShaders);
         }
 
-        public override TaskOrResult<EffectBytecode> Compile(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters, LoggerResult log)
+        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters)
         {
-            return compiler.Compile(mixinTree, compilerParameters, log);
+            return compiler.Compile(mixinTree, compilerParameters);
         }
     }
 }

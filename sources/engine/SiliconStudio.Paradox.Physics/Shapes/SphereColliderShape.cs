@@ -1,5 +1,6 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 
@@ -28,8 +29,8 @@ namespace SiliconStudio.Paradox.Physics
                 InternalShape = shape;
             }
 
-            if (!PhysicsEngine.Singleton.CreateDebugPrimitives) return;
-            DebugPrimitive = GeometricPrimitive.Sphere.New(PhysicsEngine.Singleton.DebugGraphicsDevice);
+            if (!Simulation.CreateDebugPrimitives) return;
+            DebugPrimitive = GeometricPrimitive.Sphere.New(Simulation.DebugGraphicsDevice);
             DebugPrimitiveScaling = Matrix.Scaling(radius * 2 * 1.01f);
         }
     }

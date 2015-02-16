@@ -69,7 +69,7 @@ namespace SiliconStudio.Core.MicroThreading
         /// Gets the list of every non-stopped micro threads.
         /// </summary>
         /// <value>The list of every non-stopped micro threads.</value>
-        public IEnumerable<MicroThread> MicroThreads
+        public ICollection<MicroThread> MicroThreads
         {
             get { return allMicroThreads; }
         }

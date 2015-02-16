@@ -143,9 +143,12 @@ namespace SiliconStudio.Paradox.Shaders.Tests
 
             Assert.IsFalse(results.HasErrors);
 
-            Assert.NotNull(results.MainBytecode.Reflection.ConstantBuffers);
-            Assert.AreEqual(1, results.MainBytecode.Reflection.ConstantBuffers.Count);
-            var cbuffer = results.MainBytecode.Reflection.ConstantBuffers[0];
+            var mainBytecode = results.MainBytecode.WaitForResult();
+            Assert.IsFalse(mainBytecode.CompilationLog.HasErrors);
+
+            Assert.NotNull(mainBytecode.Bytecode.Reflection.ConstantBuffers);
+            Assert.AreEqual(1, mainBytecode.Bytecode.Reflection.ConstantBuffers.Count);
+            var cbuffer = mainBytecode.Bytecode.Reflection.ConstantBuffers[0];
 
             Assert.NotNull(cbuffer.Members);
             Assert.AreEqual(2, cbuffer.Members.Length);

@@ -3,13 +3,14 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 
 namespace SiliconStudio.Paradox.Physics
 {
     [DataContract("PhysicsElement")]
+    [Display(40, "Element")]
     public class PhysicsElement
     {
         public enum Types
@@ -43,8 +44,7 @@ namespace SiliconStudio.Paradox.Physics
         /// </userdoc>
         public PhysicsColliderShape Shape { get; set; }
 
-        //todo: is there a better way to solve this?
-        public enum CollisionFilterGroups1 //needed for the editor as this is not tagged as flag...
+        public enum CollisionFilterGroups //needed for the editor as this is not tagged as flag...
         {
             DefaultFilter = 0x1,
 
@@ -90,7 +90,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <userdoc>
         /// The collision group of this element, default is AllFilter.
         /// </userdoc>
-        public CollisionFilterGroups1 CollisionGroup { get; set; }
+        public CollisionFilterGroups CollisionGroup { get; set; }
 
         /// <summary>
         /// Gets or sets the can collide with.
@@ -101,7 +101,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <userdoc>
         /// Which collider groups this element can collide with, when nothing is selected AllFilter is intended to be default.
         /// </userdoc>
-        public CollisionFilterGroups CanCollideWith { get; set; }
+        public CollisionFilterGroupFlags CanCollideWith { get; set; }
 
         /// <summary>
         /// Gets or sets the height of the character step.
@@ -157,6 +157,7 @@ namespace SiliconStudio.Paradox.Physics
         }
 
         internal Matrix BoneWorldMatrix;
+        internal Matrix BoneWorldMatrixOut;
 
         internal int BoneIndex;
 
@@ -170,7 +171,7 @@ namespace SiliconStudio.Paradox.Physics
         /// Computes the physics transformation from the TransformComponent values
         /// </summary>
         /// <returns></returns>
-        internal Matrix DerivePhysicsTransformation()
+        internal void DerivePhysicsTransformation(out Matrix derivedTransformation)
         {
             var entity = Collider.Entity;
 
@@ -195,15 +196,31 @@ namespace SiliconStudio.Paradox.Physics
                 translation.Y = -translation.Y;
             }
 
-            var physicsTransform = Matrix.RotationQuaternion(rotation) * Matrix.Translation(translation);
+            derivedTransformation = Matrix.RotationQuaternion(rotation) * Matrix.Translation(translation);
 
             //Handle collider shape offset
             if (Shape.Shape.LocalOffset != Vector3.Zero || Shape.Shape.LocalRotation != Quaternion.Identity)
             {
-                physicsTransform = Matrix.Multiply(Shape.Shape.PositiveCenterMatrix, physicsTransform);
+                derivedTransformation = Matrix.Multiply(Shape.Shape.PositiveCenterMatrix, derivedTransformation);
             }
+        }
 
-            return physicsTransform;
+        internal void DeriveBonePhysicsTransformation(out Matrix derivedTransformation)
+        {
+            Quaternion rotation;
+            Vector3 translation;
+
+            //derive rotation and translation, scale is ignored for now
+            Vector3 scale;
+            BoneWorldMatrix.Decompose(out scale, out rotation, out translation);
+
+            derivedTransformation = Matrix.RotationQuaternion(rotation) * Matrix.Translation(translation);
+
+            //Handle collider shape offset
+            if (Shape.Shape.LocalOffset != Vector3.Zero || Shape.Shape.LocalRotation != Quaternion.Identity)
+            {
+                derivedTransformation = Matrix.Multiply(Shape.Shape.PositiveCenterMatrix, derivedTransformation);
+            }
         }
 
         /// <summary>
@@ -257,6 +274,26 @@ namespace SiliconStudio.Paradox.Physics
             }
         }
 
+        internal void UpdateBoneTransformation(Matrix physicsTransform)
+        {
+            if (Shape.Shape.LocalOffset != Vector3.Zero || Shape.Shape.LocalRotation != Quaternion.Identity)
+            {
+                physicsTransform = Matrix.Multiply(Shape.Shape.NegativeCenterMatrix, physicsTransform);
+            }
+
+            var rotation = Quaternion.RotationMatrix(physicsTransform);
+            var translation = physicsTransform.TranslationVector;
+
+            var worldMatrix = BoneWorldMatrix;
+
+            Vector3 scale;
+            scale.X = (float)Math.Sqrt((worldMatrix.M11 * worldMatrix.M11) + (worldMatrix.M12 * worldMatrix.M12) + (worldMatrix.M13 * worldMatrix.M13));
+            scale.Y = (float)Math.Sqrt((worldMatrix.M21 * worldMatrix.M21) + (worldMatrix.M22 * worldMatrix.M22) + (worldMatrix.M23 * worldMatrix.M23));
+            scale.Z = (float)Math.Sqrt((worldMatrix.M31 * worldMatrix.M31) + (worldMatrix.M32 * worldMatrix.M32) + (worldMatrix.M33 * worldMatrix.M33));
+
+            TransformComponent.CreateMatrixTRS(ref translation, ref rotation, ref scale, out BoneWorldMatrixOut);
+        }
+
         /// <summary>
         /// Forces an update from the TransformComponent to the Collider.PhysicsWorldTransform.
         /// Useful to manually force movements.
@@ -264,7 +301,16 @@ namespace SiliconStudio.Paradox.Physics
         /// </summary>
         public void UpdatePhysicsTransformation()
         {
-            Collider.PhysicsWorldTransform = DerivePhysicsTransformation();
+            Matrix t;
+            if (BoneIndex == -1)
+            {
+                DerivePhysicsTransformation(out t);
+            }
+            else
+            {
+                DeriveBonePhysicsTransformation(out t);
+            }
+            Collider.PhysicsWorldTransform = t;
         }
 
         #endregion Utility

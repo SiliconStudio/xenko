@@ -57,14 +57,6 @@ public:
 	List<MeshParameters^>^ Models;
 };
 
-public ref class MaterialInstantiation
-{
-public:
-	List<String^>^ Parameters;
-	MaterialAsset^ Material;
-	String^ MaterialName;
-};
-
 public ref class TextureLayerGenerator
 {
 public:

@@ -649,6 +649,26 @@ namespace SiliconStudio.Core
             return second.Keys.All(first.ContainsKey);
         }
 
+        public static bool Compare<T>(T[] left, T[] right)
+        {
+            if (ReferenceEquals(left, right))
+                return true;
+            if (ReferenceEquals(left, null) || ReferenceEquals(right, null))
+                return false;
+
+            if (left.Length != right.Length)
+                return false;
+
+            var comparer = EqualityComparer<T>.Default;
+            for (int i = 0; i < left.Length; ++i)
+            {
+                if (!comparer.Equals(left[i], right[i]))
+                    return false;
+            }
+
+            return true;
+        }
+
         /// <summary>
         /// Compares two collection, element by elements.
         /// </summary>

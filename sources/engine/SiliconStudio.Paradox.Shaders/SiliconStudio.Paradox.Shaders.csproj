@@ -26,8 +26,10 @@
     </Compile>
     <Compile Include="Compiler\CompilerResults.cs" />
     <Compile Include="Compiler\CompilerParameters.cs" />
+    <Compile Include="Compiler\EffectBytecodeCompilerResult.cs" />
     <Compile Include="Compiler\NullEffectCompiler.cs" />
     <Compile Include="Compiler\EffectPriorityScheduler.cs" />
+    <Compile Include="Compiler\TaskOrResult.cs" />
     <Compile Include="EffectSamplerStateBinding.cs" />
     <Compile Include="EffectSourceCodeKeys.cs" />
     <Compile Include="HashSourceCollection.cs" />

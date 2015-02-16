@@ -29,6 +29,8 @@ namespace SiliconStudio.BuildEngine
         /// </summary>
         private readonly Dictionary<CommandBuildStep, TimeInterval> commandExecutionIntervals = new Dictionary<CommandBuildStep, TimeInterval>();
 
+        private readonly Dictionary<CommandBuildStep, List<ObjectUrl>> commandInputFiles = new Dictionary<CommandBuildStep, List<ObjectUrl>>();
+
         private readonly ILogger logger;
 
         private readonly object lockObject = new object();
@@ -48,8 +50,14 @@ namespace SiliconStudio.BuildEngine
                 long startTime = stopWatch.ElapsedTicks;
                 commandExecutionIntervals.Add(command, new TimeInterval(startTime));
 
+                // Get a list of unique input files
+                var inputFiles = command.Command.GetInputFiles().Distinct().ToList();
+                // Store it aside, so that we're sure to remove the same entries during CommandEnded
+                commandInputFiles.Add(command, inputFiles);
+
+                // Setup start read time for each file entry
                 var inputHash = new HashSet<ObjectUrl>();
-                foreach (ObjectUrl inputUrl in command.Command.GetInputFiles())
+                foreach (ObjectUrl inputUrl in inputFiles)
                 {
                     if (inputHash.Contains(inputUrl))
                         logger.Error("The command '{0}' has several times the file '{1}' as input. Input Files must not be duplicated", command.Title, inputUrl.Path);
@@ -119,9 +127,15 @@ namespace SiliconStudio.BuildEngine
                     }
                 }
 
-                foreach (ObjectUrl input in command.Command.GetInputFiles())
+                // Notify that we're done reading input files
+                List<ObjectUrl> inputFiles;
+                if (commandInputFiles.TryGetValue(command, out inputFiles))
                 {
-                    readAccesses[input].Single(x => x.Object == command).End(endTime);
+                    commandInputFiles.Remove(command);
+                    foreach (ObjectUrl input in inputFiles)
+                    {
+                        readAccesses[input].Single(x => x.Object == command).End(endTime);
+                    }
                 }
             }
         }
