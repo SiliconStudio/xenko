@@ -4,10 +4,13 @@
 using System;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Paradox.Assets.Materials;
+using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Engine.Graphics.Materials;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects
 {
@@ -61,6 +64,64 @@ namespace SiliconStudio.Paradox.Effects
             }
 
             return new Material(result.Parameters);
+        }
+
+        public static Material NewDiffuseOnly(Texture diffuseTexture)
+        {
+            return New(
+                new MaterialDescriptor()
+                {
+                    Attributes =
+                    {
+                        Diffuse = new MaterialDiffuseMapFeature(new ComputeTextureColor(diffuseTexture)),
+                        DiffuseModel = new MaterialDiffuseLambertModelFeature(),
+                    }
+                });
+        }
+
+        public static Material NewDiffuseAndMetal(Texture diffuseTexture, float metalness = 0.0f, float glossiness = 0.0f)
+        {
+            return New(
+                new MaterialDescriptor()
+                {
+                    Attributes =
+                    {
+                        Diffuse = new MaterialDiffuseMapFeature(new ComputeTextureColor(diffuseTexture)),
+                        DiffuseModel = new MaterialDiffuseLambertModelFeature(),
+                        MicroSurface = new MaterialGlossinessMapFeature(new ComputeFloat(glossiness)),
+                        Specular = new MaterialMetalnessMapFeature(new ComputeFloat(metalness)),
+                        SpecularModel = new MaterialSpecularMicrofacetModelFeature()
+                    }
+                });
+        }
+
+        public static Material NewDiffuseOnly(Color4 diffuseColor)
+        {
+            return New(
+                new MaterialDescriptor()
+                {
+                    Attributes =
+                    {
+                        Diffuse = new MaterialDiffuseMapFeature(new ComputeColor(diffuseColor)),
+                        DiffuseModel = new MaterialDiffuseLambertModelFeature(),
+                    }
+                });
+        }
+
+        public static Material NewDiffuseAndMetal(Color4 diffuseColor, float metalness = 0.0f, float glossiness = 0.0f)
+        {
+            return New(
+                new MaterialDescriptor()
+                {
+                    Attributes =
+                    {
+                        Diffuse = new MaterialDiffuseMapFeature(new ComputeColor(diffuseColor)),
+                        DiffuseModel = new MaterialDiffuseLambertModelFeature(),
+                        MicroSurface = new MaterialGlossinessMapFeature(new ComputeFloat(glossiness)),
+                        Specular = new MaterialMetalnessMapFeature(new ComputeFloat(metalness)),
+                        SpecularModel = new MaterialSpecularMicrofacetModelFeature()
+                    }
+                });
         }
     }
 }
