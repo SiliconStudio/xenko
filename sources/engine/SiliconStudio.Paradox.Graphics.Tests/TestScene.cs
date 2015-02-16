@@ -62,7 +62,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             var cameraEntity = new Entity { new CameraComponent() };
             cameraEntity.Transform.Position = new Vector3(0, 0, 5);
-            scene.Transform.Children.Add(cameraEntity.Transform);
+            scene.AddChild(cameraEntity);
 
             var lightEntity = new Entity()
             {
@@ -71,7 +71,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             lightEntity.Transform.Position = new Vector3(0, 0, 1);
             lightEntity.Transform.Rotation = Quaternion.RotationY(MathUtil.DegreesToRadians(45));
-            scene.Transform.Children.Add(lightEntity.Transform);
+            scene.AddChild(lightEntity);
 
             var graphicsCompositor = new SceneGraphicsCompositorLayers();
             graphicsCompositor.Master.Renderers.Add(new ClearRenderFrameRenderer());
