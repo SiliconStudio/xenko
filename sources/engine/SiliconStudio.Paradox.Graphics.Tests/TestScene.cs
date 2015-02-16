@@ -38,12 +38,11 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             // Instantiate a scene with a single entity and model component
             var scene = new Scene();
 
-            // TODO: Add material
+            // Create a cube entity
             cubeEntity = new Entity();
-            var modelDescriptor = new ProceduralModelDescriptor(new CubeProceduralModel());
-            var model = modelDescriptor.GenerateModel(Services);
-            var modelComponent = new ModelComponent(model);
 
+            // Create a procedural model with a diffuse material
+            var model = new Model();
             var material = Material.New(
                 new MaterialDescriptor
                 {
@@ -53,17 +52,21 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                         DiffuseModel = new MaterialDiffuseLambertModelFeature()
                     }
                 });
-
             model.Materials.Add(material);
+            cubeEntity.Add(new ModelComponent(model));
 
-            cubeEntity.Add(modelComponent);
+            var modelDescriptor = new ProceduralModelDescriptor(new CubeProceduralModel());
+            modelDescriptor.GenerateModel(Services, model);
 
-            scene.Transform.Children.Add(cubeEntity.Transform);
+            // Add the cube to the scene
+            scene.AddChild(cubeEntity);
 
+            // Create a camera entity and add it to the scene
             var cameraEntity = new Entity { new CameraComponent() };
             cameraEntity.Transform.Position = new Vector3(0, 0, 5);
             scene.AddChild(cameraEntity);
 
+            // Create a light
             var lightEntity = new Entity()
             {
                 new LightComponent()
@@ -73,6 +76,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             lightEntity.Transform.Rotation = Quaternion.RotationY(MathUtil.DegreesToRadians(45));
             scene.AddChild(lightEntity);
 
+            // Create a graphics compositor
             var graphicsCompositor = new SceneGraphicsCompositorLayers();
             graphicsCompositor.Master.Renderers.Add(new ClearRenderFrameRenderer());
             graphicsCompositor.Master.Renderers.Add(new SceneCameraRenderer()
@@ -80,8 +84,10 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 Camera = cameraEntity.Get<CameraComponent>()
             });
 
+            // Use this graphics compositor
             scene.Settings.GraphicsCompositor = graphicsCompositor;
 
+            // Create a scene instance
             SceneSystem.SceneInstance = new SceneInstance(Services, scene);
         }
 
