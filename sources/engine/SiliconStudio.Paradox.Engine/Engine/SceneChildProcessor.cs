@@ -1,10 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections.Generic;
 
-using SiliconStudio.Core;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
 
@@ -63,7 +61,7 @@ namespace SiliconStudio.Paradox.Engine
 
         public override void Draw(GameTime time)
         {
-            // Call on the scene Draw is performance the SceneInstance.Draw
+            // Call on the scene Draw is performed by SceneInstance.Draw
         }
     }
 }
