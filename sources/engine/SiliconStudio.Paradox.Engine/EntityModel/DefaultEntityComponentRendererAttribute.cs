@@ -34,16 +34,11 @@ namespace SiliconStudio.Paradox.EntityModel
             this.order = order;
         }
 
-        /// <summary>
-        /// Gets the renderer type.
-        /// </summary>
-        /// <value>The type.</value>
-        public EntityComponentRendererType Value
+        public int Order
         {
             get
             {
-                // TODO: Type.GetType should use an assembly resolver/custom list of assemblies in the future plugin system
-                return new EntityComponentRendererType(Type.GetType(TypeName), order);
+                return order;
             }
         }
     }

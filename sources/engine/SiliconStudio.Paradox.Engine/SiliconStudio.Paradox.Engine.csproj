@@ -76,6 +76,7 @@
     <Compile Include="DataModel\Interpolator.cs" />
     <Compile Include="Engine\CameraProjectionOrthographic.cs" />
     <Compile Include="Engine\CameraProjectionPerspective.cs" />
+    <Compile Include="Engine\EntityComponentRendererTypeCollection.cs" />
     <Compile Include="Engine\EntityTransformExtensions.cs" />
     <Compile Include="Engine\Graphics\BRDF\BRDFMicrofacet.cs">
       <DependentUpon>BRDFMicrofacet.pdxsl</DependentUpon>

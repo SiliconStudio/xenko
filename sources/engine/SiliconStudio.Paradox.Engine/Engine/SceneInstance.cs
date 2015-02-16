@@ -49,7 +49,7 @@ namespace SiliconStudio.Paradox.Engine
 
             ChildComponent = sceneChildComponent;
             Scene = sceneEntityRoot;
-            RendererTypes = new List<EntityComponentRendererType>();
+            RendererTypes = new EntityComponentRendererTypeCollection();
             Load();
         }
 
@@ -69,7 +69,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets the component renderers.
         /// </summary>
         /// <value>The renderers.</value>
-        private List<EntityComponentRendererType> RendererTypes { get; set; }
+        private EntityComponentRendererTypeCollection RendererTypes { get; set; }
 
         protected override void Destroy()
         {
@@ -111,6 +111,7 @@ namespace SiliconStudio.Paradox.Engine
                 graphicsDevice.Begin();
                 hasGraphicsBegin = true;
 
+                // Always clear the state of the GraphicsDevice to make sure a scene doesn't start with a wrong setup 
                 graphicsDevice.ClearState();
 
                 // Update the render context to use the main RenderFrame as current by default
@@ -189,12 +190,11 @@ namespace SiliconStudio.Paradox.Engine
             {
                 return;
             }
-            var renderType = rendererTypeAttribute.Value.Type;
-
+            var renderType = Type.GetType(rendererTypeAttribute.TypeName);
             if (renderType != null && typeof(IEntityComponentRenderer).IsAssignableFrom(renderType) && renderType.GetConstructor(Type.EmptyTypes) != null)
             {
-                RendererTypes.Add(rendererTypeAttribute.Value);
-                RendererTypes.Sort(EntityComponentRendererType.DefaultComparer);
+                var entityComponentRendererType = new EntityComponentRendererType(type, renderType, rendererTypeAttribute.Order);
+                RendererTypes.Add(entityComponentRendererType);
             }
         }
     }

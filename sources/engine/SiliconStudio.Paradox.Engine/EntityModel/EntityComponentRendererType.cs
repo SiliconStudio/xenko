@@ -14,38 +14,75 @@ namespace SiliconStudio.Paradox.EntityModel
     /// Defines the default <see cref="IEntityComponentRenderer"/> attached to an <see cref="EntityComponent"/>. 
     /// </summary>
     [DataContract]
-    public struct EntityComponentRendererType
+    public struct EntityComponentRendererType : IComparable<EntityComponentRendererType>, IEquatable<EntityComponentRendererType>
     {
-        public static readonly IComparer<EntityComponentRendererType> DefaultComparer = new EntityComponentRendererTypeComparer();
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="EntityComponentRendererType"/> struct.
+        /// Initializes a new instance of the <see cref="EntityComponentRendererType" /> struct.
         /// </summary>
-        /// <param name="type">The type.</param>
+        /// <param name="componentType">Type of the component.</param>
+        /// <param name="rendererType">The type.</param>
         /// <param name="displayOrder">The display order.</param>
-        public EntityComponentRendererType(Type type, int displayOrder)
+        public EntityComponentRendererType(Type componentType, Type rendererType, int displayOrder)
         {
-            Type = type;
+            if (componentType == null) throw new ArgumentNullException("componentType");
+            if (rendererType == null) throw new ArgumentNullException("rendererType");
+
+            if (!typeof(EntityComponent).IsAssignableFrom(componentType))
+            {
+                throw new ArgumentException("Must inherit from EntityComponent", "componentType");
+            }
+
+            if (!typeof(IEntityComponentRenderer).IsAssignableFrom(rendererType))
+            {
+                throw new ArgumentException("Must inherit from IEntityComponentRenderer", "rendererType");
+            }
+
+            ComponentType = componentType;
+            RendererType = rendererType;
             DisplayOrder = displayOrder;
         }
+
+        /// <summary>
+        /// The type of component. Must be derived from <see cref="EntityComponent"/>/
+        /// </summary>
+        public readonly Type ComponentType;
+
 
         /// <summary>
         /// The type of the renderer. Must derived from <see cref="IEntityComponentRenderer"/> and have a public parameter-less
         /// constructor.
         /// </summary>
-        public readonly Type Type;
+        public readonly Type RendererType;
 
         /// <summary>
         /// The display order of this renderer. Zero is the default for the <see cref="ModelComponent"/> renderer.
         /// </summary>
         public readonly int DisplayOrder;
 
-        private class EntityComponentRendererTypeComparer : IComparer<EntityComponentRendererType>
+        public bool Equals(EntityComponentRendererType other)
         {
-            public int Compare(EntityComponentRendererType x, EntityComponentRendererType y)
-            {
-                return x.DisplayOrder.CompareTo(y.DisplayOrder);
-            }
+            return ComponentType == other.ComponentType;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is EntityComponentRendererType && Equals((EntityComponentRendererType)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (ComponentType != null ? ComponentType.GetHashCode() : 0);
+        }
+
+        public int CompareTo(EntityComponentRendererType other)
+        {
+            return DisplayOrder.CompareTo(other.DisplayOrder);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("Component: {0}, DisplayOrder: {1} (Renderer: {2})", ComponentType, DisplayOrder, RendererType);
         }
     }
 }
