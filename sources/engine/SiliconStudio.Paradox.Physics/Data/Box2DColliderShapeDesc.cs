@@ -16,9 +16,15 @@ namespace SiliconStudio.Paradox.Physics
         public Vector3 LocalOffset;
 
         /// <userdoc>
+        /// The local rotation of the collider shape.
+        /// </userdoc>
+        [DataMember(20)] 
+        public Quaternion LocalRotation = Quaternion.Identity;
+
+        /// <userdoc>
         /// Half Extent size of the box.
         /// </userdoc>
-        [DataMember(20)]
+        [DataMember(30)]
         public Vector2 HalfExtent;
     }
 }

@@ -80,26 +80,22 @@ namespace SiliconStudio.Paradox.Physics
             if (type == typeof(Box2DColliderShapeDesc))
             {
                 var boxDesc = (Box2DColliderShapeDesc)desc;
-                var rotation = Quaternion.Identity; //todo
-                shape = new Box2DColliderShape(boxDesc.HalfExtent) { LocalOffset = boxDesc.LocalOffset, LocalRotation = rotation };
+                shape = new Box2DColliderShape(boxDesc.HalfExtent) { LocalOffset = boxDesc.LocalOffset, LocalRotation = boxDesc.LocalRotation };
             }
             else if (type == typeof(BoxColliderShapeDesc))
             {
                 var boxDesc = (BoxColliderShapeDesc)desc;
-                var rotation = Quaternion.Identity; //todo
-                shape = new BoxColliderShape(boxDesc.HalfExtents) { LocalOffset = boxDesc.LocalOffset, LocalRotation = rotation };
+                shape = new BoxColliderShape(boxDesc.HalfExtents) { LocalOffset = boxDesc.LocalOffset, LocalRotation = boxDesc.LocalRotation };
             }
             else if (type == typeof(CapsuleColliderShapeDesc))
             {
                 var capsuleDesc = (CapsuleColliderShapeDesc)desc;
-                var rotation = Quaternion.Identity; //todo
-                shape = new CapsuleColliderShape(capsuleDesc.Is2D, capsuleDesc.Radius, capsuleDesc.Height, capsuleDesc.UpAxis) { LocalOffset = capsuleDesc.LocalOffset, LocalRotation = rotation };
+                shape = new CapsuleColliderShape(capsuleDesc.Is2D, capsuleDesc.Radius, capsuleDesc.Height, capsuleDesc.UpAxis) { LocalOffset = capsuleDesc.LocalOffset, LocalRotation = capsuleDesc.LocalRotation };
             }
             else if (type == typeof(CylinderColliderShapeDesc))
             {
                 var cylinderDesc = (CylinderColliderShapeDesc)desc;
-                var rotation = Quaternion.Identity; //todo
-                shape = new CylinderColliderShape(cylinderDesc.HalfExtents, cylinderDesc.UpAxis) { LocalOffset = cylinderDesc.LocalOffset, LocalRotation = rotation };
+                shape = new CylinderColliderShape(cylinderDesc.HalfExtents, cylinderDesc.UpAxis) { LocalOffset = cylinderDesc.LocalOffset, LocalRotation = cylinderDesc.LocalRotation };
             }
             else if (type == typeof(SphereColliderShapeDesc))
             {

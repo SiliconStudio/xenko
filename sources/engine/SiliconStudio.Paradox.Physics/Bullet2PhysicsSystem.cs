@@ -26,6 +26,7 @@ namespace SiliconStudio.Paradox.Physics
             //add into processors pipeline
             processor = new PhysicsProcessor();
             Entities.Processors.Add(processor);
+            Enabled = true; //enabled by default
         }
 
         protected override void Destroy()
