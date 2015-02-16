@@ -52,13 +52,13 @@ namespace SiliconStudio.Paradox.Effects.Images
         }
 
         /// <inheritdoc/>
-        public override void Load(RenderContext context)
+        public override void Initialize(RenderContext context)
         {
-            base.Load(context);
+            base.Initialize(context);
 
             transformGroupEffect = new ImageEffectShader(colorTransformGroupEffectName);
             transformGroupEffect.SharedParameterCollections.Add(Parameters);
-            transformGroupEffect.Load(context);
+            transformGroupEffect.Initialize(context);
 
             // we are adding parameter collections after as transform parameters should override previous parameters
             transformGroupEffect.ParameterCollections.Add(transformsParameters);

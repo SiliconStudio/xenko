@@ -43,9 +43,9 @@ namespace SiliconStudio.Paradox.Engine
         [NotNull]
         public IRenderFrameOutput Output { get; set; }
 
-        public override void Load(RenderContext context)
+        public override void Initialize(RenderContext context)
         {
-            base.Load(context);
+            base.Initialize(context);
             currentEntityManager = context.Tags.Get(SceneInstance.Current);
         }
 

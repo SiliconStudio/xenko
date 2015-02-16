@@ -34,17 +34,14 @@ namespace SiliconStudio.Paradox.Effects.Images
         }
 
         /// <inheritdoc/>
-        public override void Load(RenderContext context)
+        public override void Initialize(RenderContext context)
         {
-            base.Load(context);
+            base.Initialize(context);
 
             if (EffectName == null) throw new ArgumentNullException("No EffectName specified");
 
             parameterCollections = new List<ParameterCollection> { context.Parameters };
-            if (SharedParameterCollections != null)
-            {
-                parameterCollections.AddRange(SharedParameterCollections);
-            }
+            parameterCollections.AddRange(SharedParameterCollections);
             parameterCollections.Add(Parameters);
             appliedParameterCollections = new List<ParameterCollection>();
 
@@ -62,10 +59,10 @@ namespace SiliconStudio.Paradox.Effects.Images
         public string EffectName { get; protected set; }
 
         /// <summary>
-        /// Optional shared parameters.
+        /// Optional shared parameters. This list must be setup before calling <see cref="Initialize"/>.
         /// </summary>
         [DataMemberIgnore]
-        public List<ParameterCollection> SharedParameterCollections { set; get; }
+        public List<ParameterCollection> SharedParameterCollections { get; private set; }
 
         /// <summary>
         /// Gets the parameter collections used by this effect.

@@ -46,7 +46,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         public PostProcessingEffects(RenderContext context)
             : this()
         {
-            Load(context);
+            Initialize(context);
         }
 
         /// <summary>
@@ -138,9 +138,9 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
-        public override void Load(RenderContext context)
+        public override void Initialize(RenderContext context)
         {
-            base.Load(context);
+            base.Initialize(context);
 
             depthOfField = ToLoadAndUnload(new DepthOfField());
             luminanceEffect = ToLoadAndUnload(new LuminanceEffect());

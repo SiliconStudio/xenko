@@ -33,9 +33,9 @@ namespace SiliconStudio.Paradox.Effects
             DebugName = "UIComponentRenderer";
         }
 
-        public override void Load(RenderContext context)
+        public override void Initialize(RenderContext context)
         {
-            base.Load(context);
+            base.Initialize(context);
 
             game = (IGame)Services.GetService(typeof(IGame));
             uiSystem = (UISystem)Services.GetService(typeof(UISystem));
@@ -57,7 +57,7 @@ namespace SiliconStudio.Paradox.Effects
             uiResolutionChanged = true;
         }
 
-        public override void Unload()
+        protected override void Unload()
         {
             if (uiSystem != null)
                 uiSystem.ResolutionChanged -= UISystemOnResolutionChanged;

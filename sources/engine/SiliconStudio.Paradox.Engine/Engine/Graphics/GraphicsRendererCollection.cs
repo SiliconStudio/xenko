@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 {
     /// <summary>
     /// A collection of <see cref="IGraphicsRenderer"/> that is itself a <see cref="IGraphicsRenderer"/> handling automatically
-    /// <see cref="IGraphicsRenderer.Load"/> and <see cref="IGraphicsRenderer.Unload"/>.
+    /// <see cref="IGraphicsRenderer.Initialize"/> and <see cref="IGraphicsRenderer.Unload"/>.
     /// </summary>
     /// <typeparam name="T">Type of the <see cref="IGraphicsRenderer"/></typeparam>.
     [DataSerializer(typeof(ListAllSerializer<,>), Mode = DataSerializerGenericMode.TypeAndGenericArguments)]
@@ -123,13 +123,14 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             }
         }
 
-        public override void Unload()
+        protected override void Unload()
         {
             // Unload renderers
             foreach (var renderer in currentRenderers)
             {
-                renderer.Unload();
+                renderer.Dispose();
             }
+            currentRenderers.Clear();
 
             base.Unload();
         }
@@ -150,7 +151,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 // If renderer is new, then load it
                 if (!tempRenderers.Contains(renderer))
                 {
-                    renderer.Load(context);
+                    renderer.Initialize(context);
                 }
 
                 // Draw the renderer
@@ -166,7 +167,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             // The renderers in tempRenderers are renderers that were removed, so we need to unload and dispose them 
             foreach (var previousRenderer in tempRenderers)
             {
-                previousRenderer.Unload();
+                previousRenderer.Dispose();
             }
             tempRenderers.Clear();
         }

@@ -273,7 +273,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             for (int i = 1; i < levelCount; i++)
             {
                 var blurEffect = Technique.ToBlurInstance();
-                blurEffect.Load(Context);
+                blurEffect.Initialize(Context);
 
                 CoCLevelConfig lvlConfig = new CoCLevelConfig
                 {

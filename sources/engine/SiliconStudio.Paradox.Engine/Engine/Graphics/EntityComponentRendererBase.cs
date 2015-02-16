@@ -50,9 +50,9 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// <value>The current render frame.</value>
         public RenderFrame CurrentRenderFrame { get; private set; }
 
-        public override void Load(RenderContext context)
+        public override void Initialize(RenderContext context)
         {
-            base.Load(context);
+            base.Initialize(context);
             Services = context.Services;
             EffectSystem = Services.GetSafeServiceAs<EffectSystem>();
             SceneInstance = context.Tags.GetSafe(SceneInstance.Current);

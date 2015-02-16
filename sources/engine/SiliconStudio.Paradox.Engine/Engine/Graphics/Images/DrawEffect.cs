@@ -45,7 +45,7 @@ namespace SiliconStudio.Paradox.Effects
         protected DrawEffect(RenderContext context, string name = null)
             : this(name)
         {
-            Load(context);
+            Initialize(context);
         }
 
         /// <summary>
@@ -53,9 +53,9 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         /// <param name="context">The context.</param>
         /// /// <exception cref="System.ArgumentNullException">context</exception>
-        public override void Load(RenderContext context)
+        public override void Initialize(RenderContext context)
         {
-            base.Load(context);
+            base.Initialize(context);
             GraphicsDevice = Context.GraphicsDevice;
             Assets = context.Services.GetSafeServiceAs<AssetManager>();
         }
@@ -94,7 +94,7 @@ namespace SiliconStudio.Paradox.Effects
                 if (scaler == null)
                 {
                     scaler = new ImageScaler();
-                    scaler.Load(Context);
+                    scaler.Initialize(Context);
                 }
                 return scaler;
             }

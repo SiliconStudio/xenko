@@ -14,9 +14,9 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         private LightModelRendererForward lightModelRenderer;
         private ModelComponentRenderer modelRenderer;
 
-        public override void Load(RenderContext context)
+        public override void Initialize(RenderContext context)
         {
-            base.Load(context);
+            base.Initialize(context);
 
             // TODO: Add support for mixin overrides
             modelRenderer = ToLoadAndUnload(new ModelComponentRenderer(SceneCameraRenderer.Mode.GetMainModelEffect()));

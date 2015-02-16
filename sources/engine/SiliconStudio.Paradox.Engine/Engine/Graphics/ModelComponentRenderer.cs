@@ -92,15 +92,15 @@ namespace SiliconStudio.Paradox.Effects
 
         public UpdateMeshesDelegate SortMeshes { get; set; }
 
-        public override void Load(RenderContext context)
+        public override void Initialize(RenderContext context)
         {
-            base.Load(context);
+            base.Initialize(context);
 
             dynamicEffectCompiler = new DynamicEffectCompiler(Services, effectName);
             modelProcessor = SceneInstance.GetProcessor<ModelProcessor>();
         }
 
-        public override void Unload()
+        protected override void Unload()
         {
             if (modelRenderSlot < 0)
             {

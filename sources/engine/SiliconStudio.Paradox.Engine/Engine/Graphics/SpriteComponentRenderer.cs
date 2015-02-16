@@ -37,9 +37,9 @@ namespace SiliconStudio.Paradox.Effects
             spriteBatch.VirtualResolution = gameVirtualResolution.VirtualResolution;
         }
 
-        public override void Load(RenderContext context)
+        public override void Initialize(RenderContext context)
         {
-            base.Load(context);
+            base.Initialize(context);
 
             gameVirtualResolution = (IVirtualResolution)Services.GetService(typeof(IVirtualResolution));
 
@@ -51,7 +51,7 @@ namespace SiliconStudio.Paradox.Effects
             GameVirtualResolutionChanged(null, EventArgs.Empty);
         }
 
-        public override void Unload()
+        protected override void Unload()
         {
             gameVirtualResolution.VirtualResolutionChanged -= GameVirtualResolutionChanged;
 

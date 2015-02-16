@@ -41,21 +41,21 @@ namespace SiliconStudio.Paradox.Effects.Images
         }
 
         /// <inheritdoc/>
-        public override void Load(RenderContext context)
+        public override void Initialize(RenderContext context)
         {
-            base.Load(context);
+            base.Initialize(context);
 
             // Use shared SharedParameters for blurH and blurV
-            blurH = new ImageEffectShader("GaussianBlurEffect").DisposeBy(this);
+            blurH = ToLoadAndUnload(new ImageEffectShader("GaussianBlurEffect"));
             blurH.SharedParameterCollections.Add(Parameters);
-            blurH.Load(context);
+            blurH.Initialize(context);
 
             // Setup specific Horizontal parameter for blurH
             blurH.Parameters.Set(GaussianBlurKeys.VerticalBlur, false);
 
-            blurV = new ImageEffectShader("GaussianBlurEffect").DisposeBy(this);
+            blurV = ToLoadAndUnload(new ImageEffectShader("GaussianBlurEffect"));
             blurV.SharedParameterCollections.Add(Parameters);
-            blurV.Load(context);
+            blurV.Initialize(context);
             // Setup specific Vertical parameter for blurV
             blurV.Parameters.Set(GaussianBlurKeys.VerticalBlur, true);
         }

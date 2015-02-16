@@ -19,20 +19,17 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         bool Enabled { get; set; }
 
         /// <summary>
-        /// Loads this renderer.
+        /// Loads this renderer. See remarks.
         /// </summary>
         /// <param name="context">The context.</param>
-        void Load(RenderContext context);
+        /// <remarks>This method allow a renderer to prepare for rendering. This method should be called once to initialize a renderer.</remarks>
+        void Initialize(RenderContext context);
 
         /// <summary>
-        /// Unloads this renderer.
-        /// </summary>
-        void Unload();
-
-        /// <summary>
-        /// Draws this renderer with the specified context.
+        /// Draws this renderer with the specified context. See remarks.
         /// </summary>
         /// <param name="context">The context.</param>
+        /// <remarks>The method <see cref="Initialize"/> should be called automatically by the implementation if it was not done before the first draw.</remarks>
         void Draw(RenderContext context);
     }
 }

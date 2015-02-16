@@ -13,8 +13,15 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
     /// A graphics layer.
     /// </summary>
     [DataContract("SceneGraphicsLayer")]
-    public class SceneGraphicsLayer
+    public class SceneGraphicsLayer : RendererBase
     {
+        private IGraphicsLayerOutput previousOutput;
+
+        /// <summary>
+        /// Property key to access the Master <see cref="RenderFrame"/> from <see cref="RenderContext.Tags"/>.
+        /// </summary>
+        public static readonly PropertyKey<RenderFrame> Master = new PropertyKey<RenderFrame>("RenderFrame.Master", typeof(RenderFrame));
+
         /// <summary>
         /// Property key to access the Input <see cref="RenderFrame"/> from the current SceneGraphicsLayer
         /// </summary>
@@ -31,20 +38,22 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="SceneGraphicsLayer"/> is enabled.
-        /// </summary>
-        /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
-        [DataMember(0)]
-        [DefaultValue(true)]
-        public bool Enabled { get; set; }
-
-        /// <summary>
         /// Gets or sets the name of this layer.
         /// </summary>
         /// <value>The name.</value>
         [DataMember(10)]
         [DefaultValue(null)]
-        public string Name { get; set; }
+        public override string Name
+        {
+            get
+            {
+                return base.Name;
+            }
+            set
+            {
+                base.Name = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the output of this layer.
@@ -69,9 +78,49 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         [Category]
         public SceneRendererCollection Renderers { get; private set; }
 
-        /// <summary>
-        /// Property key to access the Master <see cref="RenderFrame"/> from <see cref="RenderContext.Tags"/>.
-        /// </summary>
-        public static readonly PropertyKey<RenderFrame> Master = new PropertyKey<RenderFrame>("RenderFrame.Master", typeof(RenderFrame));
+        internal bool IsMaster { get; set; }
+
+        protected override void Unload()
+        {
+            // Dispose the output
+            if (Output != null)
+            {
+                Output.Dispose();
+            }
+
+            foreach (var renderer in Renderers)
+            {
+                renderer.Dispose();
+            }
+
+            base.Unload();
+        }
+
+        protected override void DrawCore(RenderContext context)
+        {
+            if (!Enabled || Output == null)
+            {
+                return;
+            }
+
+            // Sets the input of the layer (== last Current)
+            var currentRenderFrame = context.Tags.Get(RenderFrame.Current);
+            RenderFrame renderFrame;
+
+            // Sets the output of the layer 
+            // Master is always going to use the Master frame for the current frame.
+            if (IsMaster)
+            {
+                renderFrame = context.Tags.Get(Master);
+            }
+            else
+            {
+                renderFrame = Output.GetRenderFrame(context);
+            }
+
+            using (var t1 = context.PushTagAndRestore(SceneGraphicsLayer.CurrentInput, currentRenderFrame))
+            using (var t2 = context.PushTagAndRestore(RenderFrame.Current, renderFrame))
+                Renderers.Draw(context);
+        }
     }
 }

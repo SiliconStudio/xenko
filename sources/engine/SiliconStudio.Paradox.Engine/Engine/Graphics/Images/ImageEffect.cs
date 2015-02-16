@@ -51,7 +51,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         protected ImageEffect(RenderContext context, string name = null) 
             : this(name)
         {
-            Load(context);
+            Initialize(context);
         }
 
         /// <summary>

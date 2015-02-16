@@ -78,7 +78,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         [DataMemberIgnore]
         protected RenderContext Context { get; private set; }
 
-        public virtual void Load(RenderContext context)
+        public virtual void Initialize(RenderContext context)
         {
             if (context == null) throw new ArgumentNullException("context");
 
@@ -92,7 +92,10 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             subRenderersToUnload.Clear();
         }
 
-        public virtual void Unload()
+        /// <summary>
+        /// Unloads this instance on dispose.
+        /// </summary>
+        protected virtual void Unload()
         {
             foreach (var drawEffect in subRenderersToUnload)
             {
@@ -145,7 +148,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
             if (Context == null)
             {
-                Load(context);
+                Initialize(context);
             }
             else if (Context != context)
             {
@@ -221,7 +224,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         protected T ToLoadAndUnload<T>(T effect) where T : RendererBase
         {
             if (effect == null) throw new ArgumentNullException("effect");
-            effect.Load(Context);
+            effect.Initialize(Context);
             subRenderersToUnload.Add(effect);
             return effect;
         }

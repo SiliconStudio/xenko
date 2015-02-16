@@ -1,11 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Collections.Generic;
 using System.ComponentModel;
 
 using SiliconStudio.Core;
-using SiliconStudio.Core.Collections;
 using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.Engine.Graphics.Composers
@@ -15,11 +13,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
     /// </summary>
     [DataContract("SceneGraphicsCompositorLayers")]
     [Display("Layers")]
-    public sealed class SceneGraphicsCompositorLayers : ISceneGraphicsCompositor
+    public sealed class SceneGraphicsCompositorLayers : RendererBase, ISceneGraphicsCompositor
     {
-        private readonly Dictionary<SceneGraphicsLayer, GraphicsLayerState> layerStates;
-        private readonly Dictionary<SceneGraphicsLayer, GraphicsLayerState> layersToDispose;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneGraphicsCompositorLayers"/> class.
         /// </summary>
@@ -29,12 +24,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
             Master = new SceneGraphicsLayer()
             {
                 Output = new GraphicsLayerOutputMaster(),
+                IsMaster = true
             };
-
-            // Initialize states of this layer
-            layersToDispose = new Dictionary<SceneGraphicsLayer, GraphicsLayerState>();
-            layerStates = new Dictionary<SceneGraphicsLayer, GraphicsLayerState>();
-            // TODO: Add Disposable for composer
         }
 
         /// <summary>
@@ -53,88 +44,21 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         [Category]
         public SceneGraphicsLayer Master { get; private set; }
 
-        public void Draw(RenderContext context)
+        protected override void Unload()
         {
-            // Save the list of previous layers
-            layersToDispose.Clear();
-            foreach (var layerKeyState in layerStates)
-            {
-                layersToDispose.Add(layerKeyState.Key, layerKeyState.Value);
-            }
+            Layers.Dispose();
+            Master.Dispose();
 
-            // Process new layers
-            foreach (var layer in Layers)
-            {
-                DrawLayer(context, layer, false);
-
-                // Remove the layer from the previousLayerStates
-                layersToDispose.Remove(layer);
-            }
-
-            // Process layers that are removed
-            foreach (var layerKeyState in layersToDispose)
-            {
-                var layer = layerKeyState.Key;
-                var layerState = layerKeyState.Value;
-
-                // Dispose their output
-                if (layerState.Output != null)
-                {
-                    layerState.Output.Dispose();
-                }
-
-                // Dispose their renderers
-                layer.Renderers.Unload();
-            }
-            layersToDispose.Clear();
-
-            // Draw master part
-            DrawLayer(context, Master, true);
+            base.Unload();
         }
 
-        private void DrawLayer(RenderContext context, SceneGraphicsLayer layer, bool isMaster)
+        protected override void DrawCore(RenderContext context)
         {
-            if (!layer.Enabled || layer.Output == null)
-            {
-                return;
-            }
+            // Draw the layers
+            Layers.Draw(context);
 
-            GraphicsLayerState layerState;
-            if (!layerStates.TryGetValue(layer, out layerState))
-            {
-                layerState = new GraphicsLayerState();
-                layerStates.Add(layer, layerState);
-            }
-
-            // Sets the input of the layer (== last Current)
-            var currentRenderFrame = context.Tags.Get(RenderFrame.Current);
-            RenderFrame renderFrame;
-
-            // Sets the output of the layer 
-            // Master is always going to use the Master frame for the current frame.
-            if (isMaster)
-            {
-                renderFrame = context.Tags.Get(SceneGraphicsLayer.Master);
-            }
-            else
-            {
-                if (layerState.Output != null && layerState.Output != layer.Output)
-                {
-                    // If we have a new output 
-                    layerState.Output.Dispose();
-                }
-                layerState.Output = layer.Output;
-                renderFrame = layer.Output.GetRenderFrame(context);
-            }
-
-            using (var t1 = context.PushTagAndRestore(SceneGraphicsLayer.CurrentInput, currentRenderFrame))
-            using (var t2 = context.PushTagAndRestore(RenderFrame.Current, renderFrame))
-                layer.Renderers.Draw(context);
-        }
-
-        private class GraphicsLayerState
-        {
-            public IGraphicsLayerOutput Output { get; set; }
+            // Draw the master track
+            Master.Draw(context);
         }
     }
 }
