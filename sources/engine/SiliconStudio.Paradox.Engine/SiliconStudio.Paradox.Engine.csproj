@@ -1780,6 +1780,7 @@
     <Compile Include="Engine\SceneInstance.cs" />
     <Compile Include="Engine\SceneProcessor.cs" />
     <Compile Include="EntityModel\DefaultEntityComponentProcessorAttribute.cs" />
+    <Compile Include="EntityModel\EntityComponentEventArgs.cs" />
     <Compile Include="EntityModel\EntityComponentReference.cs" />
     <Compile Include="Data\GeometricPrimitiveExtension.cs" />
     <Compile Include="EntityModel\DefaultEntityComponentRendererAttribute.cs" />

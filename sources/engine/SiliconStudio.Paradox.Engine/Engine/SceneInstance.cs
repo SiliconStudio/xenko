@@ -16,7 +16,7 @@ using SiliconStudio.Paradox.Games;
 namespace SiliconStudio.Paradox.Engine
 {
     /// <summary>
-    /// A <see cref="Scene"/> instance that can be rendered.
+    /// Manage a collection of entities within a <see cref="Scene"/>.
     /// </summary>
     public sealed class SceneInstance : EntityManager
     {
@@ -175,15 +175,16 @@ namespace SiliconStudio.Paradox.Engine
             Processors.Add(new TransformProcessor());
             Add(Scene);
 
-            foreach (var componentType in RegisteredComponentTypes)
+            // TODO: RendererTypes could be done outside this instance.
+            foreach (var componentType in ComponentTypes)
             {
-                EntitySystemOnComponentTypeRegistered(null, componentType);
+                EntitySystemOnComponentTypeAdded(null, componentType);
             }
 
-            ComponentTypeRegistered += EntitySystemOnComponentTypeRegistered;
+            ComponentTypeAdded += EntitySystemOnComponentTypeAdded;
         }
 
-        private void EntitySystemOnComponentTypeRegistered(object sender, Type type)
+        private void EntitySystemOnComponentTypeAdded(object sender, Type type)
         {
             var rendererTypeAttribute = type.GetTypeInfo().GetCustomAttribute<DefaultEntityComponentRendererAttribute>();
             if (rendererTypeAttribute == null)
