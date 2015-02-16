@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 
 using SiliconStudio.Core;
@@ -20,9 +19,18 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     public sealed class SceneInstance : EntityManager
     {
+        private static readonly Logger Log = GlobalLogger.GetLogger("SceneInstance");
+
+        /// <summary>
+        /// A property key to get the current scene from the <see cref="RenderContext.Tags"/>.
+        /// </summary>
         public static readonly PropertyKey<SceneInstance> Current = new PropertyKey<SceneInstance>("SceneInstance.Current", typeof(SceneInstance));
 
-        private static readonly Logger Log = GlobalLogger.GetLogger("SceneInstance");
+
+        /// <summary>
+        /// Occurs when the scene of <see cref="SceneChildComponent"/> changed.
+        /// </summary>
+        public event EventHandler<SceneChildComponentChangedEventArgs> SceneChildComponentChanged;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneInstance"/> class.
@@ -159,9 +167,12 @@ namespace SiliconStudio.Paradox.Engine
             // If the scene has changed, we need to recreate a new SceneInstance with the new scene
             if (ChildComponent != null && ChildComponent.Scene != Scene)
             {
+                var previousScene = Scene;
                 Scene = ChildComponent.Scene;
                 Reset();
                 Load();
+
+                OnSceneChildComponentChanged(new SceneChildComponentChangedEventArgs(ChildComponent, previousScene, Scene));
             }
         }
 
@@ -197,6 +208,12 @@ namespace SiliconStudio.Paradox.Engine
                 var entityComponentRendererType = new EntityComponentRendererType(type, renderType, rendererTypeAttribute.Order);
                 RendererTypes.Add(entityComponentRendererType);
             }
+        }
+
+        private void OnSceneChildComponentChanged(SceneChildComponentChangedEventArgs e)
+        {
+            EventHandler<SceneChildComponentChangedEventArgs> handler = SceneChildComponentChanged;
+            if (handler != null) handler(this, e);
         }
     }
 }
