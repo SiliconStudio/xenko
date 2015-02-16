@@ -114,12 +114,12 @@ namespace SiliconStudio.Paradox.Engine
                 graphicsDevice.ClearState();
 
                 // Update the render context to use the main RenderFrame as current by default
-                // TODO: Push/Pop values
 
                 // Draw the main scene.
                 var graphicsCompositor = compositorOverload ?? this.Scene.Settings.GraphicsCompositor;
                 if (graphicsCompositor != null)
                 {
+                    // Push context (pop after using)
                     using (var t1 = context.PushTagAndRestore(RenderFrame.Current, toFrame))
                     using (var t2 = context.PushTagAndRestore(SceneGraphicsLayer.Master, toFrame))
                     using (var t3 = context.PushTagAndRestore(Current, this))

@@ -80,15 +80,9 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 return;
             }
 
-            // Get the previous SceneCameraRenderer if any (in case of rendering nested scene)
-            var previousCurrent = context.Tags.Get(Current);
-            context.Tags.Set(Current, this);
-
             // Draw this camera.
-            Mode.Draw(context);
-
-            // Set the previous camera renderer
-            context.Tags.Set(Current, previousCurrent);
+            using (var t1 = context.PushTagAndRestore(Current, this))
+                Mode.Draw(context);
         }
     }
 }

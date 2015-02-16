@@ -108,14 +108,13 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
 
             // Sets the input of the layer (== last Current)
             var currentRenderFrame = context.Tags.Get(RenderFrame.Current);
-            context.Tags.Set(SceneGraphicsLayer.CurrentInput, currentRenderFrame);
+            RenderFrame renderFrame;
 
             // Sets the output of the layer 
             // Master is always going to use the Master frame for the current frame.
             if (isMaster)
             {
-                // Master is always going to use the Master frame for the current frame.
-                context.Tags.Set(RenderFrame.Current, context.Tags.Get(SceneGraphicsLayer.Master));
+                renderFrame = context.Tags.Get(SceneGraphicsLayer.Master);
             }
             else
             {
@@ -125,11 +124,12 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
                     layerState.Output.Dispose();
                 }
                 layerState.Output = layer.Output;
-                var renderFrame = layer.Output.GetRenderFrame(context);
-                context.Tags.Set(RenderFrame.Current, renderFrame);
+                renderFrame = layer.Output.GetRenderFrame(context);
             }
 
-            layer.Renderers.Draw(context);
+            using (var t1 = context.PushTagAndRestore(SceneGraphicsLayer.CurrentInput, currentRenderFrame))
+            using (var t2 = context.PushTagAndRestore(RenderFrame.Current, renderFrame))
+                layer.Renderers.Draw(context);
         }
 
         private class GraphicsLayerState
