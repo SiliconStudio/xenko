@@ -94,6 +94,7 @@ namespace SiliconStudio.Core
         /// </remarks>
         public static PropertyTagRestore<T> PushTagAndRestore<T>(this ComponentBase component, PropertyKey<T> key, T value)
         {
+            // TODO: Not fully satisfied with the name and the extension point (on ComponentBase). We need to review this a bit more
             var restorer = new PropertyTagRestore<T>(component, key);
             component.Tags.Set(key, value);
             return restorer;
