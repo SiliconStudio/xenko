@@ -13,7 +13,6 @@ using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Paradox.Engine.Graphics;
 
 namespace SiliconStudio.Paradox.EntityModel
 {
