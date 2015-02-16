@@ -30,6 +30,15 @@ namespace SiliconStudio.Paradox.Assets.Materials
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="MaterialGlossinessMapFeature"/> class.
+        /// </summary>
+        /// <param name="glossinessMap">The glossiness map.</param>
+        public MaterialGlossinessMapFeature(IComputeScalar glossinessMap)
+        {
+            GlossinessMap = glossinessMap;
+        }
+
+        /// <summary>
         /// Gets or sets the smoothness map.
         /// </summary>
         /// <value>The smoothness map.</value>

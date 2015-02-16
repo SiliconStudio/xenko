@@ -25,6 +25,15 @@ namespace SiliconStudio.Paradox.Assets.Materials
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="MaterialMetalnessMapFeature"/> class.
+        /// </summary>
+        /// <param name="metalnessMap">The metalness map.</param>
+        public MaterialMetalnessMapFeature(IComputeScalar metalnessMap)
+        {
+            MetalnessMap = metalnessMap;
+        }
+
+        /// <summary>
         /// Gets or sets the metalness map.
         /// </summary>
         /// <value>The metalness map.</value>

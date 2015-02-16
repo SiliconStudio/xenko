@@ -23,6 +23,15 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="ComputeTextureColor"/> class.
+        /// </summary>
+        /// <param name="texture">The texture.</param>
+        public ComputeTextureColor(Texture texture)
+            : base(texture, TextureCoordinate.Texcoord0, Vector2.One, Vector2.Zero)
+        {
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ComputeTextureColor" /> class.
         /// </summary>
         /// <param name="texture">The texture.</param>
