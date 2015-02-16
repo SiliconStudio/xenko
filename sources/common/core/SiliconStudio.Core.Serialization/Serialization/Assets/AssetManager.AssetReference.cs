@@ -14,7 +14,8 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// <summary>
         /// Internal object that represents a loaded asset, with its url and reference counts.
         /// </summary>
-        internal class AssetReference
+        // TODO: Check how to expose this publicly in a nice way
+        public class AssetReference
         {
             /// <summary>
             /// The next item in the linked list.

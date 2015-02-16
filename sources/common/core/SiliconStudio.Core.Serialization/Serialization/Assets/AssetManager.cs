@@ -35,9 +35,11 @@ namespace SiliconStudio.Core.Serialization.Assets
         public AssetSerializer Serializer { get; private set; }
 
         // If multiple object shares the same Url, they will be stored as a linked list (AssetReference.Next).
-        private readonly Dictionary<ObjectId, AssetReference> loadedAssetsByUrl = new Dictionary<ObjectId, AssetReference>();
+        // TODO: Check how to expose this publicly in a nice way
+        public readonly Dictionary<ObjectId, AssetReference> loadedAssetsByUrl = new Dictionary<ObjectId, AssetReference>();
 
-        private readonly Dictionary<object, AssetReference> loadedAssetsUrl = new Dictionary<object, AssetReference>();
+        // TODO: Check how to expose this publicly in a nice way
+        public readonly Dictionary<object, AssetReference> loadedAssetsUrl = new Dictionary<object, AssetReference>();
 
         public AssetManager() : this(null)
         {
