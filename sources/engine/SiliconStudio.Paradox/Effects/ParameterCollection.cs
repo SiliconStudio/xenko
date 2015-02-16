@@ -154,7 +154,7 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         public IEnumerable<ParameterKey> Keys
         {
-            get { return valueList.Select(x => x.Key); }
+            get { return new KeyCollection(this); }
         }
 
         public ICollection<object> Values { get; private set; }
@@ -701,7 +701,7 @@ namespace SiliconStudio.Paradox.Effects
 
                 // Otherwise, values must match
                 // Defer actual test to InternalValue override (avoid boxing)
-                if (!internalValue2.Value.Equals(internalValue1))
+                if (!internalValue2.Value.ValueEquals(internalValue1))
                     return false;
             }
 
@@ -1281,7 +1281,14 @@ namespace SiliconStudio.Paradox.Effects
             /// </summary>
             /// <param name="internalValue">The internal value.</param>
             /// <returns></returns>
-            public abstract bool Equals(InternalValue internalValue);
+            public abstract bool ValueEquals(InternalValue internalValue);
+
+            /// <summary>
+            /// Determines if this instance and the given internal value have same <see cref="Value" />.
+            /// </summary>
+            /// <param name="value">The value.</param>
+            /// <returns></returns>
+            public abstract bool ValueEquals(object value);
 
             /// <summary>
             /// Determines whether [is default value] [the specified parameter key].
@@ -1324,13 +1331,24 @@ namespace SiliconStudio.Paradox.Effects
                 return comparer.Equals(Value, parameterKeyT.DefaultValueMetadataT.DefaultValue);
             }
 
-            public override bool Equals(InternalValue internalValue)
+            public override bool ValueEquals(InternalValue internalValue)
             {
                 var internalValueT = internalValue as InternalValueBase<T>;
                 if (internalValueT == null)
                     return false;
 
                 return comparer.Equals(Value, internalValueT.Value);
+            }
+
+            public override bool ValueEquals(object value)
+            {
+                if (value == null && Value == null)
+                    return true;
+
+                if (!(value is T))
+                    return false;
+
+                return comparer.Equals(Value, (T)value);
             }
 
             public override void SerializeHash(SerializationStream stream)
@@ -1396,6 +1414,88 @@ namespace SiliconStudio.Paradox.Effects
                 if (maxSize <= 0)
                     return;
                 Utilities.CopyMemory(dest, (IntPtr)Interop.Fixed(ref GetValue()[0]) + offset, Math.Min(size, maxSize));
+            }
+        }
+
+        public struct KeyCollection : IReadOnlyList<ParameterKey>
+        {
+            private ParameterCollection parameterCollection;
+
+            public KeyCollection(ParameterCollection parameterCollection)
+            {
+                this.parameterCollection = parameterCollection;
+            }
+
+            /// <inheritdoc/>
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            /// <inheritdoc/>
+            IEnumerator<ParameterKey> IEnumerable<ParameterKey>.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            public Enumerator GetEnumerator()
+            {
+                return new Enumerator(parameterCollection.valueList);
+            }
+
+            /// <inheritdoc/>
+            public int Count { get { return parameterCollection.valueList.Count; } }
+
+            /// <inheritdoc/>
+            public ParameterKey this[int index]
+            {
+                get { return parameterCollection.valueList[index].Key; }
+            }
+
+            public struct Enumerator : IEnumerator<ParameterKey>
+            {
+                private FastListStruct<KeyValuePair<ParameterKey, InternalValue>> valueList;
+                private int index;
+                private int length;
+
+                public Enumerator(FastListStruct<KeyValuePair<ParameterKey, InternalValue>> valueList) : this()
+                {
+                    this.valueList = valueList;
+                    index = -1;
+                    length = valueList.Count;
+                }
+
+                /// <inheritdoc/>
+                public void Dispose()
+                {
+                }
+
+                /// <inheritdoc/>
+                public bool MoveNext()
+                {
+                    if (index < length)
+                        return ++index < length;
+
+                    return false;
+                }
+
+                /// <inheritdoc/>
+                public void Reset()
+                {
+                    index = -1;
+                }
+
+                /// <inheritdoc/>
+                public ParameterKey Current
+                {
+                    get { return valueList[index].Key; }
+                }
+
+                /// <inheritdoc/>
+                object IEnumerator.Current
+                {
+                    get { return Current; }
+                }
             }
         }
 

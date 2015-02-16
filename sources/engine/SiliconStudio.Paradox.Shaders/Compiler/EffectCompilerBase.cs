@@ -98,9 +98,10 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
         private CompilerResults Compile(string name, ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters, CompilerResults compilerResults)
         {
             if (name == null) throw new ArgumentNullException("name");
-            var bytecode = Compile(mixinTree, compilerParameters, compilerResults);
+            var bytecode = Compile(mixinTree, compilerParameters);
 
-            if (bytecode.Result != null || bytecode.Task != null)
+            // Since bytecode.Result is a struct, we check if any of its member has been set to know if it's valid
+            if (bytecode.Result.CompilationLog != null || bytecode.Task != null)
             {
                 if (mixinTree.Parent == null)
                 {
@@ -125,9 +126,8 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
         /// </summary>
         /// <param name="mixinTree">The mixin tree.</param>
         /// <param name="compilerParameters">The compiler parameters.</param>
-        /// <param name="log">The log.</param>
         /// <returns>The platform-dependent bytecode.</returns>
-        public abstract TaskOrResult<EffectBytecode> Compile(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters, LoggerResult log);
+        public abstract TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters);
 
         public static string GetEffectName(string fullEffectName, out string subEffect)
         {

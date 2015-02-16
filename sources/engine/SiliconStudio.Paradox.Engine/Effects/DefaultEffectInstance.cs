@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
-
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects
@@ -32,13 +32,43 @@ namespace SiliconStudio.Paradox.Effects
             this.localParameterCollections = parameterCollections;
         }
 
-        public override void FillParameterCollections(IList<ParameterCollection> parameterCollections)
+        public override void FillParameterCollections(FastList<ParameterCollection> parameterCollections)
         {
-            foreach (var parameter in this.localParameterCollections)
+            // Test common types to avoid struct enumerator boxing
+            var localParameterCollectionsList = localParameterCollections as List<ParameterCollection>;
+            if (localParameterCollectionsList != null)
             {
-                if (parameter != null)
+                foreach (var parameter in localParameterCollectionsList)
                 {
-                    parameterCollections.Add(parameter);
+                    if (parameter != null)
+                    {
+                        parameterCollections.Add(parameter);
+                    }
+                }
+            }
+            else
+            {
+                var localParameterCollectionsArray = localParameterCollections as ParameterCollection[];
+                if (localParameterCollectionsArray != null)
+                {
+                    foreach (var parameter in localParameterCollectionsArray)
+                    {
+                        if (parameter != null)
+                        {
+                            parameterCollections.Add(parameter);
+                        }
+                    }
+                }
+                else
+                {
+                    // Slow: enumerator will be boxed
+                    foreach (var parameter in localParameterCollections)
+                    {
+                        if (parameter != null)
+                        {
+                            parameterCollections.Add(parameter);
+                        }
+                    }
                 }
             }
         }

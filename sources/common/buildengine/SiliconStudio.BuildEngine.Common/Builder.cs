@@ -568,7 +568,7 @@ namespace SiliconStudio.BuildEngine
                 // Exit loop if no more micro threads
                 lock (scheduler.MicroThreads)
                 {
-                    if (!scheduler.MicroThreads.Any())
+                    if (scheduler.MicroThreads.Count == 0)
                         break;
                 }
 

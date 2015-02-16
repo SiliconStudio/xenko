@@ -16,6 +16,8 @@ namespace SiliconStudio.Paradox.Effects.Images
     [DataContract("ToneMap")]
     public class ToneMap : ColorTransform
     {
+        // Note: could be static if we use a lock
+        private readonly Dictionary<ParameterKey, ParameterKey> tonemapKeys = new Dictionary<ParameterKey, ParameterKey>();
         private readonly float[] weightedLuminances = new float[16];
         private int currentWeightedLuminanceIndex = 0;
         private float previousLuminance;
@@ -191,10 +193,15 @@ namespace SiliconStudio.Paradox.Effects.Images
             currentOperator.UpdateParameters(context);
 
             // Copy sub parameters from composition to this transform
-            foreach (var parameterValue in currentOperator.Parameters)
+            foreach (var key in currentOperator.Parameters.Keys)
             {
-                var key = parameterValue.Key.ComposeWith("ToneMapOperator");
-                currentOperator.Parameters.CopySharedTo(parameterValue.Key, key, Parameters);
+                ParameterKey tonemapKey;
+                if (!tonemapKeys.TryGetValue(key, out tonemapKey))
+                {
+                    tonemapKey = key.ComposeWith("ToneMapOperator");
+                    tonemapKeys.Add(key, tonemapKey);
+                }
+                currentOperator.Parameters.CopySharedTo(key, tonemapKey, Parameters);
             }
         }
     }

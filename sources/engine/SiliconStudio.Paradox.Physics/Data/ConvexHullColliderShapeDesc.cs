@@ -10,6 +10,7 @@ namespace SiliconStudio.Paradox.Physics
 {
     [ContentSerializer(typeof(DataContentSerializer<ConvexHullColliderShapeDesc>))]
     [DataContract("ConvexHullColliderShapeDesc")]
+    [Display(50, "ConvexHullColliderShape")]
     public class ConvexHullColliderShapeDesc : IColliderShapeDesc
     {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP

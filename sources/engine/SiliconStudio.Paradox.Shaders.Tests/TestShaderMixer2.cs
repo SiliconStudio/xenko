@@ -53,7 +53,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             mixinSource.AddComposition("albedoDiffuse", compMixin);
 
             var mixinSourceTree = new ShaderMixinSourceTree { Name = "testRenaming", Mixin = mixinSource, UsedParameters = MixinParameters };
-            var byteCode = Compiler.Compile(mixinSourceTree, new CompilerParameters(), ResultLogger);
+            var byteCode = Compiler.Compile(mixinSourceTree, new CompilerParameters());
             Assert.IsNotNull(byteCode);
         }
 
@@ -76,7 +76,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             mixinSource.AddComposition("albedoDiffuse", compMixin);
 
             var mixinSourceTree = new ShaderMixinSourceTree { Name = "TestRenaming2", Mixin = mixinSource, UsedParameters = MixinParameters };
-            var byteCode = Compiler.Compile(mixinSourceTree, new CompilerParameters(), ResultLogger);
+            var byteCode = Compiler.Compile(mixinSourceTree, new CompilerParameters());
             Assert.IsNotNull(byteCode);
         }
 

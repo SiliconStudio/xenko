@@ -186,7 +186,10 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         [Visit]
         protected void Visit(MemberReferenceExpression memberReferenceExpression)
         {
+            var usageCopy = currentStreamUsage;
+            currentStreamUsage |= StreamUsage.Partial;
             Visit((Node)memberReferenceExpression);
+            currentStreamUsage = usageCopy;
 
             // check if it is a stream
             if (IsStreamMember(memberReferenceExpression))
@@ -274,7 +277,19 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
     {
         Unknown = 0,
         Read = 1,
-        Write = 2
+        Write = 2,
+
+        /// <summary>
+        /// Not all the components of the variable have been read/written
+        /// </summary>
+        Partial = 4,
+    }
+
+    internal static class StreamUsageExtensions
+    {
+        public static bool IsRead(this StreamUsage usage) { return (usage & StreamUsage.Read) != 0; }
+        public static bool IsWrite(this StreamUsage usage) { return (usage & StreamUsage.Write) != 0; }
+        public static bool IsPartial(this StreamUsage usage) { return (usage & StreamUsage.Partial) != 0; }
     }
 
     internal enum StreamCallType
