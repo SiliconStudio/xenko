@@ -23,8 +23,17 @@ namespace SiliconStudio.Paradox.Engine
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneChildRenderer"/> class.
         /// </summary>
-        public SceneChildRenderer()
+        public SceneChildRenderer() : this(null)
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SceneChildRenderer"/> class.
+        /// </summary>
+        /// <param name="sceneChild">The scene child.</param>
+        public SceneChildRenderer(SceneChildComponent sceneChild)
+        {
+            SceneChild = sceneChild;
             Output = new CurrentRenderFrameProvider();
         }
 

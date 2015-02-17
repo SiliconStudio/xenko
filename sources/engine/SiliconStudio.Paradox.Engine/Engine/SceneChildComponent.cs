@@ -23,6 +23,15 @@ namespace SiliconStudio.Paradox.Engine
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="SceneChildComponent"/> class.
+        /// </summary>
+        /// <param name="scene">The scene.</param>
+        public SceneChildComponent(Scene scene)
+        {
+            Scene = scene;
+        }
+
+        /// <summary>
         /// Gets or sets the child scene.
         /// </summary>
         /// <value>The scene.</value>
