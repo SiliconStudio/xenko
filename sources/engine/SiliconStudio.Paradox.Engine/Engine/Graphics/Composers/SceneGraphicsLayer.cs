@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Collections;
 using System.ComponentModel;
 
 using SiliconStudio.Core;
@@ -13,7 +14,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
     /// A graphics layer.
     /// </summary>
     [DataContract("SceneGraphicsLayer")]
-    public class SceneGraphicsLayer : RendererBase
+    public class SceneGraphicsLayer : RendererBase, IEnumerable
     {
         private IGraphicsLayerOutput output;
 
@@ -100,6 +101,15 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
             }
         }
 
+        /// <summary>
+        /// Adds the specified scene renderer.
+        /// </summary>
+        /// <param name="sceneRenderer">The scene renderer.</param>
+        public void Add(ISceneRenderer sceneRenderer)
+        {
+            Renderers.Add(sceneRenderer);
+        }
+
         protected override void Unload()
         {
             // Dispose the output
@@ -135,6 +145,11 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
                 context.Tags.Set(RenderFrame.Current, renderFrame);
                 Renderers.Draw(context);
             }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return Renderers.GetEnumerator();
         }
     }
 }
