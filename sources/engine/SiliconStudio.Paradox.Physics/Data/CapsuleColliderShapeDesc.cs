@@ -22,21 +22,27 @@ namespace SiliconStudio.Paradox.Physics
         public Vector3 LocalOffset;
 
         /// <userdoc>
-        /// The radius of the capsule.
+        /// The local rotation of the collider shape.
         /// </userdoc>
         [DataMember(30)]
+        public Quaternion LocalRotation = Quaternion.Identity;
+
+        /// <userdoc>
+        /// The radius of the capsule.
+        /// </userdoc>
+        [DataMember(40)]
         public float Radius;
 
         /// <userdoc>
         /// The height of the capsule.
         /// </userdoc>
-        [DataMember(40)]
+        [DataMember(50)]
         public float Height;
 
         /// <userdoc>
         /// The up axis of the capsule, this must be either (1,0,0),(0,1,0),(0,0,1).
         /// </userdoc>
-        [DataMember(50)]
+        [DataMember(60)]
         public Vector3 UpAxis = Vector3.UnitY;
     }
 }

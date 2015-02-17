@@ -22,6 +22,7 @@ namespace SiliconStudio.Paradox.Physics
             game.GameSystems.Add(this);
 
             Simulation.Initialize(game);
+            Enabled = true; //enabled by default
         }
 
         protected override void Destroy()
