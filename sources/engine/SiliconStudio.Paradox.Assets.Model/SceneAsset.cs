@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                 var rootEntity = new Scene { Name = "Root" };
                 rootEntity.GetOrCreate(TransformComponent.Key);
 
-                return new EntityAsset
+                return new SceneAsset
                 {
                     Hierarchy =
                     {
