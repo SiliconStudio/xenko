@@ -1873,14 +1873,14 @@
     <Compile Include="Particles\ParticleFields.cs" />
     <Compile Include="Particles\ParticleSystem.cs" />
     <Compile Include="Script.cs" />
-    <Compile Include="Shaders\Camera.cs">
+    <Compile Include="Engine\Graphics\Shaders\Camera.cs">
       <DependentUpon>Camera.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Shaders\CameraKeys.cs" />
-    <Compile Include="Shaders\Global.cs">
+    <Compile Include="Engine\Graphics\Shaders\CameraKeys.cs" />
+    <Compile Include="Engine\Graphics\Shaders\Global.cs">
       <DependentUpon>Global.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -1920,14 +1920,14 @@
     <Compile Include="PrettyPrinter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScriptContext.cs" />
-    <Compile Include="Shaders\RenderTargetKeys.cs" />
-    <Compile Include="Shaders\Transformation.cs">
+    <Compile Include="Engine\Graphics\Shaders\RenderTargetKeys.cs" />
+    <Compile Include="Engine\Graphics\Shaders\Transformation.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Transformation.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Shaders\TransformationKeys.cs" />
+    <Compile Include="Engine\Graphics\Shaders\TransformationKeys.cs" />
     <Compile Include="Threading\ILockMechanism.cs" />
     <Compile Include="Threading\Lock.cs" />
     <Compile Include="Threading\LockMechanismException.cs" />
@@ -2912,15 +2912,15 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>Utilities.cs</LastGenOutput>
     </None>
-    <None Include="Shaders\Camera.pdxsl">
+    <None Include="Engine\Graphics\Shaders\Camera.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>Camera.cs</LastGenOutput>
     </None>
-    <None Include="Shaders\Global.pdxsl">
+    <None Include="Engine\Graphics\Shaders\Global.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>Global.cs</LastGenOutput>
     </None>
-    <None Include="Shaders\Transformation.pdxsl">
+    <None Include="Engine\Graphics\Shaders\Transformation.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>Transformation.cs</LastGenOutput>
     </None>
