@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// </summary>
         public ClearRenderFrameRenderer()
         {
-            DebugName = "Clear RenderFrame";
+            Name = "Clear RenderFrame";
             ClearFlags = ClearRenderFrameFlags.Color;
             Color = Core.Mathematics.Color.CornflowerBlue;
             Depth = 1.0f;

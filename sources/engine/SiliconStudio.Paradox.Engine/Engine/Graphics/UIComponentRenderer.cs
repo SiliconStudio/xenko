@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.Effects
         
         public UIComponentRenderer()
         {
-            DebugName = "UIComponentRenderer";
+            Name = "UIComponentRenderer";
         }
 
         public override void Initialize(RenderContext context)

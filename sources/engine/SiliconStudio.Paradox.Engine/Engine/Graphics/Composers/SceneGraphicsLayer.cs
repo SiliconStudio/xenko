@@ -15,7 +15,9 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
     [DataContract("SceneGraphicsLayer")]
     public class SceneGraphicsLayer : RendererBase
     {
-        private IGraphicsLayerOutput previousOutput;
+        private IGraphicsLayerOutput output;
+
+        private bool isMaster;
 
         /// <summary>
         /// Property key to access the Master <see cref="RenderFrame"/> from <see cref="RenderContext.Tags"/>.
@@ -33,16 +35,11 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         public SceneGraphicsLayer()
         {
             Enabled = true;
-            Output = new GraphicsLayerOutputMaster();
+            Output = GraphicsLayerOutputMaster.Instance;
             Renderers = new SceneRendererCollection();
         }
 
-        /// <summary>
-        /// Gets or sets the name of this layer.
-        /// </summary>
-        /// <value>The name.</value>
         [DataMember(10)]
-        [DefaultValue(null)]
         public override string Name
         {
             get
@@ -51,7 +48,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
             }
             set
             {
-                base.Name = value;
+                // Make sure the layer Master is always named "Master"
+                base.Name = (isMaster) ? "Master" : value;
             }
         }
 
@@ -65,7 +63,18 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         /// </userdoc>
         [DataMember(40)]
         [NotNull]
-        public IGraphicsLayerOutput Output { get; set; }
+        public IGraphicsLayerOutput Output
+        {
+            get
+            {
+                return output;
+            }
+            set
+            {
+                // master layer is always a master output and cannot be changed
+                output = IsMaster ? GraphicsLayerOutputMaster.Instance : value;
+            }
+        }
 
         /// <summary>
         /// Gets the renderers that will be used to render this layer.
@@ -78,7 +87,18 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         [Category]
         public SceneRendererCollection Renderers { get; private set; }
 
-        internal bool IsMaster { get; set; }
+        internal bool IsMaster
+        {
+            get
+            {
+                return isMaster;
+            }
+            set
+            {
+                isMaster = value;
+                Name = "Master";
+            }
+        }
 
         protected override void Unload()
         {
@@ -105,18 +125,10 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
 
             // Sets the input of the layer (== last Current)
             var currentRenderFrame = context.Tags.Get(RenderFrame.Current);
-            RenderFrame renderFrame;
-
+            
             // Sets the output of the layer 
             // Master is always going to use the Master frame for the current frame.
-            if (IsMaster)
-            {
-                renderFrame = context.Tags.Get(Master);
-            }
-            else
-            {
-                renderFrame = Output.GetRenderFrame(context);
-            }
+            var renderFrame = Output.GetRenderFrame(context);
 
             using (var t1 = context.PushTagAndRestore(SceneGraphicsLayer.CurrentInput, currentRenderFrame))
             using (var t2 = context.PushTagAndRestore(RenderFrame.Current, renderFrame))

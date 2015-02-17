@@ -13,6 +13,11 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
     [Display("Master")]
     public sealed class GraphicsLayerOutputMaster : RenderFrameProviderBase, IGraphicsLayerOutput
     {
+        /// <summary>
+        /// Gets a singleton instance.
+        /// </summary>
+        public static readonly GraphicsLayerOutputMaster Instance = new GraphicsLayerOutputMaster();
+
         public override RenderFrame GetRenderFrame(RenderContext context)
         {
             return context.Tags.Get(SceneGraphicsLayer.Master);

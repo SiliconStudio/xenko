@@ -26,52 +26,52 @@ namespace SiliconStudio.Paradox.Engine
         /// </summary>
         public static readonly PropertyKey<SceneInstance> Current = new PropertyKey<SceneInstance>("SceneInstance.Current", typeof(SceneInstance));
 
-
-        /// <summary>
-        /// Occurs when the scene of <see cref="SceneChildComponent"/> changed.
-        /// </summary>
-        public event EventHandler<SceneChildComponentChangedEventArgs> SceneChildComponentChanged;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SceneInstance"/> class.
-        /// </summary>
-        /// <param name="services">The services.</param>
-        /// <param name="scene">The scene.</param>
-        public SceneInstance(IServiceRegistry services, Scene scene) : this(services, null, scene)
-        {
-        }
+        private Scene previousScene;
+        private Scene scene;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneInstance" /> class.
         /// </summary>
         /// <param name="services">The services.</param>
-        /// <param name="sceneChildComponent">The scene child component.</param>
         /// <param name="sceneEntityRoot">The scene entity root.</param>
         /// <exception cref="System.ArgumentNullException">services
         /// or
         /// sceneEntityRoot</exception>
-        internal SceneInstance(IServiceRegistry services, SceneChildComponent sceneChildComponent, Scene sceneEntityRoot) : base(services)
+        public SceneInstance(IServiceRegistry services, Scene sceneEntityRoot) : base(services)
         {
             if (services == null) throw new ArgumentNullException("services");
             if (sceneEntityRoot == null) throw new ArgumentNullException("sceneEntityRoot");
 
-            ChildComponent = sceneChildComponent;
             Scene = sceneEntityRoot;
             RendererTypes = new EntityComponentRendererTypeCollection();
             Load();
         }
 
         /// <summary>
-        /// Gets the child component if this scene instance is instantiated by a child scene. This is null for a root scene.
-        /// </summary>
-        /// <value>The child component.</value>
-        public SceneChildComponent ChildComponent { get; private set; }
-
-        /// <summary>
         /// Gets the scene.
         /// </summary>
         /// <value>The scene.</value>
-        public Scene Scene { get; private set; }
+        public Scene Scene
+        {
+            get
+            {
+                return scene;
+            }
+
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException("Cannot set a null scene");
+                }
+
+                if (scene != value)
+                {
+                    previousScene = value;
+                    scene = value;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the component renderers.
@@ -81,6 +81,9 @@ namespace SiliconStudio.Paradox.Engine
 
         protected override void Destroy()
         {
+
+
+
             Reset();
             base.Destroy();
         }
@@ -90,13 +93,13 @@ namespace SiliconStudio.Paradox.Engine
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="toFrame">To frame.</param>
-        /// <param name="compositorOverload">The compositor overload. Set this value to by-pass the default compositor of a scene.</param>
+        /// <param name="compositorOverride">The compositor overload. Set this value to by-pass the default compositor of a scene.</param>
         /// <exception cref="System.ArgumentNullException">
         /// context
         /// or
         /// toFrame
         /// </exception>
-        public void Draw(RenderContext context, RenderFrame toFrame, ISceneGraphicsCompositor compositorOverload = null)
+        public void Draw(RenderContext context, RenderFrame toFrame, ISceneGraphicsCompositor compositorOverride = null)
         {
             if (context == null) throw new ArgumentNullException("context");
             if (toFrame == null) throw new ArgumentNullException("toFrame");
@@ -112,20 +115,14 @@ namespace SiliconStudio.Paradox.Engine
 
             try
             {
-                // Update entities at draw time
-                UpdateFromChild();
-                Draw(gameTime);
-
                 graphicsDevice.Begin();
                 hasGraphicsBegin = true;
 
                 // Always clear the state of the GraphicsDevice to make sure a scene doesn't start with a wrong setup 
                 graphicsDevice.ClearState();
 
-                // Update the render context to use the main RenderFrame as current by default
-
-                // Draw the main scene.
-                var graphicsCompositor = compositorOverload ?? this.Scene.Settings.GraphicsCompositor;
+                // Draw the main scene using the current compositor (or the provided override)
+                var graphicsCompositor = compositorOverride ?? this.Scene.Settings.GraphicsCompositor;
                 if (graphicsCompositor != null)
                 {
                     // Push context (pop after using)
@@ -161,18 +158,21 @@ namespace SiliconStudio.Paradox.Engine
             base.Update(time);
         }
 
+        internal override void Draw(GameTime gameTime)
+        {
+            UpdateFromChild();
+            base.Draw(gameTime);
+        }
+
         private void UpdateFromChild()
         {
             // If this scene instance is coming from a SceneChildComponent, check that the Scene hasn't changed
             // If the scene has changed, we need to recreate a new SceneInstance with the new scene
-            if (ChildComponent != null && ChildComponent.Scene != Scene)
+            if (previousScene != null && previousScene != Scene)
             {
-                var previousScene = Scene;
-                Scene = ChildComponent.Scene;
                 Reset();
                 Load();
-
-                OnSceneChildComponentChanged(new SceneChildComponentChangedEventArgs(ChildComponent, previousScene, Scene));
+                previousScene = null;
             }
         }
 
@@ -208,12 +208,6 @@ namespace SiliconStudio.Paradox.Engine
                 var entityComponentRendererType = new EntityComponentRendererType(type, renderType, rendererTypeAttribute.Order);
                 RendererTypes.Add(entityComponentRendererType);
             }
-        }
-
-        private void OnSceneChildComponentChanged(SceneChildComponentChangedEventArgs e)
-        {
-            EventHandler<SceneChildComponentChangedEventArgs> handler = SceneChildComponentChanged;
-            if (handler != null) handler(this, e);
         }
     }
 }

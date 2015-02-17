@@ -23,31 +23,34 @@ namespace SiliconStudio.Paradox.Engine
         public SceneChildProcessor()
             : base(SceneChildComponent.Key)
         {
-            Scenes = new List<SceneInstance>();
+            Scenes = new Dictionary<SceneChildComponent, SceneInstance>();
         }
 
-        public List<SceneInstance> Scenes { get; private set; }
+        public Dictionary<SceneChildComponent, SceneInstance> Scenes { get; private set; }
 
         protected override SceneInstance GenerateAssociatedData(Entity entity)
         {
             var sceneChild = entity.Get<SceneChildComponent>();
-            return new SceneInstance(EntityManager.Services, sceneChild, sceneChild.Scene);
+            return new SceneInstance(EntityManager.Services, sceneChild.Scene);
         }
 
         protected override void OnEntityAdding(Entity entity, SceneInstance data)
         {
+            var childComponent = entity.Get<SceneChildComponent>();
+
             if (data != null)
             {
-                Scenes.Add(data);
+                Scenes[childComponent] = data;
             }
         }
 
         protected override void OnEntityRemoved(Entity entity, SceneInstance data)
         {
+            var childComponent = entity.Get<SceneChildComponent>();
             if (data != null)
             {
                 data.Dispose();
-                Scenes.Remove(data);
+                Scenes.Remove(childComponent);
             }
         }
 
@@ -55,13 +58,16 @@ namespace SiliconStudio.Paradox.Engine
         {
             foreach (var sceneEntityAndState in Scenes)
             {
-                sceneEntityAndState.Update(time);
+                sceneEntityAndState.Value.Update(time);
             }
         }
 
         public override void Draw(GameTime time)
         {
-            // Call on the scene Draw is performed by SceneInstance.Draw
+            foreach (var sceneEntityAndState in Scenes)
+            {
+                sceneEntityAndState.Value.Draw(time);
+            }
         }
     }
 }

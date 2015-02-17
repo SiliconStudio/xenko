@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.EntityModel
 {
     [DataSerializer(typeof(EntityComponent.Serializer))]
     [DataContract]
-    public abstract class EntityComponent
+    public abstract class EntityComponent : ComponentBase
     {
         private bool enabled;
 

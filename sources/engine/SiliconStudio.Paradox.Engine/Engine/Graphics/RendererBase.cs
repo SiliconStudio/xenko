@@ -35,8 +35,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// Initializes a new instance of the <see cref="ComponentBase" /> class.
         /// </summary>
         /// <param name="name">The name attached to this component</param>
-        protected RendererBase(string name)
-            : base(name)
+        protected RendererBase(string name) : base(name)
         {
             Enabled = true;
             subRenderersToUnload = new List<RendererBase>();
@@ -46,34 +45,9 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// Gets or sets a value indicating whether this <see cref="EntityComponentRendererBase"/> is enabled.
         /// </summary>
         /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
-        [DataMember(0)]
+        [DataMember(-20)]
         [DefaultValue(true)]
         public bool Enabled { get; set; }
-
-        /// <summary>
-        /// Gets or sets the name of this component.
-        /// </summary>
-        /// <value>The name.</value>
-        [DataMemberIgnore]
-        public override string Name
-        {
-            get
-            {
-                // NOTE: We are overriding Name to add a [DataMemberIgnore] as we don't want a Renderer to serialize its Name
-                return base.Name;
-            }
-            set
-            {
-                base.Name = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the name of the debug used in the profiler.
-        /// </summary>
-        /// <value>The name of the debug.</value>
-        [DataMemberIgnore]
-        public string DebugName { get; set; }
 
         [DataMemberIgnore]
         protected RenderContext Context { get; private set; }
@@ -108,15 +82,15 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
         protected virtual void PreDrawCore(RenderContext context)
         {
-            if (DebugName != null || Name != null)
+            if (Name != null)
             {
-                context.GraphicsDevice.BeginProfile(Color.Green, DebugName ?? Name);
+                context.GraphicsDevice.BeginProfile(Color.Green, Name);
             }
         }
 
         protected virtual void PostDrawCore(RenderContext context)
         {
-            if (DebugName != null || Name != null)
+            if (Name != null)
             {
                 context.GraphicsDevice.EndProfile();
             }

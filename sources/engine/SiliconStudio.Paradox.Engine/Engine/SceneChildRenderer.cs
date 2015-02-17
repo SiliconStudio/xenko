@@ -43,6 +43,14 @@ namespace SiliconStudio.Paradox.Engine
         [NotNull]
         public IRenderFrameOutput Output { get; set; }
 
+        /// <summary>
+        /// Gets or sets the graphics compositor override, allowing to override the composition of the scene.
+        /// </summary>
+        /// <value>The graphics compositor override.</value>
+        [DataMember(30)]
+        [Display("Graphics Compositor Override")]
+        public ISceneGraphicsCompositor GraphicsCompositorOverride { get; set; }
+
         public override void Initialize(RenderContext context)
         {
             base.Initialize(context);
@@ -51,7 +59,7 @@ namespace SiliconStudio.Paradox.Engine
 
         protected override void DrawCore(RenderContext context)
         {
-            if (Output == null)
+            if (SceneChild == null || Output == null)
             {
                 return;
             }
@@ -70,9 +78,10 @@ namespace SiliconStudio.Paradox.Engine
                 return;
             }
 
-            foreach (var sceneInstance in sceneChildProcessor.Scenes)
+            SceneInstance sceneInstance;
+            if (sceneChildProcessor.Scenes.TryGetValue(SceneChild, out sceneInstance))
             {
-                sceneInstance.Draw(context, renderFrame);
+                sceneInstance.Draw(context, renderFrame, GraphicsCompositorOverride);
             }
         }
     }

@@ -1,11 +1,14 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Collections.Generic;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Graphics;
+using SiliconStudio.Paradox.Engine.Graphics.Composers;
 using SiliconStudio.Paradox.Games;
 
 namespace SiliconStudio.Paradox.EntityModel
@@ -73,9 +76,11 @@ namespace SiliconStudio.Paradox.EntityModel
                 return;
             }
 
-            renderContext.Time = gameTime;
+            // Update the entities at draw time.
+            SceneInstance.Draw(gameTime);
 
-            // Draw the scene
+            // Renders the scene
+            renderContext.Time = gameTime;
             SceneInstance.Draw(renderContext, mainRenderFrame);
         }
     }

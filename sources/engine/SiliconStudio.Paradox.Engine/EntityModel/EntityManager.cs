@@ -117,7 +117,7 @@ namespace SiliconStudio.Paradox.EntityModel
             }
         }
 
-        protected void Draw(GameTime gameTime)
+        internal virtual void Draw(GameTime gameTime)
         {
             foreach (var processor in processors)
             {

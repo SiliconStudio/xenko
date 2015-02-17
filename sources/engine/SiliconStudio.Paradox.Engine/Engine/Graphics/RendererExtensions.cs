@@ -11,15 +11,15 @@ namespace SiliconStudio.Paradox.Effects
     public static class RendererExtensions
     {
         /// <summary>
-        /// Appends a name to an existing <see cref="EntityComponentRendererBase.DebugName"/>.
+        /// Appends a name to an existing <see cref="RendererBase.Name"/>.
         /// </summary>
         /// <typeparam name="T">Type of the renderer</typeparam>
         /// <param name="renderer">The renderer</param>
-        /// <param name="name">Name to append to <see cref="EntityComponentRendererBase.DebugName"/>.</param>
+        /// <param name="name">Name to append to <see cref="RendererBase.Name"/>.</param>
         /// <returns>The renderer</returns>
         public static T AppendDebugName<T>(this T renderer, string name) where T : EntityComponentRendererBase
         {
-            renderer.DebugName = renderer.DebugName == null ? name : renderer.DebugName + " " + name;
+            renderer.Name = renderer.Name == null ? name : renderer.Name + " " + name;
             return renderer;
         }
     }

@@ -86,6 +86,19 @@ namespace SiliconStudio.Paradox.EntityModel
             Group = EntityGroup.Default;
         }
 
+        [DataMember(0)] // Name is serialized
+        public override string Name
+        {
+            get
+            {
+                return base.Name;
+            }
+            set
+            {
+                base.Name = value;
+            }
+        }
+
         /// <summary>
         /// Gets or sets the <see cref="Transform"/> associated to this entity.
         /// Added for convenience over usual Get/Set method.

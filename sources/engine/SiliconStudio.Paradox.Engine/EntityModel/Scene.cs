@@ -32,5 +32,12 @@ namespace SiliconStudio.Paradox.EntityModel
         /// <value>The settings.</value>
         [DataMemberIgnore]
         public SceneComponent Settings { get; internal set; }
+
+        protected override void Destroy()
+        {
+            Settings.Dispose();
+
+            base.Destroy();
+        }
     }
 }

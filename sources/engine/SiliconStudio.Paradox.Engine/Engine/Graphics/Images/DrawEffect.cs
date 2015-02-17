@@ -120,14 +120,14 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         public void Draw(RenderContext context, string name)
         {
-            var previousDebugName = DebugName;
+            var previousDebugName = Name;
             if (name != null)
             {
-                DebugName = name;
+                Name = name;
             }
             Draw(context);
 
-            DebugName = previousDebugName;
+            Name = previousDebugName;
         }
 
         /// <summary>

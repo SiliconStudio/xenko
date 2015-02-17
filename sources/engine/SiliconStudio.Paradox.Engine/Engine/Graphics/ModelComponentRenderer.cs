@@ -58,7 +58,7 @@ namespace SiliconStudio.Paradox.Effects
             if (effectName == null) throw new ArgumentNullException("effectName");
 
             this.effectName = effectName;
-            DebugName = string.Format("ModelRenderer [{0}]", effectName);
+            Name = string.Format("ModelRenderer [{0}]", effectName);
 
             meshesToRender = new FastList<RenderMesh>();
 
