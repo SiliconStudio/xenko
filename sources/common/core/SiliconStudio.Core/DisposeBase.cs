@@ -70,6 +70,8 @@ namespace SiliconStudio.Core
         /// <inheritdoc/>
         int IReferencable.AddReference()
         {
+            OnAddReference();
+
             int newCounter = Interlocked.Increment(ref counter);
             if (newCounter <= 1) throw new InvalidOperationException(FrameworkResources.AddReferenceError);
             return newCounter;
@@ -78,6 +80,8 @@ namespace SiliconStudio.Core
         /// <inheritdoc/>
         int IReferencable.Release()
         {
+            OnReleaseReference();
+
             int newCounter = Interlocked.Decrement(ref counter);
             if (newCounter == 0)
             {
