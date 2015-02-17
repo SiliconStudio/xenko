@@ -199,16 +199,21 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         public DepthOfField()
         {
-            coclinearDepthMapEffect = ToLoadAndUnload(new ImageEffectShader("CoCLinearDepthShader"));
-            combineLevelsEffect     = ToLoadAndUnload(new ImageEffectShader("CombineLevelsFromCoCEffect"));
-            textureScaler           = ToLoadAndUnload(new ImageScaler());
-            cocMapBlur              = ToLoadAndUnload(new CoCMapBlur());
-
             // Some preset values
             DOFAreas = new Vector4(0.5f, 6f, 50f, 200f);
             MaxBokehSize = 10f / 1280f; //ratio of the width (resolution independent)
             Technique = BokehTechnique.HexagonalTripleRhombi;
             QualityPreset = 0.5f;
+        }
+
+        public override void Initialize(RenderContext context)
+        {
+            base.Initialize(context);
+
+            coclinearDepthMapEffect = ToLoadAndUnload(new ImageEffectShader("CoCLinearDepthShader"));
+            combineLevelsEffect = ToLoadAndUnload(new ImageEffectShader("CombineLevelsFromCoCEffect"));
+            textureScaler = ToLoadAndUnload(new ImageScaler());
+            cocMapBlur = ToLoadAndUnload(new CoCMapBlur());
         }
 
         /// <summary>

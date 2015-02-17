@@ -40,9 +40,6 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         public McIntoshBokeh()
         {
-            directionalBlurEffect   = ToLoadAndUnload(new ImageEffectShader("DepthAwareDirectionalBlurEffect"));
-            finalCombineEffect      = ToLoadAndUnload(new ImageEffectShader("McIntoshCombineShader"));
-            optimizedEffect         = ToLoadAndUnload(new ImageEffectShader("McIntoshOptimizedEffect"));
             Phase = 0f;
         }
 
@@ -61,6 +58,15 @@ namespace SiliconStudio.Paradox.Effects.Images
                 // Our actual total number of tap
                 tapCount = (int)Radius + 1;
             }
+        }
+
+        public override void Initialize(RenderContext context)
+        {
+            base.Initialize(context);
+
+            directionalBlurEffect = ToLoadAndUnload(new ImageEffectShader("DepthAwareDirectionalBlurEffect"));
+            finalCombineEffect = ToLoadAndUnload(new ImageEffectShader("McIntoshCombineShader"));
+            optimizedEffect = ToLoadAndUnload(new ImageEffectShader("McIntoshOptimizedEffect"));
         }
 
         protected override void DrawCore(RenderContext context)

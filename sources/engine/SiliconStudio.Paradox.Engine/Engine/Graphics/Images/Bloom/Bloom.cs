@@ -14,10 +14,10 @@ namespace SiliconStudio.Paradox.Effects.Images
     [DataContract("Bloom")]
     public class Bloom : ImageEffect
     {
-        private readonly GaussianBlur blur;
+        private GaussianBlur blur;
 
-        private readonly ColorCombiner blurCombine;
-        private readonly ImageMultiScaler multiScaler;
+        private ColorCombiner blurCombine;
+        private ImageMultiScaler multiScaler;
         private readonly List<Texture> resultList = new List<Texture>();
 
         /// <summary>
@@ -28,10 +28,6 @@ namespace SiliconStudio.Paradox.Effects.Images
             Radius = 3f / 1280f;
             Amount = 1.0f;
             DownScale = 3;
-
-            blurCombine = ToLoadAndUnload(new ColorCombiner());
-            multiScaler = ToLoadAndUnload(new ImageMultiScaler());
-            blur = ToLoadAndUnload(new GaussianBlur());
         }
 
         /// <summary>
@@ -64,6 +60,15 @@ namespace SiliconStudio.Paradox.Effects.Images
         }
 
         private int MaxMip { get; set; }
+
+        public override void Initialize(RenderContext context)
+        {
+            base.Initialize(context);
+
+            blurCombine = ToLoadAndUnload(new ColorCombiner());
+            multiScaler = ToLoadAndUnload(new ImageMultiScaler());
+            blur = ToLoadAndUnload(new GaussianBlur());
+        }
 
         protected override void DrawCore(RenderContext context)
         {

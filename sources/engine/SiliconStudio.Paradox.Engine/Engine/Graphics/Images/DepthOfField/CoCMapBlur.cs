@@ -33,7 +33,6 @@ namespace SiliconStudio.Paradox.Effects.Images
         public CoCMapBlur()
             : base()
         {
-            cocBlurEffect = ToLoadAndUnload(new ImageEffectShader("CoCMapBlurEffect"));
             Radius = 5f;
         }
 
@@ -57,6 +56,13 @@ namespace SiliconStudio.Paradox.Effects.Images
                 weightsDirty = (radius != value);
                 radius = value;
             }
+        }
+
+        public override void Initialize(RenderContext context)
+        {
+            base.Initialize(context);
+
+            cocBlurEffect = ToLoadAndUnload(new ImageEffectShader("CoCMapBlurEffect"));
         }
 
         protected override void DrawCore(RenderContext context)

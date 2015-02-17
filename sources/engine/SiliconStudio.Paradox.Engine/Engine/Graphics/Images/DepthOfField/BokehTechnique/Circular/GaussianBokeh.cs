@@ -29,7 +29,6 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         public GaussianBokeh()
         {
-            directionalBlurEffect = ToLoadAndUnload(new ImageEffectShader("DepthAwareDirectionalBlurEffect"));
         }
 
         public override float Radius
@@ -44,6 +43,13 @@ namespace SiliconStudio.Paradox.Effects.Images
                 base.Radius = value;
                 weightsDirty = (oldRadius != Radius);
             }
+        }
+
+        public override void Initialize(RenderContext context)
+        {
+            base.Initialize(context);
+
+            directionalBlurEffect = ToLoadAndUnload(new ImageEffectShader("DepthAwareDirectionalBlurEffect"));
         }
 
         protected override void DrawCore(RenderContext context)

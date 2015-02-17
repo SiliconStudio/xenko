@@ -131,8 +131,10 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
             var renderFrame = Output.GetRenderFrame(context);
 
             using (var t1 = context.PushTagAndRestore(SceneGraphicsLayer.CurrentInput, currentRenderFrame))
-            using (var t2 = context.PushTagAndRestore(RenderFrame.Current, renderFrame))
+            {
+                context.Tags.Set(RenderFrame.Current, renderFrame);
                 Renderers.Draw(context);
+            }
         }
     }
 }

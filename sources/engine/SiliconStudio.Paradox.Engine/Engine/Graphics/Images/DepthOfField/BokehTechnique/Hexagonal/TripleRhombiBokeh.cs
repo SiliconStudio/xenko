@@ -41,8 +41,6 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         public TripleRhombiBokeh()
         {
-            directionalBlurEffect = ToLoadAndUnload(new ImageEffectShader("DepthAwareDirectionalBlurEffect"));
-            finalCombineEffect = ToLoadAndUnload(new ImageEffectShader("TripleRhombiCombineShader"));
             Phase = 0f;
         }
 
@@ -103,6 +101,14 @@ namespace SiliconStudio.Paradox.Effects.Images
                 rhombiTapOffsets[i] = (rhombiPosition[i] + bias[i]) * textureSize;
             }
              
+        }
+
+        public override void Initialize(RenderContext context)
+        {
+            base.Initialize(context);
+
+            directionalBlurEffect = ToLoadAndUnload(new ImageEffectShader("DepthAwareDirectionalBlurEffect"));
+            finalCombineEffect = ToLoadAndUnload(new ImageEffectShader("TripleRhombiCombineShader"));
         }
 
         protected override void DrawCore(RenderContext context)
