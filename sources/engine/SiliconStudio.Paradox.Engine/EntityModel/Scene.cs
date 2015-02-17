@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.EntityModel
@@ -10,6 +11,7 @@ namespace SiliconStudio.Paradox.EntityModel
     /// A scene.
     /// </summary>
     [DataContract("Scene")]
+    [ContentSerializer(typeof(DataContentSerializerWithReuse<Scene>))]
     public sealed class Scene : Entity
     {
         static Scene()

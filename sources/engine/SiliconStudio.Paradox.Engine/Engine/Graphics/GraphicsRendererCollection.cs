@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
+using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
 using SiliconStudio.Paradox.Effects;
@@ -31,6 +32,19 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             tempRenderers = new HashSet<T>();
             previousRenderers = new List<T>();
             currentRenderers = new List<T>();
+        }
+
+        [DataMemberIgnore]
+        public override bool Enabled
+        {
+            get
+            {
+                return base.Enabled;
+            }
+            set
+            {
+                base.Enabled = value;
+            }
         }
 
         public IEnumerator<T> GetEnumerator()

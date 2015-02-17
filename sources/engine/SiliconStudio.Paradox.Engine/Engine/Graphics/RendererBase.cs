@@ -47,7 +47,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
         [DataMember(-20)]
         [DefaultValue(true)]
-        public bool Enabled { get; set; }
+        public virtual bool Enabled { get; set; }
 
         [DataMemberIgnore]
         protected RenderContext Context { get; private set; }

@@ -120,7 +120,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 
         public bool CanVisit(Type type)
         {
-            return type == typeof(EntityHierarchyData) || type == typeof(Entity) || typeof(EntityComponent).IsAssignableFrom(type);
+            return type == typeof(EntityHierarchyData) || typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type);
         }
 
         //public void Visit(ref VisitorContext context)

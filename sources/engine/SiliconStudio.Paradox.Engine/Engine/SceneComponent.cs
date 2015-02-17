@@ -63,11 +63,11 @@ namespace SiliconStudio.Paradox.Engine
                 throw new InvalidOperationException("A SceneComponent is only valid for the Scene object");
             }
 
-            // TODO: Check if this is possible with serialization?
-            if (scene.Settings != null)
-            {
-                throw new InvalidOperationException("A SceneComponent cannot be changed");
-            }
+            //// TODO: Check if this is possible with serialization? // Not working with Yaml
+            //if (scene.Settings != null)
+            //{
+            //    throw new InvalidOperationException("A SceneComponent cannot be changed");
+            //}
 
             scene.Settings = (SceneComponent)value;
         }
