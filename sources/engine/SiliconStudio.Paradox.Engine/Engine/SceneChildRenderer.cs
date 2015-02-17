@@ -59,7 +59,7 @@ namespace SiliconStudio.Paradox.Engine
 
         protected override void DrawCore(RenderContext context)
         {
-            if (SceneChild == null || Output == null)
+            if (SceneChild == null || Output == null || !SceneChild.Enabled)
             {
                 return;
             }

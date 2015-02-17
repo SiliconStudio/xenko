@@ -40,7 +40,6 @@ namespace SiliconStudio.Paradox.Engine
         public SceneInstance(IServiceRegistry services, Scene sceneEntityRoot) : base(services)
         {
             if (services == null) throw new ArgumentNullException("services");
-            if (sceneEntityRoot == null) throw new ArgumentNullException("sceneEntityRoot");
 
             Scene = sceneEntityRoot;
             RendererTypes = new EntityComponentRendererTypeCollection();
@@ -60,11 +59,6 @@ namespace SiliconStudio.Paradox.Engine
 
             set
             {
-                if (value == null)
-                {
-                    throw new ArgumentNullException("Cannot set a null scene");
-                }
-
                 if (scene != value)
                 {
                     previousScene = value;
@@ -81,8 +75,7 @@ namespace SiliconStudio.Paradox.Engine
 
         protected override void Destroy()
         {
-
-
+            // TODO: Dispose of Scene, graphics compositor...etc.
 
             Reset();
             base.Destroy();
@@ -103,6 +96,12 @@ namespace SiliconStudio.Paradox.Engine
         {
             if (context == null) throw new ArgumentNullException("context");
             if (toFrame == null) throw new ArgumentNullException("toFrame");
+
+            // If no scene, then we can return immediately
+            if (Scene == null)
+            {
+                return;
+            }
 
             var graphicsDevice = context.GraphicsDevice;
 
@@ -168,7 +167,7 @@ namespace SiliconStudio.Paradox.Engine
         {
             // If this scene instance is coming from a SceneChildComponent, check that the Scene hasn't changed
             // If the scene has changed, we need to recreate a new SceneInstance with the new scene
-            if (previousScene != null && previousScene != Scene)
+            if (previousScene != Scene)
             {
                 Reset();
                 Load();
@@ -178,15 +177,26 @@ namespace SiliconStudio.Paradox.Engine
 
         private void Load()
         {
+            // If Scene is null, early exit
+            if (Scene == null)
+            {
+                return;
+            }
+
             RendererTypes.Clear();
 
-            // Create a new SceneInstance
+            // Initialize processors
             Processors.Add(new SceneProcessor(this));
             Processors.Add(new HierarchicalProcessor()); // Important to pre-register this processor
             Processors.Add(new TransformProcessor());
             Add(Scene);
 
             // TODO: RendererTypes could be done outside this instance.
+            HandleRendererTypes();
+        }
+
+        private void HandleRendererTypes()
+        {
             foreach (var componentType in ComponentTypes)
             {
                 EntitySystemOnComponentTypeAdded(null, componentType);

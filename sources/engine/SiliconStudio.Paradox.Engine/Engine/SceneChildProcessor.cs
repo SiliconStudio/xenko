@@ -58,7 +58,15 @@ namespace SiliconStudio.Paradox.Engine
         {
             foreach (var sceneEntityAndState in Scenes)
             {
-                sceneEntityAndState.Value.Update(time);
+                var childComponent = sceneEntityAndState.Key;
+                var sceneInstance = sceneEntityAndState.Value;
+
+                // Copy back the scene from the component to the instance
+                sceneInstance.Scene = childComponent.Scene;
+                if (childComponent.Enabled)
+                {
+                    sceneInstance.Update(time);
+                }
             }
         }
 
@@ -66,7 +74,15 @@ namespace SiliconStudio.Paradox.Engine
         {
             foreach (var sceneEntityAndState in Scenes)
             {
-                sceneEntityAndState.Value.Draw(time);
+                var childComponent = sceneEntityAndState.Key;
+                var sceneInstance = sceneEntityAndState.Value;
+
+                // Copy back the scene from the component to the instance
+                sceneInstance.Scene = childComponent.Scene;
+                if (childComponent.Enabled)
+                {
+                    sceneInstance.Draw(time);
+                }
             }
         }
     }
