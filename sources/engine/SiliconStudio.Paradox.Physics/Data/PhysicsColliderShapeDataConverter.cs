@@ -157,6 +157,10 @@ namespace SiliconStudio.Paradox.Physics
                     compound.AddChildShape(CreateShape(desc));   
                 }
             }
+            else
+            {
+                obj = new PhysicsColliderShape(null);
+            }
         }
 
         public override void ConvertToData(ConverterContext converterContext, ref PhysicsColliderShapeData data, PhysicsColliderShape obj)

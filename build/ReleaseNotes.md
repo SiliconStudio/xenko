@@ -5,6 +5,8 @@ Release date: 2015/02/xx
 #### New Features
 
 #### Issues fixed
+- Physics: Fixed PhysicsDebugEffect shader, debug shapes should now render again.
+- Physics: Fixed issues related to creating collider shape assets in the Game Studio.
 
 ### Version 1.0.0-beta10
 
