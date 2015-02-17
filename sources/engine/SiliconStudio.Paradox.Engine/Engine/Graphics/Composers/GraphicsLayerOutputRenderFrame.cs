@@ -49,7 +49,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         /// </summary>
         /// <value>The descriptor.</value>
         [DataMember(10)]
-        public RenderFrameDescriptor Descriptor { get; set; }
+        public RenderFrameDescriptor Descriptor;
 
         /// <summary>
         /// Gets or sets the relative size source.
