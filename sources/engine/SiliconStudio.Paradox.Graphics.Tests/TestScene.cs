@@ -6,6 +6,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Assets.Materials;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Effects.Images;
 using SiliconStudio.Paradox.Effects.Lights;
 using SiliconStudio.Paradox.Effects.ProceduralModels;
 using SiliconStudio.Paradox.Engine;
@@ -77,15 +78,41 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             scene.AddChild(lightEntity);
 
             // Create a graphics compositor
-            var graphicsCompositor = new SceneGraphicsCompositorLayers();
-            graphicsCompositor.Master.Renderers.Add(new ClearRenderFrameRenderer());
-            graphicsCompositor.Master.Renderers.Add(new SceneCameraRenderer()
+            var compositor = new SceneGraphicsCompositorLayers();
+
+            bool isLDR = false;
+            if (isLDR)
             {
-                Camera = cameraEntity.Get<CameraComponent>()
-            });
+                compositor.Master.Renderers.Add(new ClearRenderFrameRenderer());
+                compositor.Master.Renderers.Add(
+                    new SceneCameraRenderer()
+                    {
+                        Camera = cameraEntity.Get<CameraComponent>()
+                    });
+            }
+            else
+            {
+                var layer = new SceneGraphicsLayer();
+                var renderHDROutput = new GraphicsLayerOutputRenderFrame { Descriptor = { Format = RenderFrameFormat.HDR, DepthFormat = RenderFrameDepthFormat.Shared} };
+                layer.Output = renderHDROutput;
+                layer.Renderers.Add(new ClearRenderFrameRenderer());
+                layer.Renderers.Add(new SceneCameraRenderer()
+                {
+                    Camera = cameraEntity.Get<CameraComponent>()
+                }
+                    );
+                compositor.Layers.Add(layer);
+
+                compositor.Master.Renderers.Add(new SceneEffectRenderer()
+                {
+                    Effect = new PostProcessingEffects()
+                });
+            }
+
+            SceneSystem.SceneInstance = new SceneInstance(Services, scene);
 
             // Use this graphics compositor
-            scene.Settings.GraphicsCompositor = graphicsCompositor;
+            scene.Settings.GraphicsCompositor = compositor;
 
             // Create a scene instance
             SceneSystem.SceneInstance = new SceneInstance(Services, scene);
