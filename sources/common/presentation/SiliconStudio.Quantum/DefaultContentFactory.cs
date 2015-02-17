@@ -15,13 +15,13 @@ namespace SiliconStudio.Quantum
         public virtual IContent CreateObjectContent(INodeBuilder nodeBuilder, object obj, ITypeDescriptor descriptor, bool isPrimitive, bool shouldProcessReference)
         {
             var reference = nodeBuilder.CreateReferenceForNode(descriptor.Type, obj) as ReferenceEnumerable;
-            return new ObjectContent(nodeBuilder, obj, descriptor, isPrimitive, reference) { ShouldProcessReference = shouldProcessReference };
+            return new ObjectContent(obj, descriptor, isPrimitive, reference) { ShouldProcessReference = shouldProcessReference };
         }
 
         /// <inheritdoc/>
         public virtual IContent CreateBoxedContent(INodeBuilder nodeBuilder, object structure, ITypeDescriptor descriptor, bool isPrimitive)
         {
-            return new BoxedContent(nodeBuilder, structure, descriptor, isPrimitive);
+            return new BoxedContent(structure, descriptor, isPrimitive);
         }
 
         /// <inheritdoc/>

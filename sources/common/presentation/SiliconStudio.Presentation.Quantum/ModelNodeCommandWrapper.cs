@@ -13,86 +13,94 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public class ModelNodeCommandWrapper : NodeCommandWrapperBase
     {
-        private readonly ObservableViewModelService service;
-        private readonly ObservableViewModelIdentifier identifier;
-        private readonly ModelNodePath nodePath;
-        private readonly ModelContainer modelContainer;
+        public readonly ModelNodePath NodePath;
+        protected readonly ModelContainer ModelContainer;
+        protected readonly ObservableViewModelService Service;
+        protected readonly ObservableViewModelIdentifier Identifier;
 
         public override string Name { get { return NodeCommand.Name; } }
 
         public override CombineMode CombineMode { get { return NodeCommand.CombineMode; } }
 
-        public ModelNodeCommandWrapper(IViewModelServiceProvider serviceProvider, INodeCommand nodeCommand, string observableNodePath, ObservableViewModelIdentifier identifier, ModelNodePath nodePath, ModelContainer modelContainer, IEnumerable<IDirtiableViewModel> dirtiables)
+        public ModelNodeCommandWrapper(IViewModelServiceProvider serviceProvider, INodeCommand nodeCommand, string observableNodePath, ObservableViewModel owner, ModelNodePath nodePath, IEnumerable<IDirtiableViewModel> dirtiables)
             : base(serviceProvider, dirtiables)
         {
             if (nodeCommand == null) throw new ArgumentNullException("nodeCommand");
-            if (modelContainer == null) throw new ArgumentNullException("modelContainer");
-            this.identifier = identifier;
-            this.nodePath = nodePath;
-            this.modelContainer = modelContainer;
+            if (owner == null) throw new ArgumentNullException("owner");
+            NodePath = nodePath;
+            // Note: the owner should not be stored in the command because we want it to be garbage collectable
+            Identifier = owner.Identifier;
+            ModelContainer = owner.ModelContainer;
             NodeCommand = nodeCommand;
-            service = serviceProvider.Get<ObservableViewModelService>();
+            Service = serviceProvider.Get<ObservableViewModelService>();
             ObservableNodePath = observableNodePath;
         }
 
         public INodeCommand NodeCommand { get; private set; }
-        
+
         internal IModelNode GetCommandRootNode()
         {
-            return nodePath.RootNode;
+            return NodePath.RootNode;
         }
 
         protected override UndoToken Redo(object parameter, bool creatingActionItem)
         {
             UndoToken token;
-            var viewModelNode = nodePath.GetNode();
-            if (viewModelNode == null)
+            var modelNode = NodePath.GetNode();
+            if (modelNode == null)
                 throw new InvalidOperationException("Unable to retrieve the node on which to apply the redo operation.");
 
-            var newValue = NodeCommand.Invoke(viewModelNode.Content.Value, viewModelNode.Content.Descriptor, parameter, out token);
-            Refresh(viewModelNode, newValue);
+            var newValue = NodeCommand.Invoke(modelNode.Content.Value, modelNode.Content.Descriptor, parameter, out token);
+            modelNode.Content.Value = newValue;
+            Refresh(modelNode);
             return token;
         }
 
         protected override void Undo(object parameter, UndoToken token)
         {
-            var viewModelNode = nodePath.GetNode();
-            if (viewModelNode == null)
-                throw new InvalidOperationException("Unable to retrieve the node on which to apply the redo operation.");
+            var modelNode = NodePath.GetNode();
+            if (modelNode == null)
+                throw new InvalidOperationException("Unable to retrieve the node on which to apply the undo operation.");
 
-            var newValue = NodeCommand.Undo(viewModelNode.Content.Value, viewModelNode.Content.Descriptor, token);
-            Refresh(viewModelNode, newValue);
+            var newValue = NodeCommand.Undo(modelNode.Content.Value, modelNode.Content.Descriptor, token);
+            modelNode.Content.Value = newValue;
+            Refresh(modelNode);
         }
 
-        private void Refresh(IModelNode modelNode, object newValue)
+        /// <summary>
+        /// Refreshes the <see cref="ObservableNode"/> corresponding to the given <see cref="IModelNode"/>, if an <see cref="ObservableViewModel"/>
+        /// is available in the current.<see cref="IViewModelServiceProvider"/>.
+        /// </summary>
+        /// <param name="modelNode">The model node to use to fetch a corresponding <see cref="ObservableNode"/>.</param>
+        protected virtual void Refresh(IModelNode modelNode)
         {
-            var observableViewModel = service.ViewModelProvider(identifier);
-
             if (modelNode == null) throw new ArgumentNullException("modelNode");
-            var observableNode = observableViewModel != null ? observableViewModel.ResolveObservableModelNode(ObservableNodePath, nodePath.RootNode) : null;
-            
-            // If we have an observable node, we use it to set the new value so the UI can be notified at the same time.
-            if (observableNode != null)
-            {
-                if (observableNode.IsPrimitive)
-                {
-                    var collectionDescriptor = modelNode.Content.Descriptor as CollectionDescriptor;
-                    if (collectionDescriptor != null)
-                        newValue = collectionDescriptor.GetValue(newValue, observableNode.Index);
+            var observableViewModel = Service.ViewModelProvider(Identifier);
 
-                    var dictionaryDescriptor = modelNode.Content.Descriptor as DictionaryDescriptor;
-                    if (dictionaryDescriptor != null)
-                        newValue = dictionaryDescriptor.GetValue(newValue, observableNode.Index);
-                }
+            // No view model to refresh
+            if (observableViewModel == null)
+                return;
 
-                observableNode.Value = newValue;
-                observableNode.Owner.NotifyNodeChanged(observableNode.Path);
-            }
-            else
+            var observableNode = observableViewModel.ResolveObservableModelNode(ObservableNodePath, NodePath.RootNode);
+            // No node matches this model node
+            if (observableNode == null)
+                return;
+
+            var newValue = modelNode.Content.Value;
+
+            if (observableNode.IsPrimitive)
             {
-                modelNode.Content.Value = newValue;
-                modelContainer.UpdateReferences(modelNode);
+                var collectionDescriptor = modelNode.Content.Descriptor as CollectionDescriptor;
+                if (collectionDescriptor != null)
+                    newValue = collectionDescriptor.GetValue(modelNode.Content.Value, observableNode.Index);
+
+                var dictionaryDescriptor = modelNode.Content.Descriptor as DictionaryDescriptor;
+                if (dictionaryDescriptor != null)
+                    newValue = dictionaryDescriptor.GetValue(newValue, observableNode.Index);
             }
+
+            observableNode.ForceSetValue(newValue);
+            observableNode.Owner.NotifyNodeChanged(observableNode.Path);
         }
     }
 }

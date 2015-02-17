@@ -73,8 +73,6 @@ namespace SiliconStudio.Presentation.Quantum
             if (!setByObservableNode)
             {
                 SetValue(node, index, previousValue);
-                // Update the view model nodes in case the graph of the object is modified by this value change
-                modelContainer.UpdateReferences(node);
             }
             
             previousValue = currentValue;        

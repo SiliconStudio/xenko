@@ -35,9 +35,11 @@ namespace SiliconStudio.Core.Serialization.Assets
         public AssetSerializer Serializer { get; private set; }
 
         // If multiple object shares the same Url, they will be stored as a linked list (AssetReference.Next).
-        private readonly Dictionary<ObjectId, AssetReference> loadedAssetsByUrl = new Dictionary<ObjectId, AssetReference>();
+        // TODO: Check how to expose this publicly in a nice way
+        public readonly Dictionary<ObjectId, AssetReference> loadedAssetsByUrl = new Dictionary<ObjectId, AssetReference>();
 
-        private readonly Dictionary<object, AssetReference> loadedAssetsUrl = new Dictionary<object, AssetReference>();
+        // TODO: Check how to expose this publicly in a nice way
+        public readonly Dictionary<object, AssetReference> loadedAssetsUrl = new Dictionary<object, AssetReference>();
 
         public AssetManager() : this(null)
         {
@@ -75,6 +77,11 @@ namespace SiliconStudio.Core.Serialization.Assets
 
         public T Load<T>(string url, AssetManagerLoaderSettings settings = null) where T : class
         {
+            return (T)Load(typeof(T), url, settings);
+        }
+
+        public object Load(Type type, string url, AssetManagerLoaderSettings settings = null)
+        {
             if (settings == null)
                 settings = AssetManagerLoaderSettings.Default;
 
@@ -84,7 +91,7 @@ namespace SiliconStudio.Core.Serialization.Assets
             {
                 using (var profile = Profiler.Begin(AssetProfilingKeys.AssetLoad, url))
                 {
-                    return (T)DeserializeObject(url, typeof(T), settings);
+                    return DeserializeObject(url, type, settings);
                 }
             }
         }
@@ -92,6 +99,11 @@ namespace SiliconStudio.Core.Serialization.Assets
         public Task<T> LoadAsync<T>(string url, AssetManagerLoaderSettings settings = null) where T : class
         {
             return Task.Factory.StartNew(() => Load<T>(url, settings));
+        }
+
+        public Task<object> LoadAsync(Type type, string url, AssetManagerLoaderSettings settings = null)
+        {
+            return Task.Factory.StartNew(() => Load(type, url, settings));
         }
 
         public bool TryGetAssetUrl(object obj, out string url)

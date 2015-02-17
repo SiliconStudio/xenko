@@ -16,7 +16,7 @@ namespace SiliconStudio.Presentation.Quantum
     public abstract class ObservableModelNode : SingleObservableNode
     {
         private readonly bool isPrimitive;
-        private readonly IModelNode sourceNode;
+        protected readonly IModelNode SourceNode;
         protected readonly ModelNodePath SourceNodePath;
         private IModelNode targetNode;
         private IDictionary<string, object> associatedData;
@@ -41,7 +41,7 @@ namespace SiliconStudio.Presentation.Quantum
                 throw new ArgumentException("baseName and index can't be both null.");
 
             this.isPrimitive = isPrimitive;
-            sourceNode = modelNode;
+            SourceNode = modelNode;
             // By default we will always combine items of list of primitive items.
             CombineMode = index != null && isPrimitive ? CombineMode.AlwaysCombine : CombineMode.CombineOnlyForAll;
             targetNode = GetTargetNode(modelNode, index);
@@ -85,20 +85,20 @@ namespace SiliconStudio.Presentation.Quantum
             Initialize(false);
         }
 
-        private void Initialize(bool isUpdating)
+        protected virtual void Initialize(bool isUpdating)
         {
-            var targetNodePath = ModelNodePath.GetChildPath(SourceNodePath, sourceNode, targetNode);
-            if (targetNodePath == null || !targetNodePath.IsValid)
+            TargetNodePath = ModelNodePath.GetChildPath(SourceNodePath, SourceNode, targetNode);
+            if (TargetNodePath == null || !TargetNodePath.IsValid)
                 throw new InvalidOperationException("Unable to retrieve the path of the given model node.");
             
             foreach (var command in targetNode.Commands)
             {
-                var commandWrapper = new ModelNodeCommandWrapper(ServiceProvider, command, Path, Owner.Identifier, targetNodePath, Owner.ModelContainer, Owner.Dirtiables);
+                var commandWrapper = new ModelNodeCommandWrapper(ServiceProvider, command, Path, Owner, TargetNodePath, Owner.Dirtiables);
                 AddCommand(commandWrapper);
             }
 
             if (!isPrimitive)
-                GenerateChildren(targetNode, targetNodePath, isUpdating);
+                GenerateChildren(targetNode, TargetNodePath, isUpdating);
 
             isInitialized = true;
 
@@ -125,7 +125,7 @@ namespace SiliconStudio.Presentation.Quantum
         }
 
         /// <inheritdoc/>
-        public override int? Order { get { return CustomOrder ?? (sourceNode.Content is MemberContent && Index == null ? ((MemberContent)sourceNode.Content).Member.Order : null); } }
+        public override int? Order { get { return CustomOrder ?? (SourceNode.Content is MemberContent && Index == null ? ((MemberContent)SourceNode.Content).Member.Order : null); } }
 
         /// <summary>
         /// Gets or sets a custom value for the <see cref="Order"/> of this node.
@@ -151,7 +151,9 @@ namespace SiliconStudio.Presentation.Quantum
         internal Guid ModelGuid { get { return targetNode.Guid; } }
 
         private ObservableModelNode ModelNodeParent { get { for (var p = Parent; p != null; p = p.Parent) { var mp = p as ObservableModelNode; if (mp != null) return mp; } return null; } }
-                
+
+        protected ModelNodePath TargetNodePath { get; private set; }
+   
         /// <summary>
         /// Indicates whether this <see cref="ObservableModelNode"/> instance corresponds to the given <see cref="IModelNode"/>.
         /// </summary>
@@ -159,23 +161,23 @@ namespace SiliconStudio.Presentation.Quantum
         /// <returns><c>true</c> if the node matches, <c>false</c> otherwise.</returns>
         public bool MatchNode(IModelNode node)
         {
-            return sourceNode == node;
+            return SourceNode == node;
         }
 
         // TODO: If possible, make this private, it's not a good thing to expose
         public IMemberDescriptor GetMemberDescriptor()
         {
-            var memberContent = sourceNode.Content as MemberContent;
+            var memberContent = SourceNode.Content as MemberContent;
             return memberContent != null ? memberContent.Member : null;
         }
 
         internal void CheckConsistency()
         {
 #if DEBUG
-            if (sourceNode != targetNode)
+            if (SourceNode != targetNode)
             {
-                var objectReference = sourceNode.Content.Reference as ObjectReference;
-                var referenceEnumerable = sourceNode.Content.Reference as ReferenceEnumerable;
+                var objectReference = SourceNode.Content.Reference as ObjectReference;
+                var referenceEnumerable = SourceNode.Content.Reference as ReferenceEnumerable;
                 if (objectReference != null && targetNode != objectReference.TargetNode)
                 {
                     throw new ObservableViewModelConsistencyException(this, "The target node does not match the target of the source node object reference.");
@@ -209,7 +211,7 @@ namespace SiliconStudio.Presentation.Quantum
                         throw new ObservableViewModelConsistencyException(this, "The target node does not match the target of the source node object reference.");
                     }
                 }
-                else if (!targetNode.Children.Contains(child.sourceNode))
+                else if (!targetNode.Children.Contains(child.SourceNode))
                 {
                     if (child.Index == null || !child.IsPrimitive)
                     {
@@ -240,57 +242,52 @@ namespace SiliconStudio.Presentation.Quantum
         /// <returns>The value of the model content associated to this <see cref="ObservableModelNode"/>.</returns>
         protected object GetModelContentValue()
         {
-            var dictionary = sourceNode.Content.Descriptor as DictionaryDescriptor;
-            var list = sourceNode.Content.Descriptor as CollectionDescriptor;
+            var dictionary = SourceNode.Content.Descriptor as DictionaryDescriptor;
+            var list = SourceNode.Content.Descriptor as CollectionDescriptor;
 
             if (Index != null && dictionary != null)
-                return dictionary.GetValue(sourceNode.Content.Value, Index);
+                return dictionary.GetValue(SourceNode.Content.Value, Index);
 
             if (Index != null && list != null)
-                return list.GetValue(sourceNode.Content.Value, Index);
+                return list.GetValue(SourceNode.Content.Value, Index);
 
-            return sourceNode.Content.Value;
+            return SourceNode.Content.Value;
         }
 
         /// <summary>
         /// Sets the value of the model content associated to this <see cref="ObservableModelNode"/>. The value is actually modified only if the new value is different from the previous value.
         /// </summary>
         /// <returns><c>True</c> if the value has been modified, <c>false</c> otherwise.</returns>
-        protected bool SetModelContentValue(object newValue)
+        protected bool SetModelContentValue(IModelNode node, object newValue)
         {
-            var dictionary = sourceNode.Content.Descriptor as DictionaryDescriptor;
-            var list = sourceNode.Content.Descriptor as CollectionDescriptor;
+            var dictionary = node.Content.Descriptor as DictionaryDescriptor;
+            var list = node.Content.Descriptor as CollectionDescriptor;
             bool result = false;
             if (Index != null && dictionary != null)
             {
-                if (!Equals(dictionary.GetValue(sourceNode.Content.Value, Index), newValue))
+                if (!Equals(dictionary.GetValue(node.Content.Value, Index), newValue))
                 {
                     result = true;
-                    dictionary.SetValue(sourceNode.Content.Value, Index, newValue);
+                    dictionary.SetValue(node.Content.Value, Index, newValue);
                 }
             }
             else if (Index != null && list != null)
             {
-                if (!Equals(list.GetValue(sourceNode.Content.Value, Index), newValue))
+                if (!Equals(list.GetValue(node.Content.Value, Index), newValue))
                 {
                     result = true;
-                    list.SetValue(sourceNode.Content.Value, Index, newValue);
+                    list.SetValue(node.Content.Value, Index, newValue);
                 }
             }
             else
             {
-                if (!Equals(sourceNode.Content.Value, newValue))
+                if (!Equals(node.Content.Value, newValue))
                 {
                     result = true;
-                    sourceNode.Content.Value = newValue;
+                    node.Content.Value = newValue;
                 }
             }
 
-            if (!IsPrimitive)
-            {
-                Owner.ModelContainer.UpdateReferences(sourceNode);
-                Refresh();
-            }
             return result;
         }
 
@@ -313,7 +310,7 @@ namespace SiliconStudio.Presentation.Quantum
                             // In this case, we must set the actual type to have type converter working, since they usually can't convert
                             // a boxed float to double for example. Otherwise, we don't want to have a node type that is value-dependent.
                             var type = reference.TargetNode != null && reference.TargetNode.Content.IsPrimitive ? reference.TargetNode.Content.Type : reference.Type;
-                            var observableNode = Create(Owner, null, false, this, modelNode, modelNodePath, type, reference.Index);
+                            var observableNode = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, false, this, modelNode, modelNodePath, type, reference.Index);
                             observableNode.Initialize(isUpdating);
                             AddChild(observableNode);
                         }
@@ -329,7 +326,7 @@ namespace SiliconStudio.Presentation.Quantum
                     // Dictionary of primitive objects
                     foreach (var key in dictionary.GetKeys(modelNode.Content.Value))
                     {
-                        var observableChild = Create(Owner, null, true, this, modelNode, modelNodePath, dictionary.ValueType, key);
+                        var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, this, modelNode, modelNodePath, dictionary.ValueType, key);
                         observableChild.Initialize(isUpdating);
                         AddChild(observableChild);
                     }
@@ -339,7 +336,7 @@ namespace SiliconStudio.Presentation.Quantum
                     // List of primitive objects
                     for (int i = 0; i < list.GetCollectionCount(modelNode.Content.Value); ++i)
                     {
-                        var observableChild = Create(Owner, null, true, this, modelNode, modelNodePath, list.ElementType, i);
+                        var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, this, modelNode, modelNodePath, list.ElementType, i);
                         observableChild.Initialize(isUpdating);
                         AddChild(observableChild);
                     }
@@ -350,7 +347,7 @@ namespace SiliconStudio.Presentation.Quantum
                     foreach (var child in modelNode.Children)
                     {
                         var childPath = ModelNodePath.GetChildPath(modelNodePath, modelNode, child);
-                        var observableChild = Create(Owner, child.Name, child.Content.IsPrimitive, this, child, childPath, child.Content.Type, null);
+                        var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, child.Name, child.Content.IsPrimitive, this, child, childPath, child.Content.Type, null);
                         observableChild.Initialize(isUpdating);
                         AddChild(observableChild);
                     }
@@ -358,13 +355,25 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        internal void Refresh()
+        public virtual void ForceSetValue(object newValue)
+        {
+            bool hasChanged = !Equals(Value, newValue);
+            if (!hasChanged)
+               OnPropertyChanging("TypedValue");
+
+            Value = newValue;
+            
+            if (!hasChanged)
+                OnPropertyChanged("TypedValue");
+        }
+
+        protected virtual void Refresh()
         {
             if (Parent == null) throw new InvalidOperationException("The node to refresh can't be a root node.");
             
             OnPropertyChanging("IsPrimitive", "HasList", "HasDictionary");
 
-            targetNode = GetTargetNode(sourceNode, Index);
+            targetNode = GetTargetNode(SourceNode, Index);
 
             // Clean the current node so it can be re-initialized (associatedData are overwritten in Initialize)
             ClearCommands();
@@ -376,7 +385,7 @@ namespace SiliconStudio.Presentation.Quantum
             OnPropertyChanged("IsPrimitive", "HasList", "HasDictionary");
         }
 
-        private static IModelNode GetTargetNode(IModelNode sourceNode, object index)
+        protected static IModelNode GetTargetNode(IModelNode sourceNode, object index)
         {
             var objectReference = sourceNode.Content.Reference as ObjectReference;
             var referenceEnumerable = sourceNode.Content.Reference as ReferenceEnumerable;
@@ -413,7 +422,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets or sets the value of this node through a correctly typed property, which is more adapted to binding.
         /// </summary>
-        public T TypedValue
+        public virtual T TypedValue
         {
             get
             {
@@ -434,7 +443,12 @@ namespace SiliconStudio.Presentation.Quantum
                 }
                 
                 // We set the value even if it has not changed in case it's a reference value and a refresh might be required (new node in a list, etc.)
-                SetModelContentValue(value);
+                SetModelContentValue(SourceNode, value);
+
+                if (!IsPrimitive)
+                {
+                    Refresh();
+                }
 
                 if (hasChanged)
                 {

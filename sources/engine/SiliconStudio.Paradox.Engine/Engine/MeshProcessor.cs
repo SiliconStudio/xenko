@@ -59,6 +59,7 @@ namespace SiliconStudio.Paradox.Engine
         protected override void OnEntityAdding(Entity entity, AssociatedData associatedData)
         {
             associatedData.RenderModels = new List<KeyValuePair<ModelRendererState, RenderModel>>();
+            associatedData.Model = associatedData.ModelComponent.Model;
 
             // Initialize a RenderModel for every pipeline
             foreach (var pipeline in renderSystem.Pipelines)
@@ -250,6 +251,14 @@ namespace SiliconStudio.Paradox.Engine
                     continue;
                 }
 
+                // Was model updated?
+                if (matchingEntity.Value.Model != matchingEntity.Value.ModelComponent.Model)
+                {
+                    // Simulate entity being removed/added
+                    OnEntityRemoved(matchingEntity.Key, matchingEntity.Value);
+                    OnEntityAdding(matchingEntity.Key, matchingEntity.Value);
+                }
+
                 var modelViewHierarchy = matchingEntity.Value.ModelComponent.ModelViewHierarchy;
 
                 var transformationComponent = matchingEntity.Value.TransformationComponent;
@@ -296,6 +305,9 @@ namespace SiliconStudio.Paradox.Engine
         public class AssociatedData
         {
             public ModelComponent ModelComponent;
+
+            // Current Model, stored here so that we know if it changed since last frame
+            public Model Model;
 
             public TransformationComponent TransformationComponent;
 

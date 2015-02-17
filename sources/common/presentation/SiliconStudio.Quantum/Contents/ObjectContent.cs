@@ -15,8 +15,8 @@ namespace SiliconStudio.Quantum.Contents
     {
         private object value;
 
-        public ObjectContent(INodeBuilder nodeBuilder, object value, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
-            : base(nodeBuilder, descriptor, isPrimitive, reference)
+        public ObjectContent(object value, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
+            : base(descriptor, isPrimitive, reference)
         {
             SerializeFlags = ViewModelContentSerializeFlags.None;
             this.value = value;

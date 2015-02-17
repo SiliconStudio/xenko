@@ -115,11 +115,16 @@ namespace SiliconStudio.Quantum
             return IsValid ? "(root)" + path.Select(x => x.ToString()).Aggregate((current, next) => current + next) : "(invalid)";
         }
 
-        private ModelNodePath Clone()
+        public ModelNodePath Clone(IModelNode newRoot)
         {
-            var clone = new ModelNodePath { RootNode = RootNode, targetIsRootNode = targetIsRootNode };
+            var clone = new ModelNodePath { RootNode = newRoot, targetIsRootNode = targetIsRootNode };
             clone.path.AddRange(path);
             return clone;
+        }
+
+        public ModelNodePath Clone()
+        {
+            return Clone(RootNode);
         }
 
         private static ModelNodePath GetNextPath(ModelNodePath parentPath, IModelNode parentNode, IModelNode target)

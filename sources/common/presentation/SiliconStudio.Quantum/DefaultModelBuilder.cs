@@ -22,18 +22,22 @@ namespace SiliconStudio.Quantum
         private readonly HashSet<IContent> referenceContents = new HashSet<IContent>();
         private ModelNode rootNode;
         private Guid rootGuid;
-        private IModelNode referencerNode;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultModelBuilder"/> class that can be used to construct a model for a data object.
         /// </summary>
-        public DefaultModelBuilder()
+        /// <param name="modelContainer"></param>
+        public DefaultModelBuilder(ModelContainer modelContainer)
         {
+            ModelContainer = modelContainer;
             PrimitiveTypes = new List<Type>();
             AvailableCommands = new List<INodeCommand>();
             ContentFactory = new DefaultContentFactory();
         }
 
+        /// <inheritdoc/>
+        public ModelContainer ModelContainer { get; private set; }
+        
         /// <inheritdoc/>
         public ICollection<Type> PrimitiveTypes { get; private set; }
         
@@ -41,9 +45,6 @@ namespace SiliconStudio.Quantum
         public ICollection<INodeCommand> AvailableCommands { get; private set; }
 
         public IContentFactory ContentFactory { get; set; }
-
-        /// <inheritdoc/>
-        public IModelNode Referencer { get { return referencerNode;} }
 
         /// <inheritdoc/>
         public event EventHandler<NodeConstructingArgs> NodeConstructing;
@@ -67,7 +68,6 @@ namespace SiliconStudio.Quantum
         public IModelNode Build(IModelNode referencer, object obj, Type type, Guid guid)
         {
             Reset();
-            referencerNode = referencer;
             rootGuid = guid;
             var typeDescriptor = TypeDescriptorFactory.Find(obj != null ? obj.GetType() : type);
             VisitObject(obj, typeDescriptor as ObjectDescriptor, true);

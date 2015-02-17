@@ -31,8 +31,6 @@ namespace SiliconStudio.Quantum.References
                 elementType = enumerableType.GetInterface(typeof(IEnumerable<>)).GetGenericArguments()[0];
             else
                 elementType = typeof(object);
-
-            Refresh(enumerable);
         }
 
         /// <inheritdoc/>

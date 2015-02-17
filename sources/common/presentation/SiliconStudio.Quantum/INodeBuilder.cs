@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Commands;
-using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
@@ -14,6 +13,11 @@ namespace SiliconStudio.Quantum
     /// </summary>
     public interface INodeBuilder
     {
+        /// <summary>
+        /// Gets the instance of <see cref="ModelContainer"/> associated to this node builder.
+        /// </summary>
+        ModelContainer ModelContainer { get; }
+
         /// <summary>
         /// Gets the collection of structure types that represents custom primitive types. Primitive structures won't have node created for each of their members.
         /// </summary>
@@ -32,17 +36,12 @@ namespace SiliconStudio.Quantum
         ICollection<INodeCommand> AvailableCommands { get; }
 
         /// <summary>
-        /// Gets the first node that referenced this one (and consequently caused its construction).
-        /// </summary>
-        IModelNode Referencer { get; }
-
-        /// <summary>
         /// Raised when a node is about to be constructed. The construction can be cancelled by setting <see cref="NodeConstructingArgs.Discard"/> to <c>true</c>.
         /// </summary>
         event EventHandler<NodeConstructingArgs> NodeConstructing;
 
         /// <summary>
-        /// Raised when a node has been constructed. Allows to attach associated data to the node via the <see cref="NodeConstructedArgs.AssociatedData"/> dictionary.
+        /// Raised when a node has been constructed.
         /// </summary>
         event EventHandler<NodeConstructedArgs> NodeConstructed;
 

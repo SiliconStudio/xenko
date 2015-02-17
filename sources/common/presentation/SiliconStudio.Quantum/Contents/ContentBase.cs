@@ -14,7 +14,7 @@ namespace SiliconStudio.Quantum.Contents
     {
         private readonly IReference reference;
 
-        protected ContentBase(INodeBuilder nodeBuilder, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
+        protected ContentBase(ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
         {
             if (descriptor == null) throw new ArgumentNullException("descriptor");
             this.reference = reference;
