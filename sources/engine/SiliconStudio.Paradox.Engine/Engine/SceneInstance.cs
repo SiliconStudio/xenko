@@ -30,6 +30,14 @@ namespace SiliconStudio.Paradox.Engine
         private Scene scene;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="EntityManager" /> class.
+        /// </summary>
+        /// <param name="registry">The registry.</param>
+        public SceneInstance(IServiceRegistry registry) : this(registry, null)
+        {
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="SceneInstance" /> class.
         /// </summary>
         /// <param name="services">The services.</param>
@@ -201,6 +209,9 @@ namespace SiliconStudio.Paradox.Engine
             {
                 EntitySystemOnComponentTypeAdded(null, componentType);
             }
+
+            // Make sure that we always have a camera component registered
+            RendererTypes.Add(new EntityComponentRendererType(typeof(CameraComponent), typeof(CameraComponentRenderer), int.MinValue));
 
             ComponentTypeAdded += EntitySystemOnComponentTypeAdded;
         }
