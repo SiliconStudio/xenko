@@ -24,7 +24,6 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             EffectName = colorCombinerShaderName;
             factors = new float[TexturingKeys.DefaultTextures.Count];
-            Parameters.Set(ColorCombinerShaderKeys.Factors, factors);
         }
 
         /// <summary>
@@ -43,6 +42,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             base.PreDrawCore(context);
             Parameters.Set(FactorCount, InputCount);
+            Parameters.Set(ColorCombinerShaderKeys.Factors, factors);
         }
     }
 }
