@@ -93,6 +93,43 @@ namespace SiliconStudio.Quantum
         }
         
         /// <summary>
+        /// Gets the source node corresponding to this path.
+        /// </summary>
+        /// <returns>The node corresponding to this path.</returns>
+        /// <exception cref="InvalidOperationException">The path is invalid.</exception>
+        public IModelNode GetSourceNode(out object targetIndex)
+        {
+            if (!IsValid)
+                throw new InvalidOperationException("The node path is invalid.");
+
+            IModelNode node = RootNode;
+            targetIndex = null;
+            foreach (var itemPath in path)
+            {
+                var member = itemPath as NodePathItemMember;
+                var target = itemPath as NodePathItemTarget;
+                var index = itemPath as NodePathItemIndex;
+                if (member != null)
+                {
+                    node = node.Children.Single(x => x.Name == member.Name);
+                }
+                else if (target != null && itemPath != path[path.Count - 1])
+                {
+                    var objectRefererence = (ObjectReference)node.Content.Reference;
+                    node = objectRefererence.TargetNode;
+                }
+                else if (index != null && itemPath != path[path.Count - 1])
+                {
+                    var enumerableReference = (ReferenceEnumerable)node.Content.Reference;
+                    var objectRefererence = enumerableReference.Single(x => Equals(x.Index, index.Value));
+                    node = objectRefererence.TargetNode;
+                }
+                targetIndex = index != null ? index.Value : null;
+            }
+            return node;
+        }
+        
+        /// <summary>
         /// Computes a <see cref="ModelNodePath"/> corresponding to the given <see cref="target"/> node, which must be a direct child or a direct reference of the <see cref="parentNode"/>.
         /// </summary>
         /// <param name="parentPath">The <see cref="ModelNodePath"/> corresponding to <see cref="parentNode"/>.</param>

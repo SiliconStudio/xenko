@@ -28,7 +28,8 @@ namespace SiliconStudio.Quantum.Commands
             var isAbstractOrClass = typeDescriptor.Type.IsAbstract || typeDescriptor.Type.IsClass;
             var isCollection = (typeDescriptor is CollectionDescriptor) || (typeDescriptor is DictionaryDescriptor);
 
-            return isNullableStruct || (isAbstractOrClass && !isCollection);
+            var result = isNullableStruct || (isAbstractOrClass && !isCollection);
+            return result;
         }
 
         /// <inheritdoc/>

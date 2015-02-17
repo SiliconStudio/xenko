@@ -46,25 +46,27 @@ namespace SiliconStudio.Presentation.Quantum
         protected override UndoToken Redo(object parameter, bool creatingActionItem)
         {
             UndoToken token;
-            var modelNode = NodePath.GetNode();
+            object index;
+            var modelNode = NodePath.GetSourceNode(out index);
             if (modelNode == null)
                 throw new InvalidOperationException("Unable to retrieve the node on which to apply the redo operation.");
 
             var newValue = NodeCommand.Invoke(modelNode.Content.Value, modelNode.Content.Descriptor, parameter, out token);
-            modelNode.Content.Value = newValue;
-            Refresh(modelNode);
+            modelNode.SetValue(newValue, index);
+            Refresh(modelNode, index);
             return token;
         }
 
         protected override void Undo(object parameter, UndoToken token)
         {
-            var modelNode = NodePath.GetNode();
+            object index;
+            var modelNode = NodePath.GetSourceNode(out index);
             if (modelNode == null)
                 throw new InvalidOperationException("Unable to retrieve the node on which to apply the undo operation.");
 
             var newValue = NodeCommand.Undo(modelNode.Content.Value, modelNode.Content.Descriptor, token);
-            modelNode.Content.Value = newValue;
-            Refresh(modelNode);
+            modelNode.SetValue(newValue, index);
+            Refresh(modelNode, index);
         }
 
         /// <summary>
@@ -72,7 +74,8 @@ namespace SiliconStudio.Presentation.Quantum
         /// is available in the current.<see cref="IViewModelServiceProvider"/>.
         /// </summary>
         /// <param name="modelNode">The model node to use to fetch a corresponding <see cref="ObservableNode"/>.</param>
-        protected virtual void Refresh(IModelNode modelNode)
+        /// <param name="index">The index at which the actual value to update is stored.</param>
+        protected virtual void Refresh(IModelNode modelNode, object index)
         {
             if (modelNode == null) throw new ArgumentNullException("modelNode");
             var observableViewModel = Service.ViewModelProvider(Identifier);
@@ -86,7 +89,7 @@ namespace SiliconStudio.Presentation.Quantum
             if (observableNode == null)
                 return;
 
-            var newValue = modelNode.Content.Value;
+            var newValue = modelNode.GetValue(index);
 
             if (observableNode.IsPrimitive)
             {
