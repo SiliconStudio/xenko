@@ -1583,6 +1583,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Engine\Graphics\Skyboxes\CubemapUtils.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapUtils.pdxsl</DependentUpon>
+    </Compile>
     <Compile Include="Engine\Graphics\Skyboxes\IComputeEnvironmentColor.cs">
       <DependentUpon>IComputeEnvironmentColor.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -2791,6 +2797,10 @@
     <None Include="Engine\Graphics\Skyboxes\ComputeSkyboxCubeMapColor.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeSkyboxCubeMapColor.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Skyboxes\CubemapUtils.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapUtils.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\Skyboxes\IComputeEnvironmentColor.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
