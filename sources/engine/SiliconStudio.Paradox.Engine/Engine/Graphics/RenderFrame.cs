@@ -116,7 +116,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             // OR create a render frame from the specified texture
             if (renderFrame == null)
             {
-                var descriptor = new RenderFrameDescriptor();
+                var descriptor = RenderFrameDescriptor.Default();
 
                 // TODO: Check for formats?
                 var renderFrameFormat = RenderFrameFormat.LDR;
@@ -162,10 +162,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         public static RenderFrame New(GraphicsDevice graphicsDevice, RenderFrameDescriptor frameDescriptor, RenderFrame referenceFrame = null)
         {
             if (graphicsDevice == null) throw new ArgumentNullException("graphicsDevice");
-            if (frameDescriptor == null) throw new ArgumentNullException("frameDescriptor");
-
-            // Make sure that the frame descriptor is cloned so that it is not modified and a different instance.
-            frameDescriptor = frameDescriptor.Clone();
 
             var referenceTexture = graphicsDevice.BackBuffer;
             if (referenceFrame != null && referenceFrame.RenderTarget != null)

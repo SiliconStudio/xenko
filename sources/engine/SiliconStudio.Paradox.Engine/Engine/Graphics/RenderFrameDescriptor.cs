@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Paradox.Engine.Graphics
 {
@@ -12,18 +13,21 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     /// A descriptor used to create a <see cref="RenderFrame"/>.
     /// </summary>
     [DataContract("RenderFrameDescriptor")]
-    public sealed class RenderFrameDescriptor : IEquatable<RenderFrameDescriptor>
+    public struct RenderFrameDescriptor : IEquatable<RenderFrameDescriptor>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderFrameDescriptor"/> class.
         /// </summary>
-        public RenderFrameDescriptor()
+        public static RenderFrameDescriptor Default()
         {
-            Mode = RenderFrameSizeMode.Relative;
-            Width = 100;
-            Height = 100;
-            Format = RenderFrameFormat.LDR;
-            DepthFormat = RenderFrameDepthFormat.None;
+            return new RenderFrameDescriptor()
+            {
+                Mode = RenderFrameSizeMode.Relative,
+                Width = 100,
+                Height = 100,
+                Format = RenderFrameFormat.LDR,
+                DepthFormat = RenderFrameDepthFormat.None,
+            };
         }
 
         /// <summary>
@@ -108,6 +112,14 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         public RenderFrameDescriptor Clone()
         {
             return (RenderFrameDescriptor)MemberwiseClone();
+        }
+
+        private class Factory : IObjectFactory
+        {
+            public object New(Type type)
+            {
+                return Default();
+            }
         }
     }
 }

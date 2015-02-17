@@ -40,7 +40,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         /// </summary>
         public GraphicsLayerOutputRenderFrame()
         {
-            Descriptor = new RenderFrameDescriptor();
+            Descriptor = RenderFrameDescriptor.Default();
             RelativeSizeSource = RenderFrameRelativeMode.Current;
         }
 
@@ -49,7 +49,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         /// </summary>
         /// <value>The descriptor.</value>
         [DataMember(10)]
-        public RenderFrameDescriptor Descriptor { get; private set; }
+        public RenderFrameDescriptor Descriptor { get; set; }
 
         /// <summary>
         /// Gets or sets the relative size source.
