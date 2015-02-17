@@ -12,6 +12,11 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     public enum RenderFrameDepthFormat
     {
         /// <summary>
+        /// Use the depth stencil buffer from the current frame without creating a new one (only if the size are the same)
+        /// </summary>
+        Shared,
+
+        /// <summary>
         /// No depth stencil is used.
         /// </summary>
         None,

@@ -19,6 +19,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     [DataSerializer(typeof(RenderFrameSerializer))]
     public class RenderFrame
     {
+        // TODO: Add dispose
+
         /// <summary>
         /// Property key to access the Current <see cref="RenderFrame"/> from <see cref="RenderContext.Tags"/>.
         /// </summary>
@@ -193,11 +195,25 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                     break;
             }
 
+            // Create the render target
+            var renderTarget = Texture.New2D(graphicsDevice, width, height, 1, pixelFormat, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
+
+            // Create the depth stencil buffer
+            Texture depthStencil = null;
+
+            // TODO: Better handle the case where shared cannot be used. Should we throw an exception?
+            if (frameDescriptor.DepthFormat == RenderFrameDepthFormat.Shared && referenceFrame != null && referenceFrame.DepthStencil != null &&
+                referenceFrame.DepthStencil.Width == width && referenceFrame.DepthStencil.Height == height)
+            {
+                depthStencil = referenceFrame.DepthStencil;
+            }
+            else if (frameDescriptor.DepthFormat == RenderFrameDepthFormat.Depth || frameDescriptor.DepthFormat == RenderFrameDepthFormat.DepthAndStencil)
+            {
+                depthStencil = Texture.New2D(graphicsDevice, width, height, 1, depthFormat, TextureFlags.DepthStencil);
+            }
+
             // Create a render frame.
-            var frame = new RenderFrame(
-                frameDescriptor,
-                Texture.New2D(graphicsDevice, width, height, 1, pixelFormat, TextureFlags.RenderTarget | TextureFlags.ShaderResource),
-                frameDescriptor.DepthFormat != RenderFrameDepthFormat.None ? Texture.New2D(graphicsDevice, width, height, 1, depthFormat, TextureFlags.DepthStencil) : null);
+            var frame = new RenderFrame(frameDescriptor, renderTarget, depthStencil);
 
             // Attach the render frame to the RenderTarget and DepthStencil
             // in order to be able to recover from it

@@ -7,6 +7,8 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Engine.Graphics.Composers;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Engine.Graphics
 {
@@ -33,6 +35,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             Mode = new CameraRendererModeForward();
             CullingMask = EntityGroup.All;
             Viewport = new RectangleF(0, 0, 1.0f, 1.0f);
+            Output = new CurrentRenderFrameProvider();
         }
 
         /// <summary>
@@ -70,15 +73,33 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// </summary>
         /// <value>The render frame.</value>
         [DataMember(50)]
-        [Display("Render To Frame")]
-        public RenderFrame RenderFrame { get; set; }
+        public IRenderFrameOutput Output { get; set; }
 
         protected override void DrawCore(RenderContext context)
         {
-            if (Mode == null)
+            if (Mode == null || Output == null)
             {
                 return;
             }
+
+            var output = Output.GetRenderFrame(context);
+
+            // If RenderFrame input or output are null, we can't do anything
+            if (output == null)
+            {
+                return;
+            }
+
+            // Setup the render target
+            context.GraphicsDevice.SetDepthAndRenderTarget(output.DepthStencil, output.RenderTarget);
+
+            // Setup the viewport
+            var width = output.RenderTarget.Width;
+            var height = output.RenderTarget.Height;
+
+            var viewport = new Viewport((int)(Viewport.X * width), (int)(Viewport.Y * height), (int)(Viewport.Width * width), (int)(Viewport.Height * height));
+            context.GraphicsDevice.SetViewport(viewport);
+
 
             // Draw this camera.
             using (var t1 = context.PushTagAndRestore(Current, this))

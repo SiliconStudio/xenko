@@ -66,6 +66,10 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             var effect = (IImageEffect)Effect ?? context.GetSharedEffect<ImageScaler>();
 
             effect.SetInput(0, input);
+            if (input.DepthStencil != null)
+            {
+                effect.SetInput(1, input.DepthStencil);
+            }
             effect.SetOutput(output);
             effect.Draw(context);
         }
