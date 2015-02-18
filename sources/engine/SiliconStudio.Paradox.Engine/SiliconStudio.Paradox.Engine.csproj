@@ -687,6 +687,40 @@
     <Compile Include="Engine\Graphics\GraphicsRendererCollection.cs" />
     <Compile Include="Engine\Graphics\IImageEffectRenderer.cs" />
     <Compile Include="Engine\Graphics\IImageEffectRendererInput.cs" />
+    <Compile Include="Engine\Graphics\Images\LensFlare\FlareArtifactEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>FlareArtifactEffect.pdxfx</DependentUpon>
+    </Compile>
+    <Compile Include="Engine\Graphics\Images\LensFlare\FlareArtifactKeys.cs" />
+    <Compile Include="Engine\Graphics\Images\LensFlare\FlareArtifactShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>FlareArtifactShader.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Engine\Graphics\Images\LensFlare\FlareReplicate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>FlareReplicate.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Engine\Graphics\Images\LensFlare\LensFlare.cs" />
+    <Compile Include="Engine\Graphics\Images\LightStreak\LightStreak.cs" />
+    <Compile Include="Engine\Graphics\Images\LightStreak\LightStreakEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>LightStreakEffect.pdxfx</DependentUpon>
+    </Compile>
+    <Compile Include="Engine\Graphics\Images\LightStreak\LightStreakKeys.cs" />
+    <Compile Include="Engine\Graphics\Images\LightStreak\LightStreakShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>LightStreakShader.pdxsl</DependentUpon>
+    </Compile>
     <Compile Include="Engine\Graphics\ISceneRendererOutput.cs" />
     <Compile Include="Engine\Graphics\LayerInputFrameProvider.cs" />
     <Compile Include="Engine\Graphics\Images\AntiAliasing\IScreenSpaceAntiAliasingEffect.cs" />
@@ -2492,6 +2526,26 @@
     <None Include="Engine\Graphics\Images\ImageScaler\ImageScalerShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ImageScalerShader.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Images\LensFlare\FlareArtifactEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>FlareArtifactEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Images\LensFlare\FlareArtifactShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>FlareArtifactShader.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Images\LensFlare\FlareReplicate.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>FlareReplicate.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Images\LightStreak\LightStreakEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>LightStreakEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Images\LightStreak\LightStreakShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>LightStreakShader.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\Images\LuminanceEffect\LuminanceLogShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

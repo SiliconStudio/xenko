@@ -19,6 +19,8 @@ namespace SiliconStudio.Paradox.Effects.Images
         private LuminanceEffect luminanceEffect;
         private BrightFilter brightFilter;
         private Bloom bloom;
+        private LightStreak lightStreak;
+        private LensFlare lensFlare;
         private ColorTransformGroup colorTransformsGroup;
         private IScreenSpaceAntiAliasingEffect ssaa;
 
@@ -40,6 +42,8 @@ namespace SiliconStudio.Paradox.Effects.Images
             luminanceEffect = new LuminanceEffect();
             brightFilter = new BrightFilter();
             bloom = new Bloom();
+            lightStreak = new LightStreak();
+            lensFlare = new LensFlare();
             ssaa = new FXAAEffect();
             colorTransformsGroup = new ColorTransformGroup();
         }
@@ -97,10 +101,38 @@ namespace SiliconStudio.Paradox.Effects.Images
         }
 
         /// <summary>
+        /// Gets the light streak effect.
+        /// </summary>
+        /// <value>The light streak.</value>
+        [DataMember(40)]
+        [Category]
+        public LightStreak LightStreak
+        {
+            get
+            {
+                return lightStreak;
+            }
+        }
+
+        /// <summary>
+        /// Gets the lens flare effect.
+        /// </summary>
+        /// <value>The lens flare.</value>
+        [DataMember(50)]
+        [Category]
+        public LensFlare LensFlare
+        {
+            get
+            {
+                return lensFlare;
+            }
+        }
+
+        /// <summary>
         /// Gets the final color transforms.
         /// </summary>
         /// <value>The color transforms.</value>
-        [DataMember(40)]
+        [DataMember(60)]
         [Category]
         public ColorTransformGroup ColorTransforms
         {
@@ -114,7 +146,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Gets the antialiasing effect.
         /// </summary>
         /// <value>The antialiasing.</value>
-        [DataMember(50)]
+        [DataMember(70)]
         [Category]
         public IScreenSpaceAntiAliasingEffect Antialiasing
         {
@@ -138,6 +170,8 @@ namespace SiliconStudio.Paradox.Effects.Images
             luminanceEffect = ToLoadAndUnload(luminanceEffect);
             brightFilter = ToLoadAndUnload(brightFilter);
             bloom = ToLoadAndUnload(bloom);
+            lightStreak = ToLoadAndUnload(lightStreak);
+            lensFlare = ToLoadAndUnload(lensFlare);
             ssaa = ToLoadAndUnload(ssaa);
             colorTransformsGroup = ToLoadAndUnload(colorTransformsGroup);
         }
@@ -188,19 +222,39 @@ namespace SiliconStudio.Paradox.Effects.Images
                 colorTransformsGroup.Parameters.Set(LuminanceEffect.LuminanceResult, new LuminanceResult(luminanceEffect.AverageLuminance, luminanceTexture));
             }
 
-            // Bloom pass
-            // TODO: Add Glare pass
-            if (bloom.Enabled)
+            // Bright filter pass
+            Texture brightTexture = null;
+            if (bloom.Enabled || lightStreak.Enabled || lensFlare.Enabled)
             {
-                var brightTexture = NewScopedRenderTarget2D(currentInput.Width, currentInput.Height, currentInput.Format, 1);
+                brightTexture = NewScopedRenderTarget2D(currentInput.Width, currentInput.Height, currentInput.Format, 1);
 
                 brightFilter.SetInput(currentInput);
                 brightFilter.SetOutput(brightTexture);
                 brightFilter.Draw(context);
+            }
 
+            // Bloom pass
+            if (bloom.Enabled)
+            {
                 bloom.SetInput(brightTexture);
                 bloom.SetOutput(currentInput);
                 bloom.Draw(context);
+            }
+
+            // Light streak pass
+            if (lightStreak.Enabled)
+            {
+                lightStreak.SetInput(brightTexture);
+                lightStreak.SetOutput(currentInput);
+                lightStreak.Draw(context);
+            }
+
+            // Lens flare pass
+            if (lensFlare.Enabled)
+            {
+                lensFlare.SetInput(brightTexture);
+                lensFlare.SetOutput(currentInput);
+                lensFlare.Draw(context);
             }
 
             var outputForLastEffectBeforeAntiAliasing = output;
