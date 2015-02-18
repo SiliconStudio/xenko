@@ -96,9 +96,9 @@ namespace SiliconStudio.Paradox.EntityModel
             {
                 var entity = obj.Entity;
 
-                stream.Serialize(ref entity, mode);
+                // Force containing Entity to be collected by serialization, no need to reassign it to EntityComponent.Entity
+                stream.SerializeExtended(ref entity, mode);
                 stream.Serialize(ref obj.enabled, mode);
-                obj.Entity = entity;
             }
         }
     }
