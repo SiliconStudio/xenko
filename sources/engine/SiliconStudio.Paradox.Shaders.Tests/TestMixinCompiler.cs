@@ -91,7 +91,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             //compilerParameters.Set(MaterialParameters.HasSkinningNormal, true);
             compilerParameters.Set(MaterialKeys.HasNormalMap, true);
 
-            var results = compiler.Compile(new ShaderMixinGeneratorSource("ParadoxBaseShader"), compilerParameters);
+            var results = compiler.Compile(new ShaderMixinGeneratorSource("ParadoxEffectBase"), compilerParameters);
 
             Assert.IsFalse(results.HasErrors);
         }

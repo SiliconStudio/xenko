@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.Effects
 {
     internal static partial class ShaderMixins
     {
-        internal partial class ParadoxBaseShader  : IShaderMixinBuilder
+        internal partial class ParadoxEffectBase  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
             {
@@ -144,7 +144,7 @@ namespace SiliconStudio.Paradox.Effects
             internal static void __Initialize__()
 
             {
-                ShaderMixinManager.Register("ParadoxBaseShader", new ParadoxBaseShader());
+                ShaderMixinManager.Register("ParadoxEffectBase", new ParadoxEffectBase());
             }
         }
     }

@@ -24,7 +24,16 @@ namespace SiliconStudio.Paradox.EntityModel
         /// <summary>
         /// Initializes a new instance of the <see cref="Scene"/> class.
         /// </summary>
-        public Scene()
+        public Scene() : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ComponentBase" /> class.
+        /// </summary>
+        /// <param name="name">The name attached to this component</param>
+        public Scene(string name)
+            : base(name, true)
         {
             // By default a scene always have a SceneComponent
             Settings = new SceneComponent();

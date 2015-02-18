@@ -3,8 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Windows.Documents;
 
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Effects;
@@ -31,41 +29,17 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         }
 
         /// <summary>
-        /// Gets the main effect used for rendering model in this mode.
-        /// </summary>
-        /// <returns>System.String.</returns>
-        public abstract string GetMainModelEffect();
-
-        /// <summary>
-        /// Gets or sets the effect mixin that will applied on top of the default Forward effect mixin.
-        /// </summary>
-        /// <value>The effect overrider.</value>
-        /// <userdoc>
-        /// The effect overrider allows to override a global effect used when rendering in forward mode. The overrider can
-        /// provide an effect that will be 'mixin' after the forward effect, allowing to change the behavior of the default 
-        /// forward effect.
-        /// </userdoc>
-        [Display("Effect Mixin")]
-        [DataMember(10)]
-        [DefaultValue(null)]
-        public IEffectMixinProvider EffectMixin { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the <see cref="EffectMixin"/> overrides completely the default effect of the
-        /// rendering mode.
-        /// </summary>
-        /// <value><c>true</c> if [effect mixin overrides]; otherwise, <c>false</c>.</value>
-        [Display("Mixin Overrides?")]
-        [DataMember(20)]
-        [DefaultValue(false)]
-        public bool EffectMixinOverrides { get; set; }
-
-        /// <summary>
         /// Gets the renderer overrides.
         /// </summary>
         /// <value>The renderer overrides.</value>
         [DataMemberIgnore]
         public Dictionary<Type, IEntityComponentRenderer> RendererOverrides { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the effect to use to render the models in the scene.
+        /// </summary>
+        /// <value>The main model effect.</value>
+        public abstract string MainModelEffect { get; set; } // TODO: This is not a good extensibility point. Check how to improve this
 
         /// <summary>
         /// Draws entities from a specified <see cref="SceneCameraRenderer" />.

@@ -15,6 +15,16 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     [DataContract("RenderFrameDescriptor")]
     public struct RenderFrameDescriptor : IEquatable<RenderFrameDescriptor>
     {
+        public RenderFrameDescriptor(int width, int height, RenderFrameFormat format, RenderFrameDepthFormat depthFormat)
+            : this()
+        {
+            Mode = RenderFrameSizeMode.Fixed;
+            Width = width;
+            Height = height;
+            Format = format;
+            DepthFormat = depthFormat;
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderFrameDescriptor"/> class.
         /// </summary>

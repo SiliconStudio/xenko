@@ -1,6 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.ComponentModel;
+
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Paradox.Engine.Graphics
@@ -10,13 +12,20 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     /// </summary>
     [DataContract("CameraRendererModeForward")]
     [Display("Forward")]
-    public class CameraRendererModeForward : CameraRendererMode
+    public sealed class CameraRendererModeForward : CameraRendererMode
     {
-        // TODO: Do we need a special instance for this class? Check this with the implem of a Deferred renderer
+        private const string ForwardEffect = "ParadoxForwardShadingEffect";
 
-        public override string GetMainModelEffect()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CameraRendererModeForward"/> class.
+        /// </summary>
+        public CameraRendererModeForward()
         {
-            return "ParadoxBaseShader";
+            MainModelEffect = ForwardEffect;
         }
+
+        [DataMember(100)]
+        [DefaultValue(ForwardEffect)]
+        public override string MainModelEffect { get; set; }
     }
 }

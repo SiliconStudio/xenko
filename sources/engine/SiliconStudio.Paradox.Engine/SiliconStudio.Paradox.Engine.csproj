@@ -684,6 +684,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Engine\Graphics\DirectRenderFrameProvider.cs" />
     <Compile Include="Engine\Graphics\GraphicsRendererCollection.cs" />
     <Compile Include="Engine\Graphics\IImageEffectRenderer.cs" />
     <Compile Include="Engine\Graphics\IImageEffectRendererInput.cs" />
@@ -805,8 +806,14 @@
     <Compile Include="Engine\Graphics\Materials\ShaderGeneratorContextBase.cs" />
     <Compile Include="Engine\Graphics\Materials\TextureChannel.cs" />
     <Compile Include="Engine\Graphics\Materials\TextureCoordinate.cs" />
-    <Compile Include="Engine\Graphics\ParadoxBaseShader.cs">
-      <DependentUpon>ParadoxBaseShader.pdxfx</DependentUpon>
+    <Compile Include="Engine\Graphics\ParadoxForwardShadingEffect.cs">
+      <DependentUpon>ParadoxForwardShadingEffect.pdxfx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Engine\Graphics\ParadoxEffectBase.cs">
+      <DependentUpon>ParadoxEffectBase.pdxfx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -2775,9 +2782,13 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialVertexStream.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\ParadoxBaseShader.pdxfx">
+    <None Include="Engine\Graphics\ParadoxForwardShadingEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ParadoxBaseShader.cs</LastGenOutput>
+      <LastGenOutput>ParadoxForwardShadingEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\ParadoxEffectBase.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ParadoxEffectBase.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\ProceduralModels\CameraCube.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

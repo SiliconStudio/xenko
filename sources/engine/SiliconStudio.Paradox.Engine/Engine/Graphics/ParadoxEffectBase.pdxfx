@@ -9,10 +9,11 @@ namespace SiliconStudio.Paradox.Effects
     /// <summary>
     /// Base shader
     /// </summary>
-    partial shader ParadoxBaseShader
+    partial shader ParadoxEffectBase
     {
         using params LightingKeys;
         using params MaterialKeys;
+        using params ParadoxEffectBaseKeys;
 
         // -----------------------------------------------
         // Base shaders
@@ -135,7 +136,6 @@ namespace SiliconStudio.Paradox.Effects
         // -----------------------------------------------
         if (LightingKeys.CastShadows)
             mixin child ShadowMapCaster;
-
     };
 
     shader Picking
@@ -143,5 +143,4 @@ namespace SiliconStudio.Paradox.Effects
         mixin clone;
         mixin ComputeID;
     };	
-
 }
