@@ -12,7 +12,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SiliconStudio.Paradox.Engine.Tests</RootNamespace>
     <AssemblyName>SiliconStudio.Paradox.Engine.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <ParadoxBuildTags>*</ParadoxBuildTags>
@@ -26,7 +26,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SiliconStudio.Paradox.Engine.Tests.SpriteTestGame</StartupObject>
+    <StartupObject>SiliconStudio.Paradox.Engine.Tests.TestTesselation</StartupObject>
   </PropertyGroup>
   <!--Import Local Pre Settings for the solution being loaded -->
   <Import Project="$(SolutionDir)$(SolutionName).PreSettings.Local.targets" Condition="Exists('$(SolutionDir)$(SolutionName).PreSettings.Local.targets')" />
@@ -123,6 +123,10 @@
       <Name>SiliconStudio.Shaders</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\shaders\SiliconStudio.Paradox.Effects.csproj">
+      <Project>{0342c3e7-4a38-46b4-a8ec-e728d50085d3}</Project>
+      <Name>SiliconStudio.Paradox.Effects</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Paradox.Games\SiliconStudio.Paradox.Games.csproj">
       <Project>{42780CBD-3FE7-48E3-BD5B-59945EA20137}</Project>
       <Name>SiliconStudio.Paradox.Games</Name>
@@ -143,7 +147,9 @@
   <ItemGroup>
     <Compile Include="Build\TestBuilder.cs" />
     <Compile Include="SpriteTestGame.cs" />
+    <Compile Include="TestCamera.cs" />
     <Compile Include="TestSpriteAnimation.cs" />
+    <Compile Include="TestTesselation.cs" />
     <Compile Include="TestTextureAlphaSeparation.cs" />
     <None Include="Build\TestSerializer.cs" />
     <Compile Include="Build\TestStorage.cs" />
@@ -163,6 +169,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Label="Paradox.DoNotSync" Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="GameAssets\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SiliconStudioPackageProps)" Condition="Exists('$(SiliconStudioPackageProps)')" />
