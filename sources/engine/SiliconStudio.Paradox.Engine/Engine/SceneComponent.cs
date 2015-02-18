@@ -26,6 +26,7 @@ namespace SiliconStudio.Paradox.Engine
         public SceneComponent()
         {
             GraphicsCompositor = new SceneGraphicsCompositorLayers();
+            EditorSettings = new SceneEditorSettings();
         }
 
         /// <summary>
@@ -36,6 +37,14 @@ namespace SiliconStudio.Paradox.Engine
         [Display("Graphics Composition")]
         [NotNull]
         public ISceneGraphicsCompositor GraphicsCompositor { get; set; }   // TODO: Should we move this to a special component?
+
+        /// <summary>
+        /// Gets or sets the editor settings.
+        /// </summary>
+        /// <value>The editor settings.</value>
+        [DataMember(20)]
+        [Display("Editor Settings")]
+        public SceneEditorSettings EditorSettings { get; set; }
 
         public override PropertyKey DefaultKey
         {

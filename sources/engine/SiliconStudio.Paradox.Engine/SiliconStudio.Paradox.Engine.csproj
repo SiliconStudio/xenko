@@ -805,6 +805,7 @@
     <Compile Include="Engine\Graphics\CurrentRenderFrameProvider.cs" />
     <Compile Include="Engine\Graphics\Composers\MasterRenderFrameProvider.cs" />
     <Compile Include="Engine\Graphics\Composers\LocalRenderFrameProvider.cs" />
+    <Compile Include="Engine\Graphics\SceneDelegateRenderer.cs" />
     <Compile Include="Engine\Graphics\SharedRenderFrameProvider.cs" />
     <Compile Include="Engine\Graphics\Composers\SceneGraphicsLayerCollection.cs" />
     <Compile Include="Engine\Graphics\SceneEffectRenderer.cs" />
@@ -1785,6 +1786,7 @@
     <Compile Include="Engine\SceneChildComponentChangedEventArgs.cs" />
     <Compile Include="Engine\SceneChildProcessor.cs" />
     <Compile Include="Engine\SceneComponent.cs" />
+    <Compile Include="Engine\SceneEditorSettings.cs" />
     <Compile Include="Engine\SceneInstance.cs" />
     <Compile Include="Engine\SceneProcessor.cs" />
     <Compile Include="EntityModel\DefaultEntityComponentProcessorAttribute.cs" />

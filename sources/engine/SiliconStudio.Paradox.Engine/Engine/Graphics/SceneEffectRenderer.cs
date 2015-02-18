@@ -57,16 +57,26 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 return;
             }
 
-            // If no effect found, just copy passthrough from input to output.
-            var effect = (IImageEffect)Effect ?? context.GetSharedEffect<ImageScaler>();
-
-            effect.SetInput(0, input);
-            if (input.DepthStencil != null)
+            // If an effect is set, we are using it
+            if (Effect != null)
             {
-                effect.SetInput(1, input.DepthStencil);
+                Effect.SetInput(0, input);
+                if (input.DepthStencil != null)
+                {
+                    Effect.SetInput(1, input.DepthStencil);
+                }
+                Effect.SetOutput(output);
+                Effect.Draw(context);
             }
-            effect.SetOutput(output);
-            effect.Draw(context);
+            else if (input != output)
+            {
+                // Else only use a scaler if input and output don't match
+                // TODO: Is this something we want by default or we just don't output anything?
+                var effect = context.GetSharedEffect<ImageScaler>();
+                effect.SetInput(0, input);
+                effect.SetOutput(output);
+                effect.Draw(context);
+            }
         }
     }
 }

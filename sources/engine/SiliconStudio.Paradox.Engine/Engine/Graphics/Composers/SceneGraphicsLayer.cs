@@ -35,7 +35,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         /// </summary>
         public SceneGraphicsLayer()
         {
-            Enabled = true;
             Output = MasterRenderFrameProvider.Instance;
             Renderers = new SceneRendererCollection();
         }
