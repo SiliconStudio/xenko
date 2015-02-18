@@ -69,7 +69,7 @@ namespace SiliconStudio.Paradox.Engine
             {
                 if (scene != value)
                 {
-                    previousScene = value;
+                    previousScene = scene;
                     scene = value;
                 }
             }
@@ -179,12 +179,13 @@ namespace SiliconStudio.Paradox.Engine
             {
                 Reset();
                 Load();
-                previousScene = null;
             }
         }
 
         private void Load()
         {
+            previousScene = Scene;
+
             // If Scene is null, early exit
             if (Scene == null)
             {
