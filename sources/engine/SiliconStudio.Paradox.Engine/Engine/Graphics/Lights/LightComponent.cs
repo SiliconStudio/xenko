@@ -62,9 +62,9 @@ namespace SiliconStudio.Paradox.Effects.Lights
         [DefaultValue(EntityGroup.All)]
         public EntityGroup Groups { get; set; }
 
-        public override PropertyKey DefaultKey
+        public override PropertyKey GetDefaultKey()
         {
-            get { return Key; }
+            return Key;
         }
     }
 }

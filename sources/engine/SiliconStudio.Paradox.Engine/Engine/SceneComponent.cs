@@ -46,12 +46,9 @@ namespace SiliconStudio.Paradox.Engine
         [Display("Editor Settings")]
         public SceneEditorSettings EditorSettings { get; set; }
 
-        public override PropertyKey DefaultKey
+        public override PropertyKey GetDefaultKey()
         {
-            get
-            {
-                return Key;
-            }
+            return Key;
         }
 
         private static object OnSceneComponentGet(ref PropertyContainer props)

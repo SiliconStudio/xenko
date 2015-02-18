@@ -120,9 +120,9 @@ namespace SiliconStudio.Paradox.Engine
             }
         }
 
-        public override PropertyKey DefaultKey
+        public override PropertyKey GetDefaultKey()
         {
-            get { return Key; }
+            return Key;
         }
     }
 }

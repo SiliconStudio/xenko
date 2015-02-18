@@ -60,7 +60,7 @@ namespace SiliconStudio.Paradox.Assets.Model.Analysis
 
                     Entity realEntity;
                     if (entityHierarchy.Entities.TryGetValue(containingEntity.Id, out realEntity)
-                        && realEntity.Components.TryGetValue(entityLink.EntityComponent.DefaultKey, out obj))
+                        && realEntity.Components.TryGetValue(entityLink.EntityComponent.GetDefaultKey(), out obj))
                     {
                         // If we already have the proper item, let's skip
                         if (obj == entityLink.EntityComponent)

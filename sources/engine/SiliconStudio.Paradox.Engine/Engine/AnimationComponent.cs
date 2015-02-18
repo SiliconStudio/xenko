@@ -127,11 +127,9 @@ namespace SiliconStudio.Paradox.Engine
             get { return playingAnimations; }
         }
 
-
-
-        public override PropertyKey DefaultKey
+        public override PropertyKey GetDefaultKey()
         {
-            get { return Key; }
+            return Key;
         }
     }
 }

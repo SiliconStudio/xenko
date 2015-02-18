@@ -270,9 +270,9 @@ namespace SiliconStudio.Paradox.Engine
         [DataMemberIgnore]
         internal bool ShouldBeProcessed { get; set; }
 
-        public override PropertyKey DefaultKey
+        public override PropertyKey GetDefaultKey()
         {
-            get { return Key; }
+            return Key;
         }
     }
 }

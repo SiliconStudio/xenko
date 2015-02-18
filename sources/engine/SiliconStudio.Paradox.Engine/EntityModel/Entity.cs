@@ -167,7 +167,7 @@ namespace SiliconStudio.Paradox.EntityModel
         public void Add(EntityComponent component)
         {
             if (component == null) throw new ArgumentNullException("component");
-            Components.SetObject(component.DefaultKey, component);
+            Components.SetObject(component.GetDefaultKey(), component);
         }
 
         /// <summary>

@@ -342,9 +342,9 @@ namespace SiliconStudio.Paradox.Engine
             result.M44 = 1.0f;
         }
 
-        public override PropertyKey DefaultKey
+        public override PropertyKey GetDefaultKey()
         {
-            get { return Key; }
+            return Key;
         }
 
         //public IEnumerator<TransformComponent> GetEnumerator()

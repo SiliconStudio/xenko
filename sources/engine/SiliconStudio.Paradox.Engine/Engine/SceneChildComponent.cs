@@ -38,12 +38,9 @@ namespace SiliconStudio.Paradox.Engine
         [DataMember(10)]
         public Scene Scene { get; set; }
 
-        public override PropertyKey DefaultKey
+        public override PropertyKey GetDefaultKey()
         {
-            get
-            {
-                return Key;
-            }
+            return Key;
         }
     }
 }

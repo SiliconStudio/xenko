@@ -230,9 +230,9 @@ namespace SiliconStudio.Paradox.Engine
             projection = UseProjectionMatrix ? ProjectionMatrix : Projection != null ? Projection.CalculateProjection(AspectRatio, NearPlane, FarPlane) : Matrix.Zero;
         }
 
-        public override PropertyKey DefaultKey
+        public override PropertyKey GetDefaultKey()
         {
-            get { return Key; }
+            return Key;
         }
     }
 }

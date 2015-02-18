@@ -72,8 +72,7 @@ namespace SiliconStudio.Paradox.EntityModel
         /// <summary>
         /// The default key this component is associated to.
         /// </summary>
-        [DataMemberIgnore]
-        public abstract PropertyKey DefaultKey { get; }
+        public abstract PropertyKey GetDefaultKey();
 
         /// <summary>
         /// Gets the default key for the specified entity component type.
@@ -88,7 +87,7 @@ namespace SiliconStudio.Paradox.EntityModel
 
         struct EntityComponentHelper<T> where T : EntityComponent, new()
         {
-            public static readonly PropertyKey DefaultKey = new T().DefaultKey;
+            public static readonly PropertyKey DefaultKey = new T().GetDefaultKey();
         }
 
         internal class Serializer : DataSerializer<EntityComponent>
