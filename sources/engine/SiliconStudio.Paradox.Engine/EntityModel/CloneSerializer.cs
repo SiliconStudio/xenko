@@ -51,10 +51,10 @@ namespace SiliconStudio.Paradox.EntityModel
 
                     // TODO: Hardcoded
                     // Model need to be cloned
-                    if (obj is Model)
-                    {
-                        obj = (T)(object)((Model)(object)obj).Instantiate();
-                    }
+                    //if (obj is Model)
+                    //{
+                    //    obj = (T)(object)((Model)(object)obj).Instantiate();
+                    //}
                 }
                 else
                 {
