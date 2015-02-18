@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// Gets or sets the effect to use to render the models in the scene.
         /// </summary>
         /// <value>The main model effect.</value>
-        public abstract string MainModelEffect { get; set; } // TODO: This is not a good extensibility point. Check how to improve this
+        public abstract string ModelEffect { get; set; } // TODO: This is not a good extensibility point. Check how to improve this
 
         /// <summary>
         /// Draws entities from a specified <see cref="SceneCameraRenderer" />.

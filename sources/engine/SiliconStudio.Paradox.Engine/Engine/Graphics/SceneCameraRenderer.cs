@@ -70,8 +70,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         {
             var output = Output.GetSafeRenderFrame(context);
 
-            // If RenderFrame output is null, we early exit
-            if (Mode == null || output == null)
+            // Early exit if some properties are null
+            if (Mode == null || output == null || Camera == null)
             {
                 return;
             }

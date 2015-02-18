@@ -21,11 +21,11 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// </summary>
         public CameraRendererModeForward()
         {
-            MainModelEffect = ForwardEffect;
+            ModelEffect = ForwardEffect;
         }
 
         [DataMember(100)]
         [DefaultValue(ForwardEffect)]
-        public override string MainModelEffect { get; set; }
+        public override string ModelEffect { get; set; }
     }
 }

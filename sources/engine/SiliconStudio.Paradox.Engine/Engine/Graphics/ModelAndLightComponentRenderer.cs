@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             base.Initialize(context);
 
             // TODO: Add support for mixin overrides
-            modelRenderer = ToLoadAndUnload(new ModelComponentRenderer(SceneCameraRenderer.Mode.MainModelEffect));
+            modelRenderer = ToLoadAndUnload(new ModelComponentRenderer(SceneCameraRenderer.Mode.ModelEffect));
             lightModelRenderer = new LightModelRendererForward(modelRenderer);
         }
 
