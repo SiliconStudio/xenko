@@ -117,7 +117,14 @@ namespace SiliconStudio.Core
         {
             get
             {
-                return properties != null ? properties.Count : 0;
+                // TODO: improve this.
+                int count = 0;
+                using (var enumerator = GetEnumerator())
+                {
+                    while (enumerator.MoveNext())
+                        ++count;
+                }
+                return count;
             }
         }
 
