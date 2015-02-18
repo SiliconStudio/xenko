@@ -24,6 +24,9 @@ namespace SiliconStudio.Paradox.EntityModel
 
         private RenderFrame mainRenderFrame;
 
+        private int previousWidth;
+        private int previousHeight;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GameSystemBase" /> class.
         /// </summary>
@@ -56,6 +59,8 @@ namespace SiliconStudio.Paradox.EntityModel
             //    }
 
             mainRenderFrame = RenderFrame.FromTexture(GraphicsDevice.BackBuffer, GraphicsDevice.DepthStencilBuffer);
+            previousWidth = mainRenderFrame.RenderTarget.Width;
+            previousHeight = mainRenderFrame.RenderTarget.Height;
 
             // Create the drawing context
             renderContext = RenderContext.GetShared(Services);
@@ -75,6 +80,17 @@ namespace SiliconStudio.Paradox.EntityModel
             {
                 return;
             }
+
+            // If the width or height changed, we have to recycle all temporary allocated resources.
+            // NOTE: We assume that they are mostly resolution dependent.
+            if (previousWidth != mainRenderFrame.RenderTarget.Width || previousHeight != mainRenderFrame.RenderTarget.Height)
+            {
+                // Force a recycle of all allocated temporary textures
+                renderContext.Allocator.Recycle(link => true);
+            }
+
+            previousWidth = mainRenderFrame.RenderTarget.Width;
+            previousHeight = mainRenderFrame.RenderTarget.Height;
 
             // Update the entities at draw time.
             SceneInstance.Draw(gameTime);

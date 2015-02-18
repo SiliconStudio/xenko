@@ -36,6 +36,8 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         {
             await base.LoadContent();
 
+            Window.AllowUserResizing = true;
+
             // Instantiate a scene with a single entity and model component
             var scene = new Scene();
 
