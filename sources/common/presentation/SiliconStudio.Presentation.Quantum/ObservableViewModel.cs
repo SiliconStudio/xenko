@@ -221,7 +221,7 @@ namespace SiliconStudio.Presentation.Quantum
             // This must be done before adding the action item to the stack!
             NotifyNodeChanged(observableNodePath);
 
-            var actionItem = new ValueChangedActionItem(displayName, observableViewModelService, nodePath, observableNodePath, Identifier, index, dirtiables, modelContainer, previousValue);
+            var actionItem = new ValueChangedActionItem(displayName, observableViewModelService, nodePath, observableNodePath, Identifier, index, dirtiables, previousValue);
             ActionStack.Add(actionItem);
         }
 

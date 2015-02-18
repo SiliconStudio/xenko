@@ -13,7 +13,7 @@ namespace SiliconStudio.Quantum.Contents
     /// <remarks>This content is not serialized by default.</remarks>
     public class ObjectContent : ContentBase
     {
-        private object value;
+        private readonly object value;
 
         public ObjectContent(object value, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
             : base(descriptor, isPrimitive, reference)
@@ -22,6 +22,6 @@ namespace SiliconStudio.Quantum.Contents
             this.value = value;
         }
 
-        public override object Value { get { return value; } set { this.value = value; } }
+        public override object Value { get { return value; } set { throw new InvalidOperationException("An ObjectContent value cannot be modified after it has been constructed"); } }
     }
 }

@@ -42,6 +42,7 @@ namespace SiliconStudio.Assets.Analysis
         private readonly Dictionary<Package, string> packagePathsTracked = new Dictionary<Package, string>();
         private readonly Dictionary<Guid, HashSet<UFile>> mapAssetToInputDependencies = new Dictionary<Guid, HashSet<UFile>>();
         private readonly Dictionary<string, HashSet<Guid>> mapInputDependencyToAssets = new Dictionary<string, HashSet<Guid>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<Guid, ObjectId> mapAssetsToSource = new Dictionary<Guid, ObjectId>();
         private readonly List<FileEvent> fileEvents = new List<FileEvent>();
         private readonly List<FileEvent> fileEventsWorkingCopy = new List<FileEvent>();
         private readonly ManualResetEvent threadWatcherEvent;
@@ -1025,20 +1026,17 @@ namespace SiliconStudio.Assets.Analysis
             {
                 // Currently an AssetImport is linked only to a single entry, but it could have probably have multiple input dependencies in the future
                 var newInputPathDependencies = new HashSet<UFile>();
-                if (assetImport.Base != null && assetImport.Base.IsRootImport)
+                var pathToSourceRawAsset = assetImport.Source;
+                if (string.IsNullOrEmpty(pathToSourceRawAsset))
                 {
-                    var pathToSourceRawAsset = assetImport.Source;
-                    if (string.IsNullOrEmpty(pathToSourceRawAsset))
-                    {
-                        return;
-                    }
-                    if (!pathToSourceRawAsset.IsAbsolute)
-                    {
-                        pathToSourceRawAsset = UPath.Combine(assetItem.FullPath.GetParent(), pathToSourceRawAsset);
-                    }
-
-                    newInputPathDependencies.Add(pathToSourceRawAsset);
+                    return;
                 }
+                if (!pathToSourceRawAsset.IsAbsolute)
+                {
+                    pathToSourceRawAsset = UPath.Combine(assetItem.FullPath.GetParent(), pathToSourceRawAsset);
+                }
+
+                newInputPathDependencies.Add(pathToSourceRawAsset);
 
                 HashSet<UFile> inputPaths;
                 if (mapAssetToInputDependencies.TryGetValue(assetItem.Id, out inputPaths))
@@ -1343,15 +1341,28 @@ namespace SiliconStudio.Assets.Analysis
 
                     var item = dependencies.Item;
 
+                    bool shouldNotifyChange;
                     var assetImport = item.Asset as AssetImportTracked;
-                    if (assetImport != null && assetImport.Base != null && assetImport.Base.IsRootImport && assetImport.SourceHash != hash)
+
+                    if (assetImport != null)
+                    {
+                        shouldNotifyChange = assetImport.Base != null && assetImport.Base.IsRootImport && assetImport.SourceHash != hash;
+                    }
+                    else
+                    {
+                         ObjectId previousHash;
+                         shouldNotifyChange = !mapAssetsToSource.TryGetValue(item.Id, out previousHash) || previousHash != hash;
+                         mapAssetsToSource[item.Id] = hash;
+                    }
+
+                    if (shouldNotifyChange)
                     {
                         // If the hash is empty, the source file has been deleted
                         var changeType = (hash == ObjectId.Empty) ? AssetFileChangedType.SourceDeleted : AssetFileChangedType.SourceUpdated;
 
                         // Transmit the hash in the event as well, so that we can check again if the asset has not been updated during the async round-trip
                         // (it happens when re-importing multiple assets at once).
-                        sourceImportFileChangedEventsToAdd.Add(new AssetFileChangedEvent(item.Package, changeType, item.Location) { AssetId = assetImport.Id, Hash = hash });
+                        sourceImportFileChangedEventsToAdd.Add(new AssetFileChangedEvent(item.Package, changeType, item.Location) { AssetId = item.Id, Hash = hash });
                     }
                 }
 

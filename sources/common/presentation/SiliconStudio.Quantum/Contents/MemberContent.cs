@@ -56,6 +56,13 @@ namespace SiliconStudio.Quantum.Contents
             }
         }
 
+        internal void UpdateReferences()
+        {
+            if (modelContainer != null && modelNode != null)
+            {
+                modelContainer.UpdateReferences(modelNode);
+            }
+        }
         void IUpdatableContent.RegisterOwner(IModelNode node)
         {
             modelNode = node;
