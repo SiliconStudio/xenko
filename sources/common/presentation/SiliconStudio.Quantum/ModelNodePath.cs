@@ -43,6 +43,7 @@ namespace SiliconStudio.Quantum
         /// <remarks>This constructor should be used for path to a root node only. To create a path to a child node, use <see cref="GetChildPath"/>.</remarks>
         public ModelNodePath(IModelNode rootNode)
         {
+            if (rootNode == null) throw new ArgumentNullException("rootNode");
             RootNode = rootNode;
             targetIsRootNode = true;
         }
@@ -117,6 +118,7 @@ namespace SiliconStudio.Quantum
 
         public ModelNodePath Clone(IModelNode newRoot)
         {
+            if (newRoot == null) throw new ArgumentNullException("newRoot");
             var clone = new ModelNodePath { RootNode = newRoot, targetIsRootNode = targetIsRootNode };
             clone.path.AddRange(path);
             return clone;
