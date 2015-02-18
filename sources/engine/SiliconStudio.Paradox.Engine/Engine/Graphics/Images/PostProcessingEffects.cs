@@ -20,7 +20,6 @@ namespace SiliconStudio.Paradox.Effects.Images
         private BrightFilter brightFilter;
         private Bloom bloom;
         private ColorTransformGroup colorTransformsGroup;
-        private ToneMap toneMap;
         private IScreenSpaceAntiAliasingEffect ssaa;
 
         /// <summary>
@@ -37,6 +36,12 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         public PostProcessingEffects()
         {
+            depthOfField = new DepthOfField();
+            luminanceEffect = new LuminanceEffect();
+            brightFilter = new BrightFilter();
+            bloom = new Bloom();
+            ssaa = new FXAAEffect();
+            colorTransformsGroup = new ColorTransformGroup();
         }
 
         /// <summary>
@@ -92,19 +97,6 @@ namespace SiliconStudio.Paradox.Effects.Images
         }
 
         /// <summary>
-        /// Gets the tone map.
-        /// </summary>
-        /// <value>The tone map.</value>
-        [DataMemberIgnore]
-        public ToneMap ToneMap
-        {
-            get
-            {
-                return toneMap;  // ToneMap is already serialized by ColorTransforms
-            }
-        }
-
-        /// <summary>
         /// Gets the final color transforms.
         /// </summary>
         /// <value>The color transforms.</value>
@@ -142,14 +134,12 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             base.Initialize(context);
 
-            depthOfField = ToLoadAndUnload(new DepthOfField());
-            luminanceEffect = ToLoadAndUnload(new LuminanceEffect());
-            brightFilter = ToLoadAndUnload(new BrightFilter());
-            bloom = ToLoadAndUnload(new Bloom());
-            ssaa = ToLoadAndUnload(new FXAAEffect());
-            colorTransformsGroup = ToLoadAndUnload(new ColorTransformGroup());
-            toneMap = new ToneMap();
-            colorTransformsGroup.Transforms.Add(toneMap);
+            depthOfField = ToLoadAndUnload(depthOfField);
+            luminanceEffect = ToLoadAndUnload(luminanceEffect);
+            brightFilter = ToLoadAndUnload(brightFilter);
+            bloom = ToLoadAndUnload(bloom);
+            ssaa = ToLoadAndUnload(ssaa);
+            colorTransformsGroup = ToLoadAndUnload(colorTransformsGroup);
         }
 
         protected override void DrawCore(RenderContext context)
@@ -183,7 +173,8 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
 
             // Luminance pass (only if tone mapping is enabled)
-            if (toneMap.Enabled)
+            // TODO: This is not super pluggable to have this kind of dependencies. Check how to improve this
+            if (colorTransformsGroup.Transforms.IsEnabled<ToneMap>())
             {
                 const int LocalLuminanceDownScale = 3;
                 var lumSize = currentInput.Size.Down2(LocalLuminanceDownScale);

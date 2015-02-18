@@ -8,6 +8,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// The tonemap Reinhard operator.
     /// </summary>
+    [DataContract("ToneMapReinhardOperator")]
     [Display("Reinhard")]
     public class ToneMapReinhardOperator : ToneMapCommonOperator
     {

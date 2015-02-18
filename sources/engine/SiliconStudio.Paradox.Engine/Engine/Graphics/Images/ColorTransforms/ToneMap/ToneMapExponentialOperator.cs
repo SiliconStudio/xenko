@@ -5,6 +5,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// The tonemap exponential operator.
     /// </summary>
+    [DataContract("ToneMapExponentialOperator")]
     [Display("Exponential")]
     public class ToneMapExponentialOperator : ToneMapCommonOperator
     {

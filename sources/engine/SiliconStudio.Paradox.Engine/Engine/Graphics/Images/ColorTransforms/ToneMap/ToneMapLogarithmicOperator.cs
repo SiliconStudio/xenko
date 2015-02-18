@@ -5,6 +5,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// The tonemap logarithmic operator.
     /// </summary>
+    [DataContract("ToneMapLogarithmicOperator")]
     [Display("Logarithmic")]
     public class ToneMapLogarithmicOperator : ToneMapCommonOperator
     {

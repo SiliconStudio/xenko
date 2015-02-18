@@ -9,6 +9,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// Base operator shared by Reinhard, Drago, Exponential and Logarithmic.
     /// </summary>
+    [DataContract]
     public abstract class ToneMapCommonOperator : ToneMapOperator
     {
         protected ToneMapCommonOperator(string effectName)

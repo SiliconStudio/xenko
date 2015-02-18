@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     {
         private bool isInDrawCore;
         private readonly List<GraphicsResource> scopedResources = new List<GraphicsResource>();
-        private readonly List<RendererBase> subRenderersToUnload;
+        private readonly List<IGraphicsRenderer> subRenderersToUnload;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RendererBase"/> class.
@@ -38,7 +38,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         protected RendererBase(string name) : base(name)
         {
             Enabled = true;
-            subRenderersToUnload = new List<RendererBase>();
+            subRenderersToUnload = new List<IGraphicsRenderer>();
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         {
             foreach (var drawEffect in subRenderersToUnload)
             {
-                drawEffect.Unload();
+                drawEffect.Dispose();
             }
             subRenderersToUnload.Clear();
 
@@ -195,7 +195,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             base.Destroy();
         }
 
-        protected T ToLoadAndUnload<T>(T effect) where T : RendererBase
+        protected T ToLoadAndUnload<T>(T effect) where T : IGraphicsRenderer
         {
             if (effect == null) throw new ArgumentNullException("effect");
             effect.Initialize(Context);

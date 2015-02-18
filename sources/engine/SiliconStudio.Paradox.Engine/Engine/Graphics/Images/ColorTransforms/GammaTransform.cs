@@ -10,10 +10,18 @@ namespace SiliconStudio.Paradox.Effects.Images
     public class GammaTransform : ColorTransform
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="GammaTransform"/> class.
+        /// </summary>
+        public GammaTransform()
+            : base("GammaTransformShader")
+        {
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ColorTransformBase" /> class.
         /// </summary>
         /// <param name="colorTransformShader">Name of the shader.</param>
-        public GammaTransform(string colorTransformShader = "GammaTransformShader") : base(colorTransformShader)
+        public GammaTransform(string colorTransformShader) : base(colorTransformShader)
         {
         }
 

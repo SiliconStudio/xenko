@@ -6,6 +6,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// The tonemap Drago operator.
     /// </summary>
+    [DataContract("ToneMapDragoOperator")]
     [Display("Drago")]
     public class ToneMapDragoOperator : ToneMapCommonOperator
     {

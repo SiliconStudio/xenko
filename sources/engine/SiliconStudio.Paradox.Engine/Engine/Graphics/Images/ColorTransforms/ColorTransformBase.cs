@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.ComponentModel;
 using System.Reflection;
 
 using SiliconStudio.Core;
@@ -65,6 +66,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
         [DataMember(5)]
+        [DefaultValue(true)]
         public bool Enabled
         {
             get
