@@ -27,7 +27,8 @@ namespace SiliconStudio.Core
     /// An cool feature of this system is that if a property doesn't exist, it could be generated during first access from a delegate or come from a default value.
     /// </remarks>
     [DataContract]
-    [DataSerializer(typeof(PropertyContainer.Serializer))]
+    //[DataSerializer(typeof(PropertyContainer.Serializer))]
+    [DataSerializer(typeof(DictionaryAllSerializer<PropertyContainer, PropertyKey, object>))]
     [DataSerializerGlobal(null, typeof(Dictionary<PropertyKey, object>))]
     public partial struct PropertyContainer : IDictionary<PropertyKey, object>
     {

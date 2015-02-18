@@ -14,6 +14,8 @@ namespace SiliconStudio.Paradox.EntityModel
     [ContentSerializer(typeof(DataContentSerializerWithReuse<Scene>))]
     public sealed class Scene : Entity
     {
+        private SceneComponent settings;
+
         static Scene()
         {
             PropertyContainer.AddAccessorProperty(typeof(Scene), SceneComponent.Key);
@@ -25,7 +27,7 @@ namespace SiliconStudio.Paradox.EntityModel
         public Scene()
         {
             // By default a scene always have a SceneComponent
-            Add(new SceneComponent());
+            Settings = new SceneComponent();
         }
 
         /// <summary>
@@ -33,7 +35,16 @@ namespace SiliconStudio.Paradox.EntityModel
         /// </summary>
         /// <value>The settings.</value>
         [DataMemberIgnore]
-        public SceneComponent Settings { get; internal set; }
+        public SceneComponent Settings
+        {
+            get { return settings; }
+            internal set
+            {
+                var settingsOld = settings;
+                settings = value;
+                Components.RaisePropertyContainerUpdated(SceneComponent.Key, settings, settingsOld);
+            }
+        }
 
         protected override void Destroy()
         {
