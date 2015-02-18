@@ -37,6 +37,13 @@ namespace SiliconStudio.Paradox.Effects
                         context.Mixin(__subMixin, context.GetParam(MaterialKeys.VertexStageSurfaceShaders));
                         context.PopComposition();
                     }
+
+                    {
+                        var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushComposition(mixin, "streamInitializerVertexStage", __subMixin);
+                        context.Mixin(__subMixin, context.GetParam(MaterialKeys.VertexStageStreamInitializer));
+                        context.PopComposition();
+                    }
                 }
                 context.Mixin(mixin, "TransformationBase");
                 context.Mixin(mixin, "NormalStream");
@@ -78,6 +85,28 @@ namespace SiliconStudio.Paradox.Effects
                         }
                     }
                 }
+                if (context.GetParam(MaterialKeys.TessellationShader) != null)
+                {
+                    context.Mixin(mixin, context.GetParam(MaterialKeys.TessellationShader));
+                    if (context.GetParam(MaterialKeys.DomainStageSurfaceShaders) != null)
+                    {
+                        context.Mixin(mixin, "MaterialSurfaceDomainStageCompositor");
+
+                        {
+                            var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                            context.PushComposition(mixin, "materialDomainStage", __subMixin);
+                            context.Mixin(__subMixin, context.GetParam(MaterialKeys.DomainStageSurfaceShaders));
+                            context.PopComposition();
+                        }
+
+                        {
+                            var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                            context.PushComposition(mixin, "streamInitializerDomainStage", __subMixin);
+                            context.Mixin(__subMixin, context.GetParam(MaterialKeys.DomainStageStreamInitializer));
+                            context.PopComposition();
+                        }
+                    }
+                }
 
                 {
                     var __subMixin = new ShaderMixinSourceTree() { Name = "Picking" };
@@ -93,6 +122,13 @@ namespace SiliconStudio.Paradox.Effects
                         var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
                         context.PushComposition(mixin, "materialPixelStage", __subMixin);
                         context.Mixin(__subMixin, context.GetParam(MaterialKeys.PixelStageSurfaceShaders));
+                        context.PopComposition();
+                    }
+
+                    {
+                        var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        context.PushComposition(mixin, "streamInitializerPixelStage", __subMixin);
+                        context.Mixin(__subMixin, context.GetParam(MaterialKeys.PixelStageStreamInitializer));
                         context.PopComposition();
                     }
                     if (context.GetParam(MaterialKeys.PixelStageSurfaceFilter) != null)

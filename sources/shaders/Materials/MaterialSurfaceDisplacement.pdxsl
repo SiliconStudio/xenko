@@ -1,0 +1,16 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Paradox.Effects.Materials
+{
+    /// <summary>
+    /// Material displacement map
+    /// </summary>
+    class MaterialSurfaceDisplacement<MemberName TPosition, MemberName TNormal> : IMaterialSurface, MaterialDisplacementStream, PositionStream, NormalStream
+    {
+        override void Compute()
+        {
+            streams.TPosition = float4(streams.TPosition.xyz + streams.matDisplacement * streams.TNormal, streams.TPosition.w);
+        }
+    };
+}

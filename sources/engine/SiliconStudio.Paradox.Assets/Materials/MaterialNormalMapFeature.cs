@@ -81,7 +81,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             if (NormalMap != null)
             {
                 // Inform the context that we are using matNormal (from the MaterialSurfaceNormalMap shader)
-                context.UseStreamWithCustomBlend(NormalStream.Stream, new ShaderClassSource("MaterialStreamNormalBlend"));
+                context.UseStreamWithCustomBlend(MaterialShaderStage.Pixel, NormalStream.Stream, new ShaderClassSource("MaterialStreamNormalBlend"));
                 context.Parameters.Set(MaterialParameters.HasNormalMap, true);
 
                 var computeColorSource = NormalMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.NormalMap, MaterialKeys.NormalValue, new Color(0x80, 0x80, 0xFF, 0xFF)));

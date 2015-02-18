@@ -3,9 +3,12 @@
 namespace SiliconStudio.Paradox.Effects.Materials
 {
     /// <summary>
-    /// Base interface for a material layer (vertex stage)
+    /// Base interface for initializing streams
     /// </summary>
-    class IMaterialSurfaceVertex : IMaterialSurface, MaterialVertexStream
+    class IStreamInitializer
     {
+        void ResetStream()
+        {
+        }
     };
 }

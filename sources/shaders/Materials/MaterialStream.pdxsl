@@ -2,22 +2,17 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 namespace SiliconStudio.Paradox.Effects.Materials
 {
-    class MaterialStream
+    class MaterialStream : IStreamInitializer
     {
         /// <summary>
         /// The blending applied between the current and previous material attributes
         /// </summary>
         stage stream float matBlend;
     
-        void ResetMaterialVertexStream()
+        override void ResetStream()
         {
-            // Reset all values for material stream to avoid pulling from a different stage (VS...etc.)
-            // TODO: It might be interesting to support pulling from VS, but this should be done from the IMaterialSurface and dedicated ComputerColors
-            streams.matBlend = 0.0f;
-        }
+            base.ResetStream();
 
-        void ResetMaterialPixelStream()
-        {
             // Reset all values for material stream to avoid pulling from a different stage (VS...etc.)
             // TODO: It might be interesting to support pulling from VS, but this should be done from the IMaterialSurface and dedicated ComputerColors
             streams.matBlend = 0.0f;

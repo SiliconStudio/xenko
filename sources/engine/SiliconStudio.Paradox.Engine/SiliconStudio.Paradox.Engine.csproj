@@ -74,6 +74,7 @@
     <Compile Include="DataModel\CompressedTimeSpan.cs" />
     <Compile Include="DataModel\AnimationCurveEvaluatorOptimizedQuaternionGroup.cs" />
     <Compile Include="DataModel\Interpolator.cs" />
+    <Compile Include="Effects\ParadoxTessellationMethod.cs" />
     <Compile Include="EntityModel\EntityComponentReference.cs" />
     <Compile Include="Data\GeometricPrimitiveExtension.cs" />
     <Compile Include="EntityModel\EntityReference.cs" />

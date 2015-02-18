@@ -4,7 +4,7 @@
 namespace SiliconStudio.Paradox.Assets.Materials
 {
     /// <summary>
-    /// Base interface for vector/color basec compute color nodes.
+    /// Base interface for vector/color based compute color nodes.
     /// </summary>
     public interface IComputeColor : IComputeNode
     {

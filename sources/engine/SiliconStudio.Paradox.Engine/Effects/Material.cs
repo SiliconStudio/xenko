@@ -19,5 +19,10 @@ namespace SiliconStudio.Paradox.Effects
         }
 
         public ParameterCollection Parameters { get; set; }
+
+        /// <summary>
+        /// The tessellation method used by the material.
+        /// </summary>
+        public ParadoxTessellationMethod TessellationMethod;
     }
 }

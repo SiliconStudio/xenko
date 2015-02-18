@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.ComponentModel;
 
 using SiliconStudio.Assets;
@@ -100,8 +101,8 @@ namespace SiliconStudio.Paradox.Assets.Materials
             material.Visit(context);
 
             // Generate Vertex and Pixel surface shaders
-            Generate(MaterialShaderStage.Vertex, context);
-            Generate(MaterialShaderStage.Pixel, context);
+            foreach (MaterialShaderStage stage in Enum.GetValues(typeof(MaterialShaderStage)))
+                Generate(stage, context);
 
             // Pop the stack
             context.PopLayer();
@@ -123,12 +124,12 @@ namespace SiliconStudio.Paradox.Assets.Materials
             shaderMixinSource.Mixins.Add(new ShaderClassSource("MaterialSurfaceStreamsBlend"));
 
             // Add all streams
-            foreach (var stream in context.Streams)
+            foreach (var stream in context.Streams[stage])
             {
                 shaderMixinSource.AddCompositionToArray("blends", context.GetStreamBlendShaderSource(stream));
             }
 
-            var materialBlendLayerMixin = context.GenerateMixin(stage);
+            var materialBlendLayerMixin = context.GenerateSurfaceShader(stage);
 
             // Add the shader to the mixin
             shaderMixinSource.AddComposition("layer", materialBlendLayerMixin);

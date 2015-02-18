@@ -50,7 +50,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         {
             if (GlossinessMap != null)
             {
-                context.UseStream(GlossinessStream.Stream);
+                context.UseStream(MaterialShaderStage.Pixel, GlossinessStream.Stream);
                 var computeColorSource = GlossinessMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.GlossinessMap, MaterialKeys.GlossinessValue));
                 var mixin = new ShaderMixinSource();
                 mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceGlossinessMap", Invert));

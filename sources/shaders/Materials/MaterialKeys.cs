@@ -12,8 +12,14 @@ namespace SiliconStudio.Paradox.Effects.Materials
     public class MaterialKeys
     {
         public static readonly ParameterKey<ShaderSource> VertexStageSurfaceShaders = ParameterKeys.New<ShaderSource>();
-
+        public static readonly ParameterKey<ShaderSource> DomainStageSurfaceShaders = ParameterKeys.New<ShaderSource>();
         public static readonly ParameterKey<ShaderSource> PixelStageSurfaceShaders = ParameterKeys.New<ShaderSource>();
+        
+        public static readonly ParameterKey<ShaderSource> VertexStageStreamInitializer = ParameterKeys.New<ShaderSource>();
+        public static readonly ParameterKey<ShaderSource> DomainStageStreamInitializer = ParameterKeys.New<ShaderSource>();
+        public static readonly ParameterKey<ShaderSource> PixelStageStreamInitializer = ParameterKeys.New<ShaderSource>();
+
+        public static readonly ParameterKey<ShaderSource> TessellationShader = ParameterKeys.New<ShaderSource>();
 
         public static readonly ParameterKey<ShaderSource> PixelStageSurfaceFilter = ParameterKeys.New<ShaderSource>();
 

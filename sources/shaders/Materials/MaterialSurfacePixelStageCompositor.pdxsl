@@ -6,6 +6,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
     class MaterialSurfacePixelStageCompositor : ShadingBase, Transformation, PositionStream, MaterialPixelShadingStream, DirectLightGroupArray, EnvironmentLightArray
     {
         compose IMaterialSurface materialPixelStage;
+        compose IStreamInitializer streamInitializerPixelStage;
 
         stage override float4 Shading()
         {
@@ -13,8 +14,8 @@ namespace SiliconStudio.Paradox.Effects.Materials
             streams.viewWS = normalize(Eye.xyz - streams.PositionWS.xyz);
             streams.shadingColor = 0;
 
-            // Reset material streams (TODO: move this to composition)
-            ResetMaterialPixelStream();
+            // Reset material streams
+            streamInitializerPixelStage.ResetStream();
 
             // Compute the shading of the surface
             // TODO: separate between material attributes blending and material lighting/shadow shading

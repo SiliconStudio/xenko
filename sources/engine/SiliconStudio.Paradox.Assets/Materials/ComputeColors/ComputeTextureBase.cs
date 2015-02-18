@@ -191,7 +191,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
                 var offsetStr = MaterialUtility.GetAsShaderString(Offset);
 
                 // If materials are optimized, we precompute best shader combination (note: will generate shader permutations!)
-                if (context.IsVertexStage)
+                if (context.IsNotPixelStage)
                 {
                     if (Offset != Vector2.Zero)
                         shaderSource = new ShaderClassSource("ComputeColorTextureLodScaledOffsetSampler", textureKey, usedTexcoord, samplerKey, channelStr, scaleStr, offsetStr, 0.0f);
@@ -219,9 +219,9 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
                 context.Parameters.Set(textureScale, scale);
                 context.Parameters.Set(textureOffset, Offset);
 
-                if (context.IsVertexStage)
+                if (context.IsNotPixelStage)
                 {
-                    shaderSource = new ShaderClassSource("ComputeColorTextureLodScaledOffsetDynamicSampler", textureKey, usedTexcoord, samplerKey, channelStr, textureScale, textureOffset);
+                    shaderSource = new ShaderClassSource("ComputeColorTextureLodScaledOffsetDynamicSampler", textureKey, usedTexcoord, samplerKey, channelStr, textureScale, textureOffset, 0.0f);
                 }
                 else
                 {

@@ -2,10 +2,10 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Data;
 using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Shaders;
 
@@ -13,9 +13,10 @@ namespace SiliconStudio.Paradox.Assets.Materials
 {
     public class MaterialShaderResult : LoggerResult
     {
-        public ShaderSource VertexStageSurfaceShader { get; set; }
+        public Dictionary<MaterialShaderStage, ShaderSource> SurfaceShaders  = new Dictionary<MaterialShaderStage, ShaderSource>();
+        public Dictionary<MaterialShaderStage, ShaderSource> StreamInitializers = new Dictionary<MaterialShaderStage, ShaderSource>();
 
-        public ShaderSource PixelStageSurfaceShader { get; set; }
+        public ParadoxTessellationMethod TessellationMethod;
 
         public ParameterCollection Parameters { get; set; }
     }
@@ -39,10 +40,21 @@ namespace SiliconStudio.Paradox.Assets.Materials
             context.PopLayer();
 
             // Squash all operations into a single mixin
-            result.VertexStageSurfaceShader = context.GenerateMixin(MaterialShaderStage.Vertex);
-            result.PixelStageSurfaceShader = context.GenerateMixin(MaterialShaderStage.Pixel);
-            result.Parameters.Set(MaterialKeys.VertexStageSurfaceShaders, result.VertexStageSurfaceShader);
-            result.Parameters.Set(MaterialKeys.PixelStageSurfaceShaders, result.PixelStageSurfaceShader);
+            foreach (MaterialShaderStage stage in Enum.GetValues(typeof(MaterialShaderStage)))
+            {
+                result.SurfaceShaders[stage] = context.GenerateSurfaceShader(stage);
+                result.StreamInitializers[stage] = context.GenerateStreamInitializer(stage);
+            }
+
+            result.Parameters.Set(MaterialKeys.VertexStageSurfaceShaders, result.SurfaceShaders[MaterialShaderStage.Vertex]);
+            result.Parameters.Set(MaterialKeys.DomainStageSurfaceShaders, result.SurfaceShaders[MaterialShaderStage.Domain]);
+            result.Parameters.Set(MaterialKeys.PixelStageSurfaceShaders, result.SurfaceShaders[MaterialShaderStage.Pixel]);
+
+            result.Parameters.Set(MaterialKeys.VertexStageStreamInitializer, result.StreamInitializers[MaterialShaderStage.Vertex]);
+            result.Parameters.Set(MaterialKeys.DomainStageStreamInitializer, result.StreamInitializers[MaterialShaderStage.Domain]);
+            result.Parameters.Set(MaterialKeys.PixelStageStreamInitializer, result.StreamInitializers[MaterialShaderStage.Pixel]);
+
+            result.TessellationMethod = context.TessellationMethod;
 
             return result;
         }

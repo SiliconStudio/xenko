@@ -134,6 +134,55 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHPass2.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Materials\IMaterialSurfaceDomain.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>IMaterialSurfaceDomain.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Materials\IStreamInitializer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>IStreamInitializer.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Materials\MaterialDomainStream.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialDomainStream.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Materials\MaterialStreamAdditiveBlend.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialStreamAdditiveBlend.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Materials\MaterialSurfaceDomainStageCompositor.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialSurfaceDomainStageCompositor.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Materials\MaterialTessellationStream.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialTessellationStream.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Materials\MaterialVertexStream.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialVertexStream.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Tessellation\TessellationKeys.cs" />
+    <Compile Include="Tessellation\TessellationAET.cs">
+      <DependentUpon>TessellationAET.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Utils\ComputeID.cs">
       <DependentUpon>ComputeID.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -286,14 +335,14 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Materials\MaterialSurfaceVertexDisplacement.cs">
-      <DependentUpon>MaterialSurfaceVertexDisplacement.pdxsl</DependentUpon>
+    <Compile Include="Materials\MaterialSurfaceDisplacement.cs">
+      <DependentUpon>MaterialSurfaceDisplacement.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Materials\MaterialVertexStream.cs">
-      <DependentUpon>MaterialVertexStream.pdxsl</DependentUpon>
+    <Compile Include="Materials\MaterialDisplacementStream.cs">
+      <DependentUpon>MaterialDisplacementStream.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -1647,30 +1696,17 @@
     </Compile>
     <Compile Include="PostEffectKeys.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TessellationKeys.cs" />
-    <Compile Include="Tessellation\ShaderBaseTessellation.cs">
+    <Compile Include="Tessellation\TessellationBase.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ShaderBaseTessellation.pdxsl</DependentUpon>
+      <DependentUpon>TessellationBase.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Tessellation\TessellationAEN.cs">
+    <Compile Include="Tessellation\TessellationAEP.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>TessellationAEN.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="Tessellation\TessellationDisplacement.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>TessellationDisplacement.pdxsl</DependentUpon>
-    </Compile>
-    <Compile Include="Tessellation\TessellationDisplacementAEN.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>TessellationDisplacementAEN.pdxsl</DependentUpon>
+      <DependentUpon>TessellationAEP.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Tessellation\TessellationFlat.cs">
       <AutoGen>True</AutoGen>
@@ -1855,6 +1891,38 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LambertianPrefilteringSHPass2.cs</LastGenOutput>
     </None>
+    <None Include="Materials\IMaterialSurfaceDomain.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>IMaterialSurfaceDomain.cs</LastGenOutput>
+    </None>
+    <None Include="Materials\IStreamInitializer.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>IStreamInitializer.cs</LastGenOutput>
+    </None>
+    <None Include="Materials\MaterialDomainStream.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialDomainStream.cs</LastGenOutput>
+    </None>
+    <None Include="Materials\MaterialStreamAdditiveBlend.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialStreamAdditiveBlend.cs</LastGenOutput>
+    </None>
+    <None Include="Materials\MaterialSurfaceDomainStageCompositor.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialSurfaceDomainStageCompositor.cs</LastGenOutput>
+    </None>
+    <None Include="Materials\MaterialTessellationStream.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialTessellationStream.cs</LastGenOutput>
+    </None>
+    <None Include="Materials\MaterialVertexStream.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialVertexStream.cs</LastGenOutput>
+    </None>
+    <None Include="Tessellation\TessellationAET.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>TessellationAET.cs</LastGenOutput>
+    </None>
     <None Include="Utils\ComputeID.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeID.cs</LastGenOutput>
@@ -1927,13 +1995,13 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceEmissiveShading.cs</LastGenOutput>
     </None>
-    <None Include="Materials\MaterialSurfaceVertexDisplacement.pdxsl">
+    <None Include="Materials\MaterialSurfaceDisplacement.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialSurfaceVertexDisplacement.cs</LastGenOutput>
+      <LastGenOutput>MaterialSurfaceDisplacement.cs</LastGenOutput>
     </None>
-    <None Include="Materials\MaterialVertexStream.pdxsl">
+    <None Include="Materials\MaterialDisplacementStream.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialVertexStream.cs</LastGenOutput>
+      <LastGenOutput>MaterialDisplacementStream.cs</LastGenOutput>
     </None>
     <None Include="Materials\MaterialSpecularMicrofacetNormalDistributionGGX.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -2783,21 +2851,13 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>SkyboxShader.cs</LastGenOutput>
     </None>
-    <None Include="Tessellation\ShaderBaseTessellation.pdxsl">
+    <None Include="Tessellation\TessellationBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ShaderBaseTessellation.cs</LastGenOutput>
+      <LastGenOutput>TessellationBase.cs</LastGenOutput>
     </None>
-    <None Include="Tessellation\TessellationAEN.pdxsl">
+    <None Include="Tessellation\TessellationAEP.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>TessellationAEN.cs</LastGenOutput>
-    </None>
-    <None Include="Tessellation\TessellationDisplacement.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>TessellationDisplacement.cs</LastGenOutput>
-    </None>
-    <None Include="Tessellation\TessellationDisplacementAEN.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>TessellationDisplacementAEN.cs</LastGenOutput>
+      <LastGenOutput>TessellationAEP.cs</LastGenOutput>
     </None>
     <None Include="Tessellation\TessellationFlat.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
