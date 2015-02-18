@@ -12,7 +12,7 @@ namespace SiliconStudio.Core
     [DataContract]
     public abstract class ComponentBase : DisposeBase, IComponent
     {
-        private static long globalCounterId;
+        private static int globalCounterId;
         private string name;
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace SiliconStudio.Core
             if (ComponentTracker.Enable) ComponentTracker.Track(this);
         }
 
-        public long Id { get; private set; }
+        public int Id { get; private set; }
 
         /// <summary>
         /// Gets or sets the name of this component.

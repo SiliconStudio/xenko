@@ -10,7 +10,7 @@ namespace SiliconStudio.Core
         /// <summary>
         /// Gets the id of this component.
         /// </summary>
-        long Id { get; }
+        int Id { get; }
 
         /// <summary>
         /// Gets the name of this component.
