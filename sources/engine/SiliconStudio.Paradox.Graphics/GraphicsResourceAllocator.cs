@@ -41,6 +41,7 @@ namespace SiliconStudio.Paradox.Graphics
             getBufferDescriptionDelegate = GetBufferDescription;
             createTextureDelegate = CreateTexture;
             createBufferDelegate = CreateBuffer;
+            RecyclePolicy = DefaultRecyclePolicy;
         }
 
         /// <summary>
@@ -56,24 +57,24 @@ namespace SiliconStudio.Paradox.Graphics
         public IServiceRegistry Services { get; private set; }
 
         /// <summary>
-        /// Gets or sets the default recycle policy.
+        /// Gets or sets the default recycle policy. Default is always recycle no matter the state of the resources.
         /// </summary>
         /// <value>The default recycle policy.</value>
-        public GraphicsResourceRecyclePolicyDelegate DefaultRecyclePolicy { get; set; }
+        public GraphicsResourceRecyclePolicyDelegate RecyclePolicy { get; set; }
 
         /// <summary>
-        /// Recycles unused resources (with a  <see cref="GraphicsResourceLink.ReferenceCount"/> == 0 ) with the <see cref="DefaultRecyclePolicy"/>. By Default, no recycle policy installed.
+        /// Recycles unused resources (with a  <see cref="GraphicsResourceLink.ReferenceCount"/> == 0 ) with the <see cref="RecyclePolicy"/>. By Default, no recycle policy installed.
         /// </summary>
         public void Recycle()
         {
-            if (DefaultRecyclePolicy != null)
+            if (RecyclePolicy != null)
             {
-                Recycle(DefaultRecyclePolicy);
+                Recycle(RecyclePolicy);
             }
         }
 
         /// <summary>
-        /// Recycles unused resource with the specified recycle policy.
+        /// Recycles unused resource with the specified recycle policy. 
         /// </summary>
         /// <param name="recyclePolicy">The recycle policy.</param>
         /// <exception cref="System.ArgumentNullException">recyclePolicy</exception>
@@ -342,6 +343,16 @@ namespace SiliconStudio.Paradox.Graphics
             resourceLink.AccessTotalCount++;
             resourceLink.AccessCountSinceLastRecycle++;
             resourceLink.LastAccessTime = DateTime.Now;
+        }
+
+        /// <summary>
+        /// The default recycle policy is always going to remove all allocated textures.
+        /// </summary>
+        /// <param name="resourceLink">The resource link.</param>
+        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
+        private static bool DefaultRecyclePolicy(GraphicsResourceLink resourceLink)
+        {
+            return true;
         }
     }
 }
