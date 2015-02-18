@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
             Layers = new SceneGraphicsLayerCollection();
             Master = new SceneGraphicsLayer()
             {
-                Output = new GraphicsLayerOutputMaster(),
+                Output = new MasterRenderFrameProvider(),
                 IsMaster = true
             };
         }

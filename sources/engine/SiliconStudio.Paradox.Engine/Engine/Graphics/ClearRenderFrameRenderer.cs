@@ -4,10 +4,8 @@
 using System.ComponentModel;
 
 using SiliconStudio.Core;
-using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Engine.Graphics.Composers;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Engine.Graphics
@@ -29,7 +27,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             Color = Core.Mathematics.Color.CornflowerBlue;
             Depth = 1.0f;
             Stencil = 0;
-            Output = new CurrentRenderFrameProvider();
         }
 
         /// <summary>
@@ -71,26 +68,12 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         [Display("Stencil Value")]
         public byte Stencil { get; set; }
 
-        /// <summary>
-        /// Gets or sets a specific frame. If not set, it takes the current frame being rendered.
-        /// </summary>
-        /// <value>The frame.</value>
-        [DataMember(50)]
-        [NotNull]
-        public IRenderFrameOutput Output { get; set; }
-
         protected override void DrawCore(RenderContext context)
         {
-            if (Output == null)
-            {
-                return;
-            }
-
-            // Use the instance Frame or gets from the context
-            var frame = Output.GetRenderFrame(context);
+            var output = Output.GetSafeRenderFrame(context);
 
             // If not frame set, then nop
-            if (frame == null)
+            if (output == null)
             {
                 return;
             }
@@ -98,15 +81,15 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             var graphicsDevice = context.GraphicsDevice;
 
             // clear the targets
-            if (frame.DepthStencil != null)
+            if (output.DepthStencil != null)
             {
                 const DepthStencilClearOptions ClearOptions = DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil;
-                graphicsDevice.Clear(frame.DepthStencil, ClearOptions, Depth, Stencil);
+                graphicsDevice.Clear(output.DepthStencil, ClearOptions, Depth, Stencil);
             }
 
             if (ClearFlags == ClearRenderFrameFlags.Color)
             {
-                graphicsDevice.Clear(frame.RenderTarget, Color);
+                graphicsDevice.Clear(output.RenderTarget, Color);
             }
         }
     }

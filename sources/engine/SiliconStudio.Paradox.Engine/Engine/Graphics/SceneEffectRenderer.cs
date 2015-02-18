@@ -5,7 +5,6 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Images;
-using SiliconStudio.Paradox.Engine.Graphics.Composers;
 
 namespace SiliconStudio.Paradox.Engine.Graphics
 {
@@ -22,7 +21,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         public SceneEffectRenderer()
         {
             Input = new LayerInputFrameProvider();
-            Output = new CurrentRenderFrameProvider();
         }
 
         /// <summary>
@@ -33,28 +31,25 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         [NotNull]
         public IImageEffectRendererInput Input { get; set; }
 
-        /// <summary>
-        /// Gets or sets the output of this effect
-        /// </summary>
-        /// <value>The output.</value>
-        [DataMember(10)]
-        [NotNull]
-        public IRenderFrameOutput Output { get; set; }
-
-        [DataMember(40)]
+        [DataMember(20)]
         [Display("Effect", AlwaysExpand = true)]
         public IImageEffectRenderer Effect { get; set; }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void Destroy()
         {
-            // If Input or Output are null, early exit
-            if (Input == null || Output == null)
+            if (Input != null)
             {
-                return;
+                Input.Dispose();
+                Input = null;
             }
 
-            var input = Input.GetRenderFrame(context);
-            var output = Output.GetRenderFrame(context);
+            base.Destroy();
+        }
+
+        protected override void DrawCore(RenderContext context)
+        {
+            var input = Input.GetSafeRenderFrame(context);
+            var output = Output.GetSafeRenderFrame(context);
 
             // If RenderFrame input or output are null, we can't do anything
             if (input == null || output == null)

@@ -84,6 +84,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Engine\Graphics\Composers\RenderFrameRelativeMode.cs" />
     <Compile Include="Engine\Graphics\ComputeColor\3dsMax\ComputeColorAdd3ds.cs">
       <DependentUpon>ComputeColorAdd3ds.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -686,7 +687,7 @@
     <Compile Include="Engine\Graphics\GraphicsRendererCollection.cs" />
     <Compile Include="Engine\Graphics\IImageEffectRenderer.cs" />
     <Compile Include="Engine\Graphics\IImageEffectRendererInput.cs" />
-    <Compile Include="Engine\Graphics\IRenderFrameOutput.cs" />
+    <Compile Include="Engine\Graphics\ISceneRendererOutput.cs" />
     <Compile Include="Engine\Graphics\LayerInputFrameProvider.cs" />
     <Compile Include="Engine\Graphics\Images\AntiAliasing\IScreenSpaceAntiAliasingEffect.cs" />
     <Compile Include="Engine\Graphics\Images\IImageEffect.cs" />
@@ -802,8 +803,8 @@
     <Compile Include="Engine\Graphics\ClearRenderFrameRenderer.cs" />
     <Compile Include="Engine\Graphics\Composers\SceneGraphicsCompositorLayers.cs" />
     <Compile Include="Engine\Graphics\CurrentRenderFrameProvider.cs" />
-    <Compile Include="Engine\Graphics\Composers\GraphicsLayerOutputMaster.cs" />
-    <Compile Include="Engine\Graphics\Composers\GraphicsLayerOutputRenderFrame.cs" />
+    <Compile Include="Engine\Graphics\Composers\MasterRenderFrameProvider.cs" />
+    <Compile Include="Engine\Graphics\Composers\LocalRenderFrameProvider.cs" />
     <Compile Include="Engine\Graphics\SharedRenderFrameProvider.cs" />
     <Compile Include="Engine\Graphics\Composers\SceneGraphicsLayerCollection.cs" />
     <Compile Include="Engine\Graphics\SceneEffectRenderer.cs" />

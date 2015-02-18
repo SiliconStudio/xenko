@@ -55,13 +55,30 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// Gets or sets the render target.
         /// </summary>
         /// <value>The render target.</value>
-        public Texture RenderTarget { get; internal set; }
+        public Texture RenderTarget { get; private set; }
 
         /// <summary>
         /// Gets or sets the depth stencil.
         /// </summary>
         /// <value>The depth stencil.</value>
-        public Texture DepthStencil { get; internal set; }
+        public Texture DepthStencil { get; private set; }
+
+        /// <summary>
+        /// Checks if resizing this instance is required.
+        /// </summary>
+        /// <param name="referenceFrame">The reference frame.</param>
+        /// <returns><c>true</c> if resizing this instance is required, <c>false</c> otherwise.</returns>
+        public bool CheckIfResizeRequired(RenderFrame referenceFrame)
+        {
+            if (Descriptor.Mode == RenderFrameSizeMode.Relative && referenceFrame != null)
+            {
+                var targetWidth = (int)((double)Descriptor.Width * referenceFrame.RenderTarget.Width / 100);
+                var targetHeight = (int)((double)Descriptor.Height * referenceFrame.RenderTarget.Height / 100);
+
+                return RenderTarget.Width != targetWidth || RenderTarget.Height != targetHeight;
+            }
+            return false;
+        }
 
         /// <summary>
         /// Activates the specified render context.

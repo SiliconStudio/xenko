@@ -36,7 +36,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         public SceneGraphicsLayer()
         {
             Enabled = true;
-            Output = GraphicsLayerOutputMaster.Instance;
+            Output = MasterRenderFrameProvider.Instance;
             Renderers = new SceneRendererCollection();
         }
 
@@ -73,7 +73,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
             set
             {
                 // master layer is always a master output and cannot be changed
-                output = IsMaster ? GraphicsLayerOutputMaster.Instance : value;
+                output = IsMaster ? MasterRenderFrameProvider.Instance : value;
             }
         }
 

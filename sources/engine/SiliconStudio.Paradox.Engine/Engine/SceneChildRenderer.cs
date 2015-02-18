@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
-using SiliconStudio.Core.Annotations;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.Engine.Graphics.Composers;
@@ -34,7 +33,6 @@ namespace SiliconStudio.Paradox.Engine
         public SceneChildRenderer(SceneChildComponent sceneChild)
         {
             SceneChild = sceneChild;
-            Output = new CurrentRenderFrameProvider();
         }
 
         /// <summary>
@@ -43,14 +41,6 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>The scene.</value>
         [DataMember(10)]
         public SceneChildComponent SceneChild { get; set; }
-
-        /// <summary>
-        /// Gets or sets the output.
-        /// </summary>
-        /// <value>The output.</value>
-        [DataMember(20)]
-        [NotNull]
-        public IRenderFrameOutput Output { get; set; }
 
         /// <summary>
         /// Gets or sets the graphics compositor override, allowing to override the composition of the scene.
@@ -66,9 +56,20 @@ namespace SiliconStudio.Paradox.Engine
             currentEntityManager = context.Tags.Get(SceneInstance.Current);
         }
 
+        protected override void Destroy()
+        {
+            if (GraphicsCompositorOverride != null)
+            {
+                GraphicsCompositorOverride.Dispose();
+                GraphicsCompositorOverride = null;
+            }
+
+            base.Destroy();
+        }
+
         protected override void DrawCore(RenderContext context)
         {
-            if (SceneChild == null || Output == null || !SceneChild.Enabled)
+            if (SceneChild == null || !SceneChild.Enabled)
             {
                 return;
             }
@@ -80,9 +81,8 @@ namespace SiliconStudio.Paradox.Engine
                 return;
             }
 
-            var renderFrame = Output.GetRenderFrame(context);
-
-            if (renderFrame == null)
+            var output = Output.GetSafeRenderFrame(context);
+            if (output == null)
             {
                 return;
             }
@@ -90,7 +90,7 @@ namespace SiliconStudio.Paradox.Engine
             SceneInstance sceneInstance;
             if (sceneChildProcessor.Scenes.TryGetValue(SceneChild, out sceneInstance))
             {
-                sceneInstance.Draw(context, renderFrame, GraphicsCompositorOverride);
+                sceneInstance.Draw(context, output, GraphicsCompositorOverride);
             }
         }
     }

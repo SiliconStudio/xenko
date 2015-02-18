@@ -1,6 +1,9 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using SiliconStudio.Core;
+using SiliconStudio.Paradox.Engine.Graphics.Composers;
+
 namespace SiliconStudio.Paradox.Engine.Graphics
 {
     /// <summary>
@@ -8,5 +11,23 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     /// </summary>
     public abstract class SceneRendererBase : RendererBase, ISceneRenderer
     {
+        protected SceneRendererBase()
+        {
+            Output = new CurrentRenderFrameProvider();
+        }
+
+        [DataMember(100)]
+        public ISceneRendererOutput Output { get; set; }
+
+        protected override void Destroy()
+        {
+            if (Output != null)
+            {
+                Output.Dispose();
+                Output = null;
+            }
+
+            base.Destroy();
+        }
     }
 }

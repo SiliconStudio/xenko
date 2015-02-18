@@ -9,14 +9,14 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
     /// <summary>
     /// Output to the Direct (same as the output of the master layer).
     /// </summary>
-    [DataContract("GraphicsLayerOutputMaster")]
+    [DataContract("MasterRenderFrameProvider")]
     [Display("Master")]
-    public sealed class GraphicsLayerOutputMaster : RenderFrameProviderBase, IGraphicsLayerOutput
+    public sealed class MasterRenderFrameProvider : RenderFrameProviderBase, IGraphicsLayerOutput, ISceneRendererOutput
     {
         /// <summary>
         /// Gets a singleton instance.
         /// </summary>
-        public static readonly GraphicsLayerOutputMaster Instance = new GraphicsLayerOutputMaster();
+        public static readonly MasterRenderFrameProvider Instance = new MasterRenderFrameProvider();
 
         public override RenderFrame GetRenderFrame(RenderContext context)
         {

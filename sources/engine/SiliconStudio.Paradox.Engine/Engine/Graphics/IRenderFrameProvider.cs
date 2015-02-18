@@ -19,4 +19,23 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// <returns>RenderFrame.</returns>
         RenderFrame GetRenderFrame(RenderContext context);
     }
+
+    /// <summary>
+    /// Extensions for <see cref="IRenderFrameProvider"/>.
+    /// </summary>
+    public static class RenderFrameProviderExtensions
+    {
+        /// <summary>
+        /// Gets a render frame handling null <see cref="IRenderFrameProvider"/>.
+        /// </summary>
+        /// <param name="renderFrameProvider">The render frame provider.</param>
+        /// <param name="context">The context.</param>
+        /// <returns>RenderFrame or null if IRenderFrameProvider is null.</returns>
+        /// <exception cref="System.ArgumentNullException">context</exception>
+        public static RenderFrame GetSafeRenderFrame(this IRenderFrameProvider renderFrameProvider, RenderContext context)
+        {
+            if (context == null) throw new ArgumentNullException("context");
+            return renderFrameProvider == null ? null : renderFrameProvider.GetRenderFrame(context);
+        }
+    }
 }

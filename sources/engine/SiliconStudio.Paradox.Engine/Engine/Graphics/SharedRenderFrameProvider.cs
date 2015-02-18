@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     /// </summary>
     [DataContract("SharedRenderFrameProvider")]
     [Display("Shared RenderFrame")]
-    public sealed class SharedRenderFrameProvider : RenderFrameProviderBase, IGraphicsLayerOutput, IImageEffectRendererInput, IRenderFrameOutput
+    public sealed class SharedRenderFrameProvider : RenderFrameProviderBase, IGraphicsLayerOutput, IImageEffectRendererInput, ISceneRendererOutput
     {
         /// <summary>
         /// Gets or sets the shared RenderFrame.

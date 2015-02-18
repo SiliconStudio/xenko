@@ -6,7 +6,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     /// <summary>
     /// Output interface for an <see cref="SceneEffectRenderer"/>
     /// </summary>
-    public interface IRenderFrameOutput : IRenderFrameProvider
+    public interface ISceneRendererOutput : IRenderFrameProvider
     {
     }
 }

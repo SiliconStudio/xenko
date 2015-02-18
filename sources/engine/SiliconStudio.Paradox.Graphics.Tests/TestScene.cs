@@ -93,7 +93,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             else
             {
                 var layer = new SceneGraphicsLayer();
-                var renderHDROutput = new GraphicsLayerOutputRenderFrame { Descriptor = { Format = RenderFrameFormat.HDR, DepthFormat = RenderFrameDepthFormat.Shared} };
+                var renderHDROutput = new LocalRenderFrameProvider { Descriptor = { Format = RenderFrameFormat.HDR, DepthFormat = RenderFrameDepthFormat.Shared} };
                 layer.Output = renderHDROutput;
                 layer.Renderers.Add(new ClearRenderFrameRenderer());
                 layer.Renderers.Add(new SceneCameraRenderer()
