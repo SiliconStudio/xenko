@@ -7,6 +7,7 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Effects.Tessellation;
+using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
@@ -62,9 +63,35 @@ namespace SiliconStudio.Paradox.Assets.Materials
             // set the desired triangle size desired for this material
             context.Parameters.Set(TessellationKeys.DesiredTriangleSize, TriangleSize);
 
-            // set the tessellation method
+            // set the tessellation method and callback to add Displacement/Normal average shaders.
             if (AdjacentEdgeAverage)
+            {
                 context.TessellationMethod = ParadoxTessellationMethod.AdjacentEdgeAverage;
+                context.AddFinalCallback(MaterialShaderStage.Domain, AddAdjacentEdgeAverageMacros);
+                context.AddFinalCallback(MaterialShaderStage.Domain, AddAdjacentEdgeAverageShaders);
+            }
+        }
+
+        public void AddAdjacentEdgeAverageShaders(MaterialShaderStage stage, MaterialGeneratorContext context)
+        {
+            var tessellationShader = context.Parameters.Get(MaterialKeys.TessellationShader) as ShaderMixinSource;
+            if(tessellationShader == null)
+                return;
+
+            if (context.GetStreamFinalModifier<MaterialDisplacementMapFeature>(MaterialShaderStage.Domain) != null)
+            {
+                tessellationShader.Mixins.Add(new ShaderClassSource("TessellationAE2", "TexCoord")); // this suppose Displacement from Texture -> TODO make it more flexible so that it works with any kind of displacement.
+                tessellationShader.Mixins.Add(new ShaderClassSource("TessellationAE3", "normalWS"));
+            }
+        }
+
+        public void AddAdjacentEdgeAverageMacros(MaterialShaderStage stage, MaterialGeneratorContext context)
+        {
+            var tessellationShader = context.Parameters.Get(MaterialKeys.TessellationShader) as ShaderMixinSource;
+            if(tessellationShader == null)
+                return;
+
+            tessellationShader.Macros.Add(new ShaderMacro("InputControlPointCount", 12));
         }
     }
 }

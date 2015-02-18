@@ -107,7 +107,7 @@ namespace SiliconStudio.Paradox.Extensions
             return true;
         }
 
-        public static unsafe IndexBufferBinding GenerateIndexBufferAEN(IndexBufferBinding indexBuffer, VertexBufferBinding vertexBuffer)
+        public static unsafe int[] GenerateIndexBufferAEN(IndexBufferBinding indexBuffer, VertexBufferBinding vertexBuffer)
         {
             // More info at http://developer.download.nvidia.com/whitepapers/2010/PN-AEN-Triangles-Whitepaper.pdf
             // This implementation might need some performance improvements
@@ -133,15 +133,15 @@ namespace SiliconStudio.Paradox.Extensions
                     {
                         var oldIndicesShort = (short*)oldIndices;
                         triangleIndices[0] = oldIndicesShort[0];
-                        triangleIndices[1] = oldIndicesShort[0];
-                        triangleIndices[2] = oldIndicesShort[0];
+                        triangleIndices[1] = oldIndicesShort[1];
+                        triangleIndices[2] = oldIndicesShort[2];
                     }
                     else
                     {
                         var oldIndicesShort = (int*)oldIndices;
                         triangleIndices[0] = oldIndicesShort[0];
-                        triangleIndices[1] = oldIndicesShort[0];
-                        triangleIndices[2] = oldIndicesShort[0];
+                        triangleIndices[1] = oldIndicesShort[1];
+                        triangleIndices[2] = oldIndicesShort[2];
                     }
 
                     positionIndices[0] = positionMapping.Indices[triangleIndices[0]];
@@ -187,15 +187,15 @@ namespace SiliconStudio.Paradox.Extensions
                     {
                         var oldIndicesShort = (short*)oldIndices;
                         triangleIndices[0] = oldIndicesShort[0];
-                        triangleIndices[1] = oldIndicesShort[0];
-                        triangleIndices[2] = oldIndicesShort[0];
+                        triangleIndices[1] = oldIndicesShort[1];
+                        triangleIndices[2] = oldIndicesShort[2];
                     }
                     else
                     {
                         var oldIndicesShort = (int*)oldIndices;
                         triangleIndices[0] = oldIndicesShort[0];
-                        triangleIndices[1] = oldIndicesShort[0];
-                        triangleIndices[2] = oldIndicesShort[0];
+                        triangleIndices[1] = oldIndicesShort[1];
+                        triangleIndices[2] = oldIndicesShort[2];
                     }
 
                     positionIndices[0] = positionMapping.Indices[triangleIndices[0]];
@@ -223,29 +223,34 @@ namespace SiliconStudio.Paradox.Extensions
                 }
             }
 
-            // Generate index buffer
-            var indexBufferData = new byte[triangleCount * 12 * Utilities.SizeOf<int>()];
-            fixed (int* indexDataStart = &newIndices[0])
-            fixed (byte* indexBufferDataStart = &indexBufferData[0])
-            {
-                Utilities.CopyMemory((IntPtr)indexBufferDataStart, (IntPtr)indexDataStart, indexBufferData.Length);
-                return new IndexBufferBinding(new BufferData(BufferFlags.IndexBuffer, indexBufferData).ToSerializableVersion(), true, triangleCount * 12);
-            }
+            return newIndices;
         }
 
         /// <summary>
-        /// Generates the index buffer with dominant edge and vertex informations.
+        /// Generates the index buffer with dominant edge and vertex information.
         /// Each triangle gets its indices expanded to 12 control points, with 0 to 2 being original triangle,
         /// 3 to 8 being dominant edges and 9 to 11 being dominant vertices.
         /// </summary>
         /// <param name="meshData">The mesh data.</param>
-        public static void GenerateIndexBufferAEN(this MeshDraw meshData)
+        public unsafe static void GenerateIndexBufferAEN(this MeshDraw meshData)
         {
             // For now, require a MeshData with only one vertex buffer and one index buffer
             if (meshData.VertexBuffers.Length != 1 || meshData.IndexBuffer == null)
                 throw new NotImplementedException();
 
-            meshData.IndexBuffer = GenerateIndexBufferAEN(meshData.IndexBuffer, meshData.VertexBuffers[0]);
+            // Generate the new indices
+            var newIndices = GenerateIndexBufferAEN(meshData.IndexBuffer, meshData.VertexBuffers[0]);
+            
+            // copy them into a byte[]
+            var triangleCount = meshData.IndexBuffer.Count / 3;
+            var indexBufferData = new byte[triangleCount * 12 * Utilities.SizeOf<int>()];
+            fixed (int* indexDataStart = &newIndices[0])
+            fixed (byte* indexBufferDataStart = &indexBufferData[0])
+            {
+                Utilities.CopyMemory((IntPtr)indexBufferDataStart, (IntPtr)indexDataStart, indexBufferData.Length);
+            }
+
+            meshData.IndexBuffer = new IndexBufferBinding(new BufferData(BufferFlags.IndexBuffer, indexBufferData).ToSerializableVersion(), true, triangleCount * 12);
             meshData.DrawCount = meshData.IndexBuffer.Count;
             meshData.PrimitiveType = PrimitiveType.PatchList.ControlPointCount(12);
         }

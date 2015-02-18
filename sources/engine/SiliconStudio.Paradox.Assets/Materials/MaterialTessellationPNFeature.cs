@@ -29,10 +29,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             var tessellationShader = new ShaderMixinSource();
             tessellationShader.Mixins.Add(new ShaderClassSource("TessellationPN"));
             if (AdjacentEdgeAverage)
-            {
-                tessellationShader.Mixins.Add(new ShaderClassSource("TessellationAEP"));
-                tessellationShader.Macros.Add(new ShaderMacro("InputControlPointCount", 12));
-            }
+                tessellationShader.Mixins.Add(new ShaderClassSource("TessellationAE4", "PositionWS"));
 
             context.Parameters.Set(MaterialKeys.TessellationShader, tessellationShader);
         }

@@ -1,11 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections.Generic;
 
 using SiliconStudio.Paradox.Extensions;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Paradox.Graphics;
+
+using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 namespace SiliconStudio.Paradox.Effects
 {
@@ -148,8 +149,10 @@ namespace SiliconStudio.Paradox.Effects
         {
             if (vertexArrayObjectAEN == null)
             {
-                var indexBufferAEN = IndexExtensions.GenerateIndexBufferAEN(Mesh.Draw.IndexBuffer, Mesh.Draw.VertexBuffers[0]);
-                vertexArrayObjectAEN = VertexArrayObject.New(context.GraphicsDevice, Effect.InputSignature, indexBufferAEN, Mesh.Draw.VertexBuffers);
+                var graphicsDevice = context.GraphicsDevice;
+                var indicesAEN = IndexExtensions.GenerateIndexBufferAEN(Mesh.Draw.IndexBuffer, Mesh.Draw.VertexBuffers[0]);
+                var indexBufferBinding = new IndexBufferBinding(Buffer.Index.New(graphicsDevice, indicesAEN), true, Mesh.Draw.IndexBuffer.Count * 12 / 3);
+                vertexArrayObjectAEN = VertexArrayObject.New(context.GraphicsDevice, Effect.InputSignature, indexBufferBinding, Mesh.Draw.VertexBuffers);
             }
 
             return vertexArrayObjectAEN;

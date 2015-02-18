@@ -22,6 +22,12 @@
     <Compile Include="..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="ComputeColor\ComputeColorSubtract.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ComputeColorSubtract.pdxsl</DependentUpon>
+    </Compile>
     <Compile Include="ComputeColor\ComputeColorTextureLodSampler.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -76,6 +82,10 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSH.cs" />
+    <None Include="ComputeColor\ComputeColorSubtract.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorSubtract.cs</LastGenOutput>
+    </None>
     <None Include="ComputeColor\ComputeColorTextureLodScaledOffsetDynamicSampler.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTextureLodScaledOffsetDynamicSampler.cs</LastGenOutput>
@@ -176,13 +186,25 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>MaterialVertexStream.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Tessellation\TessellationKeys.cs" />
-    <Compile Include="Tessellation\TessellationAET.cs">
-      <DependentUpon>TessellationAET.pdxsl</DependentUpon>
+    <Compile Include="Tessellation\TessellationAE2.cs">
+      <DependentUpon>TessellationAE2.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Tessellation\TessellationAE4.cs">
+      <DependentUpon>TessellationAE4.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Tessellation\TessellationAE3.cs">
+      <DependentUpon>TessellationAE3.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Tessellation\TessellationKeys.cs" />
     <Compile Include="Utils\ComputeID.cs">
       <DependentUpon>ComputeID.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -1702,12 +1724,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>TessellationBase.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Tessellation\TessellationAEP.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>TessellationAEP.pdxsl</DependentUpon>
-    </Compile>
     <Compile Include="Tessellation\TessellationFlat.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1919,9 +1935,17 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialVertexStream.cs</LastGenOutput>
     </None>
-    <None Include="Tessellation\TessellationAET.pdxsl">
+    <None Include="Tessellation\TessellationAE2.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>TessellationAET.cs</LastGenOutput>
+      <LastGenOutput>TessellationAE2.cs</LastGenOutput>
+    </None>
+    <None Include="Tessellation\TessellationAE4.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>TessellationAE4.cs</LastGenOutput>
+    </None>
+    <None Include="Tessellation\TessellationAE3.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>TessellationAE3.cs</LastGenOutput>
     </None>
     <None Include="Utils\ComputeID.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -2854,10 +2878,6 @@
     <None Include="Tessellation\TessellationBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>TessellationBase.cs</LastGenOutput>
-    </None>
-    <None Include="Tessellation\TessellationAEP.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>TessellationAEP.cs</LastGenOutput>
     </None>
     <None Include="Tessellation\TessellationFlat.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

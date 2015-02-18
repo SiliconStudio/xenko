@@ -110,8 +110,8 @@ class TessellationPN : TessellationFlat
 
     stage override void TessellateHull(InputPatch<Input, InputControlPointCount> input, uint uCPID, uint NextCPID)
     {
-        streams.nextPositionVS1 = ComputeControlPoint((float3)input[uCPID].PositionWS, (float3)input[NextCPID].PositionWS, (float3)input[uCPID].normalWS);
-        streams.nextPositionVS2 = ComputeControlPoint((float3)input[NextCPID].PositionWS, (float3)input[uCPID].PositionWS, (float3)input[NextCPID].normalWS);
+        streams.nextPositionVS1 = ComputeControlPoint((float3)input[uCPID].PositionWS, (float3)input[NextCPID].PositionWS, input[uCPID].normalWS);
+        streams.nextPositionVS2 = ComputeControlPoint((float3)input[NextCPID].PositionWS, (float3)input[uCPID].PositionWS, input[NextCPID].normalWS);
     }
 
     stage override void TessellateHullConstant(InputPatch<Input, InputControlPointCount> input, const OutputPatch<Input2, 3> output, inout Constants constants)

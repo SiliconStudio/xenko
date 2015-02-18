@@ -25,6 +25,7 @@ namespace SiliconStudio.Paradox.Effects
             ViewInverse = ParameterKeys.NewDynamic(ParameterDynamicValue.New<Matrix, Matrix>(View, InvertMatrix));
             ProjectionInverse = ParameterKeys.NewDynamic(ParameterDynamicValue.New<Matrix, Matrix>(Projection, InvertMatrix));
             WorldViewInverse = ParameterKeys.NewDynamic(ParameterDynamicValue.New<Matrix, Matrix>(WorldView, InvertMatrix));
+            WorldScale = ParameterKeys.NewDynamic(ParameterDynamicValue.New<Vector3, Matrix>(World, ExtractScale));
         }
 
         /// <summary>
@@ -46,6 +47,13 @@ namespace SiliconStudio.Paradox.Effects
         private static void InvertMatrix(ref Matrix inMatrix, ref Matrix outMatrix)
         {
             Matrix.Invert(ref inMatrix, out outMatrix);
+        }
+
+        private static void ExtractScale(ref Matrix inMatrix, ref Vector3 outVector)
+        {
+            outVector.X = ((Vector3)inMatrix.Row1).Length();
+            outVector.Y = ((Vector3)inMatrix.Row2).Length();
+            outVector.Z = ((Vector3)inMatrix.Row3).Length();
         }
 
         /// <summary>

@@ -6,7 +6,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
     /// <summary>
     /// Contains all the default streams of the domain shader stage.
     /// </summary>
-    class MaterialDomainStream : MaterialStream, MaterialDisplacementStream, MaterialTessellationStream, NormalStream, PositionStream
+    class MaterialDomainStream : MaterialStream, MaterialDisplacementStream, MaterialTessellationStream, NormalStream, PositionStream, Texturing
     {
     };
 }

@@ -34,5 +34,7 @@ class Transformation
         stage float4x4 WorldViewInverse;
         // WorldViewProjection matrix. Default to = World * ViewProjection.
         stage float4x4 WorldViewProjection;
+        // The scale of the World. Default to Vector2.One.
+        stage float3 WorldScale;
     };
 };

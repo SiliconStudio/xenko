@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     [Display("Displacement Map")]
     public class MaterialDisplacementMapFeature : IMaterialDisplacementFeature
     {
-        private const string DisplacementStream = "matDisplacement";
+        public const string DisplacementStream = "matDisplacement";
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialDisplacementMapFeature"/> class.
         /// </summary>
@@ -112,9 +112,10 @@ namespace SiliconStudio.Paradox.Assets.Materials
             context.SetStream(materialStage, DisplacementStream, displacement, MaterialKeys.DisplacementMap, MaterialKeys.DisplacementValue);
             context.IsNotPixelStage = false;
 
+            var scaleNormal = materialStage != MaterialShaderStage.Vertex;
             var positionMember = materialStage == MaterialShaderStage.Vertex ? "Position" : "PositionWS";
             var normalMember = materialStage == MaterialShaderStage.Vertex ? "meshNormal" : "normalWS";
-            context.SetStreamFinalModifier<MaterialDisplacementMapFeature>(materialStage, new ShaderClassSource("MaterialSurfaceDisplacement", positionMember, normalMember));
+            context.SetStreamFinalModifier<MaterialDisplacementMapFeature>(materialStage, new ShaderClassSource("MaterialSurfaceDisplacement", positionMember, normalMember, scaleNormal));
         }
     }
 }

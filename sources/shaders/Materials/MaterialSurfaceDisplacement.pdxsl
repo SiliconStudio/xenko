@@ -6,11 +6,17 @@ namespace SiliconStudio.Paradox.Effects.Materials
     /// <summary>
     /// Material displacement map
     /// </summary>
-    class MaterialSurfaceDisplacement<MemberName TPosition, MemberName TNormal> : IMaterialSurface, MaterialDisplacementStream, PositionStream, NormalStream
+    class MaterialSurfaceDisplacement<MemberName TPosition, MemberName TNormal, bool TScaleNormal> : IMaterialSurface, MaterialDisplacementStream, PositionStream, NormalStream, Transformation
     {
         override void Compute()
         {
-            streams.TPosition = float4(streams.TPosition.xyz + streams.matDisplacement * streams.TNormal, streams.TPosition.w);
+            float3 scaledNormal = streams.TNormal;
+            if(TScaleNormal)
+            {
+                scaledNormal *= WorldScale;
+            }
+
+            streams.TPosition = float4(streams.TPosition.xyz + streams.matDisplacement * scaledNormal, streams.TPosition.w);
         }
     };
 }

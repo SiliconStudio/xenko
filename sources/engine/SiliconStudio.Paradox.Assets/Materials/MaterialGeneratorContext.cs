@@ -25,6 +25,9 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         private readonly Dictionary<KeyValuePair<MaterialShaderStage, Type>, ShaderSource> inputStreamModifiers = new Dictionary<KeyValuePair<MaterialShaderStage, Type>, ShaderSource>();
 
+        public delegate void MaterialGeneratorCallback(MaterialShaderStage stage, MaterialGeneratorContext context);
+        private readonly Dictionary<MaterialShaderStage, List<MaterialGeneratorCallback>> finalCallbacks = new Dictionary<MaterialShaderStage, List<MaterialGeneratorCallback>>();
+
         public MaterialGeneratorContext()
             : this(null)
         {
@@ -34,6 +37,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
             : base(package)
         {
             currentOverrides = new MaterialBlendOverrides();
+
+            foreach (MaterialShaderStage stage in Enum.GetValues(typeof(MaterialShaderStage)))
+            {
+                finalCallbacks[stage] = new List<MaterialGeneratorCallback>();
+            }
         }
 
         public Dictionary<MaterialShaderStage, HashSet<string>> Streams
@@ -58,6 +66,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
         ///   <c>true</c> if [materials are optimized]; otherwise, <c>false</c>.
         /// </value>
         public bool OptimizeMaterials { get; set; }
+
+        public void AddFinalCallback(MaterialShaderStage stage, MaterialGeneratorCallback callback)
+        {
+            finalCallbacks[stage].Add(callback);
+        }
 
         public void SetStreamFinalModifier<T>(MaterialShaderStage stage, ShaderSource shaderSource)
         {
@@ -171,12 +184,20 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 }
             }
 
-            // In case of the root material, add all vertex stream modifiers just at the end
+            // In case of the root material, add all stream modifiers just at the end and call final callbacks
             if (Current.Parent == null)
             {
                 foreach (var modifierKey in inputStreamModifiers.Keys)
                 {
                     Current.SurfaceShaders[modifierKey.Key].Add(inputStreamModifiers[modifierKey]);
+                }
+                foreach (MaterialShaderStage stage in Enum.GetValues(typeof(MaterialShaderStage)))
+                {
+                    foreach (var callback in finalCallbacks[stage])
+                    {
+                        callback(stage, this);
+                    }
+                    finalCallbacks[stage].Clear();
                 }
             }
 
