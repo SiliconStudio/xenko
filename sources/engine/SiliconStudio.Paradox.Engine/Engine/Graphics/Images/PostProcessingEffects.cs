@@ -156,9 +156,17 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             var input = GetInput(0);
             var output = GetOutput(0);
-            if (input == null || input == output)
+            if (input == null || output == null)
             {
                 return;
+            }
+
+            // If input == output, than copy the input to a temporary texture
+            if (input == output)
+            {
+                var newInput = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
+                GraphicsDevice.Copy(input, newInput);
+                input = newInput;
             }
             
             var currentInput = input;
