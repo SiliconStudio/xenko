@@ -22,10 +22,6 @@ namespace SiliconStudio.Paradox.Physics
             game.GameSystems.Add(this);
 
             Simulation.Initialize(game);
-
-            //add into processors pipeline
-            processor = new PhysicsProcessor();
-            Entities.Processors.Add(processor);
             Enabled = true; //enabled by default
         }
 

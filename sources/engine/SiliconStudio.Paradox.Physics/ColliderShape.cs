@@ -79,7 +79,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <summary>
         /// Gets or sets the scaling.
         /// Make sure that you manually created and assigned an exclusive ColliderShape to the Collider otherwise since the engine shares shapes among many Colliders, all the colliders will be scaled.
-        /// Please note that this scaling has no relation to the TransformationComponent scaling.
+        /// Please note that this scaling has no relation to the TransformComponent scaling.
         /// </summary>
         /// <value>
         /// The scaling.

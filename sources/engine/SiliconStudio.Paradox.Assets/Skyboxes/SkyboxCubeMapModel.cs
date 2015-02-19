@@ -8,6 +8,8 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Assets.Textures;
 using SiliconStudio.Paradox.Effects.Skyboxes;
+using SiliconStudio.Paradox.Engine.Graphics.Skyboxes;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Skyboxes
@@ -24,7 +26,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
         /// </summary>
         /// <value>The cubemap texture.</value>
         [DataMember(10)]
-        public AssetReference<TextureAsset> CubeMap { get; set; }
+        public Texture CubeMap { get; set; }
 
         public ShaderSource Generate(SkyboxGeneratorContext context)
         {
@@ -36,7 +38,8 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
         {
             if (CubeMap != null)
             {
-                yield return CubeMap;
+                var reference = AttachedReferenceManager.GetAttachedReference(CubeMap);
+                yield return new AssetReference<TextureAsset>(reference.Id, reference.Url);
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -11,7 +12,7 @@ namespace SiliconStudio.Paradox.EntityModel
 {
     [DataSerializer(typeof(EntityComponent.Serializer))]
     [DataContract]
-    public abstract class EntityComponent
+    public abstract class EntityComponent : ComponentBase
     {
         private bool enabled;
 
@@ -71,8 +72,7 @@ namespace SiliconStudio.Paradox.EntityModel
         /// <summary>
         /// The default key this component is associated to.
         /// </summary>
-        [DataMemberIgnore]
-        public abstract PropertyKey DefaultKey { get; }
+        public abstract PropertyKey GetDefaultKey();
 
         /// <summary>
         /// Gets the default key for the specified entity component type.
@@ -87,7 +87,7 @@ namespace SiliconStudio.Paradox.EntityModel
 
         struct EntityComponentHelper<T> where T : EntityComponent, new()
         {
-            public static readonly PropertyKey DefaultKey = new T().DefaultKey;
+            public static readonly PropertyKey DefaultKey = new T().GetDefaultKey();
         }
 
         internal class Serializer : DataSerializer<EntityComponent>
@@ -96,9 +96,9 @@ namespace SiliconStudio.Paradox.EntityModel
             {
                 var entity = obj.Entity;
 
-                stream.Serialize(ref entity, mode);
+                // Force containing Entity to be collected by serialization, no need to reassign it to EntityComponent.Entity
+                stream.SerializeExtended(ref entity, mode);
                 stream.Serialize(ref obj.enabled, mode);
-                obj.Entity = entity;
             }
         }
     }

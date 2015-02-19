@@ -48,34 +48,35 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                         }
                     }
                 },
-                new TransformationComponent()
+                new TransformComponent()
             };
-            Entities.Add(teapot);
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            //Entities.Add(teapot);
 
-            var mainCameraTargetEntity = new Entity(Vector3.Zero);
-            Entities.Add(mainCameraTargetEntity);
-            var mainCamera = new Entity()
-            {
-                new CameraComponent
-                {
-                    AspectRatio = 8/4.8f,
-                    FarPlane = 5,
-                    NearPlane = 1,
-                    VerticalFieldOfView = 0.6f,
-                    Target = mainCameraTargetEntity,
-                    TargetUp = Vector3.UnitY,
-                },
-                new TransformationComponent
-                {
-                    Translation = new Vector3(2,1,2)
-                }
-            };
-            Entities.Add(mainCamera);
+            //var mainCameraTargetEntity = new Entity(Vector3.Zero);
+            //Entities.Add(mainCameraTargetEntity);
+            //var mainCamera = new Entity()
+            //{
+            //    new CameraComponent
+            //    {
+            //        AspectRatio = 8/4.8f,
+            //        FarPlane = 5,
+            //        NearPlane = 1,
+            //        VerticalFieldOfView = 0.6f,
+            //        Target = mainCameraTargetEntity,
+            //        TargetUp = Vector3.UnitY,
+            //    },
+            //    new TransformComponent
+            //    {
+            //        Position = new Vector3(2,1,2)
+            //    }
+            //};
+            //Entities.Add(mainCamera);
 
-            RenderSystem.Pipeline.SetCamera(mainCamera.Get<CameraComponent>());
+            //RenderSystem.Pipeline.SetCamera(mainCamera.Get<CameraComponent>());
 
-            // Add a custom script
-            Script.Add(GameScript1);
+            //// Add a custom script
+            //Script.Add(GameScript1);
         }
 
         private void CreatePipeline()
@@ -91,17 +92,20 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             var depthBuffer = Texture.New2D(GraphicsDevice, 800, 480, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil);
 
             // Setup the default rendering pipeline
-            RenderSystem.Pipeline.Renderers.Add(new CameraSetter(Services));
-            RenderSystem.Pipeline.Renderers.Add(new MultipleRenderTargetsSetter(Services)
-            {
-                ClearColor = Color.CornflowerBlue,
-                RenderTargets = textures,
-                DepthStencil = depthBuffer,
-                ClearColors = new Color[] { Color.Black, Color.White, Color.Black }
-            });
-            RenderSystem.Pipeline.Renderers.Add(new ModelRenderer(Services, "MultipleRenderTargetsEffect"));
-            RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services));
-            RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = DisplayGBuffer });
+
+            throw new NotImplementedException("TODO: Update the sample");
+
+            //RenderSystem.Pipeline.Renderers.Add(new CameraComponentRenderer(Services));
+            //RenderSystem.Pipeline.Renderers.Add(new MultipleRenderTargetsSetter(Services)
+            //{
+            //    ClearColor = Color.CornflowerBlue,
+            //    RenderTargets = textures,
+            //    DepthStencil = depthBuffer,
+            //    ClearColors = new Color[] { Color.Black, Color.White, Color.Black }
+            //});
+            //RenderSystem.Pipeline.Renderers.Add(new ModelComponentRenderer(Services, "MultipleRenderTargetsEffect"));
+            //RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services));
+            //RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = DisplayGBuffer });
         }
 
         private void DisplayGBuffer(RenderContext context)
@@ -117,7 +121,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 await Script.NextFrame();
 
                 var period = (float) (2 * Math.PI * UpdateTime.Total.TotalMilliseconds / 15000);
-                teapot.Transformation.Rotation = Quaternion.RotationAxis(Vector3.UnitY, period);
+                teapot.Transform.Rotation = Quaternion.RotationAxis(Vector3.UnitY, period);
 
                 if (Input.PointerEvents.Any(x => x.State == PointerState.Down))
                     renderTargetToDisplayIndex = (renderTargetToDisplayIndex + 1) % 3;

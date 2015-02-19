@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.Extensions
 
         public static IEnumerable<Entity> GetChildren(this Entity entity)
         {
-            var transformationComponent = entity.Transformation;
+            var transformationComponent = entity.Transform;
             if (transformationComponent != null)
             {
                 foreach (var child in transformationComponent.Children)

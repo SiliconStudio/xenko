@@ -27,7 +27,9 @@ namespace SiliconStudio.Core
     /// An cool feature of this system is that if a property doesn't exist, it could be generated during first access from a delegate or come from a default value.
     /// </remarks>
     [DataContract]
-    [DataSerializer(typeof(PropertyContainer.Serializer))]
+    //[DataSerializer(typeof(PropertyContainer.Serializer))]
+    [DataSerializer(typeof(DictionaryAllSerializer<PropertyContainer, PropertyKey, object>))]
+    [DataSerializerGlobal(null, typeof(Dictionary<PropertyKey, object>))]
     public partial struct PropertyContainer : IDictionary<PropertyKey, object>
     {
         private static readonly Dictionary<Type, List<PropertyKey>> accessorProperties = new Dictionary<Type, List<PropertyKey>>();
@@ -115,7 +117,14 @@ namespace SiliconStudio.Core
         {
             get
             {
-                return properties != null ? properties.Count : 0;
+                // TODO: improve this.
+                int count = 0;
+                using (var enumerator = GetEnumerator())
+                {
+                    while (enumerator.MoveNext())
+                        ++count;
+                }
+                return count;
             }
         }
 
@@ -291,6 +300,30 @@ namespace SiliconStudio.Core
         }
 
         /// <summary>
+        /// Gets the value of a property key or throw an error if the value was not found
+        /// </summary>
+        /// <typeparam name="T">Type of the property key</typeparam>
+        /// <param name="propertyKey">The property key.</param>
+        /// <returns>The value associated with this property key.</returns>
+        /// <exception cref="System.ArgumentNullException">propertyKey</exception>
+        /// <exception cref="System.ArgumentException">Unable to retrieve value for [{0}].ToFormat(propertyKey)</exception>
+        public T GetSafe<T>(PropertyKey<T> propertyKey)
+        {
+            if (propertyKey == null) throw new ArgumentNullException("propertyKey");
+            if (propertyKey.IsValueType)
+            {
+                return Get(propertyKey);
+            }
+
+            var result = Get((PropertyKey)propertyKey, false);
+            if (result == null)
+            {
+                throw new ArgumentException("Unable to retrieve value for [{0}]".ToFormat(propertyKey));
+            }
+            return (T)result;
+        }
+
+        /// <summary>
         /// Gets the specified tag value.
         /// </summary>
         /// <typeparam name="T">Type of the tag value</typeparam>
@@ -298,6 +331,7 @@ namespace SiliconStudio.Core
         /// <returns>Typed value of the tag property</returns>
         public T Get<T>(PropertyKey<T> propertyKey)
         {
+            if (propertyKey == null) throw new ArgumentNullException("propertyKey");
             if (propertyKey.IsValueType)
             {
                 // Fast path for value type

@@ -29,7 +29,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
         private Vector2 areaSize;
 
-        private TransformationComponent transfoComponent;
+        private TransformComponent transfoComponent;
 
         private Vector2 ballSpeed = new Vector2(-300, 200);
 
@@ -58,11 +58,11 @@ namespace SiliconStudio.Paradox.Engine.Tests
             var cameraComponent = new CameraComponent { UseProjectionMatrix = true, ProjectionMatrix = SpriteBatch.CalculateDefaultProjection(new Vector3(areaSize, 200))};
             var camera = new Entity("Camera") { cameraComponent };
 
-            // Create Main pass
-            var mainPipeline = RenderSystem.Pipeline;
-            mainPipeline.Renderers.Add(new CameraSetter(Services) { Camera = cameraComponent });
-            mainPipeline.Renderers.Add(new RenderTargetSetter(Services) { ClearColor = Color.LightBlue });
-            mainPipeline.Renderers.Add(new SpriteRenderer(Services));
+            //// Create Main pass
+            //var mainPipeline = RenderSystem.Pipeline;
+            //mainPipeline.Renderers.Add(new CameraComponentRenderer(Services) { Camera = cameraComponent });
+            //mainPipeline.Renderers.Add(new RenderTargetSetter(Services) { ClearColor = Color.LightBlue });
+            //mainPipeline.Renderers.Add(new SpriteComponentRenderer(Services));
             
             // Load assets
             groundSprites = Asset.Load<SpriteGroup>("GroundSprite");
@@ -75,24 +75,25 @@ namespace SiliconStudio.Paradox.Engine.Tests
             background = new Entity();
             foreground.Add(new SpriteComponent { SpriteGroup = groundSprites, CurrentFrame = 1 });
             background.Add(new SpriteComponent { SpriteGroup = groundSprites, CurrentFrame = 0 });
-            
-            Entities.Add(camera);
-            Entities.Add(ball);
-            Entities.Add(foreground);
-            Entities.Add(background);
+
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            //Entities.Add(camera);
+            //Entities.Add(ball);
+            //Entities.Add(foreground);
+            //Entities.Add(background);
 
             spriteComponent = ball.Get(SpriteComponent.Key);
-            transfoComponent = ball.Get(TransformationComponent.Key);
+            transfoComponent = ball.Get(TransformComponent.Key);
 
-            transfoComponent.Translation.X = areaSize.X / 2;
-            transfoComponent.Translation.Y = areaSize.Y / 2;
+            transfoComponent.Position.X = areaSize.X / 2;
+            transfoComponent.Position.Y = areaSize.Y / 2;
 
             var backgroundSpriteRegion = background.Get(SpriteComponent.Key).SpriteGroup.Images[0].Region;
             var decorationScalings = new Vector3(areaSize.X / backgroundSpriteRegion.Width, areaSize.Y / backgroundSpriteRegion.Height, 1);
-            background.Get(TransformationComponent.Key).Scaling = decorationScalings;
-            foreground.Get(TransformationComponent.Key).Scaling = decorationScalings;
-            background.Get(TransformationComponent.Key).Translation = new Vector3(0, 0, -1);
-            foreground.Get(TransformationComponent.Key).Translation = new Vector3(0, areaSize.Y, 1);
+            background.Get(TransformComponent.Key).Scale = decorationScalings;
+            foreground.Get(TransformComponent.Key).Scale = decorationScalings;
+            background.Get(TransformComponent.Key).Position = new Vector3(0, 0, -1);
+            foreground.Get(TransformComponent.Key).Position = new Vector3(0, areaSize.Y, 1);
 
             SpriteAnimation.Play(spriteComponent, 0, spriteComponent.SpriteGroup.Images.Count-1, AnimationRepeatMode.LoopInfinite, 30);
         }
@@ -144,7 +145,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
             for (int i = 0; i < 2; i++)
             {
-                var nextPosition = transfoComponent.Translation[i] + totalSeconds * ballSpeed[i];
+                var nextPosition = transfoComponent.Position[i] + totalSeconds * ballSpeed[i];
 
                 var infBound = sprite.Center[i];
                 var supBound = areaSize[i] - (spriteSize[i] - sprite.Center[i]);
@@ -159,7 +160,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
                         nextPosition = infBound + (infBound - nextPosition);
                 }
 
-                transfoComponent.Translation[i] = nextPosition;
+                transfoComponent.Position[i] = nextPosition;
 
             }
         }

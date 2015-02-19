@@ -6,18 +6,18 @@ using System.Linq;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Paradox.Games;
-using System.Threading.Tasks;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Paradox.EntityModel
 {
-    /// <summary>Entity processor, triggered on various <see cref="EntitySystem"/> events such as Entity and Component additions and removals.</summary>
+    /// <summary>Entity processor, triggered on various <see cref="EntityManager"/> events such as Entity and Component additions and removals.</summary>
     public abstract class EntityProcessor
     {
         private bool enabled = true;
 
         internal ProfilingKey UpdateProfilingKey;
         internal ProfilingKey DrawProfilingKey;
+        private readonly PropertyKey[] requiredKeys;
 
         public bool Enabled
         {
@@ -25,14 +25,22 @@ namespace SiliconStudio.Paradox.EntityModel
             set { enabled = value; }
         }
 
-        public EntitySystem EntitySystem { get; internal set; }
+        public EntityManager EntityManager { get; internal set; }
 
         public IServiceRegistry Services { get; internal set; }
 
-        protected EntityProcessor()
+        protected EntityProcessor(PropertyKey[] requiredKeys)
         {
             UpdateProfilingKey = new ProfilingKey(GameProfilingKeys.GameUpdate, this.GetType().Name);
             DrawProfilingKey = new ProfilingKey(GameProfilingKeys.GameDraw, this.GetType().Name);
+            this.requiredKeys = requiredKeys;
+        }
+
+        /// <summary>Gets the required components for an entity to be added to this entity processor.</summary>
+        /// <value>The required keys.</value>
+        public PropertyKey[] RequiredKeys
+        {
+            get { return requiredKeys; }
         }
 
         /// <summary>
@@ -52,12 +60,12 @@ namespace SiliconStudio.Paradox.EntityModel
         }
 
         /// <summary>
-        /// Run when this <see cref="EntityProcessor" /> is added to an <see cref="EntitySystem" />.
+        /// Run when this <see cref="EntityProcessor" /> is added to an <see cref="EntityManager" />.
         /// </summary>
         protected internal abstract void OnSystemAdd();
 
         /// <summary>
-        /// Run when this <see cref="EntityProcessor" /> is removed from an <see cref="EntitySystem" />.
+        /// Run when this <see cref="EntityProcessor" /> is removed from an <see cref="EntityManager" />.
         /// </summary>
         protected internal abstract void OnSystemRemove();
 
@@ -80,24 +88,24 @@ namespace SiliconStudio.Paradox.EntityModel
         protected internal abstract void EntityCheck(Entity entity, List<EntityProcessor> processors, bool forceRemove = false);
 
         /// <summary>
-        /// Adds the entity to the internal list of the <see cref="EntitySystem"/>.
-        /// Exposed for inheriting class that has no access to EntitySystem as internal.
+        /// Adds the entity to the internal list of the <see cref="EntityManager"/>.
+        /// Exposed for inheriting class that has no access to SceneInstance as internal.
         /// </summary>
         /// <param name="entity">The entity.</param>
         protected internal void InternalAddEntity(Entity entity)
         {
-            EntitySystem.InternalAddEntity(entity);
+            EntityManager.InternalAddEntity(entity);
         }
 
         /// <summary>
-        /// Removes the entity to the internal list of the <see cref="EntitySystem"/>.
-        /// Exposed for inheriting class that has no access to EntitySystem as internal.
+        /// Removes the entity to the internal list of the <see cref="EntityManager"/>.
+        /// Exposed for inheriting class that has no access to SceneInstance as internal.
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <param name="removeParent">Indicate if entity should be removed from its parent</param>
         protected internal void InternalRemoveEntity(Entity entity, bool removeParent)
         {
-            EntitySystem.InternalRemoveEntity(entity, removeParent);
+            EntityManager.InternalRemoveEntity(entity, removeParent);
         }
     }
 
@@ -109,18 +117,9 @@ namespace SiliconStudio.Paradox.EntityModel
         protected Dictionary<Entity, T> enabledEntities = new Dictionary<Entity, T>();
         protected Dictionary<Entity, T> matchingEntities = new Dictionary<Entity, T>();
         protected HashSet<Entity> reentrancyCheck = new HashSet<Entity>();
-        protected PropertyKey[] requiredKeys;
 
-        protected EntityProcessor(PropertyKey[] requiredKeys)
+        protected EntityProcessor(params PropertyKey[] requiredKeys) : base(requiredKeys)
         {
-            this.requiredKeys = requiredKeys;
-        }
-
-        /// <summary>Gets the required components for an entity to be added to this entity processor.</summary>
-        /// <value>The required keys.</value>
-        protected virtual PropertyKey[] RequiredKeys
-        {
-            get { return requiredKeys; }
         }
 
         /// <inheritdoc/>
@@ -180,7 +179,7 @@ namespace SiliconStudio.Paradox.EntityModel
                 matchingEntities.Add(entity, entityData);
 
                 // If entity was enabled, add it to enabled entity list
-                if (EntitySystem.IsEnabled(entity))
+                if (EntityManager.IsEnabled(entity))
                     enabledEntities.Add(entity, entityData);
 
                 lock (reentrancyCheck)

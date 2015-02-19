@@ -22,8 +22,6 @@ using SiliconStudio.Paradox.Graphics.Font;
 using SiliconStudio.Paradox.Input;
 using SiliconStudio.Paradox.UI;
 
-using MeshProcessor = SiliconStudio.Paradox.Engine.MeshProcessor;
-
 namespace SiliconStudio.Paradox
 {
     /// <summary>
@@ -42,12 +40,6 @@ namespace SiliconStudio.Paradox
         public GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
 
         /// <summary>
-        /// Gets the render system.
-        /// </summary>
-        /// <value>The render system.</value>
-        public RenderSystem RenderSystem { get; private set; }
-
-        /// <summary>
         /// Gets the script system.
         /// </summary>
         /// <value>The script.</value>
@@ -60,10 +52,10 @@ namespace SiliconStudio.Paradox
         public InputManager Input { get; internal set; }
 
         /// <summary>
-        /// Gets the entity system.
+        /// Gets the scene system.
         /// </summary>
-        /// <value>The entity system.</value>
-        public EntitySystem Entities { get; internal set; }
+        /// <value>The scene system.</value>
+        public SceneSystem SceneSystem { get; private set; }
 
         /// <summary>
         /// Gets the effect system.
@@ -165,8 +157,7 @@ namespace SiliconStudio.Paradox
             // Create and register all core services
             Input = new InputManager(Services);
             Script = new ScriptSystem(Services);
-            Entities = new EntitySystem(Services);
-
+            SceneSystem = new SceneSystem(Services);
             Audio = new AudioSystem(Services);
             UI = new UISystem(Services);
             gameFontSystem = new GameFontSystem(Services);
@@ -188,9 +179,6 @@ namespace SiliconStudio.Paradox
 
             // Add the UI System
             GameSystems.Add(UI);
-
-            // Add the entity manager
-            GameSystems.Add(Entities);
 
             // Add the Audio System
             GameSystems.Add(Audio);
@@ -227,22 +215,7 @@ namespace SiliconStudio.Paradox
             EffectSystem = new EffectSystem(Services);
             GameSystems.Add(EffectSystem);
 
-            // Add RenderSystem
-            RenderSystem = new RenderSystem(Services);
-            GameSystems.Add(RenderSystem);
-
-            using (var profile = Profiler.Begin(GameProfilingKeys.EntityProcessorInitialize))
-            {
-                // TODO: Do we need to make this list data-driven?
-                Entities.Processors.Add(new HierarchicalProcessor());
-                Entities.Processors.Add(new AnimationProcessor());
-                Entities.Processors.Add(new ModelNodeLinkProcessor());
-                Entities.Processors.Add(new TransformationProcessor());              
-                Entities.Processors.Add(new MeshProcessor());
-                Entities.Processors.Add(new AudioListenerProcessor());
-                Entities.Processors.Add(new AudioEmitterProcessor());
-                Entities.Processors.Add(new SpriteProcessor());               
-            }
+            GameSystems.Add(SceneSystem);
 
             // TODO: data-driven?
             //Asset.Serializer.RegisterSerializer(new GpuTextureSerializer2(GraphicsDevice));

@@ -440,7 +440,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
         }
     }
 
-    public class DictionaryAllSerializer<TDictionary, TKey, TValue> : DataSerializer<TDictionary>, IDataSerializerInitializer, IDataSerializerGenericInstantiation where TDictionary : class, IDictionary<TKey, TValue>
+    public class DictionaryAllSerializer<TDictionary, TKey, TValue> : DataSerializer<TDictionary>, IDataSerializerInitializer, IDataSerializerGenericInstantiation where TDictionary : IDictionary<TKey, TValue>
     {
         private bool isInterface = typeof(TDictionary).GetTypeInfo().IsInterface;
         private DataSerializer<TKey> keySerializer;

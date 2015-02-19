@@ -22,6 +22,7 @@ using namespace SiliconStudio::Core::Serialization;
 using namespace SiliconStudio::Core::Serialization::Assets;
 using namespace SiliconStudio::Core::Serialization::Contents;
 using namespace SiliconStudio::Paradox::Assets::Materials;
+using namespace SiliconStudio::Paradox::Effects::Materials;
 using namespace SiliconStudio::Paradox::Assets::Materials::ComputeColors;
 using namespace SiliconStudio::Paradox::AssimpNet;
 using namespace SiliconStudio::Paradox::DataModel;
@@ -610,11 +611,11 @@ private:
 		auto nodeName = aiStringToString(nodeAnim->mNodeName);
 		
 		// The scales
-		ProcessAnimationCurveVector(animationClip, nodeAnim->mScalingKeys, nodeAnim->mNumScalingKeys, String::Format("Transformation.Scaling[{0}]", nodeName), ticksPerSec);
+		ProcessAnimationCurveVector(animationClip, nodeAnim->mScalingKeys, nodeAnim->mNumScalingKeys, String::Format("Transform.Scale[{0}]", nodeName), ticksPerSec);
 		// The rotation
-		ProcessAnimationCurveQuaternion(animationClip, nodeAnim->mRotationKeys, nodeAnim->mNumRotationKeys, String::Format("Transformation.Rotation[{0}]", nodeName), ticksPerSec);
+		ProcessAnimationCurveQuaternion(animationClip, nodeAnim->mRotationKeys, nodeAnim->mNumRotationKeys, String::Format("Transform.Rotation[{0}]", nodeName), ticksPerSec);
 		// The translation
-		ProcessAnimationCurveVector(animationClip, nodeAnim->mPositionKeys, nodeAnim->mNumPositionKeys, String::Format("Transformation.Translation[{0}]", nodeName), ticksPerSec);
+		ProcessAnimationCurveVector(animationClip, nodeAnim->mPositionKeys, nodeAnim->mNumPositionKeys, String::Format("Transform.Position[{0}]", nodeName), ticksPerSec);
 	}
 
 	AnimationClip^ ProcessAnimation(const aiScene* scene)
@@ -668,7 +669,9 @@ private:
 	{
 		// TODO: compare with FBX importer - see if there could be some conflict between texture names
 		auto textureValue = TextureLayerGenerator::GenerateMaterialTextureNode(vfsOutputPath, sourceTextureFile, textureUVSetIndex, textureUVscaling, wrapTextureU, wrapTextureV, Logger);
-		auto referenceName = textureValue->TextureReference->Location;
+
+		auto attachedReference = AttachedReferenceManager::GetAttachedReference(textureValue);
+		auto referenceName = attachedReference->Url;
 
 		// find a new and correctName
 		if (!textureNameCount->ContainsKey(referenceName))
@@ -1008,7 +1011,7 @@ private:
 		hasSpecPower = (AI_SUCCESS == pMaterial->Get(AI_MATKEY_SHININESS, specPower) && specPower > 0);
 		if(pMaterial->Get(AI_MATKEY_OPACITY, opacity) == AI_SUCCESS && opacity < 1.0)
 		{
-			finalMaterial->Parameters->Set(MaterialParameters::UseTransparent, true);
+			finalMaterial->Parameters->Set(MaterialKeys::UseTransparent, true);
 			hasOpacity = true;
 		}
 
@@ -1330,11 +1333,11 @@ private:
 					{
 						nodeMeshData->Parameters = gcnew ParameterCollection();
 						if (meshInfo->HasSkinningPosition)
-							nodeMeshData->Parameters->Set(MaterialParameters::HasSkinningPosition, true);
+							nodeMeshData->Parameters->Set(MaterialKeys::HasSkinningPosition, true);
 						if (meshInfo->HasSkinningNormal)
-							nodeMeshData->Parameters->Set(MaterialParameters::HasSkinningNormal, true);
+							nodeMeshData->Parameters->Set(MaterialKeys::HasSkinningNormal, true);
 						if (meshInfo->TotalClusterCount > 0)
-							nodeMeshData->Parameters->Set(MaterialParameters::SkinningBones, meshInfo->TotalClusterCount);
+							nodeMeshData->Parameters->Set(MaterialKeys::SkinningBones, meshInfo->TotalClusterCount);
 					}
 					modelData->Meshes->Add(nodeMeshData);
 				}

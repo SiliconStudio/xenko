@@ -12,6 +12,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Paradox.Assets.Materials;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.ComputeEffect.GGXPrefiltering;
 using SiliconStudio.Paradox.Effects.ComputeEffect.LambertianPrefiltering;
@@ -53,7 +54,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
                 // TODO Add system to prefilter
                 // TODO: Add input texture as input 
 
-                using (var context = new SkyboxGeneratorContext(package))
+                using (var context = new SkyboxGeneratorContext())
                 {
                     var result = SkyboxGenerator.Compile(asset, context);
 

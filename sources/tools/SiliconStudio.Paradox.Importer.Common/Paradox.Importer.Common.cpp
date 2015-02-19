@@ -104,12 +104,8 @@ public:
 
 	static ComputeTextureColor^ GenerateMaterialTextureNode(String^ vfsOutputPath, String^ sourceTextureFile, int textureUVSetIndex, Vector2 textureUVscaling, bool wrapTextureU, bool wrapTextureV, Logger^ logger)
 	{
-		auto texture = gcnew ContentReference<Texture^>();
-
 		auto textureFileName = Path::GetFileNameWithoutExtension(sourceTextureFile);
 		auto url = vfsOutputPath + "_" + textureFileName;
-
-		texture->Location = url;
 
 		if (File::Exists(sourceTextureFile))
 		{
@@ -123,7 +119,9 @@ public:
 		auto uvScaling = textureUVscaling;
 		auto textureName = textureFileName;
 	
-		auto currentTexture = gcnew ComputeTextureColor(textureName, (TextureCoordinate)textureUVSetIndex, uvScaling, Vector2::Zero);
+		auto texture = AttachedReferenceManager::CreateSerializableVersion<Texture^>(System::Guid(), textureName);
+
+		auto currentTexture = gcnew ComputeTextureColor(texture, (TextureCoordinate)textureUVSetIndex, uvScaling, Vector2::Zero);
 		currentTexture->AddressModeU = wrapTextureU ? TextureAddressMode::Wrap : TextureAddressMode::Clamp;
 		currentTexture->AddressModeV = wrapTextureV ? TextureAddressMode::Wrap : TextureAddressMode::Clamp;
 	

@@ -13,10 +13,10 @@ namespace SiliconStudio.Paradox.Engine
     public class ModelNodeLinkProcessor : EntityProcessor<ModelNodeLinkComponent>
     {
         internal HashSet<ModelNodeLinkComponent> DirtyLinks = new HashSet<ModelNodeLinkComponent>();
-        internal MeshProcessor meshProcessor;
+        internal ModelProcessor meshProcessor;
 
         public ModelNodeLinkProcessor()
-            : base(new PropertyKey[] { TransformationComponent.Key, ModelNodeLinkComponent.Key })
+            : base(new PropertyKey[] { TransformComponent.Key, ModelNodeLinkComponent.Key })
         {
         }
 
@@ -25,33 +25,33 @@ namespace SiliconStudio.Paradox.Engine
             return entity.Get(ModelNodeLinkComponent.Key);
         }
 
-        protected override void OnEntityAdding(Entity entity, ModelNodeLinkComponent modelNodeLinkComponent)
+        protected override void OnEntityAdding(Entity entity, ModelNodeLinkComponent data)
         {
-            entity.Transformation.UseTRS = false;
-            entity.Transformation.isSpecialRoot = true;
+            entity.Transform.UseTRS = false;
+            entity.Transform.isSpecialRoot = true;
 
-            modelNodeLinkComponent.Processor = this;
+            data.Processor = this;
 
             if (meshProcessor == null)
-                meshProcessor = EntitySystem.GetProcessor<MeshProcessor>();
+                meshProcessor = EntityManager.GetProcessor<ModelProcessor>();
 
             lock (DirtyLinks)
             {
-                DirtyLinks.Add(modelNodeLinkComponent);
+                DirtyLinks.Add(data);
 
                 // Mark it as invalid
-                modelNodeLinkComponent.EntityLink.NodeIndex = -1;
+                data.EntityLink.NodeIndex = -1;
             }
         }
 
-        protected override void OnEntityRemoved(Entity entity, ModelNodeLinkComponent modelNodeLinkComponent)
+        protected override void OnEntityRemoved(Entity entity, ModelNodeLinkComponent data)
         {
             if (meshProcessor == null)
-                meshProcessor = EntitySystem.GetProcessor<MeshProcessor>();
+                meshProcessor = EntityManager.GetProcessor<ModelProcessor>();
 
-            meshProcessor.UnlinkEntity(modelNodeLinkComponent.EntityLink);
+            meshProcessor.UnlinkEntity(data.EntityLink);
 
-            modelNodeLinkComponent.Processor = null;
+            data.Processor = null;
         }
 
         public override void Draw(GameTime time)
@@ -62,7 +62,7 @@ namespace SiliconStudio.Paradox.Engine
                     return;
 
                 if (meshProcessor == null)
-                    meshProcessor = EntitySystem.GetProcessor<MeshProcessor>();
+                    meshProcessor = EntityManager.GetProcessor<ModelProcessor>();
 
                 foreach (var transformationLinkComponent in DirtyLinks)
                 {

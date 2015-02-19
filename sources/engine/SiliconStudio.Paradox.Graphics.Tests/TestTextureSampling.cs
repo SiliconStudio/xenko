@@ -87,7 +87,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             myDraws[2] = new DrawOptions { Sampler = SamplerState.New(GraphicsDevice, new SamplerStateDescription(TextureFilter.Linear, TextureAddressMode.Mirror)), Transform = Matrix.Multiply(Matrix.Scaling(0.4f), Matrix.Translation(0.5f, -0.5f, 0f)) };
             //var borderDescription = new SamplerStateDescription(TextureFilter.Linear, TextureAddressMode.Border) { BorderColor = Color.Purple };
             //var border = SamplerState.New(GraphicsDevice, borderDescription);
-            //myDraws[3] = new DrawOptions { Sampler = border, Transform = Matrix.Multiply(Matrix.Scaling(0.3f), Matrix.Translation(-0.5f, -0.5f, 0f)) };
+            //myDraws[3] = new DrawOptions { Sampler = border, Transform = Matrix.Multiply(Matrix.Scale(0.3f), Matrix.Translation(-0.5f, -0.5f, 0f)) };
         }
 
         protected override void Draw(GameTime gameTime)

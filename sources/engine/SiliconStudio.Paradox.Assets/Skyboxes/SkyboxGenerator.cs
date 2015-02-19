@@ -7,12 +7,14 @@ using System.IO;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.ComputeEffect.GGXPrefiltering;
 using SiliconStudio.Paradox.Effects.ComputeEffect.LambertianPrefiltering;
 using SiliconStudio.Paradox.Effects.Images;
 using SiliconStudio.Paradox.Effects.Skyboxes;
+using SiliconStudio.Paradox.Engine.Graphics.Skyboxes;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Graphics.Data;
 using SiliconStudio.Paradox.Shaders;
@@ -24,11 +26,6 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
     {
         public SkyboxGeneratorContext()
         {
-        }
-
-        public SkyboxGeneratorContext(Package package)
-            : base(package)
-        {
             Services = new ServiceRegistry();
             Assets = new AssetManager(Services);
             GraphicsDevice = GraphicsDevice.New();
@@ -36,7 +33,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
             EffectSystem = new EffectSystem(Services);
             EffectSystem.Initialize();
             ((EffectCompilerCache)EffectSystem.Compiler).CompileEffectAsynchronously = false;
-            DrawEffectContext = DrawEffectContext.GetShared(Services);
+            DrawEffectContext = RenderContext.GetShared(Services);
         }
 
         public IServiceRegistry Services { get; private set; }
@@ -47,7 +44,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
 
         public IGraphicsDeviceService GraphicsDeviceService { get; private set; }
 
-        public DrawEffectContext DrawEffectContext { get; private set; }
+        public RenderContext DrawEffectContext { get; private set; }
 
         public void Dispose()
         {
@@ -83,8 +80,8 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
                 // -------------------------------------------------------------------
                 var lamberFiltering = new LambertianPrefilteringSH(context.DrawEffectContext);
 
-                var location = ((SkyboxCubeMapModel)asset.Model).CubeMap.Location;
-                var skyboxTexture = context.Assets.Load<Texture>(location);
+                var reference = AttachedReferenceManager.GetAttachedReference(((SkyboxCubeMapModel)asset.Model).CubeMap);
+                var skyboxTexture = context.Assets.Load<Texture>(reference.Url);
 
                 lamberFiltering.HarmonicOrder = (int)asset.DiffuseSHOrder;
                 lamberFiltering.RadianceMap = skyboxTexture;

@@ -20,6 +20,8 @@ namespace SiliconStudio.Paradox.Assets.Model
         {
             foreach (var entityData in asset.Hierarchy.Entities)
             {
+                // TODO: How to make this code pluggable?
+
                 // determine the underlying source asset exists
                 if (entityData.Components.ContainsKey(ModelComponent.Key))
                 {

@@ -34,7 +34,7 @@ namespace SiliconStudio.Paradox.Engine
         internal Dictionary<Entity, AssociatedData> MatchingEntitiesForDebug { get { return matchingEntities; } } 
 
         /// <summary>
-        /// Data associated to each <see cref="Entity"/> instances of the system having an <see cref="AudioEmitterComponent"/> and an <see cref="TransformationComponent"/>.
+        /// Data associated to each <see cref="Entity"/> instances of the system having an <see cref="AudioEmitterComponent"/> and an <see cref="TransformComponent"/>.
         /// </summary>
         public class AssociatedData
         {
@@ -49,9 +49,9 @@ namespace SiliconStudio.Paradox.Engine
             public AudioEmitterComponent AudioEmitterComponent;
 
             /// <summary>
-            /// The <see cref="Engine.TransformationComponent"/> associated to the entity
+            /// The <see cref="TransformComponent"/> associated to the entity
             /// </summary>
-            public TransformationComponent TransformationComponent;
+            public TransformComponent TransformComponent;
 
             /// <summary>
             /// A dictionary associating each activated listener of the AudioSystem and each sound controller of the <see cref="AudioEmitterComponent"/> to a valid sound effect instance.
@@ -63,7 +63,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Create a new instance of the processor.
         /// </summary>
         public AudioEmitterProcessor()
-            : base(new PropertyKey[] { AudioEmitterComponent.Key, TransformationComponent.Key })
+            : base(new PropertyKey[] { AudioEmitterComponent.Key, TransformComponent.Key })
         {
         }
 
@@ -81,7 +81,7 @@ namespace SiliconStudio.Paradox.Engine
             return new AssociatedData
             {
                 AudioEmitterComponent = entity.Get(AudioEmitterComponent.Key),
-                TransformationComponent = entity.Get(TransformationComponent.Key),
+                TransformComponent = entity.Get(TransformComponent.Key),
                 ListenerControllerToSoundInstance = new Dictionary<Tuple<AudioListenerComponent, AudioEmitterSoundController>, SoundEffectInstance>()
             };
         }
@@ -102,8 +102,8 @@ namespace SiliconStudio.Paradox.Engine
             base.OnEntityAdding(entity, data);
 
             // initialize the AudioEmitter first position
-            data.TransformationComponent.UpdateWorldMatrix(); // ensure the worldMatrix is correct
-            data.AudioEmitter = new AudioEmitter { Position = data.TransformationComponent.WorldMatrix.TranslationVector }; // valid position is needed at first Update loop to compute velocity.
+            data.TransformComponent.UpdateWorldMatrix(); // ensure the worldMatrix is correct
+            data.AudioEmitter = new AudioEmitter { Position = data.TransformComponent.WorldMatrix.TranslationVector }; // valid position is needed at first Update loop to compute velocity.
 
             // create a SoundEffectInstance for each listener activated and for each sound controller of the EmitterComponent.
             foreach (var listener in audioSystem.Listeners.Keys)
@@ -122,7 +122,7 @@ namespace SiliconStudio.Paradox.Engine
             foreach (var associatedData in matchingEntities.Values)
             {
                 var emitter = associatedData.AudioEmitter;
-                var worldMatrix = associatedData.TransformationComponent.WorldMatrix;
+                var worldMatrix = associatedData.TransformComponent.WorldMatrix;
                 var newPosition = worldMatrix.TranslationVector;
 
                 if (!associatedData.AudioEmitterComponent.ShouldBeProcessed)

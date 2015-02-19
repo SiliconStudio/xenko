@@ -9,9 +9,9 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Paradox.EntityModel
@@ -22,12 +22,12 @@ namespace SiliconStudio.Paradox.EntityModel
     //[ContentSerializer(typeof(EntityContentSerializer))]
     //[ContentSerializer(typeof(DataContentSerializer<Entity>))]
     [DebuggerTypeProxy(typeof(EntityDebugView))]
-    [DataSerializer(typeof(EntitySerializer))]
     [ContentSerializer(typeof(DataContentSerializerWithReuse<Entity>))]
     [DataStyle(DataStyle.Normal)]
+    [DataContract("Entity")]
     public class Entity : ComponentBase, IEnumerable
     {
-        protected TransformationComponent transformation;
+        protected TransformComponent transform;
         internal List<Task> prepareTasks;
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace SiliconStudio.Paradox.EntityModel
 
         static Entity()
         {
-            PropertyContainer.AddAccessorProperty(typeof(Entity), TransformationComponent.Key);
+            PropertyContainer.AddAccessorProperty(typeof(Entity), TransformComponent.Key);
         }
 
         /// <summary>
@@ -80,25 +80,48 @@ namespace SiliconStudio.Paradox.EntityModel
             Components = new PropertyContainer(this);
             Components.PropertyUpdated += EntityPropertyUpdated;
 
-            Transformation = new TransformationComponent();
-            transformation.Translation = position;
+            Transform = new TransformComponent();
+            transform.Position = position;
+
+            Group = EntityGroup.Default;
+        }
+
+        [DataMember(0)] // Name is serialized
+        public override string Name
+        {
+            get
+            {
+                return base.Name;
+            }
+            set
+            {
+                base.Name = value;
+            }
         }
 
         /// <summary>
-        /// Gets or sets the <see cref="Transformation"/> associated to this entity.
+        /// Gets or sets the <see cref="Transform"/> associated to this entity.
         /// Added for convenience over usual Get/Set method.
         /// </summary>
         [DataMemberIgnore]
-        public TransformationComponent Transformation
+        public TransformComponent Transform
         {
-            get { return transformation; }
+            get { return transform; }
             set
             {
-                var transformationOld = transformation;
-                transformation = value;
-                Components.RaisePropertyContainerUpdated(TransformationComponent.Key, transformation, transformationOld);
+                var transformationOld = transform;
+                transform = value;
+                Components.RaisePropertyContainerUpdated(TransformComponent.Key, transform, transformationOld);
             }
         }
+
+        /// <summary>
+        /// Gets or sets the group of this entity.
+        /// </summary>
+        /// <value>The group.</value>
+        [DataMember(10)]
+        [DefaultValue(EntityGroup.Default)]
+        public EntityGroup Group { get; set; }
 
         /// <summary>
         /// Gets or create a component with the specified key.
@@ -144,7 +167,7 @@ namespace SiliconStudio.Paradox.EntityModel
         public void Add(EntityComponent component)
         {
             if (component == null) throw new ArgumentNullException("component");
-            Components.SetObject(component.DefaultKey, component);
+            Components.SetObject(component.GetDefaultKey(), component);
         }
 
         /// <summary>
@@ -231,7 +254,7 @@ namespace SiliconStudio.Paradox.EntityModel
             {
                 get
                 {
-                    var transformationComponent = entity.Transformation;
+                    var transformationComponent = entity.Transform;
                     if (transformationComponent == null)
                         return null;
 

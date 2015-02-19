@@ -1,6 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Collections.Generic;
+
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.EntityModel;
@@ -11,47 +13,49 @@ namespace SiliconStudio.Paradox.Engine
     /// <summary>
     /// The processor in charge of updating and drawing the entities having sprite components.
     /// </summary>
-    internal class SpriteProcessor : EntityProcessor<SpriteProcessor.AssociatedData>
+    internal class SpriteProcessor : EntityProcessor<SpriteProcessor.SpriteComponentState>
     {
-        private RenderSystem renderSystem;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SpriteProcessor"/> class.
+        /// </summary>
         public SpriteProcessor()
-            : base(new PropertyKey[] { SpriteComponent.Key, TransformationComponent.Key })
+            : base(new PropertyKey[] { SpriteComponent.Key, TransformComponent.Key })
         {
+            Sprites = new List<SpriteComponentState>();
         }
 
         protected internal override void OnSystemAdd()
         {
-            renderSystem = Services.GetSafeServiceAs<RenderSystem>();
         }
+
+        public List<SpriteComponentState> Sprites { get; private set; }
 
         public override void Draw(GameTime gameTime)
         {
-            base.Draw(gameTime);
-            
-            // Update the entities to render to renderers
-            foreach (var renderProcessor in renderSystem.SpriteRenderProcessors)
+            Sprites.Clear();
+            foreach (var spriteStateKeyPair in enabledEntities)
             {
-                renderProcessor.EntitiesToRender.Clear();
-                foreach (var entity in enabledEntities.Keys)
-                    renderProcessor.EntitiesToRender.Add(entity);
+                if (spriteStateKeyPair.Value.SpriteComponent.Enabled)
+                {
+                    Sprites.Add(spriteStateKeyPair.Value);
+                }
             }
         }
 
-        protected override AssociatedData GenerateAssociatedData(Entity entity)
+        protected override SpriteComponentState GenerateAssociatedData(Entity entity)
         {
-            return new AssociatedData
+            return new SpriteComponentState
             {
                 SpriteComponent = entity.Get(SpriteComponent.Key),
-                TransformationComponent = entity.Get(TransformationComponent.Key),
+                TransformComponent = entity.Get(TransformComponent.Key),
             };
         }
 
-        public class AssociatedData
+        public class SpriteComponentState
         {
             public SpriteComponent SpriteComponent;
 
-            public TransformationComponent TransformationComponent;
+            public TransformComponent TransformComponent;
         }
     }
 }

@@ -34,7 +34,7 @@ namespace SiliconStudio.Paradox.EntityModel
         public EntityComponentReference(EntityComponent entityComponent)
         {
             this.entity = new EntityReference { Id = entityComponent.Entity.Id };
-            this.component = entityComponent.DefaultKey;
+            this.component = entityComponent.GetDefaultKey();
             this.value = entityComponent;
         }
 

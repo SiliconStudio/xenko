@@ -1,4 +1,4 @@
-﻿﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Assets.Compiler;
@@ -88,7 +88,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
                     for (var i = 0; i < nodesLength; i++)
                     {
                         Matrix localMatrix;
-                        TransformationComponent.CreateMatrixTRS(
+                        TransformComponent.CreateMatrixTRS(
                             ref modelAsset.Hierarchy.Nodes[i].Transform.Translation,
                             ref modelAsset.Hierarchy.Nodes[i].Transform.Rotation,
                             ref modelAsset.Hierarchy.Nodes[i].Transform.Scaling, out localMatrix);

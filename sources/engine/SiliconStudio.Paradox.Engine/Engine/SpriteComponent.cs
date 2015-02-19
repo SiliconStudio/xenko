@@ -15,6 +15,7 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     [DataContract("SpriteComponent")]
     [Display(100, "Sprite")]
+    [DefaultEntityComponentProcessor(typeof(SpriteProcessor))]
     public sealed class SpriteComponent : EntityComponent
     {
         public static PropertyKey<SpriteComponent> Key = new PropertyKey<SpriteComponent>("Key", typeof(SpriteComponent));
@@ -153,9 +154,9 @@ namespace SiliconStudio.Paradox.Engine
             }
         }
 
-        public override PropertyKey DefaultKey
+        public override PropertyKey GetDefaultKey()
         {
-            get { return Key; }
+            return Key;
         }
     }
 }

@@ -20,6 +20,7 @@ using namespace SiliconStudio::Core::Serialization::Assets;
 using namespace SiliconStudio::Core::Serialization::Contents;
 using namespace SiliconStudio::Paradox::Assets::Materials;
 using namespace SiliconStudio::Paradox::Assets::Materials::ComputeColors;
+using namespace SiliconStudio::Paradox::Effects::Materials;
 using namespace SiliconStudio::Paradox::DataModel;
 using namespace SiliconStudio::Paradox::EntityModel;
 using namespace SiliconStudio::Paradox::Effects;
@@ -587,11 +588,11 @@ public:
 				meshData->Parameters = gcnew ParameterCollection();
 
 				if (hasSkinningPosition)
-					meshData->Parameters->Set(MaterialParameters::HasSkinningPosition, true);
+					meshData->Parameters->Set(MaterialKeys::HasSkinningPosition, true);
 				if (hasSkinningNormal)
-					meshData->Parameters->Set(MaterialParameters::HasSkinningNormal, true);
+					meshData->Parameters->Set(MaterialKeys::HasSkinningNormal, true);
 				if (totalClusterCount > 0)
-					meshData->Parameters->Set(MaterialParameters::SkinningBones, totalClusterCount);
+					meshData->Parameters->Set(MaterialKeys::SkinningBones, totalClusterCount);
 			}
 			modelData->Meshes->Add(meshData);
 		}
@@ -1141,7 +1142,9 @@ public:
 		{
 			textureValue = TextureLayerGenerator::GenerateMaterialTextureNode(vfsOutputFilename, texturePath, uvElementMapping[std::string(lFileTexture->UVSet.Get())], Vector2((float)texScale[0], (float)texScale[1]), wrapTextureU, wrapTextureV, nullptr);
 
-			auto textureNamePtr = Marshal::StringToHGlobalAnsi(textureValue->TextureReference->Location);
+			auto attachedReference = AttachedReferenceManager::GetAttachedReference(textureValue->Texture);
+
+			auto textureNamePtr = Marshal::StringToHGlobalAnsi(attachedReference->Url);
 			std::string textureName = std::string((char*)textureNamePtr.ToPointer());
 			Marshal:: FreeHGlobal(textureNamePtr);
 
@@ -1182,7 +1185,7 @@ public:
 	void RegisterNode(FbxNode* pNode, int parentIndex, std::map<FbxNode*, std::string>& nodeNames)
 	{
 		auto resultNode = gcnew Entity();
-		resultNode->GetOrCreate(TransformationComponent::Key);
+		resultNode->GetOrCreate(TransformComponent::Key);
 
 		int currentIndex = nodes.Count;
 
@@ -1575,17 +1578,17 @@ public:
 		curves[0] = node->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X);
 		curves[1] = node->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y);
 		curves[2] = node->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z);
-		auto translation = ProcessAnimationCurveVector<Vector3>(animationClip, nodeData, String::Format("Transformation.Translation[{0}]", nodeName), 3, curves, 0.005f);
+		auto translation = ProcessAnimationCurveVector<Vector3>(animationClip, nodeData, String::Format("Transform.Position[{0}]", nodeName), 3, curves, 0.005f);
 
 		curves[0] = node->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X);
 		curves[1] = node->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y);
 		curves[2] = node->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z);
-		ProcessAnimationCurveRotation(animationClip, nodeData, String::Format("Transformation.Rotation[{0}]", nodeName), curves, 0.01f);
+		ProcessAnimationCurveRotation(animationClip, nodeData, String::Format("Transform.Rotation[{0}]", nodeName), curves, 0.01f);
 
 		curves[0] = node->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X);
 		curves[1] = node->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y);
 		curves[2] = node->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z);
-		auto scaling = ProcessAnimationCurveVector<Vector3>(animationClip, nodeData, String::Format("Transformation.Scaling[{0}]", nodeName), 3, curves, 0.005f);
+		auto scaling = ProcessAnimationCurveVector<Vector3>(animationClip, nodeData, String::Format("Transform.Scale[{0}]", nodeName), 3, curves, 0.005f);
 
 		if (swapHandedness)
 		{

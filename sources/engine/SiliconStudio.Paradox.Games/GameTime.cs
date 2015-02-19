@@ -23,6 +23,8 @@
 
 using System;
 
+using SiliconStudio.Core;
+
 namespace SiliconStudio.Paradox.Games
 {
     /// <summary>

@@ -28,7 +28,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
             var entity1 = new Entity { Id = Guid.NewGuid() };
             var entity2 = new Entity { Id = Guid.NewGuid() };
 
-            entity1.Transformation.Children.Add(entity2.Transformation);
+            entity1.Transform.Children.Add(entity2.Transform);
 
             entityAsset.Hierarchy.Entities.Add(entity1);
             entityAsset.Hierarchy.Entities.Add(entity2);

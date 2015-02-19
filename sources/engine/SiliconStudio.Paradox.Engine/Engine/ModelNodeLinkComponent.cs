@@ -1,6 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
+
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Core;
 
@@ -8,11 +10,12 @@ namespace SiliconStudio.Paradox.Engine
 {
     [DataContract("ModelNodeLinkComponent")]
     [Display("Model Node Link")]
+    [DefaultEntityComponentProcessor(typeof(ModelNodeLinkProcessor))]
     public sealed class ModelNodeLinkComponent : EntityComponent
     {
         public static PropertyKey<ModelNodeLinkComponent> Key = new PropertyKey<ModelNodeLinkComponent>("Key", typeof(ModelNodeLinkComponent));
 
-        internal MeshProcessor.EntityLink EntityLink;
+        internal ModelProcessor.EntityLink EntityLink;
         internal ModelNodeLinkProcessor Processor;
         private ModelComponent target;
         private string nodeName;
@@ -67,9 +70,9 @@ namespace SiliconStudio.Paradox.Engine
             }
         }
 
-        public override PropertyKey DefaultKey
+        public override PropertyKey GetDefaultKey()
         {
-            get { return Key; }
+            return Key;
         }
     }
 }

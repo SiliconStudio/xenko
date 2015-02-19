@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
     {
         private SpriteBatch spriteBatch;
 
-        private DrawEffectContext drawEffectContext;
+        private RenderContext drawEffectContext;
 
         private Texture inputCubemap;
 
@@ -49,23 +49,20 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         {
             await base.LoadContent();
 
-            cubemapSpriteEffect = EffectSystem.LoadEffect("CubemapSprite");
+            cubemapSpriteEffect = EffectSystem.LoadEffect("CubemapSprite").WaitForResult();
 
-            drawEffectContext = new DrawEffectContext(this);
+            drawEffectContext = RenderContext.GetShared(Services);
             lamberFilter = new LambertianPrefilteringSH(drawEffectContext);
-            renderSHEffect = new SphericalHarmonicsRendererEffect(drawEffectContext);
+            renderSHEffect = new SphericalHarmonicsRendererEffect();
+            renderSHEffect.Initialize(drawEffectContext);
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
             inputCubemap = Asset.Load<Texture>("CubeMap");
             outputCubemap = Texture.NewCube(GraphicsDevice, 256, 1, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource).DisposeBy(this);
             displayedCubemap = outputCubemap;
-
-            RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = PrefilterCubeMap });
-            RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services) { ClearColor = Color.Zero });
-            RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = RenderCubeMap });
         }
 
-        private void PrefilterCubeMap(RenderContext obj)
+        private void PrefilterCubeMap()
         {
             if (!shouldPrefilter)
                 return;
@@ -89,7 +86,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             FrameGameSystem.TakeScreenshot();
         }
 
-        private void RenderCubeMap(RenderContext obj)
+        private void RenderCubeMap()
         {
             if (displayedCubemap == null || spriteBatch == null)
                 return;
@@ -142,6 +139,14 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             if(Input.IsKeyPressed(Keys.S))
                 SaveTexture(GraphicsDevice.BackBuffer, "LambertianPrefilteredImageCross.png");
+        }
+
+        protected override void Draw(GameTime gameTime)
+        {
+            base.Draw(gameTime);
+
+            PrefilterCubeMap();
+            RenderCubeMap();
         }
 
         [Test]

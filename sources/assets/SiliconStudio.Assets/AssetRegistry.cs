@@ -319,9 +319,9 @@ namespace SiliconStudio.Assets
         /// <param name="assembly">The assembly.</param>
         /// <exception cref="System.ArgumentNullException">assembly</exception>
         /// <exception cref="AssetException">
-        /// Invalid compiler type [{0}], must inherit from IAssetImporter.ToFormat(assetCompiler.CompilerTypeName)
+        /// Invalid compiler type [{0}], must inherit from IAssetImporter.ToFormat(assetCompiler.TypeName)
         /// or
-        /// Unable to instantiate compiler [{0}].ToFormat(assetCompiler.CompilerTypeName)
+        /// Unable to instantiate compiler [{0}].ToFormat(assetCompiler.TypeName)
         /// or
         /// Invalid importer type [{0}], must inherit from IAssetImporter.ToFormat(assetImporter.ImpoterTypeName)
         /// or

@@ -35,11 +35,13 @@ namespace SiliconStudio.Core.Collections
         /// <summary>
         /// Gets or sets whether the collection should throw an <see cref="ArgumentException"/> when an item to add or insert doesn't pass the constraint.
         /// </summary>
+        [DataMemberIgnore]
         public bool ThrowException { get; set; }
 
         /// <summary>
         /// Gets or sets the constraint for items added to the collection. If <c>null</c>, this collection behaves like a <see cref="List{T}"/>.
         /// </summary>
+        [DataMemberIgnore]
         public Func<ConstrainedList<T>, T, bool> Constraint { get; set; }
 
         public List<T>.Enumerator GetEnumerator()

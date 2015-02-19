@@ -39,14 +39,10 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         {
             await base.LoadContent();
 
-            var context = new DrawEffectContext(Services);
+            var context = RenderContext.GetShared(Services);
             renderHammersley = new ComputeEffectShader(context) { ShaderSourceName = "HammersleyTest" };
 
             output = Texture.New2D(GraphicsDevice, OutputSize, OutputSize, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.UnorderedAccess | TextureFlags.RenderTarget).DisposeBy(this);
-
-            RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services));
-            RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = RenderToOutput } );
-            RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = RenderToBackBuffer } );
         }
 
         protected override void RegisterTests()
@@ -54,21 +50,6 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             base.RegisterTests();
 
             FrameGameSystem.TakeScreenshot();
-        }
-
-        private void RenderToBackBuffer(RenderContext obj)
-        {
-            GraphicsDevice.DrawTexture(output);
-        }
-
-        private void RenderToOutput(RenderContext obj)
-        {
-            GraphicsDevice.Clear(output, Color4.White);
-            renderHammersley.ThreadGroupCounts = new Int3(samplesCount, 1, 1);
-            renderHammersley.ThreadNumbers = new Int3(1);
-            renderHammersley.Parameters.Set(HammersleyTestKeys.OutputTexture, output);
-            renderHammersley.Parameters.Set(HammersleyTestKeys.SamplesCount, samplesCount);
-            renderHammersley.Draw();
         }
 
         protected override void Update(GameTime gameTime)
@@ -80,6 +61,20 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             if (Input.IsKeyPressed(Keys.NumPad3))
                 samplesCount = Math.Min(1024, samplesCount * 2);
+        }
+
+        protected override void Draw(GameTime gameTime)
+        {
+            base.Draw(gameTime);
+
+            GraphicsDevice.Clear(output, Color4.White);
+            renderHammersley.ThreadGroupCounts = new Int3(samplesCount, 1, 1);
+            renderHammersley.ThreadNumbers = new Int3(1);
+            renderHammersley.Parameters.Set(HammersleyTestKeys.OutputTexture, output);
+            renderHammersley.Parameters.Set(HammersleyTestKeys.SamplesCount, samplesCount);
+            renderHammersley.Draw();
+
+            GraphicsDevice.DrawTexture(output);
         }
 
         public static void Main()

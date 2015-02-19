@@ -9,6 +9,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.ComputeEffect;
 using SiliconStudio.Paradox.Effects.Images;
+using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics.Regression;
 
 namespace SiliconStudio.Paradox.Graphics.Tests
@@ -60,14 +61,14 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             inputBuffer = Buffer.Typed.New(GraphicsDevice, inputBufferData, PixelFormat.R32G32B32A32_Float, true);
             outputBuffer = Buffer.Typed.New(GraphicsDevice, NbOfCoeffs * nbOfGroups.X * nbOfGroups.Y, PixelFormat.R32G32B32A32_Float, true);
 
-            var context = new DrawEffectContext(this);
+            var context = RenderContext.GetShared(Services);
             pass2 = new ComputeEffectShader(context) { ShaderSourceName = "LambertianPrefilteringSHEffectPass2", };
-
-            RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = RenderTest });
         }
 
-        private void RenderTest(RenderContext obj)
+        protected override void Draw(GameTime gameTime)
         {
+            base.Draw(gameTime);
+
             pass2.ThreadNumbers = new Int3(NbOfSums, 1, 1);
             pass2.ThreadGroupCounts = new Int3(nbOfGroups.X, nbOfGroups.Y, NbOfCoeffs);
             pass2.Parameters.Set(LambertianPrefilteringSHParameters.BlockSize, NbOfSums);

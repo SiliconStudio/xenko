@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31010.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "90-Tools", "90-Tools", "{1AE1AC60-5D2F-4CA7-AE20-888F44551185}"
 EndProject
@@ -86,7 +86,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScriptShader", "..\sources\scripts\ScriptShader\ScriptShader.csproj", "{457D4B45-85B9-4098-8389-6CBC012D140F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{7F348346-8AFE-4555-A14D-2290028D7B11} = {7F348346-8AFE-4555-A14D-2290028D7B11}
-		{0342C3E7-4A38-46B4-A8EC-E728D50085D3} = {0342C3E7-4A38-46B4-A8EC-E728D50085D3}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Graphics", "..\sources\engine\SiliconStudio.Paradox.Graphics\SiliconStudio.Paradox.Graphics.csproj", "{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}"
@@ -135,8 +134,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.AssemblyProce
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.AssemblyProcessor.Common", "..\sources\common\core\SiliconStudio.AssemblyProcessor.Common\SiliconStudio.AssemblyProcessor.Common.csproj", "{5D778003-7C87-47AC-A6C2-358CCCD8416E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Effects", "..\sources\shaders\SiliconStudio.Paradox.Effects.csproj", "{0342C3E7-4A38-46B4-A8EC-E728D50085D3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SiliconStudio.Paradox.Importer.Assimp", "..\sources\tools\SiliconStudio.Paradox.Importer.Assimp\SiliconStudio.Paradox.Importer.Assimp.vcxproj", "{C2306552-6C42-464C-8981-32FEF4F9458D}"
 EndProject
@@ -586,26 +583,6 @@ Global
 		{5D778003-7C87-47AC-A6C2-358CCCD8416E}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{5D778003-7C87-47AC-A6C2-358CCCD8416E}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
 		{5D778003-7C87-47AC-A6C2-358CCCD8416E}.Testing|Win32.ActiveCfg = Release|Any CPU
-		{0342C3E7-4A38-46B4-A8EC-E728D50085D3}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
-		{0342C3E7-4A38-46B4-A8EC-E728D50085D3}.AppStore|Any CPU.Build.0 = Release|Any CPU
-		{0342C3E7-4A38-46B4-A8EC-E728D50085D3}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{0342C3E7-4A38-46B4-A8EC-E728D50085D3}.AppStore|Mixed Platforms.Build.0 = Release|Any CPU
-		{0342C3E7-4A38-46B4-A8EC-E728D50085D3}.AppStore|Win32.ActiveCfg = Release|Any CPU
-		{0342C3E7-4A38-46B4-A8EC-E728D50085D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0342C3E7-4A38-46B4-A8EC-E728D50085D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0342C3E7-4A38-46B4-A8EC-E728D50085D3}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{0342C3E7-4A38-46B4-A8EC-E728D50085D3}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{0342C3E7-4A38-46B4-A8EC-E728D50085D3}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{0342C3E7-4A38-46B4-A8EC-E728D50085D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0342C3E7-4A38-46B4-A8EC-E728D50085D3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0342C3E7-4A38-46B4-A8EC-E728D50085D3}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{0342C3E7-4A38-46B4-A8EC-E728D50085D3}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{0342C3E7-4A38-46B4-A8EC-E728D50085D3}.Release|Win32.ActiveCfg = Release|Any CPU
-		{0342C3E7-4A38-46B4-A8EC-E728D50085D3}.Testing|Any CPU.ActiveCfg = Release|Any CPU
-		{0342C3E7-4A38-46B4-A8EC-E728D50085D3}.Testing|Any CPU.Build.0 = Release|Any CPU
-		{0342C3E7-4A38-46B4-A8EC-E728D50085D3}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{0342C3E7-4A38-46B4-A8EC-E728D50085D3}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
-		{0342C3E7-4A38-46B4-A8EC-E728D50085D3}.Testing|Win32.ActiveCfg = Release|Any CPU
 		{C2306552-6C42-464C-8981-32FEF4F9458D}.AppStore|Any CPU.ActiveCfg = Release|Win32
 		{C2306552-6C42-464C-8981-32FEF4F9458D}.AppStore|Mixed Platforms.ActiveCfg = Release|Win32
 		{C2306552-6C42-464C-8981-32FEF4F9458D}.AppStore|Mixed Platforms.Build.0 = Release|Win32
@@ -1941,7 +1918,6 @@ Global
 		{23EC8CE5-C100-4DEB-8276-E5AD79C30C06} = {75A820AB-0F21-40F2-9448-5D7F495B97A0}
 		{7F348346-8AFE-4555-A14D-2290028D7B11} = {2E93E2B5-4500-4E47-9B65-E705218AB578}
 		{5D778003-7C87-47AC-A6C2-358CCCD8416E} = {2E93E2B5-4500-4E47-9B65-E705218AB578}
-		{0342C3E7-4A38-46B4-A8EC-E728D50085D3} = {4C142567-C42B-40F5-B092-798882190209}
 		{C2306552-6C42-464C-8981-32FEF4F9458D} = {6F473FA6-4F8B-4FBA-AE33-EE5AF997D50C}
 		{D81F5C91-D7DB-46E5-BC99-49488FB6814C} = {10D145AF-C8AE-428F-A80F-CA1B591D0DB2}
 		{42780CBD-3FE7-48E3-BD5B-59945EA20137} = {4C142567-C42B-40F5-B092-798882190209}

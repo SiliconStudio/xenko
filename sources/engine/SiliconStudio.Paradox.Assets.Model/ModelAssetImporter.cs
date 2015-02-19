@@ -99,8 +99,8 @@ namespace SiliconStudio.Paradox.Assets.Model
         {
             var childEntity = new Entity { Name = nodeName };
 
-            // Add TransformationComponent
-            childEntity.Add(TransformationComponent.Key, new TransformationComponent());
+            // Add TransformComponent
+            childEntity.Add(TransformComponent.Key, new TransformComponent());
 
             // Add ModelNodeLinkComponent
             childEntity.Add(ModelNodeLinkComponent.Key, new ModelNodeLinkComponent
@@ -113,13 +113,13 @@ namespace SiliconStudio.Paradox.Assets.Model
             entityAsset.Hierarchy.Entities.Add(childEntity);
 
             // Get or create transformation component
-            var transformationComponent = rootEntityAsset.GetOrCreate(TransformationComponent.Key);
+            var transformationComponent = rootEntityAsset.GetOrCreate(TransformComponent.Key);
 
             // Mark node as preserved
             modelAsset.PreserveNodes(new List<string> { nodeName });
 
             // Add as children of model entity
-            transformationComponent.Children.Add(childEntity.GetOrCreate(TransformationComponent.Key));
+            transformationComponent.Children.Add(childEntity.GetOrCreate(TransformComponent.Key));
 
             return childEntity;
         }

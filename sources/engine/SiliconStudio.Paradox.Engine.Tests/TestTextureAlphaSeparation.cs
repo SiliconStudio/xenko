@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Threading.Tasks;
 
 using NUnit.Framework;
@@ -29,18 +31,19 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
         protected void LoadDices()
         {
-            RenderPipelineFactory.CreateSimple(this, "Default", Color.Red);
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer");
+            //RenderPipelineFactory.CreateSimple(this, "Default", Color.Red);
 
-            var dice = Asset.Load<Entity>("Cube/cube");
+            //var dice = Asset.Load<Entity>("Cube/cube");
 
-            var cameraComp = new CameraComponent { AspectRatio = 1, FarPlane = 100, NearPlane = 0.1f, TargetUp = -Vector3.UnitY, Target = dice, UseViewMatrix = false, VerticalFieldOfView = 1 };
-            RenderSystem.Pipeline.SetCamera(cameraComp);
+            //var cameraComp = new CameraComponent { AspectRatio = 1, FarPlane = 100, NearPlane = 0.1f, TargetUp = -Vector3.UnitY, Target = dice, UseViewMatrix = false, VerticalFieldOfView = 1 };
+            //RenderSystem.Pipeline.SetCamera(cameraComp);
 
-            var cameraEntity = new Entity { Transformation = { Translation = new Vector3(0, 0, -2) } };
-            cameraEntity.Add(cameraComp);
+            //var cameraEntity = new Entity { Transform = { Position = new Vector3(0, 0, -2) } };
+            //cameraEntity.Add(cameraComp);
 
-            Entities.Add(dice);
-            Entities.Add(cameraEntity);
+            //Entities.Add(dice);
+            //Entities.Add(cameraEntity);
         }
 
         protected override async Task LoadContent()

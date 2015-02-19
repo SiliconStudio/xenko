@@ -23,7 +23,7 @@ using IObjectFactory = SiliconStudio.Core.Reflection.IObjectFactory;
 
 namespace SiliconStudio.Paradox.Assets.Model
 {
-    [DataContract("Entity")]
+    [DataContract("EntityAsset")]
     [AssetFileExtension(FileExtension)]
     [AssetCompiler(typeof(EntityAssetCompiler))]
     [ThumbnailCompiler(PreviewerCompilerNames.EntityThumbnailCompilerQualifiedName, true)]
@@ -57,6 +57,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <summary>
         /// The various <see cref="EntityAsset"/> that are instantiated in this one.
         /// </summary>
+        [DataMemberIgnore]
         public Dictionary<Guid, EntityBase> AssetBases = new Dictionary<Guid, EntityBase>();
 
         private class EntityFactory : IObjectFactory
@@ -66,7 +67,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                 // Create a new root entity, and make sure transformation component is created
                 var rootEntity = new Entity();
                 rootEntity.Name = "Root";
-                rootEntity.GetOrCreate(TransformationComponent.Key);
+                rootEntity.GetOrCreate(TransformComponent.Key);
 
                 return new EntityAsset
                 {
@@ -143,6 +144,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         }
     }
 
+ 
     [DataContract("EntityBase")]
     public class EntityBase
     {

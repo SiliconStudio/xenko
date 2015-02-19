@@ -41,15 +41,15 @@ namespace SiliconStudio.Paradox.Engine
         /// Create a new instance of AudioListenerProcessor.
         /// </summary>
         public AudioListenerProcessor()
-            : base(new PropertyKey[] { AudioListenerComponent.Key, TransformationComponent.Key })
+            : base(new PropertyKey[] { AudioListenerComponent.Key, TransformComponent.Key })
         {
         }
 
         protected override AssociatedData GenerateAssociatedData(Entity entity)
         {
-            // Initialize TransformationComponent and ListenerComponent fields of the matchingEntities' AssociatedData.
+            // Initialize TransformComponent and ListenerComponent fields of the matchingEntities' AssociatedData.
             // other fields are initialized in OnEntityAdded or OnListenerCollectionChanged
-            return new AssociatedData { TransformationComponent = entity.Get(TransformationComponent.Key),
+            return new AssociatedData { TransformComponent = entity.Get(TransformComponent.Key),
                                         ListenerComponent = entity.Get(AudioListenerComponent.Key) };
         }
 
@@ -88,8 +88,8 @@ namespace SiliconStudio.Paradox.Engine
         private void InitializeAudioEmitter(AssociatedData data)
         {
             // initialize emitter position
-            data.TransformationComponent.UpdateWorldMatrix(); // ensure that value of the worldMatrix is correct
-            data.AudioListener = new AudioListener { Position = data.TransformationComponent.WorldMatrix.TranslationVector }; // we need a valid value of Position for the first Update (Velocity computation).
+            data.TransformComponent.UpdateWorldMatrix(); // ensure that value of the worldMatrix is correct
+            data.AudioListener = new AudioListener { Position = data.TransformComponent.WorldMatrix.TranslationVector }; // we need a valid value of Position for the first Update (Velocity computation).
 
             if (!audioSystem.Listeners.ContainsKey(data.ListenerComponent))
                 throw new AudioEngineInternalExceptions("Initialized AudioListenerComponent was not in AudioSystem.ListenerList");
@@ -118,7 +118,7 @@ namespace SiliconStudio.Paradox.Engine
                 if(!listenerData.ShouldBeComputed)  // skip all updates if the listener is not used.
                     continue;
                 
-                var worldMatrix = listenerData.TransformationComponent.WorldMatrix;
+                var worldMatrix = listenerData.TransformComponent.WorldMatrix;
                 var listener = listenerData.AudioListener;
                 var newPosition = worldMatrix.TranslationVector;
 
@@ -176,9 +176,9 @@ namespace SiliconStudio.Paradox.Engine
             public AudioListenerComponent ListenerComponent;
 
             /// <summary>
-            /// The <see cref="TransformationComponent"/> associated to the entity.
+            /// The <see cref="TransformComponent"/> associated to the entity.
             /// </summary>
-            public TransformationComponent TransformationComponent;
+            public TransformComponent TransformComponent;
         }
     }
 }

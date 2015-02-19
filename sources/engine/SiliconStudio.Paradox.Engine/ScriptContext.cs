@@ -30,11 +30,9 @@ namespace SiliconStudio.Paradox
 
         InputManager Input { get; }
 
-        EntitySystem Entities { get; }
-
         ScriptSystem Script { get; }
 
-        RenderSystem RenderSystem { get; }
+        SceneSystem SceneSystem { get; }
 
         EffectSystem EffectSystem { get; }
 
@@ -64,9 +62,8 @@ namespace SiliconStudio.Paradox
             virtualResolutionProvider = Services.GetSafeServiceAs<IVirtualResolution>();
             Asset = (AssetManager)Services.GetSafeServiceAs<IAssetManager>();
             Input = Services.GetSafeServiceAs<InputManager>();
-            Entities = Services.GetSafeServiceAs<EntitySystem>();
             Script = Services.GetSafeServiceAs<ScriptSystem>();
-            RenderSystem = Services.GetSafeServiceAs<RenderSystem>();
+            SceneSystem = Services.GetSafeServiceAs<SceneSystem>();
             EffectSystem = Services.GetSafeServiceAs<EffectSystem>();
             Audio = Services.GetSafeServiceAs<AudioSystem>();
             UI = Services.GetSafeServiceAs<UISystem>();
@@ -94,11 +91,9 @@ namespace SiliconStudio.Paradox
 
         public InputManager Input { get; private set; }
 
-        public EntitySystem Entities { get; private set; }
-
         public ScriptSystem Script { get; private set; }
 
-        public RenderSystem RenderSystem { get; private set; }
+        public SceneSystem SceneSystem { get; private set; }
 
         public EffectSystem EffectSystem { get; private set; }
 

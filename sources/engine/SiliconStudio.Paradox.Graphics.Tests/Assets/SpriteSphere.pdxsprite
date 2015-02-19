@@ -260,6 +260,6 @@ Images:
         Center: {X: 0, Y: 0}
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 ColorKeyEnabled: true
-Format: TrueColor
+Format: Color32Bits
 Alpha: Mask
 GenerateMipmaps: true

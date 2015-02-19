@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Physics
         public class AssociatedData
         {
             public PhysicsComponent PhysicsComponent;
-            public TransformationComponent TransformationComponent;
+            public TransformComponent TransformComponent;
             public ModelComponent ModelComponent; //not mandatory, could be null e.g. invisible triggers
             public Simulation PhysicsEngine;
         }
@@ -32,10 +32,9 @@ namespace SiliconStudio.Paradox.Physics
         private readonly List<PhysicsElement> characters = new List<PhysicsElement>();
 
         private Bullet2PhysicsSystem physicsSystem;
-        private RenderSystem renderSystem;
 
         public PhysicsProcessor()
-            : base(new PropertyKey[] { PhysicsComponent.Key, TransformationComponent.Key })
+            : base(new PropertyKey[] { PhysicsComponent.Key, TransformComponent.Key })
         {
         }
 
@@ -44,7 +43,7 @@ namespace SiliconStudio.Paradox.Physics
             var data = new AssociatedData
             {
                 PhysicsComponent = entity.Get(PhysicsComponent.Key),
-                TransformationComponent = entity.Get(TransformationComponent.Key),
+                TransformComponent = entity.Get(TransformComponent.Key),
                 ModelComponent = entity.Get(ModelComponent.Key),
             };
             data.PhysicsEngine = physicsSystem.PhysicsEngines[data.PhysicsComponent.Simulation];
@@ -342,14 +341,12 @@ namespace SiliconStudio.Paradox.Physics
         protected override void OnSystemAdd()
         {
             physicsSystem = (Bullet2PhysicsSystem)Services.GetSafeServiceAs<IPhysicsSystem>();
-            renderSystem = Services.GetSafeServiceAs<RenderSystem>();
 
             //setup debug device and debug shader
             var gfxDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>();
             Simulation.DebugGraphicsDevice = gfxDevice.GraphicsDevice;
 
             //Debug primitives render, should happen about the last steps of the pipeline
-            renderSystem.Pipeline.EndPass += DebugShapesDraw;
         }
 
         protected override void OnSystemRemove()
@@ -404,9 +401,9 @@ namespace SiliconStudio.Paradox.Physics
                 return;
 
             Matrix viewProj;
-            if (renderSystem.Pipeline.Parameters.ContainsKey(TransformationKeys.View) && renderSystem.Pipeline.Parameters.ContainsKey(TransformationKeys.Projection))
+            if (context.Parameters.ContainsKey(TransformationKeys.View) && context.Parameters.ContainsKey(TransformationKeys.Projection))
             {
-                viewProj = renderSystem.Pipeline.Parameters.Get(TransformationKeys.View) * renderSystem.Pipeline.Parameters.Get(TransformationKeys.Projection);
+                viewProj = context.Parameters.Get(TransformationKeys.View) * context.Parameters.Get(TransformationKeys.Projection);
             }
             else
             {

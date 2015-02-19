@@ -41,8 +41,8 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
             listCompEntities = new List<Entity> { new Entity(), new Entity() };
             emitCompEntities = new List<Entity> { new Entity(), new Entity() };
 
-            listCompEntities[0].Transformation.Parent = rootEntity.Transformation;
-            emitCompEntities[0].Transformation.Parent = listCompEntities[0].Transformation;
+            listCompEntities[0].Transform.Parent = rootEntity.Transform;
+            emitCompEntities[0].Transform.Parent = listCompEntities[0].Transform;
         }
 
         private void CreateAndAddListenerComponentToEntities()
@@ -83,7 +83,8 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
 
         private void AddRootEntityToEntitySystem(Game game)
         {
-            game.Entities.Add(rootEntity);
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            //game.Entities.Add(rootEntity);
         }
 
         private void AddListenersToAudioSystem(Game game)
@@ -325,7 +326,8 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
             else if (loopCount == 500)
             {
                 // check that the sound is stopped when removing the sound Entity from the system.
-                game.Entities.Remove(rootEntity);
+                throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+                //game.Entities.Remove(rootEntity);
                 Assert.AreEqual(SoundPlayState.Stopped, soundControllers[2].PlayState, "The sound has not been stopped when the emitter's entities have been removed.");
             }
             // should hear nothing
@@ -461,7 +463,8 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
             var extraList = new AudioListenerComponent();
             var extraListEntity = new Entity();
             extraListEntity.Add(extraList);
-            game.Entities.Add(extraListEntity);
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            //game.Entities.Add(extraListEntity);
 
             // check that PlayState always returns 'SoundPlayState.Stopped' when there are no listeners
             mainController.Play();

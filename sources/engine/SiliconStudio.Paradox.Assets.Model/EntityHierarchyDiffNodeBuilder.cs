@@ -79,7 +79,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                 if (!source.Entities.TryGetValue(rootEntity, out entity))
                     return;
 
-                var transformationComponent = entity.Get(TransformationComponent.Key);
+                var transformationComponent = entity.Get(TransformComponent.Key);
 
                 foreach (var child in transformationComponent.Children)
                 {

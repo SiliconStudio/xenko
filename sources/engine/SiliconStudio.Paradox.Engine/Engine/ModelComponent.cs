@@ -1,8 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Core;
 
@@ -13,6 +15,8 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     [DataContract("ModelComponent")]
     [Display(110, "Model")]
+    [DefaultEntityComponentRenderer(typeof(ModelAndLightComponentRenderer))]
+    [DefaultEntityComponentProcessor(typeof(ModelProcessor))]
     public sealed class ModelComponent : EntityComponent, IModelInstance
     {
         public static PropertyKey<ModelComponent> Key = new PropertyKey<ModelComponent>("Key", typeof(ModelComponent));
@@ -116,9 +120,9 @@ namespace SiliconStudio.Paradox.Engine
             }
         }
 
-        public override PropertyKey DefaultKey
+        public override PropertyKey GetDefaultKey()
         {
-            get { return Key; }
+            return Key;
         }
     }
 }

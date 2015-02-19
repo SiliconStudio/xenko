@@ -56,7 +56,7 @@ namespace SiliconStudio.Paradox.EntityModel
             if (!entities.Add(entity))
                 return;
 
-            var transformationComponent = entity.Transformation;
+            var transformationComponent = entity.Transform;
             if (transformationComponent != null)
             {
                 foreach (var child in transformationComponent.Children)

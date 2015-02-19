@@ -4,7 +4,7 @@ Tags: []
 Source: ../../../data/tests/uv.dds
 ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-Format: TrueColor
+Format: Color32Bits
 ~Base:
     Location: --import--
     Asset: !Texture

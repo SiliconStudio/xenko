@@ -108,14 +108,14 @@ namespace SiliconStudio.Paradox.Assets.Tests
             var allTexturesBlinn1 = textureVisitor.GetAllTextureValues();
             Assert.AreEqual(1, allTexturesBlinn1.Count);
             foreach (var texture in allTexturesBlinn1)
-                Assert.AreNotEqual(texture.TextureReference.Id, textureAsset.Id);
+                Assert.AreNotEqual(texture.Texture.Id, textureAsset.Id);
 
             var materialBlinn2 = AssetSerializer.Load<MaterialAsset>(projectDir + "/model/factory_material_blinn2.pdxmat");
             textureVisitor = new MaterialTextureVisitor(materialBlinn2.Material);
             var allTexturesBlinn2 = textureVisitor.GetAllTextureValues();
             Assert.AreEqual(1, allTexturesBlinn2.Count);
             foreach (var texture in allTexturesBlinn2)
-                Assert.AreEqual(texture.TextureReference.Id, textureAsset.Id);
+                Assert.AreEqual(texture.Texture.Id, textureAsset.Id);
 
             var model = AssetSerializer.Load<ModelAsset>(projectDir + "/model/factory.pdxm3d");
 
@@ -160,12 +160,12 @@ namespace SiliconStudio.Paradox.Assets.Tests
             var materialBlinn1 = AssetSerializer.Load<MaterialAsset>(projectDir + "/model/factory_material_blinn1.pdxmat");
             var textureVisitor = new MaterialTextureVisitor(materialBlinn1.Material);
             foreach (var texture in textureVisitor.GetAllTextureValues())
-                Assert.AreNotEqual(texture.TextureReference.Id, textureAsset.Id);
+                Assert.AreNotEqual(texture.Texture.Id, textureAsset.Id);
 
             var materialBlinn2 = AssetSerializer.Load<MaterialAsset>(projectDir + "/model/factory_material_blinn2.pdxmat");
             textureVisitor = new MaterialTextureVisitor(materialBlinn2.Material);
             foreach (var texture in textureVisitor.GetAllTextureValues())
-                Assert.AreEqual(texture.TextureReference.Id, textureAsset.Id);
+                Assert.AreEqual(texture.Texture.Id, textureAsset.Id);
 
             var model = AssetSerializer.Load<ModelAsset>(projectDir + "/model/factory.pdxm3d");
 

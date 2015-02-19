@@ -140,8 +140,8 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 // Wait next rendering frame
                 await Script.NextFrame();
 
-                teapotEntity.Transformation.Rotation = Quaternion.RotationY((float)(2 * Math.PI * UpdateTime.Total.TotalMilliseconds / 5000.0f));
-                dynamicCubemapEntity.Transformation.Translation = new Vector3(2f * (float)Math.Sin(2 * Math.PI * UpdateTime.Total.TotalMilliseconds / 15000.0f), 0, 0);
+                teapotEntity.Transform.Rotation = Quaternion.RotationY((float)(2 * Math.PI * UpdateTime.Total.TotalMilliseconds / 5000.0f));
+                dynamicCubemapEntity.Transform.Translation = new Vector3(2f * (float)Math.Sin(2 * Math.PI * UpdateTime.Total.TotalMilliseconds / 15000.0f), 0, 0);
             }
         }
 
