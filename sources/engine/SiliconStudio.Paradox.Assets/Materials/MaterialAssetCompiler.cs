@@ -6,14 +6,9 @@ using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
-using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
-using SiliconStudio.Paradox.Effects.Data;
-using System.Linq;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine.Graphics.Materials;
 
@@ -118,7 +113,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 //if (materialParameterCreator.CreateParameterCollectionData(commandContext.Logger))
                 //    return Task.FromResult(ResultStatus.Failed);
 
-                var materialData = new Material { Parameters = materialContext.Parameters};
+                var materialData = new Material { Parameters = result.Parameters, TessellationMethod = result.TessellationMethod };
                 
                 assetManager.Save(assetUrl, materialData);
 

@@ -1,11 +1,13 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections.Generic;
 
+using SiliconStudio.Paradox.Extensions;
 using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Paradox.Graphics;
+
+using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 namespace SiliconStudio.Paradox.Effects
 {
@@ -15,6 +17,7 @@ namespace SiliconStudio.Paradox.Effects
     public class RenderMesh : DynamicEffectInstance
     {
         private VertexArrayObject vertexArrayObject;
+        private VertexArrayObject vertexArrayObjectAEN;
 
         /// <summary>
         /// The model instance associated to this effect mesh.
@@ -81,6 +84,19 @@ namespace SiliconStudio.Paradox.Effects
             // Retrieve effect parameters
             var mesh = Mesh;
             var currentRenderData = mesh.Draw;
+            var material = Material;
+            var tessellationMethod = material.TessellationMethod;
+
+            // adapt the primitive type and index buffer to the tessellation used
+            var vao = vertexArrayObject;
+            var drawCount = currentRenderData.DrawCount;
+            if (tessellationMethod.PerformsAdjacentEdgeAverage())
+            {
+                vao = GetOrCreateVertexArrayObjectAEN(context);
+                drawCount = 12 / 3 * drawCount;
+            }
+            currentRenderData.PrimitiveType = tessellationMethod.GetPrimitiveType();
+
 
             //using (Profiler.Begin(ProfilingKeys.PrepareMesh))
             {
@@ -91,23 +107,22 @@ namespace SiliconStudio.Paradox.Effects
                 // The order is based on the granularity level of each element and how shared it can be. Material is heavily shared, a model contains many meshes. An renderMesh is unique.
                 // TODO: really copy mesh parameters into renderMesh instead of just referencing the meshDraw parameters.
 
-                var modelComponent = this.RenderModel.ModelComponent;
+                var modelComponent = RenderModel.ModelComponent;
                 var hasModelComponentParams = modelComponent != null && modelComponent.Parameters != null;
                 
-                var material = Material;
                 var materialParameters = material != null && material.Parameters != null ? material.Parameters : null;
 
                 if (materialParameters != null)
                 {
                     if (hasModelComponentParams)
-                        this.Effect.Apply(context.Parameters, materialParameters, modelComponent.Parameters, parameters, true);
+                        Effect.Apply(context.Parameters, materialParameters, modelComponent.Parameters, parameters, true);
                     else
-                        this.Effect.Apply(context.Parameters, materialParameters, parameters, true);
+                        Effect.Apply(context.Parameters, materialParameters, parameters, true);
                 }
                 else if (hasModelComponentParams)
-                    this.Effect.Apply(context.Parameters, modelComponent.Parameters, parameters, true);
+                    Effect.Apply(context.Parameters, modelComponent.Parameters, parameters, true);
                 else
-                    this.Effect.Apply(context.Parameters, parameters, true);
+                    Effect.Apply(context.Parameters, parameters, true);
             }
 
             //using (Profiler.Begin(ProfilingKeys.RenderMesh))
@@ -116,18 +131,31 @@ namespace SiliconStudio.Paradox.Effects
                 {
                     var graphicsDevice = context.GraphicsDevice;
 
-                    graphicsDevice.SetVertexArrayObject(vertexArrayObject);
+                    graphicsDevice.SetVertexArrayObject(vao);
 
                     if (currentRenderData.IndexBuffer == null)
                     {
-                        graphicsDevice.Draw(currentRenderData.PrimitiveType, currentRenderData.DrawCount, currentRenderData.StartLocation);
+                        graphicsDevice.Draw(currentRenderData.PrimitiveType, drawCount, currentRenderData.StartLocation);
                     }
                     else
                     {
-                        graphicsDevice.DrawIndexed(currentRenderData.PrimitiveType, currentRenderData.DrawCount, currentRenderData.StartLocation);
+                        graphicsDevice.DrawIndexed(currentRenderData.PrimitiveType, drawCount, currentRenderData.StartLocation);
                     }
                 }
             }
+        }
+
+        private VertexArrayObject GetOrCreateVertexArrayObjectAEN(RenderContext context)
+        {
+            if (vertexArrayObjectAEN == null)
+            {
+                var graphicsDevice = context.GraphicsDevice;
+                var indicesAEN = IndexExtensions.GenerateIndexBufferAEN(Mesh.Draw.IndexBuffer, Mesh.Draw.VertexBuffers[0]);
+                var indexBufferBinding = new IndexBufferBinding(Buffer.Index.New(graphicsDevice, indicesAEN), true, Mesh.Draw.IndexBuffer.Count * 12 / 3);
+                vertexArrayObjectAEN = VertexArrayObject.New(context.GraphicsDevice, Effect.InputSignature, indexBufferBinding, Mesh.Draw.VertexBuffers);
+            }
+
+            return vertexArrayObjectAEN;
         }
 
         public void UpdateMaterial()

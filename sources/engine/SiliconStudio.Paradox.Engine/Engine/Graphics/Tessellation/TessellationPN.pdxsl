@@ -9,9 +9,8 @@
 #ifndef InputControlPointCount
 # define InputControlPointCount 3
 #endif
-// TODO: REWRITE in WS
 
-class TessellationPN : TessellationFlat, NormalBase, TransformationBase, Transformation
+class TessellationPN : TessellationFlat
 {
     patchstream float3 f3ViewB111;
     stream float3 nextPositionVS1;
@@ -22,12 +21,12 @@ class TessellationPN : TessellationFlat, NormalBase, TransformationBase, Transfo
         return (2.0 * pA + pB - (dot((pB - pA), nA) * nA)) / 3.0f;
     }
 
-    float ComputeClippingGroup4(float3 f3Position1, float3 f3Position2, float3 f3Position3, float3 f3Position4, float4x4 f4x4Projection)
+    float ComputeClippingGroup4(float3 f3Position1, float3 f3Position2, float3 f3Position3, float3 f3Position4, float4x4 f4x4ViewProjection)
     {
-        float4 clipPos1 = mul( float4( f3Position1.xyz, 1.0f ), f4x4Projection );
-        float4 clipPos2 = mul( float4( f3Position2.xyz, 1.0f ), f4x4Projection );
-        float4 clipPos3 = mul( float4( f3Position3.xyz, 1.0f ), f4x4Projection );
-        float4 clipPos4 = mul( float4( f3Position4.xyz, 1.0f ), f4x4Projection );
+        float4 clipPos1 = mul( float4( f3Position1.xyz, 1.0f ), f4x4ViewProjection );
+        float4 clipPos2 = mul( float4( f3Position2.xyz, 1.0f ), f4x4ViewProjection );
+        float4 clipPos3 = mul( float4( f3Position3.xyz, 1.0f ), f4x4ViewProjection );
+        float4 clipPos4 = mul( float4( f3Position4.xyz, 1.0f ), f4x4ViewProjection );
 
         float3 planeTest;
 
@@ -49,16 +48,16 @@ class TessellationPN : TessellationFlat, NormalBase, TransformationBase, Transfo
         return !all(planeTest != 0.0f) ? 1.0 : 0.0;
     }
 
-    float ComputeClippingGroup8(float3 f3Position1, float3 f3Position2, float3 f3Position3, float3 f3Position4, float3 f3Position5, float3 f3Position6, float3 f3Position7, float3 f3Position8, float4x4 f4x4Projection)
+    float ComputeClippingGroup8(float3 f3Position1, float3 f3Position2, float3 f3Position3, float3 f3Position4, float3 f3Position5, float3 f3Position6, float3 f3Position7, float3 f3Position8, float4x4 f4x4ViewProjection)
     {
-        float4 clipPos1 = mul( float4( f3Position1.xyz, 1.0f ), f4x4Projection );
-        float4 clipPos2 = mul( float4( f3Position2.xyz, 1.0f ), f4x4Projection );
-        float4 clipPos3 = mul( float4( f3Position3.xyz, 1.0f ), f4x4Projection );
-        float4 clipPos4 = mul( float4( f3Position4.xyz, 1.0f ), f4x4Projection );
-        float4 clipPos5 = mul( float4( f3Position5.xyz, 1.0f ), f4x4Projection );
-        float4 clipPos6 = mul( float4( f3Position6.xyz, 1.0f ), f4x4Projection );
-        float4 clipPos7 = mul( float4( f3Position7.xyz, 1.0f ), f4x4Projection );
-        float4 clipPos8 = mul( float4( f3Position8.xyz, 1.0f ), f4x4Projection );
+        float4 clipPos1 = mul( float4( f3Position1.xyz, 1.0f ), f4x4ViewProjection );
+        float4 clipPos2 = mul( float4( f3Position2.xyz, 1.0f ), f4x4ViewProjection );
+        float4 clipPos3 = mul( float4( f3Position3.xyz, 1.0f ), f4x4ViewProjection );
+        float4 clipPos4 = mul( float4( f3Position4.xyz, 1.0f ), f4x4ViewProjection );
+        float4 clipPos5 = mul( float4( f3Position5.xyz, 1.0f ), f4x4ViewProjection );
+        float4 clipPos6 = mul( float4( f3Position6.xyz, 1.0f ), f4x4ViewProjection );
+        float4 clipPos7 = mul( float4( f3Position7.xyz, 1.0f ), f4x4ViewProjection );
+        float4 clipPos8 = mul( float4( f3Position8.xyz, 1.0f ), f4x4ViewProjection );
 
         float3 planeTest;
 
@@ -92,38 +91,38 @@ class TessellationPN : TessellationFlat, NormalBase, TransformationBase, Transfo
         return !all(planeTest != 0.0f) ? 1.0 : 0.0;
     }
     
-    override float ComputeClipping(InputPatch<Input, InputControlPointCount> input, const OutputPatch<Input2, 3> output, inout Constants constants)
+    stage override float ComputeClipping(InputPatch<Input, InputControlPointCount> input, const OutputPatch<Input2, 3> output, inout Constants constants)
     {
         // For now, Displacement clipping is hardcoded here, need to be able to split that! (maybe not that easy, need array or something)
         const float displacementSize = 75;
-        float3 f3Position5 = input[0].vPositionVS.xyz + input[0].vNormalVS * displacementSize;
-        float3 f3Position6 = input[1].vPositionVS.xyz + input[1].vNormalVS * displacementSize;
-        float3 f3Position7 = input[2].vPositionVS.xyz + input[2].vNormalVS * displacementSize;
+        float3 f3Position5 = input[0].PositionWS.xyz + input[0].normalWS * displacementSize;
+        float3 f3Position6 = input[1].PositionWS.xyz + input[1].normalWS * displacementSize;
+        float3 f3Position7 = input[2].PositionWS.xyz + input[2].normalWS * displacementSize;
 
-        float3 normalB111 = normalize((input[0].vNormalVS + input[1].vNormalVS + input[2].vNormalVS) / 3.0f);
+        float3 normalB111 = normalize((input[0].normalWS + input[1].normalWS + input[2].normalWS) / 3.0f);
         float3 f3Position8 = constants.f3ViewB111 + normalB111 * displacementSize;
 
-        return ComputeClippingGroup8(input[0].vPositionVS.xyz, input[1].vPositionVS.xyz, input[2].vPositionVS.xyz, constants.f3ViewB111,
+        return ComputeClippingGroup8(input[0].PositionWS.xyz, input[1].PositionWS.xyz, input[2].PositionWS.xyz, constants.f3ViewB111,
                                         f3Position5, f3Position6, f3Position7, f3Position8,
-                                        Projection);
-        //return ComputeClippingGroup4(input[0].vPositionVS.xyz, input[1].vPositionVS.xyz, input[2].vPositionVS.xyz, constants.f3ViewB111, Projection);
+                                        ViewProjection);
+        //return ComputeClippingGroup4(input[0].PositionWS.xyz, input[1].PositionWS.xyz, input[2].PositionWS.xyz, constants.f3ViewB111, ViewProjection);
     }
 
-    override void TessellateHull(InputPatch<Input, InputControlPointCount> input, uint uCPID, uint NextCPID)
+    stage override void TessellateHull(InputPatch<Input, InputControlPointCount> input, uint uCPID, uint NextCPID)
     {
-        streams.nextPositionVS1 = ComputeControlPoint(input[uCPID].vPositionVS, input[NextCPID].vPositionVS, input[uCPID].vNormalVS);
-        streams.nextPositionVS2 = ComputeControlPoint(input[NextCPID].vPositionVS, input[uCPID].vPositionVS, input[NextCPID].vNormalVS);
+        streams.nextPositionVS1 = ComputeControlPoint((float3)input[uCPID].PositionWS, (float3)input[NextCPID].PositionWS, input[uCPID].normalWS);
+        streams.nextPositionVS2 = ComputeControlPoint((float3)input[NextCPID].PositionWS, (float3)input[uCPID].PositionWS, input[NextCPID].normalWS);
     }
 
-    override void TessellateHullConstant(InputPatch<Input, InputControlPointCount> input, const OutputPatch<Input2, 3> output, inout Constants constants)
+    stage override void TessellateHullConstant(InputPatch<Input, InputControlPointCount> input, const OutputPatch<Input2, 3> output, inout Constants constants)
     {
-        float3 f3B300 = output[0].vPositionVS.xyz,
+        float3 f3B300 = output[0].PositionWS.xyz,
                f3B210 = output[0].nextPositionVS1.xyz,
                f3B120 = output[0].nextPositionVS2.xyz,
-               f3B030 = output[1].vPositionVS.xyz,
+               f3B030 = output[1].PositionWS.xyz,
                f3B021 = output[1].nextPositionVS1.xyz,
                f3B012 = output[1].nextPositionVS2.xyz,
-               f3B003 = output[2].vPositionVS.xyz,
+               f3B003 = output[2].PositionWS.xyz,
                f3B102 = output[2].nextPositionVS1.xyz,
                f3B201 = output[2].nextPositionVS2.xyz;
 
@@ -132,7 +131,7 @@ class TessellationPN : TessellationFlat, NormalBase, TransformationBase, Transfo
         constants.f3ViewB111 = f3E + ((f3E - f3V) / 2.0f);
 
         // TODO: Clipping test ?
-        //if (ComputeClipping(constants.f3ViewB111, Projection))
+        //if (ComputeClipping(constants.f3ViewB111, ViewProjection))
         //{
         //    constants.tessFactor[0] = 0.0f;
         //    constants.tessFactor[1] = 0.0f;
@@ -140,10 +139,10 @@ class TessellationPN : TessellationFlat, NormalBase, TransformationBase, Transfo
         //}
 
         //float fB111Clipped = IsClipped(
-        //    ApplyProjection(g_f4x4Projection, O.f3ViewB111));
+        //    ApplyProjection(g_f4x4ViewProjection, O.f3ViewB111));
     }
 
-    override void InterpolateBarycentric(const OutputPatch<Input, 3> input, in Constants constants, float3 f3BarycentricCoords)
+    stage override void InterpolateBarycentric(const OutputPatch<Input, 3> input, in Constants constants, float3 f3BarycentricCoords)
     {
         base.InterpolateBarycentric(input, constants, f3BarycentricCoords);
 
@@ -158,11 +157,10 @@ class TessellationPN : TessellationFlat, NormalBase, TransformationBase, Transfo
         float fVV3 = fVV * 3.0f;
         float fWW3 = fWW * 3.0f;
 
-        // TODO: streams.Position won't be valid anymore! maybe we should set it to right value just in case?
-        streams.vPositionVS = 
-            float4(input[0].vPositionVS * fUU * fU
-            + input[1].vPositionVS * fVV * fV
-            + input[2].vPositionVS * fWW * fW
+        streams.PositionWS = 
+            float4((float3)input[0].PositionWS * fUU * fU
+            + (float3)input[1].PositionWS * fVV * fV
+            + (float3)input[2].PositionWS * fWW * fW
             + input[0].nextPositionVS1 * fUU3 * fV
             + input[0].nextPositionVS2 * fVV3 * fU
             + input[1].nextPositionVS1 * fVV3 * fW

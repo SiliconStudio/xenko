@@ -121,8 +121,17 @@ namespace SiliconStudio.Paradox.Graphics
                 float radius = diameter / 2;
 
                 int vertexCount = 0;
+
+                // generate the first extremity points
+                for (int j = 0; j <= horizontalSegments; j++)
+                {
+                    var normal = new Vector3(0, -1, 0);
+                    var textureCoordinate = new Vector2(j / (float)horizontalSegments, 1f);
+                    vertices[vertexCount++] = new VertexPositionNormalTexture(normal * radius, normal, textureCoordinate);
+                }
+
                 // Create rings of vertices at progressively higher latitudes.
-                for (int i = 0; i <= verticalSegments; i++)
+                for (int i = 1; i < verticalSegments; i++)
                 {
                     float v = 1.0f - (float)i / verticalSegments;
 
@@ -130,8 +139,13 @@ namespace SiliconStudio.Paradox.Graphics
                     var dy = (float)Math.Sin(latitude);
                     var dxz = (float)Math.Cos(latitude);
 
+                    // the first point
+                    var firstNormal = new Vector3(0, dy, dxz);
+                    var firstHorizontalVertex = new VertexPositionNormalTexture(firstNormal * radius, firstNormal, new Vector2(0, v));
+                    vertices[vertexCount++] = firstHorizontalVertex;
+
                     // Create a single ring of vertices at this latitude.
-                    for (int j = 0; j <= horizontalSegments; j++)
+                    for (int j = 1; j < horizontalSegments; j++)
                     {
                         float u = (float)j / horizontalSegments;
 
@@ -147,6 +161,17 @@ namespace SiliconStudio.Paradox.Graphics
 
                         vertices[vertexCount++] = new VertexPositionNormalTexture(normal * radius, normal, textureCoordinate);
                     }
+
+                    // the last point equal to the first point
+                    vertices[vertexCount++] = firstHorizontalVertex;
+                }
+
+                // generate the end extremity points
+                for (int j = 0; j <= horizontalSegments; j++)
+                {
+                    var normal = new Vector3(0, 1, 0);
+                    var textureCoordinate = new Vector2(j / (float)horizontalSegments, 0f);
+                    vertices[vertexCount++] = new VertexPositionNormalTexture(normal * radius, normal, textureCoordinate);
                 }
 
                 // Fill the index buffer with triangles joining each pair of latitude rings.

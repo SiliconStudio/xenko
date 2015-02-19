@@ -167,7 +167,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
                 case BinaryOperand.SoftLight:
                     return "ComputeColorSoftLight";
                 case BinaryOperand.Subtract:
-                    return "ComputeColorSubtract3ds"; //"ComputeColorOverlayMaya" //TODO: change this
+                    return "ComputeColorSubtract"; // "ComputeColorSubtract3ds" "ComputeColorSubtractMaya" //TODO: change this
                 case BinaryOperand.SubstituteAlpha:
                     return "ComputeColorSubstituteAlpha";
                 default:

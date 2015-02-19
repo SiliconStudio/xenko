@@ -8,10 +8,19 @@ using SiliconStudio.Core;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics.Data;
 
+using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
+
 namespace SiliconStudio.Paradox.Extensions
 {
     public static class IndexExtensions
     {
+        private static byte[] GetDataSafe(this Buffer buffer)
+        {
+            var data = buffer.GetSerializationData();
+
+            return data != null ? data.Content : buffer.GetData<byte>();
+        }
+
         /// <summary>
         /// Generates an index buffer for this mesh data.
         /// </summary>
@@ -31,7 +40,7 @@ namespace SiliconStudio.Paradox.Extensions
 
             // Generate vertex buffer
             var vertexBufferData = new byte[declaration.VertexStride * indexMapping.Vertices.Length];
-            fixed (byte* oldVertexBufferDataStart = &oldVertexBuffer.Buffer.GetSerializationData().Content[oldVertexBuffer.Offset])
+            fixed (byte* oldVertexBufferDataStart = &oldVertexBuffer.Buffer.GetDataSafe()[oldVertexBuffer.Offset])
             fixed (byte* vertexBufferDataStart = &vertexBufferData[0])
             {
                 var vertexBufferDataCurrent = vertexBufferDataStart;
@@ -80,7 +89,7 @@ namespace SiliconStudio.Paradox.Extensions
             // Create new index buffer
             var indexCount = meshData.IndexBuffer.Count;
             var indexBufferData = new byte[indexCount * Utilities.SizeOf<ushort>()];
-            fixed (byte* oldIndexBufferDataStart = &meshData.IndexBuffer.Buffer.GetSerializationData().Content[0])
+            fixed (byte* oldIndexBufferDataStart = &meshData.IndexBuffer.Buffer.GetDataSafe()[0])
             fixed (byte* indexBufferDataStart = &indexBufferData[0])
             {
                 var oldIndexBufferDataPtr = (int*)oldIndexBufferDataStart;
@@ -98,41 +107,42 @@ namespace SiliconStudio.Paradox.Extensions
             return true;
         }
 
-        /// <summary>
-        /// Generates the index buffer with dominant edge and vertex informations.
-        /// Each triangle gets its indices expanded to 12 control points, with 0 to 2 being original triangle,
-        /// 3 to 8 being dominant edges and 9 to 11 being dominant vertices.
-        /// </summary>
-        /// <param name="meshData">The mesh data.</param>
-        public static unsafe void GenerateIndexBufferAEN(this MeshDraw meshData)
+        public static unsafe int[] GenerateIndexBufferAEN(IndexBufferBinding indexBuffer, VertexBufferBinding vertexBuffer)
         {
-            // For now, require a MeshData with only one vertex buffer and one index buffer
-            if (meshData.VertexBuffers.Length != 1 || meshData.IndexBuffer == null)
-                throw new NotImplementedException();
-
             // More info at http://developer.download.nvidia.com/whitepapers/2010/PN-AEN-Triangles-Whitepaper.pdf
             // This implementation might need some performance improvements
-            var indexBuffer = meshData.IndexBuffer;
 
             var triangleCount = indexBuffer.Count / 3;
             var newIndices = new int[triangleCount * 12];
 
-            var positionMapping = GenerateIndexMapping(meshData.VertexBuffers[0], "POSITION");
+            var positionMapping = GenerateIndexMapping(vertexBuffer, "POSITION");
             var dominantEdges = new Dictionary<EdgeKeyAEN, EdgeAEN>();
             var dominantVertices = new Dictionary<int, int>();
+            var indexSize = indexBuffer.Is32Bit? 4: 2;
 
-            fixed (byte* indexBufferStart = &indexBuffer.Buffer.GetSerializationData().Content[indexBuffer.Offset])
+            fixed (byte* indexBufferStart = &indexBuffer.Buffer.GetDataSafe()[indexBuffer.Offset])
             {
-                var oldIndices = (int*)indexBufferStart;
                 var triangleIndices = stackalloc int[3];
                 var positionIndices = stackalloc int[3];
 
                 // Step 2: prepare initial data
                 for (int i = 0; i < triangleCount; ++i)
                 {
-                    triangleIndices[0] = oldIndices[i * 3 + 0];
-                    triangleIndices[1] = oldIndices[i * 3 + 1];
-                    triangleIndices[2] = oldIndices[i * 3 + 2];
+                    var oldIndices = indexBufferStart + i * 3 * indexSize;
+                    if (indexSize == 2)
+                    {
+                        var oldIndicesShort = (short*)oldIndices;
+                        triangleIndices[0] = oldIndicesShort[0];
+                        triangleIndices[1] = oldIndicesShort[1];
+                        triangleIndices[2] = oldIndicesShort[2];
+                    }
+                    else
+                    {
+                        var oldIndicesShort = (int*)oldIndices;
+                        triangleIndices[0] = oldIndicesShort[0];
+                        triangleIndices[1] = oldIndicesShort[1];
+                        triangleIndices[2] = oldIndicesShort[2];
+                    }
 
                     positionIndices[0] = positionMapping.Indices[triangleIndices[0]];
                     positionIndices[1] = positionMapping.Indices[triangleIndices[1]];
@@ -172,9 +182,21 @@ namespace SiliconStudio.Paradox.Extensions
                 // Step3: Find dominant vertex/edge
                 for (int i = 0; i < triangleCount; ++i)
                 {
-                    triangleIndices[0] = oldIndices[i * 3 + 0];
-                    triangleIndices[1] = oldIndices[i * 3 + 1];
-                    triangleIndices[2] = oldIndices[i * 3 + 2];
+                    var oldIndices = indexBufferStart + i * 3 * indexSize;
+                    if (indexSize == 2)
+                    {
+                        var oldIndicesShort = (short*)oldIndices;
+                        triangleIndices[0] = oldIndicesShort[0];
+                        triangleIndices[1] = oldIndicesShort[1];
+                        triangleIndices[2] = oldIndicesShort[2];
+                    }
+                    else
+                    {
+                        var oldIndicesShort = (int*)oldIndices;
+                        triangleIndices[0] = oldIndicesShort[0];
+                        triangleIndices[1] = oldIndicesShort[1];
+                        triangleIndices[2] = oldIndicesShort[2];
+                    }
 
                     positionIndices[0] = positionMapping.Indices[triangleIndices[0]];
                     positionIndices[1] = positionMapping.Indices[triangleIndices[1]];
@@ -201,16 +223,35 @@ namespace SiliconStudio.Paradox.Extensions
                 }
             }
 
-            // Generate index buffer
+            return newIndices;
+        }
+
+        /// <summary>
+        /// Generates the index buffer with dominant edge and vertex information.
+        /// Each triangle gets its indices expanded to 12 control points, with 0 to 2 being original triangle,
+        /// 3 to 8 being dominant edges and 9 to 11 being dominant vertices.
+        /// </summary>
+        /// <param name="meshData">The mesh data.</param>
+        public unsafe static void GenerateIndexBufferAEN(this MeshDraw meshData)
+        {
+            // For now, require a MeshData with only one vertex buffer and one index buffer
+            if (meshData.VertexBuffers.Length != 1 || meshData.IndexBuffer == null)
+                throw new NotImplementedException();
+
+            // Generate the new indices
+            var newIndices = GenerateIndexBufferAEN(meshData.IndexBuffer, meshData.VertexBuffers[0]);
+            
+            // copy them into a byte[]
+            var triangleCount = meshData.IndexBuffer.Count / 3;
             var indexBufferData = new byte[triangleCount * 12 * Utilities.SizeOf<int>()];
             fixed (int* indexDataStart = &newIndices[0])
             fixed (byte* indexBufferDataStart = &indexBufferData[0])
             {
                 Utilities.CopyMemory((IntPtr)indexBufferDataStart, (IntPtr)indexDataStart, indexBufferData.Length);
-                meshData.IndexBuffer = new IndexBufferBinding(new BufferData(BufferFlags.IndexBuffer, indexBufferData).ToSerializableVersion(), true, triangleCount * 12);
             }
 
-            meshData.DrawCount = triangleCount * 12;
+            meshData.IndexBuffer = new IndexBufferBinding(new BufferData(BufferFlags.IndexBuffer, indexBufferData).ToSerializableVersion(), true, triangleCount * 12);
+            meshData.DrawCount = meshData.IndexBuffer.Count;
             meshData.PrimitiveType = PrimitiveType.PatchList.ControlPointCount(12);
         }
 
@@ -269,7 +310,7 @@ namespace SiliconStudio.Paradox.Extensions
         /// <returns></returns>
         public static unsafe IndexMappingResult GenerateIndexMapping(this VertexBufferBinding vertexBufferBinding, params string[] usages)
         {
-            var bufferData = vertexBufferBinding.Buffer.GetSerializationData().Content;
+            var bufferData = vertexBufferBinding.Buffer.GetDataSafe();
             var vertexStride = vertexBufferBinding.Declaration.VertexStride;
             var vertexCount = vertexBufferBinding.Count;
             var activeBytes = stackalloc byte[vertexStride];

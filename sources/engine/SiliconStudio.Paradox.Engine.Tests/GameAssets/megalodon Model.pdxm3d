@@ -1,0 +1,27 @@
+!Model
+Id: a22fce22-5505-4761-ac9d-91c74d92494c
+SerializedVersion: 1
+BuildOrder: 500
+Tags: []
+Source: ../../../data/tests/megalodon/megalodon.FBX
+SourceHash: c46fb7e8913041451a102b3eca8f90df
+Materials:
+    -   Name: 01-Default
+        Material: af068598-72da-41da-9cec-13c830a68a9f:01-Default
+Nodes:
+    - {Name: RootNode, Depth: 0, Preserve: false}
+    - {Name: Shark_01SG1, Depth: 1, Preserve: false}
+~Base:
+    Location: --import--
+    Asset: !Model
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: 1
+        BuildOrder: 500
+        Tags: []
+        ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
+        Materials:
+            -   Name: 01-Default
+                Material: af068598-72da-41da-9cec-13c830a68a9f:01-Default
+        Nodes:
+            - {Name: RootNode, Depth: 0, Preserve: false}
+            - {Name: Shark_01SG1, Depth: 1, Preserve: false}

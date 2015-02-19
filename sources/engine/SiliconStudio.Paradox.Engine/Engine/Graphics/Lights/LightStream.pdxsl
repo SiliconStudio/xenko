@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
         stage stream float  lightDirectAmbientOcclusion;
 
-        stage void ResetLightStream()
+        void ResetLightStream()
         {
             streams.lightDirectionWS = 0;
             streams.lightColor = 0;

@@ -38,7 +38,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
             context.Parameters.Set(key, Value);
             UsedKey = key;
 
-            return new ShaderClassSource("ComputeColorConstantFloatLink", Key ?? baseKeys.ValueBaseKey);
+            return new ShaderClassSource("ComputeColorConstantFloatLink", key);
         }
     }
 }
