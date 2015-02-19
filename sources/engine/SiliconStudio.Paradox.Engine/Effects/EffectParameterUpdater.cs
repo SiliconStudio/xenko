@@ -48,8 +48,8 @@ namespace SiliconStudio.Paradox.Effects
 
                 SortedKeys[i] = internalValue.Key;
                 SortedKeyHashes[i] = internalValue.Key.HashCode;
-                SortedCompilationValues[i] = internalValue.Value.Object;
-                SortedCounters[i] = internalValue.Value.Counter;
+                SortedCompilationValues[i] = internalValue.Key.DefaultValueMetadata.GetDefaultValue();
+                SortedCounters[i] = 0;
             }
 
             var keyMapping = new Dictionary<ParameterKey, int>();
@@ -80,6 +80,12 @@ namespace SiliconStudio.Paradox.Effects
             for (var i = 0; i < definition.SortedLevels.Length; ++i)
             {
                 var kvp = GetAtIndex(i);
+
+                // We can skip keys defined by the first level (which is the effect default parameters + key mapping)
+                // TODO: Make sure this is a valid assumption in all cases
+                if (kvp.Key == 0)
+                    continue;
+
                 if (definition.SortedLevels[i] == kvp.Key)
                 {
                     if (definition.SortedCounters[i] != kvp.Value.Counter && !kvp.Value.ValueEquals(definition.SortedCompilationValues[i]))
