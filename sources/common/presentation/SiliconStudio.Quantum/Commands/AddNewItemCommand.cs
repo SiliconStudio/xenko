@@ -49,6 +49,10 @@ namespace SiliconStudio.Quantum.Commands
             // TODO: Find a better solution for ContentSerializerAttribute that doesn't require to reference Core.Serialization (and unreference this assembly)
             if (collectionDescriptor.ElementType.IsAbstract || collectionDescriptor.ElementType.IsNullable() || collectionDescriptor.ElementType.GetCustomAttributes(typeof(ContentSerializerAttribute), true).Any())
             {
+                // If the parameter is a type instead of an instance, try to construct an instance of this type
+                var type = parameter as Type;
+                if (type != null && type.GetConstructor(Type.EmptyTypes) != null)
+                    parameter = Activator.CreateInstance(type);
                 undoToken = new UndoToken(true, collectionDescriptor.GetCollectionCount(currentValue));
                 collectionDescriptor.Add(currentValue, parameter);
             }

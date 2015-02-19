@@ -84,7 +84,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         /// The renderers that will be used to render this layer.
         /// </userdoc>
         [DataMember(50)]
-        [Category]
+        [NotNull]
         public SceneRendererCollection Renderers { get; private set; }
 
         internal bool IsMaster
