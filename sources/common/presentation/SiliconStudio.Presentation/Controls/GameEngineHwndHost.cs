@@ -79,32 +79,32 @@ namespace SiliconStudio.Presentation.Controls
             {
                 case NativeHelper.WM_RBUTTONDOWN:
                     mouseMoveCount = 0;
-                    Dispatcher.Invoke(() =>
-                        {
-                            RaiseMouseButtonEvent(Mouse.PreviewMouseDownEvent, MouseButton.Right);
-                            RaiseMouseButtonEvent(Mouse.MouseDownEvent, MouseButton.Right);
-                        });
+                    Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        RaiseMouseButtonEvent(Mouse.PreviewMouseDownEvent, MouseButton.Right);
+                        RaiseMouseButtonEvent(Mouse.MouseDownEvent, MouseButton.Right);
+                    }));
                     break;
                 case NativeHelper.WM_RBUTTONUP:
-                    Dispatcher.Invoke(() =>
-                        {
-                            RaiseMouseButtonEvent(Mouse.PreviewMouseUpEvent, MouseButton.Right);
-                            RaiseMouseButtonEvent(Mouse.MouseUpEvent, MouseButton.Right);
-                        });
+                    Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        RaiseMouseButtonEvent(Mouse.PreviewMouseUpEvent, MouseButton.Right);
+                        RaiseMouseButtonEvent(Mouse.MouseUpEvent, MouseButton.Right);
+                    }));
                     break;
                 case NativeHelper.WM_LBUTTONDOWN:
-                    Dispatcher.Invoke(() =>
-                        {
-                            RaiseMouseButtonEvent(Mouse.PreviewMouseDownEvent, MouseButton.Left);
-                            RaiseMouseButtonEvent(Mouse.MouseDownEvent, MouseButton.Left);
-                        });
+                    Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        RaiseMouseButtonEvent(Mouse.PreviewMouseDownEvent, MouseButton.Left);
+                        RaiseMouseButtonEvent(Mouse.MouseDownEvent, MouseButton.Left);
+                    }));
                     break;
                 case NativeHelper.WM_LBUTTONUP:
-                    Dispatcher.Invoke(() =>
-                        {
-                            RaiseMouseButtonEvent(Mouse.PreviewMouseUpEvent, MouseButton.Left);
-                            RaiseMouseButtonEvent(Mouse.MouseUpEvent, MouseButton.Left);
-                        });
+                    Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        RaiseMouseButtonEvent(Mouse.PreviewMouseUpEvent, MouseButton.Left);
+                        RaiseMouseButtonEvent(Mouse.MouseUpEvent, MouseButton.Left);
+                    }));
                     break;
                 case NativeHelper.WM_MOUSEMOVE:
                     ++mouseMoveCount;
