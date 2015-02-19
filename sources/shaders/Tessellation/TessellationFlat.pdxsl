@@ -24,21 +24,16 @@ class TessellationFlat : TessellationBase
         float4 clipPos2 = mul( float4( f3Position2.xyz, 1.0f ), f4x4ViewProjection );
         float4 clipPos3 = mul( float4( f3Position3.xyz, 1.0f ), f4x4ViewProjection );
 
-        float3 planeTest;
-
-        planeTest.x = ((-clipPos1.w <= clipPos1.x && clipPos1.x <= clipPos1.w) ? 1.0f : 0.0f)
-                    + ((-clipPos2.w <= clipPos2.x && clipPos2.x <= clipPos2.w) ? 1.0f : 0.0f)
-                    + ((-clipPos3.w <= clipPos3.x && clipPos3.x <= clipPos3.w) ? 1.0f : 0.0f);
-
-        planeTest.y = ((-clipPos1.w <= clipPos1.y && clipPos1.y <= clipPos1.w) ? 1.0f : 0.0f)
-                    + ((-clipPos2.w <= clipPos2.y && clipPos2.y <= clipPos2.w) ? 1.0f : 0.0f)
-                    + ((-clipPos3.w <= clipPos3.y && clipPos3.y <= clipPos3.w) ? 1.0f : 0.0f);
-
-        planeTest.z = ((-clipPos1.w <= clipPos1.z && clipPos1.z <= clipPos1.w) ? 1.0f : 0.0f)
-                    + ((-clipPos2.w <= clipPos2.z && clipPos2.z <= clipPos2.w) ? 1.0f : 0.0f)
-                    + ((-clipPos3.w <= clipPos3.z && clipPos3.z <= clipPos3.w) ? 1.0f : 0.0f);
-
-        return !all(planeTest != 0.0f) ? 1.0 : 0.0;
+        float3 clipPos1P = sign(clipPos1.xyz + clipPos1.www);
+        float3 clipPos1M = sign(clipPos1.xyz - clipPos1.www);
+        float3 clipPos2P = sign(clipPos2.xyz + clipPos2.www);
+        float3 clipPos2M = sign(clipPos2.xyz - clipPos2.www);
+        float3 clipPos3P = sign(clipPos3.xyz + clipPos3.www);
+        float3 clipPos3M = sign(clipPos3.xyz - clipPos3.www);
+        
+        float3 planeTests = abs(clipPos1P + clipPos1M + clipPos2P + clipPos2M + clipPos3P + clipPos3M);
+        
+        return all(planeTests != 6.0f) ? 0.0 : 1.0;
     }
 
     stage override void InterpolateBarycentric(const OutputPatch<Input, 3> input, in Constants constants, float3 f3BarycentricCoords)
