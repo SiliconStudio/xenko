@@ -26,6 +26,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             sortedRendererTypes = new List<EntityComponentRendererType>();
             renderers = new GraphicsRendererCollection<IEntityComponentRenderer>();
             RendererOverrides = new Dictionary<Type, IEntityComponentRenderer>();
+            FilterComponentTypes = new HashSet<Type>();
         }
 
         /// <summary>
@@ -42,6 +43,13 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         public abstract string ModelEffect { get; set; } // TODO: This is not a good extensibility point. Check how to improve this
 
         /// <summary>
+        /// Gets the filter renderer types.
+        /// </summary>
+        /// <value>The filter renderer types.</value>
+        [DataMemberIgnore]
+        public HashSet<Type> FilterComponentTypes { get; private set; } // TODO: This is not supporting changes at runtime
+
+        /// <summary>
         /// Draws entities from a specified <see cref="SceneCameraRenderer" />.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -56,9 +64,16 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             sortedRendererTypes.AddRange(rendererTypes);
             sortedRendererTypes.Sort();
 
+            int index = 0;
             for (int i = 0; i < sortedRendererTypes.Count; i++)
             {
                 var componentType = sortedRendererTypes[i].ComponentType;
+
+                // If a Filter on a component types is set, skip 
+                if (FilterComponentTypes.Count > 0 && !FilterComponentTypes.Contains(componentType))
+                {
+                    continue;
+                }
 
                 // Check an existing overrides
                 IEntityComponentRenderer renderer;
@@ -67,6 +82,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 var rendererType = renderer != null ? renderer.GetType() : sortedRendererTypes[i].RendererType;
                 var currentType = i < renderers.Count ? renderers[i].GetType() : null;
 
+
                 if (currentType != rendererType)
                 {
                     if (renderer == null)
@@ -74,15 +90,17 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                         renderer = CreateRenderer(sortedRendererTypes[i]);
                     }
 
-                    if (i == renderers.Count)
+                    if (index == renderers.Count)
                     {
                         renderers.Add(renderer);
                     }
                     else
                     {
-                        renderers.Insert(i, renderer);
+                        renderers.Insert(index, renderer);
                     }
                 }
+
+                index++;
             }
 
             renderers.Draw(context);
