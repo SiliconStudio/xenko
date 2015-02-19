@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             ModelComponent = entity.Get<ModelComponent>();
             Parameters = ModelComponent.Parameters;
             TransformComponent = entity.Transform;
-            RenderMeshes = new List<List<RenderMesh>>(4);
+            RenderMeshesList = new List<List<RenderMesh>>(4);
             Update();
         }
 
@@ -35,12 +35,25 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         {
             IsGroupUpdated = Entity.Group != Group;
             Group = Entity.Group;
+            var previousModel = Model;
             Model = ModelComponent.Model;
+            if (previousModel != Model)
+            {
+                // When changing the model, we need to regenerate the render meshes
+                foreach (var renderMeshes in RenderMeshesList)
+                {
+                    if (renderMeshes != null)
+                    {
+                        // TODO: Should we dispose something here?
+                        renderMeshes.Clear();
+                    }
+                }
+            }
         }
 
         public readonly TransformComponent TransformComponent;
 
-        internal readonly List<List<RenderMesh>> RenderMeshes;
+        internal readonly List<List<RenderMesh>> RenderMeshesList;
 
         public List<ModelProcessor.EntityLink> Links;
 

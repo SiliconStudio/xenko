@@ -17,6 +17,7 @@ using SiliconStudio.Paradox.Assets.Materials;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Materials;
+using SiliconStudio.Paradox.Engine.Graphics.Materials;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders.Compiler;
 using SiliconStudio.Paradox.Shaders.Parser.Mixins;

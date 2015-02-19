@@ -29,6 +29,7 @@ namespace SiliconStudio.Paradox.Effects
             // Must come before TransformationBase as this is responsible to modify the vertex input stream
             mixin MaterialSurfaceVertexStageCompositor;  
             mixin compose materialVertexStage = MaterialKeys.VertexStageSurfaceShaders;
+            mixin compose streamInitializerVertexStage = MaterialKeys.VertexStageStreamInitializer;
         }
 
         // -----------------------------------------------
@@ -88,6 +89,21 @@ namespace SiliconStudio.Paradox.Effects
             }
         }
 
+        // --------------------------------------------
+        // Mix material tessellation for Domain shader
+        //---------------------------------------------
+        if(MaterialKeys.TessellationShader != null)
+        {
+            mixin MaterialKeys.TessellationShader;
+
+            if(MaterialKeys.DomainStageSurfaceShaders != null)
+            {
+                mixin MaterialSurfaceDomainStageCompositor;  
+                mixin compose materialDomainStage = MaterialKeys.DomainStageSurfaceShaders;
+                mixin compose streamInitializerDomainStage = MaterialKeys.DomainStageStreamInitializer;
+            }
+        }
+
         // TODO: Need a flag to detect if we are in scene editor
         mixin child Picking;
 
@@ -98,6 +114,7 @@ namespace SiliconStudio.Paradox.Effects
         {
             mixin MaterialSurfacePixelStageCompositor;
             mixin compose materialPixelStage = MaterialKeys.PixelStageSurfaceShaders;
+            mixin compose streamInitializerPixelStage = MaterialKeys.PixelStageStreamInitializer;
 
             if (MaterialKeys.PixelStageSurfaceFilter != null)
             {

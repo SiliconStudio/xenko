@@ -16,13 +16,6 @@ using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
-    public enum MaterialShaderStage
-    {
-        Vertex,
-
-        Pixel
-    }
-
     // TODO REWRITE AND COMMENT THIS CLASS
     public class MaterialGeneratorContext : ShaderGeneratorContextBase
     {
@@ -30,14 +23,22 @@ namespace SiliconStudio.Paradox.Assets.Materials
         private int shadingModelCount;
         private MaterialBlendOverrides currentOverrides;
 
-        private readonly List<KeyValuePair<Type, ShaderSource>> vertexInputStreamModifiers = new List<KeyValuePair<Type, ShaderSource>>();
+        private readonly Dictionary<KeyValuePair<MaterialShaderStage, Type>, ShaderSource> inputStreamModifiers = new Dictionary<KeyValuePair<MaterialShaderStage, Type>, ShaderSource>();
+
+        public delegate void MaterialGeneratorCallback(MaterialShaderStage stage, MaterialGeneratorContext context);
+        private readonly Dictionary<MaterialShaderStage, List<MaterialGeneratorCallback>> finalCallbacks = new Dictionary<MaterialShaderStage, List<MaterialGeneratorCallback>>();
 
         public MaterialGeneratorContext()
         {
             currentOverrides = new MaterialBlendOverrides();
+
+            foreach (MaterialShaderStage stage in Enum.GetValues(typeof(MaterialShaderStage)))
+            {
+                finalCallbacks[stage] = new List<MaterialGeneratorCallback>();
+            }
         }
 
-        public HashSet<string> Streams
+        public Dictionary<MaterialShaderStage, HashSet<string>> Streams
         {
             get
             {
@@ -50,7 +51,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         private MaterialShadingModelCollection CurrentShadingModel { get; set; }
 
 
-        public bool IsVertexStage { get; set; }
+        public bool IsNotPixelStage { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether materials will be optimized (textures blended together, generate optimized shader permutations, etc...).
@@ -60,18 +61,25 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// </value>
         public bool OptimizeMaterials { get; set; }
 
-        public void AddVertexStreamModifier<T>(ShaderSource shaderSource)
+        public void AddFinalCallback(MaterialShaderStage stage, MaterialGeneratorCallback callback)
+        {
+            finalCallbacks[stage].Add(callback);
+        }
+
+        public void SetStreamFinalModifier<T>(MaterialShaderStage stage, ShaderSource shaderSource)
         {
             if (shaderSource == null)
-            {
                 return;
-            }
 
             var typeT = typeof(T);
-            if (vertexInputStreamModifiers.All(modifiers => modifiers.Key != typeT))
-            {
-                vertexInputStreamModifiers.Add(new KeyValuePair<Type, ShaderSource>(typeT, shaderSource));
-            }
+            inputStreamModifiers[new KeyValuePair<MaterialShaderStage, Type>(stage, typeT)] = shaderSource;
+        }
+
+        public ShaderSource GetStreamFinalModifier<T>(MaterialShaderStage stage)
+        {
+            ShaderSource shaderSource = null;
+            inputStreamModifiers.TryGetValue(new KeyValuePair<MaterialShaderStage, Type>(stage, typeof(T)), out shaderSource);
+            return shaderSource;
         }
 
         public void PushLayer(MaterialBlendOverrides overrides)
@@ -102,6 +110,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
             }
         }
 
+        /// <summary>
+        /// Gets or sets the tessellation method used by the material.
+        /// </summary>
+        public ParadoxTessellationMethod TessellationMethod { get; set; }
+
         public void PopLayer()
         {
             // If current shading model is not set, 
@@ -115,24 +128,32 @@ namespace SiliconStudio.Paradox.Assets.Materials
             {
                 shadingModelCount++;
             }
+            
+            var shouldBlendShadingModels = CurrentShadingModel != null && (!sameShadingModel || Current.Parent == null); // current shading model different from next shading model
 
-            // ----------------------------------------------
-            // Vertex surface shaders
-            // ----------------------------------------------
+            // --------------------------------------------------------------------
+            // Copy the shading surfaces and the stream initializer to the parent.
+            // --------------------------------------------------------------------
             if (Current.Parent != null)
             {
-                // Copy vertex surface shaders to parent
-                foreach (var shaderSource in Current.VertexStageSurfaceShaders)
+                foreach (MaterialShaderStage stage in Enum.GetValues(typeof(MaterialShaderStage)))
                 {
-                    Current.Parent.VertexStageSurfaceShaders.Add(shaderSource);
+                    // the initializers
+                    Current.Parent.StreamInitializers[stage].AddRange(Current.StreamInitializers[stage]);
+
+                    // skip pixel shader if shading model need to be blended
+                    if (stage == MaterialShaderStage.Pixel && shouldBlendShadingModels)
+                        continue;
+
+                    // the surface shaders
+                    Current.Parent.SurfaceShaders[stage].AddRange(Current.SurfaceShaders[stage]);
                 }
             }
 
-            // ----------------------------------------------
-            // Pixel surface shaders
-            // ----------------------------------------------
-            // If last shading model or current shading model different from next shading model
-            if (CurrentShadingModel != null && (!sameShadingModel || Current.Parent == null))
+            // -------------------------------------------------
+            // Blend shading models between layers if necessary
+            // -------------------------------------------------
+            if (shouldBlendShadingModels)
             {
                 var shadingSources = CurrentShadingModel.Generate(this);
 
@@ -153,24 +174,24 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 var currentOrParentLayer = Current.Parent ?? Current;
                 foreach (var shaderSource in shadingSources)
                 {
-                    currentOrParentLayer.PixelStageSurfaceShaders.Add(shaderSource);
-                }
-            }
-            else if (Current.Parent != null)
-            {
-                // Copy pixel surface shaders to parent
-                foreach (var shaderSource in Current.PixelStageSurfaceShaders)
-                {
-                    Current.Parent.PixelStageSurfaceShaders.Add(shaderSource);
+                    currentOrParentLayer.SurfaceShaders[MaterialShaderStage.Pixel].Add(shaderSource);
                 }
             }
 
-            // In case of the root material and for vertex stream, add all vertex stream modifiers just at the end
+            // In case of the root material, add all stream modifiers just at the end and call final callbacks
             if (Current.Parent == null)
             {
-                foreach (var shaderSource in vertexInputStreamModifiers.Select(modifiers => modifiers.Value))
+                foreach (var modifierKey in inputStreamModifiers.Keys)
                 {
-                    Current.VertexStageSurfaceShaders.Add(shaderSource);
+                    Current.SurfaceShaders[modifierKey.Key].Add(inputStreamModifiers[modifierKey]);
+                }
+                foreach (MaterialShaderStage stage in Enum.GetValues(typeof(MaterialShaderStage)))
+                {
+                    foreach (var callback in finalCallbacks[stage])
+                    {
+                        callback(stage, this);
+                    }
+                    finalCallbacks[stage].Clear();
                 }
             }
 
@@ -231,15 +252,20 @@ namespace SiliconStudio.Paradox.Assets.Materials
             return Current.GetSurfaceShaders(stage).Count > 0;
         }
 
-        public ShaderSource GenerateMixin(MaterialShaderStage stage)
+        public ShaderSource GenerateSurfaceShader(MaterialShaderStage stage)
         {
-            return Current.GenerateMixin(stage);
+            return Current.GenerateSurfaceShader(stage);
         }
 
-        public void UseStream(string stream)
+        public ShaderSource GenerateStreamInitializer(MaterialShaderStage stage)
+        {
+            return Current.GenerateStreamInilizer(stage);
+        }
+
+        public void UseStream(MaterialShaderStage stage, string stream)
         {
             if (stream == null) throw new ArgumentNullException("stream");
-            Current.Streams.Add(stream);
+            Current.Streams[stage].Add(stream);
         }
 
         public ShaderSource GetStreamBlendShaderSource(string stream)
@@ -249,11 +275,16 @@ namespace SiliconStudio.Paradox.Assets.Materials
             return shaderSource ?? new ShaderClassSource("MaterialStreamLinearBlend", stream);
         }
 
-        public void UseStreamWithCustomBlend(string stream, ShaderSource blendStream)
+        public void UseStreamWithCustomBlend(MaterialShaderStage stage, string stream, ShaderSource blendStream)
         {
             if (stream == null) throw new ArgumentNullException("stream");
-            UseStream(stream);
+            UseStream(stage, stream);
             registeredStreamBlend[stream] = blendStream;
+        }
+
+        public void AddStreamInitializer(MaterialShaderStage stage, string streamInitilizerSource)
+        {
+            Current.StreamInitializers[stage].Add(streamInitilizerSource);
         }
 
         public void SetStream(MaterialShaderStage stage, string stream, IComputeNode computeNode, ParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey, Color? defaultTextureValue = null)
@@ -284,11 +315,16 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 this.context = context;
                 this.parentNode = parentNode;
                 this.overrides = overrides;
-                VertexStageSurfaceShaders = new List<ShaderSource>();
-                PixelStageSurfaceShaders = new List<ShaderSource>();
+
                 Children = new List<MaterialBlendLayerNode>();
-                Streams = new HashSet<string>();
                 ShadingModels = new MaterialShadingModelCollection();
+
+                foreach (MaterialShaderStage stage in Enum.GetValues(typeof(MaterialShaderStage)))
+                {
+                    SurfaceShaders[stage] = new List<ShaderSource>();
+                    StreamInitializers[stage] = new List<string>();
+                    Streams[stage] = new HashSet<string>();
+                }
             }
 
             public MaterialBlendOverrides Overrides
@@ -315,11 +351,9 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 }
             }
 
-            public List<ShaderSource> VertexStageSurfaceShaders { get; private set; }
-
-            public List<ShaderSource> PixelStageSurfaceShaders { get; private set; }
-
-            public HashSet<string> Streams { get; private set; }
+            public readonly Dictionary<MaterialShaderStage, List<ShaderSource>> SurfaceShaders = new Dictionary<MaterialShaderStage, List<ShaderSource>>();
+            public readonly Dictionary<MaterialShaderStage, List<string>> StreamInitializers = new Dictionary<MaterialShaderStage, List<string>>();
+            public readonly Dictionary<MaterialShaderStage, HashSet<string>> Streams = new Dictionary<MaterialShaderStage, HashSet<string>>();
 
             public List<MaterialBlendLayerNode> Children { get; private set; }
 
@@ -360,7 +394,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 // Blend stream isnot part of the stream used
                 if (stream != MaterialBlendLayer.BlendStream)
                 {
-                    Streams.Add(stream);
+                    Streams[stage].Add(stream);
                 }
 
                 string channel;
@@ -388,10 +422,31 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
             public List<ShaderSource> GetSurfaceShaders(MaterialShaderStage stage)
             {
-                return stage == MaterialShaderStage.Pixel ? PixelStageSurfaceShaders : VertexStageSurfaceShaders;
+                return SurfaceShaders[stage];
             }
 
-            public ShaderSource GenerateMixin(MaterialShaderStage stage)
+            public ShaderSource GenerateStreamInilizer(MaterialShaderStage stage)
+            {
+                var mixin = new ShaderMixinSource();
+
+                // the basic streams contained by every materials
+                mixin.Mixins.Add(new ShaderClassSource("MaterialStream"));
+
+                // the streams coming from the material layers
+                foreach (var streamInitializer in StreamInitializers[stage])
+                {
+                    mixin.Mixins.Add(streamInitializer);
+                }
+                StreamInitializers[stage].Clear();
+
+                // the streams specific to a stage
+                if(stage == MaterialShaderStage.Pixel)
+                    mixin.Mixins.Add("MaterialPixelStream");
+
+                return mixin;
+            }
+
+            public ShaderSource GenerateSurfaceShader(MaterialShaderStage stage)
             {
                 var surfaceShaders = GetSurfaceShaders(stage);
 
@@ -420,7 +475,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 }
 
                 surfaceShaders.Clear();
-                Streams.Clear();
+                Streams[stage].Clear();
                 return result;
             }
         }

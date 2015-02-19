@@ -27,6 +27,7 @@ using namespace SiliconStudio::Paradox::Assets::Materials::ComputeColors;
 using namespace SiliconStudio::Paradox::AssimpNet;
 using namespace SiliconStudio::Paradox::DataModel;
 using namespace SiliconStudio::Paradox::Engine;
+using namespace SiliconStudio::Paradox::Engine::Graphics::Materials;
 using namespace SiliconStudio::Paradox::EntityModel;
 using namespace SiliconStudio::Paradox::Effects;
 using namespace SiliconStudio::Paradox::Effects::Data;

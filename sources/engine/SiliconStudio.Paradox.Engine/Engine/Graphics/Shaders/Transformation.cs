@@ -32,5 +32,6 @@ namespace SiliconStudio.Paradox.Effects
         public static readonly ParameterKey<Matrix> WorldView = ParameterKeys.New<Matrix>();
         public static readonly ParameterKey<Matrix> WorldViewInverse = ParameterKeys.New<Matrix>();
         public static readonly ParameterKey<Matrix> WorldViewProjection = ParameterKeys.New<Matrix>();
+        public static readonly ParameterKey<Vector3> WorldScale = ParameterKeys.New<Vector3>();
     }
 }

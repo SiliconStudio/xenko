@@ -1,17 +1,20 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 /// <summary>
-/// Defines the transformations steps, the associated methods nad inserts them into the pipeline.
-/// 3 steps are available for overriding: pre-transformation, transformation, post-transformation.
+/// Defines the 3 transformations steps used in the pipeline.
+/// The first is performed at the end of the VS.
+/// The second is performed after the tessellation.
+/// The third is performed at the end of the geometry pipeline.
 /// </summary>
 class TransformationBase : ShaderBase
 {
-    // Need to split that more properly (with guaranteed shader stages)
-    // VS for sure (usually skinning)
+    // End of the VS (usually skinning)
     stage void PreTransformPosition() {}
-    // VS or DS (usually displacement mapping in view space, etc...)
+
+    // End of tessellation (usually displacement mapping in world space, etc...)
     stage void TransformPosition() {}
-    // after TransformPosition (to generate ShadingPosition)
+
+    // At the end of the geometry pipeline (to generate ShadingPosition)
     stage void PostTransformPosition() {}
 
     stage void BaseTransformVS()

@@ -16,14 +16,14 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     [Browsable(false)] // This type is not browsable from the editor
     public class SceneDelegateRenderer : SceneRendererBase
     {
-        private readonly Action<RenderContext> drawAction;
+        private readonly Action<RenderContext, RenderFrame> drawAction;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneDelegateRenderer"/> class.
         /// </summary>
         /// <param name="drawAction">The draw action.</param>
         /// <exception cref="System.ArgumentNullException">drawAction</exception>
-        public SceneDelegateRenderer(Action<RenderContext> drawAction)
+        public SceneDelegateRenderer(Action<RenderContext, RenderFrame> drawAction)
         {
             if (drawAction == null) throw new ArgumentNullException("drawAction");
             this.drawAction = drawAction;
@@ -31,7 +31,11 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
         protected override void DrawCore(RenderContext context)
         {
-            drawAction(context);
+            var output = Output.GetSafeRenderFrame(context);
+            if (output != null)
+            {
+                drawAction(context, output);
+            }
         }
     }
 }

@@ -1,21 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 namespace SiliconStudio.Paradox.Effects.Materials
 {
-    class MaterialVertexStream : MaterialStream
+    /// <summary>
+    /// Contains all the default streams of the vertex shader stage.
+    /// </summary>
+    class MaterialVertexStream : MaterialStream, MaterialDisplacementStream, NormalStream, PositionStream
     {
-        // Displacement height attribute
-        stage stream float matDisplacement;
-
-        stage stream float matDisplacementIntensity;
-
-        override void ResetMaterialVertexStream()
-        {
-            base.ResetMaterialVertexStream();
-
-            streams.matDisplacement = 0.0f;
-            streams.matDisplacementIntensity = 1.0f;
-        }
     };
 }
-
