@@ -6,7 +6,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Materials;
-using SiliconStudio.Paradox.Effects.Tessellation;
+using SiliconStudio.Paradox.Engine.Graphics.Tessellation;
 using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Materials

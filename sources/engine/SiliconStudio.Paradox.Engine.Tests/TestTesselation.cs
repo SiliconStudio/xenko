@@ -11,7 +11,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Lights;
 using SiliconStudio.Paradox.Effects.ProceduralModels;
-using SiliconStudio.Paradox.Effects.Tessellation;
+using SiliconStudio.Paradox.Engine.Graphics.Tessellation;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;

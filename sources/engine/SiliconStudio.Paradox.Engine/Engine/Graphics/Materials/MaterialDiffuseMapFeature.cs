@@ -7,10 +7,11 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Assets.Materials;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Effects.Materials;
 
-namespace SiliconStudio.Paradox.Assets.Materials
+namespace SiliconStudio.Paradox.Engine.Graphics.Materials
 {
     /// <summary>
     /// A Diffuse map for the diffuse material feature.

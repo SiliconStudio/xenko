@@ -74,7 +74,71 @@
     <Compile Include="DataModel\CompressedTimeSpan.cs" />
     <Compile Include="DataModel\AnimationCurveEvaluatorOptimizedQuaternionGroup.cs" />
     <Compile Include="DataModel\Interpolator.cs" />
-    <Compile Include="Effects\ParadoxTessellationMethod.cs" />
+    <Compile Include="Engine\Graphics\ComputeColor\ComputeColorSubtract.cs" />
+    <Compile Include="Engine\Graphics\ComputeColor\ComputeColorSubtract1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ComputeColorSubtract.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Engine\Graphics\Materials\DisplacementMapStage.cs" />
+    <Compile Include="Engine\Graphics\Materials\IMaterialSurfaceDomain.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>IMaterialSurfaceDomain.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Engine\Graphics\Materials\IStreamInitializer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>IStreamInitializer.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Engine\Graphics\Materials\MaterialDisplacementMapFeature.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialDisplacementStream.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialDisplacementStream.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Engine\Graphics\Materials\MaterialDomainStream.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialDomainStream.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Engine\Graphics\Materials\MaterialShaderStage.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialStreamAdditiveBlend.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialStreamAdditiveBlend.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Engine\Graphics\Materials\MaterialSurfaceDisplacement.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialSurfaceDisplacement1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialSurfaceDisplacement.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Engine\Graphics\Materials\MaterialSurfaceDomainStageCompositor.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialSurfaceDomainStageCompositor1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialSurfaceDomainStageCompositor.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Engine\Graphics\Materials\MaterialTesselationBaseFeature.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialTessellationFlatFeature.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialTessellationPNFeature.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialTessellationStream.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialTessellationStream1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MaterialTessellationStream.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Engine\Graphics\Materials\ParadoxTessellationMethod.cs" />
     <Compile Include="Engine\CameraProjectionOrthographic.cs" />
     <Compile Include="Engine\CameraProjectionPerspective.cs" />
     <Compile Include="Engine\EntityComponentRendererTypeCollection.cs" />
@@ -803,7 +867,6 @@
     <Compile Include="Engine\Graphics\Materials\MaterialSpecularMicrofacetVisibilitySmithSchlickGGX.cs" />
     <Compile Include="Engine\Graphics\Materials\MaterialStreamType.cs" />
     <Compile Include="Engine\Graphics\Materials\MaterialUtility.cs" />
-    <Compile Include="Engine\Graphics\Materials\MaterialVertexDisplacementMapFeature.cs" />
     <Compile Include="Engine\Graphics\Materials\ShaderGeneratorContextBase.cs" />
     <Compile Include="Engine\Graphics\Materials\TextureChannel.cs" />
     <Compile Include="Engine\Graphics\Materials\TextureCoordinate.cs" />
@@ -1682,42 +1745,42 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\TessellationKeys.cs" />
-    <Compile Include="Engine\Graphics\Tessellation\ShaderBaseTessellation.cs">
-      <DependentUpon>ShaderBaseTessellation.pdxsl</DependentUpon>
+    <Compile Include="Engine\Graphics\Tessellation\TessellationAE2.cs">
       <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>TessellationAE2.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Engine\Graphics\Tessellation\TessellationAEN.cs">
-      <DependentUpon>TessellationAEN.pdxsl</DependentUpon>
+    <Compile Include="Engine\Graphics\Tessellation\TessellationAE3.cs">
       <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>TessellationAE3.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Engine\Graphics\Tessellation\TessellationDisplacement.cs">
-      <DependentUpon>TessellationDisplacement.pdxsl</DependentUpon>
+    <Compile Include="Engine\Graphics\Tessellation\TessellationAE4.cs">
       <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>TessellationAE4.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Engine\Graphics\Tessellation\TessellationDisplacementAEN.cs">
-      <DependentUpon>TessellationDisplacementAEN.pdxsl</DependentUpon>
+    <Compile Include="Engine\Graphics\Tessellation\TessellationBase.cs">
       <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>TessellationBase.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Engine\Graphics\Tessellation\TessellationFlat.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>TessellationFlat.pdxsl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Engine\Graphics\Tessellation\TessellationKeys.cs" />
     <Compile Include="Engine\Graphics\Tessellation\TessellationPN.cs">
-      <DependentUpon>TessellationPN.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>TessellationPN.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Engine\Graphics\Transformation\TransformationBase.cs">
       <DependentUpon>TransformationBase.pdxsl</DependentUpon>
@@ -2195,6 +2258,10 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorSubstituteAlphaWithColor.cs</LastGenOutput>
     </None>
+    <None Include="Engine\Graphics\ComputeColor\ComputeColorSubtract.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorSubtract1.cs</LastGenOutput>
+    </None>
     <None Include="Engine\Graphics\ComputeColor\ComputeColorSynthetic.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorSynthetic.cs</LastGenOutput>
@@ -2611,6 +2678,38 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LightStream.cs</LastGenOutput>
     </None>
+    <None Include="Engine\Graphics\Materials\IMaterialSurfaceDomain.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>IMaterialSurfaceDomain.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Materials\IStreamInitializer.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>IStreamInitializer.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Materials\MaterialDisplacementStream.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialDisplacementStream.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Materials\MaterialDomainStream.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialDomainStream.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Materials\MaterialStreamAdditiveBlend.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialStreamAdditiveBlend.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Materials\MaterialSurfaceDisplacement.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialSurfaceDisplacement1.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Materials\MaterialSurfaceDomainStageCompositor.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialSurfaceDomainStageCompositor1.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Materials\MaterialTessellationStream.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialTessellationStream1.cs</LastGenOutput>
+    </None>
     <None Include="Engine\Graphics\Materials\Shaders\IMaterialSpecularMicrofacetFresnelFunction.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>IMaterialSpecularMicrofacetFresnelFunction.cs</LastGenOutput>
@@ -2899,21 +2998,21 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>SphericalHarmonicsEnvironmentColor.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Tessellation\ShaderBaseTessellation.pdxsl">
+    <None Include="Engine\Graphics\Tessellation\TessellationAE2.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ShaderBaseTessellation.cs</LastGenOutput>
+      <LastGenOutput>TessellationAE2.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Tessellation\TessellationAEN.pdxsl">
+    <None Include="Engine\Graphics\Tessellation\TessellationAE3.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>TessellationAEN.cs</LastGenOutput>
+      <LastGenOutput>TessellationAE3.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Tessellation\TessellationDisplacement.pdxsl">
+    <None Include="Engine\Graphics\Tessellation\TessellationAE4.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>TessellationDisplacement.cs</LastGenOutput>
+      <LastGenOutput>TessellationAE4.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Tessellation\TessellationDisplacementAEN.pdxsl">
+    <None Include="Engine\Graphics\Tessellation\TessellationBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>TessellationDisplacementAEN.cs</LastGenOutput>
+      <LastGenOutput>TessellationBase.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\Tessellation\TessellationFlat.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

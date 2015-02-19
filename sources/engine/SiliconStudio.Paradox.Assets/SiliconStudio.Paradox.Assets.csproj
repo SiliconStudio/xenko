@@ -133,13 +133,10 @@
     <Compile Include="Effect\EffectCompositorAsset.cs" />
     <Compile Include="Effect\EffectShaderAssetCompiler.cs" />
     <Compile Include="Effect\EffectShaderAsset.cs" />
-    <Compile Include="Materials\MaterialShaderStage.cs" />
     <Compile Include="Materials\ComputeShaderBaseExtensions.cs" />
     <Compile Include="Materials\MaterialNodeClassLoader.cs" />
     <Compile Include="Materials\MaterialStreamFactory.cs" />
     <Compile Include="Materials\ShaderGeneratorContextExtensions.cs" />
-    <Compile Include="Materials\MaterialTessellationFlatFeature.cs" />
-    <Compile Include="Materials\MaterialTessellationPNFeature.cs" />
     <Compile Include="ProceduralModels\ProceduralModelAsset.cs" />
     <Compile Include="ProceduralModels\ProceduralModelAssetCompiler.cs" />
     <Compile Include="ImageGroupAsset.cs" />
