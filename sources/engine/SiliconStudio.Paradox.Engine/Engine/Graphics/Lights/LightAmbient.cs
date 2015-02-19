@@ -10,8 +10,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
     /// </summary>
     [DataContract("LightAmbient")]
     [Display("Ambient")]
-    public class LightAmbient : ILight
+    public class LightAmbient : ColorLightBase
     {
-        // TODO: Add support for disk based sun
     }
 }

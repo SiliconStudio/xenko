@@ -17,6 +17,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         {
             RegisterLightGroupProcessor<LightDirectional>(new LightDirectionalGroupRenderer());
             RegisterLightGroupProcessor<LightSkybox>(new LightSkyboxRenderer());
+            RegisterLightGroupProcessor<LightAmbient>(new LightAmbientRenderer());
         }
     }
 }

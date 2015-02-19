@@ -13,6 +13,6 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
         public abstract bool IsDirectLight { get; }
 
-        public abstract IEnumerable<LightShaderGroup> PrepareLights(RenderContext context, LightComponentCollection lights);
+        public abstract List<LightShaderGroup> PrepareLights(RenderContext context, LightComponentCollection lights);
     }
 }

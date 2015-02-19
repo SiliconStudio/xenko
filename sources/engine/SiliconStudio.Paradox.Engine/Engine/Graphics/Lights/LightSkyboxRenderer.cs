@@ -5,8 +5,6 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects.Images;
-using SiliconStudio.Paradox.Effects.Skyboxes;
 using SiliconStudio.Paradox.Engine.Graphics.Skyboxes;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
@@ -14,7 +12,7 @@ using SiliconStudio.Paradox.Shaders;
 namespace SiliconStudio.Paradox.Effects.Lights
 {
     /// <summary>
-    /// Light renderer for Skybox.
+    /// Light renderer for <see cref="LightSkybox"/>.
     /// </summary>
     public class LightSkyboxRenderer : LightGroupRendererBase
     {
@@ -55,7 +53,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             }
         }
 
-        public override IEnumerable<LightShaderGroup> PrepareLights(RenderContext context, LightComponentCollection lights)
+        public override List<LightShaderGroup> PrepareLights(RenderContext context, LightComponentCollection lights)
         {
             var count = Math.Min(lights.Count, LightMax);
 

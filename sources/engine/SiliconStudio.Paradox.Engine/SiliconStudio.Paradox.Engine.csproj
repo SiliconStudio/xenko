@@ -81,6 +81,10 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeColorSubtract.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Engine\Graphics\Lights\ColorLightBase.cs" />
+    <Compile Include="Engine\Graphics\Lights\DirectLightBase.cs" />
+    <Compile Include="Engine\Graphics\Lights\IColorLight.cs" />
+    <Compile Include="Engine\Graphics\Lights\LightAmbientRenderer.cs" />
     <Compile Include="Engine\Graphics\Materials\DisplacementMapStage.cs" />
     <Compile Include="Engine\Graphics\Materials\IMaterialSurfaceDomain.cs">
       <AutoGen>True</AutoGen>

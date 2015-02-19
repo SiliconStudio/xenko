@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         private const int LightMax = 8;
 
         private readonly LightShaderGroup lightShaderGroup;
-        private readonly LightShaderGroup[] lightShaderGroups;
+        private readonly List<LightShaderGroup> lightShaderGroups;
         private readonly ShaderSource[] defaultShaderSource;
         private readonly Vector3[] lightDirections;
         private readonly Color3[] lightColors;
@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         {
             // TODO: Handle unroll
             lightShaderGroup  = new LightShaderGroup(new ShaderClassSource("LightDirectionalGroup", LightMax));
-            lightShaderGroups = new [] { lightShaderGroup };
+            lightShaderGroups = new List<LightShaderGroup>() { lightShaderGroup };
             lightDirections = new Vector3[LightMax];
             lightColors = new Color3[LightMax];
         }
@@ -36,7 +36,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             }
         }
 
-        public override IEnumerable<LightShaderGroup> PrepareLights(RenderContext context, LightComponentCollection lights)
+        public override List<LightShaderGroup> PrepareLights(RenderContext context, LightComponentCollection lights)
         {
             var count = Math.Min(lights.Count, LightMax);
             for (int i = 0; i < count; i++)
