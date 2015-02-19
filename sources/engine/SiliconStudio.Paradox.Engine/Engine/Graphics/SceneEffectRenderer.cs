@@ -46,13 +46,12 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             base.Destroy();
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderContext context, RenderFrame output)
         {
             var input = Input.GetSafeRenderFrame(context);
-            var output = Output.GetSafeRenderFrame(context);
 
             // If RenderFrame input or output are null, we can't do anything
-            if (input == null || output == null)
+            if (input == null)
             {
                 return;
             }

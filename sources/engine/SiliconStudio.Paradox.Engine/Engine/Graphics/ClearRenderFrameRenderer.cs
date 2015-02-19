@@ -68,16 +68,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         [Display("Stencil Value")]
         public byte Stencil { get; set; }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderContext context, RenderFrame output)
         {
-            var output = Output.GetSafeRenderFrame(context);
-
-            // If not frame set, then nop
-            if (output == null)
-            {
-                return;
-            }
-
             var graphicsDevice = context.GraphicsDevice;
 
             // clear the targets

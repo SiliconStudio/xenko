@@ -67,7 +67,7 @@ namespace SiliconStudio.Paradox.Engine
             base.Destroy();
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderContext context, RenderFrame output)
         {
             if (SceneChild == null || !SceneChild.Enabled)
             {
@@ -77,12 +77,6 @@ namespace SiliconStudio.Paradox.Engine
             sceneChildProcessor = sceneChildProcessor  ?? currentEntityManager.GetProcessor<SceneChildProcessor>();
 
             if (sceneChildProcessor == null)
-            {
-                return;
-            }
-
-            var output = Output.GetSafeRenderFrame(context);
-            if (output == null)
             {
                 return;
             }

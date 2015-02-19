@@ -29,13 +29,9 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             this.drawAction = drawAction;
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderContext context, RenderFrame output)
         {
-            var output = Output.GetSafeRenderFrame(context);
-            if (output != null)
-            {
-                drawAction(context, output);
-            }
+            drawAction(context, output);
         }
     }
 }

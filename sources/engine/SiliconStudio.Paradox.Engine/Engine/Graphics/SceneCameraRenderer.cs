@@ -77,12 +77,10 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         [Display("Viewport in percentage?")]
         public bool IsViewportInPercentage { get; set; }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderContext context, RenderFrame output)
         {
-            var output = Output.GetSafeRenderFrame(context);
-
             // Early exit if some properties are null
-            if (Mode == null || output == null || Camera == null)
+            if (Mode == null || Camera == null)
             {
                 return;
             }

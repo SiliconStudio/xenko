@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine.Graphics.Composers;
 
 namespace SiliconStudio.Paradox.Engine.Graphics
@@ -18,6 +19,17 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
         [DataMember(100)]
         public ISceneRendererOutput Output { get; set; }
+
+        protected override void DrawCore(RenderContext context)
+        {
+            var output = Output.GetSafeRenderFrame(context);
+            if (output != null)
+            {
+                DrawCore(context, output);
+            }
+        }
+
+        protected abstract void DrawCore(RenderContext context, RenderFrame output);
 
         protected override void Destroy()
         {
