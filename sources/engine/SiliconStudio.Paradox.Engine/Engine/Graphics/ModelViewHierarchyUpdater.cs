@@ -107,7 +107,7 @@ namespace SiliconStudio.Paradox.Effects
             var nodeTransformationsLocal = this.nodeTransformations;
 
             // Set World matrices in mesh parameters
-            foreach (var meshes in renderModel.RenderMeshes)
+            foreach (var meshes in renderModel.RenderMeshesList)
             {
                 if (meshes == null)
                     continue;

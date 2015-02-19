@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.Effects
         {
             var boneMatrices = staticBoneMatrices;
 
-            foreach (var meshes in renderModel.RenderMeshes)
+            foreach (var meshes in renderModel.RenderMeshesList)
             {
                 if (meshes == null)
                     continue;

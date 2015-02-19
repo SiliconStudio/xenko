@@ -172,7 +172,7 @@ namespace SiliconStudio.Paradox.Effects
 
         private void EnsureRenderMeshes(RenderModel renderModel)
         {
-            var renderMeshes = renderModel.RenderMeshes;
+            var renderMeshes = renderModel.RenderMeshesList;
             if (modelRenderSlot < renderMeshes.Count)
             {
                 return;
@@ -190,13 +190,19 @@ namespace SiliconStudio.Paradox.Effects
             // We keep it that way for now since we only have two ModelRenderer with the same effect in the deferrent pipeline (splitting between opaque and transparent objects) and their acceptance tests are exclusive.
 
             // Create the list of RenderMesh objects
-            var renderMeshes = renderModel.RenderMeshes[modelRenderSlot];
-            if (renderMeshes == null)
-            {
-                renderMeshes = new List<RenderMesh>();
-                renderModel.RenderMeshes[modelRenderSlot] = renderMeshes;
+            var renderMeshes = renderModel.RenderMeshesList[modelRenderSlot];
+            var modelMeshes = renderModel.ModelComponent.Model.Meshes;
 
-                foreach (var mesh in renderModel.ModelComponent.Model.Meshes)
+            // If render mesh is new or the model changed, generate new render mesh
+            if (renderMeshes == null || (renderMeshes.Count == 00 && modelMeshes.Count > 0))
+            {
+                if (renderMeshes == null)
+                {
+                    renderMeshes = new List<RenderMesh>();
+                    renderModel.RenderMeshesList[modelRenderSlot] = renderMeshes;
+                }
+
+                foreach (var mesh in modelMeshes)
                 {
                     var renderMesh = new RenderMesh(renderModel, mesh);
                     UpdateEffect(context, renderMesh, null);
