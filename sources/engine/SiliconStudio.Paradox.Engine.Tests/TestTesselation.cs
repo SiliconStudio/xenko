@@ -45,8 +45,13 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
         private bool debug;
 
-        public TestTesselation(bool isDebug = false)
+        public TestTesselation() : this(false)
         {
+        }
+
+        public TestTesselation(bool isDebug)
+        {
+            CurrentVersion = 1;
             debug = isDebug;
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0 };
@@ -96,9 +101,22 @@ namespace SiliconStudio.Paradox.Engine.Tests
             GraphicsDevice.Parameters.Set(EnvironmentLightKeys.GetParameterKey(LightSimpleAmbientKeys.AmbientLight, 0), (Color3)Color.White);
 
             ChangeModel(0);
+            SetWireframe(true);
 
             camera.Position = new Vector3(25, 45, 80);
             camera.SetTarget(currentEntity, true);
+        }
+
+        protected override void RegisterTests()
+        {
+            base.RegisterTests();
+
+            FrameGameSystem.Draw(() => ChangeMaterial(1)).TakeScreenshot();
+            FrameGameSystem.Draw(() => ChangeMaterial(1)).TakeScreenshot();
+            FrameGameSystem.Draw(() => ChangeMaterial(1)).Draw(() => ChangeModel(1)).TakeScreenshot();
+            FrameGameSystem.Draw(() => ChangeMaterial(1)).Draw(() => ChangeModel(-1)).TakeScreenshot();
+            FrameGameSystem.Draw(() => ChangeMaterial(1)).TakeScreenshot();
+            FrameGameSystem.Draw(() => ChangeMaterial(1)).TakeScreenshot();
         }
 
         private void RenderDebugInfo(RenderContext obj)

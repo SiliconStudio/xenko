@@ -3,7 +3,7 @@ Id: f56b546d-0ce0-4b0d-9672-69e2489fbd40
 Tags: []
 Attributes:
     Tessellation: !MaterialTessellationPNFeature
-        TriangleSize: 13.8027325
+        TriangleSize: 11.5
         AdjacentEdgeAverage: true
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeColor

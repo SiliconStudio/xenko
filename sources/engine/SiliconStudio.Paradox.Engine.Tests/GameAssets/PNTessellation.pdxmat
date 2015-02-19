@@ -3,7 +3,7 @@ Id: 8866a602-efc2-49ae-8797-bf22d0794b8d
 Tags: []
 Attributes:
     Tessellation: !MaterialTessellationPNFeature
-        TriangleSize: 17.4081936
+        TriangleSize: 10.4081936
         AdjacentEdgeAverage: false
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeColor
