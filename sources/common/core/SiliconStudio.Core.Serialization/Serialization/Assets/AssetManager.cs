@@ -135,6 +135,19 @@ namespace SiliconStudio.Core.Serialization.Assets
             }
         }
 
+        public void Unload(string url)
+        {
+            lock (loadedAssetsByUrl)
+            {
+                // Try to find already loaded object
+                AssetReference assetReference;
+                if (!loadedAssetsByUrl.TryGetValue(url, out assetReference))
+                    throw new InvalidOperationException("Asset not loaded through this AssetManager.");
+
+                Unload(assetReference.Object);
+            }
+        }
+
         private void PrepareSerializerContext(ContentSerializerContext contentSerializerContext, SerializerContext context)
         {
             context.Set(ContentSerializerContext.ContentSerializerContextProperty, contentSerializerContext);
