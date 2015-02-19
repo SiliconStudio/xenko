@@ -35,11 +35,6 @@ namespace SiliconStudio.Core.Serialization.Assets
             public readonly string Url;
 
             /// <summary>
-            /// The URL.
-            /// </summary>
-            public readonly ObjectId ObjectId;
-
-            /// <summary>
             /// The public reference count (corresponding to AssetManager.Load/Unload).
             /// </summary>
             public int PublicReferenceCount;
@@ -55,9 +50,8 @@ namespace SiliconStudio.Core.Serialization.Assets
             // TODO: Lazily create this list?
             public HashSet<AssetReference> References = new HashSet<AssetReference>();
 
-            public AssetReference(ObjectId objectId, string url, bool publicReference)
+            public AssetReference(string url, bool publicReference)
             {
-                ObjectId = objectId;
                 Url = url;
                 PublicReferenceCount = publicReference ? 1 : 0;
                 PrivateReferenceCount = publicReference ? 0 : 1;

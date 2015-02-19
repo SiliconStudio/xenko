@@ -106,9 +106,9 @@ namespace SiliconStudio.Core.Serialization.Assets
             if (oldPrev == null)
             {
                 if (oldNext == null)
-                    loadedAssetsByUrl.Remove(assetReference.ObjectId);
+                    loadedAssetsByUrl.Remove(assetReference.Url);
                 else
-                    loadedAssetsByUrl[assetReference.ObjectId] = oldNext;
+                    loadedAssetsByUrl[assetReference.Url] = oldNext;
             }
             loadedAssetsUrl.Remove(assetReference.Object);
 
