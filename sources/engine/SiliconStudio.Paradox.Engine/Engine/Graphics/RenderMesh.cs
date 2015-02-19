@@ -85,18 +85,21 @@ namespace SiliconStudio.Paradox.Effects
             var mesh = Mesh;
             var currentRenderData = mesh.Draw;
             var material = Material;
-            var tessellationMethod = material.TessellationMethod;
-
-            // adapt the primitive type and index buffer to the tessellation used
             var vao = vertexArrayObject;
             var drawCount = currentRenderData.DrawCount;
-            if (tessellationMethod.PerformsAdjacentEdgeAverage())
-            {
-                vao = GetOrCreateVertexArrayObjectAEN(context);
-                drawCount = 12 / 3 * drawCount;
-            }
-            currentRenderData.PrimitiveType = tessellationMethod.GetPrimitiveType();
 
+            if (material != null && material.TessellationMethod != ParadoxTessellationMethod.None)
+            {
+                var tessellationMethod = material.TessellationMethod;
+
+                // adapt the primitive type and index buffer to the tessellation used
+                if (tessellationMethod.PerformsAdjacentEdgeAverage())
+                {
+                    vao = GetOrCreateVertexArrayObjectAEN(context);
+                    drawCount = 12 / 3 * drawCount;
+                }
+                currentRenderData.PrimitiveType = tessellationMethod.GetPrimitiveType();
+            }
 
             //using (Profiler.Begin(ProfilingKeys.PrepareMesh))
             {
