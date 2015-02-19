@@ -15,17 +15,40 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         protected SceneRendererBase()
         {
             Output = new CurrentRenderFrameProvider();
+            Parameters = new ParameterCollection();
         }
 
         [DataMember(100)]
         public ISceneRendererOutput Output { get; set; }
+
+        /// <summary>
+        /// Gets the parameters used to in place of the default <see cref="RenderContext.Parameters"/>.
+        /// </summary>
+        /// <value>The parameters.</value>
+        [DataMemberIgnore]
+        public ParameterCollection Parameters { get; private set; }
+
+        public override void Initialize(RenderContext context)
+        {
+            base.Initialize(context);
+
+            // Parameters.AddSources(context.Parameters);
+        }
 
         protected override void DrawCore(RenderContext context)
         {
             var output = Output.GetSafeRenderFrame(context);
             if (output != null)
             {
-                DrawCore(context, output);
+                try
+                {
+                    context.PushParameters(Parameters);
+                    DrawCore(context, output);
+                }
+                finally
+                {
+                    context.PopParameters();
+                }
             }
         }
 

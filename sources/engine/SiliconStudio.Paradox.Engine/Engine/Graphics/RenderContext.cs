@@ -20,6 +20,8 @@ namespace SiliconStudio.Paradox.Effects
         private readonly Dictionary<Type, DrawEffect> sharedEffects = new Dictionary<Type, DrawEffect>();
         private readonly GraphicsResourceAllocator allocator;
 
+        private readonly Stack<ParameterCollection> parametersStack;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContext" /> class.
         /// </summary>
@@ -33,7 +35,8 @@ namespace SiliconStudio.Paradox.Effects
             Effects = services.GetSafeServiceAs<EffectSystem>();
             this.allocator = allocator ?? new GraphicsResourceAllocator(Services).DisposeBy(this);
             GraphicsDevice = services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
-            Parameters = new ParameterCollection();
+            parametersStack = new Stack<ParameterCollection>();
+            PushParameters(new ParameterCollection());
         }
 
         /// <summary>
@@ -59,6 +62,24 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         /// <value>The parameters.</value>
         public ParameterCollection Parameters { get; private set; }
+
+        public void PushParameters(ParameterCollection parameters)
+        {
+            if (parameters == null) throw new ArgumentNullException("parameters");
+            parametersStack.Push(parameters);
+            Parameters = parameters;
+        }
+
+        public ParameterCollection PopParameters()
+        {
+            if (parametersStack.Count == 1)
+            {
+                throw new InvalidOperationException("Cannot Pop more than push");
+            }
+            var previous = parametersStack.Pop();
+            Parameters = parametersStack.Peek();
+            return previous;
+        }
 
         /// <summary>
         /// Gets the time.
