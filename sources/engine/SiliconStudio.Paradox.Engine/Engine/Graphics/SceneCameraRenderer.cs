@@ -7,7 +7,9 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Engine.Graphics
 {
@@ -77,6 +79,13 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         [Display("Viewport in percentage?")]
         public bool IsViewportInPercentage { get; set; }
 
+        /// <summary>
+        /// Gets or sets the material filter used to render this scene camera.
+        /// </summary>
+        /// <value>The material filter.</value>
+        [DataMemberIgnore]
+        public ShaderSource MaterialFilter { get; set; }
+
         protected override void DrawCore(RenderContext context, RenderFrame output)
         {
             // Early exit if some properties are null
@@ -106,7 +115,15 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
             // Draw this camera.
             using (var t1 = context.PushTagAndRestore(Current, this))
+            {
+                var currentFilter = context.Parameters.Get(MaterialKeys.PixelStageSurfaceFilter);
+                if (!ReferenceEquals(currentFilter, MaterialFilter))
+                {
+                    context.Parameters.Set(MaterialKeys.PixelStageSurfaceFilter, MaterialFilter);
+                }
+
                 Mode.Draw(context);
+            }
         }
     }
 }

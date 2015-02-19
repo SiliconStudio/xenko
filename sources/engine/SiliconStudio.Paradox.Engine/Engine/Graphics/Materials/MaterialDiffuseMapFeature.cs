@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Materials
     [Display("Diffuse Map")]
     public class MaterialDiffuseMapFeature : IMaterialDiffuseFeature, IMaterialStreamProvider
     {
-        private static readonly MaterialStreamDescriptor DiffuseStream = new MaterialStreamDescriptor("Diffuse", "matDiffuse", MaterialKeys.DiffuseValue.PropertyType);
+        public static readonly MaterialStreamDescriptor DiffuseStream = new MaterialStreamDescriptor("Diffuse", "matDiffuse", MaterialKeys.DiffuseValue.PropertyType);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialDiffuseMapFeature"/> class.
