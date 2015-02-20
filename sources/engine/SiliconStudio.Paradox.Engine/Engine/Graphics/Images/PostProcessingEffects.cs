@@ -3,7 +3,9 @@
 
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Graphics;
+using SiliconStudio.Paradox.Engine.Graphics.Composers;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects.Images
@@ -57,6 +59,13 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             Initialize(context);
         }
+
+        /// <summary>
+        /// Gets or sets the camera.
+        /// </summary>
+        /// <value>The camera.</value>
+        [DataMember(5)]
+        public SceneCameraSlotIndex Camera { get; set; }
 
         /// <summary>
         /// Gets the depth of field effect.
@@ -183,6 +192,14 @@ namespace SiliconStudio.Paradox.Effects.Images
             if (input == null || output == null)
             {
                 return;
+            }
+
+            // Gets the current camera state 
+            var cameraState = context.GetCameraState(Camera);
+            if (cameraState != null)
+            {
+                // Update the parameters for this post effect
+                CameraComponentRenderer.UpdateParameters(context.Parameters, cameraState);
             }
 
             // If input == output, than copy the input to a temporary texture
