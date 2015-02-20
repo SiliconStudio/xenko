@@ -49,7 +49,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="viewFlags">Type of the buffer.</param>
         /// <param name="viewFormat">The view format.</param>
         /// <param name="dataPointer">The data pointer.</param>
-        private Buffer InitializeFromImpl(BufferDescription description, BufferFlags viewFlags, PixelFormat viewFormat, IntPtr dataPointer)
+        protected Buffer InitializeFromImpl(BufferDescription description, BufferFlags viewFlags, PixelFormat viewFormat, IntPtr dataPointer)
         {
             bufferDescription = description;
             ViewFlags = viewFlags;
@@ -58,7 +58,7 @@ namespace SiliconStudio.Paradox.Graphics
 #if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
             int pixelSize;
             bool isCompressed;
-            OpenGLConvertExtensions.ConvertPixelFormat(device, viewFormat, out internalFormat, out glPixelFormat, out type, out pixelSize, out isCompressed);
+            OpenGLConvertExtensions.ConvertPixelFormat(GraphicsDevice, viewFormat, out internalFormat, out glPixelFormat, out type, out pixelSize, out isCompressed);
 #endif
 
             Recreate(dataPointer);
@@ -68,15 +68,15 @@ namespace SiliconStudio.Paradox.Graphics
 
         public void Recreate(IntPtr dataPointer)
         {
-            if ((BufferFlags & BufferFlags.VertexBuffer) == BufferFlags.VertexBuffer)
+            if ((ViewFlags & BufferFlags.VertexBuffer) == BufferFlags.VertexBuffer)
             {
                 bufferTarget = BufferTarget.ArrayBuffer;
             }
-            else if ((BufferFlags & BufferFlags.IndexBuffer) == BufferFlags.IndexBuffer)
+            else if ((ViewFlags & BufferFlags.IndexBuffer) == BufferFlags.IndexBuffer)
             {
                 bufferTarget = BufferTarget.ElementArrayBuffer;
             }
-            else if ((BufferFlags & BufferFlags.UnorderedAccess) == BufferFlags.UnorderedAccess)
+            else if ((ViewFlags & BufferFlags.UnorderedAccess) == BufferFlags.UnorderedAccess)
             {
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 throw new NotSupportedException("GLES not support UnorderedAccess buffer");
@@ -85,7 +85,7 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
             }
 
-            if ((BufferFlags & BufferFlags.ConstantBuffer) == BufferFlags.ConstantBuffer)
+            if ((ViewFlags & BufferFlags.ConstantBuffer) == BufferFlags.ConstantBuffer)
             {
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 // Special case: ConstantBuffer are faked with a byte array on OpenGL ES 2.0.

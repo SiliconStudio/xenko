@@ -387,7 +387,7 @@ namespace SiliconStudio.Paradox.Graphics
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
             throw new NotImplementedException();
 #else
-            if((buffer.BufferFlags & BufferFlags.UnorderedAccess) != BufferFlags.UnorderedAccess)
+            if((buffer.ViewFlags & BufferFlags.UnorderedAccess) != BufferFlags.UnorderedAccess)
                 throw new ArgumentException("Buffer does not support unordered access");
 
             GL.BindBuffer(buffer.bufferTarget, buffer.resourceId);
@@ -405,7 +405,7 @@ namespace SiliconStudio.Paradox.Graphics
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
             throw new NotImplementedException();
 #else
-            if ((buffer.BufferFlags & BufferFlags.UnorderedAccess) != BufferFlags.UnorderedAccess)
+            if ((buffer.ViewFlags & BufferFlags.UnorderedAccess) != BufferFlags.UnorderedAccess)
                 throw new ArgumentException("Buffer does not support unordered access");
 
             GL.BindBuffer(buffer.bufferTarget, buffer.resourceId);
@@ -423,7 +423,7 @@ namespace SiliconStudio.Paradox.Graphics
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
             throw new NotImplementedException();
 #else
-            if ((buffer.BufferFlags & BufferFlags.UnorderedAccess) != BufferFlags.UnorderedAccess)
+            if ((buffer.ViewFlags & BufferFlags.UnorderedAccess) != BufferFlags.UnorderedAccess)
                 throw new ArgumentException("Buffer does not support unordered access");
 
             GL.BindBuffer(buffer.bufferTarget, buffer.resourceId);
@@ -715,6 +715,11 @@ namespace SiliconStudio.Paradox.Graphics
         public void Copy(GraphicsResource source, GraphicsResource destination)
         {
             CopyRegion(source, 0, null, destination, 0);
+        }
+
+        public void CopyMultiSample(Texture sourceMsaaTexture, int sourceSubResource, Texture destTexture, int destSubResource, PixelFormat format = PixelFormat.None)
+        {
+            throw new NotImplementedException();
         }
 
         public void CopyCount(Buffer sourceBuffer, Buffer destBuffer, int offsetToDest)
