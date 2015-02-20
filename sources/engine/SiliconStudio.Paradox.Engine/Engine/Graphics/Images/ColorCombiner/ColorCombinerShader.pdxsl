@@ -10,6 +10,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     {
         float Factors[10];
 
+        [Color]
         float3 ModulateRGB[10];
 
         stage override float4 Shading()

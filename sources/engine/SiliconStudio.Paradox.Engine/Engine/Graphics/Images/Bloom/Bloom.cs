@@ -27,19 +27,19 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         public Bloom()
         {
-            Radius = 3f / 1280f;
+            Radius = 10;
             Amount = 1.0f;
             DownScale = 3;
             Distortion = new Vector2(1);
-            ModulateColor = new Vector3(1);
+            ModulateColor = new Color3(1);
         }
 
         /// <summary>
         /// Radius of the bloom.
         /// </summary>
         [DataMember(10)]
-        [DefaultValue(3f / 1280f)]
-        [DataMemberRange(1f / 1280f, 0.5f)]
+        [DefaultValue(10)]
+        [DataMemberRange(1.0, 100.0, 1.0, 10.0, 1)]
         public float Radius { get; set; }
 
         /// <summary>
@@ -65,7 +65,8 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <summary>
         /// Modulate the bloom by a certain color.
         /// </summary>
-        public Vector3 ModulateColor { get; set; }
+        [DataMember(30)]
+        public Color3 ModulateColor { get; set; }
 
         [DataMemberIgnore]
         public float Amount { get; set; }
@@ -97,6 +98,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             blurCombine = ToLoadAndUnload(new ColorCombiner());
             multiScaler = ToLoadAndUnload(new ImageMultiScaler());
             blur = ToLoadAndUnload(new GaussianBlur());
+            blur.SigmaRatio = 2.5f;
         }
 
         protected override void DrawCore(RenderContext context)
@@ -153,7 +155,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                 Scaler.Draw(context, name: "Down/2");
 
                 // Blur it
-                blur.Radius = Math.Max(1, (int)(Radius * input.Width));
+                blur.Radius = Math.Max(1, (int)MathUtil.Lerp(1, 20, Math.Max(0, Radius/100.0f)));
                 blur.SetInput(nextRenderTarget);
                 blur.SetOutput(nextRenderTarget);
                 blur.Draw(context);

@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         private readonly float[] factors;
 
-        private readonly Vector3[] modulateRGB;
+        private readonly Color3[] modulateRGB;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ColorCombiner"/> class.
@@ -28,11 +28,11 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             EffectName = colorCombinerShaderName;
             factors = new float[TexturingKeys.DefaultTextures.Count];
-            modulateRGB = new Vector3[TexturingKeys.DefaultTextures.Count];
+            modulateRGB = new Color3[TexturingKeys.DefaultTextures.Count];
             for (int i = 0; i < TexturingKeys.DefaultTextures.Count; i++)
             {
                 factors[i] = 1f;
-                modulateRGB[i] = new Vector3(1f, 1f, 1f);
+                modulateRGB[i] = new Color3(1f, 1f, 1f);
             }
         }
 
@@ -51,7 +51,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <summary>
         /// Gets the RGB modulation of each texture.
         /// </summary>
-        public Vector3[] ModulateRGB
+        public Color3[] ModulateRGB
         {
             get
             {

@@ -38,7 +38,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             TapsPerIteration = 4;
             StreakCount = 4;
-            Attenuation = 0.95f;
+            Attenuation = 0.7f;
             Amount = 1f;
             IterationCount = 5;
             Phase = 1.3f;
@@ -68,7 +68,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         [DataMember(20)]
         [DefaultValue(4)]
-        [DataMemberRange(0, 8)]
+        [DataMemberRange(1, STREAK_MAX_COUNT, 1, 1, 0)]
         public int StreakCount
         {
             get
@@ -116,7 +116,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         [DataMember(30)]
         [DefaultValue(0.95f)]
-        [DataMemberRange(0f, 1f)]
+        [DataMemberRange(0f, 1f, 0.01f, 0.1f, 2)]
         public float Attenuation { get; set; }
 
         /// <summary>
@@ -241,7 +241,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                     for (int i = 0; i < TapsPerIteration; i++)
                     {
                         tapOffsetsWeights[i].X = i * passLength;
-                        tapOffsetsWeights[i].Y = (float) Math.Pow(Attenuation, i * passLength);
+                        tapOffsetsWeights[i].Y = (float) Math.Pow(MathUtil.Lerp(0.7f, 1.0f, Attenuation), i * passLength);
                         totalWeight += tapOffsetsWeights[i].Y;
                     }
                     // Normalizes the weights
