@@ -362,7 +362,7 @@ namespace SiliconStudio.Paradox.Graphics
                     break;
                 case PixelFormat.R16_Float:
                     internalFormat = R16f;
-                    format = PixelFormatGl.RedInteger;
+                    format = PixelFormatGl.Red;
                     type = PixelType.HalfFloat;
                     pixelSize = 2;
                     break;
