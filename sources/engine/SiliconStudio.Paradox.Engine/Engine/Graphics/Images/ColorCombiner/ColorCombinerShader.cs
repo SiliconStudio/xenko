@@ -19,5 +19,6 @@ namespace SiliconStudio.Paradox.Effects.Images
     internal static partial class ColorCombinerShaderKeys
     {
         public static readonly ParameterKey<float[]> Factors = ParameterKeys.New<float[]>();
+        public static readonly ParameterKey<Vector3[]> ModulateRGB = ParameterKeys.New<Vector3[]>();
     }
 }

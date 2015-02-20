@@ -20,6 +20,8 @@ namespace SiliconStudio.Paradox.Effects.Images
         private ImageMultiScaler multiScaler;
         private readonly List<Texture> resultList = new List<Texture>();
 
+        private Vector2 distortion;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Bloom"/> class.
         /// </summary>
@@ -28,6 +30,8 @@ namespace SiliconStudio.Paradox.Effects.Images
             Radius = 3f / 1280f;
             Amount = 1.0f;
             DownScale = 3;
+            Distortion = new Vector2(1);
+            ModulateColor = new Vector3(1);
         }
 
         /// <summary>
@@ -37,6 +41,31 @@ namespace SiliconStudio.Paradox.Effects.Images
         [DefaultValue(3f / 1280f)]
         [DataMemberRange(1f / 1280f, 0.5f)]
         public float Radius { get; set; }
+
+        /// <summary>
+        /// Vertical or horizontal distortion to apply.
+        /// (1, 2) means the bloom will be stretched twice longer horizontally than vertically.
+        /// </summary>
+        [DataMember(20)]
+        public Vector2 Distortion
+        {
+            get
+            {
+                return distortion;
+            }
+
+            set
+            {
+                distortion = value;
+                if (distortion.X < 1f) distortion.X = 1f;
+                if (distortion.Y < 1f) distortion.Y = 1f;
+            }
+        }
+
+        /// <summary>
+        /// Modulate the bloom by a certain color.
+        /// </summary>
+        public Vector3 ModulateColor { get; set; }
 
         [DataMemberIgnore]
         public float Amount { get; set; }
@@ -78,6 +107,18 @@ namespace SiliconStudio.Paradox.Effects.Images
             if (input == null)
             {
                 return;
+            }
+
+            // A distortion can be applied to the bloom effect to simulate anamorphic lenses
+            if (Distortion.X > 1f || Distortion.Y > 1f)
+            {
+                int distortedWidth  = (int)Math.Max(1, input.Description.Width  / Distortion.X);
+                int distortedHeight = (int)Math.Max(1, input.Description.Height / Distortion.Y);
+                var anamorphicInput = NewScopedRenderTarget2D(distortedWidth, distortedHeight, input.Format);
+                Scaler.SetInput(input);
+                Scaler.SetOutput(anamorphicInput);
+                Scaler.Draw(context, name: "Anamorphic distortion");
+                input = anamorphicInput;
             }
 
             // ----------------------------------------
@@ -159,6 +200,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                     var level = !ShowOnlyMip || i == MipIndex ? (float)Math.Pow(2.0f, exponent) : 0.0f;
                     level *= Amount;
                     blurCombine.Factors[i] = level;
+                    blurCombine.ModulateRGB[i] = ModulateColor;
                 }
 
                 blurCombine.SetOutput(output);
