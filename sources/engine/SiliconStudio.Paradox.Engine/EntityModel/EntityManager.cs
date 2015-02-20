@@ -285,10 +285,19 @@ namespace SiliconStudio.Paradox.EntityModel
             // Check which processor want this entity
             CheckEntityWithProcessors(entity, entityProcessors, false);
 
-            AutoRegisterProcessors(entity, entityProcessors);
+            // Grab the list of new processors to registers
+            AutoRegisterProcessors(entity);
 
             addEntityLevel--;
 
+            // Register all new processors
+            RegisterNewProcessors();
+
+            OnEntityAdded(entity);
+        }
+
+        private void RegisterNewProcessors()
+        {
             // Auto-register all new processors
             if (addEntityLevel == 0)
             {
@@ -298,8 +307,6 @@ namespace SiliconStudio.Paradox.EntityModel
                 }
                 newProcessors.Clear();
             }
-
-            OnEntityAdded(entity);
         }
 
         /// <summary>
@@ -333,7 +340,7 @@ namespace SiliconStudio.Paradox.EntityModel
             OnEntityRemoved(entity);
         }
 
-        private void AutoRegisterProcessors(Entity entity, List<EntityProcessor> entityProcessors)
+        private void AutoRegisterProcessors(Entity entity)
         {
             // TODO: Access to Components use a yield behind. Change this
             foreach (var componentKeyPair in entity.Components)
@@ -434,6 +441,10 @@ namespace SiliconStudio.Paradox.EntityModel
 
             var entity = (Entity)propertyContainer.Owner;
             var entityProcessors = entities[entity];
+
+            AutoRegisterProcessors(entity);
+            RegisterNewProcessors();
+
             CheckEntityWithProcessors(entity, entityProcessors, false);
 
             // Notify component changes
