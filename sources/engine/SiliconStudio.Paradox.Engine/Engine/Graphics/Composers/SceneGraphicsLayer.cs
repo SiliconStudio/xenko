@@ -131,7 +131,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
             // Master is always going to use the Master frame for the current frame.
             var renderFrame = Output.GetRenderFrame(context);
 
-            using (var t1 = context.PushTagAndRestore(SceneGraphicsLayer.CurrentInput, currentRenderFrame))
+            using (var t1 = context.PushTagAndRestore(CurrentInput, currentRenderFrame))
             {
                 context.Tags.Set(RenderFrame.Current, renderFrame);
                 Renderers.Draw(context);
