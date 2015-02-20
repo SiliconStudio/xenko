@@ -13,6 +13,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
     [Display("Current")]
     public sealed class CurrentRenderFrameProvider : RenderFrameProviderBase, IGraphicsLayerOutput, IImageEffectRendererInput, ISceneRendererOutput
     {
+        public static readonly CurrentRenderFrameProvider Instance = new CurrentRenderFrameProvider();
+
         public override RenderFrame GetRenderFrame(RenderContext context)
         {
             return context.Tags.Get(RenderFrame.Current);

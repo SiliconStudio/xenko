@@ -18,8 +18,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
     {
         private IGraphicsLayerOutput output;
 
-        private bool isMaster;
-
         /// <summary>
         /// Property key to access the Master <see cref="RenderFrame"/> from <see cref="RenderContext.Tags"/>.
         /// </summary>
@@ -35,7 +33,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         /// </summary>
         public SceneGraphicsLayer()
         {
-            Output = MasterRenderFrameProvider.Instance;
+            Output = CurrentRenderFrameProvider.Instance;
             Renderers = new SceneRendererCollection();
         }
 
@@ -48,8 +46,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
             }
             set
             {
-                // Make sure the layer Master is always named "Master"
-                base.Name = (isMaster) ? "Master" : value;
+                base.Name = value;
             }
         }
 
@@ -87,18 +84,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         [NotNull]
         public SceneRendererCollection Renderers { get; private set; }
 
-        internal bool IsMaster
-        {
-            get
-            {
-                return isMaster;
-            }
-            set
-            {
-                isMaster = value;
-                Name = "Master";
-            }
-        }
+        internal bool IsMaster { get; set; }
 
         /// <summary>
         /// Adds the specified scene renderer.
@@ -130,6 +116,11 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
             if (!Enabled || Output == null)
             {
                 return;
+            }
+
+            if (Name == "Mastering")
+            {
+                
             }
 
             // Sets the input of the layer (== last Current)
