@@ -59,8 +59,10 @@ namespace SiliconStudio.Paradox.Engine
                 data.AnimationComponent.Blender.FreeIntermediateResult(data.AnimationClipResult);
         }
 
-        public override void Draw(GameTime time)
+        public override void Draw(RenderContext context)
         {
+            var time = context.Time;
+
             foreach (var entity in enabledEntities)
             {
                 var associatedData = entity.Value;
@@ -149,7 +151,7 @@ namespace SiliconStudio.Paradox.Engine
                     if (playingAnimation.RemainingTime > TimeSpan.Zero)
                     {
                         playingAnimation.Weight += (playingAnimation.WeightTarget - playingAnimation.Weight)*
-                                                   ((float)time.Elapsed.Ticks/
+                                                   ((float)time.Elapsed.Ticks /
                                                     (float)playingAnimation.RemainingTime.Ticks);
                         playingAnimation.RemainingTime -= time.Elapsed;
                         if (playingAnimation.RemainingTime <= TimeSpan.Zero)

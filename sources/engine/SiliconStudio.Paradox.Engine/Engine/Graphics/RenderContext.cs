@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Effects.Images;
+using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 

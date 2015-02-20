@@ -92,8 +92,11 @@ namespace SiliconStudio.Paradox.EntityModel
             previousWidth = mainRenderFrame.RenderTarget.Width;
             previousHeight = mainRenderFrame.RenderTarget.Height;
 
+            // TODO: Clear camera states. This is not highly customizable
+            renderContext.ClearCameraStates();
+
             // Update the entities at draw time.
-            SceneInstance.Draw(gameTime);
+            SceneInstance.Draw(renderContext);
 
             // Renders the scene
             renderContext.Time = gameTime;

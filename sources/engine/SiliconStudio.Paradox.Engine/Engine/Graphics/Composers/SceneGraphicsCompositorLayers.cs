@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
                 Output = new MasterRenderFrameProvider(),
                 IsMaster = true
             };
-            Cameras = new CameraComponentCollection();
+            Cameras = new SceneCameraSlotCollection();
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         /// </summary>
         /// <value>The cameras.</value>
         [DataMember(10)]
-        public CameraComponentCollection Cameras { get; private set; }
+        public SceneCameraSlotCollection Cameras { get; private set; }
 
         /// <summary>
         /// Gets the layers used for composing a scene.
@@ -62,7 +62,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
 
         protected override void DrawCore(RenderContext context)
         {
-            using (var t1 = context.PushTagAndRestore(CameraComponentCollection.Current, Cameras))
+            using (var t1 = context.PushTagAndRestore(SceneCameraSlotCollection.Current, Cameras))
             {
                 // Draw the layers
                 Layers.Draw(context);

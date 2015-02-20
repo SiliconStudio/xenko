@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Core;
 
@@ -54,8 +55,8 @@ namespace SiliconStudio.Paradox.EntityModel
         /// <summary>
         /// Performs work related to this processor.
         /// </summary>
-        /// <param name="time"></param>
-        public virtual void Draw(GameTime time)
+        /// <param name="context"></param>
+        public virtual void Draw(RenderContext context)
         {
         }
 

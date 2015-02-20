@@ -165,10 +165,10 @@ namespace SiliconStudio.Paradox.Engine
             base.Update(time);
         }
 
-        internal override void Draw(GameTime gameTime)
+        internal override void Draw(RenderContext context)
         {
             UpdateFromChild();
-            base.Draw(gameTime);
+            base.Draw(context);
         }
 
         private void UpdateFromChild()
@@ -198,6 +198,7 @@ namespace SiliconStudio.Paradox.Engine
             Processors.Add(new SceneProcessor(this));
             Processors.Add(new HierarchicalProcessor()); // Important to pre-register this processor
             Processors.Add(new TransformProcessor());
+            Processors.Add(new CameraProcessor()); // By default, as a scene without a camera is not really possible
             Add(Scene);
 
             // TODO: RendererTypes could be done outside this instance.

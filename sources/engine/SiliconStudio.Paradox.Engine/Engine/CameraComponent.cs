@@ -22,11 +22,6 @@ namespace SiliconStudio.Paradox.Engine
         private float focusDistance;
 
         /// <summary>
-        /// Property key to access the current <see cref="CameraComponent"/> from <see cref="RenderContext.Tags"/>.
-        /// </summary>
-        public static readonly PropertyKey<CameraComponent> Current = new PropertyKey<CameraComponent>("CameraComponent.Current", typeof(CameraComponent));
-
-        /// <summary>
         /// The property key of this component.
         /// </summary>
         public static PropertyKey<CameraComponent> Key = new PropertyKey<CameraComponent>("Key", typeof(CameraComponent));
@@ -47,7 +42,10 @@ namespace SiliconStudio.Paradox.Engine
         /// <param name="farPlane">The far plane value</param>
         public CameraComponent(Entity target, float nearPlane, float farPlane)
         {
-            Projection = new CameraProjectionPerspective();
+            Projection = CameraProjectionMode.Perspective;
+            VerticalFieldOfView = 45.0f;
+            OrthographicSize = 10.0f;
+
             // TODO: Handle Aspect ratio differently
             AspectRatio = 16f / 9f;
             Target = target;
@@ -62,7 +60,30 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>The projection.</value>
         [DataMember(0)]
         [NotNull]
-        public ICameraProjection Projection { get; set; } // TODO: Should we use an interface or just introduce the field here and display them differently in the view model?
+        public CameraProjectionMode Projection { get; set; }
+
+        /// <summary>
+        /// Gets or sets the vertical field of view in degrees.
+        /// </summary>
+        /// <value>
+        /// The vertical field of view.
+        /// </value>
+        [DataMember(5)]
+        [DefaultValue(45.0f)]
+        [Display("Field Of View")]
+        [DataMemberRange(1.0, 179.0, 1.0, 10.0, 0)]
+        public float VerticalFieldOfView { get; set; }
+
+        /// <summary>
+        /// Gets or sets the vertical field of view in degrees.
+        /// </summary>
+        /// <value>
+        /// The vertical field of view.
+        /// </value>
+        [DataMember(10)]
+        [DefaultValue(10.0f)]
+        [Display("Orthographic Size")]
+        public float OrthographicSize { get; set; }
 
         /// <summary>
         /// Gets or sets the near plane distance.
@@ -180,24 +201,6 @@ namespace SiliconStudio.Paradox.Engine
         [DataMemberIgnore]
         public Matrix ProjectionMatrix { get; set; }
 
-        [DataMemberIgnore]
-        public CameraProjectionPerspective ProjectionAsPerspective
-        {
-            get
-            {
-                return Projection as CameraProjectionPerspective;
-            }
-        }
-
-        [DataMemberIgnore]
-        public CameraProjectionOrthographic ProjectionAsOrthographic
-        {
-            get
-            {
-                return Projection as CameraProjectionOrthographic;
-            }
-        }
-
         /// <summary>
         /// Calculates the projection matrix and view matrix.
         /// </summary>
@@ -232,22 +235,19 @@ namespace SiliconStudio.Paradox.Engine
             
             // Calculates the projection
             // TODO: Should we throw an error if Projection is not set?
-            projection = UseProjectionMatrix ? ProjectionMatrix : Projection != null ? Projection.CalculateProjection(AspectRatio, NearPlane, FarPlane) : Matrix.Zero;
+            if (UseProjectionMatrix)
+            {
+                projection = ProjectionMatrix;
+            }
+            else
+            {
+                projection = Projection == CameraProjectionMode.Perspective ? Matrix.PerspectiveFovRH(MathUtil.DegreesToRadians(VerticalFieldOfView), AspectRatio, NearPlane, FarPlane) : Matrix.OrthoRH(OrthographicSize, OrthographicSize, NearPlane, FarPlane);
+            }
         }
 
         public override PropertyKey GetDefaultKey()
         {
             return Key;
-        }
-
-        /// <summary>
-        /// Gets the current <see cref="CameraComponent"/> stored in a <see cref="RenderContext.Tags"/>
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <returns>SiliconStudio.Paradox.Engine.CameraComponent.</returns>
-        public static CameraComponent GetCurrent(RenderContext context)
-        {
-            return context.Tags.Get(Current);
         }
     }
 }

@@ -2,6 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Specialized;
+
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Core;
@@ -108,8 +110,8 @@ namespace SiliconStudio.Paradox.Engine
         /// <summary>
         /// Updates all the <see cref="TransformComponent.WorldMatrix"/>.
         /// </summary>
-        /// <param name="time"></param>
-        public override void Draw(GameTime time)
+        /// <param name="context"></param>
+        public override void Draw(RenderContext context)
         {
             notSpecialRootComponents.Clear();
             foreach (var t in transformationRoots)

@@ -11,6 +11,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.ReferenceCounting;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Games;
 
@@ -117,7 +118,7 @@ namespace SiliconStudio.Paradox.EntityModel
             }
         }
 
-        internal virtual void Draw(GameTime gameTime)
+        internal virtual void Draw(RenderContext context)
         {
             foreach (var processor in processors)
             {
@@ -125,7 +126,7 @@ namespace SiliconStudio.Paradox.EntityModel
                 {
                     using (Profiler.Begin(processor.DrawProfilingKey))
                     {
-                        processor.Draw(gameTime);
+                        processor.Draw(context);
                     }
                 }
             }

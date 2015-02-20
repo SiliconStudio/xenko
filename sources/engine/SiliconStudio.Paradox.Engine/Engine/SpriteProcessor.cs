@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.Engine
 
         public List<SpriteComponentState> Sprites { get; private set; }
 
-        public override void Draw(GameTime gameTime)
+        public override void Draw(RenderContext gameTime)
         {
             Sprites.Clear();
             foreach (var spriteStateKeyPair in enabledEntities)

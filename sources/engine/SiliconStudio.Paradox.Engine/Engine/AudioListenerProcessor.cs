@@ -8,7 +8,7 @@ using System.Collections.Specialized;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
-
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Audio;
 using SiliconStudio.Paradox.Games;
@@ -109,9 +109,9 @@ namespace SiliconStudio.Paradox.Engine
             }
         }
 
-        public override void Draw(GameTime time)
+        public override void Draw(RenderContext context)
         {
-            base.Draw(time);
+            base.Draw(context);
 
             foreach (var listenerData in matchingEntities.Values)
             {

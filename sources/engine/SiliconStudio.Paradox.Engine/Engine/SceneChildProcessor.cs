@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
 
@@ -70,7 +71,7 @@ namespace SiliconStudio.Paradox.Engine
             }
         }
 
-        public override void Draw(GameTime time)
+        public override void Draw(RenderContext context)
         {
             foreach (var sceneEntityAndState in Scenes)
             {
@@ -81,7 +82,7 @@ namespace SiliconStudio.Paradox.Engine
                 sceneInstance.Scene = childComponent.Scene;
                 if (childComponent.Enabled)
                 {
-                    sceneInstance.Draw(time);
+                    sceneInstance.Draw(context);
                 }
             }
         }

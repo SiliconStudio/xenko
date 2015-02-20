@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
 
@@ -46,7 +47,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Skyboxes
             return entity.Get(SkyboxComponent.Key);
         }
 
-        public override void Draw(GameTime time)
+        public override void Draw(RenderContext context)
         {
             ActiveSkyboxBackground = null;
             foreach (var skybox in skyboxes)

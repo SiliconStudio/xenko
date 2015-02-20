@@ -6,52 +6,56 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Paradox.Engine.Graphics.Composers
 {
     /// <summary>
-    /// Identifies a camera slot in a scene composition.
+    /// A camera slot used by <see cref="SceneGraphicsCompositorLayers"/>
     /// </summary>
     [DataContract("SceneCameraSlot")]
-    public struct SceneCameraSlot
+    public sealed class SceneCameraSlot
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SceneCameraSlot"/> struct.
+        /// Initializes a new instance of the <see cref="SceneCameraSlot"/> class.
         /// </summary>
-        /// <param name="index">The index.</param>
-        public SceneCameraSlot(int index)
-            : this()
+        public SceneCameraSlot()
         {
-            Index = index;
         }
 
         /// <summary>
-        /// Index of the camera in <see cref="SceneGraphicsCompositorLayers.Cameras"/>
+        /// Initializes a new instance of the <see cref="SceneCameraSlot"/> class.
         /// </summary>
-        public int Index
+        /// <param name="camera">The camera.</param>
+        public SceneCameraSlot(CameraComponent camera)
         {
-            get; set;
+            Camera = camera;
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="SiliconStudio.Paradox.Engine.Graphics.Composers.SceneCameraSlot"/> to <see cref="System.Int32"/>.
+        /// Gets or sets the name.
         /// </summary>
-        /// <param name="slot">The slot.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static implicit operator int(SceneCameraSlot slot)
-        {
-            return slot.Index;
-        }
+        /// <value>The name.</value>
+        [DataMember(10)]
+        public string Name { get; set; }
 
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="System.Int32"/> to <see cref="SiliconStudio.Paradox.Engine.Graphics.Composers.SceneCameraSlot"/>.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static implicit operator SceneCameraSlot(int index)
-        {
-            return new SceneCameraSlot(index);
-        }
+        [DataMember(20)]
+        public CameraComponent Camera { get; set; }
 
         public override string ToString()
         {
-            return string.Format("Cameras[{0}]", Index);
+            string name = Name;
+            if (name == null && Camera != null && Camera.Entity != null)
+            {
+                name = Camera.Entity.Name;
+            }
+
+            return string.Format("Camera [{0}]", name);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="CameraComponent"/> to <see cref="SceneCameraSlot"/>.
+        /// </summary>
+        /// <param name="camera">The camera.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator SceneCameraSlot(CameraComponent camera)
+        {
+            return new SceneCameraSlot(camera);
         }
     }
 }

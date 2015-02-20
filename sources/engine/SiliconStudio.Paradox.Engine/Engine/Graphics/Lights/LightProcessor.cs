@@ -92,7 +92,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             lightComponents.Add(light);
         }
 
-        public override void Draw(GameTime time)
+        public override void Draw(RenderContext context)
         {
             // Instead of clearing the types, we are clearing the underlying list (keeping the allocated space)
             foreach (var lightPair in ActiveDirectLights)

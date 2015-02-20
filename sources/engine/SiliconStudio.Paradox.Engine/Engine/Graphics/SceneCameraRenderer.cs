@@ -53,7 +53,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// </summary>
         /// <value>The camera.</value>
         [DataMember(20)]
-        public SceneCameraSlot Camera { get; set; }
+        public SceneCameraSlotIndex Camera { get; set; }
 
         /// <summary>
         /// Gets or sets the culling mask.
@@ -95,15 +95,9 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 return;
             }
 
-            var cameraCollection = CameraComponentCollection.GetCurrent(context);
-            if (cameraCollection == null)
-            {
-                return;
-            }
-
-            // If no camera found, just skip this part.
-            var camera = cameraCollection.GetCamera(Camera);
-            if (camera == null)
+            // Gets the current camera state from the slot
+            var cameraState = context.GetCameraState(Camera);
+            if (cameraState == null)
             {
                 return;
             }
@@ -129,7 +123,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
             // Draw this camera.
             using (var t1 = context.PushTagAndRestore(Current, this))
-            using (var t2 = context.PushTagAndRestore(CameraComponent.Current, camera))
+            using (var t2 = context.PushTagAndRestore(CameraComponentRenderer.Current, cameraState))
             {
                 var currentFilter = context.Parameters.Get(MaterialKeys.PixelStageSurfaceFilter);
                 if (!ReferenceEquals(currentFilter, MaterialFilter))

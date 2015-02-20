@@ -76,7 +76,7 @@ namespace SiliconStudio.Paradox.Engine
             return modelEntityData.Links.Remove(entityLink);
         }
 
-        public override void Draw(GameTime time)
+        public override void Draw(RenderContext context)
         {
             Models.Clear();
 

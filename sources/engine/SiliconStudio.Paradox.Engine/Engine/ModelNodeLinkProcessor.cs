@@ -54,7 +54,7 @@ namespace SiliconStudio.Paradox.Engine
             data.Processor = null;
         }
 
-        public override void Draw(GameTime time)
+        public override void Draw(RenderContext context)
         {
             lock (DirtyLinks)
             {
