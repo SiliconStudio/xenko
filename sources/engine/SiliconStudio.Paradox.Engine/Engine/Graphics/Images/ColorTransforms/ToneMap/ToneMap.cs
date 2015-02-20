@@ -42,7 +42,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         public ToneMap(string toneMapEffect) : base(toneMapEffect)
         {
             timer = new Stopwatch();
-            Operator = new ToneMapU2FilmicOperator();
+            Operator = new ToneMapHejlDawsonOperator();
             AdaptationRate = 1.25f;
         }
 

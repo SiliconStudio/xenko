@@ -15,11 +15,16 @@ namespace SiliconStudio.Paradox.Effects.Images
         float4 ShoulderCoeffs;
         float  MiddleCrossOver;
 
+        float Remap(float x)
+        {
+	        float4 coeffs = (x < MiddleCrossOver) ? ToeCoeffs : ShoulderCoeffs;
+	        float2 fraction = coeffs.xy * x + coeffs.zw;
+	        return fraction.x / fraction.y; 
+        }
+
         override float4 Compute(float4 color)
         {
-	        float4 coeffs = (color < MiddleCrossOver) ? ToeCoeffs : ShoulderCoeffs;
-	        float2 fraction = coeffs.xy * color + coeffs.zw;
-	        return fraction.x / fraction.y; 
+	        return float4(Remap(color.r), Remap(color.g), Remap(color.b), color.a);
         }
     };
 }
