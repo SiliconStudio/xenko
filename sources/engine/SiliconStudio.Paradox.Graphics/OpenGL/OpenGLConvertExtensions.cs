@@ -31,6 +31,8 @@ namespace SiliconStudio.Paradox.Graphics
         private const PixelInternalFormat Depth24Stencil8 = (PixelInternalFormat)0x88F0;
         private const PixelInternalFormat DepthComponent32f = (PixelInternalFormat)0x8CAC;
         private const PixelInternalFormat R8 = (PixelInternalFormat)0x8229;
+        private const PixelInternalFormat R16f = (PixelInternalFormat)0x822D;
+        private const PixelInternalFormat Rg16f = (PixelInternalFormat)0x822F;
         private const PixelInternalFormat Rgba16f = (PixelInternalFormat)0x881A;
         private const PixelInternalFormat R32ui = (PixelInternalFormat)0x8236;
         private const PixelInternalFormat R32f = (PixelInternalFormat)0x822E;
@@ -43,6 +45,8 @@ namespace SiliconStudio.Paradox.Graphics
         private const PixelInternalFormat Depth24Stencil8 = PixelInternalFormat.Depth24Stencil8;
         private const PixelInternalFormat DepthComponent32f = PixelInternalFormat.DepthComponent32f;
         private const PixelInternalFormat R8 = PixelInternalFormat.R8;
+        private const PixelInternalFormat R16f = PixelInternalFormat.R16f;
+        private const PixelInternalFormat Rg16f = PixelInternalFormat.Rg16f;
         private const PixelInternalFormat Rgba16f = PixelInternalFormat.Rgba16f;
         private const PixelInternalFormat R32ui = PixelInternalFormat.R32ui;
         private const PixelInternalFormat R32f = PixelInternalFormat.R32f;
@@ -354,6 +358,18 @@ namespace SiliconStudio.Paradox.Graphics
                     format = PixelFormatGl.Bgra;
 #endif
                     type = PixelType.UnsignedByte;
+                    pixelSize = 4;
+                    break;
+                case PixelFormat.R16_Float:
+                    internalFormat = R16f;
+                    format = PixelFormatGl.RedInteger;
+                    type = PixelType.HalfFloat;
+                    pixelSize = 2;
+                    break;
+                case PixelFormat.R16G16_Float:
+                    internalFormat = Rg16f;
+                    format = PixelFormatGl.Rg;
+                    type = PixelType.HalfFloat;
                     pixelSize = 4;
                     break;
                 case PixelFormat.R16G16B16A16_Float:
