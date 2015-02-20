@@ -34,6 +34,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         /// </summary>
         /// <value>The cameras.</value>
         [DataMember(10)]
+        [Category]
         public SceneCameraSlotCollection Cameras { get; private set; }
 
         /// <summary>
