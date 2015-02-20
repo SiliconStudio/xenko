@@ -39,6 +39,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         {
             Enabled = true;
             subRenderersToUnload = new List<IGraphicsRenderer>();
+            Profiling = true;
         }
 
         /// <summary>
@@ -48,6 +49,9 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         [DataMember(-20)]
         [DefaultValue(true)]
         public virtual bool Enabled { get; set; }
+
+        [DataMemberIgnore]
+        public bool Profiling { get; set; }
 
         [DataMemberIgnore]
         protected RenderContext Context { get; private set; }
@@ -82,7 +86,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
         protected virtual void PreDrawCore(RenderContext context)
         {
-            if (Name != null)
+            if (Name != null && Profiling)
             {
                 context.GraphicsDevice.BeginProfile(Color.Green, Name);
             }
@@ -90,7 +94,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
         protected virtual void PostDrawCore(RenderContext context)
         {
-            if (Name != null)
+            if (Name != null && Profiling)
             {
                 context.GraphicsDevice.EndProfile();
             }
