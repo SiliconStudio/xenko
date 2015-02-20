@@ -61,5 +61,10 @@ namespace SiliconStudio.Paradox.EntityModel
 
             base.Destroy();
         }
+
+        public override string ToString()
+        {
+            return string.Format("Scene {0}", Name);
+        }
     }
 }
