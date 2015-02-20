@@ -21,7 +21,6 @@ namespace SiliconStudio.Paradox.Effects.Images
         private readonly float[] weightedLuminances = new float[16];
         private int currentWeightedLuminanceIndex = 0;
         private float previousLuminance;
-        private readonly ToneMapU2FilmicOperator defaultOperator;
 
         private readonly Stopwatch timer;
 
@@ -43,7 +42,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         public ToneMap(string toneMapEffect) : base(toneMapEffect)
         {
             timer = new Stopwatch();
-            defaultOperator = new ToneMapU2FilmicOperator();
+            Operator = new ToneMapU2FilmicOperator();
             AdaptationRate = 1.25f;
         }
 
@@ -157,6 +156,11 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             base.UpdateParameters(context);
 
+            if (Operator == null)
+            {
+                throw new InvalidOperationException("Operator cannot be null on this instance");
+            }
+
             // Update the luminance
             var elapsedTime = timer.Elapsed;
             timer.Restart();
@@ -197,11 +201,10 @@ namespace SiliconStudio.Paradox.Effects.Images
             Parameters.Set(ToneMapShaderKeys.LuminanceAverageGlobal, avgLuminanceLog);
 
             // Update operator parameters
-            var currentOperator = Operator ?? defaultOperator;
-            currentOperator.UpdateParameters(context);
+            Operator.UpdateParameters(context);
 
             // Copy sub parameters from composition to this transform
-            foreach (var key in currentOperator.Parameters.Keys)
+            foreach (var key in Operator.Parameters.Keys)
             {
                 ParameterKey tonemapKey;
                 if (!tonemapKeys.TryGetValue(key, out tonemapKey))
@@ -209,7 +212,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                     tonemapKey = key.ComposeWith("ToneMapOperator");
                     tonemapKeys.Add(key, tonemapKey);
                 }
-                currentOperator.Parameters.CopySharedTo(key, tonemapKey, Parameters);
+                Operator.Parameters.CopySharedTo(key, tonemapKey, Parameters);
             }
         }
     }
