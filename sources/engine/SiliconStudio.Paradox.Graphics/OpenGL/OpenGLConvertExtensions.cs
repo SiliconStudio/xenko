@@ -37,6 +37,7 @@ namespace SiliconStudio.Paradox.Graphics
         private const PixelInternalFormat Rg32f = (PixelInternalFormat)0x8230;
         private const PixelInternalFormat Rgb32f = (PixelInternalFormat)0x8815;
         private const PixelInternalFormat Rgba32f = (PixelInternalFormat)0x8814;
+        private const PixelInternalFormat Srgb8Alpha8 = (PixelInternalFormat)Token.Srgb8Alpha8;
 #else
         private const PixelInternalFormat DepthComponent16 = PixelInternalFormat.DepthComponent16;
         private const PixelInternalFormat Depth24Stencil8 = PixelInternalFormat.Depth24Stencil8;
@@ -48,6 +49,7 @@ namespace SiliconStudio.Paradox.Graphics
         private const PixelInternalFormat Rg32f = PixelInternalFormat.Rg32f;
         private const PixelInternalFormat Rgb32f = PixelInternalFormat.Rgb32f;
         private const PixelInternalFormat Rgba32f = PixelInternalFormat.Rgba32f;
+        private const PixelInternalFormat Srgb8Alpha8 = PixelInternalFormat.Srgb8Alpha8;
 #endif
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
@@ -333,6 +335,22 @@ namespace SiliconStudio.Paradox.Graphics
                     format = (PixelFormatGl)ExtTextureFormatBgra8888.BgraExt;
 #else
                     internalFormat = PixelInternalFormat.Rgba;
+                    format = PixelFormatGl.Bgra;
+#endif
+                    type = PixelType.UnsignedByte;
+                    pixelSize = 4;
+                    break;
+                case PixelFormat.R8G8B8A8_UNorm_SRgb:
+                    internalFormat = Srgb8Alpha8;
+                    format = PixelFormatGl.Rgba;
+                    type = PixelType.UnsignedByte;
+                    pixelSize = 4;
+                    break;
+                case PixelFormat.B8G8R8A8_UNorm_SRgb:
+                    internalFormat = Srgb8Alpha8;
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                    format = (PixelFormatGl)ExtTextureFormatBgra8888.BgraExt;
+#else
                     format = PixelFormatGl.Bgra;
 #endif
                     type = PixelType.UnsignedByte;

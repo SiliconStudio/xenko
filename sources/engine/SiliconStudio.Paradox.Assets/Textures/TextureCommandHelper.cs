@@ -139,9 +139,6 @@ namespace SiliconStudio.Paradox.Assets.Textures
             if (textureAsset.SRgb && ((int)parameters.GraphicsProfile < (int)GraphicsProfile.Level_9_2 && parameters.GraphicsPlatform != GraphicsPlatform.Direct3D11))
                 throw new NotSupportedException("sRGB is not supported on OpenGl profile level {0}".ToFormat(parameters.GraphicsProfile));
 
-            if (textureAsset.SRgb && textureAsset.Format == TextureFormat.Compressed && parameters.GraphicsPlatform == GraphicsPlatform.OpenGLES)
-                throw new NotImplementedException("sRGB compression for OpenGl 3.0 is not implemented yet");
-
             var hint = textureAsset.Hint;
 
             // Default output format
@@ -152,28 +149,39 @@ namespace SiliconStudio.Paradox.Assets.Textures
                     switch (parameters.Platform)
                     {
                         case PlatformType.Android:
-                            switch (graphicsProfile)
+                            if (textureAsset.SRgb)
                             {
-                                case GraphicsProfile.Level_9_1:
-                                case GraphicsProfile.Level_9_2:
-                                case GraphicsProfile.Level_9_3:
-                                    outputFormat = textureAsset.Alpha == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.R8G8B8A8_UNorm;
-                                    break;
-                                case GraphicsProfile.Level_10_0:
-                                case GraphicsProfile.Level_10_1:
-                                case GraphicsProfile.Level_11_0:
-                                case GraphicsProfile.Level_11_1:
-                                case GraphicsProfile.Level_11_2:
-                                    // GLES3.0 starting from Level_10_0, this profile enables ETC2 compression on Android
-                                    outputFormat = textureAsset.Alpha == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.ETC2_RGBA;
-                                    break;
-                                default:
-                                    throw new ArgumentOutOfRangeException("graphicsProfile");
+                                outputFormat = PixelFormat.R8G8B8A8_UNorm_SRgb;
+                            }
+                            else
+                            {
+                                switch (graphicsProfile)
+                                {
+                                    case GraphicsProfile.Level_9_1:
+                                    case GraphicsProfile.Level_9_2:
+                                    case GraphicsProfile.Level_9_3:
+                                        outputFormat = textureAsset.Alpha == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.R8G8B8A8_UNorm;
+                                        break;
+                                    case GraphicsProfile.Level_10_0:
+                                    case GraphicsProfile.Level_10_1:
+                                    case GraphicsProfile.Level_11_0:
+                                    case GraphicsProfile.Level_11_1:
+                                    case GraphicsProfile.Level_11_2:
+                                        // GLES3.0 starting from Level_10_0, this profile enables ETC2 compression on Android
+                                        outputFormat = textureAsset.Alpha == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.ETC2_RGBA;
+                                        break;
+                                    default:
+                                        throw new ArgumentOutOfRangeException("graphicsProfile");
+                                }
                             }
                             break;
                         case PlatformType.iOS:
                             // PVRTC works only for square POT textures
-                            if (SupportPVRTC(imageSize))
+                            if (textureAsset.SRgb)
+                            {
+                                outputFormat = PixelFormat.R8G8B8A8_UNorm_SRgb;
+                            }
+                            else if (SupportPVRTC(imageSize))
                             {
                                 switch (textureAsset.Alpha)
                                 {
@@ -263,23 +271,30 @@ namespace SiliconStudio.Paradox.Assets.Textures
                                     }
                                     break;
                                 case GraphicsPlatform.OpenGLES: // OpenGLES on Windows
-                                    switch (graphicsProfile)
+                                    if (textureAsset.SRgb)
                                     {
-                                        case GraphicsProfile.Level_9_1:
-                                        case GraphicsProfile.Level_9_2:
-                                        case GraphicsProfile.Level_9_3:
-                                            outputFormat = textureAsset.Alpha == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.R8G8B8A8_UNorm;
-                                            break;
-                                        case GraphicsProfile.Level_10_0:
-                                        case GraphicsProfile.Level_10_1:
-                                        case GraphicsProfile.Level_11_0:
-                                        case GraphicsProfile.Level_11_1:
-                                        case GraphicsProfile.Level_11_2:
-                                            // GLES3.0 starting from Level_10_0, this profile enables ETC2 compression on Android
-                                            outputFormat = textureAsset.Alpha == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.ETC2_RGBA;
-                                            break;
-                                        default:
-                                            throw new ArgumentOutOfRangeException("graphicsProfile");
+                                        outputFormat = PixelFormat.R8G8B8A8_UNorm_SRgb;
+                                    }
+                                    else
+                                    {
+                                        switch (graphicsProfile)
+                                        {
+                                            case GraphicsProfile.Level_9_1:
+                                            case GraphicsProfile.Level_9_2:
+                                            case GraphicsProfile.Level_9_3:
+                                                outputFormat = textureAsset.Alpha == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.R8G8B8A8_UNorm;
+                                                break;
+                                            case GraphicsProfile.Level_10_0:
+                                            case GraphicsProfile.Level_10_1:
+                                            case GraphicsProfile.Level_11_0:
+                                            case GraphicsProfile.Level_11_1:
+                                            case GraphicsProfile.Level_11_2:
+                                                // GLES3.0 starting from Level_10_0, this profile enables ETC2 compression on Android
+                                                outputFormat = textureAsset.Alpha == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.ETC2_RGBA;
+                                                break;
+                                            default:
+                                                throw new ArgumentOutOfRangeException("graphicsProfile");
+                                        }
                                     }
                                     break;
                                 default:
