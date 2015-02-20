@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
@@ -72,6 +73,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <value>The transforms.</value>
         [DataMember(10)]
         [Display("Transforms", AlwaysExpand = true)]
+        [NotNullItems]
         public ColorTransformCollection Transforms
         {
             get
