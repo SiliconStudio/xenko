@@ -46,9 +46,8 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets or sets the graphics compositor override, allowing to override the composition of the scene.
         /// </summary>
         /// <value>The graphics compositor override.</value>
-        [DataMember(30)]
-        [Display("Graphics Compositor Override")]
-        public ISceneGraphicsCompositor GraphicsCompositorOverride { get; set; }
+        [DataMemberIgnore]
+        public ISceneGraphicsCompositor GraphicsCompositorOverride { get; set; } // Overrides are accessible only at runtime
 
         public override void Initialize(RenderContext context)
         {

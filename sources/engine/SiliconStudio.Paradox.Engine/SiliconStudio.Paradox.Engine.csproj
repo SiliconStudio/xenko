@@ -1889,12 +1889,15 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Engine\ICameraProjection.cs" />
+    <Compile Include="Engine\ISceneEditorGraphicsModeSettings.cs" />
     <Compile Include="Engine\ModelProcessor.cs" />
     <Compile Include="Engine\Graphics\RenderModel.cs" />
     <Compile Include="Engine\SceneChildComponent.cs" />
     <Compile Include="Engine\SceneChildComponentChangedEventArgs.cs" />
     <Compile Include="Engine\SceneChildProcessor.cs" />
     <Compile Include="Engine\SceneComponent.cs" />
+    <Compile Include="Engine\SceneEditorGraphicsModeHDRSettings.cs" />
+    <Compile Include="Engine\SceneEditorGraphicsModeLDRSettings.cs" />
     <Compile Include="Engine\SceneEditorSettings.cs" />
     <Compile Include="Engine\SceneInstance.cs" />
     <Compile Include="Engine\SceneProcessor.cs" />

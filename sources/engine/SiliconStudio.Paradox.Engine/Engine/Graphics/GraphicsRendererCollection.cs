@@ -32,6 +32,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             tempRenderers = new HashSet<T>();
             previousRenderers = new List<T>();
             currentRenderers = new List<T>();
+            Profiling = false; // We don't generate a begin/end for a collection but let the collection be embedded in the parent
         }
 
         [DataMemberIgnore]

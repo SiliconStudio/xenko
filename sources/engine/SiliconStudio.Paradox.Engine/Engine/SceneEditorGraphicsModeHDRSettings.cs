@@ -1,0 +1,65 @@
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
+
+using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Reflection;
+using SiliconStudio.Paradox.Effects.Images;
+
+namespace SiliconStudio.Paradox.Engine
+{
+    /// <summary>
+    /// Settings for a HDR rendering
+    /// </summary>
+    [DataContract("SceneEditorGraphicsModeHDRSettings")]
+    [Display("High Dynamic Range")]
+    [ObjectFactory(typeof(SceneEditorGraphicsModeHDRSettings.Factory))]
+    public sealed class SceneEditorGraphicsModeHDRSettings : ISceneEditorGraphicsModeSettings
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SceneEditorGraphicsModeHDRSettings"/> class.
+        /// </summary>
+        public SceneEditorGraphicsModeHDRSettings()
+        {
+            PostProcessingEffects = new PostProcessingEffects();
+        }
+
+        /// <summary>
+        /// Gets or sets the default post processing effects.
+        /// </summary>
+        /// <value>The post processing effects.</value>
+        /// <userdoc>Default post processing effects applied to the scene in the editor</userdoc>
+        [DataMember(20)]
+        [NotNull]
+        public PostProcessingEffects PostProcessingEffects { get; set; }
+
+        private class Factory : IObjectFactory
+        {
+            public object New(Type type)
+            {
+                var settings = new SceneEditorGraphicsModeHDRSettings();
+
+                // By default, only activate ToneMap and Gamma correction
+                var fx = settings.PostProcessingEffects;
+                fx.LightStreak.Enabled = false;
+                fx.ColorTransforms.Transforms.Add(new ToneMap());
+                fx.DepthOfField.Enabled = false;
+                fx.Bloom.Enabled = false;
+
+                return settings;
+            }
+        }
+
+        public bool RequiresHDRRenderFrame()
+        {
+            return true;
+        }
+
+        public PostProcessingEffects GetSceneEditorPostProcessingEffects()
+        {
+            return PostProcessingEffects;
+        }
+    }
+}
