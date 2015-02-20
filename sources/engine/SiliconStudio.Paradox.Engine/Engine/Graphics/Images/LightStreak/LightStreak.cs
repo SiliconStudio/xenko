@@ -165,9 +165,9 @@ namespace SiliconStudio.Paradox.Effects.Images
                 {
                     AnamorphicOffsetsWeights = new Vector3[]
                         {
-                            new Vector3(0f,  3f, 0.05f),
+                            new Vector3(0f,  4f, 0.05f),
                             new Vector3(0f,  0f, 1f),
-                            new Vector3(0f, -3f, 0.05f)
+                            new Vector3(0f, -4f, 0.05f)
                         };
                 }
             }

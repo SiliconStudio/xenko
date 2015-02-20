@@ -33,10 +33,10 @@ namespace SiliconStudio.Paradox.Effects.Images
 
 
             // Symetry with scaling
-            uv = (originalUV - 0.5) * -1.5 + 0.5;
+            uv = (originalUV - 0.5) * -4.5 + 0.5;
             result += softBorderTap(uv);
 
-            uv = (originalUV - 0.5) * -3.0 + 0.5;
+            uv = (originalUV - 0.5) * -8.0 + 0.5;
             result += softBorderTap(uv);
 
 
@@ -55,10 +55,10 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         float3 softBorderTap(float2 uv) 
         {
-            float border = 0.1;
+            float border = 0.18;
             float2 borderNear = lerp( float2(0.0, 0.0), float2(1.0, 1.0), (0.5 - abs(uv - 0.5)) / border);
             float alpha = saturate(borderNear.x * borderNear.y);
-            float3 result = Texture0.Sample(LinearSampler, uv).rgb * alpha * alpha;
+            float3 result = Texture0.Sample(LinearSampler, uv).rgb * alpha;
             if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) result = float4(0.0, 0.0, 0.0, 1.0);
             return result;
         }

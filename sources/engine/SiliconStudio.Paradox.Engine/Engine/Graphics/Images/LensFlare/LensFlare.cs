@@ -31,16 +31,17 @@ namespace SiliconStudio.Paradox.Effects.Images
             Amount = 1f;
 
             // Presets
+            const float distortionFactor = 0.39f;
             ZoomOffsetsDistortions = new Vector2[]
             {
-                new Vector2( -3.2f,   1.4f),
-                new Vector2( -5.6f,   1.4f),
-                new Vector2( -3.2f,   0.5f),
-                new Vector2( -0.96f, -0.2f),
-                new Vector2( -1.14f, -0.2f),
-                new Vector2( -1.14f, -0.23f),
-                new Vector2( -1.49f, -0.2f),
-                new Vector2( -1.52f, -0.2f)
+                new Vector2( -3.2f  * distortionFactor,  1.4f),
+                new Vector2( -5.6f  * distortionFactor,  1.4f),
+                new Vector2( -3.2f  * distortionFactor,  0.5f),
+                new Vector2( -0.96f * distortionFactor, -0.2f),
+                new Vector2( -1.14f * distortionFactor, -0.2f),
+                new Vector2( -1.14f * distortionFactor, -0.23f),
+                new Vector2( -1.49f * distortionFactor, -0.2f),
+                new Vector2( -1.52f * distortionFactor, -0.2f)
             };
 
             HaloFactor = 1f;
@@ -124,7 +125,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             // Work on a blurred bright map
             var blurredBright = NewScopedRenderTarget2D(halfSizeRenderTarget.Description);
-            blur.Radius = 6;
+            blur.Radius = 8;
             blur.SetInput(halfSizeRenderTarget);
             blur.SetOutput(blurredBright);
             blur.Draw(contextParameters);
