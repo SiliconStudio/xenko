@@ -26,13 +26,21 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
                 Output = new MasterRenderFrameProvider(),
                 IsMaster = true
             };
+            Cameras = new CameraComponentCollection();
         }
+
+        /// <summary>
+        /// Gets the cameras used by this composition.
+        /// </summary>
+        /// <value>The cameras.</value>
+        [DataMember(10)]
+        public CameraComponentCollection Cameras { get; private set; }
 
         /// <summary>
         /// Gets the layers used for composing a scene.
         /// </summary>
         /// <value>The layers.</value>
-        [DataMember(10)]
+        [DataMember(20)]
         [Category]
         public SceneGraphicsLayerCollection Layers { get; private set; }
 
@@ -40,7 +48,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         /// Gets the master layer.
         /// </summary>
         /// <value>The master layer.</value>
-        [DataMember(20)]
+        [DataMember(30)]
         [Category]
         public SceneGraphicsLayer Master { get; private set; }
 
@@ -54,11 +62,14 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
 
         protected override void DrawCore(RenderContext context)
         {
-            // Draw the layers
-            Layers.Draw(context);
+            using (var t1 = context.PushTagAndRestore(CameraComponentCollection.Current, Cameras))
+            {
+                // Draw the layers
+                Layers.Draw(context);
 
-            // Draw the master track
-            Master.Draw(context);
+                // Draw the master track
+                Master.Draw(context);
+            }
         }
     }
 }

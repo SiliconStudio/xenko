@@ -8,6 +8,7 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Materials;
+using SiliconStudio.Paradox.Engine.Graphics.Composers;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 
@@ -52,7 +53,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// </summary>
         /// <value>The camera.</value>
         [DataMember(20)]
-        public CameraComponent Camera { get; set; }
+        public SceneCameraSlot Camera { get; set; }
 
         /// <summary>
         /// Gets or sets the culling mask.
@@ -89,7 +90,20 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         protected override void DrawCore(RenderContext context, RenderFrame output)
         {
             // Early exit if some properties are null
-            if (Mode == null || Camera == null)
+            if (Mode == null)
+            {
+                return;
+            }
+
+            var cameraCollection = CameraComponentCollection.GetCurrent(context);
+            if (cameraCollection == null)
+            {
+                return;
+            }
+
+            // If no camera found, just skip this part.
+            var camera = cameraCollection.GetCamera(Camera);
+            if (camera == null)
             {
                 return;
             }
@@ -115,6 +129,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
             // Draw this camera.
             using (var t1 = context.PushTagAndRestore(Current, this))
+            using (var t2 = context.PushTagAndRestore(CameraComponent.Current, camera))
             {
                 var currentFilter = context.Parameters.Get(MaterialKeys.PixelStageSurfaceFilter);
                 if (!ReferenceEquals(currentFilter, MaterialFilter))

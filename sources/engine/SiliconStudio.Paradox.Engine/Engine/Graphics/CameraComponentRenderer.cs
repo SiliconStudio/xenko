@@ -1,11 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
-
-using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Graphics;
 
@@ -16,15 +12,9 @@ namespace SiliconStudio.Paradox.Effects
     /// </summary>
     public class CameraComponentRenderer : EntityComponentRendererBase
     {
-        /// <summary>
-        /// Gets or sets the camera override (used for shadow mapping for example).
-        /// </summary>
-        /// <value>The camera override.</value>
-        public CameraComponent CameraOverride { get; set; }
-
         protected override void DrawCore(RenderContext context)
         {
-            var camera = CameraOverride ?? SceneCameraRenderer.Camera;
+            var camera = CameraComponent.GetCurrent(context);
 
             if (camera == null || camera.Entity == null)
                 return;

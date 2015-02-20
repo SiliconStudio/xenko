@@ -22,6 +22,11 @@ namespace SiliconStudio.Paradox.Engine
         private float focusDistance;
 
         /// <summary>
+        /// Property key to access the current <see cref="CameraComponent"/> from <see cref="RenderContext.Tags"/>.
+        /// </summary>
+        public static readonly PropertyKey<CameraComponent> Current = new PropertyKey<CameraComponent>("CameraComponent.Current", typeof(CameraComponent));
+
+        /// <summary>
         /// The property key of this component.
         /// </summary>
         public static PropertyKey<CameraComponent> Key = new PropertyKey<CameraComponent>("Key", typeof(CameraComponent));
@@ -233,6 +238,16 @@ namespace SiliconStudio.Paradox.Engine
         public override PropertyKey GetDefaultKey()
         {
             return Key;
+        }
+
+        /// <summary>
+        /// Gets the current <see cref="CameraComponent"/> stored in a <see cref="RenderContext.Tags"/>
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <returns>SiliconStudio.Paradox.Engine.CameraComponent.</returns>
+        public static CameraComponent GetCurrent(RenderContext context)
+        {
+            return context.Tags.Get(Current);
         }
     }
 }
