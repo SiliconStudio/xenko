@@ -542,9 +542,6 @@ namespace SiliconStudio.Paradox.Graphics
 
             if (destTexture.Description.Usage == GraphicsResourceUsage.Staging)
             {
-                if(sourceTexture.Width <= 16 || sourceTexture.Height <= 16)
-                    throw new NotSupportedException("ReadPixels from texture smaller or equal to 16x16 pixels seems systematically to fails on some android devices (for exp: Galaxy S3)");
-
                 if (dstX != 0 || dstY != 0 || dstZ != 0)
                     throw new NotSupportedException("ReadPixels from staging texture using non-zero destination is not supported");
 
@@ -554,6 +551,10 @@ namespace SiliconStudio.Paradox.Graphics
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 if (IsOpenGLES2)
                 {
+                    // TODO: This issue might just be because we don't specify alignment to glPixelStorei().
+                    if (sourceTexture.Width <= 16 || sourceTexture.Height <= 16)
+                        throw new NotSupportedException("ReadPixels from texture smaller or equal to 16x16 pixels seems systematically to fails on some android devices."); // example: Galaxy S3
+
                     GL.ReadPixels(sourceRectangle.Left, sourceRectangle.Top, sourceRectangle.Width, sourceRectangle.Height, destTexture.FormatGl, destTexture.Type, destTexture.StagingData);
                 }
                 else

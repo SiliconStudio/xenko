@@ -498,6 +498,8 @@ namespace SiliconStudio.Paradox.Graphics
             GL.GenBuffers(1, out pixelBufferObjectId);
 
             GL.BindBuffer(target, pixelBufferObjectId);
+            if (RowPitch < 4)
+                GL.PixelStore(PixelStoreParameter.PackAlignment, 1);
             GL.BufferData(target, (IntPtr)DepthPitch, IntPtr.Zero, bufferUsage);
             GL.BindBuffer(target, 0);
         }
