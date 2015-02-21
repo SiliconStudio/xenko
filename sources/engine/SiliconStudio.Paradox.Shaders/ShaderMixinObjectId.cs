@@ -61,6 +61,26 @@ namespace SiliconStudio.Paradox.Shaders
             }
         }
 
+        /// <summary>
+        /// Computes a hash <see cref="ObjectId"/> for the specified effect and compiler parameters.
+        /// </summary>
+        /// <param name="effectName">Name of the effect.</param>
+        /// <param name="compilerParameters">The compiler parameters.</param>
+        /// <returns>
+        /// EffectObjectIds.
+        /// </returns>
+        public static ObjectId Compute(string effectName, ShaderMixinParameters compilerParameters)
+        {
+            lock (generatorLock)
+            {
+                if (generator == null)
+                {
+                    generator = new ShaderMixinObjectId();
+                }
+                return generator.ComputeInternal(effectName, compilerParameters);
+            }
+        }
+
         private unsafe ObjectId ComputeInternal(ShaderMixinSource mixin, ShaderMixinParameters mixinParameters)
         {
             // Write to memory stream
@@ -73,6 +93,22 @@ namespace SiliconStudio.Paradox.Shaders
             parameters.Set(CompilerParameters.GraphicsProfileKey, mixinParameters.Get(CompilerParameters.GraphicsProfileKey));
             parameters.Set(CompilerParameters.DebugKey, mixinParameters.Get(CompilerParameters.DebugKey));
             writer.Write(parameters);
+
+            // Compute hash
+            objectIdBuilder.Reset();
+            objectIdBuilder.Write((byte*)buffer, (int)memStream.Position);
+
+            return objectIdBuilder.ComputeHash();
+        }
+
+        private unsafe ObjectId ComputeInternal(string effectName, ShaderMixinParameters compilerParameters)
+        {
+            // Write to memory stream
+            memStream.Position = 0;
+            writer.Write(EffectBytecode.MagicHeader); // Write the effect bytecode magic header
+            writer.Write(effectName);
+
+            writer.Write(compilerParameters);
 
             // Compute hash
             objectIdBuilder.Reset();
