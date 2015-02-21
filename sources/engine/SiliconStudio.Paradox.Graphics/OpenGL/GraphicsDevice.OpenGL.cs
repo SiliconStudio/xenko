@@ -317,6 +317,10 @@ namespace SiliconStudio.Paradox.Graphics
         {
         }
 
+        public void EndProfile()
+        {
+        }
+
         public void Clear(Texture depthStencilBuffer, DepthStencilClearOptions options, float depth = 1, byte stencil = 0)
         {
 #if DEBUG
@@ -940,10 +944,6 @@ namespace SiliconStudio.Paradox.Graphics
             {
                 throw new Exception("End context was called more than Begin");
             }
-        }
-
-        public void EndProfile()
-        {
         }
 
         internal void EnsureContextActive()
