@@ -1024,7 +1024,7 @@ namespace SiliconStudio.Paradox.Graphics
                 // TODO: Need to disable some part of rendering if either is null
                 var isProvidedDepthBuffer = (depthStencilBuffer == RootDevice.windowProvidedDepthTexture);
                 var isProvidedRenderTarget = (fboKey.LastRenderTarget == 1 && renderTargets[0] == RootDevice.windowProvidedRenderTexture);
-                if ((isProvidedDepthBuffer || boundDepthStencilBuffer == null) && (isProvidedRenderTarget || fboKey.LastRenderTarget == 0)) // device provided framebuffer
+                if ((isProvidedDepthBuffer || depthStencilBuffer == null) && (isProvidedRenderTarget || fboKey.LastRenderTarget == 0)) // device provided framebuffer
                 {
                     return windowProvidedFrameBuffer;
                 }
