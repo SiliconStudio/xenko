@@ -13,6 +13,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// http://filmicgames.com/archives/75
     /// </remarks>
     [Display("U2-Filmic")]
+    [DataContract("U2-Filmic")]
     public class ToneMapU2FilmicOperator : ToneMapOperator
     {
         /// <summary>

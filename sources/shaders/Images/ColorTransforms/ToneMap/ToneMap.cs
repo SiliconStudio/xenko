@@ -28,11 +28,19 @@ namespace SiliconStudio.Paradox.Effects.Images
         private string previousShader;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="ToneMap"/> class.
+        /// </summary>
+        public ToneMap() : this("ToneMapEffect")
+        {
+            
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ToneMap" /> class.
         /// </summary>
         /// <param name="toneMapEffect">The tone map shader effect (default is <c>ToneMapEffect)</c>.</param>
         /// <exception cref="System.ArgumentNullException">toneMapEffect</exception>
-        public ToneMap(string toneMapEffect = "ToneMapEffect") : base(toneMapEffect)
+        public ToneMap(string toneMapEffect) : base(toneMapEffect)
         {
             timer = new Stopwatch();
             defaultOperator = new ToneMapU2FilmicOperator();
