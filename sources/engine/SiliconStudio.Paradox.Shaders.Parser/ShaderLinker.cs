@@ -573,7 +573,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
 
         private static void LinkVariable(EffectReflection reflection, string variableName, LocalParameterKey parameterKey)
         {
-            var binding = new EffectParameterResourceData {Param = {KeyName = parameterKey.Name, Class = parameterKey.Class, Type = parameterKey.Type, RawName = variableName}};
+            var binding = new EffectParameterResourceData { Param = { KeyName = parameterKey.Name, Class = parameterKey.Class, Type = parameterKey.Type, RawName = variableName }, SlotStart = -1 };
             reflection.ResourceBindings.Add(binding);
         }
 
@@ -585,7 +585,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
             {
                 constantBuffer = new ShaderConstantBufferDescription() {Name = cbName};
                 effectReflection.ConstantBuffers.Add(constantBuffer);
-                var constantBufferBinding = new EffectParameterResourceData {Param = {KeyName = cbName, Class = EffectParameterClass.ConstantBuffer, Type = EffectParameterType.Buffer, RawName = cbName}};
+                var constantBufferBinding = new EffectParameterResourceData { Param = { KeyName = cbName, Class = EffectParameterClass.ConstantBuffer, Type = EffectParameterType.Buffer, RawName = cbName }, SlotStart = -1 };
                 effectReflection.ResourceBindings.Add(constantBufferBinding);
                 valueBindings.Add(constantBuffer, new List<EffectParameterValueData>());
             }
