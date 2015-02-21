@@ -86,11 +86,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             if (isLDR)
             {
                 compositor.Master.Renderers.Add(new ClearRenderFrameRenderer());
-                compositor.Master.Renderers.Add(
-                    new SceneCameraRenderer()
-                    {
-                        Camera = cameraEntity.Get<CameraComponent>()
-                    });
+                compositor.Master.Renderers.Add(new SceneCameraRenderer() {});
             }
             else
             {
@@ -98,18 +94,14 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 var renderHDROutput = new LocalRenderFrameProvider { Descriptor = { Format = RenderFrameFormat.HDR, DepthFormat = RenderFrameDepthFormat.Shared} };
                 layer.Output = renderHDROutput;
                 layer.Renderers.Add(new ClearRenderFrameRenderer());
-                layer.Renderers.Add(new SceneCameraRenderer()
-                {
-                    Camera = cameraEntity.Get<CameraComponent>()
-                }
-                    );
+                layer.Renderers.Add(new SceneCameraRenderer());
                 compositor.Layers.Add(layer);
-
                 compositor.Master.Renderers.Add(new SceneEffectRenderer()
                 {
                     Effect = new PostProcessingEffects()
                 });
             }
+            compositor.Cameras.Add(cameraEntity.Get<CameraComponent>());
 
             SceneSystem.SceneInstance = new SceneInstance(Services, scene);
 
