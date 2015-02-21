@@ -118,29 +118,6 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                         }
                     }
                 }
-
-                // ------------------------------------------------------------------------------------------------------------
-                // 2) Try to load from database cache
-                // ------------------------------------------------------------------------------------------------------------
-                if (bytecode == null && database.ObjectDatabase.Exists(mixinObjectId))
-                {
-                    using (var stream = database.ObjectDatabase.OpenStream(mixinObjectId))
-                    {
-                        // We have an existing stream, make sure the shader is compiled
-                        var objectIdBuffer = new byte[ObjectId.HashSize];
-                        if (stream.Read(objectIdBuffer, 0, ObjectId.HashSize) == ObjectId.HashSize)
-                        {
-                            var newBytecodeId = new ObjectId(objectIdBuffer);
-                            bytecode = LoadEffectBytecode(database, newBytecodeId);
-
-                            if (bytecode != null)
-                            {
-                                // If we successfully retrieved it from cache, add it to index map so that it won't be collected and available for faster lookup 
-                                database.AssetIndexMap[compiledUrl] = newBytecodeId;
-                            }
-                        }
-                    }
-                }
             }
 
             if (bytecode != null)
