@@ -30,6 +30,8 @@ namespace SiliconStudio.Paradox.Effects.Images
             // Get the input color to tonemap
 	        float3 color = inputColor.rgb;
 
+            // Code based on Matt Pettineo: https://mynameismjp.wordpress.com/2010/04/30/a-closer-look-at-tone-mapping/
+            // Use local luminance slightly differently to allow mix between local and global
 
 	        // Gets the local luminance
 	        float luminanceAverageLocal = LuminanceTexture.Sample(Texturing.LinearSampler, streams.TexCoord).r;
@@ -63,7 +65,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         float3 ToneMap(float3 color, float avgLuminance, float threshold)
         {
 	        float exposure = CalculateExposure(avgLuminance, threshold);
-	        //color *= exposure;
+	        color *= exposure;
 	        color = ToneMapOperator.Compute(float4(color,1)).rgb;
 	        return color;
         }

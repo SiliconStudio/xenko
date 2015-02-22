@@ -104,6 +104,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <value>The luminance local factor.</value>
         [DataMember(50)]
         [DefaultValue(0.5f)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
         public float LuminanceLocalFactor
         {
             get
