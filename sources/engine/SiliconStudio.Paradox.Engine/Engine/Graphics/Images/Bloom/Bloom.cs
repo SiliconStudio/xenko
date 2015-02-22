@@ -2,12 +2,10 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
@@ -16,9 +14,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     {
         private GaussianBlur blur;
 
-        private ColorCombiner blurCombine;
         private ImageMultiScaler multiScaler;
-        private readonly List<Texture> resultList = new List<Texture>();
 
         private Vector2 distortion;
 
@@ -28,10 +24,10 @@ namespace SiliconStudio.Paradox.Effects.Images
         public Bloom()
         {
             Radius = 10;
-            Amount = 1.0f;
-            DownScale = 3;
+            Amount = 0.3f;
+            DownScale = 1;
+            SigmaRatio = 3.5f;
             Distortion = new Vector2(1);
-            ModulateColor = new Color3(1);
         }
 
         /// <summary>
@@ -43,10 +39,26 @@ namespace SiliconStudio.Paradox.Effects.Images
         public float Radius { get; set; }
 
         /// <summary>
+        /// Gets or sets the amount.
+        /// </summary>
+        /// <value>The amount.</value>
+        [DataMember(20)]
+        [DefaultValue(0.3f)]
+        public float Amount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the amount.
+        /// </summary>
+        /// <value>The amount.</value>
+        [DataMember(30)]
+        [DefaultValue(3.5f)]
+        public float SigmaRatio { get; set; }
+
+        /// <summary>
         /// Vertical or horizontal distortion to apply.
         /// (1, 2) means the bloom will be stretched twice longer horizontally than vertically.
         /// </summary>
-        [DataMember(20)]
+        [DataMember(40)]
         public Vector2 Distortion
         {
             get
@@ -61,15 +73,6 @@ namespace SiliconStudio.Paradox.Effects.Images
                 if (distortion.Y < 1f) distortion.Y = 1f;
             }
         }
-
-        /// <summary>
-        /// Modulate the bloom by a certain color.
-        /// </summary>
-        [DataMember(30)]
-        public Color3 ModulateColor { get; set; }
-
-        [DataMemberIgnore]
-        public float Amount { get; set; }
 
         [DataMemberIgnore]
         public bool ShowOnlyBloom { get; set; }
@@ -95,10 +98,8 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             base.Initialize(context);
 
-            blurCombine = ToLoadAndUnload(new ColorCombiner());
             multiScaler = ToLoadAndUnload(new ImageMultiScaler());
             blur = ToLoadAndUnload(new GaussianBlur());
-            blur.SigmaRatio = 2.5f;
         }
 
         protected override void DrawCore(RenderContext context)
@@ -119,62 +120,49 @@ namespace SiliconStudio.Paradox.Effects.Images
                 var anamorphicInput = NewScopedRenderTarget2D(distortedWidth, distortedHeight, input.Format);
                 Scaler.SetInput(input);
                 Scaler.SetOutput(anamorphicInput);
-                Scaler.Draw(context, name: "Anamorphic distortion");
+                Scaler.Draw(context, "Anamorphic distortion");
                 input = anamorphicInput;
             }
 
             // ----------------------------------------
-            // Downscale / 2
+            // Downscale / 4
             // ----------------------------------------
-            var nextSize = input.Size.Down2();
-            var startRenderTarget = NewScopedRenderTarget2D(nextSize.Width, nextSize.Height, input.Format);
+            const int DownScaleBasis = 1;
+            var nextSize = input.Size.Down2(DownScaleBasis);
+            var inputTextureDown4 = NewScopedRenderTarget2D(nextSize.Width, nextSize.Height, input.Format);
             Scaler.SetInput(input);
-            Scaler.SetOutput(startRenderTarget);
-            Scaler.Draw(context, name: "Down/2");
+            Scaler.SetOutput(inputTextureDown4);
+            Scaler.Draw(context, "Down/4");
 
-            // ----------------------------------------
-            // Downscale / 4 up to Downscale / xx
-            // ----------------------------------------
-            var previousRenderTarget = startRenderTarget;
-            // Create other rendertargets upto lastMinSize max
-            resultList.Clear();
-            var upscaleSize = nextSize; //nextSize.Down2();
+            var blurTexture = inputTextureDown4;
 
-            //var radius = (float)power;
-            var maxInputSize = Math.Max(input.Size.Width, input.Size.Height);
-            var maxLevel = (int)(Math.Max(1, Math.Floor(Math.Log(maxInputSize, 2.0))) - 2);
-
-            for (int mip = 0; mip < DownScale; mip++)
+            // TODO: Support automatic additional downscales based on a quality parameter instead
+            // Additional downscales 
+            if (DownScale > 0)
             {
-                nextSize = nextSize.Down2();
-                var nextRenderTarget = NewScopedRenderTarget2D(nextSize.Width, nextSize.Height, input.Format);
+                nextSize = nextSize.Down2(DownScale);
+                blurTexture = NewScopedRenderTarget2D(nextSize.Width, nextSize.Height, input.Format);
 
-                // Downscale
-                Scaler.SetInput(previousRenderTarget);
-                Scaler.SetOutput(nextRenderTarget);
-                Scaler.Draw(context, name: "Down/2");
-
-                // Blur it
-                blur.Radius = Math.Max(1, (int)MathUtil.Lerp(1, 20, Math.Max(0, Radius/100.0f)));
-                blur.SetInput(nextRenderTarget);
-                blur.SetOutput(nextRenderTarget);
-                blur.Draw(context);
-
-                // TODO: Use the MultiScaler for this part instead of recoding it here
-                // Only blur after 2nd downscale
-                var renderTargetToCombine = nextRenderTarget;
-                if (mip > 0)
-                {
-                    renderTargetToCombine = NewScopedRenderTarget2D(upscaleSize.Width, upscaleSize.Height, input.Format);
-                    multiScaler.SetInput(nextRenderTarget);
-                    multiScaler.SetOutput(renderTargetToCombine);
-                    multiScaler.Draw(context);
-                }
-                resultList.Add(renderTargetToCombine);
-                previousRenderTarget = nextRenderTarget;
+                multiScaler.SetInput(inputTextureDown4);
+                multiScaler.SetOutput(blurTexture);
+                multiScaler.Draw(context);
             }
 
-            MaxMip = DownScale - 1;
+            // Max blur size no more than 1/4 of input size
+            var inputMaxBlurRadiusInPixels = 0.25 * Math.Max(input.Width, input.Height) * Math.Pow(2, -DownScaleBasis - DownScale);
+            blur.Radius = Math.Max(1, (int)MathUtil.Lerp(1, inputMaxBlurRadiusInPixels, Math.Max(0, Radius / 100.0f)));
+            blur.SigmaRatio = Math.Max(1.0f, SigmaRatio);
+            blur.SetInput(blurTexture);
+            blur.SetOutput(blurTexture);
+            blur.Draw(context);
+
+            // TODO: Support automatic additional downscales 
+            if (DownScale > 0)
+            {
+                multiScaler.SetInput(blurTexture);
+                multiScaler.SetOutput(inputTextureDown4);
+                multiScaler.Draw(context);
+            }
 
             // Copy the input texture to the output
             if (ShowOnlyMip || ShowOnlyBloom)
@@ -184,30 +172,13 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             // Switch to additive
             GraphicsDevice.SetBlendState(GraphicsDevice.BlendStates.Additive);
-            if (resultList.Count == 1)
-            {
-                Scaler.SetInput(resultList[0]);
-                Scaler.SetOutput(output);
-                Scaler.Draw(context);
-            }
-            else if (resultList.Count > 1)
-            {
-                // Combine the blurred mips
-                blurCombine.Reset();
-                for (int i = 0; i < resultList.Count; i++)
-                {
-                    var result = resultList[i];
-                    blurCombine.SetInput(i, result);
-                    var exponent = (float)Math.Max(0, i) - 4.0f;
-                    var level = !ShowOnlyMip || i == MipIndex ? (float)Math.Pow(2.0f, exponent) : 0.0f;
-                    level *= Amount;
-                    blurCombine.Factors[i] = level;
-                    blurCombine.ModulateRGB[i] = ModulateColor;
-                }
 
-                blurCombine.SetOutput(output);
-                blurCombine.Draw(context);
-            }
+            Scaler.Color = new Color4(Amount);
+            Scaler.SetInput(inputTextureDown4);
+            Scaler.SetOutput(output);
+            Scaler.Draw(context);
+            Scaler.Reset();
+
             GraphicsDevice.SetBlendState(GraphicsDevice.BlendStates.Default);
         }
     }
