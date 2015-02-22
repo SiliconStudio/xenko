@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         public GaussianBlur()
         {
             Radius = 4;
-            SigmaRatio = 2.0f;
+            SigmaRatio = 3.0f;
         }
 
         /// <inheritdoc/>
@@ -107,10 +107,6 @@ namespace SiliconStudio.Paradox.Effects.Images
                     throw new ArgumentOutOfRangeException("SigmaRatio cannot be < 0.0f");
                 }
 
-                var size = Radius * 2 + 1;
-                nameGaussianBlurH = string.Format("GaussianBlurH{0}x{0}", size);
-                nameGaussianBlurV = string.Format("GaussianBlurV{0}x{0}", size);
-
                 if (sigmaRatio != value)
                 {
                     sigmaRatio = value;
@@ -130,8 +126,12 @@ namespace SiliconStudio.Paradox.Effects.Images
             desc.MultiSampleLevel = MSAALevel.None; // TODO we should have a method to get a non-MSAA RT
             var outputTextureH = NewScopedRenderTarget2D(desc);
 
+            var size = Radius * 2 + 1;
             if (offsetsWeights == null)
             {
+                nameGaussianBlurH = string.Format("GaussianBlurH{0}x{0}", size);
+                nameGaussianBlurV = string.Format("GaussianBlurV{0}x{0}", size);
+                
                 // TODO: cache if necessary
                 offsetsWeights = GaussianUtil.Calculate1D(Radius, SigmaRatio);
             }
@@ -143,7 +143,6 @@ namespace SiliconStudio.Paradox.Effects.Images
             // Horizontal pass
             blurH.SetInput(inputTexture);
             blurH.SetOutput(outputTextureH);
-            var size = Radius * 2 + 1;
             blurH.Draw(context, nameGaussianBlurH);
 
             // Vertical pass
