@@ -4,6 +4,8 @@
 using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
@@ -11,14 +13,19 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// A bright pass filter.
     /// </summary>
     [DataContract("BrightFilter")]
-    public class BrightFilter : ImageEffectShader
+    public class BrightFilter : ImageEffect
     {
+        // TODO: Add Brightpass filters based on average luminance and key value, taking into account the tonemap
+        private readonly ImageEffectShader brightPassFilter;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BrightFilter"/> class.
         /// </summary>
         public BrightFilter()
             : this("BrightFilterShader")
         {
+            Threshold = 1.0f;
+            Color = new Color3(1.0f);
         }
 
         /// <summary>
@@ -28,25 +35,53 @@ namespace SiliconStudio.Paradox.Effects.Images
         public BrightFilter(string brightPassShaderName) : base(brightPassShaderName)
         {
             if (brightPassShaderName == null) throw new ArgumentNullException("brightPassShaderName");
-            EffectName = brightPassShaderName;
+            brightPassFilter = new ImageEffectShader(brightPassShaderName);
         }
 
         /// <summary>
-        /// Gets or sets the threshold.
+        /// Gets or sets the threshold relative to the <see cref="WhitePoint"/>.
         /// </summary>
         /// <value>The threshold.</value>
         [DataMember(10)]
-        [DefaultValue(2.0)]
-        public float Threshold
+        [DefaultValue(1.0f)]
+        public float Threshold { get; set; }
+
+        /// <summary>
+        /// Modulate the bloom by a certain color.
+        /// </summary>
+        /// <value>The color.</value>
+        /// <userdoc>Modulates the bloom/lightstreak by a color</userdoc>
+        [DataMember(20)]
+        public Color3 Color { get; set; }
+
+        public override void Initialize(RenderContext context)
         {
-            get
+            base.Initialize(context);
+            ToLoadAndUnload(brightPassFilter);
+        }
+
+        protected override void SetDefaultParameters()
+        {
+            Color = new Color3(1.0f);
+
+            base.SetDefaultParameters();
+        }
+
+        protected override void DrawCore(RenderContext context)
+        {
+            var input = GetInput(0);
+            var output = GetOutput(0);
+            if (input == null || output == null)
             {
-                return Parameters.Get(BrightFilterShaderKeys.BrightPassThreshold);
+                return;
             }
-            set
-            {
-                Parameters.Set(BrightFilterShaderKeys.BrightPassThreshold, value);
-            }
+        
+            brightPassFilter.Parameters.Set(BrightFilterShaderKeys.BrightPassThreshold, Threshold);
+            brightPassFilter.Parameters.Set(BrightFilterShaderKeys.ColorModulator, Color);
+            
+            brightPassFilter.SetInput(input);
+            brightPassFilter.SetOutput(output);
+            brightPassFilter.Draw(context);
         }
     }
 }

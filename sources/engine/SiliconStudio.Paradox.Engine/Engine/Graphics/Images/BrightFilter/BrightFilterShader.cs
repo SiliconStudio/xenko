@@ -18,6 +18,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 {
     internal static partial class BrightFilterShaderKeys
     {
+        public static readonly ParameterKey<Color3> ColorModulator = ParameterKeys.New<Color3>();
         public static readonly ParameterKey<float> BrightPassThreshold = ParameterKeys.New<float>(2.0f);
     }
 }

@@ -8,6 +8,9 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// </summary>
     internal class BrightFilterShader : ImageEffectShader
     {
+        [Color]
+        stage float3 ColorModulator;
+
         stage float BrightPassThreshold = 2.0f;
 
         stage override float4 Shading()
@@ -24,7 +27,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 	        //color *= value;
 	        color *= luminance < BrightPassThreshold ? 0.0f : 1.0f;
 	
-	        return float4(color, 1.0);
+	        return float4(color * ColorModulator, 1.0);
         }
     };
 }
