@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             TapsPerIteration = 4;
             StreakCount = 4;
             Attenuation = 0.7f;
-            Amount = 1f;
+            Amount = 0.25f;
             IterationCount = 5;
             Phase = 1.3f;
             ColorAberrationStrength = 0.2f;
@@ -60,7 +60,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// Amount of light streak (intensity).
         /// </summary>
         [DataMember(10)]
-        [DefaultValue(1f)]
+        [DefaultValue(0.25f)]
         public float Amount { get; set; }
 
         /// <summary>
