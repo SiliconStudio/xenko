@@ -11,7 +11,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// Base class for a <see cref="ColorTransformBase"/> used by <see cref="ColorTransform"/> and <see cref="ToneMapOperator"/>.
     /// </summary>
-    [DataContract()]
+    [DataContract(Inherited = true)]
     public abstract class ColorTransformBase
     {
         /// <summary>
