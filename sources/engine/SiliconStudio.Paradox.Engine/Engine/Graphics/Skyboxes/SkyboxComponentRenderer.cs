@@ -27,7 +27,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Skyboxes
         {
             base.Initialize(context);
 
-            skyboxProcessor = SceneInstance.GetProcessor<SkyboxProcessor>();
             skyboxEffect = new ImageEffectShader("SkyboxEffect");
             skyboxEffect.Initialize(context);
         }
@@ -40,6 +39,12 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Skyboxes
 
         protected override void DrawCore(RenderContext context)
         {
+            skyboxProcessor = SceneInstance.GetProcessor<SkyboxProcessor>();
+            if (skyboxProcessor == null)
+            {
+                return;
+            }
+
             var skybox = skyboxProcessor.ActiveSkyboxBackground;
 
             if (skybox != null)

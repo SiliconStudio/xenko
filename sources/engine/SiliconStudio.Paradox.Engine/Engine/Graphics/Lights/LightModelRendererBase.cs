@@ -48,11 +48,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// <param name="context">The render context.</param>
         public void PrepareLights(RenderContext context)
         {
-            if (lightProcessor == null)
-            {
-                // TODO: This is ugly to access a processor
-                lightProcessor = context.Tags.Get(SceneInstance.Current).GetProcessor<LightProcessor>();
-            }
+            lightProcessor = context.Tags.Get(SceneInstance.Current).GetProcessor<LightProcessor>();
 
             // No light processor means no lights in the scene
             if (lightProcessor == null)

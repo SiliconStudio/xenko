@@ -250,6 +250,7 @@ namespace SiliconStudio.Paradox.EntityModel
         /// <returns>T.</returns>
         public T GetProcessor<T>() where T : EntityProcessor
         {
+            // TODO: Cache in a Dictionary
             foreach (var system in processors)
             {
                 if (system is T)

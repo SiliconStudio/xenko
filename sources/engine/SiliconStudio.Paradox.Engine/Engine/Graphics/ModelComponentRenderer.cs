@@ -97,7 +97,6 @@ namespace SiliconStudio.Paradox.Effects
             base.Initialize(context);
 
             dynamicEffectCompiler = new DynamicEffectCompiler(Services, effectName);
-            modelProcessor = SceneInstance.GetProcessor<ModelProcessor>();
         }
 
         protected override void Unload()
@@ -119,6 +118,8 @@ namespace SiliconStudio.Paradox.Effects
 
         protected override void DrawCore(RenderContext context)
         {
+            modelProcessor = SceneInstance.GetProcessor<ModelProcessor>();
+
             // If we don't have yet a render slot, create a new one
             if (modelRenderSlot < 0)
             {

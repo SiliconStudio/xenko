@@ -45,8 +45,6 @@ namespace SiliconStudio.Paradox.Effects
 
             spriteBatch = new SpriteBatch(context.GraphicsDevice);
 
-            spriteProcessor = SceneInstance.GetProcessor<SpriteProcessor>();
-
             gameVirtualResolution.VirtualResolutionChanged += GameVirtualResolutionChanged;
             GameVirtualResolutionChanged(null, EventArgs.Empty);
         }
@@ -62,6 +60,8 @@ namespace SiliconStudio.Paradox.Effects
 
         protected override void DrawCore(RenderContext context)
         {
+            spriteProcessor = SceneInstance.GetProcessor<SpriteProcessor>();
+
             // TODO: Check how to integrate sprites in a Camera renderer instead of this
             // draw opaque sprites 
             SelectAndSortEntitiesByEffects(spriteProcessor, SpriteIsOpaque);
