@@ -119,11 +119,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
                 return;
             }
 
-            if (Name == "Mastering")
-            {
-                
-            }
-
             // Sets the input of the layer (== last Current)
             var currentRenderFrame = context.Tags.Get(RenderFrame.Current);
             
