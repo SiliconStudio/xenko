@@ -18,8 +18,6 @@ namespace SiliconStudio.Paradox.Effects.Images
     {
         // Note: could be static if we use a lock
         private readonly Dictionary<ParameterKey, ParameterKey> tonemapKeys = new Dictionary<ParameterKey, ParameterKey>();
-        private readonly float[] weightedLuminances = new float[16];
-        private int currentWeightedLuminanceIndex = 0;
         private float previousLuminance;
 
         private readonly Stopwatch timer;
@@ -43,7 +41,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             timer = new Stopwatch();
             Operator = new ToneMapHejlDawsonOperator();
-            AdaptationRate = 1.25f;
+            AdaptationRate = 1.0f;
         }
 
         /// <summary>
@@ -95,7 +93,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         /// <value>The adaptation rate.</value>
         [DataMember(40)]
-        [DefaultValue(1.25f)]
+        [DefaultValue(1.0f)]
         public float AdaptationRate { get; set; }
 
         /// <summary>
@@ -171,28 +169,15 @@ namespace SiliconStudio.Paradox.Effects.Images
             var avgLuminanceLog = 0.18f; // TODO: Add a parmetrized average luminance
             if (luminanceResult.LocalTexture != null)
             {
-                // Adapt the luminance using Pattanaik's technique    
-                var currentAvgLuminance = (float)Math.Max(luminanceResult.AverageLuminance, 0.0001);
-                weightedLuminances[currentWeightedLuminanceIndex] = currentAvgLuminance;
-                currentWeightedLuminanceIndex = (currentWeightedLuminanceIndex + 1) % weightedLuminances.Length;
-
-                float avgLuminannce = 0.0f;
-                for (int i = 0; i < weightedLuminances.Length; i++)
-                {
-                    avgLuminannce += weightedLuminances[i];
-                }
-                avgLuminannce /= weightedLuminances.Length;
-
-                // Get current avg luminance
-
                 // Get adapted luminance
-                var adaptedLum = (float)(previousLuminance + (avgLuminannce - previousLuminance) * (1.0 - Math.Exp(-elapsedTime.TotalSeconds * AdaptationRate)));
+                // From "Perceptual effects in real-time tone mapping" by Grzegorz Krawczyk, Karol Myszkowski, Hans-Peter Seidel, p. 3, Equation 5
+                var adaptedLum = (float)(previousLuminance + (luminanceResult.AverageLuminance - previousLuminance) * (1.0 - Math.Exp(-elapsedTime.TotalSeconds * AdaptationRate)));
                 avgLuminanceLog = (float)Math.Log(adaptedLum, 2);
                 previousLuminance = adaptedLum;
-                //Trace.WriteLine(string.Format("Adapted: {0} Luminance: {1}", adaptedLum, currentAvgLuminance));
 
                 if (AutoKeyValue)
                 {
+                    // From "Perceptual effects in real-time tone mapping" by Grzegorz Krawczyk, Karol Myszkowski, Hans-Peter Seidel, p. 4, Equation 11
                     KeyValue = 1.03f - (2.0f / (2.0f + (float)Math.Log10(adaptedLum + 1)));
                 }
             }
