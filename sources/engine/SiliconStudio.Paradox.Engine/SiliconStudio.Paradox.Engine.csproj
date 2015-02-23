@@ -1982,7 +1982,6 @@
     <Compile Include="Engine\SceneChildRenderer.cs" />
     <Compile Include="EntityModel\SceneSystem.cs" />
     <Compile Include="Framework.Extensions\DictionaryExtensions.cs" />
-    <Compile Include="GameSystem.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Graphics\GameFontSystem.cs" />
     <Compile Include="Engine\SpriteProcessor.cs" />

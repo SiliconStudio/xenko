@@ -8,7 +8,7 @@ using SiliconStudio.Paradox.Games;
 
 namespace SiliconStudio.Paradox.Physics
 {
-    public class Bullet2PhysicsSystem : GameSystem, IPhysicsSystem
+    public class Bullet2PhysicsSystem : GameSystemBase, IPhysicsSystem
     {
         internal readonly ConcurrentDictionary<string, Simulation> PhysicsEngines = new ConcurrentDictionary<string, Simulation>();
 

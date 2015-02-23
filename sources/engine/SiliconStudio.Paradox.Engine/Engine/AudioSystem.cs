@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.Engine
     /// The Audio System.
     /// It creates an underlying instance of <see cref="AudioEngine"/>.
     /// </summary>
-    public class AudioSystem : GameSystem
+    public class AudioSystem : GameSystemBase
     {
         /// <summary>
         /// Create an new instance of AudioSystem

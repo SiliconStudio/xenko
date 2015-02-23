@@ -10,7 +10,7 @@ namespace SiliconStudio.Paradox.Graphics
     /// <summary>
     /// The game system in charge of calling <see cref="FontSystem"/>.
     /// </summary>
-    internal class GameFontSystem : GameSystem
+    public class GameFontSystem : GameSystemBase
     {
         public FontSystem FontSystem { get; private set; }
 

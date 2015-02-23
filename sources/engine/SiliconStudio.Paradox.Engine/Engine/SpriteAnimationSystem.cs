@@ -11,7 +11,7 @@ namespace SiliconStudio.Paradox.Engine
     /// <summary>
     /// A system in charge of animating the sprites 
     /// </summary>
-    public class SpriteAnimationSystem : GameSystem
+    public class SpriteAnimationSystem : GameSystemBase
     {
         private readonly HashSet<SpriteComponent> playingSprites = new HashSet<SpriteComponent>();
         private readonly HashSet<SpriteComponent> spritesToStop = new HashSet<SpriteComponent>(); 
