@@ -22,8 +22,6 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         private readonly Stopwatch timer;
 
-        private string previousShader;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ToneMap"/> class.
         /// </summary>
