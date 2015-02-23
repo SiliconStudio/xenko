@@ -14,6 +14,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Paradox.Graphics.OpenGL;
 using Color4 = SiliconStudio.Core.Mathematics.Color4;
 #if SILICONSTUDIO_PLATFORM_ANDROID
 using System.Text;
@@ -2160,7 +2161,7 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
-        protected void InitializePlatformDevice(GraphicsProfile[] graphicsProfile, DeviceCreationFlags deviceCreationFlags, WindowHandle windowHandle)
+        protected void InitializePlatformDevice(GraphicsProfile[] graphicsProfiles, DeviceCreationFlags deviceCreationFlags, WindowHandle windowHandle)
         {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             gameWindow = (OpenTK.GameWindow)windowHandle.NativeHandle;
@@ -2191,24 +2192,20 @@ namespace SiliconStudio.Paradox.Graphics
             versionMajor = 1;
             versionMinor = 0;
 
-            // get real values
-            // using glGetIntegerv(GL_MAJOR_VERSION / GL_MINOR_VERSION) only works on opengl (es) > 3.0
-            var version = GL.GetString(StringName.Version);
-            if (version != null)
+            var requestedGraphicsProfile = GraphicsProfile.Level_9_1;
+
+            // Find the first profile that is compatible with current GL version
+            foreach (var graphicsProfile in graphicsProfiles)
             {
-                var splitVersion = version.Split(new char[] { '.', ' ' });
-                // find first number occurence because:
-                //   - on OpenGL, "<major>.<minor>"
-                //   - on OpenGL ES, "OpenGL ES <profile> <major>.<minor>"
-                for (var i = 0; i < splitVersion.Length - 1; ++i)
+                if (Adapter.IsProfileSupported(graphicsProfile))
                 {
-                    if (int.TryParse(splitVersion[i], out versionMajor))
-                    {
-                        int.TryParse(splitVersion[i+1], out versionMinor);
-                        break;
-                    }
+                    requestedGraphicsProfile = graphicsProfile;
+                    break;
                 }
             }
+
+            // Find back OpenGL version from requested version
+            OpenGLUtils.GetGLVersion(requestedGraphicsProfile, out versionMajor, out versionMinor);
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
             IsOpenGLES2 = (versionMajor < 3);
