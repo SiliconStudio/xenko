@@ -1899,6 +1899,7 @@
     <Compile Include="Engine\SceneChildComponentChangedEventArgs.cs" />
     <Compile Include="Engine\SceneChildProcessor.cs" />
     <Compile Include="Engine\SceneComponent.cs" />
+    <Compile Include="Engine\SceneEditorCameraSettings.cs" />
     <Compile Include="Engine\SceneEditorGraphicsModeHDRSettings.cs" />
     <Compile Include="Engine\SceneEditorGraphicsModeLDRSettings.cs" />
     <Compile Include="Engine\SceneEditorSettings.cs" />

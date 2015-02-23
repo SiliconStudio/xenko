@@ -56,8 +56,10 @@ namespace SiliconStudio.Paradox.Assets.Model.Analysis
                 {
                     var containingEntity = entityLink.EntityComponent.Entity;
                     if (containingEntity == null)
+                    {
                         throw new InvalidOperationException("Found a reference to a component which doesn't have any entity");
-
+                    }
+                        
                     Entity realEntity;
                     if (entityHierarchy.Entities.TryGetValue(containingEntity.Id, out realEntity)
                         && realEntity.Components.TryGetValue(entityLink.EntityComponent.GetDefaultKey(), out obj))

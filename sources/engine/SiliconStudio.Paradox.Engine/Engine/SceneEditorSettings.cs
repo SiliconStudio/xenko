@@ -3,6 +3,7 @@
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Engine
 {
@@ -19,17 +20,45 @@ namespace SiliconStudio.Paradox.Engine
         /// </summary>
         public SceneEditorSettings()
         {
+            BackgroundColor = (Color3)new Color(12, 12, 12);
+            GridColor = (Color3)new Color(180, 180, 180);
+            Camera = new SceneEditorCameraSettings();
             Mode = new SceneEditorGraphicsModeLDRSettings();
         }
+
+        /// <summary>
+        /// Gets or sets the color of the background.
+        /// </summary>
+        /// <value>The color of the background.</value>
+        /// <userdoc>The background color used by the editor view</userdoc>
+        [DataMember(0)]
+        public Color3 BackgroundColor { get; set; }
+
+        /// <summary>
+        /// Gets or sets the color of the background.
+        /// </summary>
+        /// <value>The color of the background.</value>
+        /// <userdoc>The background color used by the editor view</userdoc>
+        [DataMember(5)]
+        public Color3 GridColor { get; set; }
+
+        /// <summary>
+        /// Gets or sets the camera.
+        /// </summary>
+        /// <value>The camera.</value>
+        [DataMember(10)]
+        [NotNull]
+        [Display("Camera", AlwaysExpand = true)]
+        public SceneEditorCameraSettings Camera { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to use HDR when displaying a scene in the editor.
         /// </summary>
         /// <value><c>true</c> if [use HDR]; otherwise, <c>false</c>.</value>
         /// <userdoc>Use HDR rendering when displaying a scene in the editor</userdoc>
-        [DataMember(10)]
+        [DataMember(20)]
         [NotNull]
-        [Display("Rendering Mode")]
+        [Display("Rendering Mode", AlwaysExpand = true)]
         public ISceneEditorGraphicsModeSettings Mode { get; set; }
     }
 }

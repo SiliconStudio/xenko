@@ -47,6 +47,7 @@ namespace SiliconStudio.Paradox.Engine
                 fx.ColorTransforms.Transforms.Add(new ToneMap());
                 fx.DepthOfField.Enabled = false;
                 fx.Bloom.Enabled = false;
+                fx.LensFlare.Enabled = false;
 
                 return settings;
             }

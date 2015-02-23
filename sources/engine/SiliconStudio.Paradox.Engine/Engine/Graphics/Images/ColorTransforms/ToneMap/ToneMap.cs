@@ -38,6 +38,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         public ToneMap(string toneMapEffect) : base(toneMapEffect)
         {
             timer = new Stopwatch();
+            AutoKeyValue = true;
             Operator = new ToneMapHejlDawsonOperator();
             AdaptationRate = 1.0f;
         }
@@ -73,7 +74,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         /// <value><c>true</c> if [automatic key value]; otherwise, <c>false</c>.</value>
         [DataMember(30)]
-        [DefaultValue(false)]
+        [DefaultValue(true)]
         public bool AutoKeyValue
         {
             get
