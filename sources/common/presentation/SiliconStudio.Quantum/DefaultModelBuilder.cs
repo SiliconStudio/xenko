@@ -100,7 +100,6 @@ namespace SiliconStudio.Quantum
                     referenceContents.Add(content);
 
                 AvailableCommands.Where(x => x.CanAttach(currentDescriptor, null)).ForEach(rootNode.AddCommand);
-                var commands = AvailableCommands.Where(x => x.CanAttach(currentDescriptor, null));
                 NotifyNodeConstructed(content);
 
                 if (obj == null)
