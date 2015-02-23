@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -34,8 +35,9 @@ namespace SiliconStudio.Paradox.Engine
         /// </summary>
         /// <value>The graphics composer.</value>
         [DataMember(10)]
-        [Display("Graphics Composition")]
+        [Display("Graphics Composition", AlwaysExpand = true)]
         [NotNull]
+        [Category]
         public ISceneGraphicsCompositor GraphicsCompositor { get; set; }   // TODO: Should we move this to a special component?
 
         /// <summary>
@@ -43,7 +45,8 @@ namespace SiliconStudio.Paradox.Engine
         /// </summary>
         /// <value>The editor settings.</value>
         [DataMember(20)]
-        [Display("Editor Settings")]
+        [Display("Editor Settings", AlwaysExpand = true)]
+        [Category]
         public SceneEditorSettings EditorSettings { get; set; }
 
         public override PropertyKey GetDefaultKey()
