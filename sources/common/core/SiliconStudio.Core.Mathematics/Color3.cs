@@ -677,7 +677,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>The result of the conversion.</returns>
         public static explicit operator Color4(Color3 value)
         {
-            return new Color4(1.0f, value.R, value.G, value.B);
+            return new Color4(value.R, value.G, value.B, 1.0f);
         }
 
         /// <summary>
