@@ -1902,6 +1902,7 @@
     <Compile Include="Engine\SceneEditorCameraSettings.cs" />
     <Compile Include="Engine\SceneEditorGraphicsModeHDRSettings.cs" />
     <Compile Include="Engine\SceneEditorGraphicsModeLDRSettings.cs" />
+    <Compile Include="Engine\SceneEditorGraphicsModeSettingsBase.cs" />
     <Compile Include="Engine\SceneEditorSettings.cs" />
     <Compile Include="Engine\SceneInstance.cs" />
     <Compile Include="Engine\SceneProcessor.cs" />

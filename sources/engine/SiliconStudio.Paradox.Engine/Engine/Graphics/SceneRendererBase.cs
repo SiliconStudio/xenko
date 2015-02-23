@@ -28,13 +28,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         [DataMemberIgnore]
         public ParameterCollection Parameters { get; private set; }
 
-        public override void Initialize(RenderContext context)
-        {
-            base.Initialize(context);
-
-            // Parameters.AddSources(context.Parameters);
-        }
-
         protected override void DrawCore(RenderContext context)
         {
             var output = Output.GetSafeRenderFrame(context);

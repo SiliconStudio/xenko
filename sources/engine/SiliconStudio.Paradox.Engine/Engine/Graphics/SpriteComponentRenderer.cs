@@ -37,13 +37,13 @@ namespace SiliconStudio.Paradox.Effects
             spriteBatch.VirtualResolution = gameVirtualResolution.VirtualResolution;
         }
 
-        public override void Initialize(RenderContext context)
+        protected override void InitializeCore()
         {
-            base.Initialize(context);
+            base.InitializeCore();
 
             gameVirtualResolution = (IVirtualResolution)Services.GetService(typeof(IVirtualResolution));
 
-            spriteBatch = new SpriteBatch(context.GraphicsDevice);
+            spriteBatch = new SpriteBatch(Context.GraphicsDevice);
 
             gameVirtualResolution.VirtualResolutionChanged += GameVirtualResolutionChanged;
             GameVirtualResolutionChanged(null, EventArgs.Empty);

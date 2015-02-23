@@ -56,7 +56,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         [DataMemberIgnore]
         protected RenderContext Context { get; private set; }
 
-        public virtual void Initialize(RenderContext context)
+        public void Initialize(RenderContext context)
         {
             if (context == null) throw new ArgumentNullException("context");
 
@@ -68,6 +68,15 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
             Context = context;
             subRenderersToUnload.Clear();
+
+            InitializeCore();
+
+            // Notify that a particular renderer has been initialized.
+            context.OnRendererInitialized(this);
+        }
+
+        protected virtual void InitializeCore()
+        {
         }
 
         /// <summary>

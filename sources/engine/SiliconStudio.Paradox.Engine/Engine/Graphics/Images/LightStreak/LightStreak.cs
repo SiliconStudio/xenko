@@ -47,9 +47,9 @@ namespace SiliconStudio.Paradox.Effects.Images
             IsAnamorphic = false;
         }
 
-        public override void Initialize(RenderContext context)
+        protected override void InitializeCore()
         {
-            base.Initialize(context);
+            base.InitializeCore();
 
             combiner = ToLoadAndUnload(new ColorCombiner());
             blur = ToLoadAndUnload(new GaussianBlur());

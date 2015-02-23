@@ -33,9 +33,9 @@ namespace SiliconStudio.Paradox.Effects
             Name = "UIComponentRenderer";
         }
 
-        public override void Initialize(RenderContext context)
+        protected override void InitializeCore()
         {
-            base.Initialize(context);
+            base.InitializeCore();
 
             game = (IGame)Services.GetService(typeof(IGame));
             uiSystem = (UISystem)Services.GetService(typeof(UISystem));

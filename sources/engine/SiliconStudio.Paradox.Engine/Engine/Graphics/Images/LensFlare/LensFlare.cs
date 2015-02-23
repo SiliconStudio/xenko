@@ -62,9 +62,9 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         }
 
-        public override void Initialize(RenderContext context)
+        protected override void InitializeCore()
         {
-            base.Initialize(context);
+            base.InitializeCore();
 
             blur = ToLoadAndUnload(new GaussianBlur());
             flareArtifactEffect = ToLoadAndUnload(new ImageEffectShader("FlareArtifactEffect"));

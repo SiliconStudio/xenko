@@ -1,6 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects.Images;
 
 namespace SiliconStudio.Paradox.Engine
@@ -10,6 +12,13 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     public interface ISceneEditorGraphicsModeSettings
     {
+        /// <summary>
+        /// Gets or sets the color of the background.
+        /// </summary>
+        /// <value>The color of the background.</value>
+        /// <userdoc>The background color used by the editor view</userdoc>
+        Color3 BackgroundColor { get; set; }
+
         bool RequiresHDRRenderFrame();
 
         PostProcessingEffects GetSceneEditorPostProcessingEffects();

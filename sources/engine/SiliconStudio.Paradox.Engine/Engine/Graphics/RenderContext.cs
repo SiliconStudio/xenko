@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Effects.Images;
 using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 
@@ -29,7 +30,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <param name="services">The services.</param>
         /// <param name="allocator">The allocator.</param>
         /// <exception cref="System.ArgumentNullException">services</exception>
-        public RenderContext(IServiceRegistry services, GraphicsResourceAllocator allocator = null)
+        private RenderContext(IServiceRegistry services, GraphicsResourceAllocator allocator = null)
         {
             if (services == null) throw new ArgumentNullException("services");
             Services = services;
@@ -39,6 +40,11 @@ namespace SiliconStudio.Paradox.Effects
             parametersStack = new Stack<ParameterCollection>();
             PushParameters(new ParameterCollection());
         }
+
+        /// <summary>
+        /// Occurs when a renderer is initialized.
+        /// </summary>
+        public event Action<IGraphicsRenderer> RendererInitialized;
 
         /// <summary>
         /// Gets the content manager.
@@ -134,6 +140,12 @@ namespace SiliconStudio.Paradox.Effects
             // Store RenderContext shared into the GraphicsDevice
             var graphicsDevice = services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
             return graphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, SharedImageEffectContextKey, () => new RenderContext(services));
+        }
+
+        internal void OnRendererInitialized(IGraphicsRenderer obj)
+        {
+            Action<IGraphicsRenderer> handler = RendererInitialized;
+            if (handler != null) handler(obj);
         }
     }
 }

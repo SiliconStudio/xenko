@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         private readonly List<ColorTransform> collectTransforms;
         private readonly List<ColorTransform> enabledTransforms;
         private readonly GammaTransform gammaTransform;
-        private ColorTransformContext context;
+        private ColorTransformContext transformContext;
         private readonly string colorTransformGroupEffectName;
 
         /// <summary>
@@ -53,18 +53,18 @@ namespace SiliconStudio.Paradox.Effects.Images
         }
 
         /// <inheritdoc/>
-        public override void Initialize(RenderContext context)
+        protected override void InitializeCore()
         {
-            base.Initialize(context);
+            base.InitializeCore();
 
             transformGroupEffect = new ImageEffectShader(colorTransformGroupEffectName);
             transformGroupEffect.SharedParameterCollections.Add(Parameters);
-            transformGroupEffect.Initialize(context);
+            transformGroupEffect.Initialize(Context);
 
             // we are adding parameter collections after as transform parameters should override previous parameters
             transformGroupEffect.ParameterCollections.Add(transformsParameters);
 
-            this.context = new ColorTransformContext(this);
+            this.transformContext = new ColorTransformContext(this);
         }
 
         /// <summary>
@@ -106,9 +106,9 @@ namespace SiliconStudio.Paradox.Effects.Images
             // Collect all transform parameters
             CollectTransformsParameters();
 
-            for (int i = 0; i < context.Inputs.Count; i++)
+            for (int i = 0; i < transformContext.Inputs.Count; i++)
             {
-                transformGroupEffect.SetInput(i, context.Inputs[i]);
+                transformGroupEffect.SetInput(i, transformContext.Inputs[i]);
             }
             transformGroupEffect.SetOutput(output);
             transformGroupEffect.Draw(context1, name: Name);
@@ -145,10 +145,10 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         private void CollectTransformsParameters()
         {
-            context.Inputs.Clear();
+            transformContext.Inputs.Clear();
             for (int i = 0; i < InputCount; i++)
             {
-                context.Inputs.Add(GetInput(i));
+                transformContext.Inputs.Add(GetInput(i));
             }
 
             // Grab all color transforms
@@ -159,7 +159,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             {
                 var transform = enabledTransforms[i];
                 // Always update parameters
-                transform.UpdateParameters(context);
+                transform.UpdateParameters(transformContext);
 
                 // Copy transform parameters back to the composition with the current index
                 var sourceParameters = transform.Parameters;

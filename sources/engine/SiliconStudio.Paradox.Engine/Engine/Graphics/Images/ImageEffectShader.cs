@@ -34,20 +34,20 @@ namespace SiliconStudio.Paradox.Effects.Images
         }
 
         /// <inheritdoc/>
-        public override void Initialize(RenderContext context)
+        protected override void InitializeCore()
         {
-            base.Initialize(context);
+            base.InitializeCore();
 
             if (EffectName == null) throw new ArgumentNullException("No EffectName specified");
 
-            parameterCollections = new List<ParameterCollection> { context.Parameters };
+            parameterCollections = new List<ParameterCollection> { Context.Parameters };
             parameterCollections.AddRange(SharedParameterCollections);
             parameterCollections.Add(Parameters);
             appliedParameterCollections = new List<ParameterCollection>();
 
             // Setup the effect compiler
             EffectInstance = new DefaultEffectInstance(parameterCollections);
-            effectCompiler = new DynamicEffectCompiler(context.Services, EffectName);
+            effectCompiler = new DynamicEffectCompiler(Context.Services, EffectName);
 
             SetDefaultParameters();
         }

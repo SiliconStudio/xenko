@@ -54,9 +54,9 @@ namespace SiliconStudio.Paradox.Effects.Images
         [DataMember(20)]
         public Color3 Color { get; set; }
 
-        public override void Initialize(RenderContext context)
+        protected override void InitializeCore()
         {
-            base.Initialize(context);
+            base.InitializeCore();
             ToLoadAndUnload(brightPassFilter);
         }
 

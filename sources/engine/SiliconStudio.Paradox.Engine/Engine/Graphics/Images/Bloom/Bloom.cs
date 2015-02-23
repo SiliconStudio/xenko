@@ -94,9 +94,9 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         private int MaxMip { get; set; }
 
-        public override void Initialize(RenderContext context)
+        protected override void InitializeCore()
         {
-            base.Initialize(context);
+            base.InitializeCore();
 
             multiScaler = ToLoadAndUnload(new ImageMultiScaler());
             blur = ToLoadAndUnload(new GaussianBlur());

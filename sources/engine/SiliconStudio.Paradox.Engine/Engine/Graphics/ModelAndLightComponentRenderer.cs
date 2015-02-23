@@ -3,8 +3,11 @@
 
 using System;
 
+using SiliconStudio.Paradox.Assets.Materials;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Lights;
+using SiliconStudio.Paradox.Effects.Materials;
+using SiliconStudio.Paradox.Shaders.Compiler;
 
 namespace SiliconStudio.Paradox.Engine.Graphics
 {
@@ -15,9 +18,9 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     {
         private LightModelRendererForward lightModelRenderer;
         private ModelComponentRenderer modelRenderer;
-        public override void Initialize(RenderContext context)
+        protected override void InitializeCore()
         {
-            base.Initialize(context);
+            base.InitializeCore();
 
             // TODO: Add support for mixin overrides
             modelRenderer = ToLoadAndUnload(new ModelComponentRenderer(SceneCameraRenderer.Mode.ModelEffect));

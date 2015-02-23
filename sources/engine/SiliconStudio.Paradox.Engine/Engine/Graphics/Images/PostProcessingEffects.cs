@@ -171,9 +171,9 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
-        public override void Initialize(RenderContext context)
+        protected override void InitializeCore()
         {
-            base.Initialize(context);
+            base.InitializeCore();
 
             depthOfField = ToLoadAndUnload(depthOfField);
             luminanceEffect = ToLoadAndUnload(luminanceEffect);

@@ -76,6 +76,14 @@ namespace SiliconStudio.Paradox.Effects
             }
         }
 
+        public DynamicEffectCompiler DynamicEffectCompiler
+        {
+            get
+            {
+                return dynamicEffectCompiler;
+            }
+        }
+
         public AcceptRenderModelDelegate AcceptRenderModel { get; set; }
 
         public AcceptRenderMeshDelegate AcceptRenderMesh { get; set; }
@@ -92,9 +100,9 @@ namespace SiliconStudio.Paradox.Effects
 
         public UpdateMeshesDelegate SortMeshes { get; set; }
 
-        public override void Initialize(RenderContext context)
+        protected override void InitializeCore()
         {
-            base.Initialize(context);
+            base.InitializeCore();
 
             dynamicEffectCompiler = new DynamicEffectCompiler(Services, effectName);
         }

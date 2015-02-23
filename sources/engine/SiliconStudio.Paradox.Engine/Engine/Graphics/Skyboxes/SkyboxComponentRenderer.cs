@@ -23,12 +23,11 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Skyboxes
         {
         }
 
-        public override void Initialize(RenderContext context)
+        protected override void InitializeCore()
         {
-            base.Initialize(context);
+            base.InitializeCore();
 
-            skyboxEffect = new ImageEffectShader("SkyboxEffect");
-            skyboxEffect.Initialize(context);
+            skyboxEffect = ToLoadAndUnload(new ImageEffectShader("SkyboxEffect"));
         }
 
         protected override void Unload()

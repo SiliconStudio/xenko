@@ -5,6 +5,7 @@ using System;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Effects.Images;
 
@@ -16,13 +17,14 @@ namespace SiliconStudio.Paradox.Engine
     [DataContract("SceneEditorGraphicsModeHDRSettings")]
     [Display("High Dynamic Range")]
     [ObjectFactory(typeof(SceneEditorGraphicsModeHDRSettings.Factory))]
-    public sealed class SceneEditorGraphicsModeHDRSettings : ISceneEditorGraphicsModeSettings
+    public sealed class SceneEditorGraphicsModeHDRSettings : SceneEditorGraphicsModeSettingsBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneEditorGraphicsModeHDRSettings"/> class.
         /// </summary>
         public SceneEditorGraphicsModeHDRSettings()
         {
+            BackgroundColor = (Color3)new Color(12, 12, 12);
             PostProcessingEffects = new PostProcessingEffects();
         }
 
@@ -44,7 +46,7 @@ namespace SiliconStudio.Paradox.Engine
                 // By default, only activate ToneMap and Gamma correction
                 var fx = settings.PostProcessingEffects;
                 fx.LightStreak.Enabled = false;
-                fx.ColorTransforms.Transforms.Add(new ToneMap());
+                fx.ColorTransforms.Transforms.Add(new ToneMap() { LuminanceLocalFactor = 0.0f });
                 fx.DepthOfField.Enabled = false;
                 fx.Bloom.Enabled = false;
                 fx.LensFlare.Enabled = false;
@@ -53,12 +55,12 @@ namespace SiliconStudio.Paradox.Engine
             }
         }
 
-        public bool RequiresHDRRenderFrame()
+        public override bool RequiresHDRRenderFrame()
         {
             return true;
         }
 
-        public PostProcessingEffects GetSceneEditorPostProcessingEffects()
+        public override PostProcessingEffects GetSceneEditorPostProcessingEffects()
         {
             return PostProcessingEffects;
         }

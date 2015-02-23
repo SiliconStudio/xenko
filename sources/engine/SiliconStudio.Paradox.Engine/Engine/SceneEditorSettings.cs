@@ -20,19 +20,10 @@ namespace SiliconStudio.Paradox.Engine
         /// </summary>
         public SceneEditorSettings()
         {
-            BackgroundColor = (Color3)new Color(12, 12, 12);
             GridColor = (Color3)new Color(180, 180, 180);
             Camera = new SceneEditorCameraSettings();
             Mode = new SceneEditorGraphicsModeLDRSettings();
         }
-
-        /// <summary>
-        /// Gets or sets the color of the background.
-        /// </summary>
-        /// <value>The color of the background.</value>
-        /// <userdoc>The background color used by the editor view</userdoc>
-        [DataMember(0)]
-        public Color3 BackgroundColor { get; set; }
 
         /// <summary>
         /// Gets or sets the color of the background.

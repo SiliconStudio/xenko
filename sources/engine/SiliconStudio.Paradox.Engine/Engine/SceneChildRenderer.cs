@@ -49,10 +49,10 @@ namespace SiliconStudio.Paradox.Engine
         [DataMemberIgnore]
         public ISceneGraphicsCompositor GraphicsCompositorOverride { get; set; } // Overrides are accessible only at runtime
 
-        public override void Initialize(RenderContext context)
+        protected override void InitializeCore()
         {
-            base.Initialize(context);
-            currentEntityManager = context.Tags.Get(SceneInstance.Current);
+            base.InitializeCore();
+            currentEntityManager = Context.Tags.Get(SceneInstance.Current);
         }
 
         protected override void Destroy()

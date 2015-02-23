@@ -206,9 +206,9 @@ namespace SiliconStudio.Paradox.Effects.Images
             QualityPreset = 0.5f;
         }
 
-        public override void Initialize(RenderContext context)
+        protected override void InitializeCore()
         {
-            base.Initialize(context);
+            base.InitializeCore();
 
             coclinearDepthMapEffect = ToLoadAndUnload(new ImageEffectShader("CoCLinearDepthShader"));
             combineLevelsEffect = ToLoadAndUnload(new ImageEffectShader("CombineLevelsFromCoCEffect"));

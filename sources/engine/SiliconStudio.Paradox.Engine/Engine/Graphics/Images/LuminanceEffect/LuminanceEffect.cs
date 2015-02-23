@@ -36,27 +36,24 @@ namespace SiliconStudio.Paradox.Effects.Images
             EnableAverageLuminanceReadback = true;
         }
 
-        public override void Initialize(RenderContext context)
+        protected override void InitializeCore()
         {
-            base.Initialize(context);
+            base.InitializeCore();
 
-            LuminanceLogEffect = LuminanceLogEffect ?? new LuminanceLogEffect().DisposeBy(this);
-            LuminanceLogEffect.Initialize(context);
+            LuminanceLogEffect = ToLoadAndUnload(new LuminanceLogEffect());
 
             // Create 1x1 texture
             luminance1x1 = Texture.New2D(GraphicsDevice, 1, 1, 1, luminanceFormat, TextureFlags.ShaderResource | TextureFlags.RenderTarget).DisposeBy(this);
 
             // Use a multiscaler
-            multiScaler = new ImageMultiScaler().DisposeBy(this);
-            multiScaler.Initialize(context);
+            multiScaler = ToLoadAndUnload(new ImageMultiScaler());
 
             // Readback is always going to be done on the 1x1 texture
-            readback = new ImageReadback<Half>(context).DisposeBy(this);
+            readback = ToLoadAndUnload(new ImageReadback<Half>(Context));
             readback.SetInput(luminance1x1);
 
             // Blur used before upscaling 
-            blur = new GaussianBlur().DisposeBy(this);
-            blur.Initialize(context);
+            blur = ToLoadAndUnload(new GaussianBlur());
             blur.Radius = 4;
         }
 

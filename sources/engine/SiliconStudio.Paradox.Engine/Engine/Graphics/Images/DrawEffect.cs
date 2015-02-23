@@ -51,13 +51,12 @@ namespace SiliconStudio.Paradox.Effects
         /// <summary>
         /// Initializes the <see cref="DrawEffect"/> with the given <see cref="RenderContext"/>.
         /// </summary>
-        /// <param name="context">The context.</param>
         /// /// <exception cref="System.ArgumentNullException">context</exception>
-        public override void Initialize(RenderContext context)
+        protected override void InitializeCore()
         {
-            base.Initialize(context);
+            base.InitializeCore();
             GraphicsDevice = Context.GraphicsDevice;
-            Assets = context.Services.GetSafeServiceAs<AssetManager>();
+            Assets = Context.Services.GetSafeServiceAs<AssetManager>();
         }
 
         /// <summary>
