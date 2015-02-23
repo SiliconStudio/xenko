@@ -12,6 +12,18 @@ namespace SiliconStudio.Paradox.Effects.Images
     [DataContract("ColorTransformCollection")]
     public class ColorTransformCollection : SafeList<ColorTransform>
     {
+        public T Get<T>() where T : ColorTransform
+        {
+            foreach (var transform in this)
+            {
+                if (typeof(T) == transform.GetType())
+                {
+                    return (T)transform;
+                }
+            }
+            return null;
+        }
+
         public bool IsEnabled<T>() where T : ColorTransform
         {
             foreach (var transform in this)
